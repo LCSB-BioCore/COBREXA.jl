@@ -1,7 +1,7 @@
 using SparseArrays
 
 """
-A bilevel linear optimization problem of the form:
+A linear optimization problem of the form:
 ```
 min c^T * x
 s.t. S x = b
