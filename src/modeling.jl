@@ -1,3 +1,5 @@
+using SparseArrays
+
 """
 A bilevel linear optimization problem of the form:
 ```
@@ -7,20 +9,20 @@ s.t. S x = b
 ```
 """
 mutable struct CobraLP
-    S       ::AbstractMatrix
-    b       ::Array{Float64,1}
-    c       ::Array{Float64,1}
-    lb      ::Array{Float64,1}
-    ub      ::Array{Float64,1}
+    S       ::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}
+    b       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}}
+    c       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}}
+    lb      ::Union{Array{Float64,1}, SparseVector{Float64,Int64}}
+    ub      ::Union{Array{Float64,1}, SparseVector{Float64,Int64}}
     rxns    ::Array{String,1}
     mets    ::Array{String,1}
 
     function CobraLP(
-        S       ::AbstractMatrix,
-        b       ::Array{Float64,1},
-        c       ::Array{Float64,1},
-        lb      ::Array{Float64,1},
-        ub      ::Array{Float64,1},
+        S       ::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}},
+        b       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}},
+        c       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}},
+        lb      ::Union{Array{Float64,1}, SparseVector{Float64,Int64}},
+        ub      ::Union{Array{Float64,1}, SparseVector{Float64,Int64}},
         rxns    ::Array{String,1},
         mets    ::Array{String,1})
 
@@ -35,13 +37,13 @@ mutable struct CobraLP
     end
 end
 
-function addReaction(m::CobraLP, s::Array{Float64,1}, b)
+function addReaction(m::CobraLP, s::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, b)
     newS = vcat(m.S, s')
     newb = vcat(m.b, b)
     return CobraLP(newS, newb, m.c, m.lb, m.ub, m.rxns, m.mets)
 end
 
-function addReactions(m::CobraLP, Sp::AbstractMatrix, b::Array{Float64,1})
+function addReactions(m::CobraLP, Sp::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}, b::Union{Array{Float64,1}, SparseVector{Float64,Int64}})
     newS = vcat(m.S, Sp)
     newb = vcat(m.b, b)
     return CobraLP(newS, newb, m.c, m.lb, m.ub, m.rxns, m.mets)
