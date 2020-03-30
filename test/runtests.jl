@@ -1,12 +1,22 @@
 using Test
 using SparseArrays
 using ***REMOVED***
+using JuMP
 
 test_cobraLP() = CobraLP(zeros(4, 3),
                          zeros(4),
                          ones(3),
                          ones(3),
                          ones(3),
+                         ["r1"],
+                         ["m1"])
+
+test_simpleCobraLP() = CobraLP([1.0 1.0
+                                -1.0 1.0],
+                         [3., 1.],
+                         [-0.25, 1.],
+                         -ones(2),
+                         2.0 * ones(2),
                          ["r1"],
                          ["m1"])
 
@@ -50,4 +60,13 @@ end
     @test size(cp.S) == (4002, 3000)
     cp = addReactions(cp, 2. * ones(1000, 3000), ones(1000))
     @test size(cp.S) == (5002, 3000)
+end
+
+
+@testset "Solve CobraLP" begin
+    cp = test_simpleCobraLP()
+    (lp, x) = solveLP(cp)
+    @test termination_status(lp) === MOI.OPTIMAL
+    sol = JuMP.value.(x)
+    @test sol ≈ [1., 2.]
 end
