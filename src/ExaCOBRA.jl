@@ -1,6 +1,6 @@
 module ***REMOVED***
 
-export CobraLP
+export CobraLP, addReaction, addReactions
 
 include("modeling.jl")
 end
