@@ -1,8 +1,11 @@
-import ..CobraLP
+import ..LinearModel
 using JuMP
 using GLPK
 
-function solveLP(model::CobraLP)
+"""
+Use JuMP to solve an instance of LinearModel
+"""
+function solveLP(model::LinearModel)
    m, n = size(model.S)
 
    optimization_model = JuMP.Model(GLPK.Optimizer)
