@@ -8,7 +8,7 @@ s.t. S x = b
      lb ≤ x ≤ ub
 ```
 """
-mutable struct CobraLP
+mutable struct LinearModel
     S       ::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}
     b       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}}
     c       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}}
@@ -17,7 +17,7 @@ mutable struct CobraLP
     rxns    ::Array{String,1}
     mets    ::Array{String,1}
 
-    function CobraLP(
+    function LinearModel(
         S       ::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}},
         b       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}},
         c       ::Union{Array{Float64,1}, SparseVector{Float64,Int64}},
@@ -37,14 +37,12 @@ mutable struct CobraLP
     end
 end
 
-function addReaction(m::CobraLP, s::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, b)
-    newS = vcat(m.S, s')
-    newb = vcat(m.b, b)
-    return CobraLP(newS, newb, m.c, m.lb, m.ub, m.rxns, m.mets)
+function addReactions(m::LinearModel, s::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, b)
+    return addReactions(m, reshape(s, (1, length(s))), [b])
 end
 
-function addReactions(m::CobraLP, Sp::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}, b::Union{Array{Float64,1}, SparseVector{Float64,Int64}})
+function addReactions(m::LinearModel, Sp::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}, b::Union{Array{Float64,1}, SparseVector{Float64,Int64}})
     newS = vcat(m.S, Sp)
     newb = vcat(m.b, b)
-    return CobraLP(newS, newb, m.c, m.lb, m.ub, m.rxns, m.mets)
+    return LinearModel(newS, newb, m.c, m.lb, m.ub, m.rxns, m.mets)
 end
