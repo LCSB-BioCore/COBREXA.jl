@@ -2,7 +2,11 @@ import ..LinearModel
 
 using MAT
 
+"""
+Load a model in MAT (Matlab) format and returns a `LinearModel`
 
+See also: `MAT.jl`
+"""
 function loadModel(filePath::String, varName::String)
 
     # open file and read
