@@ -16,51 +16,22 @@ function loadModel(filePath::String, varName::String)
     if exists(file, varName)
 
         model = vars[varName]
-        modelKeys = keys(model)
+        modelKeys = ["S", "b", "c", "ub", "lb"]
 
-        if "S" in modelKeys
-            S = model["S"]
-        else
-            error("No S matrix was found in the MAT file.")
+        for key = modelKeys
+            if !(key in keys(model))
+                error("No variable $key found in the MAT file.")
+            end
         end
 
-        if "b" in modelKeys
-            b = vec(model["b"])
-        else
-            error("No b vector found in the MAT file.")
-        end
-
-        if "c" in modelKeys
-            c = vec(model["c"])
-        else
-            error("No c vector found in the MAT file.")
-        end
-
-        if "ub" in modelKeys
-            ub = vec(model["ub"])
-        else
-            error("No ub vector found in the MAT file.")
-        end
-
-        if "lb" in modelKeys
-            lb = vec(model["lb"])
-        else
-            error("No lb vector found in the MAT file.")
-        end
-
+        S = model["S"]
+        b = vec(model["b"])
+        c = vec(model["c"])
+        ub = vec(model["ub"])
+        lb = vec(model["lb"])
         # rxns and mets get loaded as Array{Any,2} need to convert
-
-        if "rxns" in modelKeys
-            rxns = convert(Array{String, 1}, vec(model["rxns"]))
-        else
-            error("No rxns vector found in the MAT file.")
-        end
-
-        if "mets" in modelKeys
-            mets = convert(Array{String, 1}, vec(model["mets"]))
-        else
-            error("No mets vector found in the MAT file.")
-        end
+        rxns = conversionMetRxns(model["rxns"])
+        mets = conversionMetRxns(model["mets"])
 
         return LinearModel(S, b, c, lb, ub, rxns, mets)
 
@@ -68,4 +39,12 @@ function loadModel(filePath::String, varName::String)
         error("Variable `varName` does not exist in the specified MAT file.")
     end
     close(file)
+end
+
+function conversionMetRxns(x)
+    if x isa Array{Any, 2}
+        return convert(Array{String, 1}, vec(x))
+    else
+        return vec(x)
+    end
 end
