@@ -65,5 +65,3 @@ function loadModel(filePath::String, varName::String)
     end
     close(file)
 end
-
-export loadModel
