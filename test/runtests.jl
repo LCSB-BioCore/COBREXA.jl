@@ -2,6 +2,7 @@ using Test
 using SparseArrays
 using ***REMOVED***
 using JuMP
+using MAT
 
 test_LP() = LinearModel(zeros(4, 3),
                         zeros(4),
@@ -69,4 +70,10 @@ end
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [1., 2.]
+end
+
+@testset "Import MAT" begin
+    cp = loadModel("agora-model.mat", "model")
+    @test cp isa LinearModel
+    @test_throws ErrorException loadModel("agora-model.mat", "badmodel")
 end
