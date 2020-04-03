@@ -2,7 +2,7 @@ using SparseArrays
 
 const VT = Union{Array{Float64,1}, SparseVector{Float64,Int64}}
 const MT = Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}
-const ST = AbstractVector
+const ST = Union{Array{String,1}, SparseVector{String,Int64}}
 
 """
 A linear optimization problem of the form:
@@ -45,20 +45,39 @@ mutable struct LinearModel{M<:MT, V<:VT, C<:ST}
     end
 end
 
-function addReactions(m::LinearModel, s::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, c::AbstractFloat, lb::AbstractFloat, ub::AbstractFloat)
+
+function addReactions(m::LinearModel,
+                      s::V,
+                      c::AbstractFloat,
+                      lb::AbstractFloat,
+                      ub::AbstractFloat) where {V<:VT}
     return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub])
 end
 
-function addReactions(m::LinearModel, s::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, c::AbstractFloat, lb::AbstractFloat, ub::AbstractFloat, names::String)
+function addReactions(m::LinearModel,
+                      s::V,
+                      c::AbstractFloat,
+                      lb::AbstractFloat,
+                      ub::AbstractFloat,
+                      names::String) where {V<:VT}
     return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub], [names])
 end
 
-function addReactions(m::LinearModel, Sp::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}, c::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, lb::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, ub::Union{Array{Float64,1}, SparseVector{Float64,Int64}})
+function addReactions(m::LinearModel,
+                      Sp::M,
+                      c::V,
+                      lb::V,
+                      ub::V)  where {M<:MT,V<:VT}
     names = ["r$x" for x in length(m.rxns)+1:length(m.rxns)+length(ub)]
     return addReactions(m, Sp, c, lb, ub, names)
 end
 
-function addReactions(m::LinearModel, Sp::Union{AbstractMatrix, SparseMatrixCSC{Float64,Int64}}, c::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, lb::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, ub::Union{Array{Float64,1}, SparseVector{Float64,Int64}}, names::Union{Array{String,1}, SparseVector{String,Int64}})
+function addReactions(m::LinearModel,
+                      Sp::M,
+                      c::V,
+                      lb::V,
+                      ub::V,
+                      names::C) where {M<:MT,V<:VT,C<:ST}
     newS = hcat(m.S, Sp)
     newc = vcat(m.c, c)
     newlb = vcat(m.lb, lb)
