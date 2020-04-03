@@ -1,24 +1,22 @@
 image: $CI_REGISTRY/r3/docker/julia-custom
 
 stages:
-  - ci
-  - cd
+  - test
+  - deploy-doc
 
-default:
-  stage: ci
+test:
+  stage: test
   before_script:
     - git lfs pull
 
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
 
-coverage:
-  stage: ci
-  script:
+  after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
 
 pages:
-  stage: cd
+  stage: deploy-doc
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - julia --project=docs --color=yes docs/make.jl
@@ -26,6 +24,6 @@ pages:
   artifacts:
     paths:
       - public
-  only:
-  - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
 
