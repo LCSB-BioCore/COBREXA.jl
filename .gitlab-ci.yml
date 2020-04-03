@@ -6,11 +6,11 @@ test pkg:
   image:
     name: julia
   before_script:
-    - julia 'import Pkg; Pkg.clone(pwd());'
+    - julia --color=yes -e 'import Pkg; Pkg.clone(pwd());'
   script:
-    - julia 'Pkg.test("GigaSOM", coverage=true);';
+    - julia --color=yes -e 'Pkg.test("GigaSOM", coverage=true);';
   after_script:
-    - julia 'Pkg.rm("GigaSOM");';
+    - julia --color=yes -e 'Pkg.rm("GigaSOM");';
   artifacts:
     untracked: true
     expire_in: 1 week
