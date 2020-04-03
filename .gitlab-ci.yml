@@ -1,0 +1,12 @@
+stages:
+  - test
+
+ci:
+  stage: test
+  image:
+    name: julia
+  script:
+    - julia test/runtests.jl
+  artifacts:
+    untracked: true
+    expire_in: 1 week
