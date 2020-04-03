@@ -73,8 +73,22 @@ end
 end
 
 @testset "Import MAT" begin
-    cp = loadModel("agora-model.mat", "model")
+    cp = loadModel("data/agora-model.mat", "model")
     @test cp isa LinearModel
     @test size(cp.S) == (475, 496)
-    @test_throws ErrorException loadModel("agora-model.mat", "badmodel")
+    @test_throws ErrorException loadModel("data/agora-model.mat", "badmodel")
+
+    cp = loadModel("data/toyModel1.mat", "model")
+    @test cp isa LinearModel
+    @test size(cp.S) == (6, 7)
+
+    cp = loadModel("data/toyModel2.mat", "model")
+    @test cp isa LinearModel
+    @test size(cp.S) == (6, 7)
+
+    cp = loadModel("data/toyModel3.mat", "model")
+    @test cp isa LinearModel
+    @test size(cp.S) == (9, 12)
+
+
 end
