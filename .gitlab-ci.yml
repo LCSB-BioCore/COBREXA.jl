@@ -1,4 +1,4 @@
-image: julia:1.2                # image comes from Docker hub
+image: julia
 
 before_script:
   # workaround for https://github.com/JuliaDocs/Documenter.jl/issues/686
