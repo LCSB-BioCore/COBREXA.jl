@@ -1,0 +1,13 @@
+name = "***REMOVED***"
+uuid = "babc4406-5200-4a30-9033-bf5ae714c842"
+authors = ["Some people"]
+version = "0.1.0"
+
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+MAT = "23992714-dd62-5051-b70f-ba57cb901cac"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
