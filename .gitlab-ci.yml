@@ -1,4 +1,4 @@
-image: julia
+image: julia:1.2
 
 before_script:
   # workaround for https://github.com/JuliaDocs/Documenter.jl/issues/686
