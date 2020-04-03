@@ -1,12 +1,16 @@
 stages:
   - test
 
-ci:
+test pkg:
   stage: test
   image:
     name: julia
+  before_script:
+    - julia 'import Pkg; Pkg.clone(pwd());'
   script:
-    - julia test/runtests.jl
+    - julia 'Pkg.test("GigaSOM", coverage=true);';
+  after_script:
+    - julia 'Pkg.rm("GigaSOM");';
   artifacts:
     untracked: true
     expire_in: 1 week
