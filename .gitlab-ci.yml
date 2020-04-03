@@ -1,6 +1,10 @@
 image: git-r3lab.uni.lu:4567/permedcoe/julia-custom
 
 default:
+  before_script:
+    - git lfs install
+    - git lfs fetch
+
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
     - julia --project=test/coverage -e 'import Pkg; Pkg.instantiate()'
