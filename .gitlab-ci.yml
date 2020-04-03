@@ -1,16 +1,24 @@
 image: $CI_REGISTRY/r3/docker/julia-custom
 
+stages:
+  - ci
+  - cd
+
 default:
+  stage: ci
   before_script:
     - git lfs pull
 
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
-    - julia --project=test/coverage -e 'import Pkg; Pkg.instantiate()'
+
+coverage:
+  stage: ci
+  script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
 
 pages:
-  stage: deploy
+  stage: cd
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - julia --project=docs --color=yes docs/make.jl
