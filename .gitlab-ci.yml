@@ -1,9 +1,8 @@
-image: git-r3lab.uni.lu:4567/permedcoe/julia-custom
+image: $CI_REGISTRY/r3/docker/julia-custom
 
 default:
   before_script:
-    - git lfs install
-    - git lfs fetch
+    - git lfs pull
 
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
