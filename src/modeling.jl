@@ -85,3 +85,17 @@ function addReactions(m::LinearModel,
     newRxns = vcat(m.rxns, names)
     return LinearModel(newS, m.b, newc, newlb, newub, newRxns, m.mets)
 end
+
+"""
+Returns the number of reactions in the LinearModel
+"""
+function nReactions(m::LinearModel)
+    return length(m.rxns)
+end
+
+"""
+Returns the number of metabolites in the LinearModel
+"""
+function nMetabolites(m::LinearModel)
+    return length(m.mets)
+end
