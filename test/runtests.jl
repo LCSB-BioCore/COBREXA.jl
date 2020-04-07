@@ -43,6 +43,14 @@ end
 end
 
 
+@testset "Add reactions (checking existence and consistency)" begin
+    cp = test_LP()
+    @test size(cp.S) == (4, 3)
+    newCp = addReactions(cp, cp.S[:, end], 2., -1., 1., checkConsistency=true)
+    @test nReactions(cp) == nReactions(newCp)
+end
+
+
 @testset "Add reactions" begin
     cp = test_LP()
     @test size(cp.S) == (4, 3)
