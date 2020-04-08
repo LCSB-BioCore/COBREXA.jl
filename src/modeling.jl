@@ -50,8 +50,9 @@ function addReactions(m::LinearModel,
                       s::V,
                       c::AbstractFloat,
                       lb::AbstractFloat,
-                      ub::AbstractFloat) where {V<:VT}
-    return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub])
+                      ub::AbstractFloat;
+                      checkConsistency=false) where {V<:VT}
+    return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub], checkConsistency=checkConsistency)
 end
 
 function addReactions(m::LinearModel,
@@ -59,17 +60,25 @@ function addReactions(m::LinearModel,
                       c::AbstractFloat,
                       lb::AbstractFloat,
                       ub::AbstractFloat,
-                      names::String) where {V<:VT}
-    return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub], [names])
+                      names::String;
+                      checkConsistency=false) where {V<:VT}
+    return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub], [names], checkConsistency=checkConsistency)
 end
 
 function addReactions(m::LinearModel,
                       Sp::M,
                       c::V,
                       lb::V,
-                      ub::V)  where {M<:MT,V<:VT}
+                      ub::V;
+                      checkConsistency=false)  where {M<:MT,V<:VT}
     names = ["r$x" for x in length(m.rxns)+1:length(m.rxns)+length(ub)]
-    return addReactions(m, Sp, c, lb, ub, names)
+    return addReactions(m, Sp, c, lb, ub, names, checkConsistency=checkConsistency)
+end
+
+mutable struct ReactionStatus
+           alreadyPresent::Bool
+           index::Int
+           info::String
 end
 
 function addReactions(m::LinearModel,
@@ -77,11 +86,41 @@ function addReactions(m::LinearModel,
                       c::V,
                       lb::V,
                       ub::V,
-                      names::C) where {M<:MT,V<:VT,C<:ST}
-    newS = hcat(m.S, Sp)
-    newc = vcat(m.c, c)
-    newlb = vcat(m.lb, lb)
-    newub = vcat(m.ub, ub)
-    newRxns = vcat(m.rxns, names)
+                      names::C;
+                      checkConsistency=false) where {M<:MT,V<:VT,C<:ST}
+    if checkConsistency
+        statuses = Array{ReactionStatus}(undef, length(names))
+        for (i, name) in enumerate(names)
+            index = findfirst(isequal(name), m.rxns)
+            if isnothing(index)
+                statuses[i] = ReactionStatus(false, 0, "new reaction")
+            else
+                statuses[i] = ReactionStatus(true, index, "reaction with the same name")
+            end
+        end
+        newReactions = findall(x->x.alreadyPresent==true, statuses)
+    else
+        newReactions = 1:length(names)
+    end
+
+    newS = hcat(m.S, Sp[:,newReactions])
+    newc = vcat(m.c, c[newReactions])
+    newlb = vcat(m.lb, lb[newReactions])
+    newub = vcat(m.ub, ub[newReactions])
+    newRxns = vcat(m.rxns, names[newReactions])
     return LinearModel(newS, m.b, newc, newlb, newub, newRxns, m.mets)
+end
+
+"""
+Returns the number of reactions in the LinearModel
+"""
+function nReactions(m::LinearModel)
+    return length(m.rxns)
+end
+
+"""
+Returns the number of metabolites in the LinearModel
+"""
+function nMetabolites(m::LinearModel)
+    return length(m.mets)
 end

@@ -29,10 +29,27 @@ test_sparseLP() = LinearModel(sprand(4000, 3000, 0.5),
                               ["r$x" for x in 1:3000],
                               ["m$x" for x in 1:4000])
 
+
 @testset "LinearModel type" begin
     cp = test_LP()
     @test cp isa LinearModel
 end
+
+
+@testset "LinearModel simple functions" begin
+    cp = test_LP()
+    @test nReactions(cp) == 3
+    @test nMetabolites(cp) == 4
+end
+
+
+@testset "Add reactions (checking existence and consistency)" begin
+    cp = test_LP()
+    @test size(cp.S) == (4, 3)
+    newCp = addReactions(cp, cp.S[:, end], 2., -1., 1., checkConsistency=true)
+    @test nReactions(cp) == nReactions(newCp)
+end
+
 
 @testset "Add reactions" begin
     cp = test_LP()
@@ -72,23 +89,24 @@ end
     @test sol ≈ [1., 2.]
 end
 
+
 @testset "Import MAT" begin
-    cp = loadModel("data/agora-model.mat", "model")
+    filepath = joinpath("data", "agora-model.mat")
+    cp = loadModel(filepath, "model")
     @test cp isa LinearModel
     @test size(cp.S) == (475, 496)
-    @test_throws ErrorException loadModel("data/agora-model.mat", "badmodel")
+    @test_throws ErrorException loadModel(filepath, "badmodel")
 
-    cp = loadModel("data/toyModel1.mat", "model")
+    cp = loadModel(joinpath("data", "toyModel1.mat"), "model")
     @test cp isa LinearModel
     @test size(cp.S) == (6, 7)
 
-    cp = loadModel("data/toyModel2.mat", "model")
+    cp = loadModel(joinpath("data", "toyModel2.mat"), "model")
     @test cp isa LinearModel
     @test size(cp.S) == (6, 7)
 
-    cp = loadModel("data/toyModel3.mat", "model")
+    cp = loadModel(joinpath("data", "toyModel3.mat"), "model")
     @test cp isa LinearModel
     @test size(cp.S) == (9, 12)
-
 
 end
