@@ -89,16 +89,7 @@ function addReactions(m::LinearModel,
                       names::C;
                       checkConsistency=false) where {M<:MT,V<:VT,C<:ST}
     if checkConsistency
-        statuses = Array{ReactionStatus}(undef, length(names))
-        for (i, name) in enumerate(names)
-            index = findfirst(isequal(name), m.rxns)
-            if isnothing(index)
-                statuses[i] = ReactionStatus(false, 0, "new reaction")
-            else
-                statuses[i] = ReactionStatus(true, index, "reaction with the same name")
-            end
-        end
-        newReactions = findall(x->x.alreadyPresent==true, statuses)
+        newReactions = consistency(m, Sp, c, lb, ub, names)
     else
         newReactions = 1:length(names)
     end
@@ -110,6 +101,29 @@ function addReactions(m::LinearModel,
     newRxns = vcat(m.rxns, names[newReactions])
     return LinearModel(newS, m.b, newc, newlb, newub, newRxns, m.mets)
 end
+
+
+function consistency(m::LinearModel,
+                          Sp::M,
+                          c::V,
+                          lb::V,
+                          ub::V,
+                          names::C) where {M<:MT,V<:VT,C<:ST}
+
+    statuses = Array{ReactionStatus}(undef, length(names))
+    for (i, name) in enumerate(names)
+        index = findfirst(isequal(name), m.rxns)
+        if isnothing(index)
+            statuses[i] = ReactionStatus(false, 0, "new reaction")
+        else
+            statuses[i] = ReactionStatus(true, index, "reaction with the same name")
+        end
+    end
+
+    newReactions = findall(x->x.alreadyPresent==true, statuses)
+    return newReactions
+end
+
 
 """
 Returns the number of reactions in the LinearModel
