@@ -6,8 +6,6 @@ stages:
 
 test:
   stage: test
-  before_script:
-    - git lfs pull
 
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
