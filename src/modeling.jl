@@ -60,9 +60,9 @@ function addReactions(m::LinearModel,
                       c::AbstractFloat,
                       lb::AbstractFloat,
                       ub::AbstractFloat,
-                      names::String;
+                      rxns::String;
                       checkConsistency=false) where {V<:VT}
-    return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub], [names], checkConsistency=checkConsistency)
+    return addReactions(m, reshape(s, (length(s), 1)), [c], [lb], [ub], [rxns], checkConsistency=checkConsistency)
 end
 
 function addReactions(m::LinearModel,
@@ -71,14 +71,14 @@ function addReactions(m::LinearModel,
                       lb::V,
                       ub::V;
                       checkConsistency=false)  where {M<:MT,V<:VT}
-    names = ["r$x" for x in length(m.rxns)+1:length(m.rxns)+length(ub)]
-    return addReactions(m, Sp, c, lb, ub, names, checkConsistency=checkConsistency)
+    rxns = ["r$x" for x in length(m.rxns)+1:length(m.rxns)+length(ub)]
+    return addReactions(m, Sp, c, lb, ub, rxns, checkConsistency=checkConsistency)
 end
 
 mutable struct ReactionStatus
-           alreadyPresent::Bool
-           index::Int
-           info::String
+    alreadyPresent::Bool
+    index::Int
+    info::String
 end
 
 function addReactions(m::LinearModel,
@@ -86,22 +86,45 @@ function addReactions(m::LinearModel,
                       c::V,
                       lb::V,
                       ub::V,
-                      names::C;
+                      rxns::C;
                       checkConsistency=false) where {M<:MT,V<:VT,C<:ST}
+
+    checkInputDimensions(m, Sp, c, lb, ub, rxns)
+
     if checkConsistency
-        newReactions = consistency(m, Sp, c, lb, ub, names)
+        newReactions = consistency(m, Sp, c, lb, ub, rxns)
     else
-        newReactions = 1:length(names)
+        newReactions = 1:length(rxns)
     end
 
     newS = hcat(m.S, Sp[:,newReactions])
     newc = vcat(m.c, c[newReactions])
     newlb = vcat(m.lb, lb[newReactions])
     newub = vcat(m.ub, ub[newReactions])
-    newRxns = vcat(m.rxns, names[newReactions])
+    newRxns = vcat(m.rxns, rxns[newReactions])
     return LinearModel(newS, m.b, newc, newlb, newub, newRxns, m.mets)
 end
 
+"""
+Verifies that vectors and matrices have the expected dimensions.
+"""
+function checkInputDimensions(m::LinearModel,
+                              Sp::M,
+                              c::V,
+                              lb::V,
+                              ub::V,
+                              rxns::C) where {M<:MT,V<:VT,C<:ST}
+    n_c = length(c)
+    nMets = nMetabolites(m)
+
+    length(ub) == length(lb) || throw(DimensionMismatch("`lb` and `ub` don't have the same size"))
+    n_c == length(lb) || throw(DimensionMismatch("`c` doesn't have the same size as `lb`"))
+
+    size(Sp) == (nMets, n_c) || throw(DimensionMismatch("`S` shape doesn't match with `c` and `b`"))
+
+    length(rxns) == n_c || throw(DimensionMismatch("`rxns` size doesn't match with `S`"))
+
+end
 
 function consistency(m::LinearModel,
                           Sp::M,

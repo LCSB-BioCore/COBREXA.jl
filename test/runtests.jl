@@ -78,6 +78,8 @@ end
     @test size(cp.S) == (4000, 3002)
     cp = addReactions(cp, 2. * ones(4000, 1000), 2 .* ones(1000), -ones(1000), ones(1000))
     @test size(cp.S) == (4000, 4002)
+
+    @test_throws DimensionMismatch addReactions(cp, 2. * ones(4000, 1), 2 .* ones(2), -ones(1), ones(1))
 end
 
 
