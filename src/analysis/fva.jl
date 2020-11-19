@@ -39,3 +39,51 @@ function fluxVariabilityAnalysis(model::LinearModel, reactions::Array{Int64, 1},
    end
    return fluxes
 end
+
+"""
+(Local) multi-process version of FVA that assigns the reactions to several
+processes running in parallel
+`workers` should be a list of process ids returned by `createParPool`
+"""
+function parFVA(model::LinearModel, reactions::Array{Int64, 1}, solverName::Symbol, workersToUse::Array{Int64,1})
+   nReacs = length(reactions)
+   nWorkers = length(workersToUse)
+   if nReacs < nWorkers
+      @info "Number of workers exceeds number of reactions. 1 worker per reaction will be used."
+      workersToUse = workersToUse[1:nReacs]
+      nWorkers = nReacs
+   end
+   remRefs = Array{Future}(undef, nWorkers)
+   fluxes = zeros(nReacs, 2)
+   alloReacs = allocateReacs(reactions, nWorkers)
+
+   @sync for (round, pid) in enumerate(workersToUse)
+      @async remRefs[round] = @spawnat pid begin
+         fluxVariabilityAnalysis(model, alloReacs[round], eval(solverName).Optimizer)
+      end
+   end
+   @sync for (round, pid) in enumerate(workersToUse)
+      fluxes[alloReacs[round], :] = fetch(remRefs[round])
+   end
+
+   return fluxes
+end
+
+"""
+Auxiliary function for `parFVA` to divide the list of reactions evenly (for now)
+"""
+function allocateReacs(reactions::Array{Int64, 1}, nWorkers::Int)
+   nReacs = length(reactions)
+   steps = floor(Int, nReacs/nWorkers) * ones(Int, nWorkers)
+   steps[1:nReacs%nWorkers] = steps[1:nReacs%nWorkers] .+ 1
+   steps = cumsum(steps)
+   allocatedReacs = Vector(undef, nWorkers)
+
+   startI = 1
+   for (i, endI) in enumerate(steps)
+      allocatedReacs[i] = reactions[startI:endI]
+      startI = endI + 1
+   end
+
+   return allocatedReacs
+end

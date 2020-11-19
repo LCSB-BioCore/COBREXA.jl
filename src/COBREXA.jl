@@ -6,6 +6,7 @@ using DelimitedFiles
 using LinearAlgebra
 using JuMP
 using MAT
+using Distributed
 import Pkg
 
 # import src files
@@ -43,7 +44,7 @@ export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
        removeCouplingConstraints!, removeCouplingConstraints,
        changeCouplingBounds!, changeCouplingBounds,
        verifyConsistency, findExchangeReactions, findExchangeMetabolites,
-       solveLP, loadModel, fluxBalanceAnalysis, fluxVariabilityAnalysis,
-       writeModel, convertToExportable
+       solveLP, loadModel, fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA,
+       writeModel, convertToExportable, createParPool
 
 end
