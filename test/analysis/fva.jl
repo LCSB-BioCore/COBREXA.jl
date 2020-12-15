@@ -16,8 +16,8 @@ end
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
     pids = createParPool(2)
-    @everywhere using COBREXA, GLPK
-    fluxes = parFVA(cp, [1;2], :GLPK, pids)
+    @everywhere using COBREXA
+    fluxes = parFVA(cp, [1;2], pids)
     @test fluxes ≈ [1. 1.;
                     2. 2.]
 end
