@@ -45,7 +45,7 @@ end
 processes running in parallel
 `workers` should be a list of process ids returned by `createParPool`
 """
-function parFVA(model::LinearModel, reactions::Array{Int64, 1}, solverName::Symbol, workersToUse::Array{Int64,1})
+function parFVA(model::LinearModel, reactions::Array{Int64, 1}, workersToUse::Array{Int64,1})
    nReacs = length(reactions)
    nWorkers = length(workersToUse)
    if nReacs < nWorkers
@@ -59,7 +59,7 @@ function parFVA(model::LinearModel, reactions::Array{Int64, 1}, solverName::Symb
 
    @sync for (round, pid) in enumerate(workersToUse)
       @async remRefs[round] = @spawnat pid begin
-         fluxVariabilityAnalysis(model, alloReacs[round], eval(solverName).Optimizer)
+         fluxVariabilityAnalysis(model, alloReacs[round], GLPK.Optimizer)
       end
    end
    @sync for (round, pid) in enumerate(workersToUse)
