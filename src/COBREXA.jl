@@ -8,7 +8,6 @@ using JuMP
 using MAT
 using Distributed
 import Pkg
-import GLPK
 
 # import src files
 include(joinpath("header", "header.jl"))
