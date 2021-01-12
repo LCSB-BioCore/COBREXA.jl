@@ -15,3 +15,12 @@ function Base.copy(model::LinearModel)
     return LinearModel(model.S, model.b, model.C, model.cl, model.cu,
                        model.c, model.xl, model.xu, model.rxns, model.mets)
 end
+
+"""
+Create a pool of parallel workers to pass to, eg, `parFVA`
+"""
+function createParPool(nWorkers)
+    addprocs(nWorkers, topology=:master_worker)
+
+    return workers()[end-nWorkers+1: end]
+end
