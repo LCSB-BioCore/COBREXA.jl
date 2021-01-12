@@ -12,3 +12,12 @@
     @test size(fluxes) == (1, 2)
     @test fluxes == Array{Float64, 2}([2 2])
 end
+
+@testset "Parallel FVA" begin
+    cp = test_simpleLP()
+    pids = createParPool(2)
+    @everywhere using COBREXA, GLPK
+    fluxes = parFVA(cp, [1;2], GLPK.Optimizer, pids)
+    @test fluxes ≈ [1. 1.;
+                    2. 2.]
+end
