@@ -1,5 +1,5 @@
 module CobraTools
 
-greet() = print("Hello World!")
+include("parsemodels.jl")
 
 end # module
