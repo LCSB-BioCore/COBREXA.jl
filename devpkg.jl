@@ -1,2 +1,4 @@
 using Revise
-include("CobraTools.jl")
+
+using CobraTools
+
