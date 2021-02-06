@@ -3,7 +3,7 @@ module CobraTools
 # model reading and writing
 using JSON
 using MATLAB 
-# add SBML support
+using PyCall # NB: need to install libsbml
 
 # Model analysis
 using SparseArrays

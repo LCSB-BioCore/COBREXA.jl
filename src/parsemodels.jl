@@ -113,11 +113,24 @@ Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA
 function savemodel(model :: Model, file_location :: String)
     if endswith(file_location, ".json")
         @info "Saving a JSON formatted model..."
+        @info "Done saving JSON model."
     elseif endswith(file_location, ".xml")
         @info "Saving an SBML formatted model..."
+        @info "Done saving SBML model."
     elseif endswith(file_location, ".mat")
         @info "Saving a Matlab formatted model..."
+        @ingo "Done saving Matlab model."
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
     end
 end
+
+
+function savejsonmodel()
+
+end
+
+function savematlabmodel()
+
+end
+
