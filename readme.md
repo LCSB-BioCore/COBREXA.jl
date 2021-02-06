@@ -11,6 +11,24 @@ The optimization solvers are implemented through `JuMP` and thus this package sh
 
 To install this package: `] add CobraTools`.
 
+## Progress
+
+- [x] Read JSON "Cobrapy" models
+- [x] Read Matlab models
+- [ ] Read SBML models
+- [ ] Read YAML models
+- [x] Write JSON models
+- [x] Write Matlab models
+- [ ] Write SBML models
+- [ ] Write YAML
+- [ ] Run FBA
+- [ ] Run pFBA
+- [ ] Run FVA
+- [ ] Implement sampling
+- [ ] Single gene knockouts
+- [ ] Double gene knockout
+- [ ] Distributed analysis (COBRA.jl integration?)
+
 ## Usage
 
 ### Read and writing models
