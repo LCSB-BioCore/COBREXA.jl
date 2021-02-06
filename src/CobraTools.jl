@@ -11,5 +11,6 @@ using JuMP
 
 include("cobra.jl")
 include("parsemodels.jl")
+include("analysis.jl")
 
 end # module
