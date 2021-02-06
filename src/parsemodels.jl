@@ -28,12 +28,13 @@ end
 reconstructmodeljson(modeldict)
 """
 function reconstructmodeljson(modeldict)
+    id = modeldict["id"]
     rxnids = [rxn["id"] for rxn in modeldict["reactions"]]
     ubs = [rxn["upper_bound"] for rxn in modeldict["reactions"]]
-    lbs = [rxn["lower_bount"] for rxn in modeldict["reactions"]]
+    lbs = [rxn["lower_bound"] for rxn in modeldict["reactions"]]
     metids = [met["id"] for met in modeldict["metabolites"]]
     b = spzeros(length(metids))
-    grrs = Dict{String, Array{String, 1}}()
+    grrs = Dict{String,  Array{Array{String, 1}, 1}}()
     S = spzeros(length(metids), length(rxnids))
     
     for (i, rxn) in enumerate(modeldict["reactions"])
@@ -42,11 +43,35 @@ function reconstructmodeljson(modeldict)
             isnothing(j) ? (@error "S matrix construction error: $met not defined."; continue) : nothing
             S[j, i] = coeff
         end
-        
-        grrs[rxn["id"]] = parsegrr(rxn["gene_reaction_rule"])
+
+        isempty(rxn["gene_reaction_rule"]) ? continue : (grrs[rxn["id"]] = parsegrr(rxn["gene_reaction_rule"]))
     end
     
-    return Model(S, b, lbs, ubs, rxnids, metids, grrs)
+    return Model(id, S, b, lbs, ubs, rxnids, metids, grrs)
+end
+
+"""
+
+"""
+function reconstructmodelmatlab(file_location)
+    mf = MatFile(file_location)
+    model_name = variable_names(mf)[1] # assume model name is the only variable
+    modeldict = get_variable(mf, model_name)
+    close(mf)
+
+    metids = modeldict["mets"]
+    rxnids = modeldict["rxns"]
+    grrs = Dict{String,  Array{Array{String, 1}, 1}}()
+    for (i, rxn) in enumerate(rxnids)
+        if !isempty(modeldict["grRules"][i])
+            grrs[rxn] = parsegrr(modeldict["grRules"][i])
+        end
+    end
+    S = sparse(modeldict["S"])
+    b = sparse(modeldict["b"])
+    lbs = modeldict["lb"]
+    ubs = modeldict["ub"]
+    Model(model_name, S, b, lbs, ubs, rxnids, metids, grrs)
 end
 
 """
@@ -61,6 +86,7 @@ function parsegrr(s :: String)
         and_genes = split(replace(replace(or_gene, "("=>""), ")"=>""), " and ")
         push!(gene_list_list, and_genes)
     end
+    return gene_list_list
 end
 
 """

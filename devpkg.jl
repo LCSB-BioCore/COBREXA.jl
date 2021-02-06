@@ -2,6 +2,10 @@ using Revise
 
 using CobraTools
 
-using JSON
+using MATLAB
 
-m = JSON.parsefile(joinpath("test/iMM904.json"))
+# jsonpath = joinpath("test/iMM904.json")
+# model = CobraTools.readmodel(jsonpath)
+
+matpath = joinpath("test/iMM904.mat")
+model = CobraTools.readmodel(jsonpath)
