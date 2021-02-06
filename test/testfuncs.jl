@@ -4,7 +4,7 @@ and mets could be different. Rather test indirectly.
 """
 function model_comparison(model1, model2)
     # test if blank model is given - automatic fail
-    (isempty(model1.S) || isempty(model2.S)) ? (return false) : nothing
+    (isempty(model1.coremodel.S) || isempty(model2.coremodel.S)) ? (return false) : nothing
 
     # test same rxn and met ids
     rxn_diff = (isempty(setdiff(model1.rxns, model2.rxns)) && isempty(setdiff(model2.rxns, model1.rxns))) ? true : false
