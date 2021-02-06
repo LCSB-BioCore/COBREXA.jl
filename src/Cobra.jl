@@ -26,7 +26,7 @@ function Model()
             Float64[], 
             String[], 
             String[], 
-            Dict{String, Array{Array{String, 1}, 1}})
+            Dict{String, Array{Array{String, 1}, 1}}())
 end
 
 """
