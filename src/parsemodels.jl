@@ -3,6 +3,13 @@ model = readmodel(file_location)
 
 Reads a model file at file_location and returns a constraint based model.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
+
+Note, when importing JSON models only reactions, metabolites, genes and id are used. 
+
+Note, when importing Matlab models only rxns, metCharge, lb, metNames, S, grRules,
+genes, description, rxnNames, ub, metFormulas, b, subSystems, mets and c are used.
+
+Note, SBML is not implemented yet.
 """
 function readmodel(file_location)
     if endswith(file_location, ".json")
@@ -18,6 +25,7 @@ function readmodel(file_location)
         @info "Reading an SBML formatted model..."
         try
             model = reconstructmodelsbml(file_location)
+            @warn "Not implemented!"
             @info "Done reading SBML model."
         catch err
             @error "SBML model reading error.\n$err"
@@ -157,10 +165,17 @@ function reconstructmodelmatlab(file_location)
 end
 
 function reconstructmodelsbml(file_location)
-    @pyimport libsbml
-    reader = libsbml.SBMLReader()
-    sbmlmodel = reader[:readSBML](file_location)
-    
+    # @pyimport libsbml
+    # reader = libsbml.SBMLReader()
+    # sbmldoc = reader[:readSBML](file_location)
+    # sbmlmodel = sbmldoc[:getModel]() # Get the model
+    # model_id = sbmlmodel[:getId]()
+    # met = sbmlmodel[:getListOfSpecies]()[1]
+    # id = met[:getId]()
+    # name = met[:getName]()
+    # charge = met[:getCharge]()
+    # formula = ???
+
     mets = Array{Metabolite, 1}()
     # for i in eachindex(modeldict["mets"])
     #     id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
@@ -214,8 +229,8 @@ function reconstructmodelsbml(file_location)
     #     end
     # end
 
-    return Model()
     # return Model(model_id, CoreModel(S, b, lbs, ubs), rxns, mets, genes, grrs)
+    return Model()
 end
 
 """
@@ -238,16 +253,27 @@ savemodel(model, file_location)
 
 Save model at location file_location. Infers format from file_location extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
+
+Note, when exporting JSON models only reactions, metabolites, genes and id are written. 
+
+Note, when exporting Matlab models only rxns, metCharge, lb, metNames, S, grRules,
+genes, description, rxnNames, ub, metFormulas, b, subSystems, mets, rev, rxnGeneMat
+and c are written to.
+
+Note, SBML is not implemented yet.
 """
 function savemodel(model :: Model, file_location :: String)
     if endswith(file_location, ".json")
         @info "Saving a JSON formatted model..."
+        savejsonmodel(model, file_location)
         @info "Done saving JSON model."
     elseif endswith(file_location, ".xml")
         @info "Saving an SBML formatted model..."
+        @warn "Not implemented!"
         @info "Done saving SBML model."
     elseif endswith(file_location, ".mat")
         @info "Saving a Matlab formatted model..."
+        savematlabmodel(model, file_location)
         @info "Done saving Matlab model."
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
@@ -255,15 +281,71 @@ function savemodel(model :: Model, file_location :: String)
 end
 
 
-function savejsonmodel()
+function savejsonmodel(model :: Model, file_location :: String)
+    modeldict = Dict{String, Any}()
+    modeldict["id"] = model.id
+    modeldict["metabolites"] = model.mets
+    modeldict["genes"] = model.genes    
+    rxns = []
+    for r in model.rxns
+        rdict = Dict()
+        rdict["id"] = r.id
+        rdict["name"] = r.name
+        rdict["metabolites"] = r.metabolites
+        rdict["lower_bound"] = r.lb
+        rdict["upper_bound"] = r.ub
+        rdict["gene_reaction_rule"] = r.grr
+        rdict["subsystem"] = r.subsystem
+        rdict["notes"] = r.notes
+        rdict["annotation"] = r.annotation
+        rdict["objective_coefficient"] = r.objective_coefficient
+        push!(rxns, rdict)
+    end
 
+    modeldict["reactions"] = rxns
+    open(file_location, "w") do io
+        JSON.print(io, modeldict)
+    end
 end
 
-function savematlabmodel()
+function savematlabmodel(model :: Model, file_location :: String)
+    rxnrevs = zeros(Int64, length(model.rxns))
+    for i in eachindex(model.rxns)
+        if model.rxns[i].lb < 0.0 && model.rxns[i].ub > 0
+            rxnrevs[i] = 1 # reversible
+        end
+    end
 
+    rgm = spzeros(length(model.rxns), length(model.genes)) # stored as a sparse matrix
+    for (i, rxn) in enumerate(model.rxns)
+        for (j, gene) in enumerate(model.genes)
+            if contains(rxn.grr, gene.id)
+                rgm[i, j] = 1.0
+            end
+        end
+    end
+    
+    write_matfile(file_location; 
+    c = [r.objective_coefficient for r in model.rxns],
+    mets = [m.id for m in model.mets],
+    subSystems = [r.subsystem for r in model.rxns],
+    b = Array(model.coremodel.b),
+    metFormulas = [m.formula for m in model.mets],
+    rxnGeneMat = rgm,
+    ub = Array(model.coremodel.ubs),
+    rxnNames = [r.name for r in model.rxns],
+    description = model.id,
+    genes = [g.id for g in model.genes],
+    rev = rxnrevs,
+    grRules = [r.grr for r in model.rxns],
+    S = Array(model.coremodel.S),
+    metNames = [m.name for m in model.mets],
+    lb = Array(model.coremodel.lbs),
+    metCharge = [m.charge for m in model.mets],
+    rxns = [r.id for r in model.rxns]) 
 end
 
 function savesbmlmodel()
-
+    # To do...
 end
 
