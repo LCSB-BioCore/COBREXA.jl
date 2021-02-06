@@ -7,16 +7,31 @@ Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA
 function readmodel(file_location)
     if endswith(file_location, ".json")
         @info "Reading a JSON formatted model..."
-        model = reconstructmodeljson(JSON.parsefile(file_location))
-        @info "Done reading JSON model."
+        try 
+            model = reconstructmodeljson(JSON.parsefile(file_location))
+            @info "Done reading JSON model."
+        catch err
+            @error "JSON model reading error.\n $err"
+            model = Model()
+        end
     elseif endswith(file_location, ".xml")
         @info "Reading an SBML formatted model..."
-
-        @info "Done reading SBML model."
+        try
+            model = Model()
+            @info "Done reading SBML model."
+        catch err
+            @error "SBML model reading error.\n $err"
+            model = Model()
+        end
     elseif endswith(file_location, ".mat")
         @info "Reading a Matlab formatted model..."
-
-        @info "Done reading Matlab model."
+       try
+            model = reconstructmodelmatlab(file_location)
+            @info "Done reading Matlab model." 
+       catch err
+            @error "Matlab model reading error.\n $err"
+            model = Model()
+       end
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
         model = Model()
@@ -51,7 +66,7 @@ function reconstructmodeljson(modeldict)
 end
 
 """
-
+reconstructmodelmatlab(file_location)
 """
 function reconstructmodelmatlab(file_location)
     mf = MatFile(file_location)
