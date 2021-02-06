@@ -324,25 +324,26 @@ function savematlabmodel(model :: Model, file_location :: String)
             end
         end
     end
-    
-    write_matfile(file_location; 
-    c = [r.objective_coefficient for r in model.rxns],
-    mets = [m.id for m in model.mets],
-    subSystems = [r.subsystem for r in model.rxns],
-    b = Array(model.coremodel.b),
-    metFormulas = [m.formula for m in model.mets],
-    rxnGeneMat = rgm,
-    ub = Array(model.coremodel.ubs),
-    rxnNames = [r.name for r in model.rxns],
-    description = model.id,
-    genes = [g.id for g in model.genes],
-    rev = rxnrevs,
-    grRules = [r.grr for r in model.rxns],
-    S = Array(model.coremodel.S),
-    metNames = [m.name for m in model.mets],
-    lb = Array(model.coremodel.lbs),
-    metCharge = [m.charge for m in model.mets],
-    rxns = [r.id for r in model.rxns]) 
+
+    mdict = Dict("c" => [r.objective_coefficient for r in model.rxns],
+    "mets" => [m.id for m in model.mets],
+    "subSystems" => [r.subsystem for r in model.rxns],
+    "b" => Array(model.coremodel.b),
+    "metFormulas" => [m.formula for m in model.mets],
+    "rxnGeneMat" => rgm,
+    "ub" => Array(model.coremodel.ubs),
+    "rxnNames" => [r.name for r in model.rxns],
+    "description" => model.id,
+    "genes" => [g.id for g in model.genes],
+    "rev" => rxnrevs,
+    "grRules" => [r.grr for r in model.rxns],
+    "S" => Array(model.coremodel.S),
+    "metNames" => [m.name for m in model.mets],
+    "lb" => Array(model.coremodel.lbs),
+    "metCharge" => [m.charge for m in model.mets],
+    "rxns" => [r.id for r in model.rxns])
+
+    write_matfile(file_location; Dict(Symbol(model.id) => mdict)...) 
 end
 
 function savesbmlmodel()

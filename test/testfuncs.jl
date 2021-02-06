@@ -7,25 +7,34 @@ function model_comparison(model1, model2)
     (isempty(model1.coremodel.S) || isempty(model2.coremodel.S)) ? (return false) : nothing
 
     # test same rxn and met ids
-    rxn_diff = (isempty(setdiff(model1.rxns, model2.rxns)) && isempty(setdiff(model2.rxns, model1.rxns))) ? true : false
-    met_diff = (isempty(setdiff(model1.mets, model2.mets)) && isempty(setdiff(model2.mets, model1.mets))) ? true : false
+    rxns1 = [r.id for r in model1.rxns]
+    rxns2 = [r.id for r in model2.rxns]
+    mets1 = [m.id for m in model1.mets]
+    mets2 = [m.id for m in model2.mets]
+    rxn_diff = (isempty(setdiff(rxns1, rxns2)) && isempty(setdiff(rxns2, rxns1))) ? true : false
+    met_diff = (isempty(setdiff(mets1, mets2)) && isempty(setdiff(mets2, mets1))) ? true : false
 
     # test same S and b shapes
-    S_size = all(size(model1.S) .== size(model2.S))
-    b_size = all(size(model1.b) .== size(model2.b))
+    S_size = all(size(model1.coremodel.S) .== size(model2.coremodel.S))
+    b_size = all(size(model1.coremodel.b) .== size(model2.coremodel.b))
 
     # test lb and ub the same (indirectly)
-    lb_same = sum(abs, model1.lbs) == sum(abs, model2.lbs)
-    ub_same = sum(abs, model1.ubs) == sum(abs, model2.ubs)
+    lbs1 = [r.lb for r in model1.rxns]
+    lbs2 = [r.lb for r in model2.rxns]
+    ubs1 = [r.lb for r in model1.rxns]
+    ubs2 = [r.lb for r in model2.rxns]
+
+    lb_same = sum(abs, lbs1) == sum(abs, lbs2)
+    ub_same = sum(abs, ubs1) == sum(abs, ubs2)
     
     # test if S and b the same (indirectly)
     if S_size
-        input_vector = rand(size(model1.S, 2))
-        S_same = sum(abs, model1.S * input_vector) ≈ sum(abs, model2.S * input_vector)
+        input_vector = rand(size(model1.coremodel.S, 2))
+        S_same = sum(abs, model1.coremodel.S * input_vector) ≈ sum(abs, model2.coremodel.S * input_vector)
     else
         S_same = false
     end
-    b_same = sum(abs, model1.b) == sum(abs, model2.b)
+    b_same = sum(abs, model1.coremodel.b) == sum(abs, model2.coremodel.b)
     
     # test grrs
     model1_grr_keys = keys(model1.grrs)
@@ -54,3 +63,12 @@ function model_comparison(model1, model2)
     return all([rxn_diff, met_diff, S_size, b_size, lb_same, ub_same, S_same, b_same, same_grr])
 end
 
+function read_write_read(model, format)
+    tmpfile = "temp."*format
+
+    CobraTools.savemodel(model, tmpfile)
+    tmpmodel = CobraTools.readmodel(tmpfile)
+
+    rm(tmpfile)
+    model_comparison(model, tmpmodel)
+end
