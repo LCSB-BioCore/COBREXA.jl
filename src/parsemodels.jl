@@ -11,7 +11,7 @@ function readmodel(file_location)
             model = reconstructmodeljson(JSON.parsefile(file_location))
             @info "Done reading JSON model."
         catch err
-            @error "JSON model reading error.\n $err"
+            @error "JSON model reading error.\n$err"
             model = Model()
         end
     elseif endswith(file_location, ".xml")
@@ -20,7 +20,7 @@ function readmodel(file_location)
             model = Model()
             @info "Done reading SBML model."
         catch err
-            @error "SBML model reading error.\n $err"
+            @error "SBML model reading error.\n$err"
             model = Model()
         end
     elseif endswith(file_location, ".mat")
@@ -29,7 +29,7 @@ function readmodel(file_location)
             model = reconstructmodelmatlab(file_location)
             @info "Done reading Matlab model." 
        catch err
-            @error "Matlab model reading error.\n $err"
+            @error "Matlab model reading error.\n$err"
             model = Model()
        end
     else
@@ -44,25 +44,44 @@ reconstructmodeljson(modeldict)
 """
 function reconstructmodeljson(modeldict)
     id = modeldict["id"]
-    rxnids = [rxn["id"] for rxn in modeldict["reactions"]]
-    ubs = [rxn["upper_bound"] for rxn in modeldict["reactions"]]
-    lbs = [rxn["lower_bound"] for rxn in modeldict["reactions"]]
-    metids = [met["id"] for met in modeldict["metabolites"]]
-    b = spzeros(length(metids))
-    grrs = Dict{String,  Array{Array{String, 1}, 1}}()
-    S = spzeros(length(metids), length(rxnids))
+
+    rxns = Array{Reaction, 1}()
+    for rxn in modeldict["reactions"]
+        r = Reaction(rxn)
+        push!(rxns, r)
+    end
+
+    mets = Array{Metabolite, 1}()
+    for met in modeldict["metabolites"]
+        m = Metabolite(met)
+        push!(mets, m)
+    end
     
-    for (i, rxn) in enumerate(modeldict["reactions"])
-        for (met, coeff) in rxn["metabolites"]
-            j = findfirst(x -> x == met, metids)
+    genes = Array{Gene, 1}()
+    for gene in modeldict["genes"]
+        g = Gene(gene)
+        push!(genes, g)
+    end
+
+    ubs = [rxn.ub for rxn in rxns]
+    lbs = [rxn.lb for rxn in rxns]
+    
+    b = spzeros(length(mets))
+    S = spzeros(length(mets), length(rxns))
+    grrs = Dict{String,  Array{Array{String, 1}, 1}}()
+
+    metids = [met.id for met in mets] # need indices for S matrix construction
+    for (i, rxn) in enumerate(rxns) # column
+        for (met, coeff) in rxn.metabolites
+            j = findfirst(x -> x == met, metids) # row
             isnothing(j) ? (@error "S matrix construction error: $met not defined."; continue) : nothing
             S[j, i] = coeff
         end
 
-        isempty(rxn["gene_reaction_rule"]) ? continue : (grrs[rxn["id"]] = parsegrr(rxn["gene_reaction_rule"]))
+        isempty(rxn.grr) ? continue : (grrs[rxn.id] = parsegrr(rxn.grr))
     end
     
-    return Model(id, S, b, lbs, ubs, rxnids, metids, grrs)
+    return Model(id, CoreModel(S, b, lbs, ubs), rxns, mets, genes, grrs)
 end
 
 """
@@ -87,6 +106,10 @@ function reconstructmodelmatlab(file_location)
     lbs = modeldict["lb"]
     ubs = modeldict["ub"]
     Model(model_name, S, b, lbs, ubs, rxnids, metids, grrs)
+end
+
+function reconstructmodelsbml()
+
 end
 
 """
@@ -119,7 +142,7 @@ function savemodel(model :: Model, file_location :: String)
         @info "Done saving SBML model."
     elseif endswith(file_location, ".mat")
         @info "Saving a Matlab formatted model..."
-        @ingo "Done saving Matlab model."
+        @info "Done saving Matlab model."
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
     end
@@ -131,6 +154,10 @@ function savejsonmodel()
 end
 
 function savematlabmodel()
+
+end
+
+function savesbmlmodel()
 
 end
 
