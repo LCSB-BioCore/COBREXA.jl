@@ -9,19 +9,35 @@ using PyCall # NB: need to install libsbml
 using SparseArrays
 using JuMP
 
-# set the output flag (turns on/true info and warning messages)
-verbose = true
+# Global options for package
+mutable struct CobraToolsOptions
+    verbose :: Bool
+end
+cto = CobraToolsOptions(true)
+
+"""
+Reduce verbosity (@info and @warn are suppressed)
+
+This is mostly useful for unit testing to suppress all the model reading and writing that occurs therein.
+"""
+function setverbose(verbose)
+    if verbose
+        cto.verbose = true
+    else
+        cto.verbose = false
+    end
+end
 
 include("cobra.jl")
-include("parsemodels.jl")
-include("analysis.jl")
-include("rxn_construction.jl")
-
-# cobra
 export Reaction, Metabolite, Gene
 
-# rxn_construction
+include("parsemodels.jl")
+
+include("analysis.jl")
+
+include("rxn_construction.jl")
 ∅ = Metabolite("∅") # for exchange reactions
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
+
 
 end # module
