@@ -256,10 +256,6 @@ function Model()
     Model("blank", CoreModel(), Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
 end
 
-struct CBModel
-    model :: JuMP.Model
-end
-
 """
 Pretty printing of model.
 """
@@ -309,7 +305,7 @@ end
 """
 Pretty printing of reactions.
 """
-function Base.show(io::IO, rs::Array{Reaction, 1})
+function Base.show(io::IO, ::MIME"text/plain", rs::Array{Reaction, 1})
     println(io, "Reaction set of length: ", length(rs))
 end
 
@@ -327,7 +323,7 @@ end
 """
 Pretty printing of metabolites.
 """
-function Base.show(io::IO, ms::Array{Metabolite, 1})
+function Base.show(io::IO, ::MIME"text/plain", ms::Array{Metabolite, 1})
     println(io, "Metabolite set of length: ", length(ms))
 end
 
@@ -342,6 +338,6 @@ end
 """
 Pretty printing of genes.
 """
-function Base.show(io::IO, gs::Array{Gene, 1})
+function Base.show(io::IO, ::MIME"text/plain", gs::Array{Gene, 1})
     println(io, "Gene set of length: ", length(gs))
 end
