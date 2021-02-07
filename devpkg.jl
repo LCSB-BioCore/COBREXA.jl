@@ -5,8 +5,8 @@ using CobraTools
 # using Ipopt
 # using GLPK
 
-jsonpath = "test/iJO1366.json"
-jsonmodel = CobraTools.readmodel(jsonpath)
+iJO1366_json = joinpath("..", "models", "iJO1366.json") 
+jsonmodel = CobraTools.readmodel(iJO1366_json)
 
 # cbmodel = CobraTools.initCBM(jsonmodel)
 
