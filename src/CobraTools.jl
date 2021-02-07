@@ -14,6 +14,9 @@ include("parsemodels.jl")
 include("analysis.jl")
 include("rxn_construction.jl")
 
+# cobra
+export Reaction, Metabolite, Gene
+
 # rxn_construction
 ∅ = Metabolite("∅") # for exchange reactions
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
