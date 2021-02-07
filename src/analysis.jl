@@ -5,44 +5,68 @@ Initialize a constraint based model. Creates a model that satisfies the mass bal
 and flux constraints but no objective is set. Return references to these objects for 
 simple modification if necessary.
 """
-function initCBM(model :: Model; optimizer=:Gurobi.Optimizer)
+function initCBM(model :: Model; optimizer="gurobi")
     cbmodel = JuMP.Model()
-    set_optimizer(cbmodel, optimizer)
 
     # set optimizer
-    # if optimizer == "glpk"
-        # set_optimizer(cbmodel, GLPK.Optimizer)
-    # elseif optimizer == "gurobi"
-    #     set_optimizer(cbmodel, Gurobi.Optimizer)
-    # elseif optimizer == "tulip"
-    #     set_optimizer(cbmodel, Tulip.Optimizer)
-    # elseif optimizer == "ipopt"
-    #     set_optimizer(cbmodel, Ipopt.Optimizer)    
-    # else
-    #     @warn "Optimizer not yet directly supported, however, you can set it yourself with `set_optimizer(cbmodel, OPTIMIZER)`.\nSee JuMP's documentation."
-    # end
+    if optimizer == "glpk"
+        set_optimizer(cbmodel, GLPK.Optimizer)
+        set_optimizer_attribute(model, "msg_lev", GLPK.GLP_MSG_OFF) # quiet
+    elseif optimizer == "gurobi"
+        set_optimizer(cbmodel, Gurobi.Optimizer)
+        set_optimizer_attribute(cbmodel, "OutputFlag", 0) # quiet
+    elseif optimizer == "tulip"
+        set_optimizer(cbmodel, Tulip.Optimizer) # quiet by default
+    elseif optimizer == "ipopt"
+        set_optimizer(cbmodel, Ipopt.Optimizer)
+        set_optimizer_attribute(model, "print_level", 0) # quiet    
+    else
+        @warn "Optimizer not yet directly supported, however, you can set it yourself with `set_optimizer(cbmodel, OPTIMIZER)`.\nSee JuMP's documentation."
+    end
     
     nvars = size(model.coremodel.S, 2) # number of variables in model
-    set_optimizer_attribute(cbmodel, "OutputFlag", 0) # quiet
     
     v = @variable(cbmodel, v[1:nvars]) # flux variables
-    @constraint(cmodel, massbalance, rawmodel["S"]*v .== rawmodel["b"]) # mass balance constraints
+    @constraint(cbmodel, massbalance, model.coremodel.S*v .== model.coremodel.b) # mass balance constraints
     @constraint(cbmodel, fluxlbs, model.coremodel.lbs .<= v)
     @constraint(cbmodel, fluxubs, v .<= model.coremodel.ubs)
 
-    return cbmodel, v, massbalance, fluxlbs, fluxubs
-end
-
-function fba(model :: CoreModel, objective_index)
-end
-
-# model, v = mkCBM(rawmodel, constraint_subset)
+    cbmodelout = (cbmodel=cbmodel, v=v, massbalance=massbalance, fluxlbs=fluxlbs, fluxubs=fluxubs) # named tuple for convenience
     
-# # Solve FBA problem
-# obj_ind = getrxnind(rawmodel, objective_id)
-# @objective(model, Max, v[obj_ind]) # objective biomass maximization
-# optimize!(model)
-# println("FBA status: ", termination_status(model))
+    return cbmodelout
+end
+
+function fba(cbmodel, objective_index)
+    @objective(cbmodel.cbmodel, Max, cbmodel.v[objective_index])
+    optimize!(cbmodel.cbmodel)
+    @info "FBA status: $(termination_status(cbmodel.cbmodel))"
+end
+
+"""
+index = getindex(model, rxn)
+
+Get the index of rxn in model
+"""
+function getindex(model::Model, rxn::Reaction)
+    for i in eachindex(model.rxns)
+        if model.rxns[i].id == rxn.id
+            return i
+        end
+    end
+    return -1
+end
+
+
+"""
+"""
+function findrxn(model::Model, rxnid::String)
+    for i in eachindex(model.rxns)
+        if model.rxns[i].id == rxnid
+            return model.rxns[i]
+        end
+    end
+    return nothing
+end
 
 # μ = objective_value(model) 
 

@@ -3,7 +3,7 @@
 """
 Reaction
 """
-struct Reaction
+mutable struct Reaction
     id :: String
     name :: String
     metabolites :: Dict{String, Float64}
@@ -16,7 +16,41 @@ struct Reaction
     objective_coefficient :: Float64
 end
 
-function Reaction(d)
+function Reaction()
+    id = ""
+    name = ""
+    metabolites = Dict{String, Float64}()
+    lb = -1000.0 
+    ub = 1000.0 
+    grr = ""
+    subsystem = "" 
+    notes = Dict{String, Array{String, 1}}() 
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    objective_coefficient = 0.0
+    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
+end
+
+function Reaction(id::String, metabolites::Dict{String, Float64}, dir::String)
+    name = ""
+    if dir == "for"
+        lb = 0.0 
+        ub = 1000.0     
+    elseif dir == "rev"
+        lb = -1000.0 
+        ub = 0.0     
+    else
+        lb = -1000.0 
+        ub = 1000.0     
+    end
+    grr = ""
+    subsystem = "" 
+    notes = Dict{String, Array{String, 1}}() 
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    objective_coefficient = 0.0
+    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
+end
+
+function Reaction(d :: Dict{String, Any})
     id = ""
     name = ""
     metabolites = Dict{String, Float64}()
@@ -65,7 +99,7 @@ end
 """
 Metabolite
 """
-struct Metabolite
+mutable struct Metabolite
     id :: String
     name :: String
     formula :: String
@@ -75,7 +109,28 @@ struct Metabolite
     annotation :: Dict{String, Union{Array{String, 1}, String}}
 end
 
-function Metabolite(d)
+function Metabolite()
+    id = ""
+    name = ""
+    formula = ""
+    charge = 0
+    compartment = ""
+    notes = Dict{String, Array{String, 1}}()
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    Metabolite(id, name, formula, charge, compartment, notes, annotation)
+end
+
+function Metabolite(id :: String)
+    name = ""
+    formula = ""
+    charge = 0
+    compartment = ""
+    notes = Dict{String, Array{String, 1}}()
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    Metabolite(id, name, formula, charge, compartment, notes, annotation)
+end
+
+function Metabolite(d :: Dict{String, Any})
     id = ""
     name = ""
     formula = ""
@@ -116,11 +171,19 @@ end
 """
 Gene
 """
-struct Gene
+mutable struct Gene
     id :: String
     name :: String
     notes :: Dict{String, Array{String, 1}}
     annotation :: Dict{String, Union{Array{String, 1}, String}}    
+end
+
+function Gene()
+    id = ""
+    name = ""
+    notes = Dict{String, Array{String, 1}}()
+    annotation = Dict{String, Union{Array{String, 1}, String}}()    
+    Gene(id, name, notes, annotation)
 end
 
 function Gene(d)
@@ -191,6 +254,10 @@ Empty constructor.
 """
 function Model()
     Model("blank", CoreModel(), Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
+end
+
+struct CBModel
+    model :: JuMP.Model
 end
 
 """
