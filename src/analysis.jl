@@ -1,43 +1,55 @@
-function fba(model :: Model)
+"""
+cbmodel = initCBM(model :: Model; optimizer="Gurobi")
 
+Initialize a constraint based model. Creates a model that satisfies the mass balance
+and flux constraints but no objective is set. Return references to these objects for 
+simple modification if necessary.
+"""
+function initCBM(model :: Model; optimizer=:Gurobi.Optimizer)
+    cbmodel = JuMP.Model()
+    set_optimizer(cbmodel, optimizer)
+
+    # set optimizer
+    # if optimizer == "glpk"
+        # set_optimizer(cbmodel, GLPK.Optimizer)
+    # elseif optimizer == "gurobi"
+    #     set_optimizer(cbmodel, Gurobi.Optimizer)
+    # elseif optimizer == "tulip"
+    #     set_optimizer(cbmodel, Tulip.Optimizer)
+    # elseif optimizer == "ipopt"
+    #     set_optimizer(cbmodel, Ipopt.Optimizer)    
+    # else
+    #     @warn "Optimizer not yet directly supported, however, you can set it yourself with `set_optimizer(cbmodel, OPTIMIZER)`.\nSee JuMP's documentation."
+    # end
+    
+    nvars = size(model.coremodel.S, 2) # number of variables in model
+    set_optimizer_attribute(cbmodel, "OutputFlag", 0) # quiet
+    
+    v = @variable(cbmodel, v[1:nvars]) # flux variables
+    @constraint(cmodel, massbalance, rawmodel["S"]*v .== rawmodel["b"]) # mass balance constraints
+    @constraint(cbmodel, fluxlbs, model.coremodel.lbs .<= v)
+    @constraint(cbmodel, fluxubs, v .<= model.coremodel.ubs)
+
+    return cbmodel, v, massbalance, fluxlbs, fluxubs
 end
 
 function fba(model :: CoreModel, objective_index)
-
 end
 
-nvars = size(rawmodel["S"], 2) # number of variables in model
-model = Model(Gurobi.Optimizer) # model
-set_optimizer_attribute(model, "OutputFlag", 0) # quiet
-
-v = @variable(model, v[1:nvars]) # flux variables
-@constraint(model, massbalance, rawmodel["S"]*v .== rawmodel["b"]) # mass balance constraints
-
-constraint_subset_inds = getrxninds(rawmodel, keys(constraint_subset))
-default_constraints = filter(x -> !(x in values(constraint_subset_inds)), 1:length(rawmodel["rxns"]))
-@constraint(model, fluxbounds, rawmodel["lb"][default_constraints] .<= v[default_constraints] .<= rawmodel["ub"][default_constraints]) # flux bounds
-
-
-for (k, cv) in constraint_subset
-    @constraint(model, cv[1] <= v[constraint_subset_inds[k]] <= cv[2])
-end
-
-return model, v
-
-model, v = mkCBM(rawmodel, constraint_subset)
+# model, v = mkCBM(rawmodel, constraint_subset)
     
-# Solve FBA problem
-obj_ind = getrxnind(rawmodel, objective_id)
-@objective(model, Max, v[obj_ind]) # objective biomass maximization
-optimize!(model)
-println("FBA status: ", termination_status(model))
+# # Solve FBA problem
+# obj_ind = getrxnind(rawmodel, objective_id)
+# @objective(model, Max, v[obj_ind]) # objective biomass maximization
+# optimize!(model)
+# println("FBA status: ", termination_status(model))
 
-μ = objective_value(model) 
+# μ = objective_value(model) 
 
-# Solve pFBA problem
-@constraint(model, 0.999*μ <= v[obj_ind] <= μ) # set biomass function to FBA solution
-@objective(model, Min, sum(dot(v,v)))
-optimize!(model)
-println("pFBA status: ", termination_status(model))
+# # Solve pFBA problem
+# @constraint(model, 0.999*μ <= v[obj_ind] <= μ) # set biomass function to FBA solution
+# @objective(model, Min, sum(dot(v,v)))
+# optimize!(model)
+# println("pFBA status: ", termination_status(model))
 
-return v, μ
+# return v, μ
