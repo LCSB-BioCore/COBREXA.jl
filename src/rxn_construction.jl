@@ -26,25 +26,25 @@ function Base.:+(m1::Array{MetaboliteWithCoefficient, 1}, m2::Union{Metabolite, 
 end
 
 function mkrxn(substrates, products)
-    metdict = Dict{String, Float64}()
+    metdict = Dict{Metabolite, Float64}()
     
     if typeof(substrates) == Metabolite
-        substrates.id != "∅" && (metdict[substrates.id] = get(metdict, substrates.id, 0.0)  - 1.0) 
+        substrates != "∅" && (metdict[substrates] = get(metdict, substrates, 0.0)  - 1.0) 
     elseif typeof(substrates) == MetaboliteWithCoefficient
-        substrates.metabolite.id != "∅" && (metdict[substrates.metabolite.id] = get(metdict, substrates.metabolite.id, 0.0) - 1.0*abs(substrates.coeff))
+        substrates.metabolite != "∅" && (metdict[substrates.metabolite] = get(metdict, substrates.metabolite, 0.0) - 1.0*abs(substrates.coeff))
     else
         for mwc in substrates
-            metdict[mwc.metabolite.id] = get(metdict, mwc.metabolite.id, 0.0) - 1.0*abs(mwc.coeff)
+            metdict[mwc.metabolite] = get(metdict, mwc.metabolite, 0.0) - 1.0*abs(mwc.coeff)
         end
     end
 
     if typeof(products) == Metabolite
-        products.id != "∅" && (metdict[products.id] = get(metdict, products.id, 0.0) + 1.0) 
+        products != "∅" && (metdict[products] = get(metdict, products, 0.0) + 1.0) 
     elseif typeof(products) == MetaboliteWithCoefficient
-        products.metabolite.id != "∅" && (metdict[products.metabolite.id] = get(metdict, products.metabolite.id, 0.0) + abs(products.coeff))
+        products.metabolite != "∅" && (metdict[products.metabolite] = get(metdict, products.metabolite, 0.0) + abs(products.coeff))
     else
         for mwc in products
-            metdict[mwc.metabolite.id] = get(metdict, mwc.metabolite.id, 0.0) + 1.0*abs(mwc.coeff)
+            metdict[mwc.metabolite] = get(metdict, mwc.metabolite, 0.0) + 1.0*abs(mwc.coeff)
         end
     end
     
@@ -56,7 +56,7 @@ Forward reaction.
 """
 function ⟶(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}}, products::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}})
     metdict = mkrxn(substrates, products)
-    return Reaction("", metdict, "for")
+    return Reaction(metdict, "for")
 end
 const → = ⟶
 
@@ -65,7 +65,7 @@ Reverse only reaction.
 """
 function ⟵(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}}, products::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}})
     metdict = mkrxn(substrates, products)
-    return Reaction("", metdict, "rev")
+    return Reaction(metdict, "rev")
 end
 const ← = ⟵
 
@@ -74,6 +74,10 @@ Bidirectional (reversible) reaction.
 """
 function ⟷(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}}, products::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}})
     metdict = mkrxn(substrates, products)
-    return Reaction("", metdict, "bidir")
+    return Reaction(metdict, "bidir")
 end
 const ↔ = ⟷
+
+function ismassbalanced(rxn)
+
+end
