@@ -1,102 +1,6 @@
 # Structs and printing
 
 """
-Reaction
-"""
-mutable struct Reaction
-    id :: String
-    name :: String
-    metabolites :: Dict{String, Float64}
-    lb :: Float64
-    ub :: Float64
-    grr :: String
-    subsystem :: String
-    notes :: Dict{String, Array{String, 1}}
-    annotation :: Dict{String, Union{Array{String, 1}, String}} # SBO is a single string term
-    objective_coefficient :: Float64
-end
-
-function Reaction()
-    id = ""
-    name = ""
-    metabolites = Dict{String, Float64}()
-    lb = -1000.0 
-    ub = 1000.0 
-    grr = ""
-    subsystem = "" 
-    notes = Dict{String, Array{String, 1}}() 
-    annotation = Dict{String, Union{Array{String, 1}, String}}()
-    objective_coefficient = 0.0
-    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
-end
-
-function Reaction(id::String, metabolites::Dict{String, Float64}, dir::String)
-    name = ""
-    if dir == "for"
-        lb = 0.0 
-        ub = 1000.0     
-    elseif dir == "rev"
-        lb = -1000.0 
-        ub = 0.0     
-    else
-        lb = -1000.0 
-        ub = 1000.0     
-    end
-    grr = ""
-    subsystem = "" 
-    notes = Dict{String, Array{String, 1}}() 
-    annotation = Dict{String, Union{Array{String, 1}, String}}()
-    objective_coefficient = 0.0
-    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
-end
-
-function Reaction(d :: Dict{String, Any})
-    id = ""
-    name = ""
-    metabolites = Dict{String, Float64}()
-    lb = -1000.0 
-    ub = 1000.0 
-    grr = ""
-    subsystem = "" 
-    notes = Dict{String, Array{String, 1}}() 
-    annotation = Dict{String, Union{Array{String, 1}, String}}()
-    objective_coefficient = 0.0
-    for (k, v) in d
-        if k == "id"
-            id = v
-        elseif k == "name"
-            name = v
-        elseif k == "metabolites"
-            metabolites = Dict{String, Float64}(kk=>vv for (kk, vv) in v)
-        elseif k == "lower_bound"
-            lb = v
-        elseif k == "upper_bound"
-            ub = v
-        elseif k == "gene_reaction_rule"
-            grr = v
-        elseif k == "subsystem"
-            subsystem = v
-        elseif k == "notes"
-            notes = Dict{String, Array{String, 1}}(kk=>vv for (kk, vv) in v)
-        elseif k == "annotation"
-            annotation = Dict{String, Union{Array{String, 1}, String}}()
-            for (kk, vv) in v
-                if typeof(vv) == String
-                    annotation[kk] = vv
-                else
-                    annotation[kk] = convert(Array{String, 1}, vv)
-                end
-            end
-        elseif k == "objective_coefficient"
-            objective_coefficient = v
-        else
-            @warn "Unrecognized reaction field: $k"
-        end
-    end
-    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
-end
-
-"""
 Metabolite
 """
 mutable struct Metabolite
@@ -120,7 +24,7 @@ function Metabolite()
     Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
-function Metabolite(id :: String)
+function Metabolite(id::String)
     name = ""
     formula = ""
     charge = 0
@@ -130,7 +34,7 @@ function Metabolite(id :: String)
     Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
-function Metabolite(d :: Dict{String, Any})
+function Metabolite(d::Dict{String, Any})
     id = ""
     name = ""
     formula = ""
@@ -167,6 +71,108 @@ function Metabolite(d :: Dict{String, Any})
     
     Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
+
+"""
+Reaction
+"""
+mutable struct Reaction
+    id :: String
+    name :: String
+    metabolites :: Dict{Metabolite, Float64}
+    lb :: Float64
+    ub :: Float64
+    grr :: String
+    subsystem :: String
+    notes :: Dict{String, Array{String, 1}}
+    annotation :: Dict{String, Union{Array{String, 1}, String}} # SBO is a single string term
+    objective_coefficient :: Float64
+end
+
+function Reaction()
+    id = ""
+    name = ""
+    metabolites = Dict{Metabolite, Float64}()
+    lb = -1000.0 
+    ub = 1000.0 
+    grr = ""
+    subsystem = "" 
+    notes = Dict{String, Array{String, 1}}() 
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    objective_coefficient = 0.0
+    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
+end
+
+function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
+    name = ""
+    if dir == "for"
+        lb = 0.0 
+        ub = 1000.0     
+    elseif dir == "rev"
+        lb = -1000.0 
+        ub = 0.0     
+    else
+        lb = -1000.0 
+        ub = 1000.0     
+    end
+    grr = ""
+    subsystem = "" 
+    notes = Dict{String, Array{String, 1}}() 
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    objective_coefficient = 0.0
+    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
+end
+
+function Reaction(d :: Dict{String, Any}, mets::Array{Metabolite, 1})
+    id = ""
+    name = ""
+    metabolites = Dict{Metabolite, Float64}()
+    lb = -1000.0 
+    ub = 1000.0 
+    grr = ""
+    subsystem = "" 
+    notes = Dict{String, Array{String, 1}}() 
+    annotation = Dict{String, Union{Array{String, 1}, String}}()
+    objective_coefficient = 0.0
+    for (k, v) in d
+        if k == "id"
+            id = v
+        elseif k == "name"
+            name = v
+        elseif k == "metabolites"
+            metabolites = Dict{Metabolite, Float64}() 
+            for (kk, vv) in v
+                ind = findfirst(x->x.id == kk, mets)
+                isnothing(ind) ? (@warn "Metabolite $kk not found in reaction assignment."; continue) : nothing
+                metabolites[mets[ind]] = vv
+            end 
+        elseif k == "lower_bound"
+            lb = v
+        elseif k == "upper_bound"
+            ub = v
+        elseif k == "gene_reaction_rule"
+            grr = v
+        elseif k == "subsystem"
+            subsystem = v
+        elseif k == "notes"
+            notes = Dict{String, Array{String, 1}}(kk=>vv for (kk, vv) in v)
+        elseif k == "annotation"
+            annotation = Dict{String, Union{Array{String, 1}, String}}()
+            for (kk, vv) in v
+                if typeof(vv) == String
+                    annotation[kk] = vv
+                else
+                    annotation[kk] = convert(Array{String, 1}, vv)
+                end
+            end
+        elseif k == "objective_coefficient"
+            objective_coefficient = v
+        else
+            @warn "Unrecognized reaction field: $k"
+        end
+    end
+    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
+end
+
 
 """
 Gene

@@ -53,18 +53,18 @@ reconstructmodeljson(modeldict)
 function reconstructmodeljson(modeldict)
     id = modeldict["id"]
 
-    rxns = Array{Reaction, 1}()
-    for rxn in modeldict["reactions"]
-        r = Reaction(rxn)
-        push!(rxns, r)
-    end
-
     mets = Array{Metabolite, 1}()
     for met in modeldict["metabolites"]
         m = Metabolite(met)
         push!(mets, m)
     end
     
+    rxns = Array{Reaction, 1}()
+    for rxn in modeldict["reactions"]
+        r = Reaction(rxn, mets)
+        push!(rxns, r)
+    end
+
     genes = Array{Gene, 1}()
     for gene in modeldict["genes"]
         g = Gene(gene)
@@ -81,8 +81,8 @@ function reconstructmodeljson(modeldict)
     metids = [met.id for met in mets] # need indices for S matrix construction
     for (i, rxn) in enumerate(rxns) # column
         for (met, coeff) in rxn.metabolites
-            j = findfirst(x -> x == met, metids) # row
-            isnothing(j) ? (@error "S matrix construction error: $met not defined."; continue) : nothing
+            j = findfirst(x -> x == met.id, metids) # row
+            isnothing(j) ? (@error "S matrix construction error: $(met.id) not defined."; continue) : nothing
             S[j, i] = coeff
         end
 
@@ -128,7 +128,7 @@ function reconstructmodelmatlab(file_location)
         id = haskey(modeldict, "rxns") ? modeldict["rxns"][i] : ""
         name = haskey(modeldict, "rxnNames") ? modeldict["rxnNames"][i] : ""
         metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
-        metabolites = Dict{String, Float64}(mets[j].id=>modeldict["S"][j, i] for j in metinds)
+        metabolites = Dict{Metabolite, Float64}(mets[j]=>modeldict["S"][j, i] for j in metinds)
         lb = haskey(modeldict, "lb") ? modeldict["lb"][i] : -1000.0 # reversible by default
         ub = haskey(modeldict, "ub") ? modeldict["ub"][i] : 1000.0 # reversible by default
         grr = haskey(modeldict, "grRules") ? modeldict["grRules"][i] : ""
@@ -175,61 +175,6 @@ function reconstructmodelsbml(file_location)
     # name = met[:getName]()
     # charge = met[:getCharge]()
     # formula = ???
-
-    mets = Array{Metabolite, 1}()
-    # for i in eachindex(modeldict["mets"])
-    #     id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
-    #     name = haskey(modeldict, "metNames") ? modeldict["metNames"][i] : ""
-    #     formula = haskey(modeldict, "metFormulas") ? modeldict["metFormulas"][i] : "" 
-    #     charge = haskey(modeldict, "metCharge") ? modeldict["metCharge"][i] : 0
-
-    #     # these fields likely don't exist in the matlab model
-    #     compartment = haskey(modeldict, "compartment") ? modeldict["compartment"][i] : ""
-    #     notes = haskey(modeldict, "notes") ? modeldict["notes"][i] : Dict{String, Array{String, 1}}()
-    #     annotation = haskey(modeldict, "annotation") ? modeldict["annotation"][i] : Dict{String, Union{Array{String, 1}, String}}()
-
-    #     push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation))
-    # end
-
-    rxns = Array{Reaction, 1}()
-    # for i in eachindex(modeldict["rxns"])
-    #     id = haskey(modeldict, "rxns") ? modeldict["rxns"][i] : ""
-    #     name = haskey(modeldict, "rxnNames") ? modeldict["rxnNames"][i] : ""
-    #     metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
-    #     metabolites = Dict{String, Float64}(mets[j].id=>modeldict["S"][j, i] for j in metinds)
-    #     lb = haskey(modeldict, "lb") ? modeldict["lb"][i] : -1000.0 # reversible by default
-    #     ub = haskey(modeldict, "ub") ? modeldict["ub"][i] : 1000.0 # reversible by default
-    #     grr = haskey(modeldict, "grRules") ? modeldict["grRules"][i] : ""
-    #     subsystem = modeldict["subSystems"][i]
-    #     objective_coefficient = haskey(modeldict, "c") ? modeldict["c"][i] : 0.0
-
-    #     # these fields likely don't exist in the matlab model
-    #     notes = haskey(modeldict, "notes") ? modeldict["notes"][i] : Dict{String, Array{String, 1}}()
-    #     annotation = haskey(modeldict, "annotation") ? modeldict["annotation"][i] : Dict{String, Union{Array{String, 1}, String}}() 
-        
-    #     push!(rxns, Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient))
-    # end
-
-    genes = Array{Gene, 1}()
-    # for i in eachindex(modeldict["genes"])
-    #     id = haskey(modeldict, "genes") ? modeldict["genes"][i] : ""
-        
-    #     # these fields likely don't exist in the matlab model
-    #     name = haskey(modeldict, "geneNames") ? modeldict["geneNames"][i] : ""
-    #     notes = haskey(modeldict, "geneNotes") ? modeldict["geneNotes"][i] : Dict{String, Array{String, 1}}()
-    #     annotation = haskey(modeldict, "geneAnnotations") ? modeldict["geneAnnotations"][i] : Dict{String, Union{Array{String, 1}, String}}()
-        
-    #     push!(genes, Gene(id, name, notes, annotation))
-    # end
-
-    # grrs = Dict{String,  Array{Array{String, 1}, 1}}()
-    # for (i, rxn) in enumerate(rxns)
-    #     if !isempty(modeldict["grRules"][i])
-    #         grrs[rxn.id] = parsegrr(modeldict["grRules"][i])
-    #     end
-    # end
-
-    # return Model(model_id, CoreModel(S, b, lbs, ubs), rxns, mets, genes, grrs)
     return Model()
 end
 
@@ -291,7 +236,7 @@ function savejsonmodel(model :: Model, file_location :: String)
         rdict = Dict()
         rdict["id"] = r.id
         rdict["name"] = r.name
-        rdict["metabolites"] = r.metabolites
+        rdict["metabolites"] = Dict{String, Float64}(k.id=>v for (k, v) in r.metabolites)
         rdict["lower_bound"] = r.lb
         rdict["upper_bound"] = r.ub
         rdict["gene_reaction_rule"] = r.grr
