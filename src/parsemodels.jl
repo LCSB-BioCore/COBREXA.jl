@@ -13,29 +13,29 @@ Note, SBML is not implemented yet.
 """
 function readmodel(file_location)
     if endswith(file_location, ".json")
-        @info "Reading a JSON formatted model..."
+        verbose && @info "Reading a JSON formatted model..."
         try 
             model = reconstructmodeljson(JSON.parsefile(file_location))
-            @info "Done reading JSON model."
+            verbose && @info "Done reading JSON model."
         catch err
             @error "JSON model reading error.\n$err"
             model = Model()
         end
     elseif endswith(file_location, ".xml")
-        @info "Reading an SBML formatted model..."
+        verbose && @info "Reading an SBML formatted model..."
         try
             model = reconstructmodelsbml(file_location)
-            @warn "Not implemented!"
-            @info "Done reading SBML model."
+            verbose && @warn "Not implemented!"
+            verbose && @info "Done reading SBML model."
         catch err
             @error "SBML model reading error.\n$err"
             model = Model()
         end
     elseif endswith(file_location, ".mat")
-        @info "Reading a Matlab formatted model..."
+        verbose && @info "Reading a Matlab formatted model..."
        try
             model = reconstructmodelmatlab(file_location)
-            @info "Done reading Matlab model." 
+            verbose && @info "Done reading Matlab model." 
        catch err
             @error "Matlab model reading error.\n$err"
             model = Model()
@@ -209,17 +209,17 @@ Note, SBML is not implemented yet.
 """
 function savemodel(model :: Model, file_location :: String)
     if endswith(file_location, ".json")
-        @info "Saving a JSON formatted model..."
+        verbose && @info "Saving a JSON formatted model..."
         savejsonmodel(model, file_location)
-        @info "Done saving JSON model."
+        verbose && @info "Done saving JSON model."
     elseif endswith(file_location, ".xml")
-        @info "Saving an SBML formatted model..."
-        @warn "Not implemented!"
-        @info "Done saving SBML model."
+        verbose && @info "Saving an SBML formatted model..."
+        verbose && @warn "Not implemented!"
+        verbose && @info "Done saving SBML model."
     elseif endswith(file_location, ".mat")
-        @info "Saving a Matlab formatted model..."
+        verbose && @info "Saving a Matlab formatted model..."
         savematlabmodel(model, file_location)
-        @info "Done saving Matlab model."
+        verbose && @info "Done saving Matlab model."
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
     end
