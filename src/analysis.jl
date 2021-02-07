@@ -42,31 +42,6 @@ function fba(cbmodel, objective_index)
     cto.verbose && @info "FBA status: $(termination_status(cbmodel.cbmodel))"
 end
 
-"""
-index = getindex(model, rxn)
-
-Get the index of rxn in model
-"""
-function getindex(model::Model, rxn::Reaction)
-    for i in eachindex(model.rxns)
-        if model.rxns[i].id == rxn.id
-            return i
-        end
-    end
-    return -1
-end
-
-
-"""
-"""
-function findrxn(model::Model, rxnid::String)
-    for i in eachindex(model.rxns)
-        if model.rxns[i].id == rxnid
-            return model.rxns[i]
-        end
-    end
-    return nothing
-end
 
 # μ = objective_value(model) 
 

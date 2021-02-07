@@ -2,7 +2,7 @@
 Shouldn't test the identity of S, b, lb, ub because the storage format may differ i.e. order of rxns
 and mets could be different. Rather test indirectly.
 """
-function model_comparison(model1, model2)
+function model_comparison_test(model1, model2)
     # test if blank model is given - automatic fail
     (isempty(model1.coremodel.S) || isempty(model2.coremodel.S)) ? (return false) : nothing
 
@@ -63,12 +63,43 @@ function model_comparison(model1, model2)
     return all([rxn_diff, met_diff, S_size, b_size, lb_same, ub_same, S_same, b_same, same_grr])
 end
 
-function read_write_read(model, format)
+function read_write_read_test(model, format)
     tmpfile = "temp."*format
 
     CobraTools.savemodel(model, tmpfile)
     tmpmodel = CobraTools.readmodel(tmpfile)
 
     rm(tmpfile)
-    model_comparison(model, tmpmodel)
+    model_comparison_test(model, tmpmodel)
+end
+
+function rxn_construction_test(model)
+    # note, this test is for iJO1366
+    rxn_original = findfirst(model.rxns, "NADH16pp")
+    nadh = findfirst(model.mets, "nadh_c")
+    h_c = findfirst(model.mets, "h_c")
+    q8 = findfirst(model.mets, "q8_c")
+    q8h2 = findfirst(model.mets, "q8h2_c")
+    nad = findfirst(model.mets, "nad_c")
+    h_p = findfirst(model.mets, "h_p")
+    
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
+    check_bounds_forward = (rxn.lb == 0.0 && rxn.ub > 0.0) ? true : false
+
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ← 1.0*q8h2 + 1.0*nad + 3.0*h_p
+    check_bounds_reverse = (rxn.lb < 0.0 && rxn.ub == 0.0) ? true : false
+    
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ↔ 1.0*q8h2 + 1.0*nad + 3.0*h_p
+    check_bounds_bidir = (rxn.lb < 0.0 && rxn.ub > 0.0) ? true : false
+    
+    rxn = 1.0*nadh → ∅
+    check_ex_out = length(rxn.metabolites) == 1 ? true : false 
+    rxn = ∅ → nadh
+    check_ex_in = length(rxn.metabolites) == 1 ? true : false 
+    
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
+    rxn_mets_coeffs = prod(values(rxn.metabolites)) == -12 ? true : false
+    rxn_mets = ("q8h2_c" in [x.id for x  in keys(rxn.metabolites)]) ? true : false # getting one right suggests it works
+
+    return all([check_bounds_forward, check_bounds_reverse, check_bounds_bidir, check_ex_out, check_ex_in, rxn_mets, rxn_mets_coeffs])
 end
