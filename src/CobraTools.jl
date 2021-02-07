@@ -9,6 +9,9 @@ using PyCall # NB: need to install libsbml
 using SparseArrays
 using JuMP
 
+# set the output flag (turns on/true info and warning messages)
+verbose = true
+
 include("cobra.jl")
 include("parsemodels.jl")
 include("analysis.jl")
@@ -20,8 +23,5 @@ export Reaction, Metabolite, Gene
 # rxn_construction
 ∅ = Metabolite("∅") # for exchange reactions
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
-
-
-
 
 end # module

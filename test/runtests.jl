@@ -1,5 +1,6 @@
 using Test
 using CobraTools
+verbose = false # make testing quiet
 
 include("testfuncs.jl")
 
@@ -30,6 +31,10 @@ yeast_mat = joinpath("yeastGEM.mat")
     @test_broken read_write_read(sbmlmodel_ecoli, "xml") # SBML not implemented yet
 end    
 
-# @testset "Test something else" begin
+@testset "Model construction" begin
+    @test true 
+end    
+
+# @testset "Analysis" begin
 #     @test yeast_xml == yeast_xml 
 # end    

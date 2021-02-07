@@ -21,7 +21,7 @@ function initCBM(model :: Model; optimizer="gurobi")
         set_optimizer(cbmodel, Ipopt.Optimizer)
         set_optimizer_attribute(model, "print_level", 0) # quiet    
     else
-        @warn "Optimizer not yet directly supported, however, you can set it yourself with `set_optimizer(cbmodel, OPTIMIZER)`.\nSee JuMP's documentation."
+        verbose && @warn "Optimizer not yet directly supported, however, you can set it yourself with `set_optimizer(cbmodel, OPTIMIZER)`.\nSee JuMP's documentation."
     end
     
     nvars = size(model.coremodel.S, 2) # number of variables in model
@@ -39,7 +39,7 @@ end
 function fba(cbmodel, objective_index)
     @objective(cbmodel.cbmodel, Max, cbmodel.v[objective_index])
     optimize!(cbmodel.cbmodel)
-    @info "FBA status: $(termination_status(cbmodel.cbmodel))"
+    verbose && @info "FBA status: $(termination_status(cbmodel.cbmodel))"
 end
 
 """

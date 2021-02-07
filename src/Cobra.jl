@@ -65,7 +65,7 @@ function Metabolite(d::Dict{String, Any})
                 end
             end
         else
-            @warn "Unrecognized reaction field: $k"
+            verbose && @warn "Unrecognized reaction field: $k"
         end
     end
     
@@ -142,7 +142,7 @@ function Reaction(d :: Dict{String, Any}, mets::Array{Metabolite, 1})
             metabolites = Dict{Metabolite, Float64}() 
             for (kk, vv) in v
                 ind = findfirst(x->x.id == kk, mets)
-                isnothing(ind) ? (@warn "Metabolite $kk not found in reaction assignment."; continue) : nothing
+                isnothing(ind) ? ((verbose && @warn "Metabolite $kk not found in reaction assignment."); continue) : nothing
                 metabolites[mets[ind]] = vv
             end 
         elseif k == "lower_bound"
@@ -167,7 +167,7 @@ function Reaction(d :: Dict{String, Any}, mets::Array{Metabolite, 1})
         elseif k == "objective_coefficient"
             objective_coefficient = v
         else
-            @warn "Unrecognized reaction field: $k"
+            verbose && @warn "Unrecognized reaction field: $k"
         end
     end
     Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
@@ -214,7 +214,7 @@ function Gene(d)
                 end
             end
         else
-            @warn "Unrecognized reaction field: $k"
+            verbose && @warn "Unrecognized reaction field: $k"
         end
     end
     
