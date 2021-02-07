@@ -103,6 +103,7 @@ function Reaction()
 end
 
 function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
+    id = ""
     name = ""
     if dir == "for"
         lb = 0.0 
@@ -263,6 +264,91 @@ function Model()
 end
 
 """
+index = getindex(model, rxn)
+
+Get the index of rxn in model. Return -1 if not found.
+"""
+function Base.getindex(model::Model, rxn::Reaction)
+    for i in eachindex(model.rxns)
+        if model.rxns[i].id == rxn.id
+            return i
+        end
+    end
+    return -1
+end
+
+"""
+index = getindex(model, rxn)
+
+Get the index of metabolite in model. Return -1 if not found.
+"""
+function Base.getindex(model::Model, met::Metabolite)
+    for i in eachindex(model.mets)
+        if model.mets[i].id == met.id
+            return i
+        end
+    end
+    return -1
+end
+
+"""
+index = getindex(model, gene)
+
+Get the index of gene in model. Return -1 if not found.
+"""
+function Base.getindex(model::Model, gene::Gene)
+    for i in eachindex(model.genes)
+        if model.genes[i].id == gene.id
+            return i
+        end
+    end
+    return -1
+end
+
+"""
+findfirst(rxns, rxnid)
+
+Return the reaction with rxnid or else `nothing`. Typically used: findfirst(model.rxns, rxnid)
+"""
+function Base.findfirst(rxns::Array{Reaction, 1}, rxnid::String)
+    for i in eachindex(rxns)
+        if rxns[i].id == rxnid
+            return rxns[i]
+        end
+    end
+    return nothing
+end
+
+"""
+findfirst(mets, metid)
+
+Return the metabolite with metid or else `nothing`. Typically used: findfirst(model.mets, metid)
+"""
+function Base.findfirst(mets::Array{Metabolite, 1}, metid::String)
+    for i in eachindex(mets)
+        if mets[i].id == metid
+            return mets[i]
+        end
+    end
+    return nothing
+end
+
+"""
+findfirst(genes, geneid)
+
+Return the gene with geneid or else `nothing`. Typically used: findfirst(model.genes, geneid)
+"""
+function Base.findfirst(genes::Array{Gene, 1}, geneid::String)
+    for i in eachindex(genes)
+        if genes[i].id == geneid
+            return genes[i]
+        end
+    end
+    return nothing
+end
+
+
+"""
 Pretty printing of model.
 """
 function Base.show(io::IO, m::Model)
@@ -290,9 +376,9 @@ function Base.show(io::IO, r::Reaction)
     products = String[]
     for (k, v) in r.metabolites
         if v < 0.0
-            push!(substrates, string(abs(v))*" "*k)
+            push!(substrates, string(abs(v))*" "*k.id)
         else
-            push!(products, string(abs(v))*" "*k)
+            push!(products, string(abs(v))*" "*k.id)
         end
     end
     isempty(substrates) && (substrates = "∅")
