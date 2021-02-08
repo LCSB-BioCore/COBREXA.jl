@@ -113,7 +113,7 @@ function dopfba(model::Model, objective_rxn; optimizer="gurobi")
     objective_index = model[objective_rxn]
     cbmodel, v = dofba(model, objective_rxn; optimizer)
     λ = value(v[objective_index])
-    @constraint(cbmodel, 0.9999*λ <= v[objective_index] <= λ) # constrain model - 0.9999 should be close enough?
+    @constraint(cbmodel, 0.999*λ <= v[objective_index] <= λ) # constrain model - 0.999 should be close enough?
     @objective(cbmodel, Min, sum(dot(v, v)))
     optimize!(cbmodel)
     cto.verbose && @info "pFBA status: $(termination_status(cbmodel))"
@@ -127,6 +127,7 @@ function atom_exchange(model::Model, objective_rxn; optimizer="gurobi")
     cbmodel, v = dopfba(model, objective_rxn; optimizer)
     # find exchange reactions
     ex_inds = [i for i in eachindex(model.rxns) if startswith(model.rxns[i].id, "EX_")] # get reaction indices that are exchanges
+    
     atom_balance = Dict{String, Float64}()
     for ex_ind in ex_inds
         for (met, w) in model.rxns[ex_ind].metabolites
