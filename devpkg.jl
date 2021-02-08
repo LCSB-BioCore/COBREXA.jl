@@ -1,5 +1,7 @@
 using CobraTools
 
+
+# E. coli model
 modelpath = joinpath("models", "iJO1366.json") 
 model = CobraTools.readmodel(modelpath)
 
