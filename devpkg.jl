@@ -8,6 +8,10 @@ using CobraTools
 modelpath = joinpath("models", "iJO1366.json") 
 jsonmodel = CobraTools.readmodel(modelpath)
 
+biomass_rxn = findfirst(jsonmodel.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
+CobraTools.fba(jsonmodel, )
+
+
 # cbmodel = CobraTools.initCBM(jsonmodel)
 
 # biomass_rxn = CobraTools.findrxn(jsonmodel, "BIOMASS_Ec_iJO1366_core_53p95M")
