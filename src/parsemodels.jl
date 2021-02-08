@@ -71,25 +71,12 @@ function reconstructmodeljson(modeldict)
         push!(genes, g)
     end
 
-    ubs = [rxn.ub for rxn in rxns]
-    lbs = [rxn.lb for rxn in rxns]
-    
-    b = spzeros(length(mets))
-    S = spzeros(length(mets), length(rxns))
     grrs = Dict{String,  Array{Array{String, 1}, 1}}()
-
-    metids = [met.id for met in mets] # need indices for S matrix construction
-    for (i, rxn) in enumerate(rxns) # column
-        for (met, coeff) in rxn.metabolites
-            j = findfirst(x -> x == met.id, metids) # row
-            isnothing(j) ? (@error "S matrix construction error: $(met.id) not defined."; continue) : nothing
-            S[j, i] = coeff
-        end
-
+    for rxn in rxns
         isempty(rxn.grr) ? continue : (grrs[rxn.id] = parsegrr(rxn.grr))
     end
     
-    return Model(id, CoreModel(S, b, lbs, ubs), rxns, mets, genes, grrs)
+    return Model(id, rxns, mets, genes, grrs)
 end
 
 """
@@ -103,11 +90,6 @@ function reconstructmodelmatlab(file_location)
 
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
     
-    S = sparse(modeldict["S"])
-    b = sparse(modeldict["b"])
-    lbs = modeldict["lb"]
-    ubs = modeldict["ub"]
-
     mets = Array{Metabolite, 1}()
     for i in eachindex(modeldict["mets"])
         id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
@@ -161,7 +143,7 @@ function reconstructmodelmatlab(file_location)
         end
     end
     
-    return Model(model_id, CoreModel(S, b, lbs, ubs), rxns, mets, genes, grrs)
+    return Model(model_id, rxns, mets, genes, grrs)
 end
 
 function reconstructmodelsbml(file_location)
@@ -269,22 +251,24 @@ function savematlabmodel(model :: Model, file_location :: String)
             end
         end
     end
+    
+    coremodel = CoreModel(model::Model)
 
     mdict = Dict("c" => [r.objective_coefficient for r in model.rxns],
     "mets" => [m.id for m in model.mets],
     "subSystems" => [r.subsystem for r in model.rxns],
-    "b" => Array(model.coremodel.b),
+    "b" => Array(coremodel.b),
     "metFormulas" => [m.formula for m in model.mets],
     "rxnGeneMat" => rgm,
-    "ub" => Array(model.coremodel.ubs),
+    "ub" => Array(coremodel.ubs),
     "rxnNames" => [r.name for r in model.rxns],
     "description" => model.id,
     "genes" => [g.id for g in model.genes],
     "rev" => rxnrevs,
     "grRules" => [r.grr for r in model.rxns],
-    "S" => Array(model.coremodel.S),
+    "S" => Array(coremodel.S),
     "metNames" => [m.name for m in model.mets],
-    "lb" => Array(model.coremodel.lbs),
+    "lb" => Array(coremodel.lbs),
     "metCharge" => [m.charge for m in model.mets],
     "rxns" => [r.id for r in model.rxns])
 
