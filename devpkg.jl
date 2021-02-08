@@ -1,16 +1,20 @@
 using CobraTools
 
-# using Gurobi
-# using Tulip
-# using Ipopt
-# using GLPK
-
 modelpath = joinpath("models", "iJO1366.json") 
 jsonmodel = CobraTools.readmodel(modelpath)
 
 biomass_rxn = findfirst(jsonmodel.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
-CobraTools.fba(jsonmodel, )
+solobj = CobraTools.pfba(jsonmodel, biomass_rxn)
 
+
+# using JuMP
+# using Gurobi
+# coremodel = CobraTools.CoreModel(jsonmodel)
+# cbmodel, v, massbalance, fluxlbs, fluxubs = CobraTools.initCBM(coremodel)
+
+# objective_index = jsonmodel[biomass_rxn]
+# @objective(cbmodel, Max, v[objective_index])
+# optimize!(cbmodel)
 
 # cbmodel = CobraTools.initCBM(jsonmodel)
 

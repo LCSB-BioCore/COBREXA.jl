@@ -1,3 +1,32 @@
+struct Solution
+    isoptimal :: Bool
+    objid :: String
+    obj :: Float64
+    fluxids :: Array{String, 1}
+    fluxnames :: Array{String, 1}
+    fluxes :: Array{Float64, 1}
+end
+
+function Base.show(io::IO, s::Solution)
+    afluxes = abs.(s.fluxes)
+    inds = sortperm(afluxes, rev=true)
+    if s.isoptimal
+        println("Optimum for $(s.objid) = ", round(s.obj, digits=4))
+        counter = 0
+        for i in inds
+            if startswith(s.fluxids[i], "EX_")
+                println(s.fluxnames[i], " = ", round(s.fluxes[i], digits=4), " mmol/gDW/h")
+                counter += 1
+            end
+            if counter > 10
+                break
+            end
+        end
+    else
+        println("Optimization issues, try again.")
+    end
+end
+
 """
 cbmodel = initCBM(coremodel :: CoreModel; optimizer="Gurobi")
 
@@ -37,26 +66,59 @@ end
 """
 fba(model::Model, objfunctionrxn; optimizer="gubori")
 
-Run flux balance analysis on the Model
+Run flux balance analysis on the Model. Inefficient implementation.
 """
 function fba(model :: Model, objective_rxn; optimizer="gurobi")
+    objective_index = model[objective_rxn]
+    cbmodel, v = dofba(model, objective_rxn; optimizer)
+
+    status = termination_status(cbmodel) == MOI.OPTIMAL
+    
+    solobj = Solution(status, objective_rxn.id, value(v[objective_index]), [rxn.id for rxn in model.rxns], [rxn.name for rxn in model.rxns], [value(v[i]) for i in eachindex(v)])
+
+    return solobj
+end
+
+function dofba(model :: Model, objective_rxn; optimizer="gurobi")
     coremodel = CoreModel(model)
     cbmodel, v, massbalance, fluxlbs, fluxubs = initCBM(coremodel, optimizer=optimizer)
     
     objective_index = model[objective_rxn]
     @objective(cbmodel, Max, v[objective_index])
     optimize!(cbmodel)
-    cto.verbose && @info "FBA status: $(termination_status(cbmodel.cbmodel))"
-    return v
+    cto.verbose && @info "FBA status: $(termination_status(cbmodel))"
+
+    return cbmodel, v
 end
 
 
-# μ = objective_value(model) 
+"""
+solobj = pfba()
 
-# # Solve pFBA problem
-# @constraint(model, 0.999*μ <= v[obj_ind] <= μ) # set biomass function to FBA solution
-# @objective(model, Min, sum(dot(v,v)))
-# optimize!(model)
-# println("pFBA status: ", termination_status(model))
+Not efficient.
+"""
+function pfba(model::Model, objective_rxn; optimizer="gurobi")
+    objective_index = model[objective_rxn]
+    cbmodel, v = dopfba(model, objective_rxn; optimizer)
 
-# return v, μ
+    status = termination_status(cbmodel) == MOI.OPTIMAL
+    
+    solobj = Solution(status, objective_rxn.id, value(v[objective_index]), [rxn.id for rxn in model.rxns], [rxn.name for rxn in model.rxns], [value(v[i]) for i in eachindex(v)])
+
+    return solobj
+end
+
+function dopfba(model::Model, objective_rxn; optimizer="gurobi")
+
+    objective_index = model[objective_rxn]
+    cbmodel, v = dofba(model, objective_rxn; optimizer)
+    λ = value(v[objective_index])
+    @constraint(cbmodel, 0.9999*λ <= v[objective_index] <= λ) # constrain model - 0.9999 should be close enough?
+    @objective(cbmodel, Min, sum(dot(v, v)))
+    optimize!(cbmodel)
+    cto.verbose && @info "pFBA status: $(termination_status(cbmodel))"
+    return cbmodel, v
+end
+
+
+
