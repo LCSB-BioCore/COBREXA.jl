@@ -21,14 +21,15 @@ To install this package: `] add CobraTools`.
 - [x] Write Matlab models
 - [ ] Write SBML models
 - [ ] Write YAML
-- [ ] FBA
-- [ ] pFBA
+- [x] FBA
+- [X] pFBA
 - [ ] MOMA
 - [ ] FVA
 - [ ] Implement sampling
 - [ ] Single gene knockouts
 - [ ] Double gene knockout
 - [ ] Model construction tools
+- [ ] Gibbs integration
 - [ ] Distributed analysis (COBRA.jl integration?)
 
 ## Usage
