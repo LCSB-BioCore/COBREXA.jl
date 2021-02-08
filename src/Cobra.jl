@@ -247,7 +247,6 @@ Contains grrs which should make gene reaction look ups easier
 """
 struct Model
     id :: String # model name
-    coremodel :: CoreModel # core model
     rxns :: Array{Reaction, 1} # reaction metadata
     mets :: Array{Metabolite, 1}  # metabolite metadata
     genes :: Array{Gene, 1} # gene metadata
@@ -260,7 +259,31 @@ Model()
 Empty constructor.
 """
 function Model()
-    Model("blank", CoreModel(), Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
+    Model("blank", Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
+end
+
+
+"""
+Construct CoreModel from Model
+"""
+function CoreModel(model::Model)
+    ubs = [rxn.ub for rxn in rxns]
+    lbs = [rxn.lb for rxn in rxns]
+    
+    b = spzeros(length(mets))
+    S = spzeros(length(mets), length(rxns))
+
+    metids = [met.id for met in mets] # need indices for S matrix construction
+    for (i, rxn) in enumerate(rxns) # column
+        for (met, coeff) in rxn.metabolites
+            j = findfirst(x -> x == met.id, metids) # row
+            isnothing(j) ? (@error "S matrix construction error: $(met.id) not defined."; continue) : nothing
+            S[j, i] = coeff
+        end
+
+        isempty(rxn.grr) ? continue : (grrs[rxn.id] = parsegrr(rxn.grr))
+    end
+    
 end
 
 """

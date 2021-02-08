@@ -30,13 +30,14 @@ function initCBM(model :: Model; optimizer="gurobi")
     @constraint(cbmodel, massbalance, model.coremodel.S*v .== model.coremodel.b) # mass balance constraints
     @constraint(cbmodel, fluxlbs, model.coremodel.lbs .<= v)
     @constraint(cbmodel, fluxubs, v .<= model.coremodel.ubs)
-
-    cbmodelout = (cbmodel=cbmodel, v=v, massbalance=massbalance, fluxlbs=fluxlbs, fluxubs=fluxubs) # named tuple for convenience
     
-    return cbmodelout
+    return cbmodel, v, massbalance, fluxlbs, fluxubs
 end
 
-function fba(cbmodel, objective_index)
+function fba(model :: Model, objective_index; optimizer="gurobi")
+
+    cbmodel, v, massbalance, fluxlbs, fluxubs = initCBM(model, optimizer=optimizer)
+
     @objective(cbmodel.cbmodel, Max, cbmodel.v[objective_index])
     optimize!(cbmodel.cbmodel)
     cto.verbose && @info "FBA status: $(termination_status(cbmodel.cbmodel))"
