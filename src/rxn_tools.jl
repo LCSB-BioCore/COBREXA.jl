@@ -78,6 +78,19 @@ function ⟷(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{Meta
 end
 const ↔ = ⟷
 
-function ismassbalanced(rxn)
+"""
+isbalanced, atom_balances = ismassbalanced(rxn::Reaction)
 
+Checks if rxn is atom balanced. Returns bool and the associated balance for convenience.
+"""
+function ismassbalanced(rxn::Reaction)
+    atom_balances = Dict{String, Float64}()
+    for (met, stoich) in rxn.metabolites
+        atoms = getatoms(met)
+        for (k, v) in atoms
+            atom_balances[k] = get(atom_balances, k, 0) + v*stoich
+        end
+    end
+
+    return all(sum(values(atom_balances)) == 0), atom_balances
 end
