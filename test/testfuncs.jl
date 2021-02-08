@@ -4,7 +4,7 @@ and mets could be different. Rather test indirectly.
 """
 function model_comparison_test(model1, model2)
     # test if blank model is given - automatic fail
-    (isempty(model1.coremodel.S) || isempty(model2.coremodel.S)) ? (return false) : nothing
+    (isempty(model1.rxns) || isempty(model2.rxns)) ? (return false) : nothing
 
     # test same rxn and met ids
     rxns1 = [r.id for r in model1.rxns]
@@ -14,10 +14,6 @@ function model_comparison_test(model1, model2)
     rxn_diff = (isempty(setdiff(rxns1, rxns2)) && isempty(setdiff(rxns2, rxns1))) ? true : false
     met_diff = (isempty(setdiff(mets1, mets2)) && isempty(setdiff(mets2, mets1))) ? true : false
 
-    # test same S and b shapes
-    S_size = all(size(model1.coremodel.S) .== size(model2.coremodel.S))
-    b_size = all(size(model1.coremodel.b) .== size(model2.coremodel.b))
-
     # test lb and ub the same (indirectly)
     lbs1 = [r.lb for r in model1.rxns]
     lbs2 = [r.lb for r in model2.rxns]
@@ -26,16 +22,7 @@ function model_comparison_test(model1, model2)
 
     lb_same = sum(abs, lbs1) == sum(abs, lbs2)
     ub_same = sum(abs, ubs1) == sum(abs, ubs2)
-    
-    # test if S and b the same (indirectly)
-    if S_size
-        input_vector = rand(size(model1.coremodel.S, 2))
-        S_same = sum(abs, model1.coremodel.S * input_vector) ≈ sum(abs, model2.coremodel.S * input_vector)
-    else
-        S_same = false
-    end
-    b_same = sum(abs, model1.coremodel.b) == sum(abs, model2.coremodel.b)
-    
+        
     # test grrs
     model1_grr_keys = keys(model1.grrs)
     model2_grr_keys = keys(model2.grrs)
@@ -60,7 +47,7 @@ function model_comparison_test(model1, model2)
         same_grr = false
     end
 
-    return all([rxn_diff, met_diff, S_size, b_size, lb_same, ub_same, S_same, b_same, same_grr])
+    return all([rxn_diff, met_diff, lb_same, ub_same, same_grr])
 end
 
 function read_write_read_test(model, format)
