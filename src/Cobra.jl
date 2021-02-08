@@ -267,23 +267,21 @@ end
 Construct CoreModel from Model
 """
 function CoreModel(model::Model)
-    ubs = [rxn.ub for rxn in rxns]
-    lbs = [rxn.lb for rxn in rxns]
+    ubs = [rxn.ub for rxn in model.rxns]
+    lbs = [rxn.lb for rxn in model.rxns]
     
-    b = spzeros(length(mets))
-    S = spzeros(length(mets), length(rxns))
+    b = spzeros(length(model.mets))
+    S = spzeros(length(model.mets), length(model.rxns))
 
-    metids = [met.id for met in mets] # need indices for S matrix construction
-    for (i, rxn) in enumerate(rxns) # column
+    metids = [met.id for met in model.mets] # need indices for S matrix construction
+    for (i, rxn) in enumerate(model.rxns) # column
         for (met, coeff) in rxn.metabolites
             j = findfirst(x -> x == met.id, metids) # row
             isnothing(j) ? (@error "S matrix construction error: $(met.id) not defined."; continue) : nothing
             S[j, i] = coeff
         end
-
-        isempty(rxn.grr) ? continue : (grrs[rxn.id] = parsegrr(rxn.grr))
     end
-    
+    return CoreModel(S, b, lbs, ubs)
 end
 
 """
