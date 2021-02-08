@@ -8,6 +8,12 @@ using PyCall # NB: need to install libsbml
 # Model analysis
 using SparseArrays
 using JuMP
+using LinearAlgebra
+# Find a way to only import packages the user actually has...?
+using Gurobi
+using Tulip
+using GLPK
+using Ipopt
 
 # Global options for package
 mutable struct CobraToolsOptions
@@ -40,5 +46,6 @@ export ∅, ⟶, →, ←, ⟵, ↔, ⟷
 include("met_tools.jl")
 
 include("basic_analysis.jl")
+# export Solution
 
 end # module
