@@ -1,11 +1,11 @@
 """
-cbmodel = initCBM(model :: Model; optimizer="Gurobi")
+cbmodel = initCBM(coremodel :: CoreModel; optimizer="Gurobi")
 
 Initialize a constraint based model. Creates a model that satisfies the mass balance
 and flux constraints but no objective is set. Return references to these objects for 
 simple modification if necessary.
 """
-function initCBM(model :: Model; optimizer="gurobi")
+function initCBM(coremodel :: CoreModel; optimizer="gurobi")
     cbmodel = JuMP.Model()
 
     # set optimizer
@@ -24,23 +24,30 @@ function initCBM(model :: Model; optimizer="gurobi")
         cto.verbose && @warn "Optimizer not yet directly supported, however, you can set it yourself with `set_optimizer(cbmodel, OPTIMIZER)`.\nSee JuMP's documentation."
     end
     
-    nvars = size(model.coremodel.S, 2) # number of variables in model
+    nvars = size(coremodel.S, 2) # number of variables in model
     
     v = @variable(cbmodel, v[1:nvars]) # flux variables
-    @constraint(cbmodel, massbalance, model.coremodel.S*v .== model.coremodel.b) # mass balance constraints
-    @constraint(cbmodel, fluxlbs, model.coremodel.lbs .<= v)
-    @constraint(cbmodel, fluxubs, v .<= model.coremodel.ubs)
+    @constraint(cbmodel, massbalance, coremodel.S*v .== coremodel.b) # mass balance constraints
+    @constraint(cbmodel, fluxlbs, coremodel.lbs .<= v)
+    @constraint(cbmodel, fluxubs, v .<= coremodel.ubs)
     
     return cbmodel, v, massbalance, fluxlbs, fluxubs
 end
 
-function fba(model :: Model, objective_index; optimizer="gurobi")
+"""
+fba(model::Model, objfunctionrxn; optimizer="gubori")
 
-    cbmodel, v, massbalance, fluxlbs, fluxubs = initCBM(model, optimizer=optimizer)
-
-    @objective(cbmodel.cbmodel, Max, cbmodel.v[objective_index])
-    optimize!(cbmodel.cbmodel)
+Run flux balance analysis on the Model
+"""
+function fba(model :: Model, objective_rxn; optimizer="gurobi")
+    coremodel = CoreModel(model)
+    cbmodel, v, massbalance, fluxlbs, fluxubs = initCBM(coremodel, optimizer=optimizer)
+    
+    objective_index = model[objective_rxn]
+    @objective(cbmodel, Max, v[objective_index])
+    optimize!(cbmodel)
     cto.verbose && @info "FBA status: $(termination_status(cbmodel.cbmodel))"
+    return v
 end
 
 

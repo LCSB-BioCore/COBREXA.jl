@@ -408,7 +408,19 @@ function Base.show(io::IO, r::Reaction)
     println(io, "Reaction ID: ", r.id)
     println(io, "Reaction name: ", r.name)
     println(io, "Reaction subsystem: ", r.subsystem)
-    println(io, join(substrates, " + ")*arrow*join(products, " + "))
+    if length(substrates) > 5 && length(products) > 5
+        sp = substrates[1]*" + ... + "*substrates[end]
+        pp = products[1]*" + ... + "*products[end]
+        println(io, sp*arrow*pp)
+    elseif length(substrates) > 5
+        sp = substrates[1]*" + ... + "*substrates[end]
+        println(io, sp*arrow*join(products, " + "))
+    elseif length(products) > 5
+        pp = products[1]*" + ... + "*products[end]
+        println(io, join(substrates, " + ")*arrow*pp)    
+    else
+        println(io, join(substrates, " + ")*arrow*join(products, " + "))
+    end
     println(io, "Lower bound: ", r.lb)
     println(io, "Upper bound: ", r.ub)
     println(io, "Genes: ", r.grr)
