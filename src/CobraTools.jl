@@ -33,13 +33,12 @@ export Reaction, Metabolite, Gene
 
 include("parsemodels.jl")
 
-include("analysis.jl")
-
 include("rxn_tools.jl")
 ∅ = Metabolite("∅") # for exchange reactions
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
 
 include("met_tools.jl")
 
+include("basic_analysis.jl")
 
 end # module
