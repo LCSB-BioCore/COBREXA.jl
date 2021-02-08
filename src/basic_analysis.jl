@@ -103,7 +103,7 @@ function pfba(model::Model, objective_rxn; optimizer="gurobi")
 
     status = termination_status(cbmodel) == MOI.OPTIMAL
     
-    solobj = Solution(status, objective_rxn.id, value(v[objective_index]), [rxn.id for rxn in model.rxns], [rxn.name for rxn in model.rxns], [value(v[i]) for i in eachindex(v)])
+    solobj = Solution(status, "Σ||v - ̄v||", objective_value(cbmodel), [rxn.id for rxn in model.rxns], [rxn.name for rxn in model.rxns], [value(v[i]) for i in eachindex(v)])
 
     return solobj
 end
@@ -120,5 +120,20 @@ function dopfba(model::Model, objective_rxn; optimizer="gurobi")
     return cbmodel, v
 end
 
-
-
+"""
+Perform pFBA and calculate the atom balance across the model
+"""
+function atom_exchange(model::Model, objective_rxn; optimizer="gurobi")
+    cbmodel, v = dopfba(model, objective_rxn; optimizer)
+    # find exchange reactions
+    ex_inds = [i for i in eachindex(model.rxns) if startswith(model.rxns[i].id, "EX_")] # get reaction indices that are exchanges
+    atom_balance = Dict{String, Float64}()
+    for ex_ind in ex_inds
+        for (met, w) in model.rxns[ex_ind].metabolites
+            for (atom, stoich) in getatoms(met)
+                atom_balance[atom] = get(atom_balance, atom, 0.0) + stoich*w*value(v[ex_ind])
+            end
+        end
+    end
+    return atom_balance
+end

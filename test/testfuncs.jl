@@ -90,3 +90,15 @@ function rxn_construction_test(model)
 
     return all([check_bounds_forward, check_bounds_reverse, check_bounds_bidir, check_ex_out, check_ex_in, rxn_mets, rxn_mets_coeffs])
 end
+
+function fba_test(model)    
+    biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
+    solobj = CobraTools.fba(model, biomass_rxn)
+    return solobj.obj ≈ 0.9865144469529787
+end
+
+function pfba_test(model)    
+    biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
+    solobj = CobraTools.pfba(model, biomass_rxn)
+    return solobj.obj ≈ 15546.145490407944
+end

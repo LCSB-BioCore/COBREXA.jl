@@ -45,7 +45,8 @@ sbmlmodel_yeast = CobraTools.readmodel(yeast_xml)
     end    
 
     @testset "Basic Analysis" begin
-        @test_skip false 
+        @test fba_test(jsonmodel_ecoli) 
+        @test pfba_test(jsonmodel_ecoli) 
     end    
 
     @testset "Sampling" begin
