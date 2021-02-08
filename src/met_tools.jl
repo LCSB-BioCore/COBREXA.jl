@@ -1,6 +1,8 @@
 function getatoms(met::Metabolite)
     atoms = Dict{String, Int64}()
     N = length(met.formula)
+    
+    N == 0 && return atoms
 
     caps = findall(x-> isuppercase(x[1]), split(met.formula, ""))
     if length(caps) == 1
@@ -10,7 +12,7 @@ function getatoms(met::Metabolite)
         pend = [caps[2:end].-1;length(met.formula)]
         for (i, j) in zip(caps, pend) 
             atom, count = formulapart(met.formula[i:j])
-            atoms[atom] = count            
+            atoms[atom] = count
         end
     end
     return atoms

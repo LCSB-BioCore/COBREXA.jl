@@ -87,6 +87,7 @@ function ismassbalanced(rxn::Reaction)
     atom_balances = Dict{String, Float64}()
     for (met, stoich) in rxn.metabolites
         atoms = getatoms(met)
+        isempty(atoms) && continue # ignore blanks
         for (k, v) in atoms
             atom_balances[k] = get(atom_balances, k, 0) + v*stoich
         end
