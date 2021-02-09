@@ -53,19 +53,19 @@ reconstructmodeljson(modeldict)
 function reconstructmodeljson(modeldict)
     id = modeldict["id"]
 
-    mets = Array{Metabolite, 1}()
+    mets = Metabolite[]
     for met in modeldict["metabolites"]
         m = Metabolite(met)
         push!(mets, m)
     end
     
-    rxns = Array{Reaction, 1}()
+    rxns = Reaction[]
     for rxn in modeldict["reactions"]
         r = Reaction(rxn, mets)
         push!(rxns, r)
     end
 
-    genes = Array{Gene, 1}()
+    genes = Gene[]
     for gene in modeldict["genes"]
         g = Gene(gene)
         push!(genes, g)
@@ -90,7 +90,7 @@ function reconstructmodelmatlab(file_location)
 
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
     
-    mets = Array{Metabolite, 1}()
+    mets = Metabolite[]
     for i in eachindex(modeldict["mets"])
         id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
         name = haskey(modeldict, "metNames") ? modeldict["metNames"][i] : ""
@@ -105,7 +105,7 @@ function reconstructmodelmatlab(file_location)
         push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation, 1e-3)) # concentration 1 mM
     end
 
-    rxns = Array{Reaction, 1}()
+    rxns = Reaction[]
     for i in eachindex(modeldict["rxns"])
         id = haskey(modeldict, "rxns") ? modeldict["rxns"][i] : ""
         name = haskey(modeldict, "rxnNames") ? modeldict["rxnNames"][i] : ""
@@ -124,7 +124,7 @@ function reconstructmodelmatlab(file_location)
         push!(rxns, Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient))
     end
 
-    genes = Array{Gene, 1}()
+    genes = Gene[]
     for i in eachindex(modeldict["genes"])
         id = haskey(modeldict, "genes") ? modeldict["genes"][i] : ""
         

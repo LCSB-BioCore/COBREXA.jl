@@ -32,7 +32,7 @@ sbmlmodel_yeast = CobraTools.readmodel(yeast_xml)
 
         @test model_comparison_test(jsonmodel_ecoli, matlabmodel_ecoli)
         @test_broken model_comparison_test(sbmlmodel_ecoli, matlabmodel_ecoli) # SBML not implemented yet
-        @test_broken model_comparison_test(matlabmodel_yeast, sbmlmodel_yeast) # yeast GEM matlab format issue
+        @test_broken model_comparison_test(matlabmodel_yeast, sbmlmodel_yeast) # yeast GEM matlab format issue?
 
         @test read_write_read_test(jsonmodel_ecoli, "json")
         @test read_write_read_test(matlabmodel_ecoli, "mat")
@@ -46,8 +46,14 @@ sbmlmodel_yeast = CobraTools.readmodel(yeast_xml)
 
     @testset "Basic Analysis" begin
         @test fba_test(jsonmodel_ecoli) 
-        @test pfba_test(jsonmodel_ecoli) 
-    end    
+        @test pfba_test(jsonmodel_ecoli)
+        @test atom_test(jsonmodel_ecoli)
+         
+    end
+    
+    @testset "Gibbs Analysis" begin
+        @test true
+    end
 
     @testset "Sampling" begin
         @test_skip false 
