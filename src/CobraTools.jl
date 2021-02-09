@@ -35,5 +35,6 @@ include("basic_analysis.jl")
 # export Solution
 
 include("gibbs_tools.jl")
+include("name_space.jl")
 
 end # module

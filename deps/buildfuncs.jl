@@ -5,7 +5,7 @@ Read and parse equilibrator ΔG data. Save to Julia file.
 """
 function mkGibbsDB(in_file_loc::String, out_file_loc::String)
     gibbs = Dict{String, Measurement{Float64}}()
-    open(in_file_loc) do io
+    GZip.open(in_file_loc) do io
         for ln in eachline(io)
             startswith(ln, "!") && continue
             prts = split(ln, "\t")

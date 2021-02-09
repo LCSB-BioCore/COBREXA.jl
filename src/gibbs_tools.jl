@@ -21,7 +21,7 @@ mutable struct ΔᵣG
 end
 
 function update!(ΔG::ΔᵣG)
-    if !isnothing(ΔG.ΔG⁰.rxn)
+    if !isnothing(ΔG.ΔG⁰.rxn) # don't update if not associated with a reaction - no concentration available then
         for (met, stoich) in ΔG.ΔG⁰.rxn
             if met.concentration ≈ 0.0 # no zero concentrations
                 ΔG.Q = 1.0            
