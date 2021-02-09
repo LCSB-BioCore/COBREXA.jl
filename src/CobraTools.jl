@@ -23,7 +23,7 @@ include("global_cobratools.jl")
 include("cobra.jl")
 export Reaction, Metabolite, Gene
 
-include("parsemodels.jl")
+include("parse_models.jl")
 
 include("rxn_tools.jl")
 ∅ = Metabolite("∅") # for exchange reactions
