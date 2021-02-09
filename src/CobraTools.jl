@@ -1,9 +1,9 @@
 module CobraTools
 
-# model reading and writing
+# IO of models and data
 using JSON
 using MATLAB 
-using PyCall # NB: need to install libsbml
+using JLD
 
 # Model analysis
 using SparseArrays
@@ -18,24 +18,7 @@ using Ipopt
 # Gibbs
 using Measurements
 
-# Global options for package
-mutable struct CobraToolsOptions
-    verbose :: Bool
-end
-cto = CobraToolsOptions(true)
-
-"""
-Reduce verbosity (@info and @warn are suppressed)
-
-This is mostly useful for unit testing to suppress all the model reading and writing that occurs therein.
-"""
-function setverbose(verbose)
-    if verbose
-        cto.verbose = true
-    else
-        cto.verbose = false
-    end
-end
+include("global_cobratools.jl")
 
 include("cobra.jl")
 export Reaction, Metabolite, Gene
@@ -50,5 +33,7 @@ include("met_tools.jl")
 
 include("basic_analysis.jl")
 # export Solution
+
+include("gibbs_tools.jl")
 
 end # module
