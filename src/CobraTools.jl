@@ -15,6 +15,9 @@ using Tulip
 using GLPK
 using Ipopt
 
+# Gibbs
+using Measurements
+
 # Global options for package
 mutable struct CobraToolsOptions
     verbose :: Bool
