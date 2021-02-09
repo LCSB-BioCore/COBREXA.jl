@@ -3,7 +3,6 @@
 This is package aims to provide basic constraint based reconstruction analysis (COBRA) tools in the Julia environment.
 
 ## Installation
-To import SBML formatted models you will need both `PyCall` and `python-libsbml` installed. See [here](https://stochasticreveller.wordpress.com/2016/08/02/sbml-and-the-julia-programming-language/) for some installation hints.
 
 To import Matlab formatted models you will need `MATLAB.jl` installed and a working Matlab. Refer to the documentation of MATLAB.jl for installation instructions.
 
@@ -53,7 +52,7 @@ The standard (temperature 25 °C, pressue 1 bar, concentration 1M) Gibbs energie
 ### Citations
 Cobrapy
 
-    Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013) COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Syst Biol 7, 74. https://doi.org/10.1186/1752-0509-7-74
+    Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013). COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Systems Biology, 7(74). https://doi.org/10.1186/1752-0509-7-74
 
 ACHR
 
@@ -61,4 +60,7 @@ CHRR
 
 Equilibrator
 
-    Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics (Oxford, England), 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
+    Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics, 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
+
+MetaNetX
+    Bernard, T., Bridge A., Morgat A., Moretti, S., Xenarios, I., Pagni, M., (2014) Reconciliation of metabolites and biochemical reactions for metabolic networks, Briefings in Bioinformatics, 15(1), 123–135, https://doi.org/10.1093/bib/bbs058

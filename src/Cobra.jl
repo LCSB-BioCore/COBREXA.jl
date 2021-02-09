@@ -11,6 +11,7 @@ mutable struct Metabolite
     compartment :: String
     notes :: Dict{String, Array{String, 1}}
     annotation :: Dict{String, Union{Array{String, 1}, String}}
+    concentration :: Union{Float64, Measurement{Float64}}
 end
 
 function Metabolite()
@@ -21,7 +22,8 @@ function Metabolite()
     compartment = ""
     notes = Dict{String, Array{String, 1}}()
     annotation = Dict{String, Union{Array{String, 1}, String}}()
-    Metabolite(id, name, formula, charge, compartment, notes, annotation)
+    concentration = 1e-3 # 1mM
+    Metabolite(id, name, formula, charge, compartment, notes, annotation, concentration)
 end
 
 function Metabolite(id::String)
@@ -31,7 +33,8 @@ function Metabolite(id::String)
     compartment = ""
     notes = Dict{String, Array{String, 1}}()
     annotation = Dict{String, Union{Array{String, 1}, String}}()
-    Metabolite(id, name, formula, charge, compartment, notes, annotation)
+    concentration = 1e-3 # 1mM
+    Metabolite(id, name, formula, charge, compartment, notes, annotation, concentration)
 end
 
 function Metabolite(d::Dict{String, Any})
@@ -68,8 +71,8 @@ function Metabolite(d::Dict{String, Any})
             cto.verbose && @warn "Unrecognized reaction field: $k"
         end
     end
-    
-    Metabolite(id, name, formula, charge, compartment, notes, annotation)
+    concentration = 1e-3 # 1mM
+    Metabolite(id, name, formula, charge, compartment, notes, annotation, concentration)
 end
 
 """
