@@ -102,3 +102,10 @@ function pfba_test(model)
     solobj = CobraTools.pfba(model, biomass_rxn)
     return solobj.objective ≈ 15546.145490407944
 end
+
+function atom_test(model)
+    biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
+    pfbasol = CobraTools.pfba(model, biomass_rxn)
+    ad = CobraTools.atom_exchange(pfbasol)
+    return ad["C"]/ad["H"] ≈ 0.6362486422376349
+end

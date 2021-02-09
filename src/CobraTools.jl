@@ -17,6 +17,7 @@ using Ipopt
 
 # Gibbs
 using Measurements
+using Statistics
 
 include("global_cobratools.jl")
 
