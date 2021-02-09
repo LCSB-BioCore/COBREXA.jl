@@ -46,3 +46,19 @@ pFBA
 Knock-outs
 
 ### Sampling
+
+### Gibbs 
+The standard (temperature 25 °C, pressue 1 bar, concentration 1M) Gibbs energies of biochemical reactions at various pH levels (ionic strength = 0.1M) mapped to the KEGG database are made available from [Equilibrator](http://equilibrator.weizmann.ac.il/download). The raw .csv files downloaded from Equilibrator are located in `data`. Temperature and reactant concentration adjustments are made by ΔᵣG = ΔᵣG⁰ + RTln(Q).   
+
+### Citations
+Cobrapy
+
+    Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013) COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Syst Biol 7, 74. https://doi.org/10.1186/1752-0509-7-74
+
+ACHR
+
+CHRR
+
+Equilibrator
+
+    Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics (Oxford, England), 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
