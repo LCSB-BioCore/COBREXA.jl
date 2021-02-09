@@ -102,7 +102,7 @@ function reconstructmodelmatlab(file_location)
         notes = haskey(modeldict, "notes") ? modeldict["notes"][i] : Dict{String, Array{String, 1}}()
         annotation = haskey(modeldict, "annotation") ? modeldict["annotation"][i] : Dict{String, Union{Array{String, 1}, String}}()
 
-        push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation))
+        push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation, 1e-3)) # concentration 1 mM
     end
 
     rxns = Array{Reaction, 1}()
