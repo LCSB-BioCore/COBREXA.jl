@@ -1,8 +1,17 @@
-# Global options for package
+"""
+A struct containing global parameters
+"""
 mutable struct CobraToolsOptions
     verbose :: Bool
+    name_space :: String # kegg, bigg, metanetx, metacyc
 end
-cto = CobraToolsOptions(true)
+cto = CobraToolsOptions(true, "bigg")
+
+function Base.show(io::IO, cto::CobraToolsOptions)
+    vb = cto.verbose ? "loud" : "quiet"
+    println(io, "Output level is ", vb)
+    println(io, "Name space used is ", cto.name_space)
+end
 
 """
 setverbose(verbose::Bool)

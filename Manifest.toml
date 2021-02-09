@@ -172,6 +172,12 @@ git-tree-sha1 = "15abc5f976569a1c9d651aff02f7222ef305eb2a"
 uuid = "781609d7-10c4-51f6-84f2-b8444358ff6d"
 version = "6.1.2+6"
 
+[[GZip]]
+deps = ["Libdl"]
+git-tree-sha1 = "039be665faf0b8ae36e089cd694233f5dee3f7d6"
+uuid = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
+version = "0.5.1"
+
 [[Gurobi]]
 deps = ["CEnum", "Libdl", "MathOptInterface"]
 git-tree-sha1 = "87c818dc7da7f7927cda470fda06bc2d05881d46"
