@@ -19,5 +19,13 @@ function Base.show(io::IO, gibbs::Gibbs)
 end
 
 function mapGibbs(rxns::Array{Reaction, 1}; ph="7.0", T=298.15, R=8314.46261815324)
-    
+    CC = pyimport("from equilibrator_api import ComponentContribution")
+    Q = pyimport("from equilibrator_api import Q_")
+    # cc = ComponentContribution()
+end
+
+function getdG0(formula::String, ph=7.0, ionic_strength="100 mM")
+    isbal, v, err = py"pygetdg0"(formula, ph, ionic_strength)
+    !isbal && @warn "Reaction not balanced."
+    return v ± err
 end
