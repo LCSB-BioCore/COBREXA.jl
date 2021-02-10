@@ -18,6 +18,7 @@ using Ipopt
 # Gibbs
 using Measurements
 using Statistics
+using PyCall
 
 include("global_cobratools.jl")
 
