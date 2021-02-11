@@ -1,5 +1,5 @@
 using CobraTools
-# using Measurements
+using Measurements
 # using Plots
 # pyplot()
 
@@ -12,9 +12,9 @@ fbasol = CobraTools.fba(model, biomass_rxn)
 pfbasol = CobraTools.pfba(model, biomass_rxn)
 ad = CobraTools.atom_exchange(pfbasol)
 
-ecoli_kJmol = -71.36 ± 8.55 # B = ∅
-# gibbs0 = CobraTools.mapGibbs(model.rxns) 
-# CobraTools.blackbox(pfbasol, gibbs0, biomass_rxn, ecoli_kJmol)
+ecoli_kJmol = -71.36 ± 8.55 # formation of biomass kJ/mol
+gibbs = CobraTools.mapGibbs(model.rxns) 
+CobraTools.blackbox(pfbasol, gibbs, biomass_rxn, ecoli_kJmol)
 
 
 # # Yeast GEM
