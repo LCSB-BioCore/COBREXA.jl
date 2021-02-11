@@ -47,8 +47,10 @@ end
 blackbox(fluxres, gibbs, biomassrxn, biomassdg)
 
 Calculate the Gibbs free energy change taking only the external fluxes into account.
+
+Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
 """
-function blackbox(fluxres, gibbs, biomassrxn, biomassdg)
+function blackbox(fluxres::ReactionFluxes, gibbs, biomassrxn, biomassdg)
     total_ΔG = 0.0 ± 0.0
     for rxnflux in fluxres.rxnfluxes
         if startswith(rxnflux.rxn.id, "EX_")
@@ -58,5 +60,18 @@ function blackbox(fluxres, gibbs, biomassrxn, biomassdg)
         end
     end
     total_ΔG += -fluxres.rxnfluxes[fluxres[biomassrxn]].flux*biomassdg # the formation is given correctly here though
+    return total_ΔG # units J/gDW/h
+end
+
+function blackbox(fluxres::Dict{String, Float64}, gibbs, biomassrxnid, biomassdg)
+    total_ΔG = 0.0 ± 0.0
+    for (rxnid, v) in fluxres
+        if startswith(rxnid, "EX_")
+            if abs(rxnflux.flux) > 1
+                total_ΔG -= v * gibbs[rxnid] # negative here because "combustion" is actually Gibbs value not formation  
+            end
+        end
+    end
+    total_ΔG += -fluxres[biomassrxnid]*biomassdg # the formation is given correctly here though
     return total_ΔG # units J/gDW/h
 end

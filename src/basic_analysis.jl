@@ -62,7 +62,7 @@ function CBM(model::Model)
     mb = @constraint(cbmodel, mb, coremodel.S*v .== coremodel.b) # mass balance
     lbs = @constraint(cbmodel, lbs, coremodel.lbs .<= v) # lower bounds
     ubs = @constraint(cbmodel, ubs, v .<= coremodel.ubs) # upper bounds
-    return cbmodel, v, mb, lbs, ubs
+    return cbmodel, v, mb, ubs, lbs
 end
 
 """
@@ -241,4 +241,12 @@ function atom_exchange(rfs::ReactionFluxes)
         end
     end
     return atom_balance
+end
+
+function map_fluxes(v, model)
+    rxndict = Dict{String, Float64}()
+    for i in eachindex(model.rxns)
+        rxndict[model.rxns[i].id] = value(v[i])
+    end
+    return rxndict
 end
