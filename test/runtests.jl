@@ -17,18 +17,18 @@ function runSuite(baseDir)
     for file in filter(f -> endswith(f, ".jl"), readdir(baseDir))
         t = time()
         include(joinpath(baseDir, file))
-        println(" > $(file) took $(round(time() - t; digits = 1)) seconds.")
+        @info "$(file) took $(round(time() - t; digits = 2)) seconds"
     end
 end
-
-disable_logging(LogLevel(0))
 
 # load the test models
 include(joinpath("data", "testModels.jl"))
 
 # import base files
-for testSet in ["base", "io", "reconstruction", "analysis"]
-    @testset "$testSet" begin
-        runSuite(testSet)
+@testset "COBREXA test suite" begin
+    for testSet in ["base", "io", "reconstruction", "analysis"]
+        @testset "$testSet" begin
+            runSuite(testSet)
+        end
     end
 end
