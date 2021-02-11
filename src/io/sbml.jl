@@ -21,8 +21,11 @@ function loadSBMLModel(filename::String)
     getvalue = (val,_)::Tuple -> val
     getunit = (_, unit)::Tuple -> unit
     
-    if any(getunit.(lbu) .!== unit) || any(getunit.(ubu) .!== unit)
-        @error "The SBML file uses multiple units; loading needs conversion"
+    allunits = unique([getunit.(lbu) getunit.(ubu)])
+
+    if length(allunits) != 1
+        throw(DomainError(allunits,
+            "The SBML file uses multiple units; loading needs conversion"))
     end
 
     return LinearModel(S, b, c, getvalue.(lbu), getvalue.(ubu), rxns, mets)
