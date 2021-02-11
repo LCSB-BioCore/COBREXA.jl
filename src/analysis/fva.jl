@@ -87,3 +87,34 @@ function allocateReacs(reactions::Array{Int64, 1}, nWorkers::Int)
 
    return allocatedReacs
 end
+
+function parFVA2(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
+    if any(reactions .> length(model.rxns))
+        throw(ArgumentError("reactions contain an out-of-bounds index"))
+    end
+
+    γ = 1.
+    fluxes = zeros(length(reactions), 2)
+
+    (optimization_model, x₀) = fluxBalanceAnalysis(model::LinearModel, optimizer)
+    Z₀ = JuMP.objective_value(optimization_model)
+    x = JuMP.all_variables(optimization_model)
+    @constraint(optimization_model, model.c' * x ≥ γ * Z₀)
+
+    fetch.([save_at(w, :cobrexa_parfva_model, optimization_model) for w in workers])
+
+    fluxes = vcat(dpmap(reactions, rid -> :(begin
+        var = JuMP.all_variables(cobrexa_parfva_model)[$rid]
+        @objective(cobrexa_parfva_model, MOI.MIN_SENSE, var)
+        JuMP.optimize!(cobrexa_parfva_model)
+        min_flux = JuMP.objective_value(cobrexa_parfva_model)
+
+        @objective(cobrexa_parfva_model, MOI.MIN_SENSE, var)
+        JuMP.optimize!(cobrexa_parfva_model)
+        max_flux = JuMP.objective_value(cobrexa_parfva_model)
+        [min_flux max_flux]
+    end), workers)...)
+
+    fetch.([remove_from(w, :cobrexa_parfva_model) for w in workers])
+    return fluxes
+end

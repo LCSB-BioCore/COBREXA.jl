@@ -8,6 +8,7 @@ using JuMP
 using MAT
 using Distributed
 using SBML
+using DistributedData
 import Pkg
 
 # import src files
@@ -45,8 +46,8 @@ export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
        removeCouplingConstraints!, removeCouplingConstraints,
        changeCouplingBounds!, changeCouplingBounds,
        verifyConsistency, findExchangeReactions, findExchangeMetabolites,
-       solveLP, loadModel, loadSBMLModel, writeModel,
-       fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA,
+       solveLP, loadModel, loadSBMLmodel, writeModel,
+       fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA, parFVA2,
        convertToExportable, createParPool
 
 end
