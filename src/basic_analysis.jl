@@ -19,8 +19,9 @@ end
 getindex(reactionfluxes, rxn)
 
 Return the index of rxn in reactionfluxes and -1 if it is not found.
+Note, this is slightly different from the normal getindex function.
 """
-function Base.getindex(rfs::ReactionFluxes, rxn)
+function Base.getindex(rfs::ReactionFluxes, rxn::Reaction)
     for i in eachindex(rfs.rxnfluxes)
         if rxn.id == rfs.rxnfluxes[i].rxn.id
             return i
@@ -58,10 +59,10 @@ function CBM(model::Model)
     cbmodel = JuMP.Model()
     nvars = size(coremodel.S, 2) # number of variables in model
     v = @variable(cbmodel, v[1:nvars]) # flux variables
-    @constraint(cbmodel, massbalance, coremodel.S*v .== coremodel.b) # mass balance constraints
-    @constraint(cbmodel, fluxlbs, coremodel.lbs .<= v)
-    @constraint(cbmodel, fluxubs, v .<= coremodel.ubs)
-    return cbmodel
+    mb = @constraint(cbmodel, mb, coremodel.S*v .== coremodel.b) # mass balance
+    lbs = @constraint(cbmodel, lbs, coremodel.lbs .<= v) # lower bounds
+    ubs = @constraint(cbmodel, ubs, v .<= coremodel.ubs) # upper bounds
+    return cbmodel, v, mb, lbs, ubs
 end
 
 """
@@ -71,7 +72,7 @@ Run flux balance analysis on the model using objective_rxn(s) and optionally spe
 Optimiser can also be set here. Uses the constraints implied by the model object. Objective is set separately.
 """
 function fba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
-    cbm = CBM(model) # get the base constraint based model
+    cbm, _, _, _, _ = CBM(model) # get the base constraint based model
 
     # ensure that an array of objective indices are fed in
     if typeof(objective_rxns) == Reaction
@@ -139,7 +140,7 @@ Optimiser can also be set here. Uses the constraints implied by the model object
 """
 function pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
     ## FBA ################################################
-    cbm = CBM(model) # get the base constraint based model
+    cbm, _, _, _, _ = CBM(model) # get the base constraint based model
 
     # ensure that an array of objective indices are fed in
     if typeof(objective_rxns) == Reaction
