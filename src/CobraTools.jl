@@ -45,6 +45,7 @@ function __init__()
     py"""
     from equilibrator_api import ComponentContribution, Q_
     cc = ComponentContribution()
+
     def pygetdg0(f, ph, ionic):
         rxn = cc.parse_reaction_formula(f)
         isbal = rxn.is_balanced()
@@ -65,7 +66,6 @@ function __init__()
         cc.p_h = Q_(ph)  # set pH
         cc.ionic_strength = Q_(ionic)  # set I
         return isbal, cc.physiological_dg_prime(rxn).value.magnitude, cc.physiological_dg_prime(rxn).error.magnitude
-        
     """
 
 

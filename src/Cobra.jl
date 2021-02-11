@@ -293,8 +293,17 @@ index = getindex(model, rxn)
 Get the index of rxn in model. Return -1 if not found.
 """
 function Base.getindex(model::Model, rxn::Reaction)
-    for i in eachindex(model.rxns)
-        if model.rxns[i].id == rxn.id
+    return model.rxns[rxn]
+end
+
+"""
+index = getindex(rxns, rxn)
+
+Get the index of rxn in rxns. Return -1 if not found.
+"""
+function Base.getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
+    for i in eachindex(rxns)
+        if rxns[i].id == rxn.id
             return i
         end
     end
@@ -307,8 +316,17 @@ index = getindex(model, rxn)
 Get the index of metabolite in model. Return -1 if not found.
 """
 function Base.getindex(model::Model, met::Metabolite)
-    for i in eachindex(model.mets)
-        if model.mets[i].id == met.id
+    return model.mets[met]
+end
+
+"""
+index = getindex(metabolites, rxn)
+
+Get the index of metabolite in metabolites. Return -1 if not found.
+"""
+function Base.getindex(mets::Array{Metabolite, 1}, met::Metabolite)
+    for i in eachindex(mets)
+        if mets[i].id == met.id
             return i
         end
     end
@@ -321,8 +339,17 @@ index = getindex(model, gene)
 Get the index of gene in model. Return -1 if not found.
 """
 function Base.getindex(model::Model, gene::Gene)
-    for i in eachindex(model.genes)
-        if model.genes[i].id == gene.id
+    return model.genes[gene]
+end
+
+"""
+index = getindex(model, gene)
+
+Get the index of gene in genes. Return -1 if not found.
+"""
+function Base.getindex(genes::Array{Gene, 1}, gene::Gene)
+    for i in eachindex(genes)
+        if genes[i].id == gene.id
             return i
         end
     end

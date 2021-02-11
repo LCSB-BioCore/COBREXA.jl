@@ -1,24 +1,21 @@
 using CobraTools
-using Measurements
-# using PyCall
+# using Measurements
+# using Plots
+# pyplot()
 
 # E. coli model
 modelpath = joinpath("models", "iJO1366.json") 
 model = CobraTools.readmodel(modelpath)
 
-# biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
-# fbasol = CobraTools.fba(model, biomass_rxn)
-# pfbasol = CobraTools.pfba(model, biomass_rxn)
-
+biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
+fbasol = CobraTools.fba(model, biomass_rxn)
+pfbasol = CobraTools.pfba(model, biomass_rxn)
 ad = CobraTools.atom_exchange(pfbasol)
 
-f = "kegg:C00002 + kegg:C00001 = kegg:C00008 + kegg:C00009"
-CobraTools.getdG0(f, 7.0, "100")
+ecoli_kJmol = -71.36 ± 8.55 # B = ∅
+# gibbs0 = CobraTools.mapGibbs(model.rxns) 
+# CobraTools.blackbox(pfbasol, gibbs0, biomass_rxn, ecoli_kJmol)
 
-# Q = pyimport("from equilibrator_api import Q_")
-# cc = ComponentContribution()
-
-# gibbs = CobraTools.mapGibbs(model.rxns)
 
 # # Yeast GEM
 # modelpath = joinpath("models", "iMM904.json") 
