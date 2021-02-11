@@ -10,10 +10,8 @@ function loadModel(filePath::String, varName::String)
     vars = matread(filePath)
 
 
-    if exists(file, varName)
-
+    if haskey(file, varName)
         return convertToLinearModel(vars[varName])
-
     else
         error("Variable `varName` does not exist in the specified MAT file.")
     end
