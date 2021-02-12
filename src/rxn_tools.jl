@@ -79,14 +79,14 @@ end
 const ↔ = ⟷
 
 """
-isbalanced, atom_balances = ismassbalanced(rxn::Reaction)
+isbalanced, atom_balances = is_mass_balanced(rxn::Reaction)
 
 Checks if rxn is atom balanced. Returns bool and the associated balance for convenience.
 """
-function ismassbalanced(rxn::Reaction)
+function is_mass_balanced(rxn::Reaction)
     atom_balances = Dict{String, Float64}()
     for (met, stoich) in rxn.metabolites
-        atoms = getatoms(met)
+        atoms = get_atoms(met)
         isempty(atoms) && continue # ignore blanks
         for (k, v) in atoms
             atom_balances[k] = get(atom_balances, k, 0) + v*stoich
