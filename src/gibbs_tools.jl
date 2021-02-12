@@ -52,26 +52,30 @@ Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
 """
 function map_gibbs_external(fluxres::ReactionFluxes, gibbs)
     total_ΔG = 0.0 ± 0.0
+    missing_flux = 0.0
     for (i, rxn) in enumerate(fluxres.rxns)
         if startswith(rxn.id, "EX_")
-            if abs(fluxres.fluxes[i]) > 1e-6
-                total_ΔG -= fluxres.fluxes[i] * gibbs[rxn.id] # negative here because formation is not MET -> as used here, but the -> MET 
-            end
+            if gibbs[rxn.id] ≈ 0.0
+                missing_flux += abs(fluxres.fluxes[i])
+            end 
+            total_ΔG -= fluxres.fluxes[i] * gibbs[rxn.id] # negative here because formation is not MET -> as used here, but the -> MET 
         end
     end
-    return total_ΔG # units J/gDW/h
+    return total_ΔG, missing_flux/sum(abs, fluxres.fluxes) # units J/gDW/h
 end
 
 function map_gibbs_external(fluxres::Dict{String, Float64}, gibbs)
     total_ΔG = 0.0 ± 0.0
+    missing_flux = 0.0
     for (rxnid, v) in fluxres
         if startswith(rxnid, "EX_")
-            if abs(v) > 1e-6
-                total_ΔG -= v * gibbs[rxnid] # negative here because "combustion" is actually Gibbs value not formation  
-            end
+            if gibbs[rxnid] ≈ 0.0
+                missing_flux += abs(fluxres.fluxes[i])
+            end    
+            total_ΔG -= v * gibbs[rxnid] # negative here because "combustion" is actually Gibbs value not formation  
         end
     end
-    return total_ΔG # units J/gDW/h
+    return total_ΔG, missing_flux/sum(abs, values(fluxres)) # units J/gDW/h
 end
 
 """
@@ -84,26 +88,32 @@ Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
 """
 function map_gibbs_internal(fluxres::ReactionFluxes, gibbs)
     total_ΔG = 0.0 ± 0.0
+    missing_flux = 0.0
     for (i, rxn) in enumerate(fluxres.rxns)
         if !startswith(rxn.id, "EX_") # ignore exchange reactions
-            if abs(fluxres.fluxes[i]) > 1e-6
+            if abs(fluxres.fluxes[i]) > 1e-8
+                if gibbs[rxn.id] ≈ 0.0
+                    missing_flux += abs(fluxres.fluxes[i])
+                end
                 total_ΔG += fluxres.fluxes[i] * gibbs[rxn.id] # add because this is not formation but rather just adding equations (the flux direction sign compensates) 
             end
         end
     end
-    return total_ΔG # units J/gDW/h
+    return total_ΔG, missing_flux/sum(abs, fluxres.fluxes) # units J/gDW/h
 end
 
 function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs)
     total_ΔG = 0.0 ± 0.0
+    missing_flux = 0.0
     for (rxnid, v) in fluxres
         if !startswith(rxnid, "EX_") # ignore exchange reactions 
-            if abs(v) > 1e-6
-                total_ΔG += v * gibbs[rxnid] # add because this is not formation but rather just adding equations (the flux direction sign compensates)
-            end
+            if gibbs[rxnid] ≈ 0.0
+                missing_flux += abs(fluxres.fluxes[i])
+            end 
+            total_ΔG += v * gibbs[rxnid] # add because this is not formation but rather just adding equations (the flux direction sign compensates)
         end
     end
-    return total_ΔG # units J/gDW/h
+    return total_ΔG, missing_flux/sum(abs, values(fluxres)) # units J/gDW/h
 end
 
 """
