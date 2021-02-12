@@ -307,12 +307,13 @@ function get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
     end
     inds_prod = sortperm(fluxes, rev=true)
     inds_cons = sortperm(fluxes)
+
     println("Consuming fluxes:")
     for i in 1:topN
-        println(rxns[i], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
+        println(rxns[inds_cons[i]], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
     end
     println("Producing fluxes:")
     for i in 1:topN
-        println(rxns[i], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
+        println(rxns[inds_prod[i]], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
     end
 end
