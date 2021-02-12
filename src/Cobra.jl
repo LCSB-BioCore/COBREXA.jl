@@ -11,7 +11,6 @@ mutable struct Metabolite
     compartment :: String
     notes :: Dict{String, Array{String, 1}}
     annotation :: Dict{String, Union{Array{String, 1}, String}}
-    concentration :: Union{Float64, Measurement{Float64}}
 end
 
 function Metabolite()
@@ -22,8 +21,7 @@ function Metabolite()
     compartment = ""
     notes = Dict{String, Array{String, 1}}()
     annotation = Dict{String, Union{Array{String, 1}, String}}()
-    concentration = 1e-3 # 1mM
-    Metabolite(id, name, formula, charge, compartment, notes, annotation, concentration)
+    Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
 function Metabolite(id::String)
@@ -33,8 +31,7 @@ function Metabolite(id::String)
     compartment = ""
     notes = Dict{String, Array{String, 1}}()
     annotation = Dict{String, Union{Array{String, 1}, String}}()
-    concentration = 1e-3 # 1mM
-    Metabolite(id, name, formula, charge, compartment, notes, annotation, concentration)
+    Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
 function Metabolite(d::Dict{String, Any})
@@ -71,8 +68,7 @@ function Metabolite(d::Dict{String, Any})
             cto.verbose && @warn "Unrecognized reaction field: $k"
         end
     end
-    concentration = 1e-3 # 1mM
-    Metabolite(id, name, formula, charge, compartment, notes, annotation, concentration)
+    Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
 """
@@ -226,25 +222,6 @@ function Gene(d)
 end
 
 """
-CoreModel fields define the basic information necessary to run analysis tools
-"""
-struct CoreModel
-    S :: SparseMatrixCSC{Float64,Int64} # stoichiometric matrix
-    b :: SparseVector{Float64,Int64} # mass balance rhs
-    lbs :: Array{Float64, 1} # reaction lower bounds
-    ubs :: Array{Float64, 1} # rxn upper bounds
-end
-
-"""
-CoreModel()
-
-Empty constructor.
-"""
-function CoreModel()
-    CoreModel(sparse(rand(0,0)), sparse(rand(0)), Float64[], Float64[])
-end
-
-"""
 Complete model with metadata associated with the model e.g. formulas etc.
 Contains grrs which should make gene reaction look ups easier
 """
@@ -269,7 +246,7 @@ end
 """
 Construct CoreModel from Model
 """
-function CoreModel(model::Model)
+function coremodel(model::Model)
     ubs = [rxn.ub for rxn in model.rxns]
     lbs = [rxn.lb for rxn in model.rxns]
     
@@ -284,7 +261,7 @@ function CoreModel(model::Model)
             S[j, i] = coeff
         end
     end
-    return CoreModel(S, b, lbs, ubs)
+    return S, b, lbs, ubs
 end
 
 """
