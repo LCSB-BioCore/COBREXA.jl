@@ -1,4 +1,9 @@
-function getatoms(met::Metabolite)
+"""
+get_atoms(met::Metabolite)
+
+Return a dictionary mapping the elements in a metabolite to their stoichiometric coefficients.
+"""
+function get_atoms(met::Metabolite)
     atoms = Dict{String, Int64}()
     N = length(met.formula)
     
@@ -6,19 +11,25 @@ function getatoms(met::Metabolite)
 
     caps = findall(x-> isuppercase(x[1]), split(met.formula, ""))
     if length(caps) == 1
-        atom, count = formulapart(met.formula)
+        atom, count = split_formula(met.formula)
         atoms[atom] = count
     else
         pend = [caps[2:end].-1;length(met.formula)]
         for (i, j) in zip(caps, pend) 
-            atom, count = formulapart(met.formula[i:j])
+            atom, count = split_formula(met.formula[i:j])
             atoms[atom] = count
         end
     end
     return atoms
 end
 
-function formulapart(formula)
+"""
+split_formula(formula)
+
+Split the Atom from the stoichiometric coefficient. 
+E.g. C12 => C, 12 or Ca3 => Ca, 3
+"""
+function split_formula(formula)
     N = length(formula)
     if N > 1
         if islowercase(formula[2][1])

@@ -1,18 +1,11 @@
 """
-ReactionFlux associates a rxn with a flux.
-"""
-mutable struct ReactionFlux
-    rxn :: Reaction
-    flux :: Float64
-end
-
-"""
 ReactionFluxes holds references to the objective, reactions and fluxes from analysis (e.g. FBA)
 """
 mutable struct ReactionFluxes
     objective_id :: String 
     objective :: Float64
-    rxnfluxes :: Array{ReactionFlux, 1}
+    rxns :: Array{Reaction, 1}
+    fluxes :: Array{Float64, 1}
 end
 
 """
@@ -22,8 +15,8 @@ Return the index of rxn in reactionfluxes and -1 if it is not found.
 Note, this is slightly different from the normal getindex function.
 """
 function Base.getindex(rfs::ReactionFluxes, rxn::Reaction)
-    for i in eachindex(rfs.rxnfluxes)
-        if rxn.id == rfs.rxnfluxes[i].rxn.id
+    for i in eachindex(rfs.rxns)
+        if rxn.id == rfs.rxns[i].id
             return i
         end
     end
@@ -34,12 +27,12 @@ end
 Pretty printing of ReactionFluxes objects.
 """
 function Base.show(io::IO, rfs::ReactionFluxes)
-    inds = sortperm(abs.([rf.flux for rf in rfs.rxnfluxes]), rev=true) # max abs fluxes 
+    inds = sortperm(abs.(rfs.fluxes), rev=true) # max abs fluxes 
     println(io, "Optimum for $(rfs.objective_id) = ", round(rfs.objective, digits=4))
     counter = 0
     for i in inds
-        if startswith(rfs.rxnfluxes[i].rxn.id, "EX_")
-            println(io, rfs.rxnfluxes[i].rxn.name, " = ", round(rfs.rxnfluxes[i].flux, digits=4), " mmol/gDW/h")
+        if startswith(rfs.rxns[i].id, "EX_")
+            println(io, rfs.rxns[i].name, " = ", round(rfs.fluxes[i], digits=4), " mmol/gDW/h")
             counter += 1
         end
         if counter > 10 # only display top 10
@@ -55,7 +48,7 @@ Initialize a constraint based model. Creates a model that satisfies the mass bal
 and flux constraints but no objective or optimizer is set. Returns the JuMP model.
 """
 function CBM(model::Model)
-    S, b, lbs, ubs = coremodel(model) # Construct S, b, lbs, ubs from model
+    S, b, lbs, ubs = get_core_model(model) # Construct S, b, lbs, ubs from model
     cbmodel = JuMP.Model()
     nvars = size(S, 2) # number of variables in model
     v = @variable(cbmodel, v[1:nvars]) # flux variables
@@ -121,13 +114,10 @@ function fba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; 
     
     if status
         objective_id = length(objective_indices) == 1 ? model.rxns[objective_indices[1]].id : "multiple reactions"
-        arr= Array{ReactionFlux, 1}()
-        for (i, rxn) in enumerate(model.rxns)
-            push!(arr, ReactionFlux(rxn, value(v[i])))
-        end
-        return ReactionFluxes(objective_id, objective_value(cbm), arr)        
+        fluxes = [value(v[i]) for i in eachindex(model.rxns)]
+        return ReactionFluxes(objective_id, objective_value(cbm), model.rxns, fluxes)        
     else
-        return ReactionFluxes("Optimization issues", 0.0, Array{ReactionFlux, 1}())
+        return ReactionFluxes("Optimization issues", 0.0, Reaction[], Float64[])
     end
 end
 
@@ -213,13 +203,10 @@ function pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}};
     pfba_status = termination_status(cbm) == MOI.OPTIMAL
     
     if fba_status && pfba_status
-        arr = Array{ReactionFlux, 1}()
-        for (i, rxn) in enumerate(model.rxns)
-            push!(arr, ReactionFlux(rxn, value(v[i])))
-        end
-        return ReactionFluxes("Σᵢ||vᵢ||", objective_value(cbm), arr)        
+        fluxes = [value(v[i]) for i in eachindex(model.rxns)]
+        return ReactionFluxes("Σᵢ||vᵢ||", objective_value(cbm), model.rxns, fluxes)        
     else
-        return ReactionFluxes("Optimization issues", 0.0, Array{ReactionFlux, 1}())
+        return ReactionFluxes("Optimization issues", 0.0, Reaction[], Float64[])
     end
 end
 
@@ -230,23 +217,53 @@ Return the composition of atoms consumed or produced by the model according to r
 """
 function atom_exchange(rfs::ReactionFluxes)
     # find exchange reactions
-    ex_inds = [i for i in eachindex(rfs.rxnfluxes) if startswith(rfs.rxnfluxes[i].rxn.id, "EX_")]
+    ex_inds = [i for i in eachindex(rfs.rxns) if startswith(rfs.rxns[i].id, "EX_")]
     
     atom_balance = Dict{String, Float64}()
     for ex_ind in ex_inds
-        for (met, w) in rfs.rxnfluxes[ex_ind].rxn.metabolites
-            for (atom, stoich) in getatoms(met)
-                atom_balance[atom] = get(atom_balance, atom, 0.0) + stoich*w*value(rfs.rxnfluxes[ex_ind].flux)
+        for (met, w) in rfs.rxns[ex_ind].metabolites
+            for (atom, stoich) in get_atoms(met)
+                atom_balance[atom] = get(atom_balance, atom, 0.0) + stoich*w*value(rfs.fluxes[ex_ind])
             end
         end
     end
     return atom_balance
 end
 
-function map_fluxes(v, model)
+function atom_exchange(fluxdict::Dict{String, Float64}, model::Model)
+    exrxns = [k for k in keys(fluxdict) if startswith(k, "EX_")] # get exchange reactions
+
+    atom_balance = Dict{String, Float64}()
+    for exrxn in exrxns
+        rxn = findfirst(model.rxns, exrxn)
+        for (met, w) in rxn.metabolites
+            for (atom, stoich) in get_atoms(met)
+                atom_balance[atom] = get(atom_balance, atom, 0.0) + stoich*w*fluxdict[exrxn]
+            end
+        end
+    end
+    return atom_balance
+end
+
+function map_fluxes(v, model::Model)
     rxndict = Dict{String, Float64}()
     for i in eachindex(model.rxns)
         rxndict[model.rxns[i].id] = value(v[i])
     end
     return rxndict
+end
+
+"""
+setbound(v, vindex, ub=1000, lb=-1000)
+
+Helper function to set the bounds of variables.
+The JuMP set_normalized_rhs function is a little confusing...
+"""
+function set_bound(ubs, lbs, vind; ub=1000, lb=-1000)
+    if lb <= 0 
+        set_normalized_rhs(lbs[vind], abs(lb))
+    else
+        set_normalized_rhs(lbs[vind], -abs(lb))
+    end
+    set_normalized_rhs(ubs[vind], ub)
 end

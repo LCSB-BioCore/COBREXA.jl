@@ -11,17 +11,17 @@ genes, description, rxnNames, ub, metFormulas, b, subSystems, mets and c are use
 
 Note, SBML is not implemented yet.
 """
-function readmodel(file_location)
+function read_model(file_location)
     if endswith(file_location, ".json")
         try 
-            model = reconstructmodeljson(JSON.parsefile(file_location))
+            model = reconstruct_model_json(JSON.parsefile(file_location))
         catch err
             @error "JSON model reading error.\n$err"
             model = Model()
         end
     elseif endswith(file_location, ".xml")
         try
-            model = reconstructmodelsbml(file_location)
+            model = reconstruct_model_sbml(file_location)
             cto.verbose && @warn "Not implemented!"
         catch err
             @error "SBML model reading error.\n$err"
@@ -29,7 +29,7 @@ function readmodel(file_location)
         end
     elseif endswith(file_location, ".mat")
        try
-            model = reconstructmodelmatlab(file_location)
+            model = reconstruct_model_matlab(file_location)
        catch err
             @error "Matlab model reading error.\n$err"
             model = Model()
@@ -44,7 +44,7 @@ end
 """
 reconstructmodeljson(modeldict)
 """
-function reconstructmodeljson(modeldict)
+function reconstruct_model_json(modeldict)
     id = modeldict["id"]
 
     mets = Metabolite[]
@@ -67,7 +67,7 @@ function reconstructmodeljson(modeldict)
 
     grrs = Dict{String,  Array{Array{String, 1}, 1}}()
     for rxn in rxns
-        isempty(rxn.grr) ? continue : (grrs[rxn.id] = parsegrr(rxn.grr))
+        isempty(rxn.grr) ? continue : (grrs[rxn.id] = parse_grr(rxn.grr))
     end
     
     return Model(id, rxns, mets, genes, grrs)
@@ -76,7 +76,7 @@ end
 """
 reconstructmodelmatlab(file_location)
 """
-function reconstructmodelmatlab(file_location)
+function reconstruct_model_matlab(file_location)
     mf = MatFile(file_location)
     model_name = variable_names(mf)[1] # assume model name is the only variable
     modeldict = get_variable(mf, model_name)
@@ -96,7 +96,7 @@ function reconstructmodelmatlab(file_location)
         notes = haskey(modeldict, "notes") ? modeldict["notes"][i] : Dict{String, Array{String, 1}}()
         annotation = haskey(modeldict, "annotation") ? modeldict["annotation"][i] : Dict{String, Union{Array{String, 1}, String}}()
 
-        push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation, 1e-3)) # concentration 1 mM
+        push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation))
     end
 
     rxns = Reaction[]
@@ -133,7 +133,7 @@ function reconstructmodelmatlab(file_location)
     grrs = Dict{String,  Array{Array{String, 1}, 1}}()
     for (i, rxn) in enumerate(rxns)
         if !isempty(modeldict["grRules"][i])
-            grrs[rxn.id] = parsegrr(modeldict["grRules"][i])
+            grrs[rxn.id] = parse_grr(modeldict["grRules"][i])
         end
     end
     
@@ -159,7 +159,7 @@ parsegrr(string_rule)
 
 Format: (YIL010W and YLR043C) or (YIL010W and YGR209C)
 """
-function parsegrr(s :: String)
+function parse_grr(s :: String)
     gene_list_list = Array{Array{String, 1}, 1}()
     or_genes = split(s, " or ")
     for or_gene in or_genes
@@ -183,20 +183,20 @@ and c are written to.
 
 Note, SBML is not implemented yet.
 """
-function savemodel(model :: Model, file_location :: String)
+function save_model(model :: Model, file_location :: String)
     if endswith(file_location, ".json")
-        savejsonmodel(model, file_location)
+        save_json_model(model, file_location)
     elseif endswith(file_location, ".xml")
         cto.verbose && @warn "Not implemented!"
     elseif endswith(file_location, ".mat")
-        savematlabmodel(model, file_location)
+        save_matlab_model(model, file_location)
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
     end
 end
 
 
-function savejsonmodel(model :: Model, file_location :: String)
+function save_json_model(model :: Model, file_location :: String)
     modeldict = Dict{String, Any}()
     modeldict["id"] = model.id
     modeldict["metabolites"] = model.mets
@@ -223,7 +223,7 @@ function savejsonmodel(model :: Model, file_location :: String)
     end
 end
 
-function savematlabmodel(model :: Model, file_location :: String)
+function save_matlab_model(model :: Model, file_location :: String)
     rxnrevs = zeros(Int64, length(model.rxns))
     for i in eachindex(model.rxns)
         if model.rxns[i].lb < 0.0 && model.rxns[i].ub > 0
@@ -240,7 +240,7 @@ function savematlabmodel(model :: Model, file_location :: String)
         end
     end
     
-    S, b, lbs, ubs = coremodel(model)
+    S, b, lbs, ubs = get_core_model(model)
 
     mdict = Dict("c" => [r.objective_coefficient for r in model.rxns],
     "mets" => [m.id for m in model.mets],
@@ -263,7 +263,7 @@ function savematlabmodel(model :: Model, file_location :: String)
     write_matfile(file_location; Dict(Symbol(model.id) => mdict)...) 
 end
 
-function savesbmlmodel()
+function save_sbml_model()
     # To do...
 end
 

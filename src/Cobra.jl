@@ -246,7 +246,7 @@ end
 """
 Construct CoreModel from Model
 """
-function coremodel(model::Model)
+function get_core_model(model::Model)
     ubs = [rxn.ub for rxn in model.rxns]
     lbs = [rxn.lb for rxn in model.rxns]
     

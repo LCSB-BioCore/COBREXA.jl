@@ -3,7 +3,7 @@ buildrxnstring(rxn)
 
 Get rxn in string format for Equilibrator.
 """
-function buildrxnstring(rxn::Reaction)
+function build_rxn_string(rxn::Reaction)
     pos_s = []
     neg_s = []
     for (met, coeff) in rxn.metabolites 
@@ -21,10 +21,9 @@ gibbs_arr = mapGibbs(rxns; dgtype="zero", ph=7.0, ionic_str="100 mM")
 
 Return an dict of rxn.id => ΔG of the specidied dgtype.
 """
-function mapGibbs(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM") 
-    rxns_strings = [buildrxnstring(rxn) for rxn in rxns]
+function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM") 
+    rxns_strings = [build_rxn_string(rxn) for rxn in rxns]
     if dgtype == "phys"
-        py"pygetdg0"(formula, ph, ionic_strength)
         bals, gs, errs = py"pygetdgprimephys"(rxns_strings, ph, ionic_str)
     elseif dgtype == "prime" 
         bals, gs, errs = py"pygetdgprime"(rxns_strings, ph, ionic_str)
@@ -44,34 +43,92 @@ function mapGibbs(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="10
 end
 
 """
-blackbox(fluxres, gibbs, biomassrxn, biomassdg)
+map_gibbs_external(fluxres, gibbs)
 
 Calculate the Gibbs free energy change taking only the external fluxes into account.
+NB: you need to account for the biomass function separately.
 
 Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
 """
-function blackbox(fluxres::ReactionFluxes, gibbs, biomassrxn, biomassdg)
+function map_gibbs_external(fluxres::ReactionFluxes, gibbs)
     total_ΔG = 0.0 ± 0.0
-    for rxnflux in fluxres.rxnfluxes
-        if startswith(rxnflux.rxn.id, "EX_")
-            if abs(rxnflux.flux) > 1
-                total_ΔG -= rxnflux.flux * gibbs[rxnflux.rxn.id] # negative here because formation is not MET -> as used here, but the -> MET 
+    for (i, rxn) in enumerate(fluxres.rxns)
+        if startswith(rxn.id, "EX_")
+            if abs(fluxres.fluxes[i]) > 1e-6
+                total_ΔG -= fluxres.fluxes[i] * gibbs[rxn.id] # negative here because formation is not MET -> as used here, but the -> MET 
             end
         end
     end
-    total_ΔG += -fluxres.rxnfluxes[fluxres[biomassrxn]].flux*biomassdg # the formation is given correctly here though
     return total_ΔG # units J/gDW/h
 end
 
-function blackbox(fluxres::Dict{String, Float64}, gibbs, biomassrxnid, biomassdg)
+function map_gibbs_external(fluxres::Dict{String, Float64}, gibbs)
     total_ΔG = 0.0 ± 0.0
     for (rxnid, v) in fluxres
         if startswith(rxnid, "EX_")
-            if abs(rxnflux.flux) > 1
+            if abs(v) > 1e-6
                 total_ΔG -= v * gibbs[rxnid] # negative here because "combustion" is actually Gibbs value not formation  
             end
         end
     end
-    total_ΔG += -fluxres[biomassrxnid]*biomassdg # the formation is given correctly here though
     return total_ΔG # units J/gDW/h
+end
+
+"""
+map_gibbs_internal(fluxres, gibbs)
+
+Calculate the Gibbs free energy change taking only the internal fluxes into account.
+NB: you need to account for the biomass function separately
+
+Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
+"""
+function map_gibbs_internal(fluxres::ReactionFluxes, gibbs)
+    total_ΔG = 0.0 ± 0.0
+    for (i, rxn) in enumerate(fluxres.rxns)
+        if !startswith(rxn.id, "EX_") # ignore exchange reactions
+            if abs(fluxres.fluxes[i]) > 1e-6
+                total_ΔG += fluxres.fluxes[i] * gibbs[rxn.id] # add because this is not formation but rather just adding equations (the flux direction sign compensates) 
+            end
+        end
+    end
+    return total_ΔG # units J/gDW/h
+end
+
+function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs)
+    total_ΔG = 0.0 ± 0.0
+    for (rxnid, v) in fluxres
+        if !startswith(rxnid, "EX_") # ignore exchange reactions 
+            if abs(v) > 1e-6
+                total_ΔG += v * gibbs[rxnid] # add because this is not formation but rather just adding equations (the flux direction sign compensates)
+            end
+        end
+    end
+    return total_ΔG # units J/gDW/h
+end
+
+"""
+save_Gibbs(path, gibbs)
+
+Save Gibbs dict. Saved as String => [mag, err]
+"""
+function save_Gibbs(path, gibbs)
+    decomp = Dict{String, Array{Float64,1}}()
+    for (k, v) in gibbs
+        decomp[k] = [Measurements.value(v), Measurements.uncertainty(v)]
+    end
+    JLD.save(path, "gibbs", decomp)
+end
+
+"""
+load_Gibbs(path)
+
+Load Gibbs dict. Loads String => [mag, err]
+"""
+function load_Gibbs(path)
+    decomp = JLD.load(path, "gibbs")
+    gibbs = Dict{String, Measurement{Float64}}()
+    for (k, vs) in decomp
+        gibbs[k] = vs[1] ± vs[2]
+    end
+    return gibbs
 end
