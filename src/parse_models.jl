@@ -240,23 +240,23 @@ function savematlabmodel(model :: Model, file_location :: String)
         end
     end
     
-    coremodel = CoreModel(model::Model)
+    S, b, lbs, ubs = coremodel(model)
 
     mdict = Dict("c" => [r.objective_coefficient for r in model.rxns],
     "mets" => [m.id for m in model.mets],
     "subSystems" => [r.subsystem for r in model.rxns],
-    "b" => Array(coremodel.b),
+    "b" => Array(b),
     "metFormulas" => [m.formula for m in model.mets],
     "rxnGeneMat" => rgm,
-    "ub" => Array(coremodel.ubs),
+    "ub" => Array(ubs),
     "rxnNames" => [r.name for r in model.rxns],
     "description" => model.id,
     "genes" => [g.id for g in model.genes],
     "rev" => rxnrevs,
     "grRules" => [r.grr for r in model.rxns],
-    "S" => Array(coremodel.S),
+    "S" => Array(S),
     "metNames" => [m.name for m in model.mets],
-    "lb" => Array(coremodel.lbs),
+    "lb" => Array(lbs),
     "metCharge" => [m.charge for m in model.mets],
     "rxns" => [r.id for r in model.rxns])
 

@@ -55,13 +55,13 @@ Initialize a constraint based model. Creates a model that satisfies the mass bal
 and flux constraints but no objective or optimizer is set. Returns the JuMP model.
 """
 function CBM(model::Model)
-    coremodel = CoreModel(model) # Construct S, b, lbs, ubs from model
+    S, b, lbs, ubs = coremodel(model) # Construct S, b, lbs, ubs from model
     cbmodel = JuMP.Model()
-    nvars = size(coremodel.S, 2) # number of variables in model
+    nvars = size(S, 2) # number of variables in model
     v = @variable(cbmodel, v[1:nvars]) # flux variables
-    mb = @constraint(cbmodel, mb, coremodel.S*v .== coremodel.b) # mass balance
-    lbs = @constraint(cbmodel, lbs, coremodel.lbs .<= v) # lower bounds
-    ubs = @constraint(cbmodel, ubs, v .<= coremodel.ubs) # upper bounds
+    mb = @constraint(cbmodel, mb, S*v .== b) # mass balance
+    lbs = @constraint(cbmodel, lbs, lbs .<= v) # lower bounds
+    ubs = @constraint(cbmodel, ubs, v .<= ubs) # upper bounds
     return cbmodel, v, mb, ubs, lbs
 end
 
