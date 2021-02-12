@@ -27,15 +27,32 @@ end
 Pretty printing of ReactionFluxes objects.
 """
 function Base.show(io::IO, rfs::ReactionFluxes)
-    inds = sortperm(abs.(rfs.fluxes), rev=true) # max abs fluxes 
     println(io, "Optimum for $(rfs.objective_id) = ", round(rfs.objective, digits=4))
+    
+    println()
+    inds = sortperm(rfs.fluxes) # consuming fluxes  
+    println("Consuming fluxes:")
     counter = 0
     for i in inds
         if startswith(rfs.rxns[i].id, "EX_")
             println(io, rfs.rxns[i].name, " = ", round(rfs.fluxes[i], digits=4), " mmol/gDW/h")
             counter += 1
         end
-        if counter > 10 # only display top 10
+        if counter > 8 # only display top 10
+            break
+        end
+    end
+
+    println()
+    inds = sortperm(rfs.fluxes, rev=true) # consuming fluxes  
+    println("Producing fluxes:")
+    counter = 0
+    for i in inds
+        if startswith(rfs.rxns[i].id, "EX_")
+            println(io, rfs.rxns[i].name, " = ", round(rfs.fluxes[i], digits=4), " mmol/gDW/h")
+            counter += 1
+        end
+        if counter > 8 # only display top 10
             break
         end
     end
@@ -245,6 +262,12 @@ function atom_exchange(fluxdict::Dict{String, Float64}, model::Model)
     return atom_balance
 end
 
+"""
+map_fluxes(v, model::Model)
+
+Map fluxes from an optimization problem (v) to rxns in a model.
+Assumes they are in order, which they should be since they are constructed from model.
+"""
 function map_fluxes(v, model::Model)
     rxndict = Dict{String, Float64}()
     for i in eachindex(model.rxns)
@@ -254,16 +277,42 @@ function map_fluxes(v, model::Model)
 end
 
 """
-setbound(v, vindex, ub=1000, lb=-1000)
+setbound(index, ubconstaintref, lbconstaintref; ub=1000, lb=-1000)
 
 Helper function to set the bounds of variables.
 The JuMP set_normalized_rhs function is a little confusing...
 """
-function set_bound(ubs, lbs, vind; ub=1000, lb=-1000)
+function set_bound(vind, ubs, lbs; ub=1000, lb=-1000)
     if lb <= 0 
         set_normalized_rhs(lbs[vind], abs(lb))
     else
         set_normalized_rhs(lbs[vind], -abs(lb))
     end
     set_normalized_rhs(ubs[vind], ub)
+end
+
+"""
+get_exchanges(rxndict::Dict{String, Float64})
+
+Display the top producing and consuming exchange fluxes. Ignores infinite (problem upper/lower bound) fluxes.
+"""
+function get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
+    fluxes = Float64[]
+    rxns = String[]
+    for (k, v) in rxndict
+        if startswith(k, "EX_") && abs(v) < ignorebound
+            push!(rxns, k)
+            push!(fluxes, v)
+        end
+    end
+    inds_prod = sortperm(fluxes, rev=true)
+    inds_cons = sortperm(fluxes)
+    println("Consuming fluxes:")
+    for i in 1:topN
+        println(rxns[i], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
+    end
+    println("Producing fluxes:")
+    for i in 1:topN
+        println(rxns[i], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
+    end
 end

@@ -23,14 +23,9 @@ CobraTools.map_gibbs_external(pfbasol, gibbs)
 CobraTools.map_gibbs_internal(pfbasol, gibbs)
 
 
+# cbmodel, v, mb, ubs, lbs = CobraTools.CBM(model)
 
-
-cbmodel, v, mb, ubs, lbs = CobraTools.CBM(model)
-
-
-
-
-
+# CobraTools.set_bound(1, ubs, lbs, ub=1, lb=1)
 
 # # Yeast GEM
 # modelpath = joinpath("models", "iMM904.json") 
