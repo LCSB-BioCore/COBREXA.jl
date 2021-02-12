@@ -70,7 +70,7 @@ function map_gibbs_external(fluxres::Dict{String, Float64}, gibbs)
     for (rxnid, v) in fluxres
         if startswith(rxnid, "EX_")
             if gibbs[rxnid] ≈ 0.0
-                missing_flux += abs(fluxres.fluxes[i])
+                missing_flux += abs(v)
             end    
             total_ΔG -= v * gibbs[rxnid] # negative here because "combustion" is actually Gibbs value not formation  
         end
@@ -108,7 +108,7 @@ function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs)
     for (rxnid, v) in fluxres
         if !startswith(rxnid, "EX_") # ignore exchange reactions 
             if gibbs[rxnid] ≈ 0.0
-                missing_flux += abs(fluxres.fluxes[i])
+                missing_flux += abs(v)
             end 
             total_ΔG += v * gibbs[rxnid] # add because this is not formation but rather just adding equations (the flux direction sign compensates)
         end
