@@ -5,17 +5,14 @@ See also: `MAT.jl`
 """
 function loadModel(filePath::String, varName::String)
 
-    # open file and read
-    file = matopen(filePath)
+    # read file
     vars = matread(filePath)
 
-
-    if haskey(file, varName)
+    if haskey(vars, varName)
         return convertToLinearModel(vars[varName])
     else
         error("Variable `varName` does not exist in the specified MAT file.")
     end
-    close(file)
 end
 
 """
