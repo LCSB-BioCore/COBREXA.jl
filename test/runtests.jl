@@ -6,6 +6,7 @@ using GLPK
 using Clp
 using COBREXA
 using MAT
+using SHA
 using Distributed
 
 """
