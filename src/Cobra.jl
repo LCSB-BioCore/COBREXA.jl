@@ -261,7 +261,7 @@ function get_core_model(model::Model)
             S[j, i] = coeff
         end
     end
-    return S, b, lbs, ubs
+    return S, b, ubs, lbs
 end
 
 """

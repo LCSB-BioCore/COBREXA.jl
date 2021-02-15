@@ -39,6 +39,8 @@ include("basic_analysis.jl")
 include("gibbs_tools.jl")
 include("name_space.jl")
 
+include("sampling.jl")
+
 
 # Init function
 function __init__()
