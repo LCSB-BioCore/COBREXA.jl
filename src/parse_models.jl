@@ -240,7 +240,7 @@ function save_matlab_model(model :: Model, file_location :: String)
         end
     end
     
-    S, b, lbs, ubs = get_core_model(model)
+    S, b, ubs, lbs = get_core_model(model)
 
     mdict = Dict("c" => [r.objective_coefficient for r in model.rxns],
     "mets" => [m.id for m in model.mets],
