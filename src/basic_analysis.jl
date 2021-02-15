@@ -268,10 +268,18 @@ map_fluxes(v, model::Model)
 Map fluxes from an optimization problem (v) to rxns in a model.
 Assumes they are in order, which they should be since they are constructed from model.
 """
-function map_fluxes(v, model::Model)
+function map_fluxes(v::Array{VariableRef,1}, model::Model)
     rxndict = Dict{String, Float64}()
     for i in eachindex(model.rxns)
         rxndict[model.rxns[i].id] = value(v[i])
+    end
+    return rxndict
+end
+
+function map_fluxes(v::Array{Float64,1}, model::Model)
+    rxndict = Dict{String, Float64}()
+    for i in eachindex(model.rxns)
+        rxndict[model.rxns[i].id] = v[i]
     end
     return rxndict
 end

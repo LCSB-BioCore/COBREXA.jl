@@ -73,12 +73,15 @@ function get_bound_vectors(ubconref, lbconref)
     return ubs, lbs
 end
 
-function achr(N::Int64, wpoints::Array{Float64, 2}, model::Model, ubcons, lbcons)  
+function achr(N::Int64, wpoints::Array{Float64, 2}, model::Model, ubcons, lbcons; burnin=0.9, keepevery=10)  
     S, _, _, _ = CobraTools.get_core_model(model) # assume S has not been modified from model
     ubs, lbs = CobraTools.get_bound_vectors(ubcons, lbcons)
     
     nwpts = size(wpoints, 2) # number of warmup points generated
-    samples = zeros(size(wpoints, 1), N) # sample storage
+
+    Nkeep = round(Int64, burnin*N) # start storing from here only 
+    
+    samples = zeros(size(wpoints, 1), round(Int64, length(Nkeep:N)/keepevery, RoundUp)) # sample storage
 
     center_point = mean(wpoints, dims=2)[:]
 
@@ -88,25 +91,27 @@ function achr(N::Int64, wpoints::Array{Float64, 2}, model::Model, ubcons, lbcons
 
     δdirtol = 1e-6 # too small directions get ignored solver precision issue 
 
-    samples[:, 1] .= wpoints[:, rand(1:nwpts)] # initial point
+    current_point = zeros(size(wpoints, 1))
+    current_point .= wpoints[:, rand(1:nwpts)] # initial point
+    sample_num = 0
 
-    for n=2:N
+    for n=1:N
         foundit = false # found a feasible direction
         λmax = 0.0
         λmin = 0.0
         numiters = 0
-        while numiters < 10_000 # maximum time spent looking for feasible direction
+        while numiters < 2*(nwpts+sample_num) # maximum time spent looking for feasible direction
             # pick a random direction from samples and warmup points
-            if rand() < nwpts/(nwpts + n-1)
+            if rand() < nwpts/(nwpts + sample_num)
                 w .= wpoints[:, rand(1:nwpts)] .- center_point
             else
-                w .= samples[:, rand(1:(n-1))] .- center_point
+                w .= samples[:, rand(1:(sample_num))] .- center_point
             end
             w .= w./norm(w) # direction
 
             for i in eachindex(w)
-                δlower = lbs[i] - samples[i, n-1]
-                δupper = ubs[i] - samples[i, n-1]
+                δlower = lbs[i] - current_point[i]
+                δupper = ubs[i] - current_point[i]
                 if w[i] < -δdirtol
                     λlower[i] = δupper/w[i]
                     λupper[i] = δlower/w[i]    
@@ -136,7 +141,15 @@ function achr(N::Int64, wpoints::Array{Float64, 2}, model::Model, ubcons, lbcons
         end
 
         λ = rand()*(λmax - λmin) + λmin
-        samples[:, n] .= samples[:, n-1] .+ λ .* w
+        current_point .= current_point .+ λ .* w
+
+        center_point .= ((nwpts + n - 1).*center_point .+ current_point) ./ (nwpts + n)
+
+        if n >= Nkeep && n % keepevery == 0
+            sample_num += 1
+            samples[:, sample_num] .= current_point
+        end
+        
     end
 
     return samples
