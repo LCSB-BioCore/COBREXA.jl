@@ -100,7 +100,8 @@ function achr(N::Int64, wpoints::Array{Float64, 2}, model::Model, ubcons, lbcons
         λmax = 0.0
         λmin = 0.0
         numiters = 0
-        while numiters < 2*(nwpts+sample_num) # maximum time spent looking for feasible direction
+        while numiters < 3*(nwpts+sample_num) # maximum time spent looking for feasible direction
+            
             # pick a random direction from samples and warmup points
             if rand() < nwpts/(nwpts + sample_num)
                 w .= wpoints[:, rand(1:nwpts)] .- center_point
