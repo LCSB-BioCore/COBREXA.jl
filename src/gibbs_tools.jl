@@ -82,38 +82,42 @@ end
 map_gibbs_internal(fluxres, gibbs)
 
 Calculate the Gibbs free energy change taking only the internal fluxes into account.
-NB: you need to account for the biomass function separately
+NB: you need to account for the biomass function separately. NB: 
 
 Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
 """
-function map_gibbs_internal(fluxres::ReactionFluxes, gibbs)
+function map_gibbs_internal(fluxres::ReactionFluxes, gibbs, biomassid="BIOMASS")
     total_ΔG = 0.0 ± 0.0
     missing_flux = 0.0
+    found_flux = 0.0
     for (i, rxn) in enumerate(fluxres.rxns)
-        if !startswith(rxn.id, "EX_") # ignore exchange reactions
-            if abs(fluxres.fluxes[i]) > 1e-8
-                if gibbs[rxn.id] ≈ 0.0
-                    missing_flux += abs(fluxres.fluxes[i])
-                end
-                total_ΔG += fluxres.fluxes[i] * gibbs[rxn.id] # add because this is not formation but rather just adding equations (the flux direction sign compensates) 
-            end
+        if !startswith(rxn.id, "EX_") && !contains(rxn.id, biomassid) # ignore exchange reactions and biomass eqn
+            if gibbs[rxn.id] ≈ 0.0
+                missing_flux += abs(fluxres.fluxes[i])
+            else
+                found_flux += abs(fluxres.fluxes[i])
+            end 
+            total_ΔG += fluxres.fluxes[i] * gibbs[rxn.id] # add because this is not formation but rather just adding equations (the flux direction sign compensates) 
         end
     end
-    return total_ΔG, missing_flux/sum(abs, fluxres.fluxes) # units J/gDW/h
+    return total_ΔG, missing_flux/(missing_flux+found_flux) # units J/gDW/h
 end
 
-function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs)
+function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs, biomassid="BIOMASS")
     total_ΔG = 0.0 ± 0.0
     missing_flux = 0.0
+    found_flux = 0.0
     for (rxnid, v) in fluxres
-        if !startswith(rxnid, "EX_") # ignore exchange reactions 
+        if !startswith(rxnid, "EX_") && !contains(rxnid, biomassid) # ignore exchange reactions # hopefully the biomass eqn will have zero flux because it is unbalanced
             if gibbs[rxnid] ≈ 0.0
                 missing_flux += abs(v)
+            else
+                found_flux += abs(v)
             end 
             total_ΔG += v * gibbs[rxnid] # add because this is not formation but rather just adding equations (the flux direction sign compensates)
         end
     end
-    return total_ΔG, missing_flux/sum(abs, values(fluxres)) # units J/gDW/h
+    return total_ΔG, missing_flux/(missing_flux+found_flux) # units J/gDW/h
 end
 
 """
