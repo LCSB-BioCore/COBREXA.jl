@@ -143,9 +143,9 @@ function hit_and_run(N::Int64, wpoints::Array{Float64, 2}, ubcons, lbcons; keepe
 end
 
 """
-test_samples(samples::Array{Float64, 2}, model::Model, ubcons, lbcons)
+indexes_test_failed = test_samples(samples::Array{Float64, 2}, model::Model, ubcons, lbcons)
 
-Test if samples pass tests.
+Test if samples pass tests: mass balances and constraints are satisfied..
 """
 function test_samples(samples::Array{Float64, 2}, model::Model, ubcons, lbcons)
     S, _, _, _ = get_core_model(model) # assume S has not been modified from model
@@ -166,6 +166,7 @@ function test_samples(samples::Array{Float64, 2}, model::Model, ubcons, lbcons)
     
     return violations
 end
+
 # function achr(N::Int64, wpoints::Array{Float64, 2}, model::Model, ubcons, lbcons; burnin=0.9, keepevery=10)  
 #     # S, _, _, _ = CobraTools.get_core_model(model) # assume S has not been modified from model
     
