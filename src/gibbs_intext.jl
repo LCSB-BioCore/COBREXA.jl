@@ -8,25 +8,18 @@ using Plots
 pyplot()
 
 # E. coli model
-modelpath = joinpath("models", "iJO1366.json") 
+modelpath = joinpath("models", "iML1515.json") 
 model = CobraTools.read_model(modelpath)
-# gibbs = CobraTools.mapGibbs(model.rxns) # very slow - rather just import this - will need to reload for other models
+gibbs = CobraTools.mapGibbs(model.rxns) # very slow - rather just import this - will need to reload for other models
 
-## issue
-decomp = JLD.load(joinpath("data", "dgzeros.jld"), "gibbs")
-gibbs = Dict{String, Measurement{Float64}}()
-for (k, vs) in decomp
-    gibbs[k] = vs[1] ± vs[2]
-end
-##
 
 ecoli_kJmolCarbon = -37.36 ± 8.55 # formation of biomass kJ/mol 74.36 ± 8.67
 
-cbmodel, v, mb, ubs, lbs = CobraTools.CBM(model);
+cbmodel, v, mb, ubs, lbs = CobraTools.CBM(model)
 set_optimizer(cbmodel, Gurobi.Optimizer)
 set_optimizer_attribute(cbmodel, "OutputFlag", 0) # quiet
 
-biomass_index = model[findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")] 
+biomass_index = model[findfirst(model.rxns, "BIOMASS_Ec_iML1515_core_75p37M")] 
 glucose_index = model[findfirst(model.rxns, "EX_glc__D_e")]
 o2_index = model[findfirst(model.rxns, "EX_o2_e")]
 atpm_index = model[findfirst(model.rxns, "ATPM")]
@@ -35,9 +28,9 @@ atpm_index = model[findfirst(model.rxns, "ATPM")]
 CobraTools.set_bound(glucose_index, ubs, lbs; ub=-1.0, lb=-1.0)
 
 # Aerobic
-CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=-1000.0)
+# CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=-1000.0)
 # Anaerobic
-# CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
+CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
 
 # No free ATP generation
 CobraTools.set_bound(atpm_index, ubs, lbs; ub=1000.0, lb=0.0)
