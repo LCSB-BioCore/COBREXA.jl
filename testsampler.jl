@@ -6,6 +6,9 @@ using JLD
 using JuMP
 using Gurobi
 
+using Plots
+pyplot()
+
 # E. coli model
 modelpath = joinpath("models", "iJO1366.json") 
 model = CobraTools.read_model(modelpath)
@@ -36,19 +39,12 @@ CobraTools.set_bound(biomass_index, ubs, lbs; ub=μ_max, lb=0.9*μ_max)
 
 ##################################
 # Get warmup points
-wpoints = CobraTools.get_warmup_points(cbmodel, v, ubs, lbs) # very slow
+wpoints = CobraTools.get_warmup_points(cbmodel, v, ubs, lbs, numstop=1000) # very slow
 
 # sample!
-samples = @time CobraTools.achr(100_000, wpoints, model, ubs, lbs) 
+samples = @time CobraTools.hit_and_run(100_000, wpoints, ubs, lbs; keepevery=200, samplesize=5000, W=2000) 
 
 ###########################
+violation_inds = CobraTools.test_samples(samples, model, ubs, lbs)
 
-
-
-
-
-
-
-
-
-
+plot(samples[etoh_index, :])
