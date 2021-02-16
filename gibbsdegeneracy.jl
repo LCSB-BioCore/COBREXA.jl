@@ -3,20 +3,16 @@ using JuMP
 using Gurobi # use your favourite solver
 using Measurements
 using LinearAlgebra
-using JLD
+using MCMCChains
+using StatsBase
 using Plots
 pyplot()
 
 # E. coli model
-modelpath = joinpath("models", "iJO1366.json") 
+modelpath = joinpath("models", "iML1515.json") 
 model = CobraTools.read_model(modelpath)
+gibbs = CobraTools.map_gibbs_rxns(model.rxns) # very slow - rather just import this - will need to reload for other models
 
-decomp = JLD.load(joinpath("data", "dgzeros.jld"), "gibbs")
-gibbs = Dict{String, Measurement{Float64}}()
-for (k, vs) in decomp
-    gibbs[k] = vs[1] ± vs[2]
-end
-##
 
 ecoli_kJmolCarbon = -37.36 ± 8.55 # formation of biomass kJ/mol 74.36 ± 8.67
 
@@ -24,7 +20,7 @@ cbmodel, v, mb, ubs, lbs = CobraTools.CBM(model)
 set_optimizer(cbmodel, Gurobi.Optimizer)
 set_optimizer_attribute(cbmodel, "OutputFlag", 0) # quiet
 
-biomass_index = model[findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")] 
+biomass_index = model[findfirst(model.rxns, "BIOMASS_Ec_iML1515_core_75p37M")] 
 glucose_index = model[findfirst(model.rxns, "EX_glc__D_e")]
 o2_index = model[findfirst(model.rxns, "EX_o2_e")]
 atpm_index = model[findfirst(model.rxns, "ATPM")]
@@ -49,20 +45,25 @@ termination_status(cbmodel) != MOI.OPTIMAL && @warn "Optimization issue..."
 μ = objective_value(cbmodel)
 
 ### Fix biomass as a constraint
-CobraTools.set_bound(biomass_index, ubs, lbs; ub=0.5*μ, lb=0.49*μ)  
+CobraTools.set_bound(biomass_index, ubs, lbs; ub=μ, lb=0.99*μ)  
 
 ##################################
 # Get warmup points
 wpoints = CobraTools.get_warmup_points(cbmodel, v, ubs, lbs, numstop=1000) # very slow
 
-# sample!
-samples = @time CobraTools.hit_and_run(500_000, wpoints, ubs, lbs; keepevery=50, samplesize=5000, W=1000) 
+# sample
+samples = @time CobraTools.hit_and_run(1000_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000) 
+samples = @time CobraTools.achr(100_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000) 
 
+etoh_chain = Chains(samples[etoh_index, :])
+gewekediag(etoh_chain)[1]
+
+plot(samples[etoh_index, :])
+v = StatsBase.autocor(samples[etoh_index, :])
+plot(v)
 ###########################
 violation_inds = CobraTools.test_samples(samples, model, ubs, lbs)
 ###########################
-
-plot(samples[etoh_index, :]) # check for convergence
 
 ΔG_exts = Measurement{Float64}[]
 for s in 1:size(samples, 2)
@@ -73,3 +74,5 @@ for s in 1:size(samples, 2)
     push!(ΔG_exts, ΔG_ext) # for quick histogram
 end
 
+dgs = [x.val for x in ΔG_exts]
+histogram(dgs)
