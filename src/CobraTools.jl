@@ -20,6 +20,9 @@ using Measurements
 using Statistics
 using PyCall # for Equilibrator - ensure that it is installed
 
+# Sampling
+using Random
+
 include("global_cobratools.jl")
 
 include("cobra.jl")
@@ -42,7 +45,7 @@ include("name_space.jl")
 include("sampling.jl")
 
 
-# Init function
+# Init function - build Gibbs calling functions
 function __init__()
     py"""
     from equilibrator_api import ComponentContribution, Q_
@@ -108,8 +111,6 @@ function __init__()
                 
         return bals, mags, errs
     """
-
-
 end
 
 end # module
