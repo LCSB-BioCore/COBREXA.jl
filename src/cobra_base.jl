@@ -1,7 +1,7 @@
 # Structs and printing
 
 """
-Metabolite
+Metabolite struct (mutable)
 """
 mutable struct Metabolite
     id :: String
@@ -13,6 +13,11 @@ mutable struct Metabolite
     annotation :: Dict{String, Union{Array{String, 1}, String}}
 end
 
+"""
+metabolite = Metabolite()
+
+Empty metabolite constructor.
+"""
 function Metabolite()
     id = ""
     name = ""
@@ -24,6 +29,11 @@ function Metabolite()
     Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
+"""
+Metabolite(id::String)
+
+Assigns only the id field to a metabolite struct.
+"""
 function Metabolite(id::String)
     name = ""
     formula = ""
@@ -34,6 +44,11 @@ function Metabolite(id::String)
     Metabolite(id, name, formula, charge, compartment, notes, annotation)
 end
 
+"""
+metabolite = Metabolite(field_dict::Dict{String, Any})
+
+Assign a metabolite using fields contained in d.
+"""
 function Metabolite(d::Dict{String, Any})
     id = ""
     name = ""
@@ -72,7 +87,7 @@ function Metabolite(d::Dict{String, Any})
 end
 
 """
-Reaction
+Reaction struct (mutable)
 """
 mutable struct Reaction
     id :: String
@@ -87,6 +102,11 @@ mutable struct Reaction
     objective_coefficient :: Float64
 end
 
+"""
+reaction = Reaction()
+
+Empty reaction constructor.
+"""
 function Reaction()
     id = ""
     name = ""
@@ -101,6 +121,13 @@ function Reaction()
     Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
 end
 
+"""
+reaction = Reaction(metabolite_dict::Dict{Metabolite, Float64}, dir::String)
+
+Assign metabolites and their associated stoichiometries from metabolite_dict to a reaction struct.
+Directionality is specified using "for" (forward), "rev" (reverse), or "" for bidirectional reactions. 
+All other fields are left unassigned.
+"""
 function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
     id = ""
     name = ""
@@ -122,6 +149,12 @@ function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
     Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
 end
 
+"""
+reaction = Reaction(rxn_dict :: Dict{String, Any}, mets::Array{Metabolite, 1})
+
+Assign a reaction struct using rxn_dict and also check that metabolites in this struct exist in the model.
+If not a warning is issued and that metabolite is not added to the reaction.
+"""
 function Reaction(d :: Dict{String, Any}, mets::Array{Metabolite, 1})
     id = ""
     name = ""
@@ -175,7 +208,7 @@ end
 
 
 """
-Gene
+Gene struct (mutable)
 """
 mutable struct Gene
     id :: String
@@ -184,6 +217,11 @@ mutable struct Gene
     annotation :: Dict{String, Union{Array{String, 1}, String}}    
 end
 
+"""
+gene = Gene()
+
+Empty gene constructor.
+"""
 function Gene()
     id = ""
     name = ""
@@ -192,6 +230,11 @@ function Gene()
     Gene(id, name, notes, annotation)
 end
 
+"""
+gene = Gene(gene_dict :: Dict{String, Any},)
+
+Assign a gene based on the fields contained in gene_dict.
+"""
 function Gene(d)
     id = ""
     name = ""
@@ -222,8 +265,7 @@ function Gene(d)
 end
 
 """
-Complete model with metadata associated with the model e.g. formulas etc.
-Contains grrs which should make gene reaction look ups easier
+Model struct of a constraint based metabolic model.
 """
 struct Model
     id :: String # model name
@@ -236,7 +278,7 @@ end
 """
 Model()
 
-Empty constructor.
+Empty model constructor.
 """
 function Model()
     Model("blank", Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
@@ -244,7 +286,11 @@ end
 
 
 """
-Construct CoreModel from Model
+S, b, upper_bounds, lower_bounds = get_core_model(model::Model)
+
+Return stoichiometrix matrix (S), mass balance right hand side (b), upper and lower bounds of constraint based model.
+That is, S*v=b with lower_bounds ≤ v ≤ upper_bounds where v is the flux vector. This is useful if you want to construct
+your own optimization problem.
 """
 function get_core_model(model::Model)
     ubs = [rxn.ub for rxn in model.rxns]
@@ -265,7 +311,7 @@ function get_core_model(model::Model)
 end
 
 """
-index = getindex(model, rxn)
+index = getindex(model::Model, rxn::Reaction)
 
 Get the index of rxn in model. Return -1 if not found.
 """
@@ -274,9 +320,9 @@ function Base.getindex(model::Model, rxn::Reaction)
 end
 
 """
-index = getindex(rxns, rxn)
+index = getindex((rxns::Array{Reaction, 1}, rxn::Reaction)
 
-Get the index of rxn in rxns. Return -1 if not found.
+Get the index of a reaction in an array of reactions. Return -1 if not found.
 """
 function Base.getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
     for i in eachindex(rxns)
@@ -288,7 +334,7 @@ function Base.getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 end
 
 """
-index = getindex(model, rxn)
+index = getindex(model::Model, met::Metabolite)
 
 Get the index of metabolite in model. Return -1 if not found.
 """
@@ -297,9 +343,9 @@ function Base.getindex(model::Model, met::Metabolite)
 end
 
 """
-index = getindex(metabolites, rxn)
+index = getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 
-Get the index of metabolite in metabolites. Return -1 if not found.
+Get the index of a metabolite in an array of metabolites. Return -1 if not found.
 """
 function Base.getindex(mets::Array{Metabolite, 1}, met::Metabolite)
     for i in eachindex(mets)
@@ -311,7 +357,7 @@ function Base.getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 end
 
 """
-index = getindex(model, gene)
+index = getindex(model::Model, gene::Gene)
 
 Get the index of gene in model. Return -1 if not found.
 """
@@ -320,9 +366,9 @@ function Base.getindex(model::Model, gene::Gene)
 end
 
 """
-index = getindex(model, gene)
+index = getindex(genes::Array{Gene, 1}, gene::Gene)
 
-Get the index of gene in genes. Return -1 if not found.
+Get the index of a gene in an array of genes. Return -1 if not found.
 """
 function Base.getindex(genes::Array{Gene, 1}, gene::Gene)
     for i in eachindex(genes)
@@ -334,7 +380,7 @@ function Base.getindex(genes::Array{Gene, 1}, gene::Gene)
 end
 
 """
-findfirst(rxns, rxnid)
+findfirst(rxns::Array{Reaction, 1}, rxnid::String)
 
 Return the reaction with rxnid or else `nothing`. Typically used: findfirst(model.rxns, rxnid)
 """
@@ -348,7 +394,7 @@ function Base.findfirst(rxns::Array{Reaction, 1}, rxnid::String)
 end
 
 """
-findfirst(mets, metid)
+findfirst(mets::Array{Metabolite, 1}, metid::String)
 
 Return the metabolite with metid or else `nothing`. Typically used: findfirst(model.mets, metid)
 """
@@ -362,7 +408,7 @@ function Base.findfirst(mets::Array{Metabolite, 1}, metid::String)
 end
 
 """
-findfirst(genes, geneid)
+findfirst(genes::Array{Gene, 1}, geneid::String)
 
 Return the gene with geneid or else `nothing`. Typically used: findfirst(model.genes, geneid)
 """
@@ -377,18 +423,17 @@ end
 
 
 """
-Pretty printing of model.
+Pretty printing of model::Model.
 """
 function Base.show(io::IO, m::Model)
     println(io, "Constraint based model: ", m.id)
     println(io, "Number of reactions: ", length(m.rxns))
     println(io, "Number of metabolites: ", length(m.mets))
     println(io, "Number of genes: ", length(m.genes))
-    # println(io, "Objective function: ", )
 end
 
 """
-Pretty printing of reaction.
+Pretty printing of reaction::Reaction.
 """
 function Base.show(io::IO, r::Reaction)
     if r.ub > 0.0 && r.lb < 0.0
@@ -435,7 +480,7 @@ function Base.show(io::IO, r::Reaction)
 end
 
 """
-Pretty printing of reactions.
+Pretty printing of reactions::Array{Reaction, 1}.
 """
 function Base.show(io::IO, ::MIME"text/plain", rs::Array{Reaction, 1})
     println(io, "Reaction set of length: ", length(rs))
@@ -443,7 +488,7 @@ end
 
 
 """
-Pretty printing of metabolite.
+Pretty printing of metabolite::Metabolite.
 """
 function Base.show(io::IO, m::Metabolite)
     println(io, "Metabolite ID: ", m.id)
@@ -453,14 +498,14 @@ function Base.show(io::IO, m::Metabolite)
 end
 
 """
-Pretty printing of metabolites.
+Pretty printing of metabolites::Array{Metabolite, 1}.
 """
 function Base.show(io::IO, ::MIME"text/plain", ms::Array{Metabolite, 1})
     println(io, "Metabolite set of length: ", length(ms))
 end
 
 """
-Pretty printing of gene.
+Pretty printing of gene::Gene.
 """
 function Base.show(io::IO, g::Gene)
     println(io, "Gene ID: ", g.id)
@@ -468,7 +513,7 @@ function Base.show(io::IO, g::Gene)
 end
 
 """
-Pretty printing of genes.
+Pretty printing of genes::Array{Gene, 1}.
 """
 function Base.show(io::IO, ::MIME"text/plain", gs::Array{Gene, 1})
     println(io, "Gene set of length: ", length(gs))

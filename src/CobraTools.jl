@@ -4,6 +4,7 @@ module CobraTools
 using JSON
 using MATLAB 
 using JLD
+using SBML
 
 # Model analysis
 using SparseArrays
@@ -25,7 +26,7 @@ using Random
 
 include("global_cobratools.jl")
 
-include("cobra.jl")
+include("cobra_base.jl")
 export Reaction, Metabolite, Gene
 
 include("parse_models.jl")

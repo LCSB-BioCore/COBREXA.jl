@@ -1274,6 +1274,18 @@ git-tree-sha1 = "369e25546984dff5df351bc056fccc30de615080"
 uuid = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 version = "1.0.8"
 
+[[SBML]]
+deps = ["Libdl", "Pkg", "SBML_jll", "SHA", "Test"]
+git-tree-sha1 = "c2008b1fa2b150d96c065ca508cc55986f4081da"
+uuid = "e5567a89-2604-4b09-9718-f5f78e97c3bb"
+version = "0.1.0"
+
+[[SBML_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "XML2_jll", "Zlib_jll"]
+git-tree-sha1 = "4787b76c8914002ab3a9d2b1ae002fe82376bfba"
+uuid = "bb12108a-f4ef-5f88-8ef3-0b33ff7017f1"
+version = "5.19.0+1"
+
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
