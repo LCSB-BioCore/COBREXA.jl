@@ -8,7 +8,7 @@ using Plots
 pyplot()
 
 # E. coli model
-modelpath = joinpath("models", "iML1515.json") 
+modelpath = joinpath("..", "models", "iML1515.json") 
 model = CobraTools.read_model(modelpath)
 gibbs = CobraTools.map_gibbs_rxns(model.rxns) # very slow - rather just import this - will need to reload for other models
 
@@ -86,6 +86,6 @@ end
 
 plot(μs./μ_max, ΔG_exts, label="External", ylabel="ΔG [kJ/mol Glc]", xlabel="Anabolic flux fraction")
 plot!(μs./μ_max, ΔG_ints, label="Internal", ylabel="ΔG [kJ/mol Glc]", xlabel="Anabolic flux fraction")
-#savefig("aerobic_dg_lowbiomassdg.png")
+#savefig("imgs/aerobic_dg_lowbiomassdg.png")
 
 [missing_exts missing_ints]

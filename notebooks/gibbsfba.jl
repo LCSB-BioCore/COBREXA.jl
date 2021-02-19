@@ -9,7 +9,7 @@ using Plots
 pyplot()
 
 # E. coli model
-modelpath = joinpath("models", "iML1515.json")
+modelpath = joinpath("..", "models", "iML1515.json")
 
 model = CobraTools.read_model(modelpath)
 gibbs = CobraTools.map_gibbs_rxns(model.rxns) # very slow - rather just import this - will need to reload for other models
@@ -48,6 +48,6 @@ termination_status(cbmodel) != MOI.OPTIMAL && @warn "Optimization issue..."
 fluxes = CobraTools.map_fluxes(v, model)
 CobraTools.get_exchanges(fluxes; topN=8, ignorebound=10000)
 
-open("gibbsfluxes.json", "w") do io
+open(joinpath("escher-fluxes","gibbsfluxes.json"), "w") do io
     JSON.print(io, fluxes)
 end

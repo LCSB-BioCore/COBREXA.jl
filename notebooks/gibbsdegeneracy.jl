@@ -10,7 +10,7 @@ using Plots
 pyplot()
 
 # E. coli model
-modelpath = joinpath("models", "iML1515.json") 
+modelpath = joinpath("..", "models", "iML1515.json") 
 model = CobraTools.read_model(modelpath)
 gibbs = CobraTools.map_gibbs_rxns(model.rxns) # very slow - rather just import this - will need to reload for other models
 
@@ -92,4 +92,4 @@ end
 dgs = [x.val for x in ΔG_exts]
 histogram(dgs)
 plot!(xlabel="kJ/mol Glc", legend=false)
-savefig("gibbsdegcon.png")
+savefig("imgs/gibbsdegcon.png")
