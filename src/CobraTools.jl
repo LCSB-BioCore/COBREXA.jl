@@ -2,8 +2,7 @@ module CobraTools
 
 # IO of models and data
 using JSON
-using MATLAB 
-using JLD
+using MATLAB
 using SBML
 
 # Model analysis
@@ -23,8 +22,6 @@ using PyCall # for Equilibrator - ensure that it is installed
 
 # Sampling
 using Random
-
-include("global_cobratools.jl")
 
 include("cobra_base.jl")
 export Reaction, Metabolite, Gene
