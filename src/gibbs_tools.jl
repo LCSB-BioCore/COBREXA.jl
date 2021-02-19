@@ -121,16 +121,18 @@ function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs, biomassid="BI
 end
 
 """
-save_Gibbs(path, gibbs)
+save_gibbs(path, gibbs)
 
-Save Gibbs dict. Saved as String => [mag, err]
+Save gibbs dict. Saved as String => [mag, err]
 """
-function save_Gibbs(path, gibbs)
+function save_gibbs(path, gibbs)
     decomp = Dict{String, Array{Float64,1}}()
     for (k, v) in gibbs
         decomp[k] = [Measurements.value(v), Measurements.uncertainty(v)]
     end
-    JLD.save(path, "gibbs", decomp)
+    open(path, "w") do io
+        JSON.print(io, decomp)
+    end
 end
 
 """
@@ -138,8 +140,8 @@ load_Gibbs(path)
 
 Load Gibbs dict. Loads String => [mag, err]
 """
-function load_Gibbs(path)
-    decomp = JLD.load(path, "gibbs")
+function load_gibbs(path)
+    decomp = JSON.parsefile(path)
     gibbs = Dict{String, Measurement{Float64}}()
     for (k, vs) in decomp
         gibbs[k] = vs[1] ± vs[2]
