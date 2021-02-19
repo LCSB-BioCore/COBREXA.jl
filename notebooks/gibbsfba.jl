@@ -38,7 +38,7 @@ CobraTools.set_bound(atpm_index, ubs, lbs; ub=1000.0, lb=0.0)
 
 exts = [(i, model.rxns[i].id)  for i in eachindex(model.rxns) if startswith(model.rxns[i].id, "EX_") && haskey(gibbs, model.rxns[i].id)]
 
-@objective(cbmodel, Max, sum(v[i]*Measurements.value(gibbs[id]) for (i, id) in exts))
+@objective(cbmodel, Min, sum(v[i]*Measurements.value(gibbs[id]) for (i, id) in exts))
 
 optimize!(cbmodel) 
 termination_status(cbmodel) != MOI.OPTIMAL && @warn "Optimization issue..."

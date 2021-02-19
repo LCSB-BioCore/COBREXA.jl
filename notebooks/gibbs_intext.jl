@@ -10,10 +10,11 @@ pyplot()
 # E. coli model
 modelpath = joinpath("models", "iML1515.json") 
 model = CobraTools.read_model(modelpath)
-gibbs = CobraTools.mapGibbs(model.rxns) # very slow - rather just import this - will need to reload for other models
+gibbs = CobraTools.map_gibbs_rxns(model.rxns) # very slow - rather just import this - will need to reload for other models
 
 
 ecoli_kJmolCarbon = -37.36 ± 8.55 # formation of biomass kJ/mol 74.36 ± 8.67
+# ecoli_kJmolCarbon = -74.36 ± 8.67 # formation of biomass kJ/mol 
 
 cbmodel, v, mb, ubs, lbs = CobraTools.CBM(model)
 set_optimizer(cbmodel, Gurobi.Optimizer)
@@ -28,9 +29,9 @@ atpm_index = model[findfirst(model.rxns, "ATPM")]
 CobraTools.set_bound(glucose_index, ubs, lbs; ub=-1.0, lb=-1.0)
 
 # Aerobic
-# CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=-1000.0)
+CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=-1000.0)
 # Anaerobic
-CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
+# CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
 
 # No free ATP generation
 CobraTools.set_bound(atpm_index, ubs, lbs; ub=1000.0, lb=0.0)
@@ -85,6 +86,6 @@ end
 
 plot(μs./μ_max, ΔG_exts, label="External", ylabel="ΔG [kJ/mol Glc]", xlabel="Anabolic flux fraction")
 plot!(μs./μ_max, ΔG_ints, label="Internal", ylabel="ΔG [kJ/mol Glc]", xlabel="Anabolic flux fraction")
-# savefig("aerobic_dg.png")
+#savefig("aerobic_dg_lowbiomassdg.png")
 
 [missing_exts missing_ints]

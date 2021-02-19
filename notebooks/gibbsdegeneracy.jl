@@ -4,6 +4,7 @@ using Gurobi # use your favourite solver
 using Measurements
 using LinearAlgebra
 using MCMCChains
+using HypothesisTests
 using StatsBase
 using Plots
 pyplot()
@@ -30,9 +31,9 @@ etoh_index = model[findfirst(model.rxns, "EX_etoh_e")]
 CobraTools.set_bound(glucose_index, ubs, lbs; ub=-1.0, lb=-1.0)
 
 # Aerobic
-# CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=-1000.0)
+CobraTools.set_bound(o2_index, ubs, lbs; ub=0.0, lb=-1000.0)
 # Anaerobic
-CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
+# CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
 
 # No free ATP generation
 CobraTools.set_bound(atpm_index, ubs, lbs; ub=1000.0, lb=0.0)
@@ -45,18 +46,32 @@ termination_status(cbmodel) != MOI.OPTIMAL && @warn "Optimization issue..."
 μ = objective_value(cbmodel)
 
 ### Fix biomass as a constraint
-CobraTools.set_bound(biomass_index, ubs, lbs; ub=μ, lb=0.99*μ)  
+CobraTools.set_bound(biomass_index, ubs, lbs; ub=μ*0.9, lb=0.89*μ)  
+
+
+######################    
+@objective(cbmodel, Max, v[atpm_index]) # maximum catabolism
+optimize!(cbmodel)
+termination_status(cbmodel) != MOI.OPTIMAL && @warn "Catabolic optimization issue at $μ"
+
+λ = objective_value(cbmodel) # maximum ATP burnt
+
+### Fix ATP burn rate
+CobraTools.set_bound(atpm_index, ubs, lbs; ub=λ, lb=λ*0.99)
+########################
+
 
 ##################################
 # Get warmup points
 wpoints = CobraTools.get_warmup_points(cbmodel, v, ubs, lbs, numstop=1000) # very slow
 
 # sample
-samples = @time CobraTools.hit_and_run(1000_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000) 
-samples = @time CobraTools.achr(100_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000) 
-
-etoh_chain = Chains(samples[etoh_index, :])
-gewekediag(etoh_chain)[1]
+samples = @time CobraTools.hit_and_run(100_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000) 
+# samples = @time CobraTools.achr(100_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000) 
+n10 = round(Int64, 0.1*size(samples, 2))
+samples10 = samples[etoh_index, 1:n10]
+samples50 = samples[etoh_index, (n10+1):end]
+UnequalVarianceTTest(samples10, samples50)
 
 plot(samples[etoh_index, :])
 v = StatsBase.autocor(samples[etoh_index, :])
@@ -76,3 +91,5 @@ end
 
 dgs = [x.val for x in ΔG_exts]
 histogram(dgs)
+plot!(xlabel="kJ/mol Glc", legend=false)
+savefig("gibbsdegcon.png")
