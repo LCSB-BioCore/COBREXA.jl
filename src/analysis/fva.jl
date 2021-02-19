@@ -16,7 +16,7 @@ function fluxVariabilityAnalysis(model::LinearModel, optimizer)
    return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
 end
 
-function fluxVariabilityAnalysis(model::LinearModel, reactions::Array{Int64, 1}, optimizer)
+function fluxVariabilityAnalysis(model::LinearModel, reactions::Vector{Int64}, optimizer)
    (maximum(reactions) > length(model.rxns)) && error("Index exceeds number of reactions.")
    γ = 1.
    fluxes = zeros(length(reactions), 2)
@@ -43,9 +43,9 @@ end
 """
 (Local) multi-process version of FVA that assigns the reactions to several
 processes running in parallel
-`workers` should be a list of process ids returned by `createParPool`
+`workers` should be a list of process ids, as returned by `addprocs`.
 """
-function parFVA(model::LinearModel, reactions::Array{Int64, 1}, solver, workersToUse::Array{Int64,1})
+function parFVA(model::LinearModel, reactions::Vector{Int64}, solver, workersToUse::Vector{Int64})
    nReacs = length(reactions)
    nWorkers = length(workersToUse)
    if nReacs < nWorkers
@@ -88,33 +88,55 @@ function allocateReacs(reactions::Array{Int64, 1}, nWorkers::Int)
    return allocatedReacs
 end
 
+function parFVA2_add_constraint(model, c, x, Z0, gamma)
+    JuMP.@constraint(model, c' * x ≥ gamma * Z0)
+end
+
+function parFVA2_get_minmax(model, rid)
+    var = JuMP.all_variables(model)[rid]
+    JuMP.@objective(model, MOI.MIN_SENSE, var)
+    JuMP.optimize!(model)
+    min_flux = JuMP.objective_value(model)
+
+    JuMP.@objective(model, MOI.MAX_SENSE, var)
+    JuMP.optimize!(model)
+    max_flux = JuMP.objective_value(model)
+
+    [min_flux max_flux]
+end
+
+
 function parFVA2(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
     if any(reactions .> length(model.rxns))
         throw(ArgumentError("reactions contain an out-of-bounds index"))
     end
 
-    γ = 1.
-    fluxes = zeros(length(reactions), 2)
+    gamma = 1. #TODO parametrize?
+    (optimization_model, x0) = fluxBalanceAnalysis(model::LinearModel, optimizer)
+    Z0 = JuMP.objective_value(optimization_model)
 
-    (optimization_model, x₀) = fluxBalanceAnalysis(model::LinearModel, optimizer)
-    Z₀ = JuMP.objective_value(optimization_model)
-    x = JuMP.all_variables(optimization_model)
-    @constraint(optimization_model, model.c' * x ≥ γ * Z₀)
+    # helper
+    allworkers(f) = fetch.([f(w) for w in workers])
 
-    fetch.([save_at(w, :cobrexa_parfva_model, optimization_model) for w in workers])
+    # copy the data to the workers
+    allworkers(w -> save_at(w, :cobrexa_parfva_data, (model, Z0, optimizer, gamma)))
 
-    fluxes = vcat(dpmap(reactions, rid -> :(begin
-        var = JuMP.all_variables(cobrexa_parfva_model)[$rid]
-        @objective(cobrexa_parfva_model, MOI.MIN_SENSE, var)
-        JuMP.optimize!(cobrexa_parfva_model)
-        min_flux = JuMP.objective_value(cobrexa_parfva_model)
+    # make a JuMP optimization model
+    allworkers(w -> save_at(w, :cobrexa_parfva_model, :(begin
+        model, Z0, optimizer, gamma = cobrexa_parfva_data
+        optmodel, x = COBREXA.makeOptimizationModel(model, optimizer)
+        COBREXA.parFVA2_add_constraint(optmodel, model.c, x, Z0, gamma)
+        optmodel
+    end)))
 
-        @objective(cobrexa_parfva_model, MOI.MIN_SENSE, var)
-        JuMP.optimize!(cobrexa_parfva_model)
-        max_flux = JuMP.objective_value(cobrexa_parfva_model)
-        [min_flux max_flux]
-    end), workers)...)
+    # schedule FVA parts parallely using pmap
+    fluxes = vcat(pmap(
+        rid -> Base.eval(Main, :(COBREXA.parFVA2_get_minmax(cobrexa_parfva_model, $rid))),
+        CachingPool(workers), reactions)...)
 
+    # free the data on workers
+    fetch.([remove_from(w, :cobrexa_parfva_data) for w in workers])
     fetch.([remove_from(w, :cobrexa_parfva_model) for w in workers])
+
     return fluxes
 end
