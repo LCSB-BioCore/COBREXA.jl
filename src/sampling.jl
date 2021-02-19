@@ -3,7 +3,8 @@ get_warmup_points(cbmodel, v, mb, ubs, lbs; randomobjective=false, numstop=1e10)
 
 Generate warmup points for all the reactions on the model that 
 are not fixed. Assumes you feed in a JuMP model that is already
-constrained by however you want it to be.
+constrained i.e. the constrains are already applied into cbmodel.
+Note, extra constraints applied to ubs and lbs will have no effect.
 
 numstop = 2*number of warmup points - to reduce the time this takes
 """

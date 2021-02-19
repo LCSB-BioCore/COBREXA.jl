@@ -22,7 +22,7 @@ function read_model(file_location)
     elseif endswith(file_location, ".xml")
         try
             model = reconstruct_model_sbml(file_location)
-            cto.verbose && @warn "Not implemented!"
+            @warn "Not implemented!"
         catch err
             @error "SBML model reading error.\n$err"
             model = Model()
@@ -187,7 +187,7 @@ function save_model(model :: Model, file_location :: String)
     if endswith(file_location, ".json")
         save_json_model(model, file_location)
     elseif endswith(file_location, ".xml")
-        cto.verbose && @warn "Not implemented!"
+        @warn "Not implemented!"
     elseif endswith(file_location, ".mat")
         save_matlab_model(model, file_location)
     else

@@ -1,8 +1,6 @@
 using Test
 using CobraTools
 
-CobraTools.setverbose(false) # quiet
-
 include("testfuncs.jl")
 
 # E. coli models
