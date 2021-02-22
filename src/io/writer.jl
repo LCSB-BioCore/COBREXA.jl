@@ -6,9 +6,7 @@ NB: Does NOT export general inequality constraints (eg coupling)
 See also: `MAT.jl`
 """
 function writeModel(filePath::String, model::LinearModel, varName::String="model")
-    file = matopen(filePath, "w")
-    write(file, varName, convertToExportable(model))
-    close(file)
+    matwrite(filePath, Dict(varName => convertToExportable(model)))
 end
 
 """
