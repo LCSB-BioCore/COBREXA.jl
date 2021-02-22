@@ -13,9 +13,10 @@ end
 
 """
 Convert a LinearModel to exportable format
+SparseVectors are not written and read properly, SparseMatrix is okay
 """
 function convertToExportable(model::LinearModel)
-    return Dict("S"    => Matrix(model.S),
+    return Dict("S"    => model.S,
                 "b"    => Array(model.b),
                 "c"    => Array(model.c),
                 "ub"   => Array(model.xu),
