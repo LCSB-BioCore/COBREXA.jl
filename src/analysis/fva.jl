@@ -105,7 +105,6 @@ function parFVA2_get_minmax(model, rid)
     [min_flux max_flux]
 end
 
-
 function parFVA2(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
     if any(reactions .> length(model.rxns))
         throw(ArgumentError("reactions contain an out-of-bounds index"))
@@ -115,14 +114,11 @@ function parFVA2(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
     (optimization_model, x0) = fluxBalanceAnalysis(model::LinearModel, optimizer)
     Z0 = JuMP.objective_value(optimization_model)
 
-    # helper
-    allworkers(f) = fetch.([f(w) for w in workers])
-
-    # copy the data to the workers
-    allworkers(w -> save_at(w, :cobrexa_parfva_data, (model, Z0, optimizer, gamma)))
+    # save the model data to all workers (`Ref` avoids broadcasting over the tuple)
+    save_at.(workers, :cobrexa_parfva_data, Ref((model, Z0, optimizer, gamma)))
 
     # make a JuMP optimization model
-    allworkers(w -> save_at(w, :cobrexa_parfva_model, :(begin
+    save_at.(workers, :cobrexa_parfva_model, Ref(:(begin
         model, Z0, optimizer, gamma = cobrexa_parfva_data
         optmodel, x = COBREXA.makeOptimizationModel(model, optimizer)
         COBREXA.parFVA2_add_constraint(optmodel, model.c, x, Z0, gamma)
@@ -130,13 +126,13 @@ function parFVA2(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
     end)))
 
     # schedule FVA parts parallely using pmap
-    fluxes = vcat(pmap(
-        rid -> Base.eval(Main, :(COBREXA.parFVA2_get_minmax(cobrexa_parfva_model, $rid))),
+    fluxes = vcat(dpmap(
+        rid -> :(COBREXA.parFVA2_get_minmax(cobrexa_parfva_model, $rid)),
         CachingPool(workers), reactions)...)
 
     # free the data on workers
-    fetch.([remove_from(w, :cobrexa_parfva_data) for w in workers])
-    fetch.([remove_from(w, :cobrexa_parfva_model) for w in workers])
+    fetch.(remove_from.(workers, :cobrexa_parfva_data))
+    fetch.(remove_from.(workers, :cobrexa_parfva_model))
 
     return fluxes
 end
