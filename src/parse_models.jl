@@ -8,8 +8,6 @@ Note, when importing JSON models only reactions, metabolites, genes and id are u
 
 Note, when importing Matlab models only rxns, metCharge, lb, metNames, S, grRules,
 genes, description, rxnNames, ub, metFormulas, b, subSystems, mets and c are used.
-
-Note, SBML is not implemented yet.
 """
 function read_model(file_location)
     if endswith(file_location, ".json")
@@ -22,7 +20,6 @@ function read_model(file_location)
     elseif endswith(file_location, ".xml")
         try
             model = reconstruct_model_sbml(file_location)
-            @warn "Not implemented!"
         catch err
             @error "SBML model reading error.\n$err"
             model = Model()
@@ -140,8 +137,15 @@ function reconstruct_model_matlab(file_location)
     return Model(model_id, rxns, mets, genes, grrs)
 end
 
-function reconstructmodelsbml(file_location)
-    return Model()
+function reconstruct_model_sbml(file_location)
+    m = readSBML(file_location)
+
+# m is now a Model structure with:
+# m.reactions
+# m.species
+# m.compartments
+    # return Model()
+    return m
 end
 
 """

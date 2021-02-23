@@ -24,11 +24,11 @@ To install this package: `] add CobraTools`.
 - [X] pFBA
 - [ ] MOMA
 - [ ] FVA
-- [ ] Implement sampling
+- [x] Implement sampling
 - [ ] Single gene knockouts
 - [ ] Double gene knockout
 - [ ] Model construction tools
-- [ ] Gibbs integration
+- [x] Gibbs integration
 - [ ] Distributed analysis (COBRA.jl integration?)
 
 ## Usage
