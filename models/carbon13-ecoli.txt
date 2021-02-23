@@ -19,7 +19,7 @@ S7P ↔ TA-C3 + E4P
 KDPG → Pyr + GAP 
 Pyr → AcCoA + CO2 + NADH
 OAC + AcCoA → Cit 
-Cit ↔ICit 
+Cit ↔ ICit 
 ICit ↔ AKG + CO2 + NADPH
 AKG → SucCoA + CO2 + NADH
 SucCoA ↔ Suc + ATP
@@ -67,4 +67,4 @@ CO2 → CO2.ext
 O2.ext → O2
 NH3.ext → NH3
 SO4.ext → SO4
-0.488 Ala+0.281 Arg+0.229 Asn + 0.229 Asp + 0.087 Cys + 0.250 Glu + 0.250 Gln + 0.582 Gly + 0.090 His + 0.276 Ile + 0.428 Leu + 0.326 Lys + 0.146 Met + 0.176 Phe + 0.210 Pro + 0.205 Ser + 0.241 Thr + 0.054 Trp + 0.131 Tyr + 0.402 Val + 0.205 G6P + 0.071 F6P + 0.754 R5P + 0.129 GAP + 0.619 3PG + 0.051 PEP + 0.083 Pyr + 2.510 AcCoA + 0.087 AKG + 0.340 OAC + 0.443 MEETHF + 33.247 ATP + 5.363 NADPH → 39.68 Biomass + 1.455 NADH
+#0.488 Ala+0.281 Arg+0.229 Asn + 0.229 Asp + 0.087 Cys + 0.250 Glu + 0.250 Gln + 0.582 Gly + 0.090 His + 0.276 Ile + 0.428 Leu + 0.326 Lys + 0.146 Met + 0.176 Phe + 0.210 Pro + 0.205 Ser + 0.241 Thr + 0.054 Trp + 0.131 Tyr + 0.402 Val + 0.205 G6P + 0.071 F6P + 0.754 R5P + 0.129 GAP + 0.619 3PG + 0.051 PEP + 0.083 Pyr + 2.510 AcCoA + 0.087 AKG + 0.340 OAC + 0.443 MEETHF + 33.247 ATP + 5.363 NADPH → 39.68 Biomass + 1.455 NADH
