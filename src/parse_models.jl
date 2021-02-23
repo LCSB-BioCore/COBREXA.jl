@@ -141,16 +141,6 @@ function reconstruct_model_matlab(file_location)
 end
 
 function reconstructmodelsbml(file_location)
-    # @pyimport libsbml
-    # reader = libsbml.SBMLReader()
-    # sbmldoc = reader[:readSBML](file_location)
-    # sbmlmodel = sbmldoc[:getModel]() # Get the model
-    # model_id = sbmlmodel[:getId]()
-    # met = sbmlmodel[:getListOfSpecies]()[1]
-    # id = met[:getId]()
-    # name = met[:getName]()
-    # charge = met[:getCharge]()
-    # formula = ???
     return Model()
 end
 

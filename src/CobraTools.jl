@@ -29,7 +29,6 @@ include("sampling.jl")
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
 export Reaction, Metabolite, Gene
 
-
 # Initialization functions
 include("init_functions.jl")
 
