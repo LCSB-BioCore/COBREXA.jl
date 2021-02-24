@@ -3,26 +3,50 @@ buildrxnstring(rxn)
 
 Get rxn in string format for Equilibrator.
 """
-function build_rxn_string(rxn::Reaction)
+function build_rxn_string(rxn::Reaction, compoundtype="kegg")
     pos_s = []
     neg_s = []
-    for (met, coeff) in rxn.metabolites 
+
+    if compoundtype == "kegg"
+        cid = "kegg.compound"
+    else
+        cid = "bigg.metabolite"
+    end
+
+    for (met, coeff) in rxn.metabolites
+        metid = get(met.annotation, cid, [""])[1]
+        metid == "" && continue 
         if coeff > 0.0
-            push!(pos_s, "$(coeff) bigg.metabolite:$(met.id[1:end-2])")
+            if compoundtype == "kegg" 
+                push!(pos_s, "$(coeff) KEGG:$metid")
+            else
+                push!(pos_s, "$(coeff) bigg.metabolite:$metid")
+            end
         else
-            push!(neg_s, "$(abs(coeff)) bigg.metabolite:$(met.id[1:end-2])")    
+            if compoundtype == "kegg" 
+                push!(neg_s, "$(abs(coeff)) KEGG:$metid")
+            else
+                push!(neg_s, "$(abs(coeff)) bigg.metabolite:$metid")
+            end 
         end
     end
     return join(neg_s, " + ")*" = "*join(pos_s, " + ") # keep order for ease of use later
 end
 
+
 """
 gibbs_arr = mapGibbs(rxns; dgtype="zero", ph=7.0, ionic_str="100 mM")
 
-Return an dict of rxn.id => ΔG of the specidied dgtype.
+Return an dict of rxn.id => ΔG of the specified dgtype.
 """
-function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM") 
-    rxns_strings = [build_rxn_string(rxn) for rxn in rxns]
+function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true) 
+    
+    if usekegg
+        rxns_strings = [build_rxn_string(rxn, "kegg") for rxn in rxns]
+    else
+        rxns_strings = [build_rxn_string(rxn, "bigg") for rxn in rxns]
+    end
+    
     if dgtype == "phys"
         bals, gs, errs = py"pygetdgprimephys"(rxns_strings, ph, ionic_str)
     elseif dgtype == "prime" 
