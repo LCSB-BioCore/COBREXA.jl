@@ -24,6 +24,7 @@ include("met_tools.jl")
 include("basic_analysis.jl")
 include("gibbs_tools.jl")
 include("sampling.jl")
+include("brenda_tools.jl")
 
 ∅ = Metabolite("∅") # for exchange reactions
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
