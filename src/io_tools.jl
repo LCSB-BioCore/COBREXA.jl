@@ -41,7 +41,8 @@ end
 """
 reconstructmodeljson(modeldict)
 """
-function reconstruct_model_json(modeldict)
+function reconstruct_model_json(file_location)
+    modeldict = JSON.parsefile(file_location)
     id = modeldict["id"]
 
     mets = Metabolite[]
@@ -71,13 +72,14 @@ function reconstruct_model_json(modeldict)
 end
 
 """
-reconstructmodelmatlab(file_location)
+reconstruct_model_matlab(file_location)
+
+Note, notes and some annotation information will be lost when reading in in this format.
 """
 function reconstruct_model_matlab(file_location::String)
-    mf = MatFile(file_location)
-    model_name = variable_names(mf)[1] # assume model name is the only variable
-    modeldict = get_variable(mf, model_name)
-    close(mf)
+    matfile = matread(file_location)
+    model_name = collect(keys(matfile))[1]
+    modeldict = matfile[model_name]
 
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
     
@@ -85,13 +87,42 @@ function reconstruct_model_matlab(file_location::String)
     for i in eachindex(modeldict["mets"])
         id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
         name = haskey(modeldict, "metNames") ? modeldict["metNames"][i] : ""
-        formula = haskey(modeldict, "metFormulas") ? modeldict["metFormulas"][i] : "" 
-        charge = haskey(modeldict, "metCharge") ? modeldict["metCharge"][i] : 0
+        compartment = ""
+        formula = ""
+        if haskey(modeldict, "metFormulas") 
+            formula = modeldict["metFormulas"][i]
+        elseif haskey(modeldict, "metFormula") 
+            formula = modeldict["metFormula"][i]    
+        end
 
-        # these fields likely don't exist in the matlab model
-        compartment = haskey(modeldict, "compartment") ? modeldict["compartment"][i] : ""
-        notes = haskey(modeldict, "notes") ? modeldict["notes"][i] : Dict{String, Array{String, 1}}()
-        annotation = haskey(modeldict, "annotation") ? modeldict["annotation"][i] : Dict{String, Union{Array{String, 1}, String}}()
+        charge = 0 # sometimes inconsistently named
+        if haskey(modeldict, "metCharge") && !isnan(modeldict["metCharge"][i])
+            charge = modeldict["metCharge"][i]
+        elseif haskey(modeldict, "metCharges") && !isnan(modeldict["metCharges"][i])
+            charge = modeldict["metCharges"][i]
+        end
+        
+        annotation = Dict{String, Union{Array{String, 1}, String}}()
+        if haskey(modeldict, "metBiGGID")
+            annotation["bigg.metabolite"] = [modeldict["metBiGGID"][i]]
+        end
+        if haskey(modeldict, "metSBOTerms")
+            annotation["sbo"] = modeldict["metSBOTerms"][i]
+        end
+        if haskey(modeldict, "metKEGGID")
+            annotation["kegg.compound"] = [modeldict["metKEGGID"][i]]
+        end
+        if haskey(modeldict, "metMetaNetXID")
+            annotation["metanetx.chemical"] = [modeldict["metMetaNetXID"][i]]
+        end
+        if haskey(modeldict, "metChEBIID")
+            annotation["chebi"] = [modeldict["metChEBIID"][i]]
+        end
+        
+        notes = Dict{String, Array{String, 1}}()
+        if haskey(modeldict, "metNotes")
+            notes["note"] = [modeldict["metNotes"][i]]
+        end            
 
         push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation))
     end
@@ -105,13 +136,26 @@ function reconstruct_model_matlab(file_location::String)
         lb = haskey(modeldict, "lb") ? modeldict["lb"][i] : -1000.0 # reversible by default
         ub = haskey(modeldict, "ub") ? modeldict["ub"][i] : 1000.0 # reversible by default
         grr = haskey(modeldict, "grRules") ? modeldict["grRules"][i] : ""
-        subsystem = modeldict["subSystems"][i]
+        subsystem = join(modeldict["subSystems"][i], "; ")
+        objective_coefficient = 0.0
         objective_coefficient = haskey(modeldict, "c") ? modeldict["c"][i] : 0.0
 
-        # these fields likely don't exist in the matlab model
-        notes = haskey(modeldict, "notes") ? modeldict["notes"][i] : Dict{String, Array{String, 1}}()
-        annotation = haskey(modeldict, "annotation") ? modeldict["annotation"][i] : Dict{String, Union{Array{String, 1}, String}}() 
+        annotation = Dict{String, Union{Array{String, 1}, String}}()
+        if haskey(modeldict, "rxnKEGGID")
+            annotation["kegg.reaction"] = [modeldict["rxnKEGGID"][i]]
+        end
+        if haskey(modeldict, "rxnECNumbers")
+            annotation["ec-code"] = string.(split(modeldict["rxnECNumbers"][i], "; "))
+        end
+        if haskey(modeldict, "rxnBiGGID")
+            annotation["bigg.reaction"] = [modeldict["rxnBiGGID"][i]]
+        end     
         
+        notes = Dict{String, Array{String, 1}}()
+        if haskey(modeldict, "rxnNotes")
+            notes["note"] = [modeldict["rxnNotes"][i]]
+        end
+
         push!(rxns, Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient))
     end
 
@@ -119,17 +163,17 @@ function reconstruct_model_matlab(file_location::String)
     for i in eachindex(modeldict["genes"])
         id = haskey(modeldict, "genes") ? modeldict["genes"][i] : ""
         
-        # these fields likely don't exist in the matlab model
-        name = haskey(modeldict, "geneNames") ? modeldict["geneNames"][i] : ""
-        notes = haskey(modeldict, "geneNotes") ? modeldict["geneNotes"][i] : Dict{String, Array{String, 1}}()
-        annotation = haskey(modeldict, "geneAnnotations") ? modeldict["geneAnnotations"][i] : Dict{String, Union{Array{String, 1}, String}}()
+        # these fields often don't exist in the matlab models
+        name = ""
+        notes =  Dict{String, Array{String, 1}}()
+        annotation = Dict{String, Union{Array{String, 1}, String}}()
         
         push!(genes, Gene(id, name, notes, annotation))
     end
 
     grrs = Dict{String,  Array{Array{String, 1}, 1}}()
     for (i, rxn) in enumerate(rxns)
-        if !isempty(modeldict["grRules"][i])
+        if haskey(modeldict, "grRules") && !isempty(modeldict["grRules"][i])
             grrs[rxn.id] = parse_grr(modeldict["grRules"][i])
         end
     end

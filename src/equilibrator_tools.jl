@@ -1,3 +1,70 @@
+using PyCall
+
+@eval py"""
+    from equilibrator_api import ComponentContribution, Q_
+    cc = ComponentContribution()
+
+    def pygetdg0(fs, ph, ionic):
+        cc.p_h = Q_(ph)  # set pH
+        cc.ionic_strength = Q_(ionic)  # set I
+        bals = []
+        mags = []
+        errs = []
+        for f in fs:
+            try:
+                rxn = cc.parse_reaction_formula(f)
+                isbal = rxn.is_balanced()
+                bals += [isbal]
+                mags += [cc.standard_dg(rxn).value.magnitude]
+                errs += [cc.standard_dg(rxn).error.magnitude]
+            except:
+                bals += [False]
+                mags += [0.0]
+                errs += [0.0]
+                
+        return bals, mags, errs
+    
+    def pygetdgprime(fs, ph, ionic):
+        cc.p_h = Q_(ph)  # set pH
+        cc.ionic_strength = Q_(ionic)  # set I
+        bals = []
+        mags = []
+        errs = []
+        for f in fs:
+            try:
+                rxn = cc.parse_reaction_formula(f)
+                isbal = rxn.is_balanced()
+                bals += [isbal]
+                mags += [cc.standard_dg_prime(rxn).value.magnitude]
+                errs += [cc.standard_dg_prime(rxn).error.magnitude]
+            except:
+                bals += [False]
+                mags += [0.0]
+                errs += [0.0]
+                
+        return bals, mags, errs
+        
+    def pygetdgprimephys(fs, ph, ionic):
+        cc.p_h = Q_(ph)  # set pH
+        cc.ionic_strength = Q_(ionic)  # set I
+        bals = []
+        mags = []
+        errs = []
+        for f in fs:
+            try:
+                rxn = cc.parse_reaction_formula(f)
+                isbal = rxn.is_balanced()
+                bals += [isbal]
+                mags += [cc.physiological_dg_prime(rxn).value.magnitude]
+                errs += [cc.physiological_dg_prime(rxn).error.magnitude]
+            except:
+                bals += [False]
+                mags += [0.0]
+                errs += [0.0]
+                
+        return bals, mags, errs
+    """
+
 """
 build_rxn_string(rxn::Reaction, compoundtype="kegg")
 
@@ -33,14 +100,12 @@ function build_rxn_string(rxn::Reaction, compoundtype="kegg")
     return join(neg_s, " + ")*" = "*join(pos_s, " + ") # keep order for ease of use later
 end
 
-
 """
     map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true)
 
 Return a dict of rxn.id => ΔG of the specified dgtype.
 """
 function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true) 
-    include("equilibrator_pycall.jl")
     if usekegg
         rxns_strings = [build_rxn_string(rxn, "kegg") for rxn in rxns]
     else
@@ -58,12 +123,18 @@ function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_s
     gibbs = Dict{String, Measurement{Float64}}()
     for (rxn, g, err) in zip(rxns, gs, errs)
         if err < 1000.0 # ignore crazy errors
-            gibbs[rxn.id] = g ± err 
+            gibbs[rxn.id] = g ± err
         else
-            gibbs[rxn.id] = 0.0 ± 0.0    
+            gibbs[rxn.id] = 0.0 ± 0.0 
         end
     end
-    return gibbs
+
+    balances = Dict{String, Float64}()
+    for (rxn, bal) in zip(rxns, bals)
+        balances[rxn.id] = bal
+    end
+
+    return gibbs, balances
 end
 
 """
