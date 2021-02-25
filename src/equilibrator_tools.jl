@@ -1,5 +1,5 @@
 """
-buildrxnstring(rxn)
+build_rxn_string(rxn::Reaction, compoundtype="kegg")
 
 Get rxn in string format for Equilibrator.
 """
@@ -35,12 +35,12 @@ end
 
 
 """
-gibbs_arr = mapGibbs(rxns; dgtype="zero", ph=7.0, ionic_str="100 mM")
+    map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true)
 
-Return an dict of rxn.id => ΔG of the specified dgtype.
+Return a dict of rxn.id => ΔG of the specified dgtype.
 """
 function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true) 
-    
+    include("equilibrator_pycall.jl")
     if usekegg
         rxns_strings = [build_rxn_string(rxn, "kegg") for rxn in rxns]
     else
@@ -67,7 +67,7 @@ function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_s
 end
 
 """
-map_gibbs_external(fluxres, gibbs)
+    map_gibbs_external(fluxres::Dict{String, Float64}, gibbs)
 
 Calculate the Gibbs free energy change taking only the external fluxes into account.
 NB: you need to account for the biomass function separately.
@@ -89,7 +89,7 @@ function map_gibbs_external(fluxres::Dict{String, Float64}, gibbs)
 end
 
 """
-map_gibbs_internal(fluxres, gibbs, biomassid="BIOMASS")
+    map_gibbs_internal(fluxres, gibbs, biomassid="BIOMASS")
 
 Calculate the Gibbs free energy change taking only the internal fluxes into account.
 NB: you need to account for the biomass function separately. NB: 
@@ -114,7 +114,7 @@ function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs, biomassid="BI
 end
 
 """
-save_gibbs(path, gibbs)
+    save_gibbs(path, gibbs)
 
 Save gibbs dict. Saved as String => [mag, err]
 """
@@ -129,7 +129,7 @@ function save_gibbs(path, gibbs)
 end
 
 """
-load_Gibbs(path)
+    load_Gibbs(path)
 
 Load Gibbs dict. Loads String => [mag, err]
 """
