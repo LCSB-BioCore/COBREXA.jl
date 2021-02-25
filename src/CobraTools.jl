@@ -1,5 +1,6 @@
 module CobraTools
 
+using Requires
 using JSON
 using MATLAB
 using SBML
