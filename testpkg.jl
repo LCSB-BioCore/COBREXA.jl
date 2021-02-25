@@ -1,7 +1,7 @@
 using CobraTools
 
 # using SBML
-# modelpath = joinpath("models", "iMM904.xml") # doesn' work
+modelpath = joinpath("models", "iMM904.xml") # doesn' work
 # modelpath = joinpath("models", "iJO1366.xml") # doesn't work
 # modelpath = joinpath("models", "e_coli_core.xml") # doesn't work
 # modelpath = joinpath("models", "Ec_core_flux1.xml") # works
@@ -13,6 +13,4 @@ using CobraTools
 # modelpath = joinpath("models", "yeastGEM.xml")
 
 
-# model = CobraTools.read_model(modelpath)
-
-brenda_data = CobraTools.parse_brenda(joinpath("data", "brenda_download.brenda.txt"))
+model = CobraTools.read_model(modelpath)
