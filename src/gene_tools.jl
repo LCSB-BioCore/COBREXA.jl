@@ -56,15 +56,6 @@ function Gene(d)
 end
 
 """
-index = getindex(model::Model, gene::Gene)
-
-Get the index of gene in model. Return -1 if not found.
-"""
-function Base.getindex(model::Model, gene::Gene)
-    return model.genes[gene]
-end
-
-"""
 index = getindex(genes::Array{Gene, 1}, gene::Gene)
 
 Get the index of a gene in an array of genes. Return -1 if not found.

@@ -1,8 +1,8 @@
-using JLD
-using GZip
-using HTTP
+# using JLD
+# using GZip
+# using HTTP
 
-include("buildfuncs.jl")
+# include("buildfuncs.jl")
 
 # # # Get Gibbs data from Equilibrator
 # gibbs_reaction_url(ph::String) = "http://equilibrator.weizmann.ac.il/static/downloads/kegg_reactions_CC_ph$(ph).csv.gz"
