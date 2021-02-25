@@ -67,7 +67,7 @@ reaction = Reaction(rxn_dict :: Dict{String, Any}, mets::Array{Metabolite, 1})
 Assign a reaction struct using rxn_dict and also check that metabolites in this struct exist in the model.
 If not a warning is issued and that metabolite is not added to the reaction.
 """
-function Reaction(d :: Dict{String, Any}, mets::Array{Metabolite, 1})
+function Reaction(d::Dict{String, Any}, mets::Array{Metabolite, 1})
     id = ""
     name = ""
     metabolites = Dict{Metabolite, Float64}()
@@ -118,14 +118,6 @@ function Reaction(d :: Dict{String, Any}, mets::Array{Metabolite, 1})
     Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
 end
 
-"""
-index = getindex(model::Model, rxn::Reaction)
-
-Get the index of rxn in model. Return -1 if not found.
-"""
-function Base.getindex(model::Model, rxn::Reaction)
-    return model.rxns[rxn]
-end
 
 """
 index = getindex((rxns::Array{Reaction, 1}, rxn::Reaction)

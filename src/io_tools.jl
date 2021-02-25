@@ -1,5 +1,5 @@
 """
-model = readmodel(file_location)
+model = read_model(file_location)
 
 Reads a model file at file_location and returns a constraint based model.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
@@ -15,25 +15,25 @@ function read_model(file_location)
             model = reconstruct_model_json(JSON.parsefile(file_location))
         catch err
             @error "JSON model reading error.\n$err"
-            model = Model()
+            model = CobraTools.Model()
         end
     elseif endswith(file_location, ".xml")
         try
             model = reconstruct_model_sbml(file_location)
         catch err
             @error "SBML model reading error.\n$err"
-            model = Model()
+            model = CobraTools.Model()
         end
     elseif endswith(file_location, ".mat")
        try
             model = reconstruct_model_matlab(file_location)
        catch err
             @error "Matlab model reading error.\n$err"
-            model = Model()
+            model = CobraTools.Model()
        end
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
-        model = Model()
+        model = CobraTools.Model()
     end
     return model
 end
@@ -67,7 +67,7 @@ function reconstruct_model_json(modeldict)
         isempty(rxn.grr) ? continue : (grrs[rxn.id] = parse_grr(rxn.grr))
     end
     
-    return Model(id, rxns, mets, genes, grrs)
+    return CobraTools.Model(id, rxns, mets, genes, grrs)
 end
 
 """
@@ -134,7 +134,7 @@ function reconstruct_model_matlab(file_location)
         end
     end
     
-    return Model(model_id, rxns, mets, genes, grrs)
+    return CobraTools.Model(model_id, rxns, mets, genes, grrs)
 end
 
 function reconstruct_model_sbml(file_location)
@@ -177,7 +177,7 @@ and c are written to.
 
 Note, SBML is not implemented yet.
 """
-function save_model(model :: Model, file_location :: String)
+function save_model(model :: CobraTools.Model, file_location :: String)
     if endswith(file_location, ".json")
         save_json_model(model, file_location)
     elseif endswith(file_location, ".xml")
@@ -190,7 +190,7 @@ function save_model(model :: Model, file_location :: String)
 end
 
 
-function save_json_model(model :: Model, file_location :: String)
+function save_json_model(model::CobraTools.Model, file_location :: String)
     modeldict = Dict{String, Any}()
     modeldict["id"] = model.id
     modeldict["metabolites"] = model.mets
@@ -217,7 +217,7 @@ function save_json_model(model :: Model, file_location :: String)
     end
 end
 
-function save_matlab_model(model :: Model, file_location :: String)
+function save_matlab_model(model::CobraTools.Model, file_location::String)
     rxnrevs = zeros(Int64, length(model.rxns))
     for i in eachindex(model.rxns)
         if model.rxns[i].lb < 0.0 && model.rxns[i].ub > 0

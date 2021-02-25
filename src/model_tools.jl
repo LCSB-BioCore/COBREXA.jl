@@ -15,18 +15,44 @@ Model()
 Empty model constructor.
 """
 function Model()
-    Model("blank", Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
+    CobraTools.Model("blank", Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}(), Dict{String, Array{Array{String, 1}, 1}}())
 end
 
+"""
+index = getindex(model::CobraTools.Model, rxn::Reaction)
+
+Get the index of rxn in model. Return -1 if not found.
+"""
+function Base.getindex(model::CobraTools.Model, rxn::Reaction)
+    return model.rxns[rxn]
+end
 
 """
-S, b, upper_bounds, lower_bounds = get_core_model(model::Model)
+index = getindex(model::CobraTools.Model, met::Metabolite)
+
+Get the index of metabolite in model. Return -1 if not found.
+"""
+function Base.getindex(model::CobraTools.Model, met::Metabolite)
+    return model.mets[met]
+end
+
+"""
+index = getindex(model::CobraTools.Model, gene::Gene)
+
+Get the index of gene in model. Return -1 if not found.
+"""
+function Base.getindex(model::CobraTools.Model, gene::Gene)
+    return model.genes[gene]
+end
+
+"""
+S, b, upper_bounds, lower_bounds = get_core_model(model::CobraTools.Model)
 
 Return stoichiometrix matrix (S), mass balance right hand side (b), upper and lower bounds of constraint based model.
 That is, S*v=b with lower_bounds ≤ v ≤ upper_bounds where v is the flux vector. This is useful if you want to construct
 your own optimization problem.
 """
-function get_core_model(model::Model)
+function get_core_model(model::CobraTools.Model)
     ubs = [rxn.ub for rxn in model.rxns]
     lbs = [rxn.lb for rxn in model.rxns]
     
@@ -45,9 +71,9 @@ function get_core_model(model::Model)
 end
 
 """
-Pretty printing of model::Model.
+Pretty printing of model::CobraTools.Model.
 """
-function Base.show(io::IO, m::Model)
+function Base.show(io::IO, m::CobraTools.Model)
     println(io, "Constraint based model: ", m.id)
     println(io, "Number of reactions: ", length(m.rxns))
     println(io, "Number of metabolites: ", length(m.mets))

@@ -1,5 +1,5 @@
 """
-cbmodel, v, mb, ubs, lbs = CBM(model::Model)
+cbmodel, v, mb, ubs, lbs = CBM(model::CobraTools.Model)
 
 Initialize a constraint based model. Creates a model that satisfies the mass balance
 and flux constraints but no objective or optimizer is set. Returns the JuMP model.
@@ -7,7 +7,7 @@ This is useful if you want to write your own optimization problem.
 
 cbmodel is the JuMP model. v are the fluxes, mb is S*v == 0, and lbs <= v <= ubs.
 """
-function build_cbm(model::Model)
+function build_cbm(model::CobraTools.Model)
     S, b, ubs, lbs = get_core_model(model) # Construct S, b, lbs, ubs from model
     cbmodel = JuMP.Model()
     nvars = size(S, 2) # number of variables in model
@@ -19,12 +19,12 @@ function build_cbm(model::Model)
 end
 
 """
-reactionfluxes = fba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights = Float64[], optimizer="gubori")
+reactionfluxes = fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights = Float64[], optimizer="gubori")
 
 Run flux balance analysis (FBA) on the model using objective_rxn(s) and optionally specifying their weights (empty weights mean equal weighting per reaction).
 Optimiser can also be set here. Uses the constraints implied by the model object.
 """
-function fba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
+function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
     cbm, _, _, _, _ = build_cbm(model) # get the base constraint based model
 
     # ensure that an array of objective indices are fed in
@@ -80,13 +80,13 @@ function fba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; 
 end
 
 """
-reactionfluxes = pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
+reactionfluxes = pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
 
 Run parsimonious flux balance analysis on the model using objective_rxn(s) as the objective for the initial FBA problem. 
 Optionally, this/these objectives can be weighted by weights.
 Optimiser can also be set here. Uses the constraints implied by the model object.
 """
-function pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
+function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
     ## FBA ################################################
     cbm, _, _, _, _ = build_cbm(model) # get the base constraint based model
 
@@ -169,12 +169,12 @@ function pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}};
 end
 
 """
-rxn_flux_dict = map_fluxes(v, model::Model)
+rxn_flux_dict = map_fluxes(v, model::CobraTools.Model)
 
 Map fluxes from an optimization problem (v) to rxns in a model. v can be a JuMP object (fluxes) or an array of Float64 fluxes.
 Assumes they are in order, which they should be since they are constructed from model.
 """
-function map_fluxes(v::Array{VariableRef,1}, model::Model)
+function map_fluxes(v::Array{VariableRef,1}, model::CobraTools.Model)
     rxndict = Dict{String, Float64}()
     for i in eachindex(model.rxns)
         rxndict[model.rxns[i].id] = value(v[i])
@@ -182,7 +182,7 @@ function map_fluxes(v::Array{VariableRef,1}, model::Model)
     return rxndict
 end
 
-function map_fluxes(v::Array{Float64,1}, model::Model)
+function map_fluxes(v::Array{Float64,1}, model::CobraTools.Model)
     rxndict = Dict{String, Float64}()
     for i in eachindex(model.rxns)
         rxndict[model.rxns[i].id] = v[i]
@@ -241,6 +241,6 @@ end
 
 """
 """
-function display_metabolite_fluxes(fluxdict::Dict{String, Float64}, model::Model)
+function display_metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
 
 end

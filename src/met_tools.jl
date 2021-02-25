@@ -85,15 +85,6 @@ function Metabolite(d::Dict{String, Any})
 end
 
 """
-index = getindex(model::Model, met::Metabolite)
-
-Get the index of metabolite in model. Return -1 if not found.
-"""
-function Base.getindex(model::Model, met::Metabolite)
-    return model.mets[met]
-end
-
-"""
 index = getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 
 Get the index of a metabolite in an array of metabolites. Return -1 if not found.
