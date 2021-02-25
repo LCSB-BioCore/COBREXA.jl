@@ -1,8 +1,7 @@
 module CobraTools
 
-using Requires
 using JSON
-using MATLAB
+# using MATLAB
 using SBML
 using SparseArrays
 using JuMP
@@ -16,7 +15,7 @@ using Random
 using Gurobi
 using Tulip
 using GLPK
-using Ipopt
+# using Ipopt
 
 include("met_tools.jl")
 include("rxn_tools.jl")

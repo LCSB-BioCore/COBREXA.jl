@@ -4,8 +4,6 @@ These include PyCall functions that return Gibbs free energies of reactions from
 Equilibrator's python API.
 """
 function __init__()
-    @require MATLAB="10e44e05-a98a-55b3-a45b-ba969058deb6" reconstruct_model_matlab_(file_location::String) = reconstruct_model_matlab(file_location)
-
     # Get Gibbs reaction energies from Equilibrator's python API. 
     py"""
     from equilibrator_api import ComponentContribution, Q_
