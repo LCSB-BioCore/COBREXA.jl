@@ -11,7 +11,7 @@ makedocs(
         "Optimization Based Analysis" => "basic_analysis.md",
         "Sampling Tools" => "sampling_tools.md",
         "Equilibrator Interface" => "thermo_tools.md",
-        "Brenda Interface" => "brenda_tools.jl"
+        "Brenda Interface" => "brenda_tools.md"
     ]
 )
 
