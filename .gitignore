@@ -5,10 +5,10 @@
 
 # Ignore data files
 *.brenda.txt
-/models
-!/models/iML1515.xml
-!/models/iML1515.json
-!/models/iML1515.mat
+/models/*
+!/models/iJO1366.xml
+!/models/iJ01366.json
+!/models/iJO1366.mat
 
 # Ignore working files
 /notebooks_and_scripts/imgs
