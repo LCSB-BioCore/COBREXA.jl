@@ -73,7 +73,7 @@ end
 """
 reconstructmodelmatlab(file_location)
 """
-function reconstruct_model_matlab_(file_location::String)
+function reconstruct_model_matlab(file_location::String)
     mf = MatFile(file_location)
     model_name = variable_names(mf)[1] # assume model name is the only variable
     modeldict = get_variable(mf, model_name)

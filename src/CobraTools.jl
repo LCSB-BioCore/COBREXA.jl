@@ -22,13 +22,13 @@ include("rxn_tools.jl")
 include("gene_tools.jl")
 include("model_tools.jl")
 
-include("io_tools.jl")
-include("construction_tools.jl")
+# include("io_tools.jl")
+# include("construction_tools.jl")
 
-include("basic_analysis.jl")
-include("equilibrator_tools.jl")
-include("brenda_tools.jl")
-include("sampling_tools.jl")
+# include("basic_analysis.jl")
+# include("equilibrator_tools.jl")
+# include("brenda_tools.jl")
+# include("sampling_tools.jl")
 
 # export
 ∅ = Metabolite("∅") # for exchange reactions
@@ -38,6 +38,6 @@ export build_cbm, fba, pfba, map_fluxes, set_bound, exchange_reactions, metaboli
 
 
 # Initialization functions
-include("init_functions.jl")
+# include("init_functions.jl")
 
 end # module
