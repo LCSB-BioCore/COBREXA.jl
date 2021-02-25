@@ -28,7 +28,7 @@ include("construction_tools.jl")
 include("basic_analysis.jl")
 include("gibbs_tools.jl")
 include("brenda_tools.jl")
-include("sampling.jl")
+include("sampling_tools.jl")
 
 # export
 ∅ = Metabolite("∅") # for exchange reactions

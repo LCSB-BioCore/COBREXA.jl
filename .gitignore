@@ -3,3 +3,4 @@
 *.jld
 *.png
 *.brenda.txt
+/src/depr_functions.jl

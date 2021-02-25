@@ -7,7 +7,7 @@ This is useful if you want to write your own optimization problem.
 
 cbmodel is the JuMP model. v are the fluxes, mb is S*v == 0, and lbs <= v <= ubs.
 """
-function CBM(model::Model)
+function build_cbm(model::Model)
     S, b, ubs, lbs = get_core_model(model) # Construct S, b, lbs, ubs from model
     cbmodel = JuMP.Model()
     nvars = size(S, 2) # number of variables in model
@@ -25,7 +25,7 @@ Run flux balance analysis (FBA) on the model using objective_rxn(s) and optional
 Optimiser can also be set here. Uses the constraints implied by the model object.
 """
 function fba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
-    cbm, _, _, _, _ = CBM(model) # get the base constraint based model
+    cbm, _, _, _, _ = build_cbm(model) # get the base constraint based model
 
     # ensure that an array of objective indices are fed in
     if typeof(objective_rxns) == Reaction
@@ -88,7 +88,7 @@ Optimiser can also be set here. Uses the constraints implied by the model object
 """
 function pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}; weights=Float64[], optimizer="gurobi")
     ## FBA ################################################
-    cbm, _, _, _, _ = CBM(model) # get the base constraint based model
+    cbm, _, _, _, _ = build_cbm(model) # get the base constraint based model
 
     # ensure that an array of objective indices are fed in
     if typeof(objective_rxns) == Reaction
@@ -169,27 +169,7 @@ function pfba(model::Model, objective_rxns::Union{Reaction, Array{Reaction, 1}};
 end
 
 """
-atom_balance_dict = atom_exchange(fluxdict::Dict{String, Float64}, model::Model)
-
-Return the composition of atoms consumed or produced by the model according to fluxdict.
-"""
-function atom_exchange(fluxdict::Dict{String, Float64}, model::Model)
-    exrxns = [k for k in keys(fluxdict) if startswith(k, "EX_")] # get exchange reactions
-
-    atom_balance = Dict{String, Float64}()
-    for exrxn in exrxns
-        rxn = findfirst(model.rxns, exrxn)
-        for (met, w) in rxn.metabolites
-            for (atom, stoich) in get_atoms(met)
-                atom_balance[atom] = get(atom_balance, atom, 0.0) + stoich*w*fluxdict[exrxn]
-            end
-        end
-    end
-    return atom_balance
-end
-
-"""
-map_fluxes(v, model::Model)
+rxn_flux_dict = map_fluxes(v, model::Model)
 
 Map fluxes from an optimization problem (v) to rxns in a model. v can be a JuMP object (fluxes) or an array of Float64 fluxes.
 Assumes they are in order, which they should be since they are constructed from model.
@@ -231,7 +211,7 @@ get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
 
 Display the topN producing and consuming exchange fluxes. Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 """
-function get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
+function display_exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
     fluxes = Float64[]
     rxns = String[]
     for (k, v) in rxndict
@@ -245,10 +225,22 @@ function get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
 
     println("Consuming fluxes:")
     for i in 1:topN
+        if rxndict[rxns[inds_cons[i]]] > 0
+            continue
+        end
         println(rxns[inds_cons[i]], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
     end
     println("Producing fluxes:")
     for i in 1:topN
+        if rxndict[rxns[inds_cons[i]]] < 0
+            continue
+        end
         println(rxns[inds_prod[i]], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
     end
+end
+
+"""
+"""
+function display_metabolite_fluxes(fluxdict::Dict{String, Float64}, model::Model)
+
 end

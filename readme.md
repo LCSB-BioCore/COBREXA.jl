@@ -2,7 +2,7 @@
 
 This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment.
 This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
-More importantly, it also exposes the user to the core machinary used in this type of analysis, e.g. the stoichiometric matrix, so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). 
+More importantly, it also exposes the user to the core machinery used in this type of analysis, e.g. the stoichiometric matrix, so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). 
 
 ## Installation
 
@@ -26,12 +26,14 @@ To install this package: `] add CobraTools`.
 - [X] pFBA
 - [ ] MOMA
 - [ ] FVA
-- [x] Implement sampling
+- [x] Implement sampling (hit and run)
+- [x] Implement sampling (achr - kind of?)
 - [ ] Single gene knockouts
 - [ ] Double gene knockout
-- [ ] Model construction tools
 - [x] Gibbs integration
 - [x] Brenda integration (basic)
+- [x] Reaction construction
+- [ ] Model modifications
 - [ ] Distributed analysis (COBRA.jl integration?)
 
 ## Usage
