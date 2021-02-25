@@ -1,3 +1,18 @@
 using Documenter, CobraTools
+cd("docs")
 
-makedocs(sitename="My Documentation")
+makedocs(
+    sitename="CobraTools.jl",
+    authors = "St. Elmo Wilken",
+    pages = [
+        "Home" => "index.md",
+        "Model IO" => "io.md",
+        "Model Construction" => "model_construction.md",
+        "Optimization Based Analysis" => "basic_analysis.md",
+        "Sampling Tools" => "sampling_tools.md",
+        "Equilibrator Interface" => "thermo_tools.md",
+        "Brenda Interface" => "brenda_tools.jl"
+    ]
+    )
+
+cd("..")

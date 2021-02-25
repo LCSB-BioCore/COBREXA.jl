@@ -1,11 +1,11 @@
 """
-cbmodel, v, mb, ubs, lbs = CBM(model::CobraTools.Model)
+    build_cbm(model::CobraTools.Model)
 
 Initialize a constraint based model. Creates a model that satisfies the mass balance
 and flux constraints but no objective or optimizer is set. Returns the JuMP model.
 This is useful if you want to write your own optimization problem.
 
-cbmodel is the JuMP model. v are the fluxes, mb is S*v == 0, and lbs <= v <= ubs.
+Returns: cbmodel, v, mb, ubs, and lbs, where cbmodel is the JuMP model, v are the fluxes, mb is S*v == 0, and lbs <= v <= ubs.
 """
 function build_cbm(model::CobraTools.Model)
     S, b, ubs, lbs = get_core_model(model) # Construct S, b, lbs, ubs from model
@@ -211,7 +211,7 @@ get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
 
 Display the topN producing and consuming exchange fluxes. Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 """
-function display_exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
+function exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
     fluxes = Float64[]
     rxns = String[]
     for (k, v) in rxndict
@@ -241,6 +241,6 @@ end
 
 """
 """
-function display_metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
+function metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
 
 end
