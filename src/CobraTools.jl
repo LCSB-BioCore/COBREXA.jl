@@ -1,6 +1,7 @@
 module CobraTools
 
 using JSON
+using Requires
 # using MATLAB
 using SBML
 using SparseArrays

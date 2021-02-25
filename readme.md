@@ -1,9 +1,12 @@
 # CobraTools.jl
 *CobraTools is a Julia package for constraint based reconstruction and analysis of metabolic models.*
 
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://stelmo.github.io/CobraTools.jl/dev)
+
 This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment, similar to Cobrapy in Python and the Cobra Toolbox in Matlab.
 This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
 More importantly, it also exposes the user to the core machinery used in this type of analysis, e.g. the stoichiometric matrix, so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). 
+
 
 ## Installation
 
