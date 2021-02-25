@@ -9,7 +9,7 @@
         "basic_analysis.md",
         "sampling_tools.md",
         "thermo_tools.md",
-        "brenda_tools.jl"
+        "brenda_tools.md"
     ]
     Depth=1
 ```
