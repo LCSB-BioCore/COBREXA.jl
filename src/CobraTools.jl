@@ -17,15 +17,20 @@ using Tulip
 using GLPK
 using Ipopt
 
-include("cobra_base.jl")
-include("parse_models.jl")
-include("rxn_tools.jl")
 include("met_tools.jl")
+include("rxn_tools.jl")
+include("gene_tools.jl")
+
+include("io_tools.jl")
+include("model_tools.jl")
+include("construction_tools.jl")
+
 include("basic_analysis.jl")
 include("gibbs_tools.jl")
-include("sampling.jl")
 include("brenda_tools.jl")
+include("sampling.jl")
 
+# export
 ∅ = Metabolite("∅") # for exchange reactions
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
 export Reaction, Metabolite, Gene

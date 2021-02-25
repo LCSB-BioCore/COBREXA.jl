@@ -26,7 +26,7 @@ for modelname in models
     model = CobraTools.read_model(modelpath)
     gibbs = CobraTools.map_gibbs_rxns(model.rxns) 
     nkeys = length([k for k in keys(gibbs) if !startswith(k, "EX_") && gibbs[k] != 0.0])
-    nrxns = length(model.rxns)
+    nrxns = length([r for r in model.rxns if !startswith(r.id, "EX_")])
     md[modelname[1:end-5]] = nkeys/nrxns
 end
 
@@ -35,4 +35,4 @@ vs = [md[k] for k in mdks]
 xnms = [k*"\n"*mnames[k] for k in mdks]
 bar(vs)
 plot!(xticks=(1:7,xnms), legend=false, ylabel="Fraction of reactions with ΔG⁰", xrotation=60)
-
+savefig("equilibrator-coverage.png")

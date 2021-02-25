@@ -72,7 +72,7 @@ end
 """
 brenda_data = parse_brenda(brenda_txt_file_path)
 
-Parse the Brenda txt file. 
+Parse the Brenda txt file line by line. 
 Download it from https://www.brenda-enzymes.org/download_brenda_without_registration.php.
 """
 function parse_brenda(brenda_loc)

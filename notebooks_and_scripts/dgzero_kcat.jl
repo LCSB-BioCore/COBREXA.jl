@@ -9,7 +9,8 @@ gr()
 modelpath = joinpath("models", "iML1515.json") 
 model = CobraTools.read_model(modelpath)
 gibbs = CobraTools.map_gibbs_rxns(model.rxns) 
-brenda = CobraTools.get_ec_turnover(joinpath("data", "brenda_download.brenda.txt"))
+# brenda = CobraTools.get_ec_turnover(joinpath("data", "brenda_download.brenda.txt"))
+brenda_data = CobraTools.parse_brenda(joinpath("data", "brenda_download.brenda.txt"))
 
 kcats = Dict{String, Union{Float64, Measurement{Float64}}}()
 for rxnid in keys(gibbs)
@@ -19,12 +20,15 @@ for rxnid in keys(gibbs)
     rxn = findfirst(model.rxns, rxnid)
     ec = get(rxn.annotation, "ec-code", [""])[1]
     metnames = [m.name for m in keys(rxn.metabolites)]
-    brs = get(brenda, ec, [])
+    br_ind = findfirst(x -> x.ID == ec, brenda_data)
+    isnothing(br_ind) && continue
+
     ks = Float64[]
-    for br in brs
-        scomps = [compare(lowercase(metname), lowercase(br[2]), Levenshtein()) for metname in metnames]
+    for br in brenda_data[br_ind].TN
+        isnothing(br.substrate) && continue
+        scomps = [compare(lowercase(metname), lowercase(br.substrate), Levenshtein()) for metname in metnames]
         if maximum(scomps) > 0.65 # could probably make this stricter
-            push!(ks, br[1])
+            push!(ks, br.val)
             # ind = argmax(scomps)
             # println(br[2], " <-> ", metnames[ind], " = ", maximum(scomps))
         end
@@ -60,3 +64,4 @@ end
 plot!(legend=false) 
 
 plot!(xlim=(-2, 3))
+savefig("brenda-dg-kcat.png")
