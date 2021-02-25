@@ -20,9 +20,9 @@ using Ipopt
 include("met_tools.jl")
 include("rxn_tools.jl")
 include("gene_tools.jl")
+include("model_tools.jl")
 
 include("io_tools.jl")
-include("model_tools.jl")
 include("construction_tools.jl")
 
 include("basic_analysis.jl")
