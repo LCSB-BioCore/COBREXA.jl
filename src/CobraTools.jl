@@ -12,9 +12,9 @@ using PyCall # for Equilibrator
 using Random
 
 # Find a way to only import packages the user actually has...?
-using Gurobi
+# using Gurobi
 using Tulip
-using GLPK
+# using GLPK
 # using Ipopt
 
 include("met_tools.jl")
