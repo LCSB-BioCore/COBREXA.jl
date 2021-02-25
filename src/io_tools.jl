@@ -153,7 +153,7 @@ parsegrr(string_rule)
 
 Format: (YIL010W and YLR043C) or (YIL010W and YGR209C)
 """
-function parse_grr(s :: String)
+function parse_grr(s::String)
     gene_list_list = Array{Array{String, 1}, 1}()
     or_genes = split(s, " or ")
     for or_gene in or_genes
@@ -177,7 +177,7 @@ and c are written to.
 
 Note, SBML is not implemented yet.
 """
-function save_model(model :: CobraTools.Model, file_location :: String)
+function save_model(model::CobraTools.Model, file_location::String)
     if endswith(file_location, ".json")
         save_json_model(model, file_location)
     elseif endswith(file_location, ".xml")
