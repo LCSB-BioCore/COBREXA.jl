@@ -1,7 +1,7 @@
 # CobraTools.jl
 *CobraTools is a Julia package for constraint based reconstruction and analysis of metabolic models.*
 
-This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment.
+This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment, similar to Cobrapy in Python and the Cobra Toolbox in Matlab.
 This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
 More importantly, it also exposes the user to the core machinery used in this type of analysis, e.g. the stoichiometric matrix, so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). 
 
@@ -39,4 +39,5 @@ TODO.
 
 ### Citations
 1) Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013). COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Systems Biology, 7(74). https://doi.org/10.1186/1752-0509-7-74
-2) Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics, 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
+2) Heirendt, L., Arreckx, S., Pfau, T. et al. (2019). Creation and analysis of biochemical constraint-based models using the COBRA Toolbox v.3.0. Nat Protoc 14, 639–702. https://doi.org/10.1038/s41596-018-0098-2
+3) Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics, 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
