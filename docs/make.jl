@@ -1,5 +1,5 @@
 using Documenter, CobraTools
-cd("docs")
+
 
 makedocs(
     sitename="CobraTools.jl",
@@ -13,6 +13,8 @@ makedocs(
         "Equilibrator Interface" => "thermo_tools.md",
         "Brenda Interface" => "brenda_tools.jl"
     ]
-    )
+)
 
-cd("..")
+deploydocs(
+    repo = "github.com/stelmo/CobraTools.jl.git",
+)
