@@ -1,6 +1,5 @@
 using Documenter, CobraTools
 
-
 makedocs(
     sitename="CobraTools.jl",
     authors = "St. Elmo Wilken",
