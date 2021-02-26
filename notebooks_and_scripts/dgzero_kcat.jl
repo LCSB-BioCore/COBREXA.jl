@@ -11,7 +11,7 @@ modelpath = joinpath("models", "iJO1366.mat")
 modelpath = joinpath("models", "iJO1366.json")
 
 model = CobraTools.read_model(modelpath)
-gibbs, balances = CobraTools.map_gibbs_rxns(model.rxns) 
+gibbs, balances = CobraTools.map_gibbs_rxns(model.rxns)
 brenda_data = CobraTools.parse_brenda(joinpath("data", "brenda_download.brenda.txt"))
 
 kcats = Dict{String, Union{Float64, Measurement{Float64}}}()
