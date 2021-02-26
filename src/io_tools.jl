@@ -1,18 +1,26 @@
 """
-model = read_model(file_location)
+    read_model(file_location::String))
 
-Reads a model file at file_location and returns a constraint based model.
-Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
+Reads a model at file_location and returns a constraint based model (::CobraTools.Model).
+Currently supported formats include SBML (.xml), Matlab (.mat) and JSON (.json) models.
+The model format is inferred from the file extension.
 
-Note, when importing JSON models only reactions, metabolites, genes and id are used. 
+Note, some meta-information may be lost when importing a model. Importantly, only information regarding the
+reactions, metabolites and genes are imported. Currently reading JSON models captures the most meta-information
+regarding reactions, metabolites and genes (e.g. the notes and annotation fields). 
 
-Note, when importing Matlab models only rxns, metCharge, lb, metNames, S, grRules,
-genes, description, rxnNames, ub, metFormulas, b, subSystems, mets and c are used.
+When importing Matlab models some annotation and notes may not be imported because of the non-standard field names used by some models.
+Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`. Other gene reaction rules
+formats are not supported yet. 
+
+In all cases the basic information should be imported, e.g. stoichiometrix matrix, constraints etc..
+Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
+Always inspect the imported model before running analysis. 
 """
-function read_model(file_location)
+function read_model(file_location::String)
     if endswith(file_location, ".json")
         try 
-            model = reconstruct_model_json(JSON.parsefile(file_location))
+            model = reconstruct_model_json(file_location)
         catch err
             @error "JSON model reading error.\n$err"
             model = CobraTools.Model()
@@ -39,9 +47,9 @@ function read_model(file_location)
 end
 
 """
-reconstructmodeljson(modeldict)
+    reconstructmodeljson(modeldict::String)
 """
-function reconstruct_model_json(file_location)
+function reconstruct_model_json(file_location::String)
     modeldict = JSON.parsefile(file_location)
     id = modeldict["id"]
 
@@ -72,9 +80,7 @@ function reconstruct_model_json(file_location)
 end
 
 """
-reconstruct_model_matlab(file_location)
-
-Note, notes and some annotation information will be lost when reading in in this format.
+    reconstruct_model_matlab(file_location::String)
 """
 function reconstruct_model_matlab(file_location::String)
     matfile = matread(file_location)
@@ -82,6 +88,7 @@ function reconstruct_model_matlab(file_location::String)
     modeldict = matfile[model_name]
 
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
+    model_id = haskey(modeldict, "modelName") ? modeldict["modelName"] : model_name # more specific
     
     mets = Metabolite[]
     for i in eachindex(modeldict["mets"])
@@ -181,7 +188,10 @@ function reconstruct_model_matlab(file_location::String)
     return CobraTools.Model(model_id, rxns, mets, genes, grrs)
 end
 
-function reconstruct_model_sbml(file_location)
+"""
+    reconstruct_model_sbml(file_location::String)
+"""
+function reconstruct_model_sbml(file_location::String)
     m = readSBML(file_location)
 
 # m is now a Model structure with:
@@ -193,7 +203,7 @@ function reconstruct_model_sbml(file_location)
 end
 
 """
-parsegrr(string_rule)
+    parsegrr(string_rule)
 
 Format: (YIL010W and YLR043C) or (YIL010W and YGR209C)
 """
@@ -208,18 +218,13 @@ function parse_grr(s::String)
 end
 
 """
-savemodel(model, file_location)
+    save_model(model::CobraTools.Model, file_location::String)
 
-Save model at location file_location. Infers format from file_location extension.
+Save model(::CobraTools.Model) at file_location. Infers format from file_location extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
 
-Note, when exporting JSON models only reactions, metabolites, genes and id are written. 
-
-Note, when exporting Matlab models only rxns, metCharge, lb, metNames, S, grRules,
-genes, description, rxnNames, ub, metFormulas, b, subSystems, mets, rev, rxnGeneMat
-and c are written to.
-
-Note, SBML is not implemented yet.
+Note, only the fields contained in model::CobraTools.Model are saved. Make sure that information isn't
+lost between reading a model and writing a model (e.g. check gene reaction rules, notes and annotations).
 """
 function save_model(model::CobraTools.Model, file_location::String)
     if endswith(file_location, ".json")
@@ -233,8 +238,10 @@ function save_model(model::CobraTools.Model, file_location::String)
     end
 end
 
-
-function save_json_model(model::CobraTools.Model, file_location :: String)
+"""
+    save_json_model(model::CobraTools.Model, file_location::String)
+"""
+function save_json_model(model::CobraTools.Model, file_location::String)
     modeldict = Dict{String, Any}()
     modeldict["id"] = model.id
     modeldict["metabolites"] = model.mets
@@ -261,6 +268,9 @@ function save_json_model(model::CobraTools.Model, file_location :: String)
     end
 end
 
+"""
+    save_matlab_model(model::CobraTools.Model, file_location::String)
+"""
 function save_matlab_model(model::CobraTools.Model, file_location::String)
     rxnrevs = zeros(Int64, length(model.rxns))
     for i in eachindex(model.rxns)
@@ -298,10 +308,12 @@ function save_matlab_model(model::CobraTools.Model, file_location::String)
     "metCharge" => [m.charge for m in model.mets],
     "rxns" => [r.id for r in model.rxns])
 
-    write_matfile(file_location; Dict(Symbol(model.id) => mdict)...) 
+    matwrite(file_location, Dict(Symbol(model.id) => mdict)) 
 end
 
-function save_sbml_model()
+"""
+    save_sbml_model(model::CobraTools.Model, file_location::String)
+"""
+function save_sbml_model(model::CobraTools.Model, file_location::String)
     # To do...
 end
-

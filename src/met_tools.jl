@@ -1,5 +1,16 @@
 """
-Metabolite struct (mutable)
+Metabolite struct (mutable).
+
+# Fields
+````
+id :: String
+name :: String
+formula :: String
+charge :: Int64
+compartment :: String
+notes :: Dict{String, Array{String, 1}}
+annotation :: Dict{String, Union{Array{String, 1}, String}}
+````
 """
 mutable struct Metabolite
     id :: String
