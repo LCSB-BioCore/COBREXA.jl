@@ -1,23 +1,20 @@
 using CobraTools
 
-# using SBML
-# modelpath = joinpath("models", "iMM904.xml") # doesn' work
-# modelpath = joinpath("models", "iJO1366.xml") # doesn't work
-# modelpath = joinpath("models", "e_coli_core.xml") # doesn't work
-# modelpath = joinpath("models", "Ec_core_flux1.xml") # works
 
-# model = readSBML(modelpath) 
-
-
-# modelpath = joinpath("models", "iAF1260.xml")
-# modelpath = joinpath("models", "yeastGEM.xml")
-
-# modelpath = joinpath("models", "e_coli_core.json")
+modelpath = joinpath("models", "iJO1366.xml")
+modelpath = joinpath("models", "iJO1366.json")
 modelpath = joinpath("models", "iJO1366.mat")
-# modelpath = joinpath("models", "iJO1366.json")
-
 
 model = CobraTools.read_model(modelpath)
+
+save_model(model, "test.mat")
+
+model2 = CobraTools.read_model("test.mat")
+
+using MAT
+
+m2 = matread("test.mat")
+
 # using JSON
 # m = JSON.parsefile(modelpath)
 # atp = Metabolite("atp") 

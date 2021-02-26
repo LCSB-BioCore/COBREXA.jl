@@ -426,7 +426,7 @@ function save_matlab_model(model::CobraTools.Model, file_location::String)
     rgm = spzeros(length(model.reactions), length(model.genes)) # stored as a sparse matrix
     for (i, rxn) in enumerate(model.reactions)
         for (j, gene) in enumerate(model.genes)
-            if contains(rxn.grr, gene.id)
+            if contains(unparse_grr(rxn.grr), gene.id)
                 rgm[i, j] = 1.0
             end
         end
@@ -451,16 +451,16 @@ function save_matlab_model(model::CobraTools.Model, file_location::String)
     "lb" => Array(lbs),
     "metCharge" => [m.charge for m in model.metabolites],
     "rxns" => [r.id for r in model.reactions],
-    "rxnKEGGID" => [join(r.annotation["kegg.reaction"], "; ") for r in model.reactions],
-    "rxnECNumbers" => [join(r.annotation["ec-code"], "; ") for r in model.reactions],
-    "rxnBiGGID" => [join(r.annotation["bigg.reaction"], "; ") for r in model.reactions],
-    "metBiGGID" => [join(m.annotation["bigg.metabolite"], "; ") for met in model.metabolites],
-    "metSBOTerms" => [m.annotation["sbo"] for met in model.metabolites],
-    "metKEGGID" => [join(m.annotation["kegg.compound"], "; ") for met in model.metabolites],
-    "metMetaNetXID" => [join(m.annotation["metanetx.chemical"], "; ") for met in model.metabolites],
-    "metChEBIID" => [join(m.annotation["chebi"], "; ") for met in model.metabolites])
-
-    matwrite(file_location, Dict(Symbol(model.id) => mdict)) 
+    "rxnKEGGID" => [join(get(r.annotation, "kegg.reaction", [""]), "; ") for r in model.reactions],
+    "rxnECNumbers" => [join(get(r.annotation, "ec-code", [""]), "; ") for r in model.reactions],
+    "rxnBiGGID" => [join(get(r.annotation ,"bigg.reaction", [""]), "; ") for r in model.reactions],
+    "metBiGGID" => [join(get(m.annotation, "bigg.metabolite", [""]), "; ") for m in model.metabolites],
+    "metSBOTerms" => [get(m.annotation, "sbo", "") for m in model.metabolites],
+    "metKEGGID" => [join(get(m.annotation, "kegg.compound", [""]), "; ") for m in model.metabolites],
+    "metMetaNetXID" => [join(get(m.annotation, "metanetx.chemical", [""]), "; ") for m in model.metabolites],
+    "metChEBIID" => [join(get(m.annotation, "chebi", [""]), "; ") for m in model.metabolites])
+    
+    matwrite(file_location, Dict(model.id => mdict)) 
 end
 
 """
