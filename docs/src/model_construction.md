@@ -2,7 +2,7 @@
 
 ## Defining genes
 Genes are represented by the `Gene` type in `CobraTools`, see [Model Structure](@ref) for details.
-Likewise with `Metabolite`s, `Gene`s can be constructed using either an empty constructor or a constructor taking in only
+`Gene`s can be constructed using either an empty constructor, or a constructor taking only
 the string `id` of the gene.
 ```@docs
 Gene()
@@ -22,12 +22,10 @@ getindex(::Array{Gene, 1}, ::Gene)
 ```
 ## Defining metabolites
 Metabolites are represented by the `Metabolite` type in `CobraTools`, see [Model Structure](@ref) for details. 
-The simplest way to define a new metabolite is by using the empty constructor `Metabolite()`.
-```@docs
-Metabolite()
-```
+The simplest way to define a new metabolite is by using the empty constructor `Metabolite()`. 
 Alternatively, `Metabolite(id::String)` can be used to assign only the `id` field of the `Metabolite`. 
 ```@docs
+Metabolite()
 Metabolite(::String)
 ```
 The other fields can be modified as usual, if desired.
