@@ -17,7 +17,7 @@ end
     cp = test_simpleLP()
     pids = addprocs(2, topology=:master_worker)
     @everywhere using COBREXA, GLPK
-    fluxes = parFVA2(cp, [1,2], GLPK.Optimizer, pids)
+    fluxes = parFVA(cp, [1,2], GLPK.Optimizer, pids)
     @test fluxes ≈ [1. 1.;
                     2. 2.]
     rmprocs(pids)
