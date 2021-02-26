@@ -29,7 +29,7 @@ end
 """
     getindex(model::CobraTools.Model, rxn::Reaction)
 
-Get the index of rxn in model. Return -1 if not found.
+Get the index of `rxn` in `model`. Return -1 if not found.
 """
 function Base.getindex(model::CobraTools.Model, rxn::Reaction)
     return model.reactions[rxn]
@@ -38,7 +38,7 @@ end
 """
     getindex(model::CobraTools.Model, met::Metabolite)
 
-Get the index of metabolite in model. Return -1 if not found.
+Get the index of `met` in `model`. Return -1 if not found.
 """
 function Base.getindex(model::CobraTools.Model, met::Metabolite)
     return model.metabolites[met]
@@ -47,7 +47,7 @@ end
 """
     getindex(model::CobraTools.Model, gene::Gene)
 
-Get the index of gene in model. Return -1 if not found.
+Get the index of `gene` in `model`. Return -1 if not found.
 """
 function Base.getindex(model::CobraTools.Model, gene::Gene)
     return model.genes[gene]
@@ -67,7 +67,7 @@ end
 """
     add!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
 
-Add rxn(s) to model if they are not already present (based on rxn.id)
+Add `rxn(s)` to `model` if they are not already present (based on `rxn.id`).
 """
 function add!(model::CobraTools.Model, rxns::Array{Reaction, 1})
     for rxn in rxns
@@ -86,7 +86,7 @@ end
 """
     add!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metabolite})
 
-Add metabolite(s) to model if they are not already present (based on rxn.id)
+Add `met(s)` to `model` if they are not already present (based on `rxn.id`).
 """
 function add!(model::CobraTools.Model, mets::Array{Metabolite, 1})
     for met in mets
@@ -105,7 +105,7 @@ end
 """
     add!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
 
-Add gene(s) to model if they are not already present (based on gene.id)
+Add `gene(s)` to `model` if they are not already present (based on `gene.id`).
 """
 function add!(model::CobraTools.Model, genes::Array{Gene, 1})
     for gene in genes
@@ -124,7 +124,7 @@ end
 """
     rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
 
-Remove rxn(s) from model (based on ID).
+Remove `rxn(s)` from `model` (based on `rxn.id`).
 """
 function rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
     new_rxn_list = Reaction[]
@@ -145,7 +145,7 @@ end
 """
     rm!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metabolite})
 
-Remove met(s) from model (based on ID).
+Remove `met(s)` from `model` (based on `met.id`).
 """
 function rm!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metabolite})
     new_met_list = Metabolite[]
@@ -166,7 +166,7 @@ end
 """
     rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
 
-Remove gene(s) from model (based on ID).
+Remove `gene(s)` from `model` (based on `gene.id`).
 """
 function rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
     new_gene_list = Gene[]
@@ -185,35 +185,35 @@ function rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
 end
 
 """
-    is_duplicate(model::CobraTools.Model, cmet::Metabolite)
+    is_duplicate(model::CobraTools.Model, met::Metabolite)
 
-Check if met already exists in model.metabolites but potentially has another id. 
-First check if the id and formulas are the same. 
-If not, check if the charges are the same.
-If not, check if any of the annotations are the same.
+Check if `met` already exists in `model.metabolites` but potentially has another `id`. 
+First check if the `id`s and `formula`s are the same. 
+If not, check if the `charge`s are the same.
+If not, check if any of the `annotation`s are the same.
 """
 function is_duplicate(model::CobraTools.Model, cmet::Metabolite)
     _is_duplicate(model.metabolites, cmet)
 end
 
 """
-    is_duplicate(model::CobraTools.Model, crxn::Reaction)
+    is_duplicate(model::CobraTools.Model, rxn::Reaction)
 
-Check if rxn already exists in model.reactions but potentially has another id. 
-First checks if the ID already exists.
-Then looks through the reaction equations and compares met.id's and stoichiometric coefficients.
-If rxn has the same reaction equation as another reaction in rxns, the return true and the index of the match. 
+Check if `rxn` already exists in `model.reactions` but potentially has another `id`. 
+First checks if the `id` already exists.
+Then looks through the reaction equations and compares `id`s and stoichiometric coefficients.
+If `rxn` has the same reaction equation as another reaction in `model.reactions`, the return true and the index of the match. 
 """
 function is_duplicate(model::CobraTools.Model, crxn::Reaction)
     _is_duplicate(model.reactions, crxn)
 end
 
 """
-    is_duplicate(model::CobraTools.Model, cgene::Gene)
+    is_duplicate(model::CobraTools.Model, gene::Gene)
 
-Check if gene already exists in model.genes but potentially has another id. 
-First check if the ids are the same. 
-If not, check if any of the annotations are the same.
+Check if `gene` already exists in `model.genes` but potentially has another `id`. 
+First check if the `id`s are the same. 
+If not, check if any of the `annotation`s are the same.
 """
 function is_duplicate(model::CobraTools.Model, cgene::Gene)
     _is_duplicate(model.genes, cgene)
@@ -222,9 +222,9 @@ end
 """
     fix_model!(model::CobraTools.Model)
 
-Inspect metabolites and genes of model relative to the reactions.
+Inspect metabolites and genes of `model` relative to the reactions of `model`.
 Remove genes or metabolites that are not used in the reactions.
-Add genes or metabolites that are not present in model.genes or model.metabolites but are used in model.reactions. 
+Add genes or metabolites that are not present in `model.genes` or `model.metabolites` but are used in `model.reactions`. 
 """
 function fix_model!(model::CobraTools.Model)
     rxn_mets = Metabolite[] # list of metabolites used in reactions

@@ -32,7 +32,7 @@ end
 """
     Gene(id::String)
 
-Assign gene with only an id.
+Assign gene with only an `id`.
 """
 function Gene(id::String)
     name = ""
@@ -44,7 +44,7 @@ end
 """
     getindex(genes::Array{Gene, 1}, gene::Gene)
 
-Get the index of a gene in an array of genes. Return -1 if not found.
+Get the index of a `gene` in an array of `genes`. Return -1 if not found.
 Typically used `genes[gene] = index`.
 """
 function Base.getindex(genes::Array{Gene, 1}, gene::Gene)
@@ -59,7 +59,8 @@ end
 """
     findfirst(genes::Array{Gene, 1}, geneid::String)
 
-Return the gene with geneid or else `nothing`. Typically used: findfirst(model.genes, geneid)
+Return the gene with `geneid` in `genes` or else `nothing`. 
+Typically used: `findfirst(model.genes, geneid)`.
 """
 function Base.findfirst(genes::Array{Gene, 1}, geneid::String)
     for i in eachindex(genes)

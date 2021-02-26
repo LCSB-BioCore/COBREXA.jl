@@ -1,9 +1,9 @@
 """
     read_model(file_location::String))
 
-Reads a model at file_location and returns a constraint based `model::CobraTools.Model`.
+Reads a model at `file_location` and returns a constraint based `model::CobraTools.Model`.
 Currently supported formats include SBML (.xml), Matlab (.mat) and JSON (.json) models.
-The model format is inferred from the file extension.
+The model format is inferred from the `file_location` extension.
 
 Note, some meta-information may be lost when importing a model. Importantly, only information regarding the
 reactions, metabolites and genes are imported. Currently reading JSON models captures the most meta-information
@@ -11,8 +11,8 @@ regarding reactions, metabolites and genes (e.g. the notes and annotation fields
 
 When importing Matlab models some annotation and notes may not be imported because of the non-standard field names used by some models.
 Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`, where
-"or" can be interchanged with (OR, |, ||) and "and" can be interchanged with (AND, &, &&).
-Other gene reaction rules formats are not supported yet (file an issue if the format is standard). 
+`or` can be interchanged with `OR, |, ||` and `and` can be interchanged with `AND, &, &&`.
+Other gene reaction rules formats are not supported yet, but file an issue if your format is standard and needs to be included. 
 
 In all cases the basic information should be imported, e.g. stoichiometrix matrix, constraints etc..
 Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
@@ -338,7 +338,7 @@ end
 """
     save_model(model::CobraTools.Model, file_location::String)
 
-Save model at file_location. Infers format from file_location extension.
+Save model at `file_location`. Infers format from `file_location` extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
 
 Note, only the fields contained in model are saved. Make sure that information isn't

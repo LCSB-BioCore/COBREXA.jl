@@ -41,7 +41,7 @@ end
 """
     Metabolite(id::String)
 
-Assigns only the id field to a metabolite struct.
+Assigns only the `id` field to a metabolite struct.
 """
 function Metabolite(id::String)
     name = ""
@@ -56,8 +56,8 @@ end
 """
     getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 
-Get the index of a metabolite in an array of metabolites. Return -1 if not found.
-This function overrides the [] notation from base, hence `mets[met] = index` works. 
+Get the index of a `met` in an array of `mets`. Return -1 if not found.
+This function overrides the `[]` notation from base, hence `mets[met] = index` works. 
 """
 function Base.getindex(mets::Array{Metabolite, 1}, met::Metabolite)
     for i in eachindex(mets)
@@ -71,7 +71,8 @@ end
 """
     findfirst(mets::Array{Metabolite, 1}, metid::String)
 
-Return the metabolite with metid or else `nothing`. Typically used: findfirst(model.mets, metid)
+Return the metabolite in `mets` with `metid` or else `nothing`. 
+Typically used: `findfirst(model.mets, metid)`.
 """
 function Base.findfirst(mets::Array{Metabolite, 1}, metid::String)
     for i in eachindex(mets)
@@ -137,7 +138,7 @@ end
 """
     get_atoms(met::Metabolite)
 
-Return a dictionary mapping the elements in a metabolite to their stoichiometric coefficients.
+Return a dictionary mapping the elements in a metabolite `met` to their stoichiometric coefficients.
 """
 function get_atoms(met::Metabolite)
     atoms = Dict{String, Int64}()

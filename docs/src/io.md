@@ -12,6 +12,7 @@ using CobraTools
 
 model_location = joinpath("..","..", "models", "iJO1366.json") 
 model = read_model(model_location)
+model # pretty printing
 ```
 
 ## Writing constraint based models

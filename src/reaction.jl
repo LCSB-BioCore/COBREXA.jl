@@ -50,8 +50,8 @@ end
 """
     Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
 
-Assign the id, metabolites (and their associated stoichiometries), and the direcionality of a reaction to a Reaction struct.
-Directionality (dir) is specified using "for" (forward), "rev" (reverse), or any other string for bidirectional reactions. 
+Assign the `id`, `metabolites` (and their associated stoichiometries), and the direcionality (`dir`) of a reaction to a Reaction struct.
+Directionality is specified using `for` (forward), `rev` (reverse), or any other string for bidirectional reactions. 
 All other fields are left unassigned.
 """
 function Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
@@ -77,7 +77,7 @@ end
 """
     getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 
-Get the index of a reaction in an array of reactions. Return -1 if not found.
+Get the index of a reaction `rxn` in an array of reactions `rxns`. Return -1 if not found.
 Typically used, `rxns[rxn] = index`.
 """
 function Base.getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
@@ -92,7 +92,8 @@ end
 """
     findfirst(rxns::Array{Reaction, 1}, rxnid::String)
 
-Return the reaction with rxnid or else `nothing`. Typically used: findfirst(model.rxns, rxnid)
+Return the reaction with `rxnid` in `rxns` or else `nothing`. 
+Typically used: `findfirst(model.rxns, rxnid)`.
 """
 function Base.findfirst(rxns::Array{Reaction, 1}, rxnid::String)
     for i in eachindex(rxns)
@@ -190,7 +191,7 @@ end
 """
     is_mass_balanced(rxn::Reaction)
 
-Checks if rxn is atom balanced. Returns a boolean for whether the reaction is balanced,
+Checks if `rxn` is atom balanced. Returns a boolean for whether the reaction is balanced,
 and the associated balance of atoms for convenience (useful if not balanced).
 """
 function is_mass_balanced(rxn::Reaction)
