@@ -20,5 +20,6 @@ end
     fluxes = parFVA(cp, [1,2], GLPK.Optimizer, pids)
     @test fluxes ≈ [1. 1.;
                     2. 2.]
+    @test_throws ArgumentError parFVA(cp, [99999999], GLPK.Optimizer, pids)
     rmprocs(pids)
 end
