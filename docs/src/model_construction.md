@@ -16,7 +16,7 @@ gene.name = "gene 1 name"
 gene # pretty printing
 ```
 Helper functions from Base have also been overwritten to make accessing arrays of genes easy.
-```@@docs
+```@docs
 findfirst(::Array{Gene, 1}, ::String)
 getindex(::Array{Gene, 1}, ::Gene)
 ```
@@ -55,7 +55,7 @@ atp.formula = "C10H12N5O13P3" # hide
 get_atoms(atp)
 ```
 Helper functions from Base have also been overwritten to make accessing arrays of metabolites easy.
-```@@docs
+```@docs
 findfirst(mets::Array{Metabolite, 1}, metid::String)
 getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 ```
@@ -135,7 +135,7 @@ unbal_rxn = 2.0adp ⟶ 1.0*atp # unbalanced reaction
 is_mass_balanced(unbal_rxn)
 ```
 Helper functions from Base have also been overwritten to make accessing arrays of reactions easy.
-```@@docs
+```@docs
 findfirst(rxns::Array{Reaction, 1}, rxnid::String)
 getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 ```
@@ -165,7 +165,7 @@ catabolism = glc + 2.0*adp + 2.0*pp ⟶ 2.0 * lac + 2.0 * h2o + 2.0 * atp
 catabolism.id = "catabolism"
 catabolism.grr = [[g1, g2], [g3, g4]]
 
-anabolism = 10.0 * atp ⟶ 10.0*adp
+anabolism = 10.0 * atp + 10.0*h2o ⟶ 10.0*adp + 10.0*pp
 anabolism.id = "anabolism"
 
 glc_ex = ∅ ⟷ glc # exchanges are defined like this so negative fluxes mean import
@@ -202,10 +202,10 @@ using CobraTools # hide
 atp = Metabolite("atp") 
 adp = Metabolite("adp") 
 
-anabolism = 10.0 * atp ⟶ 10.0*adp
+anabolism = 10.0 * atp + 10.0*h2o ⟶ 10.0*adp + 10.0*pp
 anabolism.id = "anabolism"
 
-anabolism2 = 10.0 * atp ⟶ 10.0*adp
+anabolism = 10.0 * atp + 10.0*h2o ⟶ 10.0*adp + 10.0*pp
 anabolism.id = "anabolism2"
 
 mets = [atp, adp]
@@ -258,9 +258,11 @@ add!(model, mets) # missing adp
 add!(model, rxns)
 
 fix_model!(model) # adp added
+
+model # now has 2 metabolites
 ```
 Helper functions from Base have also been overwritten to make accessing reactions, metabolites and genes easy from a model.
-```@@docs
+```@docs
 getindex(model::CobraTools.Model, rxn::Reaction)
 getindex(model::CobraTools.Model, rxn::Metabolite)
 getindex(model::CobraTools.Model, rxn::Gene)

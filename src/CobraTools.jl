@@ -26,7 +26,7 @@ include("io_tools.jl")
 include("construction_overloading.jl")
 include("brenda_tools.jl")
 include("equilibrator_tools.jl")
-# include("basic_analysis.jl")
+include("basic_analysis.jl")
 # include("sampling_tools.jl")
 
 # export
@@ -39,8 +39,7 @@ export Metabolite, get_atoms # from metabolite
 export Reaction, is_mass_balanced # from reaction
 export ⟶, →, ←, ⟵, ↔, ⟷ # from construction_tools
 export read_model, save_model # from io_tools
-export build_cbm, fba, pfba, map_fluxes, set_bound, exchange_reactions, metabolite_fluxes
-
+export build_cbm, fba, pfba, map_fluxes, set_bound, exchange_reactions, metabolite_fluxes, get_core_model
 
 # Initialization functions
 include("init_functions.jl")
