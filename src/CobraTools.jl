@@ -10,6 +10,7 @@ using LinearAlgebra
 using Measurements
 using Statistics
 using Random
+using PyCall
 
 include("met_tools.jl")
 include("rxn_tools.jl")

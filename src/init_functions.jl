@@ -65,24 +65,23 @@ try:
                
       return bals, mags, errs
 
-   except ImportError as e: # in case equilibrator is not installed.
-      def pygetdg0(fs, ph, ionic):
-         bals = [0.0]
-         mags = [0.0]
-         errs = [0.0]
-         return bals, mags, errs
+except ImportError as e: # in case equilibrator is not installed.
+   def pygetdg0(fs, ph, ionic):
+      bals = [0.0]
+      mags = [0.0]
+      errs = [0.0]
+      return bals, mags, errs
 
-      def pygetdgprimephys(fs, ph, ionic):
-         bals = [0.0]
-         mags = [0.0]
-         errs = [0.0]
-         return bals, mags, errs
-         
-      def pygetdgprime(fs, ph, ionic):
-         bals = [0.0]
-         mags = [0.0]
-         errs = [0.0]
-         return bals, mags, errs
-         
+   def pygetdgprimephys(fs, ph, ionic):
+      bals = [0.0]
+      mags = [0.0]
+      errs = [0.0]
+      return bals, mags, errs
+      
+   def pygetdgprime(fs, ph, ionic):
+      bals = [0.0]
+      mags = [0.0]
+      errs = [0.0]
+      return bals, mags, errs
 """
 end
