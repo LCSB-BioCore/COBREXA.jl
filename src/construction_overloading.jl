@@ -56,7 +56,7 @@ Forward reaction.
 """
 function ⟶(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}}, products::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}})
     metdict = mkrxn(substrates, products)
-    return Reaction(metdict, "for")
+    return Reaction("", metdict, "for")
 end
 const → = ⟶
 
@@ -65,7 +65,7 @@ Reverse only reaction.
 """
 function ⟵(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}}, products::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}})
     metdict = mkrxn(substrates, products)
-    return Reaction(metdict, "rev")
+    return Reaction("", metdict, "rev")
 end
 const ← = ⟵
 
@@ -74,6 +74,6 @@ Bidirectional (reversible) reaction.
 """
 function ⟷(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}}, products::Union{Metabolite, MetaboliteWithCoefficient, Array{MetaboliteWithCoefficient, 1}})
     metdict = mkrxn(substrates, products)
-    return Reaction(metdict, "bidir")
+    return Reaction("", metdict, "bidir")
 end
 const ↔ = ⟷

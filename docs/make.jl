@@ -5,6 +5,7 @@ makedocs(
     authors = "St. Elmo Wilken",
     pages = [
         "Home" => "index.md",
+        "Model Structure" => "model_structure.md",
         "Model IO" => "io.md",
         "Model Construction" => "model_construction.md",
         "Optimization Based Analysis" => "basic_analysis.md",
