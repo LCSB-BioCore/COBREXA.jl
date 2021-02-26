@@ -62,16 +62,12 @@ function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
     (optimization_model, x0) = fluxBalanceAnalysis(model::LinearModel, optimizer)
     Z0 = JuMP.objective_value(optimization_model)
 
-    # save the model data to all workers (`Ref` avoids broadcasting over the tuple)
-    save_at.(workers, :cobrexa_parfva_data, Ref((model, Z0, optimizer, gamma)))
-
     # make a JuMP optimization model
-    save_at.(workers, :cobrexa_parfva_model, Ref(:(begin
-        model, Z0, optimizer, gamma = cobrexa_parfva_data
-        optmodel, x = COBREXA.makeOptimizationModel(model, optimizer)
-        COBREXA.parFVA_add_constraint(optmodel, model.c, x, Z0, gamma)
+    map(fetch, save_at.(workers, :cobrexa_parfva_model, Ref(:(begin
+        optmodel, x = COBREXA.makeOptimizationModel($model, $optimizer)
+        COBREXA.parFVA_add_constraint(optmodel, $(model.c), x, $Z0, $gamma)
         optmodel
-    end)))
+    end))))
 
     # schedule FVA parts parallely using pmap
     fluxes = dpmap(
@@ -80,8 +76,7 @@ function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
         [-reactions reactions])
 
     # free the data on workers
-    fetch.(remove_from.(workers, :cobrexa_parfva_data))
-    fetch.(remove_from.(workers, :cobrexa_parfva_model))
+    map(fetch, remove_from.(workers, :cobrexa_parfva_model))
 
     return fluxes
 end
