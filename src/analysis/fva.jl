@@ -44,17 +44,13 @@ function parFVA_add_constraint(model, c, x, Z0, gamma)
     JuMP.@constraint(model, c' * x ≥ gamma * Z0)
 end
 
-function parFVA_get_minmax(model, rid)
-    var = JuMP.all_variables(model)[rid]
-    JuMP.@objective(model, MOI.MIN_SENSE, var)
-    JuMP.optimize!(model)
-    min_flux = JuMP.objective_value(model)
+function parFVA_get_opt(model, rid)
+    sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
+    var = JuMP.all_variables(model)[abs(rid)]
 
-    JuMP.@objective(model, MOI.MAX_SENSE, var)
+    JuMP.@objective(model, sense, var)
     JuMP.optimize!(model)
-    max_flux = JuMP.objective_value(model)
-
-    [min_flux max_flux]
+    return JuMP.objective_value(model)
 end
 
 function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
@@ -78,9 +74,10 @@ function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
     end)))
 
     # schedule FVA parts parallely using pmap
-    fluxes = vcat(dpmap(
-        rid -> :(COBREXA.parFVA_get_minmax(cobrexa_parfva_model, $rid)),
-        CachingPool(workers), reactions)...)
+    fluxes = dpmap(
+        rid -> :(COBREXA.parFVA_get_opt(cobrexa_parfva_model, $rid)),
+        CachingPool(workers),
+        [-reactions reactions])
 
     # free the data on workers
     fetch.(remove_from.(workers, :cobrexa_parfva_data))
