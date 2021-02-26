@@ -1,12 +1,11 @@
 # Model Structure
-Before reading or writing models, it is important to understand how they are represented internally.
-Each model is a type of `CobraTools.Model`, which is composed of a model `id`, and arrays of `Reaction`s, `Metabolite`s and `Gene`s. 
-The fields of `Reaction`, `Metabolite`, `Gene` types are shown below. 
-
-When reading or writing, these fields are what is used by `CobraTools.jl`.
+Before reading, writing models or building models, it is important to understand how they are represented internally in `CobraTools`.
+Each model is a struct of the type `CobraTools.Model`, which is composed of a model `id`, and arrays of `Reaction`s, `Metabolite`s and `Gene`s. 
 ```@docs
 Model
 ```
+The fields of `Reaction`, `Metabolite`, `Gene` types are shown below. 
+When reading, writing, building or analysing models, these fields are what is used by `CobraTools.jl`.
 ```@docs
 Reaction
 ```
