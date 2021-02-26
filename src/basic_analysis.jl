@@ -1,4 +1,29 @@
 """
+S, b, upper_bounds, lower_bounds = get_core_model(model::CobraTools.Model)
+
+Return stoichiometrix matrix (S), mass balance right hand side (b), upper and lower bounds of constraint based model.
+That is, S*v=b with lower_bounds ≤ v ≤ upper_bounds where v is the flux vector. This is useful if you want to construct
+your own optimization problem.
+"""
+function get_core_model(model::CobraTools.Model)
+    ubs = [rxn.ub for rxn in model.reactions]
+    lbs = [rxn.lb for rxn in model.reactions]
+    
+    b = spzeros(length(model.metabolites))
+    S = spzeros(length(model.metabolites), length(model.reactions))
+
+    metids = [met.id for met in model.metabolites] # need indices for S matrix construction
+    for (i, rxn) in enumerate(model.reactions) # column
+        for (met, coeff) in rxn.metabolites
+            j = findfirst(x -> x == met.id, metids) # row
+            isnothing(j) ? (@error "S matrix construction error: $(met.id) not defined."; continue) : nothing
+            S[j, i] = coeff
+        end
+    end
+    return S, b, ubs, lbs
+end
+
+"""
     build_cbm(model::CobraTools.Model)
 
 Initialize a constraint based model. Creates a model that satisfies the mass balance
@@ -169,23 +194,23 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
 end
 
 """
-rxn_flux_dict = map_fluxes(v, model::CobraTools.Model)
+    map_fluxes(v, model::CobraTools.Model)
 
 Map fluxes from an optimization problem (v) to rxns in a model. v can be a JuMP object (fluxes) or an array of Float64 fluxes.
 Assumes they are in order, which they should be since they are constructed from model.
 """
 function map_fluxes(v::Array{VariableRef,1}, model::CobraTools.Model)
     rxndict = Dict{String, Float64}()
-    for i in eachindex(model.rxns)
-        rxndict[model.rxns[i].id] = value(v[i])
+    for i in eachindex(model.reactions)
+        rxndict[model.reactions[i].id] = value(v[i])
     end
     return rxndict
 end
 
 function map_fluxes(v::Array{Float64,1}, model::CobraTools.Model)
     rxndict = Dict{String, Float64}()
-    for i in eachindex(model.rxns)
-        rxndict[model.rxns[i].id] = v[i]
+    for i in eachindex(model.reactions)
+        rxndict[model.reactions[i].id] = v[i]
     end
     return rxndict
 end

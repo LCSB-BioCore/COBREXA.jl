@@ -8,20 +8,20 @@ name :: String
 metabolites :: Dict{Metabolite, Float64}
 lb :: Float64
 ub :: Float64
-grr :: String
+grr :: Array{Array{Gene, 1}, 1}
 subsystem :: String
 notes :: Dict{String, Array{String, 1}}
 annotation :: Dict{String, Union{Array{String, 1}, String}}
 objective_coefficient :: Float64
 ````
 """
-mutable struct Reaction
+mutable struct Reaction <: ModelComponent
     id :: String
     name :: String
     metabolites :: Dict{Metabolite, Float64}
     lb :: Float64
     ub :: Float64
-    grr :: String
+    grr :: Array{Array{Gene, 1}, 1}
     subsystem :: String
     notes :: Dict{String, Array{String, 1}}
     annotation :: Dict{String, Union{Array{String, 1}, String}} # SBO is a single string term
@@ -29,7 +29,7 @@ mutable struct Reaction
 end
 
 """
-reaction = Reaction()
+    Reaction()
 
 Empty reaction constructor.
 """
@@ -39,7 +39,7 @@ function Reaction()
     metabolites = Dict{Metabolite, Float64}()
     lb = -1000.0 
     ub = 1000.0 
-    grr = ""
+    grr = Array{Array{Gene, 1}, 1}()
     subsystem = "" 
     notes = Dict{String, Array{String, 1}}() 
     annotation = Dict{String, Union{Array{String, 1}, String}}()
@@ -48,14 +48,13 @@ function Reaction()
 end
 
 """
-reaction = Reaction(metabolite_dict::Dict{Metabolite, Float64}, dir::String)
+    Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
 
-Assign metabolites and their associated stoichiometries from metabolite_dict to a reaction struct.
-Directionality is specified using "for" (forward), "rev" (reverse), or "" for bidirectional reactions. 
+Assign the id, metabolites (and their associated stoichiometries), and the direcionality of a reaction to a Reaction struct.
+Directionality (dir) is specified using "for" (forward), "rev" (reverse), or any other string for bidirectional reactions. 
 All other fields are left unassigned.
 """
-function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
-    id = ""
+function Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
     name = ""
     if dir == "for"
         lb = 0.0 
@@ -67,7 +66,7 @@ function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
         lb = -1000.0 
         ub = 1000.0     
     end
-    grr = ""
+    grr = Array{Array{Gene, 1}, 1}()
     subsystem = "" 
     notes = Dict{String, Array{String, 1}}() 
     annotation = Dict{String, Union{Array{String, 1}, String}}()
@@ -76,67 +75,10 @@ function Reaction(metabolites::Dict{Metabolite, Float64}, dir::String)
 end
 
 """
-reaction = Reaction(rxn_dict :: Dict{String, Any}, mets::Array{Metabolite, 1})
-
-Assign a reaction struct using rxn_dict and also check that metabolites in this struct exist in the model.
-If not a warning is issued and that metabolite is not added to the reaction.
-"""
-function Reaction(d::Dict{String, Any}, mets::Array{Metabolite, 1})
-    id = ""
-    name = ""
-    metabolites = Dict{Metabolite, Float64}()
-    lb = -1000.0 
-    ub = 1000.0 
-    grr = ""
-    subsystem = "" 
-    notes = Dict{String, Array{String, 1}}() 
-    annotation = Dict{String, Union{Array{String, 1}, String}}()
-    objective_coefficient = 0.0
-    for (k, v) in d
-        if k == "id"
-            id = v
-        elseif k == "name"
-            name = v
-        elseif k == "metabolites"
-            metabolites = Dict{Metabolite, Float64}() 
-            for (kk, vv) in v
-                ind = findfirst(x->x.id == kk, mets)
-                isnothing(ind) ? (@warn "Metabolite $kk not found in reaction assignment."; continue) : nothing
-                metabolites[mets[ind]] = vv
-            end 
-        elseif k == "lower_bound"
-            lb = v
-        elseif k == "upper_bound"
-            ub = v
-        elseif k == "gene_reaction_rule"
-            grr = v
-        elseif k == "subsystem"
-            subsystem = v
-        elseif k == "notes"
-            notes = Dict{String, Array{String, 1}}(kk=>vv for (kk, vv) in v)
-        elseif k == "annotation"
-            annotation = Dict{String, Union{Array{String, 1}, String}}()
-            for (kk, vv) in v
-                if typeof(vv) == String
-                    annotation[kk] = vv
-                else
-                    annotation[kk] = convert(Array{String, 1}, vv)
-                end
-            end
-        elseif k == "objective_coefficient"
-            objective_coefficient = v
-        else
-            @warn "Unrecognized reaction field: $k"
-        end
-    end
-    Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient)
-end
-
-
-"""
-index = getindex((rxns::Array{Reaction, 1}, rxn::Reaction)
+    getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 
 Get the index of a reaction in an array of reactions. Return -1 if not found.
+Typically used, `rxns[rxn] = index`.
 """
 function Base.getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
     for i in eachindex(rxns)
@@ -148,7 +90,7 @@ function Base.getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 end
 
 """
-findfirst(rxns::Array{Reaction, 1}, rxnid::String)
+    findfirst(rxns::Array{Reaction, 1}, rxnid::String)
 
 Return the reaction with rxnid or else `nothing`. Typically used: findfirst(model.rxns, rxnid)
 """
@@ -162,9 +104,32 @@ function Base.findfirst(rxns::Array{Reaction, 1}, rxnid::String)
 end
 
 """
+    _is_duplicate(rxns::Array{Reaction, 1}, rxn::Reaction)
+
+Check if rxn already exists in rxns but has another id. 
+First checks if the ID already exists.
+Then looks through the reaction equations and compares met.id's and stoichiometric coefficients.
+If rxn has the same reaction equation as another reaction in rxns, the return true and the index of the match. 
+"""
+function _is_duplicate(rxns::Array{Reaction, 1}, crxn::Reaction)
+    ceq = Dict{String, Float64}(k.id => v for (k, v) in crxn.metabolites)
+    for rxn in rxns
+        if rxn.id != crxn.id
+            req = Dict{String, Float64}(k.id => v for (k, v) in rxn.metabolites)
+            if isempty(setdiff(collect(keys(ceq)), collect(keys(req)))) && isempty(setdiff(collect(keys(req)),collect(keys(ceq)))) # same metabolites
+                all([req[k] == v for (k, v) in ceq]) && (return true, rxns[rxn])
+            end
+        else
+            return true, rxns[rxn]
+        end
+    end
+    return false, -1
+end
+
+"""
 Pretty printing of reaction::Reaction.
 """
-function Base.show(io::IO, r::Reaction)
+function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     if r.ub > 0.0 && r.lb < 0.0
         arrow = " ⟷  "
     elseif r.ub == 0.0 && r.lb < 0.0
@@ -204,8 +169,15 @@ function Base.show(io::IO, r::Reaction)
     end
     println(io, "Lower bound: ", r.lb)
     println(io, "Upper bound: ", r.ub)
-    println(io, "Genes: ", r.grr)
-    println(io, "E.C. number: ", join(get(r.annotation, "ec-code", ["N/A"]), " or "))
+
+    grr_strings = String[]
+    for gr in r.grr
+        push!(grr_strings, "("*join([g.id for g in gr], " and ")*")")
+    end
+    grr_string = join(grr_strings, " or ")
+    (isnothing(grr_string) || grr_string == "") && (grr_string = "") 
+    println(io, "Genes: ", grr_string)
+    println(io, "E.C. number: ", join(get(r.annotation, "ec-code", [""]), " or "))
 end
 
 """
@@ -216,9 +188,10 @@ function Base.show(io::IO, ::MIME"text/plain", rs::Array{Reaction, 1})
 end
 
 """
-isbalanced, atom_balances = is_mass_balanced(rxn::Reaction)
+    is_mass_balanced(rxn::Reaction)
 
-Checks if rxn is atom balanced. Returns bool and the associated balance for convenience.
+Checks if rxn is atom balanced. Returns a boolean for whether the reaction is balanced,
+and the associated balance of atoms for convenience (useful if not balanced).
 """
 function is_mass_balanced(rxn::Reaction)
     atom_balances = Dict{String, Float64}()
