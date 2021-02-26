@@ -7,19 +7,10 @@ Currently, SBML, JSON and Matlab formatted models can be imported.
 read_model(file_location::String)
 ```
 
-```@setup modelread
+```@example
 using CobraTools
 
-models_folder = joinpath(join(split(pwd(), "\\")[1:end-2], "\\"), "models")
-model_location = joinpath(models_folder, "iJO1366.json") 
-model = read_model(model_location) # import model so that the examples are simpler
-```
-
-```@example modelread
-using CobraTools
-
-# models_folder is a directory where models are stored
-model_location = joinpath(models_folder, "iJO1366.json") 
+model_location = joinpath("..","..", "models", "iJO1366.json") 
 model = read_model(model_location)
 ```
 
@@ -30,11 +21,13 @@ Currently, JSON and Matlab models can be exported.
 save_model(model::CobraTools.Model, file_location::String)
 ```
 
-```@example modelread
-using CobraTools
+```@example
+using CobraTools # hide
+model_location = joinpath("..","..", "models", "iJO1366.json") # hide
+model = read_model(model_location) # hide
 
 # "e_coli_json_model.json" is the file name we are going to use to save the model
-model_location = joinpath(pwd(), "e_coli_json_model.json")
+model_location = joinpath("e_coli_json_model.json")
 
 # model is a CobraTools.Model object previously imported or created
 save_model(model, model_location)

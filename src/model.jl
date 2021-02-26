@@ -1,5 +1,5 @@
 """
-Model struct of a constraint based metabolic model.
+Model struct of a constraint based metabolic model (mutable).
 
 # Fields
 ````
