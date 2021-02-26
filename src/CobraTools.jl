@@ -30,6 +30,7 @@ include("equilibrator_tools.jl")
 export ∅, ⟶, →, ←, ⟵, ↔, ⟷
 export Reaction, Metabolite, Gene, Model
 export build_cbm, fba, pfba, map_fluxes, set_bound, exchange_reactions, metabolite_fluxes
+export read_model, save_model
 
 
 # Initialization functions

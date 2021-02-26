@@ -1,5 +1,19 @@
 """
-Reaction struct (mutable)
+Reaction struct (mutable).
+
+# Fields
+````
+id :: String
+name :: String
+metabolites :: Dict{Metabolite, Float64}
+lb :: Float64
+ub :: Float64
+grr :: String
+subsystem :: String
+notes :: Dict{String, Array{String, 1}}
+annotation :: Dict{String, Union{Array{String, 1}, String}}
+objective_coefficient :: Float64
+````
 """
 mutable struct Reaction
     id :: String

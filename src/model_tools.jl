@@ -1,5 +1,14 @@
 """
 Model struct of a constraint based metabolic model.
+
+# Fields
+````
+id :: String
+rxns :: Array{Reaction, 1}
+mets :: Array{Metabolite, 1}
+genes :: Array{Gene, 1}
+grrs :: Dict{String, Array{Array{String, 1}, 1}}
+````
 """
 struct Model
     id :: String # model name
@@ -73,9 +82,10 @@ end
 """
 Pretty printing of model::CobraTools.Model.
 """
-function Base.show(io::IO, m::CobraTools.Model)
-    println(io, "Constraint based model: ", m.id)
-    println(io, "Number of reactions: ", length(m.rxns))
-    println(io, "Number of metabolites: ", length(m.mets))
-    println(io, "Number of genes: ", length(m.genes))
+function Base.show(io::IO, ::MIME"text/plain", m::CobraTools.Model)
+    println(io, "Constraint based model: ", m.id, "\n",
+              "Number of reactions: ", length(m.rxns), "\n",
+              "Number of metabolites: ", length(m.mets), "\n",
+              "Number of genes: ", length(m.genes))
 end
+
