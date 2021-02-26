@@ -47,7 +47,7 @@ export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
        changeCouplingBounds!, changeCouplingBounds,
        verifyConsistency, findExchangeReactions, findExchangeMetabolites,
        solveLP, loadModel, loadSBMLModel, writeModel,
-       fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA, parFVA2,
+       fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA,
        convertToExportable
 
 end
