@@ -20,6 +20,7 @@ include("io_tools.jl")
 include("construction_tools.jl")
 
 include("brenda_tools.jl")
+include("equilibrator_tools.jl")
 # include("basic_analysis.jl")
 # include("sampling_tools.jl")
 
