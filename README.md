@@ -3,6 +3,7 @@
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://stelmo.github.io/CobraTools.jl/dev)
 [![CI](https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/stelmo/CobraTools.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG)](https://codecov.io/gh/stelmo/CobraTools.jl)
 
 This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment, similar to Cobrapy in Python and the Cobra Toolbox in Matlab.
 This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
