@@ -53,6 +53,224 @@ function read_write_read_test(model, format)
     model_comparison_test(model, tmpmodel)
 end
 
+"""
+Test if gene can be constructed and manipulated.
+"""
+function test_gene()
+    g = Gene()
+    g.id = "gene1"
+    g.name = "gene_name"
+    g.notes = Dict("notes"=>["blah", "blah"])
+    g.annotation = Dict("sboterm" => "sbo", "ncbigene" => ["ads", "asds"])
+    
+    g2 = Gene("gene2")
+    
+    genes = [g, g2]
+    
+    ind = genes[g]
+    if ind != 1
+        return false
+    end
+    
+    gg = findfirst(genes, g2.id)
+    if gg.id != g2.id
+        return false
+    end
+    
+    g3 = Gene("g3")
+    g3.annotation = Dict("ncbigene" => "sbo", "ncbigene" => ["ads", "asds"])
+    
+    dup, ind = check_duplicate_annotations(genes, g3)
+    if !dup || ind != 1 
+        return false
+    end
+
+    return true
+end
+
+"""
+Test if metabolite can be constructed and manipulated.
+"""
+function test_metabolite()
+    m1 = Metabolite()
+    m1.id = "met1"
+    m1.name = "metabolite 1"
+    m1.formula = "C6H12O6N"
+    m1.charge = 1
+    m1.compartment = "c"
+    m1.notes = Dict("notes"=>["blah", "blah"])
+    m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
+    
+    m2 = Metabolite("met2")
+    m2.formula = "C6H12O6N"
+    
+    m3 = Metabolite("met3")
+    m3.formula = "X"
+    m3.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ad2s", "asds"])
+    
+    mets = [m1, m2, m3]
+    
+    ind = mets[m2]
+    if ind != 2
+        return false
+    end
+    
+    mm = findfirst(mets, "met3")
+    if mm.id != m3.id
+        return false
+    end
+    
+    dup, ind = check_duplicate_annotations(mets, m3)
+    if !dup || ind !=3
+        return false
+    end
+    
+    mms = check_same_formula([m3, m1], m2)
+    if length(mms) != 1
+        return false
+    end
+    
+    ats = get_atoms(mms[1])
+    if ats["C"] != 6 && ats["N"] != 1
+        return false
+    end
+    
+    return true
+end
+
+"""
+Test if reaction can be constructed and manipulated.
+"""
+function test_reaction()
+    m1 = Metabolite("m1")
+    m1.formula = "C2H3"
+    m2 = Metabolite("m2")
+    m2.formula = "H3C2"
+    m3 = Metabolite("m3")
+    m4 = Metabolite("m4")
+    
+    g1 = Gene("g1")
+    g2 = Gene("g2")
+    g3 = Gene("g3")
+    
+    r1 = Reaction()
+    r1.id = "r1"
+    r1.name = "reaction 1"
+    r1.metabolites = Dict(m1 => -1.0, m2 => 1.0)
+    r1.lb = -100.0
+    r1.ub = 100.0
+    r1.grr = [[g1, g2], [g3]]
+    r1.subsystem = "glycolysis"
+    r1.notes = Dict("notes"=>["blah", "blah"])
+    r1.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
+    r1.objective_coefficient = 1.0
+    
+    r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), "rev")
+    if r2.lb != -1000.0 && r2.ub != 0.0
+        return false
+    end
+    
+    r3 = Reaction("r3", Dict(m3 => -1.0, m4 => 1.0), "for")
+    if r3.lb != 0.0 && r3.ub != 1000.0
+        return false
+    end
+    
+    rxns = [r1, r2, r3]
+    
+    ind = rxns[r3]
+    if ind != 3
+        return false
+    end
+    
+    rr = findfirst(rxns, "r2")
+    if rr.id != r2.id
+        return false
+    end
+    
+    r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), "bidir")
+    r4.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
+    if r4.lb != -1000.0 && r4.ub != 1000.0
+        return false
+    end
+    
+    dup, ind = check_duplicate_annotations(rxns, r4)
+    if !dup || ind !=1
+        return false
+    end
+    
+    dup, ind = check_duplicate_reaction(rxns, r4)
+    if !dup || ind !=3
+        return false
+    end
+    
+    bal, d = is_mass_balanced(r1)
+    if !bal
+        return false
+    end
+
+    return true
+end
+
+"""
+Test if model can be constructed and manipulated (basic).
+"""
+function test_model()
+    m1 = Metabolite("m1")
+    m1.formula = "C2H3"
+    m2 = Metabolite("m2")
+    m2.formula = "H3C2"
+    m3 = Metabolite("m3")
+    m4 = Metabolite("m4")
+
+    g1 = Gene("g1")
+    g2 = Gene("g2")
+    g3 = Gene("g3")
+
+    r1 = Reaction()
+    r1.id = "r1"
+    r1.name = "reaction 1"
+    r1.metabolites = Dict(m1 => -1.0, m2 => 1.0)
+    r1.lb = -100.0
+    r1.ub = 100.0
+    r1.grr = [[g1, g2], [g3]]
+    r1.subsystem = "glycolysis"
+    r1.notes = Dict("notes"=>["blah", "blah"])
+    r1.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
+    r1.objective_coefficient = 1.0
+
+    r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), "rev")
+    r3 = Reaction("r3", Dict(m3 => -1.0, m4 => 1.0), "for")
+    r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), "bidir")
+    r4.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
+
+    mets = [m1, m2, m3, m4]
+    genes = [g1, g2, g3]
+    rxns = [r1, r2, r3, r4]
+    
+    model = Model()
+    model.id = "model"
+    model.reactions = rxns
+    model.metabolites = mets
+    model.genes = genes
+    
+    ind = model[r2]
+    if ind != 2
+        return false
+    end
+
+    ind = model[g3]
+    if ind != 3
+        return false
+    end
+
+    ind = model[m4]
+    if ind != 4
+        return false
+    end
+
+    return true
+end
+
 # function rxn_construction_test(model)
 #     # note, this test is for iJO1366
 #     rxn_original = findfirst(model.rxns, "NADH16pp")

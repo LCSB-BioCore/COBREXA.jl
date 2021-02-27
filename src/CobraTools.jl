@@ -30,17 +30,22 @@ include(joinpath("optimization_analysis", "basic_analysis.jl"))
 # include("brenda_tools.jl")
 # include("equilibrator_tools.jl")
 
-# export
 ∅ = Metabolite("∅") # for exchange reactions
-export ∅
 
-export Model, add!, rm!, is_duplicate, fix_model! # from model
-export Gene # from gene
-export Metabolite, get_atoms # from metabolite
-export Reaction, is_mass_balanced # from reaction
-export ⟶, →, ←, ⟵, ↔, ⟷ # from construction_tools
-export read_model, save_model # from io_tools
-export build_cbm, fba, pfba, map_fluxes, set_bound, exchange_reactions, metabolite_fluxes, get_core_model
+export
+    ∅,
+
+    # base
+    Model, Gene, Reaction, Metabolite, check_duplicate_annotations, get_atoms, check_same_formula, is_mass_balanced, check_duplicate_reaction, 
+    
+    # construction
+    ⟶, →, ←, ⟵, ↔, ⟷, add!, rm!, fix_model!,
+    
+    # io
+    read_model, save_model,
+    
+    # optimization_analysis
+    get_core_model, build_cbm #, fba, pfba, map_fluxes, set_bound, exchange_reactions, metabolite_fluxes
 
 # Initialization functions
 include("init_functions.jl")

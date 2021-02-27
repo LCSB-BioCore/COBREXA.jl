@@ -14,8 +14,15 @@ iJO1366_json = joinpath("..", "models", "iJO1366.json")
 jsonmodel_ecoli = CobraTools.read_model(iJO1366_json)
 
 @testset "CobraTools Tests" begin
-    @testset "Reading & Writing" begin
 
+    @testset "Base" begin
+        @test test_gene()
+        @test test_metabolite()
+        @test test_reaction()
+        @test test_model()
+    end    
+
+    @testset "IO" begin
         @test length(jsonmodel_ecoli.reactions) == 2583
         @test length(matlabmodel_ecoli.reactions) == 2583
         @test_broken length(sbmlmodel_ecoli.reactions) == 2583
@@ -28,10 +35,10 @@ jsonmodel_ecoli = CobraTools.read_model(iJO1366_json)
         @test_broken read_write_read_test(sbmlmodel_ecoli, "xml")    
     end    
 
-    # @testset "Construction" begin
-    #     @test rxn_construction_test(jsonmodel_ecoli)
-    #     @test (CobraTools.ismassbalanced(findfirst(jsonmodel_ecoli.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M"))[1] == false) && (CobraTools.ismassbalanced(findfirst(jsonmodel_ecoli.rxns, "APCS"))[1])
-    # end    
+    @testset "Construction" begin
+        @test rxn_construction_test(jsonmodel_ecoli)
+        @test (CobraTools.ismassbalanced(findfirst(jsonmodel_ecoli.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M"))[1] == false) && (CobraTools.ismassbalanced(findfirst(jsonmodel_ecoli.rxns, "APCS"))[1])
+    end    
 
     # @testset "Basic Analysis" begin
     #     @test fba_test(jsonmodel_ecoli) 
