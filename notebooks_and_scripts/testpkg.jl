@@ -1,19 +1,28 @@
 using CobraTools
 # hello
 
-modelpath = joinpath("models", "iJO1366.xml")
-modelpath = joinpath("models", "iJO1366.json")
-modelpath = joinpath("models", "iJO1366.mat")
 
-model = CobraTools.read_model(modelpath)
 
-save_model(model, "test.mat")
 
-model2 = CobraTools.read_model("test.mat")
 
-using MAT
 
-m2 = matread("test.mat")
+# modelpath = joinpath("models", "iJO1366.xml")
+# modelpath = joinpath("models", "iJO1366.json")
+# modelpath = joinpath("models", "iJO1366.mat")
+# modelpath = joinpath("models", "yeastGEM.mat")
+
+# model = CobraTools.read_model(modelpath)
+
+# save_model(model, "test.mat")
+
+# model2 = CobraTools.read_model("test.mat")
+
+
+# using MAT
+
+# my = matread(modelpath)
+# m2 = matread("test.mat")
+
 
 # using JSON
 # m = JSON.parsefile(modelpath)

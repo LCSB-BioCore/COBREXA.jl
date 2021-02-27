@@ -25,10 +25,10 @@ include(joinpath("base", "model.jl"))
 include(joinpath("io", "io_tools.jl"))
 include(joinpath("construction", "construction_overloading.jl"))
 include(joinpath("construction", "model_manipulations.jl"))
+include(joinpath("optimization_analysis", "basic_analysis.jl"))
+# include("sampling_tools.jl")
 # include("brenda_tools.jl")
 # include("equilibrator_tools.jl")
-# include("basic_analysis.jl")
-# include("sampling_tools.jl")
 
 # export
 ∅ = Metabolite("∅") # for exchange reactions
