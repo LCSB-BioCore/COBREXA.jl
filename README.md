@@ -1,9 +1,25 @@
 # CobraTools.jl
 *CobraTools is a Julia package for constraint based reconstruction and analysis of metabolic models.*
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://stelmo.github.io/CobraTools.jl/dev)
-[![CI](https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/stelmo/CobraTools.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG)](https://codecov.io/gh/stelmo/CobraTools.jl)
+[docs-img]:https://img.shields.io/badge/docs-dev-blue.svg
+[docs-url]: https://stelmo.github.io/CobraTools.jl/dev
+ 
+[ci-img]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push
+[ci-url]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml
+
+[cov-img]: https://codecov.io/gh/stelmo/CobraTools.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG
+[cov-url]: https://codecov.io/gh/stelmo/CobraTools.jl
+
+[contrib]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
+
+[license-img]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
+[license-url]: LICENSE.md
+
+[![][license-img]][license-url] [![contributions welcome][contrib]](https://github.com/stelmo/CobraTools.jl/issues)
+
+| **Documentation** | **Tests** | **Coverage** |
+|:--------------:|:-------:|:---------:|
+| [![docs-img]][docs-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] |
 
 This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment, similar to Cobrapy in Python and the Cobra Toolbox in Matlab.
 This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
@@ -16,7 +32,15 @@ To install this package: `] add CobraTools`. See the documentation for more info
 
 ## Quick Example
 
-TODO.
+```julia
+using CobraTools
+using JuMP
+using Gurobi # pick any solver supported by JuMP
+
+model = read_model("iJO1366.json") # models have pretty printing
+
+```
+More funcionality is described in the documention.
 
 ## Progress
 

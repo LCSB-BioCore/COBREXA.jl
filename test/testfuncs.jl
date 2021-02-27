@@ -30,7 +30,7 @@ function model_comparison_test(model1, model2)
     grrs_same = true
     for rxn1 in model1.reactions
         rxn2 = findfirst(model2.reactions, rxn1.id)
-        rxn1_grr_string = string(split(CobraTools.unparse_grr(rxn1.grr), ""))
+        rxn1_grr_string = string(split(CobraTools.unparse_grr(rxn1.grr), "")) # use hash
         rxn2_grr_string = string(split(CobraTools.unparse_grr(rxn2.grr), ""))
         rxn1_ints = sum(Int.([x[1] for x in rxn1_grr_string]))
         rxn2_ints = sum(Int.([x[1] for x in rxn2_grr_string]))

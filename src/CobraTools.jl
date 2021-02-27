@@ -13,20 +13,21 @@ using Random
 using PyCall
 
 # abstract types
-abstract type ModelComponent end # for Reactions, Metabolites and Genes (all have IDs)
+abstract type ModelComponent end # for Reactions, Metabolites and Genes. All ModelComponents have an `id` field.
 
 # definitions of structs
-include("metabolite.jl")
-include("gene.jl")
-include("reaction.jl")
-include("model.jl")
+include(joinpath("base", "metabolite.jl"))
+include(joinpath("base", "gene.jl"))
+include(joinpath("base", "reaction.jl"))
+include(joinpath("base", "model.jl"))
 
 # Tools
-include("io_tools.jl")
-include("construction_overloading.jl")
-include("brenda_tools.jl")
-include("equilibrator_tools.jl")
-include("basic_analysis.jl")
+include(joinpath("io", "io_tools.jl"))
+include(joinpath("construction", "construction_overloading.jl"))
+include(joinpath("construction", "model_manipulations.jl"))
+# include("brenda_tools.jl")
+# include("equilibrator_tools.jl")
+# include("basic_analysis.jl")
 # include("sampling_tools.jl")
 
 # export
