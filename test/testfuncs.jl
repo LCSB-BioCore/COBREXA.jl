@@ -65,10 +65,14 @@ function test_gene()
     g.name = "gene_name"
     g.notes = Dict("notes"=>["blah", "blah"])
     g.annotation = Dict("sboterm" => "sbo", "ncbigene" => ["ads", "asds"])
+
+    println(g) # test IO
     
     g2 = Gene("gene2")
     
     genes = [g, g2]
+
+    println(genes) # test IO
     
     ind = genes[g]
     if ind != 1
@@ -104,6 +108,8 @@ function test_metabolite()
     m1.notes = Dict("notes"=>["blah", "blah"])
     m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
     
+    println(m1) # test IO
+
     m2 = Metabolite("met2")
     m2.formula = "C6H12O6N"
     
@@ -112,6 +118,8 @@ function test_metabolite()
     m3.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ad2s", "asds"])
     
     mets = [m1, m2, m3]
+
+    println(mets) # test IO
     
     ind = mets[m2]
     if ind != 2
@@ -167,6 +175,8 @@ function test_reaction()
     r1.notes = Dict("notes"=>["blah", "blah"])
     r1.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
+
+    println(r1) # test IO
     
     r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), "rev")
     if r2.lb != -1000.0 && r2.ub != 0.0
@@ -179,6 +189,8 @@ function test_reaction()
     end
     
     rxns = [r1, r2, r3]
+
+    println(rxns) # test IO
     
     ind = rxns[r3]
     if ind != 3
@@ -256,6 +268,8 @@ function test_model()
     model.metabolites = mets
     model.genes = genes
     
+    println(model) # test IO
+
     ind = model[r2]
     if ind != 2
         return false
