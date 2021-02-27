@@ -9,6 +9,7 @@
 !/models/iJO1366.xml
 !/models/iJ01366.json
 !/models/iJO1366.mat
+!/models/e_coli_core.json
 *.png
 
 # Ignore working files
