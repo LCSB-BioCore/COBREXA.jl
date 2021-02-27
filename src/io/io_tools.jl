@@ -9,14 +9,15 @@ Note, some meta-information may be lost when importing a model. Importantly, onl
 reactions, metabolites and genes are imported. Currently reading JSON models captures the most meta-information
 regarding reactions, metabolites and genes (e.g. the notes and annotation fields). 
 
-When importing Matlab models some annotation and notes may not be imported because of the non-standard field names used by some models.
-Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`, where
-`or` can be interchanged with `OR, |, ||` and `and` can be interchanged with `AND, &, &&`.
+When importing Matlab models some annotation and notes may not be imported because of non-standard field names used by some models.
+Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`, 
+where `or` can be interchanged with `OR, |, ||` and `and` can be interchanged with `AND, &, &&`.
 Other gene reaction rules formats are not supported yet, but file an issue if your format is standard and needs to be included. 
 
-In all cases the basic information should be imported, e.g. stoichiometrix matrix, constraints etc..
+However, in all cases the basic information needed to perform constraint based analysis should be imported successfully, 
+e.g. stoichiometrix matrix, constraints etc..
 Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
-Always inspect the imported model before running analysis. 
+Always inspect the imported model before running analysis (garbage in -> garbage out). 
 """
 function read_model(file_location::String)
     if endswith(file_location, ".json")
@@ -50,9 +51,9 @@ end
 """
     parsegrr(string_rule, genes::Array{Gene, 1})
 
-Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) 
-where or can also be OR, |, ||
-also where and can also be AND, &, &&
+Parse a gene reaction rule string `string_rule` into a nested `gene` array `Array{Array{Gene, 1}, 1}`. 
+
+Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
 """
 function parse_grr(s::String, genes::Array{Gene, 1})
     if s == "" || isnothing(s)
@@ -82,7 +83,7 @@ end
 """
     unparse_grr(grr::Array{Array{Gene, 1}, 1}
 
-Converts a grr array back into a grr string.
+Converts a nested `gene` array, `grr`, back into a grr string.
 """
 function unparse_grr(grr::Array{Array{Gene, 1}, 1})
     grr_strings = String[]
@@ -228,19 +229,24 @@ function reconstruct_model_matlab(file_location::String)
     model_name = collect(keys(matfile))[1]
     modeldict = matfile[model_name]
 
+    # the model_id can be written in many places, try varying levels of specificity
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
     model_id = haskey(modeldict, "modelName") ? modeldict["modelName"] : model_name # more specific
     
     mets = Metabolite[]
     for i in eachindex(modeldict["mets"])
         id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
+        if id == ""
+            continue
+        end
+
         name = haskey(modeldict, "metNames") ? modeldict["metNames"][i] : ""
         compartment = ""
         formula = ""
         if haskey(modeldict, "metFormulas") 
-            formula = modeldict["metFormulas"][i]
+            formula = string(modeldict["metFormulas"][i])
         elseif haskey(modeldict, "metFormula") 
-            formula = modeldict["metFormula"][i]    
+            formula = string(modeldict["metFormula"][i])    
         end
 
         charge = 0 # sometimes inconsistently named
@@ -250,26 +256,22 @@ function reconstruct_model_matlab(file_location::String)
             charge = modeldict["metCharges"][i]
         end
         
+        # look for annotation data, assume delimited by "; "
         annotation = Dict{String, Union{Array{String, 1}, String}}()
-        if haskey(modeldict, "metBiGGID")
-            annotation["bigg.metabolite"] = [modeldict["metBiGGID"][i]]
+        anno_kid = Dict("metBiGGID"=>"bigg.metabolite","metKEGGID"=>"kegg.compound","metMetaNetXID"=>"metanetx.chemical", "metChEBIID"=>"chebi")
+        for (anno, kid) in anno_kid
+            if haskey(modeldict, anno)
+                annotation[kid] = string.(split(string(modeldict[anno][i]), "; "))
+            end
         end
         if haskey(modeldict, "metSBOTerms")
-            annotation["sbo"] = modeldict["metSBOTerms"][i]
-        end
-        if haskey(modeldict, "metKEGGID")
-            annotation["kegg.compound"] = [modeldict["metKEGGID"][i]]
-        end
-        if haskey(modeldict, "metMetaNetXID")
-            annotation["metanetx.chemical"] = [modeldict["metMetaNetXID"][i]]
-        end
-        if haskey(modeldict, "metChEBIID")
-            annotation["chebi"] = [modeldict["metChEBIID"][i]]
+            annotation["sbo"] = string(modeldict["metSBOTerms"][i])
         end
         
+        # look for some notes
         notes = Dict{String, Array{String, 1}}()
         if haskey(modeldict, "metNotes")
-            notes["note"] = [modeldict["metNotes"][i]]
+            notes["note"] = string.(split(string(modeldict["metNotes"][i]), "; "))
         end            
 
         push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation))
@@ -278,8 +280,11 @@ function reconstruct_model_matlab(file_location::String)
     genes = Gene[]
     for i in eachindex(modeldict["genes"])
         id = haskey(modeldict, "genes") ? modeldict["genes"][i] : ""
-        
-        # these fields often don't exist in the matlab models
+        if id == ""
+            continue # skip blanks
+        end
+
+        # these fields often don't exist in the matlab models, ignore for now
         name = ""
         notes =  Dict{String, Array{String, 1}}()
         annotation = Dict{String, Union{Array{String, 1}, String}}()
@@ -290,32 +295,43 @@ function reconstruct_model_matlab(file_location::String)
     rxns = Reaction[]
     for i in eachindex(modeldict["rxns"])
         id = haskey(modeldict, "rxns") ? modeldict["rxns"][i] : ""
+        if id == ""
+            continue # skip blanks
+        end
+
         name = haskey(modeldict, "rxnNames") ? modeldict["rxnNames"][i] : ""
         metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
         metabolites = Dict{Metabolite, Float64}(mets[j]=>modeldict["S"][j, i] for j in metinds)
+
         lb = haskey(modeldict, "lb") ? modeldict["lb"][i] : -1000.0 # reversible by default
         ub = haskey(modeldict, "ub") ? modeldict["ub"][i] : 1000.0 # reversible by default
+
         grr_string = haskey(modeldict, "grRules") ? modeldict["grRules"][i] : ""
-        subsystem = modeldict["subSystems"][i]
-        objective_coefficient = 0.0
+        subsystem = join(modeldict["subSystems"][i], "; ")
+
         objective_coefficient = haskey(modeldict, "c") ? modeldict["c"][i] : 0.0
 
+        # look for some annotations
         annotation = Dict{String, Union{Array{String, 1}, String}}()
-        if haskey(modeldict, "rxnKEGGID")
-            annotation["kegg.reaction"] = [modeldict["rxnKEGGID"][i]]
+        anno_kids = Dict("rxnKEGGID"=>"kegg.reaction", "rxnECNumbers"=>"ec-code", "rxnBiGGID"=>"bigg.reaction")
+        for (anno, kid) in anno_kids
+            if haskey(modeldict, anno)
+                annotation[kid] = string.(split(string(modeldict[anno][i]), "; "))
+            end    
         end
-        if haskey(modeldict, "rxnECNumbers")
-            annotation["ec-code"] = string.(split(modeldict["rxnECNumbers"][i], "; "))
+        if haskey(modeldict, "rxnSBOTerms")
+            annotation["sbo"] = string(modeldict["rxnSBOTerms"][i])
         end
-        if haskey(modeldict, "rxnBiGGID")
-            annotation["bigg.reaction"] = [modeldict["rxnBiGGID"][i]]
-        end     
         
+        # look for some notes
         notes = Dict{String, Array{String, 1}}()
         if haskey(modeldict, "rxnNotes")
-            notes["note"] = [modeldict["rxnNotes"][i]]
+            notes["note"] = string.(split(string(modeldict["rxnNotes"][i]), "; "))
         end
+
+        # get gene reaction rule
         grr = parse_grr(grr_string, genes)
+
         push!(rxns, Reaction(id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient))
     end
 
@@ -415,36 +431,19 @@ end
 
 Some information is lost here, e.g. notes and some annotations.
 """
-function save_matlab_model(model::CobraTools.Model, file_location::String)
-    rxnrevs = zeros(Int64, length(model.reactions))
-    for i in eachindex(model.reactions)
-        if model.reactions[i].lb < 0.0 && model.reactions[i].ub > 0
-            rxnrevs[i] = 1 # reversible
-        end
-    end
-
-    rgm = spzeros(length(model.reactions), length(model.genes)) # stored as a sparse matrix
-    for (i, rxn) in enumerate(model.reactions)
-        for (j, gene) in enumerate(model.genes)
-            if contains(unparse_grr(rxn.grr), gene.id)
-                rgm[i, j] = 1.0
-            end
-        end
-    end
-    
+function save_matlab_model(model::CobraTools.Model, file_location::String)    
     S, b, ubs, lbs = get_core_model(model)
 
     mdict = Dict("c" => [r.objective_coefficient for r in model.reactions],
+    "modelName" => model.id,
     "mets" => [m.id for m in model.metabolites],
     "subSystems" => [r.subsystem for r in model.reactions],
     "b" => Array(b),
     "metFormulas" => [m.formula for m in model.metabolites],
-    "rxnGeneMat" => rgm,
     "ub" => Array(ubs),
     "rxnNames" => [r.name for r in model.reactions],
     "description" => model.id,
     "genes" => [g.id for g in model.genes],
-    "rev" => rxnrevs,
     "grRules" => [unparse_grr(r.grr) for r in model.reactions],
     "S" => Array(S),
     "metNames" => [m.name for m in model.metabolites],
@@ -454,13 +453,14 @@ function save_matlab_model(model::CobraTools.Model, file_location::String)
     "rxnKEGGID" => [join(get(r.annotation, "kegg.reaction", [""]), "; ") for r in model.reactions],
     "rxnECNumbers" => [join(get(r.annotation, "ec-code", [""]), "; ") for r in model.reactions],
     "rxnBiGGID" => [join(get(r.annotation ,"bigg.reaction", [""]), "; ") for r in model.reactions],
+    "rxnSBOTerms" => [get(r.annotation ,"sbo", "") for r in model.reactions],
     "metBiGGID" => [join(get(m.annotation, "bigg.metabolite", [""]), "; ") for m in model.metabolites],
     "metSBOTerms" => [get(m.annotation, "sbo", "") for m in model.metabolites],
     "metKEGGID" => [join(get(m.annotation, "kegg.compound", [""]), "; ") for m in model.metabolites],
     "metMetaNetXID" => [join(get(m.annotation, "metanetx.chemical", [""]), "; ") for m in model.metabolites],
     "metChEBIID" => [join(get(m.annotation, "chebi", [""]), "; ") for m in model.metabolites])
     
-    matwrite(file_location, Dict(model.id => mdict)) 
+    matwrite(file_location, Dict("model" => mdict)) 
 end
 
 """

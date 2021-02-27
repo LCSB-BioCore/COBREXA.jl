@@ -1,11 +1,11 @@
 """
     get_core_model(model::CobraTools.Model)
 
-Return stoichiometrix matrix (S), mass balance right hand side (b), upper (ubs) and lower bounds (lbs) of constraint based model.
-That is, S*v=b with lbs ≤ v ≤ ubs where v is the flux vector. This is useful if you want to construct
-your own optimization problem.
+Return stoichiometrix matrix (S), mass balance right hand side (b), upper (ubs), and lower bounds (lbs) of constraint based `model`.
+That is, S*v=b with lbs ≤ v ≤ ubs where v is the flux vector. 
+This is useful if you want to construct your own optimization problem.
 
-Returns: S, b, upper_bounds, lower_bounds
+Returns: S, b, ubs, lbs
 """
 function get_core_model(model::CobraTools.Model)
     ubs = [rxn.ub for rxn in model.reactions]
@@ -28,11 +28,12 @@ end
 """
     build_cbm(model::CobraTools.Model)
 
-Initialize a constraint based model. Creates a model that satisfies the mass balance
-and flux constraints but no objective or optimizer is set. Returns the JuMP model.
+Initialize a constraint based `model` using `JuMP`. 
+Creates a model that satisfies the mass balance and flux constraints but no objective or optimizer is set. 
+Returns the `JuMP` model.
 This is useful if you want to write your own optimization problem.
 
-Returns: cbmodel, v, mb, ubs, and lbs, where cbmodel is the JuMP model, v are the fluxes, mb is S*v == 0, and lbs <= v <= ubs.
+Returns: `cbmodel`, `v`, `mb`, `ubs`, and `lbs`, where `cbmodel` is the JuMP model, `v` are the fluxes, `mb` is S*v == 0, and lbs <= v <= ubs.
 """
 function build_cbm(model::CobraTools.Model)
     S, b, ubs, lbs = get_core_model(model) # Construct S, b, lbs, ubs from model

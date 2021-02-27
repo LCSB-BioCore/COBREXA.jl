@@ -24,7 +24,7 @@ jsonmodel_ecoli = CobraTools.read_model(iJO1366_json)
         @test_broken model_comparison_test(jsonmodel_ecoli, sbmlmodel_ecoli)
 
         @test read_write_read_test(jsonmodel_ecoli, "json")
-        # @test read_write_read_test(matlabmodel_ecoli, "mat")
+        @test read_write_read_test(matlabmodel_ecoli, "mat")
         @test_broken read_write_read_test(sbmlmodel_ecoli, "xml")    
     end    
 
