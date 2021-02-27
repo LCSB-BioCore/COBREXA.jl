@@ -43,6 +43,9 @@ function model_comparison_test(model1, model2)
     return all([rxns_same, mets_same, lbs_same, ubs_same, Ss_same, grrs_same])
 end
 
+"""
+Test if model is the same after it was read in, saved, and then re-read. 
+"""
 function read_write_read_test(model, format)
     tmpfile = "temp."*format
 
@@ -271,36 +274,140 @@ function test_model()
     return true
 end
 
-# function rxn_construction_test(model)
-#     # note, this test is for iJO1366
-#     rxn_original = findfirst(model.rxns, "NADH16pp")
-#     nadh = findfirst(model.mets, "nadh_c")
-#     h_c = findfirst(model.mets, "h_c")
-#     q8 = findfirst(model.mets, "q8_c")
-#     q8h2 = findfirst(model.mets, "q8h2_c")
-#     nad = findfirst(model.mets, "nad_c")
-#     h_p = findfirst(model.mets, "h_p")
+"""
+Test reaction overloading functions.
+"""
+function rxn_construction_test(model)
+    # note, this test is for iJO1366
+    rxn_original = findfirst(model.reactions, "NADH16pp")
+    nadh = findfirst(model.metabolites, "nadh_c")
+    h_c = findfirst(model.metabolites, "h_c")
+    q8 = findfirst(model.metabolites, "q8_c")
+    q8h2 = findfirst(model.metabolites, "q8h2_c")
+    nad = findfirst(model.metabolites, "nad_c")
+    h_p = findfirst(model.metabolites, "h_p")
     
-#     rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
-#     check_bounds_forward = (rxn.lb == 0.0 && rxn.ub > 0.0) ? true : false
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
+    check_bounds_forward = (rxn.lb == 0.0 && rxn.ub > 0.0) ? true : false
 
-#     rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ← 1.0*q8h2 + 1.0*nad + 3.0*h_p
-#     check_bounds_reverse = (rxn.lb < 0.0 && rxn.ub == 0.0) ? true : false
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ← 1.0*q8h2 + 1.0*nad + 3.0*h_p
+    check_bounds_reverse = (rxn.lb < 0.0 && rxn.ub == 0.0) ? true : false
     
-#     rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ↔ 1.0*q8h2 + 1.0*nad + 3.0*h_p
-#     check_bounds_bidir = (rxn.lb < 0.0 && rxn.ub > 0.0) ? true : false
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ↔ 1.0*q8h2 + 1.0*nad + 3.0*h_p
+    check_bounds_bidir = (rxn.lb < 0.0 && rxn.ub > 0.0) ? true : false
     
-#     rxn = 1.0*nadh → ∅
-#     check_ex_out = length(rxn.metabolites) == 1 ? true : false 
-#     rxn = ∅ → nadh
-#     check_ex_in = length(rxn.metabolites) == 1 ? true : false 
+    rxn = 1.0*nadh → ∅
+    check_ex_out = length(rxn.metabolites) == 1 ? true : false 
+    rxn = ∅ → nadh
+    check_ex_in = length(rxn.metabolites) == 1 ? true : false 
     
-#     rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
-#     rxn_mets_coeffs = prod(values(rxn.metabolites)) == -12 ? true : false
-#     rxn_mets = ("q8h2_c" in [x.id for x  in keys(rxn.metabolites)]) ? true : false # getting one right suggests it works
+    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
+    rxn_mets_coeffs = prod(values(rxn.metabolites)) == -12 ? true : false
+    rxn_mets = ("q8h2_c" in [x.id for x  in keys(rxn.metabolites)]) ? true : false # getting one right suggests it works
 
-#     return all([check_bounds_forward, check_bounds_reverse, check_bounds_bidir, check_ex_out, check_ex_in, rxn_mets, rxn_mets_coeffs])
-# end
+    return all([check_bounds_forward, check_bounds_reverse, check_bounds_bidir, check_ex_out, check_ex_in, rxn_mets, rxn_mets_coeffs])
+end
+
+"""
+Test add!, rm!, and fix_model! functions.
+"""
+function test_model_manipulations()  
+    m1 = Metabolite("m1")
+    m2 = Metabolite("m2")
+    m3 = Metabolite("m3")
+    m4 = Metabolite("m4")
+    mets = [m1, m2, m3, m4]
+    m5 = Metabolite("m5")
+    m6 = Metabolite("m6")
+    m7 = Metabolite("m7")
+    
+    g1 = Gene("g1")
+    g2 = Gene("g2")
+    g3 = Gene("g3")
+    g4 = Gene("g4")
+    genes = [g1, g2, g3, g4]
+    g5 = Gene("g5")
+    g6 = Gene("g6")
+    g7 = Gene("g7")
+    
+    r1 = Reaction("r1", Dict(m1=>-1.0, m2=>1.0) ,"for")
+    r2 = Reaction("r2", Dict(m2=>-2.0, m3=>1.0) ,"bidir")
+    r2.grr = [[g2], [g1, g3]]
+    r3 = Reaction("r3", Dict(m1=>-1.0, m4=>2.0) ,"rev")
+    r4 = Reaction("r4", Dict(m1=>-5.0, m4=>2.0) ,"rev")
+    r5 = Reaction("r5", Dict(m1=>-11.0, m4=>2.0, m3=>2.0) ,"rev")
+    
+    rxns = [r1, r2]
+
+    model = Model()
+    model.id = "model"
+    model.reactions = rxns
+    model.metabolites = mets
+    model.genes = genes
+    
+    ### reactions
+    add!(model, [r3, r4])
+    if length(model.reactions) != 4
+        return false
+    end
+    add!(model, r5)
+    if length(model.reactions) != 5
+        return false
+    end
+    rm!(model, [r5, r4])
+    if length(model.reactions) != 3
+        return false
+    end
+    rm!(model, r1)
+    if length(model.reactions) != 2
+        return false
+    end
+
+    ### metabolites
+    add!(model, [m5, m6])
+    if length(model.metabolites) != 6
+        return false
+    end
+
+    add!(model, m7)
+    if length(model.metabolites) != 7
+        return false
+    end
+    rm!(model, [m5, m4])
+    if length(model.metabolites) != 5
+        return false
+    end
+    rm!(model, m1)
+    if length(model.metabolites) != 4
+        return false
+    end
+
+    ### genes
+    add!(model, [g5, g6])
+    if length(model.genes) != 6
+        return false
+    end
+
+    add!(model, g7)
+    if length(model.genes) != 7
+        return false
+    end
+    rm!(model, [g5, g4])
+    if length(model.genes) != 5
+        return false
+    end
+    rm!(model, g1)
+    if length(model.genes) != 4
+        return false
+    end
+    
+    fix_model!(model)
+    if length(model.reactions) != 2 && length(model.metabolites) != 4 && length(model.genes) != 3
+        return false
+    end
+    
+    return true
+end
 
 # function fba_test(model)    
 #     biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")

@@ -37,7 +37,7 @@ jsonmodel_ecoli = CobraTools.read_model(iJO1366_json)
 
     @testset "Construction" begin
         @test rxn_construction_test(jsonmodel_ecoli)
-        @test (CobraTools.ismassbalanced(findfirst(jsonmodel_ecoli.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M"))[1] == false) && (CobraTools.ismassbalanced(findfirst(jsonmodel_ecoli.rxns, "APCS"))[1])
+        @test test_model_manipulations()
     end    
 
     # @testset "Basic Analysis" begin
