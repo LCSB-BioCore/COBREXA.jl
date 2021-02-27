@@ -15,6 +15,7 @@ function add!(model::CobraTools.Model, rxn::Reaction)
     else
         @warn "$(rxn.id) already present in model."
     end
+    return nothing
 end
 
 """
@@ -34,6 +35,7 @@ function add!(model::CobraTools.Model, met::Metabolite)
     else
         @warn "$(met.id) already present in model."
     end
+    return nothing
 end
 
 """
@@ -53,12 +55,13 @@ function add!(model::CobraTools.Model, gene::Gene)
     else
         @warn "$(gene.id) already present in model."
     end
+    return nothing
 end
 
 """
     rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
 
-Remove `rxn(s)` from `model` based on reaction `id`.
+Remove all `rxn(s)` from `model` if the `id`s match those in `rxns`.
 """
 function rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
     new_rxn_list = Reaction[]
@@ -74,6 +77,7 @@ function rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
         end
     end
     model.reactions = new_rxn_list
+    return nothing
 end
 
 """
@@ -95,6 +99,7 @@ function rm!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metaboli
         end
     end
     model.metabolites = new_met_list
+    return nothing
 end
 
 """
@@ -116,6 +121,7 @@ function rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
         end
     end
     model.genes = new_gene_list
+    return nothing
 end
 
 """
@@ -141,12 +147,10 @@ function fix_model!(model::CobraTools.Model)
 
     rxn_genes = Gene[] # list of genes used in reactions
     for rxn in model.reactions
-        for gene_lists in rxn.grr
-            for gene_list in gene_lists
-                for gene in gene_list
-                    if rxn_genes[gene] == -1
-                        push!(rxn_genes, gene)
-                    end
+        for gene_list in rxn.grr # for [] in [[]]
+            for gene in gene_list
+                if rxn_genes[gene] == -1
+                    push!(rxn_genes, gene)
                 end
             end
         end
@@ -160,7 +164,7 @@ function fix_model!(model::CobraTools.Model)
     extra_genes = setdiff(model_gene_ids, rxn_gene_ids)
     !isempty(extra_genes) && rm!(model, [findfirst(model.genes, x) for x in extra_genes])
     extra_mets = setdiff(model_mets_ids, rxn_mets_ids)
-    !isempty(extra_mets) && rm!(model, [findfirst(model.reactions, x) for x in extra_mets])
+    !isempty(extra_mets) && rm!(model, [findfirst(model.metabolites, x) for x in extra_mets])
 
     missing_genes = setdiff(rxn_gene_ids, model_gene_ids)
     for mg in missing_genes

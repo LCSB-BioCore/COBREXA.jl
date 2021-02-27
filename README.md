@@ -60,10 +60,10 @@ More funcionality is described in the documention.
 - [x] Implement sampling (achr - kind of?)
 - [ ] Single gene knockouts
 - [ ] Double gene knockout
-- [x] Gibbs integration
+- [x] Equilibrator integration
 - [x] Brenda integration (basic)
 - [x] Reaction construction
-- [ ] Model modifications
+- [x] Model modifications
 - [ ] Distributed analysis (COBRA.jl integration?)
 
 ### Citations
