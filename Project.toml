@@ -7,6 +7,7 @@ version = "0.1.0"
 Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+DistributedData = "f6a0035f-c5ac-4ad0-b410-ad102ced35df"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
 HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
@@ -22,3 +23,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 julia = "1"
+DistributedData = "0.1.3"
