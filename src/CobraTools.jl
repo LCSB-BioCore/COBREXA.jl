@@ -11,6 +11,8 @@ using Measurements
 using Statistics
 using Random
 using PyCall
+using Tulip # for LPs
+using OSQP # for QPs - only pFBA, not a very good LP solver
 
 # abstract types
 abstract type ModelComponent end # for Reactions, Metabolites and Genes. All ModelComponents have an `id` field.
@@ -45,7 +47,7 @@ export
     read_model, save_model,
     
     # optimization_analysis
-    get_core_model, build_cbm #, fba, pfba, map_fluxes, set_bound, exchange_reactions, metabolite_fluxes
+    get_core_model, build_cbm, fba, map_fluxes, set_bound, pfba#, exchange_reactions, metabolite_fluxes
 
 # Initialization functions
 include("init_functions.jl")

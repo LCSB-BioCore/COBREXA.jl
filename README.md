@@ -23,7 +23,7 @@
 
 This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment, similar to Cobrapy in Python and the Cobra Toolbox in Matlab.
 This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
-More importantly, it also exposes the user to the core structures used in COBRA, e.g. the stoichiometric matrix, etc., so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). 
+More importantly, it also exposes the user to the core structures used in COBRA, e.g. the stoichiometric matrix, etc., so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). An alternative, [COBRA.jl](https://github.com/opencobra/COBRA.jl), but its scope is more restricted than `CobraTools.jl`.
 
 
 ## Installation
@@ -35,10 +35,24 @@ To install this package: `] add CobraTools`. See the documentation for more info
 ```julia
 using CobraTools
 using JuMP
-using Gurobi # pick any solver supported by JuMP
+using GLPK # pick any solver supported by JuMP
 
+# import E. coli model
 model = read_model("iJO1366.json") # models have pretty printing
 
+# choose objective to maximize
+biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
+
+# Use convenience functions
+sol = fba(model, biomass, GLPK.Optimizer; solver_attributes=Dict("msg_lev" => GLPK.GLP_MSG_OFF)) # classic flux balance analysis
+
+# DIY
+cbm, v, mb, ubs, lbs = build_cbm(model) # get the constraint based model (cbm) in JuMP format: S*v=b (mb: mass balance constraints) with lbs <= v <= ubs.
+set_optimizer(cbm, GLPK.Optimizer) # use JuMP functions to set optimizer
+set_optimizer_attribute(cbm, "msg_lev", GLPK.GLP_MSG_OFF) # use JuMP functions to set optimizer attributes
+@objective(cbm, Max, v[model[biomass]]) # use index notation to get biomass equation index
+optimize!(cbm)    
+sol = map_fluxes(v, model) # map fluxes to reaction ids. 
 ```
 More funcionality is described in the documention.
 
@@ -70,4 +84,4 @@ More funcionality is described in the documention.
 1) Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013). COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Systems Biology, 7(74). https://doi.org/10.1186/1752-0509-7-74
 2) Heirendt, L., Arreckx, S., Pfau, T. et al. (2019). Creation and analysis of biochemical constraint-based models using the COBRA Toolbox v.3.0. Nat Protoc 14, 639–702. https://doi.org/10.1038/s41596-018-0098-2
 3) Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics, 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
-4) Cite Brenda
+4) Chang, A., Jeske, L., Ulbrich, S., Hofmann, J., Koblitz, J., Schomburg, I., Neumann-Schaal, M., Jahn, D., Schomburg, D.. (2021). BRENDA, the ELIXIR core data resource in 2021: new developments and updates. Nucleic Acids Research, 49(D1). https://doi.org/10.1093/nar/gkaa1025

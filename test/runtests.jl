@@ -1,5 +1,8 @@
 using Test
 using CobraTools
+using JuMP
+using Tulip
+using OSQP
 
 include("testfuncs.jl")
 
@@ -12,6 +15,8 @@ matlabmodel_ecoli = CobraTools.read_model(iJO1366_mat)
 
 iJO1366_json = joinpath("..", "models", "iJO1366.json") 
 jsonmodel_ecoli = CobraTools.read_model(iJO1366_json)
+
+core_model = CobraTools.read_model(joinpath("..", "models", "e_coli_core.json")) # to make solving the LPs/QPs faster
 
 @testset "CobraTools Tests" begin
 
@@ -40,12 +45,10 @@ jsonmodel_ecoli = CobraTools.read_model(iJO1366_json)
         @test test_model_manipulations()
     end    
 
-    # @testset "Basic Analysis" begin
-    #     @test fba_test(jsonmodel_ecoli) 
-    #     @test pfba_test(jsonmodel_ecoli)
-    #     @test atom_test(jsonmodel_ecoli)
-         
-    # end
+    @testset "Optimization Analysis" begin
+        @test fba_test(core_model) 
+        @test pfba_test(core_model)  
+    end
     
     # @testset "Gibbs Analysis" begin
     #     @test true

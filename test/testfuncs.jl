@@ -66,13 +66,13 @@ function test_gene()
     g.notes = Dict("notes"=>["blah", "blah"])
     g.annotation = Dict("sboterm" => "sbo", "ncbigene" => ["ads", "asds"])
 
-    println(g) # test IO
+    g # test IO
     
     g2 = Gene("gene2")
     
     genes = [g, g2]
 
-    println(genes) # test IO
+    genes # test IO
     
     ind = genes[g]
     if ind != 1
@@ -108,7 +108,7 @@ function test_metabolite()
     m1.notes = Dict("notes"=>["blah", "blah"])
     m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
     
-    println(m1) # test IO
+    m1 # test IO
 
     m2 = Metabolite("met2")
     m2.formula = "C6H12O6N"
@@ -119,7 +119,7 @@ function test_metabolite()
     
     mets = [m1, m2, m3]
 
-    println(mets) # test IO
+    mets # test IO
     
     ind = mets[m2]
     if ind != 2
@@ -176,7 +176,7 @@ function test_reaction()
     r1.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    println(r1) # test IO
+    r1 # test IO
     
     r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), "rev")
     if r2.lb != -1000.0 && r2.ub != 0.0
@@ -190,7 +190,7 @@ function test_reaction()
     
     rxns = [r1, r2, r3]
 
-    println(rxns) # test IO
+    rxns # test IO
     
     ind = rxns[r3]
     if ind != 3
@@ -262,13 +262,13 @@ function test_model()
     genes = [g1, g2, g3]
     rxns = [r1, r2, r3, r4]
     
-    model = Model()
+    model = CobraTools.Model()
     model.id = "model"
     model.reactions = rxns
     model.metabolites = mets
     model.genes = genes
     
-    println(model) # test IO
+    model # test IO
 
     ind = model[r2]
     if ind != 2
@@ -317,7 +317,6 @@ function rxn_construction_test(model)
     rxn = ∅ → 1.0nadh
     check_ex_in2 = length(rxn.metabolites) == 1 ? true : false 
     
-
     rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
     rxn_mets_coeffs = prod(values(rxn.metabolites)) == -12 ? true : false
     rxn_mets = ("q8h2_c" in [x.id for x  in keys(rxn.metabolites)]) ? true : false # getting one right suggests it works
@@ -356,7 +355,7 @@ function test_model_manipulations()
     
     rxns = [r1, r2]
 
-    model = Model()
+    model = CobraTools.Model()
     model.id = "model"
     model.reactions = rxns
     model.metabolites = mets
@@ -426,17 +425,26 @@ function test_model_manipulations()
     return true
 end
 
-# function fba_test(model)    
-#     biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
-#     solobj = CobraTools.fba(model, biomass_rxn)
-#     return solobj.objective ≈ 0.9865144469529787
-# end
+"""
+Test if the FBA convenience function works.
+"""
+function fba_test(model)    
+    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+    optimizer = Tulip.Optimizer # quiet by default
+    sol = fba(model, biomass, optimizer)
+    return sol["BIOMASS_Ecoli_core_w_GAM"] ≈ 0.8739215022678488
+end
 
-# function pfba_test(model)    
-#     biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
-#     solobj = CobraTools.pfba(model, biomass_rxn)
-#     return solobj.objective ≈ 15546.145490407944
-# end
+"""
+Test if the pFBA convenience function works
+"""
+function pfba_test(model)    
+    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+    optimizer = OSQP.Optimizer 
+    atts = Dict("eps_abs" => 5e-4,"eps_rel" => 5e-4, "max_iter" => 100_000, "verbose"=>false) # not a good linear solver :/
+    sol = pfba(model, biomass, optimizer; solver_attributes=atts)
+    return sol["PGM"] ≈ -14.749854477263863
+end
 
 # function atom_test(model)
 #     biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
