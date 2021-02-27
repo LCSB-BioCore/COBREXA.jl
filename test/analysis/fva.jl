@@ -15,9 +15,11 @@ end
 
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
-    pids = createParPool(2)
+    pids = addprocs(2, topology=:master_worker)
     @everywhere using COBREXA, GLPK
-    fluxes = parFVA(cp, [1;2], GLPK.Optimizer, pids)
+    fluxes = parFVA(cp, [1,2], GLPK.Optimizer, pids)
     @test fluxes ≈ [1. 1.;
                     2. 2.]
+    @test_throws ArgumentError parFVA(cp, [99999999], GLPK.Optimizer, pids)
+    rmprocs(pids)
 end

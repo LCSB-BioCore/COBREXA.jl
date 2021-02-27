@@ -16,7 +16,7 @@ function fluxVariabilityAnalysis(model::LinearModel, optimizer)
    return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
 end
 
-function fluxVariabilityAnalysis(model::LinearModel, reactions::Array{Int64, 1}, optimizer)
+function fluxVariabilityAnalysis(model::LinearModel, reactions::Vector{Int64}, optimizer)
    (maximum(reactions) > length(model.rxns)) && error("Index exceeds number of reactions.")
    γ = 1.
    fluxes = zeros(length(reactions), 2)
@@ -40,50 +40,43 @@ function fluxVariabilityAnalysis(model::LinearModel, reactions::Array{Int64, 1},
    return fluxes
 end
 
-"""
-(Local) multi-process version of FVA that assigns the reactions to several
-processes running in parallel
-`workers` should be a list of process ids returned by `createParPool`
-"""
-function parFVA(model::LinearModel, reactions::Array{Int64, 1}, solver, workersToUse::Array{Int64,1})
-   nReacs = length(reactions)
-   nWorkers = length(workersToUse)
-   if nReacs < nWorkers
-      @info "Number of workers exceeds number of reactions. 1 worker per reaction will be used."
-      workersToUse = workersToUse[1:nReacs]
-      nWorkers = nReacs
-   end
-   remRefs = Array{Future}(undef, nWorkers)
-   fluxes = zeros(nReacs, 2)
-   alloReacs = allocateReacs(reactions, nWorkers)
-
-   @sync for (round, pid) in enumerate(workersToUse)
-      @async remRefs[round] = @spawnat pid begin
-         fluxVariabilityAnalysis(model, alloReacs[round], solver)
-      end
-   end
-   @sync for (round, pid) in enumerate(workersToUse)
-      fluxes[alloReacs[round], :] = fetch(remRefs[round])
-   end
-
-   return fluxes
+function parFVA_add_constraint(model, c, x, Z0, gamma)
+    JuMP.@constraint(model, c' * x ≥ gamma * Z0)
 end
 
-"""
-Auxiliary function for `parFVA` to divide the list of reactions evenly (for now)
-"""
-function allocateReacs(reactions::Array{Int64, 1}, nWorkers::Int)
-   nReacs = length(reactions)
-   steps = floor(Int, nReacs/nWorkers) * ones(Int, nWorkers)
-   steps[1:nReacs%nWorkers] = steps[1:nReacs%nWorkers] .+ 1
-   steps = cumsum(steps)
-   allocatedReacs = Vector(undef, nWorkers)
+function parFVA_get_opt(model, rid)
+    sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
+    var = JuMP.all_variables(model)[abs(rid)]
 
-   startI = 1
-   for (i, endI) in enumerate(steps)
-      allocatedReacs[i] = reactions[startI:endI]
-      startI = endI + 1
-   end
+    JuMP.@objective(model, sense, var)
+    JuMP.optimize!(model)
+    return JuMP.objective_value(model)
+end
 
-   return allocatedReacs
+function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
+    if any(reactions .> length(model.rxns))
+        throw(ArgumentError("reactions contain an out-of-bounds index"))
+    end
+
+    gamma = 1. #TODO parametrize?
+    (optimization_model, x0) = fluxBalanceAnalysis(model::LinearModel, optimizer)
+    Z0 = JuMP.objective_value(optimization_model)
+
+    # make a JuMP optimization model
+    map(fetch, save_at.(workers, :cobrexa_parfva_model, Ref(:(begin
+        optmodel, x = COBREXA.makeOptimizationModel($model, $optimizer)
+        COBREXA.parFVA_add_constraint(optmodel, $(model.c), x, $Z0, $gamma)
+        optmodel
+    end))))
+
+    # schedule FVA parts parallely using pmap
+    fluxes = dpmap(
+        rid -> :(COBREXA.parFVA_get_opt(cobrexa_parfva_model, $rid)),
+        CachingPool(workers),
+        [-reactions reactions])
+
+    # free the data on workers
+    map(fetch, remove_from.(workers, :cobrexa_parfva_model))
+
+    return fluxes
 end
