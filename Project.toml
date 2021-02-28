@@ -28,7 +28,6 @@ SBML_jll = "bb12108a-f4ef-5f88-8ef3-0b33ff7017f1"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StringDistances = "88034a9c-02f8-509d-84a9-84ec65e18404"
-Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 

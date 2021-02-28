@@ -52,7 +52,7 @@ end
 Run flux balance analysis (FBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, k, v)`.
-Uses the constraints implied by the model object.
+This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
 Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
 
 # Example
@@ -112,9 +112,12 @@ end
     pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}())
 
 Run parsimonious flux balance analysis (pFBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction) for the initial FBA problem.
-Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
+Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
+When `optimizer` is an array of optimizers, e.g. `[opt1, opt2]``, then `opt1` is used to solve the FBA problem, and `opt2` is used to solve the QP problem.
+This strategy is useful when the QP solver is not good at solving the LP problem.
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, k, v)`.
-Uses the constraints implied by the model object.
+If more than one solver is specified in `optimizer`, then `solver_attributes` must be a dictionary of dictionaries with keys "opt1" and "opt2", e.g. Dict("opt1" => Dict{Any, Any}(),"opt2" => Dict{Any, Any}()).
+This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
 Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
 
 # Example
@@ -127,11 +130,21 @@ sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}())
     ## FBA ################################################
     cbm, _, _, _, _ = build_cbm(model) # get the base constraint based model
-    set_optimizer(cbm, optimizer) # choose optimizer
-    if !isempty(solver_attributes) # set other attributes
-        for (k, v) in solver_attributes
-            set_optimizer_attribute(cbm, k, v)
-       end
+    
+    if typeof(optimizer) <: AbstractArray # choose optimizer
+        set_optimizer(cbm, optimizer[1]) 
+        if !isempty(solver_attributes["opt1"]) # set other attributes
+            for (k, v) in solver_attributes["opt1"]
+                set_optimizer_attribute(cbm, k, v)
+           end
+        end
+    else
+        set_optimizer(cbm, optimizer) # choose optimizer
+        if !isempty(solver_attributes) # set other attributes
+            for (k, v) in solver_attributes
+                set_optimizer_attribute(cbm, k, v)
+           end
+        end
     end
 
     # ensure that an array of objective indices are fed in
@@ -166,21 +179,30 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
     ## pFBA ###############################################
     λ = objective_value(cbm)
 
+    if typeof(optimizer) <: AbstractArray # choose optimizer
+        set_optimizer(cbm, optimizer[2]) 
+        if !isempty(solver_attributes["opt2"]) # set other attributes
+            for (k, v) in solver_attributes["opt2"]
+                set_optimizer_attribute(cbm, k, v)
+           end
+        end
+    end
+
     @constraint(cbm, pfbacon, 0.999999*λ <= sum(v[i] for i in objective_indices) <= λ) # constrain model - 0.9999 should be close enough?
     @objective(cbm, Min, sum(dot(v, v)))
     optimize!(cbm)
 
-    if termination_status(cbm) != MOI.OPTIMAL # try to relax bound if failed optimization
+    if termination_status(cbm) != MOI.OPTIMAL && termination_status(cbm) != MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
         JuMP.delete(cbm, pfbacon)
         @constraint(cbm, 0.99999*λ <= sum(v[i] for i in objective_indices) <= λ) 
         optimize!(cbm)    
     end
-    if termination_status(cbm) != MOI.OPTIMAL # try to relax bound if failed optimization
+    if termination_status(cbm) != MOI.OPTIMAL && termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
         JuMP.delete(cbm, pfbacon)
         @constraint(cbm, 0.9999*λ <= sum(v[i] for i in objective_indices) <= λ) 
         optimize!(cbm)    
     end
-    if termination_status(cbm) != MOI.OPTIMAL # try to relax bound if failed optimization
+    if termination_status(cbm) != MOI.OPTIMAL && termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
         JuMP.delete(cbm, pfbacon)
         @constraint(cbm, 0.999*λ <= sum(v[i] for i in objective_indices) <= λ) 
         optimize!(cbm)    

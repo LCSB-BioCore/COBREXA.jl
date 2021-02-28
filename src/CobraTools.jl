@@ -14,6 +14,8 @@ using PyCall
 using Tulip # for LPs
 using OSQP # for QPs - only pFBA, not a very good LP solver
 
+import Base: findfirst, getindex, show
+
 # abstract types
 abstract type ModelComponent end # for Reactions, Metabolites and Genes. All ModelComponents have an `id` field.
 
