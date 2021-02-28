@@ -66,7 +66,7 @@ function test_gene()
     g.notes = Dict("notes"=>["blah", "blah"])
     g.annotation = Dict("sboterm" => "sbo", "ncbigene" => ["ads", "asds"])
 
-    @suppress_out begin
+    io_out = @suppress_out begin
         g
     end
     
