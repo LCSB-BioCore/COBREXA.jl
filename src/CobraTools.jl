@@ -38,7 +38,7 @@ export
     ∅,
 
     # base
-    Model, Gene, Reaction, Metabolite, check_duplicate_annotations, get_atoms, check_same_formula, is_mass_balanced, check_duplicate_reaction, 
+    Model, Gene, Reaction, Metabolite, check_duplicate_annotations, get_atoms, check_same_formula, is_mass_balanced, check_duplicate_reaction,
     
     # construction
     ⟶, →, ←, ⟵, ↔, ⟷, add!, rm!, fix_model!,

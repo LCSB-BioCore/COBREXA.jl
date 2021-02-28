@@ -4,6 +4,20 @@ using Gurobi
 using Tulip
 using OSQP
 using GLPK
+using Suppressor
+
+m1 = Metabolite()
+m1.id = "met1"
+m1.name = "metabolite 1"
+m1.formula = "C6H12O6N"
+m1.charge = 1
+m1.compartment = "c"
+m1.notes = Dict("notes"=>["blah", "blah"])
+m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
+
+@suppress_out begin
+    m1
+end
 
 # model = read_model(joinpath("models", "e_coli_core.json"))
 # biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")

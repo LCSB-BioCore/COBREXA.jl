@@ -3,6 +3,7 @@ using CobraTools
 using JuMP
 using Tulip
 using OSQP
+using Suppressor
 
 include("testfuncs.jl")
 
