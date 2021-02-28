@@ -259,41 +259,104 @@ function set_bound(vind, ubs, lbs; ub=1000, lb=-1000)
     set_normalized_rhs(ubs[vind], ub)
 end
 
-# """
-# get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
+"""
+    atom_exchange(flux_dict::Dict{String, Float64}, model::CobraTools.Model)
 
-# Display the topN producing and consuming exchange fluxes. Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
-# """
-# function exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000)
-#     fluxes = Float64[]
-#     rxns = String[]
-#     for (k, v) in rxndict
-#         if startswith(k, "EX_") && abs(v) < ignorebound
-#             push!(rxns, k)
-#             push!(fluxes, v)
-#         end
-#     end
-#     inds_prod = sortperm(fluxes, rev=true)
-#     inds_cons = sortperm(fluxes)
+Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`. 
+Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
+"""
+function atom_exchange(flux_dict::Dict{String, Float64}, model::CobraTools.Model)
+    atom_flux = Dict{String, Float64}()
+    for (rxnid, flux) in flux_dict
+        if startswith(rxnid, "EX_") || startswith(rxnid, "DM_") # exchange, demand reaction
+            for (met, stoich) in findfirst(model.reactions, rxnid).metabolites
+                adict = get_atoms(met)
+                for (atom, stoich) in adict
+                    atom_flux[atom] = get(atom_flux, atom, 0.0) + flux*stoich
+                end
+            end
+        end
+    end
+    return atom_flux
+end
 
-#     println("Consuming fluxes:")
-#     for i in 1:topN
-#         if rxndict[rxns[inds_cons[i]]] > 0
-#             continue
-#         end
-#         println(rxns[inds_cons[i]], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
-#     end
-#     println("Producing fluxes:")
-#     for i in 1:topN
-#         if rxndict[rxns[inds_cons[i]]] < 0
-#             continue
-#         end
-#         println(rxns[inds_prod[i]], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
-#     end
-# end
+"""
+    get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000.0, verbose=true)
 
-# """
-# """
-# function metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
+Display the topN producing and consuming exchange fluxes. 
+Set topN to a large number to get all the consuming/producing fluxes.
+Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
+When `verbose` is false, the output is not printed out.
+Return these reactions in two dictionaries: `consuming`, `producing`
+"""
+function exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000.0, verbose=true)
+    fluxes = Float64[]
+    rxns = String[]
+    for (k, v) in rxndict
+        if startswith(k, "EX_") && abs(v) < ignorebound
+            push!(rxns, k)
+            push!(fluxes, v)
+        end
+    end
+    inds_prod = sortperm(fluxes, rev=true)
+    inds_cons = sortperm(fluxes)
 
-# end
+    consuming = Dict{String, Float64}()
+    producing = Dict{String, Float64}()
+    verbose && println("Consuming fluxes:")
+    for i in 1:min(topN, length(rxndict))
+        if rxndict[rxns[inds_cons[i]]] < -eps()
+            verbose && println(rxns[inds_cons[i]], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
+            consuming[rxns[inds_cons[i]]] = rxndict[rxns[inds_cons[i]]]
+        else
+            continue
+        end
+    end
+
+    verbose && println("Producing fluxes:")
+    for i in 1:min(topN, length(rxndict))
+        if rxndict[rxns[inds_prod[i]]] > eps()
+            verbose && println(rxns[inds_prod[i]], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
+            producing[rxns[inds_prod[i]]] = rxndict[rxns[inds_prod[i]]]
+        else
+            continue
+        end
+    end
+    return consuming, producing
+end
+
+"""
+    metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
+
+Return two dictionaries of metabolite `id`s mapped to reactions that consume or produce them.
+"""
+function metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
+    S, _, _, _ = get_core_model(model)
+    S = Array(S) # full
+    met_flux = Dict{String, Float64}()
+    rxnids = [rxn.id for rxn in model.reactions]
+    metids= [met.id for met in model.metabolites]
+
+    producing = Dict{String, Dict{String, Float64}}()
+    consuming = Dict{String, Dict{String, Float64}}()
+    for (row, metid) in enumerate(metids)
+        for (col, rxnid) in enumerate(rxnids)
+            mf = fluxdict[rxnid]*S[row, col]
+            # ignore zero flux
+            if mf < -eps() # consuming rxn
+                if haskey(consuming, metid)
+                    consuming[metid][rxnid] = mf
+                else
+                    consuming[metid] = Dict(rxnid => mf)
+                end
+            elseif mf > eps()
+                if haskey(producing, metid)
+                    producing[metid][rxnid] = mf
+                else
+                    producing[metid] = Dict(rxnid => mf)                    
+                end                
+            end
+        end
+    end
+    return consuming, producing
+end

@@ -1,7 +1,7 @@
 # CobraTools.jl
 *CobraTools is a Julia package for constraint based reconstruction and analysis of metabolic models.*
 
-[docs-img]:https://img.shields.io/badge/docs-dev-blue.svg
+[docs-img]:https://img.shields.io/badge/docs-latest-blue.svg
 [docs-url]: https://stelmo.github.io/CobraTools.jl/dev
  
 [ci-img]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push

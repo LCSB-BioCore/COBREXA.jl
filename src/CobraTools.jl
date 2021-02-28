@@ -1,18 +1,13 @@
 module CobraTools
 
 using Requires
-using MAT
-using JSON
-using SBML
-using SparseArrays
-using JuMP
-using LinearAlgebra
+using MAT, JSON, SBML
+using LinearAlgebra, SparseArrays
 using Measurements
-using Statistics
-using Random
+using Statistics, Random
 using PyCall
-using Tulip # for LPs
-using OSQP # for QPs - only pFBA, not a very good LP solver
+using JuMP, Tulip, OSQP # OSQP sucks for LPs
+using LightGraphs, SimpleWeightedGraphs, GraphPlot, Compose
 
 import Base: findfirst, getindex, show
 
@@ -49,7 +44,7 @@ export
     read_model, save_model,
     
     # optimization_analysis
-    get_core_model, build_cbm, fba, map_fluxes, set_bound, pfba#, exchange_reactions, metabolite_fluxes
+    get_core_model, build_cbm, fba, map_fluxes, set_bound, pfba, atom_exchange, exchange_reactions, metabolite_fluxes
 
 # Initialization functions
 include("init_functions.jl")
