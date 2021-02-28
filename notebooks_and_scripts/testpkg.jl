@@ -17,7 +17,7 @@ m1.compartment = "c"
 m1.notes = Dict("notes"=>["blah", "blah"])
 m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
 
-@suppress_out begin
+oo = @suppress_out begin
     m1
 end
 
