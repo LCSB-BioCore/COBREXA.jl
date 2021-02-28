@@ -22,8 +22,8 @@
 | [![docs-img]][docs-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] |
 
 This is package aims to provide constraint based reconstruction and analysis (COBRA) tools in the Julia environment, similar to Cobrapy in Python and the Cobra Toolbox in Matlab.
-This package provides basic convenience functions, e.g. FBA, pFBA, sampling, model construction, etc.
-More importantly, it also exposes the user to the core structures used in COBRA, e.g. the stoichiometric matrix, etc., so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). An alternative, [COBRA.jl](https://github.com/opencobra/COBRA.jl), but its scope is more restricted than `CobraTools.jl`.
+This package provides basic convenience functions, e.g. model IO, construction, modification, FBA, pFBA, sampling, etc. It can also be used to interface with [Equilibrator](http://equilibrator.weizmann.ac.il/) and [BRENDA](https://www.brenda-enzymes.org/).
+More importantly, it also exposes the user to the core structures used in COBRA, e.g. the stoichiometric matrix, etc., so that custom optimization routines can be written as painlessly as possible (due in large part to JuMP). An alternative Julia package hosted by OpenCobra, [COBRA.jl](https://github.com/opencobra/COBRA.jl), also exists, but its scope is more restricted than `CobraTools.jl`.
 
 
 ## Installation
@@ -46,8 +46,23 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 # Use convenience functions
 sol = fba(model, biomass, GLPK.Optimizer; solver_attributes=Dict("msg_lev" => GLPK.GLP_MSG_OFF)) # classic flux balance analysis
 
-# DIY
+# DIY - automatically construct basic JuMP model from a constraint based model
 cbm, v, mb, ubs, lbs = build_cbm(model) # get the constraint based model (cbm) in JuMP format: S*v=b (mb: mass balance constraints) with lbs <= v <= ubs.
+set_optimizer(cbm, GLPK.Optimizer) # use JuMP functions to set optimizer
+set_optimizer_attribute(cbm, "msg_lev", GLPK.GLP_MSG_OFF) # use JuMP functions to set optimizer attributes
+@objective(cbm, Max, v[model[biomass]]) # use index notation to get biomass equation index
+optimize!(cbm)    
+sol = map_fluxes(v, model) # map fluxes to reaction ids. 
+
+# Really DIY - manually construct a JuMP model from constraint based model
+S, b, ubvec, lbvec = get_core_model(model) # S*v = b with lbvec <= v <= ubvec from model
+cbm = JuMP.Model()
+nvars = size(S, 2) # number of variables in model
+v = @variable(cbmodel, v[1:nvars]) # flux variables
+mb = @constraint(cbmodel, mb, S*v .== b) # mass balance
+lbs = @constraint(cbmodel, lbs, lbs .<= v) # lower bounds
+ubs = @constraint(cbmodel, ubs, v .<= ubs) # upper bounds
+
 set_optimizer(cbm, GLPK.Optimizer) # use JuMP functions to set optimizer
 set_optimizer_attribute(cbm, "msg_lev", GLPK.GLP_MSG_OFF) # use JuMP functions to set optimizer attributes
 @objective(cbm, Max, v[model[biomass]]) # use index notation to get biomass equation index
