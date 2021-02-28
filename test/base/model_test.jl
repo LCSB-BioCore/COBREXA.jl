@@ -37,7 +37,7 @@
     model.metabolites = mets
     model.genes = genes
     
-    @test repr("text/plain", model) == "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n"
+    @test sprint(show, MIME("text/plain"), model) == "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n"
 
     @test model[r2] == 2
 

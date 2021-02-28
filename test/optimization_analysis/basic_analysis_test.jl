@@ -6,6 +6,10 @@
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
     optimizer = Tulip.Optimizer # quiet by default
     sol = fba(model, biomass, optimizer)
+
+    flux_vec = [sol[rxn.id] for rxn in model.reactions]
+    sol_mapped = map_fluxes(flux_vec, model)
+    @test isapprox(sol_mapped["BIOMASS_Ecoli_core_w_GAM"], 0.8739215022678488, atol=1e-6)
     @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.8739215022678488, atol=1e-6)
 
     # exchange trackers
