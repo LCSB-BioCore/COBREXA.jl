@@ -8,7 +8,7 @@
     m1.notes = Dict("notes"=>["blah", "blah"])
     m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
     
-    @test repr("text/plain", m1) == "Metabolite ID: met1\nMetabolite name: metabolite 1\nFormula: C6H12O6N\nCharge: 1\n"
+    @test sprint(show, MIME("text/plain"), m1) == "Metabolite ID: met1\nMetabolite name: metabolite 1\nFormula: C6H12O6N\nCharge: 1\n"
 
     m2 = Metabolite("met2")
     m2.formula = "C6H12O6N"
@@ -19,7 +19,7 @@
     
     mets = [m1, m2, m3]
 
-    @test repr("text/plain", mets) == "Metabolite set of length: 3\n"
+    @test sprint(show, MIME("text/plain"), mets) == "Metabolite set of length: 3\n"
     
     @test mets[m2] == 2
     
@@ -34,4 +34,13 @@
     
     ats = get_atoms(mms[1])
     @test ats["C"] == 6 && ats["N"] == 1 
+
+    @test isnothing(findfirst(mets, "nope"))
+
+    m4 = Metabolite("met4")
+    m4.formula = "X"
+    m4.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["adxxx2s", "asdxxxs"])
+
+    dup, ind = check_duplicate_annotations(mets, m4)
+    @test !dup && ind == -1
 end

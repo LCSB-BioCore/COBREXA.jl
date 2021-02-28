@@ -28,46 +28,52 @@ More importantly, it also exposes the user to the core structures used in COBRA,
 
 ## Installation
 
-To install this package: `] add CobraTools`. See the documentation for more information.
+To install this package: `] add https://github.com/stelmo/CobraTools.jl`. See the documentation for more information.
 
 ## Quick Example
-
+Let's use `CobraTools` to perform classic flux balance analysis on an *E. coli* genome-scale metabolic model.
 ```julia
 using CobraTools
 using JuMP
-using GLPK # pick any solver supported by JuMP
+using Tulip # pick any solver supported by JuMP
 
-# import E. coli model
-model = read_model("iJO1366.json") # models have pretty printing
+# Import E. coli model (models have pretty printing)
+model = read_model("iJO1366.json") 
 
-# choose objective to maximize
+# Choose objective to maximize (biomass is a reaction struct, which also has pretty printing)
 biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 
 # FBA - use convenience functions
-sol = fba(model, biomass, GLPK.Optimizer; solver_attributes=Dict("msg_lev" => GLPK.GLP_MSG_OFF)) # classic flux balance analysis
+sol = fba(model, biomass, Tulip.Optimizer))
+```
 
-# FBA DIY - automatically construct basic JuMP model from a constraint based model
-cbm, v, mb, ubs, lbs = build_cbm(model) # get the constraint based model (cbm) in JuMP format: S*v=b (mb: mass balance constraints) with lbs <= v <= ubs.
-set_optimizer(cbm, GLPK.Optimizer) # use JuMP functions to set optimizer
-set_optimizer_attribute(cbm, "msg_lev", GLPK.GLP_MSG_OFF) # use JuMP functions to set optimizer attributes
-@objective(cbm, Max, v[model[biomass]]) # use index notation to get biomass equation index
+If you are feeling more adventurous you can perform the optimization yourself using `JuMP`.
+```julia
+# Get the constraint based model (cbm) in JuMP format: S*v=b (mb: mass balance constraints) with lbs <= v <= ubs
+cbm, v, mb, ubs, lbs = build_cbm(model)
+# Use JuMP functions to optimize the constraint based model
+set_optimizer(cbm, Tulip.Optimizer)
+# Use index notation to get biomass equation index
+@objective(cbm, Max, v[model[biomass]])
 optimize!(cbm)    
-sol = map_fluxes(v, model) # map fluxes to reaction ids. 
+# Map fluxes to reaction ids
+sol = map_fluxes(v, model) 
+```
 
-# FBA really DIY - manually construct a JuMP model from constraint based model
-S, b, ubvec, lbvec = get_core_model(model) # get S*v = b with lbvec <= v <= ubvec from model
-cbm = JuMP.Model()
-nvars = size(S, 2) # number of variables in model
-v = @variable(cbmodel, v[1:nvars]) # flux variables
-mb = @constraint(cbmodel, mb, S*v .== b) # mass balance
-lbs = @constraint(cbmodel, lbs, lbs .<= v) # lower bounds
-ubs = @constraint(cbmodel, ubs, v .<= ubs) # upper bounds
-
-set_optimizer(cbm, GLPK.Optimizer) # use JuMP functions to set optimizer
-set_optimizer_attribute(cbm, "msg_lev", GLPK.GLP_MSG_OFF) # use JuMP functions to set optimizer attributes
-@objective(cbm, Max, v[model[biomass]]) # use index notation to get biomass equation index
-optimize!(cbm)    
-sol = map_fluxes(v, model) # map fluxes to reaction ids. 
+If you are feeling even more adventurous you can do everything yourself!
+```julia
+# Get S*v = b with lbvec <= v <= ubvec from model
+S, b, ubvec, lbvec = get_core_model(model) 
+# Manually define the model in JuMP
+cbm = JuMP.Model(Tulip.Optimizer)
+nvars = size(S, 2)
+v = @variable(cbmodel, v[1:nvars]) 
+mb = @constraint(cbmodel, mb, S*v .== b) 
+lbs = @constraint(cbmodel, lbs, lbs .<= v) 
+ubs = @constraint(cbmodel, ubs, v .<= ubs) 
+@objective(cbm, Max, v[model[biomass]])
+optimize!(cbm)
+sol = map_fluxes(v, model)
 ```
 More funcionality is described in the documention.
 

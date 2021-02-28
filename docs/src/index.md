@@ -17,7 +17,7 @@
 
 ## Installation
 
-To install this package: `] add CobraTools`.
+To install this package: `] add https://github.com/stelmo/CobraTools.jl`.
 
 Some of the optional features used in this package require external programs and/or data to be available. These are described below:
 
