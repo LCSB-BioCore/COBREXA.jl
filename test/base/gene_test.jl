@@ -5,8 +5,9 @@
     g.notes = Dict("notes"=>["blah", "blah"])
     g.annotation = Dict("sboterm" => "sbo", "ncbigene" => ["ads", "asds"])
 
-    @test repr("text/plain", g) == "Gene ID: gene1\nGene name: gene_name\n"
-
+    # @test repr("text/plain", g) == "Gene ID: gene1\nGene name: gene_name\n"
+    @test sprint(show, MIME("text/plain"), g) == "Gene ID: gene1\nGene name: gene_name\n"
+    
     g2 = Gene("gene2")
    
     genes = [g, g2]
