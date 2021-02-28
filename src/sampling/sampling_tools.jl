@@ -168,70 +168,70 @@ function test_samples(samples::Array{Float64, 2}, model::CobraTools.Model, ubcon
     return violations
 end
 
-"""
-achr(N::Int64, wpoints::Array{Float64, 2}, ubcons, lbcons; keepevery=100, samplesize=1000)
+# """
+# achr(N::Int64, wpoints::Array{Float64, 2}, ubcons, lbcons; keepevery=100, samplesize=1000)
 
-Needs work, for long iterations it becomes unstable (violates bounds).
-"""
-function achr(N::Int64, wpoints::Array{Float64, 2}, ubcons, lbcons; keepevery=100, samplesize=1000)  
-    ubs, lbs = get_bound_vectors(ubcons, lbcons) # get bounds from model
-    nwpts = size(wpoints, 2) # number of warmup points generated
-    samples = zeros(size(wpoints, 1), samplesize) # sample storage
-    current_point = zeros(size(wpoints, 1))
-    current_point .= wpoints[:, rand(1:nwpts)]
-    shat = mean(wpoints, dims=2)[:]
+# Needs work, for long iterations it becomes unstable (violates bounds).
+# """
+# function achr(N::Int64, wpoints::Array{Float64, 2}, ubcons, lbcons; keepevery=100, samplesize=1000)  
+#     ubs, lbs = get_bound_vectors(ubcons, lbcons) # get bounds from model
+#     nwpts = size(wpoints, 2) # number of warmup points generated
+#     samples = zeros(size(wpoints, 1), samplesize) # sample storage
+#     current_point = zeros(size(wpoints, 1))
+#     current_point .= wpoints[:, rand(1:nwpts)]
+#     shat = mean(wpoints, dims=2)[:]
 
-    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue) 
-    sample_num = 0
-    samplelength = 0
-    updatesamplesizelength = true
-    for n=1:N
+#     δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue) 
+#     sample_num = 0
+#     samplelength = 0
+#     updatesamplesizelength = true
+#     for n=1:N
 
-        if updatesamplesizelength # switch to samples 
-            direction_point = (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
-        else
-            direction_point = (@view shat[:]) - (@view current_point[:]) # after warmup phase, only find directions in sampled space
-        end
+#         if updatesamplesizelength # switch to samples 
+#             direction_point = (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
+#         else
+#             direction_point = (@view shat[:]) - (@view current_point[:]) # after warmup phase, only find directions in sampled space
+#         end
 
-        λmax = 1e10
-        λmin = -1e10 
-        for i in eachindex(lbs)
-            δlower = lbs[i] - current_point[i]
-            δupper = ubs[i] - current_point[i]
-            if direction_point[i] < -δdirtol
-                lower = δupper/direction_point[i]
-                upper = δlower/direction_point[i]
-            elseif direction_point[i] > δdirtol
-                lower = δlower/direction_point[i]
-                upper = δupper/direction_point[i]
-            else
-                lower = -1e10
-                upper = 1e10   
-            end
-            lower > λmin && (λmin = lower) # max min step size that satisfies all bounds
-            upper < λmax && (λmax = upper) # min max step size that satisfies all bounds   
-        end
+#         λmax = 1e10
+#         λmin = -1e10 
+#         for i in eachindex(lbs)
+#             δlower = lbs[i] - current_point[i]
+#             δupper = ubs[i] - current_point[i]
+#             if direction_point[i] < -δdirtol
+#                 lower = δupper/direction_point[i]
+#                 upper = δlower/direction_point[i]
+#             elseif direction_point[i] > δdirtol
+#                 lower = δlower/direction_point[i]
+#                 upper = δupper/direction_point[i]
+#             else
+#                 lower = -1e10
+#                 upper = 1e10   
+#             end
+#             lower > λmin && (λmin = lower) # max min step size that satisfies all bounds
+#             upper < λmax && (λmax = upper) # min max step size that satisfies all bounds   
+#         end
 
-        if λmax <= λmin || λmin == -1e10 || λmax == 1e10 # this sometimes can happen
-            @warn "Infeasible direction at iteration $(n)..."
-            continue
-        end
+#         if λmax <= λmin || λmin == -1e10 || λmax == 1e10 # this sometimes can happen
+#             @warn "Infeasible direction at iteration $(n)..."
+#             continue
+#         end
     
-        λ = rand()*(λmax - λmin) + λmin # random step size
-        current_point .= current_point .+ λ .* direction_point # will be feasible
-        shat .= (n.*shat .+ current_point)./(n+1)
+#         λ = rand()*(λmax - λmin) + λmin # random step size
+#         current_point .= current_point .+ λ .* direction_point # will be feasible
+#         shat .= (n.*shat .+ current_point)./(n+1)
 
-        if n % keepevery == 0
-            sample_num += 1
-            samples[:, sample_num] .= current_point
-            if sample_num >= samplesize
-                updatesamplesizelength = false
-                sample_num = 0 # reset, start replacing the older samples
-            end
-            updatesamplesizelength && (samplelength += 1) # lags sample_num because the latter is a flag as well
-        end
+#         if n % keepevery == 0
+#             sample_num += 1
+#             samples[:, sample_num] .= current_point
+#             if sample_num >= samplesize
+#                 updatesamplesizelength = false
+#                 sample_num = 0 # reset, start replacing the older samples
+#             end
+#             updatesamplesizelength && (samplelength += 1) # lags sample_num because the latter is a flag as well
+#         end
         
-    end
+#     end
 
-    return samples
-end
+#     return samples
+# end

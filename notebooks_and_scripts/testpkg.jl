@@ -2,37 +2,45 @@ using CobraTools
 using JuMP
 using Gurobi
 using Tulip
-using OSQP
-using GLPK
-using Gadfly
+
+model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
+biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+# sol = fba(model, biomass, Tulip.Optimizer) # classic flux balance analysis
+# atom_exchange(sol, model)
+
+# consuming, producing = exchange_reactions(sol; verbose=false)
+
+# consuming, producing = metabolite_fluxes(sol, model)
+
+##################################
+# Get warmup points
 
 
-# using Compose # export plot to file
-# using Gadfly # export plot to browser
-# using LightGraphs
-# using GraphPlot
+cbmodel, v, mb, ubs, lbs = CobraTools.build_cbm(model)
+set_optimizer(cbmodel, Tulip.Optimizer)
 
-# g = Graph(4)
-# add_edge!(g,1,2)
-# add_edge!(g,1,3)
-# add_edge!(g,2,4)
-# add_edge!(g,1,4)
-# gplot(g)
+biomass_index = model[findfirst(model.rxns, "BIOMASS_Ecoli_core_w_GAM")] 
+glucose_index = model[findfirst(model.rxns, "EX_glc__D_e")]
+o2_index = model[findfirst(model.rxns, "EX_o2_e")]
+atpm_index = model[findfirst(model.rxns, "ATPM")]
 
-# draw(PNG("mygraph.png", 8cm, 8cm), gplot(g))
+CobraTools.set_bound(glucose_index, ubs, lbs; ub=-1.0, lb=-1.0)
+CobraTools.set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
+CobraTools.set_bound(atpm_index, ubs, lbs; ub=1000.0, lb=0.0)
+
+# Do FBA
+@objective(cbmodel, Max, v[biomass_index])
+optimize!(cbmodel) 
+μ_max = round(objective_value(cbmodel), digits=6)
+
+CobraTools.set_bound(biomass_index, ubs, lbs; ub=μ_max, lb=0.9*μ_max)
 
 
-# optimizer = Tulip.Optimizer # quiet by default
-# sol = fba(model, biomass, optimizer)
-# sol["BIOMASS_Ecoli_core_w_GAM"]
+wpoints = CobraTools.get_warmup_points(cbmodel, v, ubs, lbs, numstop=4) # very slow
 
+# sample!
+# samples = @time CobraTools.hit_and_run(100_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000, W=1000) 
 
-# atts = Dict("eps_abs" => 5e-4,"eps_rel" => 5e-4, "max_iter" => 100_000, "verbose"=>false) # not a good linear solver :/
-# sol = pfba(model, biomass, [Tulip.Optimizer, OSQP.Optimizer]; solver_attributes=Dict("opt1" => Dict{Any, Any}(), "opt2" => atts))
-# sol["BIOMASS_Ecoli_core_w_GAM"]
+###########################
+# violation_inds = CobraTools.test_samples(samples, model, ubs, lbs)
 
-# biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-# optimizer = OSQP.Optimizer 
-# atts = Dict("eps_abs" => 5e-4,"eps_rel" => 5e-4, "max_iter" => 100_000, "verbose"=>false) # not a good linear solver :/
-# sol = pfba(model, biomass, optimizer; solver_attributes=atts)
-# sol["PGM"]
