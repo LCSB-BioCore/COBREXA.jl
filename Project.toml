@@ -4,13 +4,17 @@ authors = ["st elmo <stelmozors@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+Compose = "a81c6b42-2e10-5240-aca2-a61377ecd94b"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
+GraphPlot = "a2cc645c-3eea-5389-862e-a155d0052231"
 Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MAT = "23992714-dd62-5051-b70f-ba57cb901cac"
 Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"

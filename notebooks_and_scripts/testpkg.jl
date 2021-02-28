@@ -6,6 +6,8 @@ using OSQP
 using GLPK
 using Suppressor
 
+using Gadfly
+
 m1 = Metabolite()
 m1.id = "met1"
 m1.name = "metabolite 1"
@@ -18,6 +20,28 @@ m1.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["ads", "asds"])
 @suppress_out begin
     m1
 end
+
+
+
+using Compose # export plot to file
+using Gadfly # export plot to browser
+using LightGraphs
+using GraphPlot
+
+g = Graph(4)
+add_edge!(g,1,2)
+add_edge!(g,1,3)
+add_edge!(g,2,4)
+add_edge!(g,1,4)
+gplot(g)
+
+draw(PNG("mygraph.png", 8cm, 8cm), gplot(g))
+
+
+
+
+
+
 
 # model = read_model(joinpath("models", "e_coli_core.json"))
 # biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")

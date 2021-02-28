@@ -48,7 +48,7 @@ core_model = CobraTools.read_model(joinpath("..", "models", "e_coli_core.json"))
 
     @testset "Optimization Analysis" begin
         @test fba_test(core_model) 
-        @test pfba_test(core_model)  
+        # @test pfba_test(core_model)  
     end
     
     # @testset "Gibbs Analysis" begin
