@@ -43,13 +43,14 @@ model = read_model("iJO1366.json")
 # Choose objective to maximize (biomass is a reaction struct, which also has pretty printing)
 biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 
-# FBA - use convenience functions
-sol = fba(model, biomass, Tulip.Optimizer))
+# FBA - use convenience function
+sol = fba(model, biomass, Tulip.Optimizer)
 ```
 
 If you are feeling more adventurous you can perform the optimization yourself using `JuMP`.
 ```julia
-# Get the constraint based model (cbm) in JuMP format: S*v=b (mb: mass balance constraints) with lbs <= v <= ubs
+# Get the constraint based model (cbm) in JuMP format 
+# S*v=b (mb: mass balance constraints) with lbs <= v <= ubs
 cbm, v, mb, ubs, lbs = build_cbm(model)
 # Use JuMP functions to optimize the constraint based model
 set_optimizer(cbm, Tulip.Optimizer)
