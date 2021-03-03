@@ -9,17 +9,10 @@ using MAT
 using SHA
 using Distributed
 
-"""
-    runSuite(baseDir)
-
-Runs the tests located in the `baseDir` and outputs the time it took
-"""
-function runSuite(baseDir)
-    for file in filter(f -> endswith(f, ".jl"), readdir(baseDir))
-        t = time()
-        include(joinpath(baseDir, file))
-        @info "$(file) took $(round(time() - t; digits = 2)) seconds"
-    end
+function runTestFile(path...)
+    fn = joinpath(path...)
+    t = @elapsed include(fn)
+    @info "$(fn) done in $(round(t; digits = 2))s"
 end
 
 # load the test models
@@ -27,9 +20,16 @@ include(joinpath("data", "testModels.jl"))
 
 # import base files
 @testset "COBREXA test suite" begin
-    for testSet in ["base", "io", "reconstruction", "analysis"]
-        @testset "$testSet" begin
-            runSuite(testSet)
-        end
+    @testset "Base functionality" begin
+        runTestFile.("base", ["types.jl", "solver.jl", "utilities.jl"])
+    end
+    @testset "I/O" begin
+        runTestFile.("io", ["reader.jl", "writer.jl", "sbml.jl"])
+    end
+    @testset "Reconstruction" begin
+        runTestFile.("reconstruction", ["coupling.jl", "modeling.jl"])
+    end
+    @testset "Analysis" begin
+        runTestFile.("analysis", ["fba.jl", "fva.jl"])
     end
 end
