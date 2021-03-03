@@ -12,22 +12,25 @@ using DistributedData
 import Pkg
 
 include("banner.jl")
-printBanner()
+_printBanner()
 
-include(joinpath("header", "loadSource.jl"))
-include(joinpath("header", "types.jl"))
+const _inc(path...) = include(joinpath(path...))
 
-loadSource(["base", "io", "reconstruction", "analysis"], @__DIR__)
+_inc.("types", ["linearModel.jl", "reactionStatus.jl"])
 
-# export functions
-export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
-       addReaction, addReactions, removeReactions, changeBounds!,
-       addCouplingConstraints!, addCouplingConstraints,
-       removeCouplingConstraints!, removeCouplingConstraints,
-       changeCouplingBounds!, changeCouplingBounds,
-       verifyConsistency, findExchangeReactions, findExchangeMetabolites,
-       solveLP, loadModel, loadSBMLModel, writeModel,
-       fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA,
-       convertToExportable
+_inc.("base", ["solver.jl", "utilities.jl"])
+_inc.("io", ["reader.jl", "writer.jl", "sbml.jl"])
+_inc.("reconstruction", ["coupling.jl", "modeling.jl"])
+_inc.("analysis", ["fba.jl", "fva.jl"])
+
+
+# export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
+for sym in names(@__MODULE__, all=true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] ||
+       startswith(string(sym), "_")
+        continue
+    end
+    @eval export $sym
+end
 
 end
