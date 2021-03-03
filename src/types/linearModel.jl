@@ -1,6 +1,10 @@
-const VT = Union{Array{Float64,1},SparseVector{Float64,Int64}}
-const MT = Union{AbstractMatrix,SparseMatrixCSC{Float64,Int64}}
-const ST = Union{Array{String,1},SparseVector{String,Int64}}
+const VT = AbstractVector{Float64}
+const Vt = SparseVector{Float64,Int64}
+const MT = AbstractMatrix{Float64}
+const Mt = SparseMatrixCSC{Float64,Int64}
+const ST = AbstractVector{String}
+const St = Vector{String}
+
 
 """
 A linear optimization problem of the form:
@@ -11,28 +15,27 @@ s.t. S x = b
     xₗ ≤ x ≤ xᵤ
 ```
 """
-mutable struct LinearModel{M<:MT,V<:VT,K<:ST}
-    S::M
-    b::V
-    C::M
-    cl::V
-    cu::V
-    c::V
-    xl::V
-    xu::V
-    rxns::K
-    mets::K
+mutable struct LinearModel
+    S::Mt
+    b::Vt
+    C::Mt
+    cl::Vt
+    cu::Vt
+    c::Vt
+    xl::Vt
+    xu::Vt
+    rxns::St
+    mets::St
 
     function LinearModel(
-        S::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K,
-    ) where {V<:VT,M<:MT,K<:ST}
-
+        S::MX,
+        b::VX,
+        c::VX,
+        xl::VX,
+        xu::VX,
+        rxns::SX,
+        mets::SX,
+    ) where {VX<:VT,MX<:MT,SX<:ST}
 
         sS = sparse(S)
         sb = sparse(b)
@@ -47,17 +50,17 @@ mutable struct LinearModel{M<:MT,V<:VT,K<:ST}
     end
 
     function LinearModel(
-        S::M1,
-        b::V,
-        C::M2,
-        cl::V,
-        cu::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K,
-    ) where {V<:VT,M1<:MT,M2<:MT,K<:ST}
+        S::MX,
+        b::VX,
+        C::MX2,
+        cl::VX,
+        cu::VX,
+        c::VX,
+        xl::VX,
+        xu::VX,
+        rxns::SX,
+        mets::SX,
+    ) where {VX<:VT,MX<:MT,MX2<:MT,SX<:ST}
 
         checkInputDimensions(S, b, C, cl, cu, c, xl, xu, rxns, mets)
 
@@ -70,17 +73,6 @@ mutable struct LinearModel{M<:MT,V<:VT,K<:ST}
         sxl = sparse(xl)
         sxu = sparse(xu)
 
-        new{SparseMatrixCSC{Float64,Int64},SparseVector{Float64,Int64},Array{String,1}}(
-            sS,
-            sb,
-            sC,
-            scl,
-            scu,
-            sc,
-            sxl,
-            sxu,
-            rxns,
-            mets,
-        )
+        new(sS, sb, sC, scl, scu, sc, sxl, sxu, rxns, mets)
     end
 end
