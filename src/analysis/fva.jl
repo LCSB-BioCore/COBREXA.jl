@@ -12,32 +12,32 @@ where Z₀:= cᵀx₀ is the objective value of an optimal solution to the assoc
 FBA problem
 """
 function fluxVariabilityAnalysis(model::LinearModel, optimizer)
-   (m, n) = size(model.S)
-   return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
+    (m, n) = size(model.S)
+    return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
 end
 
 function fluxVariabilityAnalysis(model::LinearModel, reactions::Vector{Int64}, optimizer)
-   (maximum(reactions) > length(model.rxns)) && error("Index exceeds number of reactions.")
-   γ = 1.
-   fluxes = zeros(length(reactions), 2)
+    (maximum(reactions) > length(model.rxns)) && error("Index exceeds number of reactions.")
+    γ = 1.0
+    fluxes = zeros(length(reactions), 2)
 
-   (optimization_model, x₀) = fluxBalanceAnalysis(model::LinearModel, optimizer)
-   Z₀ = JuMP.objective_value(optimization_model)
-   x = all_variables(optimization_model)
-   @constraint(optimization_model, model.c' * x ≥ γ * Z₀)
+    (optimization_model, x₀) = fluxBalanceAnalysis(model::LinearModel, optimizer)
+    Z₀ = JuMP.objective_value(optimization_model)
+    x = all_variables(optimization_model)
+    @constraint(optimization_model, model.c' * x ≥ γ * Z₀)
 
-   for i in eachindex(reactions)
-      sense = MOI.MIN_SENSE
-      @objective(optimization_model, sense, x[reactions[i]])
-      JuMP.optimize!(optimization_model)
-      fluxes[i, 1] = JuMP.objective_value(optimization_model)
+    for i in eachindex(reactions)
+        sense = MOI.MIN_SENSE
+        @objective(optimization_model, sense, x[reactions[i]])
+        JuMP.optimize!(optimization_model)
+        fluxes[i, 1] = JuMP.objective_value(optimization_model)
 
-      sense = MOI.MAX_SENSE
-      JuMP.set_objective_sense(optimization_model, sense)
-      JuMP.optimize!(optimization_model)
-      fluxes[i, 2] = JuMP.objective_value(optimization_model)
-   end
-   return fluxes
+        sense = MOI.MAX_SENSE
+        JuMP.set_objective_sense(optimization_model, sense)
+        JuMP.optimize!(optimization_model)
+        fluxes[i, 2] = JuMP.objective_value(optimization_model)
+    end
+    return fluxes
 end
 
 function parFVA_add_constraint(model, c, x, Z0, gamma)
@@ -58,22 +58,32 @@ function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
         throw(ArgumentError("reactions contain an out-of-bounds index"))
     end
 
-    gamma = 1. #TODO parametrize?
+    gamma = 1.0 #TODO parametrize?
     (optimization_model, x0) = fluxBalanceAnalysis(model::LinearModel, optimizer)
     Z0 = JuMP.objective_value(optimization_model)
 
     # make a JuMP optimization model
-    map(fetch, save_at.(workers, :cobrexa_parfva_model, Ref(:(begin
-        optmodel, x = COBREXA.makeOptimizationModel($model, $optimizer)
-        COBREXA.parFVA_add_constraint(optmodel, $(model.c), x, $Z0, $gamma)
-        optmodel
-    end))))
+    map(
+        fetch,
+        save_at.(
+            workers,
+            :cobrexa_parfva_model,
+            Ref(:(
+                begin
+                    optmodel, x = COBREXA.makeOptimizationModel($model, $optimizer)
+                    COBREXA.parFVA_add_constraint(optmodel, $(model.c), x, $Z0, $gamma)
+                    optmodel
+                end
+            )),
+        ),
+    )
 
     # schedule FVA parts parallely using pmap
     fluxes = dpmap(
         rid -> :(COBREXA.parFVA_get_opt(cobrexa_parfva_model, $rid)),
         CachingPool(workers),
-        [-reactions reactions])
+        [-reactions reactions],
+    )
 
     # free the data on workers
     map(fetch, remove_from.(workers, :cobrexa_parfva_model))
