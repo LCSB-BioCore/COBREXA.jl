@@ -71,9 +71,3 @@ mutable struct LinearModel{M<:MT, V<:VT, K<:ST}
         new{SparseMatrixCSC{Float64,Int64}, SparseVector{Float64,Int64}, Array{String,1}}(sS, sb, sC, scl, scu, sc, sxl, sxu, rxns, mets)
     end
 end
-
-mutable struct ReactionStatus
-    alreadyPresent::Bool
-    index::Int
-    info::String
-end
