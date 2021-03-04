@@ -281,22 +281,6 @@ function removeReactions(m::LinearModel, rxns::Array{String,1})
 end
 
 
-
-"""
-Returns the number of reactions in the LinearModel
-"""
-function nReactions(m::LinearModel)
-    return length(m.rxns)
-end
-
-"""
-Returns the number of metabolites in the LinearModel
-"""
-function nMetabolites(m::LinearModel)
-    return length(m.mets)
-end
-
-
 """
 Returns indices of exchange reactions.
 Exchange reactions are identified based on most commonly used prefixes.
