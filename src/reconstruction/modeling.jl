@@ -241,7 +241,7 @@ end
 Removes a set of reactions from a LinearModel.
 Also removes the metabolites not involved in any reaction.
 """
-function removeReactions(m::LinearModel, rxns::Array{Int64,1})
+function removeReactions(m::LinearModel, rxns::Vector{Int})
     rxnsToKeep = filter(e -> e ∉ rxns, 1:nReactions(m))
     tempS = m.S[:, rxnsToKeep]
 
@@ -330,7 +330,7 @@ Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
 """
 function changeBounds!(
     model::LinearModel,
-    rxns::Array{Int64,1};
+    rxns::Vector{Int};
     xl::V = Array{Float64}(undef, 0),
     xu::V = Array{Float64}(undef, 0),
 ) where {V<:VT}
@@ -358,7 +358,7 @@ function changeBounds!(
     xu::V = Array{Float64}(undef, 0),
 ) where {V<:VT}
     found = [name ∈ model.rxns for name in rxns]
-    rxnIndices = zeros(Int64, length(rxns))
+    rxnIndices = zeros(Int, length(rxns))
     rxnIndices[found] = [findfirst(isequal(name), model.rxns) for name in rxns[found]]
     changeBounds!(model, rxnIndices, xl = xl, xu = xu)
 end
