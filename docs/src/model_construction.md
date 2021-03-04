@@ -199,8 +199,9 @@ check_duplicate_annotations(rxns::Array{Reaction, 1}, crxn::Reaction)
 check_same_formula(mets::Array{Metabolite, 1}, met::Metabolite)
 check_duplicate_reaction(rxns::Array{Reaction, 1}, crxn::Reaction)
 ```
-```@example
+```@example duplex
 using CobraTools
+
 met1 = Metabolite()
 met1.id = "met1"
 met1.name = "Metabolite 1"
@@ -220,13 +221,9 @@ met3.annotation = Dict("sboterm" => "sbo00001", "kegg.compound" => ["C02222", "C
 mets = [met1, met2, met3]
 
 dup, ind = check_duplicate_annotations(mets, met3)
-if dup
-    println("Duplicate found at index: ", ind)
-end
-
+```
+```@example duplex
 mms = check_same_formula([met3, met1], met2)
-println("Metabolites with the same formula as \"met2\":")
-mms[1]
 ```
 Similar functionality exists for genes and reactions. 
 Duplicate reactions, metabolites or genes can be removed using `rm!`.
