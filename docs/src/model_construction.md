@@ -189,35 +189,46 @@ add!(model::CobraTools.Model, rxns::Array{Reaction, 1})
 add!(model::CobraTools.Model, mets::Array{Metabolite, 1})
 add!(model::CobraTools.Model, genes::Array{Gene, 1})
 ```
-Checking for duplicates can also be done. 
+Checking for duplicates of genes, metabolites or reactions can also be done. 
 Note that duplicate checking is NOT performed when models are imported. 
 If you suspect the model quality you should check each reaction, metabolite and gene yourself.
 ```@docs
-is_duplicate(model::CobraTools.Model, rxn::Reaction)
-is_duplicate(model::CobraTools.Model, cmet::Metabolite)
-is_duplicate(model::CobraTools.Model, cgene::Gene)
+check_duplicate_annotations(genes::Array{Gene, 1}, gene::Gene)
+check_duplicate_annotations(mets::Array{Metabolite, 1}, cmet::Metabolite)
+check_duplicate_annotations(rxns::Array{Reaction, 1}, crxn::Reaction)
+check_same_formula(mets::Array{Metabolite, 1}, met::Metabolite)
+check_duplicate_reaction(rxns::Array{Reaction, 1}, crxn::Reaction)
 ```
 ```@example
-using CobraTools # hide
-atp = Metabolite("atp") 
-adp = Metabolite("adp") 
+using CobraTools
+met1 = Metabolite()
+met1.id = "met1"
+met1.name = "Metabolite 1"
+met1.formula = "C6H12O6N"
+met1.charge = 1
+met1.compartment = "c"
+met1.notes = Dict("notes"=>["This is a made up metabolite", "Another note"])
+met1.annotation = Dict("sboterm" => "sbo000001", "kegg.compound" => ["C0001", "C0010"])
 
-anabolism = 10.0 * atp + 10.0*h2o ⟶ 10.0*adp + 10.0*pp
-anabolism.id = "anabolism"
+met2 = Metabolite("met2")
+met2.formula = "C6H12O6N"
 
-anabolism = 10.0 * atp + 10.0*h2o ⟶ 10.0*adp + 10.0*pp
-anabolism.id = "anabolism2"
+met3 = Metabolite("met3")
+met3.formula = "X"
+met3.annotation = Dict("sboterm" => "sbo00001", "kegg.compound" => ["C02222", "C0001"])
 
-mets = [atp, adp]
-rxns = [anabolism]
+mets = [met1, met2, met3]
 
-model = Model()
-model.id = "Test model"
-add!(model, mets)
-add!(model, rxns)
+dup, ind = check_duplicate_annotations(mets, met3)
+if dup
+    println("Duplicate found at index: ", ind)
+end
 
-is_duplicate(model, anabolism2)
+mms = check_same_formula([met3, met1], met2)
+println("Metabolites with the same formula as \"met2\":")
+mms[1]
 ```
+Similar functionality exists for genes and reactions. 
 Duplicate reactions, metabolites or genes can be removed using `rm!`.
 ```@docs
 rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
