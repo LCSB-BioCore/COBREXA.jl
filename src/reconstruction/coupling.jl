@@ -16,33 +16,22 @@ function checkCouplingConstraintsInputDimensions(
 end
 
 """
-Add constraints of the following form to a LinearModel:
+Add constraints of the following form to a LinearModel and return a modified one.
+
+The arguments are same as for in-place `addCouplingConstraints!`.
+"""
+function addCouplingConstraints(m::LinearModel, args...)
+    newLp = deepcopy(m)
+    addCouplingConstraints!(newLp, args...)
+    return newLp
+end
+
+"""
+In-place add coupling constraints in form
 ```
     cₗ ≤ C x ≤ cᵤ
 ```
 """
-function addCouplingConstraints(
-    m::LinearModel,
-    c::V,
-    cl::AbstractFloat,
-    cu::AbstractFloat,
-) where {V<:VT}
-    return addCouplingConstraints(
-        m,
-        sparse(reshape(c, (1, length(c)))),
-        sparse([cl]),
-        sparse([cu]),
-    )
-end
-
-
-function addCouplingConstraints(m::LinearModel, C::M, cl::V, cu::V) where {M<:MT,V<:VT}
-    newLp = deepcopy(m)
-    addCouplingConstraints!(newLp, C, cl, cu)
-    return newLp
-end
-
-
 function addCouplingConstraints!(
     m::LinearModel,
     c::V,
@@ -73,26 +62,26 @@ end
 
 
 """
-Removes a set of coupling constraints from a LinearModel.
+Remove coupling constraints from the linear model and return the modified model.
+
+Arguments are the same as for in-place version `removeCouplingConstraints!`.
 """
-function removeCouplingConstraints(m::LinearModel, constraint::Int64)
-    return removeCouplingConstraints(m, [constraint])
-end
-
-
-function removeCouplingConstraints(m::LinearModel, constraints::Array{Int64,1})
+function removeCouplingConstraints(m::LinearModel, args...)
     newModel = deepcopy(m)
-    removeCouplingConstraints!(newModel, constraints)
+    removeCouplingConstraints!(newModel, args...)
     return newModel
 end
 
 
-function removeCouplingConstraints!(m::LinearModel, constraint::Int64)
+"""
+Removes a set of coupling constraints from a LinearModel in-place.
+"""
+function removeCouplingConstraints!(m::LinearModel, constraint::Int)
     removeCouplingConstraints!(m, [constraint])
 end
 
 
-function removeCouplingConstraints!(m::LinearModel, constraints::Array{Int64,1})
+function removeCouplingConstraints!(m::LinearModel, constraints::Vector{Int})
     toBeKept = filter(e -> e ∉ constraints, 1:nCouplingConstraints(m))
     m.C = m.C[toBeKept, :]
     m.cl = m.cl[toBeKept]
@@ -101,19 +90,11 @@ end
 
 
 """
-Returns the number of coupling constraints in a LinearModel
-"""
-function nCouplingConstraints(m::LinearModel)
-    return size(m.C, 1)
-end
-
-
-"""
 Change the lower and/or upper bounds ('cl' and 'cu') for given coupling constraints
 """
 function changeCouplingBounds!(
     model::LinearModel,
-    constraints::Array{Int64,1};
+    constraints::Vector{Int};
     cl::V = Array{Float64}(undef, 0),
     cu::V = Array{Float64}(undef, 0),
 ) where {V<:VT}
