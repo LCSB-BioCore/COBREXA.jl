@@ -5,42 +5,6 @@ using SBML
 
 m = readSBML(joinpath("models", "iJO1366.xml"))
 
-
-
-using CobraTools # hide
-met1 = Metabolite()
-met1.id = "met1"
-met1.name = "Metabolite 1"
-met1.formula = "C6H12O6N"
-met1.charge = 1
-met1.compartment = "c"
-met1.notes = Dict("notes"=>["This is a made up metabolite", "Another note"])
-met1.annotation = Dict("sboterm" => "sbo000001", "kegg.compound" => ["C0001", "C0010"])
-
-met2 = Metabolite("met2")
-met2.formula = "C6H12O6N"
-
-met3 = Metabolite("met3")
-met3.formula = "X"
-met3.annotation = Dict("sboterm" => "sbo00001", "kegg.compound" => ["C02222", "C0001"])
-
-mets = [met1, met2, met3]
-
-dup, ind = check_duplicate_annotations(mets, met3)
-if dup
-    println("Duplicate found at index: ", ind)
-end
-
-mms = check_same_formula([met3, met1], met2)
-println("Metabolites with the same formula as \"met2\":")
-mms[1]
-
-
-
-
-
-
-
 # using JuMP
 # using Tulip
 
