@@ -50,7 +50,7 @@ sol = fba(model, biomass, Tulip.Optimizer)
 If you are feeling more adventurous you can perform the optimization yourself using `JuMP`.
 ```julia
 # Get the constraint based model (cbm) in JuMP format 
-# S*v=b (mb: mass balance constraints) with lbs <= v <= ubs
+# cbm: S*v=b (mb: mass balance constraints) with lbs <= v <= ubs
 cbm, v, mb, ubs, lbs = build_cbm(model)
 # Use JuMP functions to optimize the constraint based model
 set_optimizer(cbm, Tulip.Optimizer)
@@ -76,31 +76,32 @@ ubs = @constraint(cbmodel, ubs, v .<= ubs)
 optimize!(cbm)
 sol = map_fluxes(v, model)
 ```
-More funcionality is described in the documention.
+More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
 
 ## Progress
 
 - [x] Read JSON "Cobrapy" models
 - [x] Read Matlab models
 - [ ] Read SBML models
-- [ ] Read YAML models
 - [x] Write JSON models
 - [x] Write Matlab models
 - [ ] Write SBML models
-- [ ] Write YAML
 - [x] FBA
 - [X] pFBA
 - [ ] MOMA
 - [ ] FVA
 - [x] Implement sampling (hit and run)
-- [x] Implement sampling (achr - kind of?)
+- [x] Implement sampling (achr - kind of, fix constraint issue...)
 - [ ] Single gene knockouts
 - [ ] Double gene knockout
 - [x] Equilibrator integration
 - [x] Brenda integration (basic)
 - [x] Reaction construction
+- [x] Model construction
 - [x] Model modifications
-- [ ] Distributed analysis (COBRA.jl integration?)
+- [ ] Thermodynamic FBA (and related functions)
+
+
 
 ### Citations
 1) Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013). COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Systems Biology, 7(74). https://doi.org/10.1186/1752-0509-7-74

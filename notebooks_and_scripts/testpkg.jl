@@ -1,26 +1,53 @@
 using CobraTools
 using Gurobi
 
-using JuMP
-using Tulip
+using SBML
+
+m = readSBML(joinpath("models", "iJO1366.xml"))
 
 
-model = Model(Tulip.Optimizer)
-@variable(model, -1.0 <= x[1:2] <= 2)
-@objective(model, Max, 5x[1] + 3 * x[2])
-@constraint(model, con1, 1x[1] + 5x[2] <= 3)
-@constraint(model, con2, 0.0 .<= x)
+
+using CobraTools # hide
+met1 = Metabolite()
+met1.id = "met1"
+met1.name = "Metabolite 1"
+met1.formula = "C6H12O6N"
+met1.charge = 1
+met1.compartment = "c"
+met1.notes = Dict("notes"=>["This is a made up metabolite", "Another note"])
+met1.annotation = Dict("sboterm" => "sbo000001", "kegg.compound" => ["C0001", "C0010"])
+
+met2 = Metabolite("met2")
+met2.formula = "C6H12O6N"
+
+met3 = Metabolite("met3")
+met3.formula = "X"
+met3.annotation = Dict("sboterm" => "sbo00001", "kegg.compound" => ["C02222", "C0001"])
+
+mets = [met1, met2, met3]
+
+dup, ind = check_duplicate_annotations(mets, met3)
+if dup
+    println("Duplicate found at index: ", ind)
+end
+
+mms = check_same_formula([met3, met1], met2)
+println("Metabolites with the same formula as \"met2\":")
+mms[1]
 
 
-optimize!(model)
-objective_value(model)
-
-set_normalized_rhs(con2[1], 0.2)
-set_normalized_rhs(con2[2], 0.2)
 
 
-model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
-biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+
+
+
+# using JuMP
+# using Tulip
+
+# 1+1
+
+# model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
+# biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 # sol = fba(model, biomass, Tulip.Optimizer) # classic flux balance analysis
 # atom_exchange(sol, model)
 
@@ -63,37 +90,3 @@ biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 
 
 ##################3
-model = CobraTools.read_model(joinpath("data", "iJO1366.json") )
-    
-    rxn_original = findfirst(model.reactions, "NADH16pp")
-    nadh = findfirst(model.metabolites, "nadh_c")
-    h_c = findfirst(model.metabolites, "h_c")
-    q8 = findfirst(model.metabolites, "nadp_c")
-    q8h2 = findfirst(model.metabolites, "g3p_c")
-    nad = findfirst(model.metabolites, "nad_c")
-    h_p = findfirst(model.metabolites, "for_c")
-    
-    rxn = nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
-    @test rxn.lb == 0.0 && rxn.ub > 0.0
-
-    rxn = 1.0*nadh + 4.0*h_c + q8 ← 1.0*q8h2 + 1.0*nad + 3.0*h_p
-    @test rxn.lb < 0.0 && rxn.ub == 0.0
-  
-    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ↔ q8h2 + nad + 3.0*h_p
-    @test rxn.lb < 0.0 && rxn.ub > 0.0
-    
-    rxn = 1.0*nadh → ∅
-    @test length(rxn.metabolites) == 1
-
-    rxn = ∅ → nadh
-    @test length(rxn.metabolites) == 1
-
-    rxn = ∅ → 1.0nadh
-    @test length(rxn.metabolites) == 1
-    
-    rxn = 1.0*nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
-    @test prod(values(rxn.metabolites)) == -12
-    @test ("q8h2_c" in [x.id for x  in keys(rxn.metabolites)])
-
-    rxn = nadh + 4.0*h_c + 1.0*q8 ⟶  1.0*q8h2 + 1.0*nad + 3.0*h_p
-    @test rxn.lb == 0.0 && rxn.ub > 0.0
