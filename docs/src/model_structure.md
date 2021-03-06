@@ -5,7 +5,7 @@ Each model is a struct of the type `CobraTools.Model`, which is composed of a mo
 Model
 ```
 The fields of `Reaction`, `Metabolite`, `Gene` types are shown below. 
-When reading, writing, building or analysing models, these fields are what is used by `CobraTools`.
+When reading, writing, building or analysing models, these fields are what is used by `CobraTools.jl`.
 ```@docs
 Reaction
 ```

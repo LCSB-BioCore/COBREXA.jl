@@ -46,20 +46,24 @@ function build_cbm(model::CobraTools.Model)
     return cbmodel, v, mb, ubs, lbs
 end
 
-"""
+@doc raw"""
     fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}())
 
 Run flux balance analysis (FBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
-The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, k, v)`.
+The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
 This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
 Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
 
 # Example
 optimizer = Gurobi.Optimizer
+
 atts = Dict("OutputFlag" => 0)
+
 model = CobraTools.read_model("iJO1366.json")
-biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
+
+biomass = findfirst(model.reactions, "BIOMASS\_Ec\_iJO1366\_WT\_53p95M")
+
 sol = fba(model, biomass, optimizer; solver_attributes=atts)
 """
 function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}())
@@ -78,16 +82,17 @@ function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
         objective_indices = [model[rxn] for rxn in objective_rxns]
     end
     
-    # ensure corrects weights are given to objective
     if isempty(weights)
         weights = ones(length(objective_indices))
     end
+    opt_weights = zeros(length(model.reactions))
     
     # update the objective function tracker
     wcounter = 1
     for i in eachindex(model.reactions)
         if i in objective_indices
             model.reactions[i].objective_coefficient = weights[wcounter]
+            opt_weights[i] = weights[wcounter]
             wcounter += 1
         else
             model.reactions[i].objective_coefficient = 0.0
@@ -95,7 +100,7 @@ function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
     end
     
     v = all_variables(cbm)
-    @objective(cbm, Max, sum(v[i] for i in objective_indices))
+    @objective(cbm, Max, sum(opt_weights[i]*v[i] for i in objective_indices))
     optimize!(cbm)    
 
     status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
@@ -108,12 +113,12 @@ function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
     end
 end
 
-"""
+@doc raw"""
     pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}())
 
 Run parsimonious flux balance analysis (pFBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction) for the initial FBA problem.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
-When `optimizer` is an array of optimizers, e.g. `[opt1, opt2]``, then `opt1` is used to solve the FBA problem, and `opt2` is used to solve the QP problem.
+When `optimizer` is an array of optimizers, e.g. `[opt1, opt2]`, then `opt1` is used to solve the FBA problem, and `opt2` is used to solve the QP problem.
 This strategy is useful when the QP solver is not good at solving the LP problem.
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, k, v)`.
 If more than one solver is specified in `optimizer`, then `solver_attributes` must be a dictionary of dictionaries with keys "opt1" and "opt2", e.g. Dict("opt1" => Dict{Any, Any}(),"opt2" => Dict{Any, Any}()).
@@ -122,9 +127,13 @@ Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, 
 
 # Example
 optimizer = Gurobi.Optimizer
+
 atts = Dict("OutputFlag" => 0)
+
 model = CobraTools.read_model("iJO1366.json")
-biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
+
+biomass = findfirst(model.reactions, "BIOMASS\_Ec\_iJO1366\_WT\_53p95M")
+
 sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 """
 function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}())
@@ -154,16 +163,17 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
         objective_indices = [model[rxn] for rxn in objective_rxns]
     end
     
-    # ensure corrects weights are given to objective
     if isempty(weights)
         weights = ones(length(objective_indices))
     end
+    opt_weights = zeros(length(model.reactions))
     
     # update the objective function tracker
     wcounter = 1
     for i in eachindex(model.reactions)
         if i in objective_indices
             model.reactions[i].objective_coefficient = weights[wcounter]
+            opt_weights[i] = weights[wcounter]
             wcounter += 1
         else
             model.reactions[i].objective_coefficient = 0.0
@@ -171,7 +181,7 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
     end
     
     v = all_variables(cbm)
-    @objective(cbm, Max, sum(v[i] for i in objective_indices))
+    @objective(cbm, Max, sum(opt_weights[i]*v[i] for i in objective_indices))
     optimize!(cbm)    
 
     fba_status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
@@ -188,7 +198,7 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
         end
     end
 
-    @constraint(cbm, pfbacon, 0.999999*λ <= sum(v[i] for i in objective_indices) <= λ) # constrain model - 0.9999 should be close enough?
+    @constraint(cbm, pfbacon, 0.999999*λ <= sum(opt_weights[i]*v[i] for i in objective_indices) <= λ) # constrain model - 0.9999 should be close enough?
     @objective(cbm, Min, sum(dot(v, v)))
     optimize!(cbm)
 

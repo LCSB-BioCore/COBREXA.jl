@@ -1,7 +1,7 @@
 # Model Construction
 
 ## Defining genes
-Genes are represented by the `Gene` type in `CobraTools`, see [Model Structure](@ref) for details.
+Genes are represented by the `Gene` type in `CobraTools.jl`, see [Model Structure](@ref) for details.
 `Gene`s can be constructed using either an empty constructor, or a constructor taking only
 the string `id` of the gene.
 ```@docs
@@ -21,7 +21,7 @@ findfirst(::Array{Gene, 1}, ::String)
 getindex(::Array{Gene, 1}, ::Gene)
 ```
 ## Defining metabolites
-Metabolites are represented by the `Metabolite` type in `CobraTools`, see [Model Structure](@ref) for details. 
+Metabolites are represented by the `Metabolite` type in `CobraTools.jl`, see [Model Structure](@ref) for details. 
 The simplest way to define a new metabolite is by using the empty constructor `Metabolite()`. 
 Alternatively, `Metabolite(id::String)` can be used to assign only the `id` field of the `Metabolite`. 
 ```@docs
@@ -60,7 +60,7 @@ findfirst(mets::Array{Metabolite, 1}, metid::String)
 getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 ```
 ## Defining reactions
-Reactions are represented by the `Reaction` type in `CobraTools`, see [Model Structure](@ref) for details.
+Reactions are represented by the `Reaction` type in `CobraTools.jl`, see [Model Structure](@ref) for details.
 The simplest way to define a new reaction is by using the empty constructor `Reaction()`. 
 All the other fields still need to be assigned.
 ```@docs
