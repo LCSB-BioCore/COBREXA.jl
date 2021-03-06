@@ -1,7 +1,7 @@
 # Model IO
 
 ## Reading constraint based models
-Currently, SBML, JSON and Matlab formatted models can be imported.
+Currently, JSON and Matlab formatted models can be imported.
 
 ```@docs
 read_model(file_location::String)

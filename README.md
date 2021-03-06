@@ -1,5 +1,5 @@
 # CobraTools.jl
-*CobraTools is a Julia package for constraint based reconstruction and analysis of metabolic models.*
+*CobraTools.jl is a Julia package for constraint based reconstruction and analysis of metabolic models.*
 
 [docs-img]:https://img.shields.io/badge/docs-latest-blue.svg
 [docs-url]: https://stelmo.github.io/CobraTools.jl/dev
@@ -31,7 +31,7 @@ More importantly, it also exposes the user to the core structures used in COBRA,
 To install this package: `] add https://github.com/stelmo/CobraTools.jl`. See the documentation for more information.
 
 ## Quick Example
-Let's use `CobraTools` to perform classic flux balance analysis on an *E. coli* genome-scale metabolic model.
+Let's use `CobraTools.jl` to perform classic flux balance analysis on an *E. coli* genome-scale metabolic model.
 ```julia
 using CobraTools
 using JuMP
@@ -88,7 +88,6 @@ More funcionality is described in the documention, e.g. model construction and a
 - [ ] Write SBML models
 - [x] FBA
 - [X] pFBA
-- [ ] MOMA
 - [ ] FVA
 - [x] Implement sampling (hit and run)
 - [x] Implement sampling (achr - kind of, fix constraint issue...)
