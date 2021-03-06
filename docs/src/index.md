@@ -1,5 +1,5 @@
 # CobraTools.jl
-*CobraTools is a Julia package for constraint based reconstruction and analysis of metabolic models.*
+*CobraTools.jl is a Julia package for constraint based reconstruction and analysis of metabolic models.*
 
 ## Contents
 ```@contents
