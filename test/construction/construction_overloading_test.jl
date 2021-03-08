@@ -36,4 +36,6 @@
 
     @test length(h_p + h_p) == 2
     @test length(h_p + h_p + h_p) == 3
+
+    @test length(+([2.0*q8, nad], nadh)) == 3 
 end
