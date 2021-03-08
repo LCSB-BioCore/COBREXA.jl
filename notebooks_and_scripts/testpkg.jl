@@ -2,7 +2,7 @@ using CobraTools
 using JuMP
 using Tulip
 
-# model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
+model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
 # optimizer = Tulip.Optimizer
 # biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 # sol = fba(model, biomass, Tulip.Optimizer) # classic flux balance analysis
@@ -39,4 +39,31 @@ using Tulip
 # println(std(samples[64,:]))
 
 
-brenda_data = parse_brenda(joinpath("test", "data", "small_brenda.txt"))
+# brenda_data = parse_brenda(joinpath("test", "data", "small_brenda.txt"))
+
+
+model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
+biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+atts = Dict("eps_abs" => 5e-4,"eps_rel" => 5e-4, "max_iter" => 100_000, "verbose"=>false) 
+sol = pfba(model, biomass, [Tulip.Optimizer, OSQP.Optimizer]; solver_attributes=Dict("opt1" => Dict{Any, Any}(), "opt2" => atts)) # try two optimizers
+ 
+# sol = pfba(model, biomass, [Tulip.Optimizer, ]) # classic flux balance analysis
+
+rs = CobraTools.build_rxn_string(model.reactions[64]) == "1.0 KEGG:C00354 = 1.0 KEGG:C00111 + 1.0 KEGG:C00661"
+
+
+gibbs_str = JSON.parsefile(joinpath("test", "data", "gibbs.json"))
+gibbs = Dict{String, Measurement{Float64}}()
+for (k, v) in gibbs_str
+    gibbs[k] = parse(Measurement{Float64}, v)
+end
+
+total_ΔG, mf = map_gibbs_external(sol, gibbs)
+
+total_ΔG, mf = map_gibbs_internal(sol, gibbs) 
+
+for (k, v) in gibbs
+    if abs(sol[k]) > 0.000 
+        println(k, "\t", round(v*sol[k], digits=3))
+    end
+end
