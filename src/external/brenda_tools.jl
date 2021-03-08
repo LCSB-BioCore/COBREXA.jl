@@ -1,5 +1,7 @@
 """
 EnzymeParams
+
+This struct has `val`, `substrate`, `ph`, and `temperature` fields, extrated from the database.
 """
 struct EnzymeParams
     val :: Union{Nothing, Float64}
@@ -17,6 +19,8 @@ end
 
 """
 BrendaEntry
+
+This struct has ID, TN, KI, KM, KMM fields, corresponding to the fields in the database.
 """
 struct BrendaEntry
     ID :: String # EC number
@@ -70,10 +74,11 @@ function Base.show(io::IO, m::BrendaEntry)
 end
 
 """
-brenda_data = parse_brenda(brenda_txt_file_path)
+    parse_brenda(brenda_txt_file_path)
 
 Parse the Brenda txt file line by line. 
 Download it from https://www.brenda-enzymes.org/download_brenda_without_registration.php.
+Returns an array with Brenda 
 """
 function parse_brenda(brenda_loc)
     brenda_data = Array{BrendaEntry, 1}()
