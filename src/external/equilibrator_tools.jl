@@ -37,6 +37,11 @@ end
     map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true)
 
 Return a dict of rxn.id => ΔG of the specified dgtype.
+Takes as inputs an array of reactions, `rxns`, and optional keyword arguments `dgtype`, which specifies which type of ΔG calculation should be returned.
+Valid options for `dgtype` are "phys" and "prime" (anything else is "zero"). 
+Ionic strength can be set through `ionic_str` which takes a string input, e.g. "150 mM".
+Only BIGG and KEGG metabolite identifiers are supported, i.e. the reaction needs to have a KEGG or BIGG `id` listed in the annotation field in the reaction struct.
+By default KEGG annotations are used to build the reaction strings that are fed to Equilibrator. Note that the first metabolite `id` is used.
 """
 function map_gibbs_rxns(rxns::Array{Reaction, 1}; dgtype="zero", ph=7.0, ionic_str="100 mM", usekegg=true) 
     if usekegg
@@ -115,33 +120,4 @@ function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs, biomassid="BI
         end
     end
     return total_ΔG, missing_flux/(missing_flux+found_flux) # units J/gDW/h
-end
-
-"""
-    save_gibbs(path, gibbs)
-
-Save gibbs dict. Saved as String => [mag, err]
-"""
-function save_gibbs(path, gibbs)
-    decomp = Dict{String, Array{Float64,1}}()
-    for (k, v) in gibbs
-        decomp[k] = [Measurements.value(v), Measurements.uncertainty(v)]
-    end
-    open(path, "w") do io
-        JSON.print(io, decomp)
-    end
-end
-
-"""
-    load_Gibbs(path)
-
-Load Gibbs dict. Loads String => [mag, err]
-"""
-function load_gibbs(path)
-    decomp = JSON.parsefile(path)
-    gibbs = Dict{String, Measurement{Float64}}()
-    for (k, vs) in decomp
-        gibbs[k] = vs[1] ± vs[2]
-    end
-    return gibbs
 end

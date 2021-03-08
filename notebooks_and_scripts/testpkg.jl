@@ -1,56 +1,42 @@
 using CobraTools
-using Gurobi
-
-using SBML
-
-m = readSBML(joinpath("models", "iJO1366.xml"))
-
-# using JuMP
-# using Tulip
-
-# 1+1
+using JuMP
+using Tulip
 
 # model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
+# optimizer = Tulip.Optimizer
 # biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 # sol = fba(model, biomass, Tulip.Optimizer) # classic flux balance analysis
+
+# atts = Dict("OutputFlag" => 0)
+# fva_max, fva_min = fva(model, biomass, Gurobi.Optimizer, solver_attributes=atts)
+# fva_max, fva_min = fva(model, biomass, Tulip.Optimizer)
+# optimizer = Tulip.Optimizer 
+# atts = Dict("IPM_IterationsLimit" => 400)
+# fva_max, fva_min = fva(model, biomass, optimizer, solver_attributes=atts)
+# sol = fba(model, biomass, Tulip.Optimizer) # classic flux balance analysis
 # atom_exchange(sol, model)
-
 # consuming, producing = exchange_reactions(sol; verbose=false)
-
 # consuming, producing = metabolite_fluxes(sol, model)
 
 ##################################
-# Get warmup points
+
+# model = CobraTools.read_model(joinpath("models", "e_coli_core.json"))
+# optimizer = Tulip.Optimizer
+# biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+# cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
+# sol = fba(model, biomass, optimizer, constraints=cons) # classic flux balance analysis
+# cons["BIOMASS_Ecoli_core_w_GAM"] = (sol["BIOMASS_Ecoli_core_w_GAM"], sol["BIOMASS_Ecoli_core_w_GAM"]*0.99)
+
+# # sample!
+# (@view shat[:])
+
+# samples = @time CobraTools.hit_and_run(100_000, model, optimizer; keepevery=10, samplesize=5000, constraints=cons)
+# println(mean(samples[64,:]))
+# println(std(samples[64,:]))
+
+# samples = @time CobraTools.achr(100_000, model, optimizer; keepevery=10, samplesize=5000, constraints=cons)
+# println(mean(samples[64,:]))
+# println(std(samples[64,:]))
 
 
-# cbmodel, v, mb, ubs, lbs = CobraTools.build_cbm(model)
-# set_optimizer(cbmodel, Tulip.Optimizer)
-
-# biomass_index = model[findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")] 
-# glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
-# o2_index = model[findfirst(model.reactions, "EX_o2_e")]
-# atpm_index = model[findfirst(model.reactions, "ATPM")]
-
-# set_bound(glucose_index, ubs, lbs; ub=-1.0, lb=-1.0)
-# set_bound(o2_index, ubs, lbs; ub=1000.0, lb=0.0)
-# set_bound(atpm_index, ubs, lbs; ub=1000.0, lb=0.0)
-
-# Do FBA
-# @objective(cbmodel, Max, v[biomass_index])
-# optimize!(cbmodel) 
-# μ_max = round(objective_value(cbmodel), digits=6)
-
-# set_normalized_rhs(ubs[25], 0.1)
-# set_bound(biomass_index, ubs, lbs; ub=μ_max, lb=0.9*μ_max)
-
-
-# wpoints = CobraTools.get_warmup_points(cbmodel, v, ubs, lbs, numstop=4) # very slow
-
-# sample!
-# samples = @time CobraTools.hit_and_run(100_000, wpoints, ubs, lbs; keepevery=10, samplesize=5000, W=1000) 
-
-###########################
-# violation_inds = CobraTools.test_samples(samples, model, ubs, lbs)
-
-
-##################3
+brenda_data = parse_brenda(joinpath("test", "data", "small_brenda.txt"))

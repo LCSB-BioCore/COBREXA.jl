@@ -13,11 +13,9 @@ makedocs(
         "Model Structure" => "model_structure.md",
         "Model IO" => "io.md",
         "Model Construction" => "model_construction.md",
-        "Optimization Based Analysis" => "basic_analysis.md",
+        "Optimization Based Analysis Tools" => "basic_analysis.md",
         "Sampling Tools" => "sampling_tools.md",
-        "Equilibrator Interface" => "thermo_tools.md",
-        "Brenda Interface" => "brenda_tools.md",
-        "Thermodynamic Analysis" => "thermodynamics.md"
+        "External Tools" => "external_tools.md",
     ]
 )
 

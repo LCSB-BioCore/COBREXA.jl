@@ -79,28 +79,24 @@ sol = map_fluxes(v, model)
 More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
 
 ## Progress
-
+- [ ] Read SBML models
+- [ ] Write SBML models
+- [ ] Single gene knockouts
+- [ ] Thermodynamic FBA (and related functions)
 - [x] Read JSON "Cobrapy" models
 - [x] Read Matlab models
-- [ ] Read SBML models
 - [x] Write JSON models
 - [x] Write Matlab models
-- [ ] Write SBML models
 - [x] FBA
-- [X] pFBA
-- [ ] FVA
+- [x] pFBA
+- [x] FVA
 - [x] Implement sampling (hit and run)
 - [x] Implement sampling (achr - kind of, fix constraint issue...)
-- [ ] Single gene knockouts
-- [ ] Double gene knockout
 - [x] Equilibrator integration
 - [x] Brenda integration (basic)
 - [x] Reaction construction
 - [x] Model construction
 - [x] Model modifications
-- [ ] Thermodynamic FBA (and related functions)
-
-
 
 ### Citations
 1) Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013). COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Systems Biology, 7(74). https://doi.org/10.1186/1752-0509-7-74
