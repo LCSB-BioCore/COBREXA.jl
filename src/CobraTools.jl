@@ -25,9 +25,9 @@ include(joinpath("io", "io_tools.jl"))
 include(joinpath("construction", "construction_overloading.jl"))
 include(joinpath("construction", "model_manipulations.jl"))
 include(joinpath("optimization_analysis", "basic_analysis.jl"))
-# include("sampling_tools.jl")
-# include("brenda_tools.jl")
-# include("equilibrator_tools.jl")
+include(joinpath("sampling", "sampling_tools.jl"))
+include(joinpath("external", "brenda_tools.jl"))
+include(joinpath("external", "equilibrator_tools.jl"))
 
 ∅ = Metabolite("∅") # for exchange reactions
 
@@ -44,7 +44,13 @@ export
     read_model, save_model,
     
     # optimization_analysis
-    get_core_model, build_cbm, fba, map_fluxes, set_bound, pfba, atom_exchange, exchange_reactions, metabolite_fluxes
+    get_core_model, build_cbm, fba, map_fluxes, set_bound, pfba, atom_exchange, exchange_reactions, metabolite_fluxes, fva,
+
+    # sampling
+    hit_and_run, test_samples, achr,
+
+    # external
+    parse_brenda, map_gibbs_rxns, map_gibbs_external, map_gibbs_internal
 
 # Initialization functions
 include("init_functions.jl")

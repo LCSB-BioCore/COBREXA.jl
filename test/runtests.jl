@@ -3,6 +3,7 @@ using CobraTools
 using JuMP
 using Tulip
 using OSQP
+using Statistics 
 
 const testdir = dirname(@__FILE__)
 
@@ -15,7 +16,9 @@ tests = ["base/gene_test.jl",
         "io/io_tools_test.jl",
         "construction/construction_overloading_test.jl",
         "construction/model_manipulations_test.jl",
-        "optimization_analysis/basic_analysis_test.jl"]
+        "optimization_analysis/basic_analysis_test.jl",
+        "sampling/sampling_tools_test.jl",
+        "external/brenda_tests.jl"]
 
 @testset "CobraTools" begin
     for t in tests
