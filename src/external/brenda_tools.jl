@@ -20,14 +20,14 @@ end
 """
 BrendaEntry
 
-This struct has ID, TN, KI, KM, KMM fields, corresponding to the fields in the database.
+This struct has ID, TN, KI, KM, KKM fields, corresponding to the fields in the database.
 """
 struct BrendaEntry
     ID :: String # EC number
     TN :: Array{EnzymeParams, 1} # turnover number [[TN, substrate, temp, ph], ...]
     KI :: Array{EnzymeParams, 1} # turnover number [[KI, substrate, temp, ph], ...]
     KM :: Array{EnzymeParams, 1} # turnover number [[KM, substrate, temp, ph], ...]
-    KMM :: Array{EnzymeParams, 1} # turnover number [[Kcat/KM-Value, substrate, temp, ph], ...]
+    KKM :: Array{EnzymeParams, 1} # turnover number [[KKM, substrate, temp, ph], ...]
 
     # Keywords below are not implemented (yet)...
     # AC	# activating compound
@@ -87,7 +87,7 @@ function parse_brenda(brenda_loc)
         TN = Array{EnzymeParams, 1}()
         KI = Array{EnzymeParams, 1}()
         KM = Array{EnzymeParams, 1}()
-        KMM = Array{EnzymeParams, 1}()
+        KKM = Array{EnzymeParams, 1}()
         firstline = true
         for ln in eachline(io)
             # println(ID)
@@ -95,13 +95,13 @@ function parse_brenda(brenda_loc)
                 if firstline || ID == "0.0.0.0"
                     firstline = false
                 else
-                    push!(brenda_data, BrendaEntry(ID, TN, KI, KM, KMM))
+                    push!(brenda_data, BrendaEntry(ID, TN, KI, KM, KKM))
                 end
                 ID = split(split(ln, "\t")[2], " ")[1]
                 TN = Array{EnzymeParams, 1}()
                 KI = Array{EnzymeParams, 1}()
                 KM = Array{EnzymeParams, 1}()
-                KMM = Array{EnzymeParams, 1}()
+                KKM = Array{EnzymeParams, 1}()
             end
 
             if startswith(ln, "TN\t")
@@ -122,10 +122,10 @@ function parse_brenda(brenda_loc)
                     push!(KM, km_data)
                 end
             end
-            if startswith(ln, "KMM\t")
-                kmm_data = get_enzyme_data(ln)
-                if !isnothing(kmm_data.val)
-                    push!(KMM, kmm_data)
+            if startswith(ln, "KKM\t")
+                kkm_data = get_enzyme_data(ln)
+                if !isnothing(kkm_data.val)
+                    push!(KKM, kkm_data)
                 end
             end
         end

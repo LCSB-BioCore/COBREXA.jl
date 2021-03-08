@@ -13,6 +13,9 @@
     r_str = CobraTools.build_rxn_string(model.reactions[64])
     rs = split(replace(r_str, r"(1.0 )|( \+)|(= )|(KEGG:)"=>""), " ")
     @test all([x in ["C00354", "C00111", "C00661"] for x in rs ])
+
+    sprint(show, MIME("text/plain"), brenda_data[1].TN[1]) == "Value: 0.52\nSubstrate: DL-glyceraldehyde\npH: 7.0\nTemperature: 25.0\n"
+    sprint(show, MIME("text/plain"), brenda_data[1]) == "EC: 1.1.1.10\n"
     
     gibbs_str = JSON.parsefile(joinpath("data", "gibbs.json"))
     gibbs = Dict{String, Measurement{Float64}}()
