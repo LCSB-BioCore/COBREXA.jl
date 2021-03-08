@@ -9,10 +9,10 @@
         "model_construction.md",
         "basic_analysis.md",
         "sampling_tools.md",
-        "thermo_tools.md",
-        "brenda_tools.md"
+        "external_tools.md",
+        "thermodynamics.md"
     ]
-    Depth=1
+    Depth=2
 ```
 
 ## Installation
@@ -27,10 +27,19 @@ Some of the optional features used in this package require external programs and
 The optimization solvers are implemented through `JuMP` and thus this package should be solver agnostic. All tests are conducted using `Tulip.jl` and `OSQP.jl`, but other solvers should also work (I mostly use `Gurobi.jl`). 
 
 ## Quick Example
-```@example
-using CobraTools
-
-
+Let's perform flux balance analysis on a constraint based model.
+```@setup intro
+model_location = joinpath("..","..", "models", "e_coli_core.json")
 ```
+```@example intro
+using CobraTools
+using JuMP
+using Tulip
 
+model = read_model(model_location)
+
+biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+optimizer = Tulip.Optimizer
+sol = fba(model, biomass, optimizer)
+```
 

@@ -12,7 +12,7 @@ Once the database has been downloaded, it can be parsed by `parse_brenda`.
 parse_brenda
 ```
 This function returns an array of `BrendaEntry` structs, which are composed of `EnzymeParams` for each field extracted from the Brenda database.
-Currently, only the ID (=EC number), TN (=turn over number), KM (=Michaelis-Menten constant, ``K_M``), KI (=Inhibition term for Michaelis-Menten kintics), and KMM (=ratio of TN/KM) numbers for each enzyme class (ID, or EC number) are extracted. All the structs have pretty printing enabled.
+Currently, only the ID (=EC number), TN (=turn over number), KM (=Michaelis-Menten constant, ``K_M``), KI (=Inhibition term for Michaelis-Menten kintics), and KKM (=ratio of TN/KM) numbers for each enzyme class (ID, or EC number) are extracted. All the structs have pretty printing enabled.
 ```@docs
 CobraTools.BrendaEntry
 CobraTools.EnzymeParams
