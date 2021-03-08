@@ -101,7 +101,8 @@ end
     map_gibbs_internal(fluxres, gibbs, biomassid="BIOMASS")
 
 Calculate the Gibbs free energy change taking only the internal fluxes into account.
-NB: you need to account for the biomass function separately. NB: 
+NB: you need to account for the biomass function separately. 
+NB: the missing fluxes will pick up transporters...
 
 Fluxres are a Dict with rxnid -> flux.
 """

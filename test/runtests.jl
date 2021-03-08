@@ -4,6 +4,8 @@ using JuMP
 using Tulip
 using OSQP
 using Statistics 
+using JSON
+using Measurements
 
 const testdir = dirname(@__FILE__)
 
