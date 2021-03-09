@@ -7,7 +7,6 @@ using Measurements
 using Statistics, Random
 using PyCall
 using JuMP, Tulip, OSQP # OSQP sucks for LPs
-using LightGraphs, SimpleWeightedGraphs, GraphPlot, Compose
 
 import Base: findfirst, getindex, show
 
