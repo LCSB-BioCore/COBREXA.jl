@@ -1,7 +1,13 @@
 """
 EnzymeParams
 
-This struct has `val`, `substrate`, `ph`, and `temperature` fields, extrated from the database.
+# Fields
+```
+val :: Union{Nothing, Float64}
+substrate :: Union{Nothing, String}
+ph :: Union{Nothing, Float64}
+temperature :: Union{Nothing, Float64}
+```
 """
 struct EnzymeParams
     val :: Union{Nothing, Float64}
@@ -20,14 +26,21 @@ end
 """
 BrendaEntry
 
-This struct has ID, TN, KI, KM, KKM fields, corresponding to the fields in the database.
+# Fields
+```
+ID :: String # EC number
+TN :: Array{EnzymeParams, 1}
+KI :: Array{EnzymeParams, 1} 
+KM :: Array{EnzymeParams, 1} 
+KKM :: Array{EnzymeParams, 1} 
+```
 """
 struct BrendaEntry
     ID :: String # EC number
-    TN :: Array{EnzymeParams, 1} # turnover number [[TN, substrate, temp, ph], ...]
-    KI :: Array{EnzymeParams, 1} # turnover number [[KI, substrate, temp, ph], ...]
-    KM :: Array{EnzymeParams, 1} # turnover number [[KM, substrate, temp, ph], ...]
-    KKM :: Array{EnzymeParams, 1} # turnover number [[KKM, substrate, temp, ph], ...]
+    TN :: Array{EnzymeParams, 1}
+    KI :: Array{EnzymeParams, 1} 
+    KM :: Array{EnzymeParams, 1} 
+    KKM :: Array{EnzymeParams, 1} 
 
     # Keywords below are not implemented (yet)...
     # AC	# activating compound
@@ -77,8 +90,10 @@ end
     parse_brenda(brenda_txt_file_path)
 
 Parse the Brenda txt file line by line. 
-Download it from https://www.brenda-enzymes.org/download_brenda_without_registration.php.
-Returns an array with Brenda 
+Download it from `https://www.brenda-enzymes.org/download_brenda_without_registration.php`.
+Returns an array of `BrendaEntry`s.
+
+See also: [`BrendaEntry`](@ref), [`EnzymeParams`](@ref)
 """
 function parse_brenda(brenda_loc)
     brenda_data = Array{BrendaEntry, 1}()

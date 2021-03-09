@@ -29,7 +29,7 @@ brenda_data = parse_brenda(brenda_loc)
 brenda_data[1]
 ```
 ```@example brenda
-brenda_data[1].TN
+brenda_data[1].TN[1]
 ```
 ## Equilibrator Interface
 The Equilibrator interface requires that the Equilibrator-API has been installed and can be accessed through Julia's PyCall package. Refer to the [Equilibrator-API website](https://gitlab.com/equilibrator/equilibrator-api) for installation instructions. Within Julia, if you can call `pyimport("equilibrator_api")` successfully, then you will be able to use the functions exposed here. To actually use the functions insert `using PyCall` in your main level script (before or after `using CobraTools`).

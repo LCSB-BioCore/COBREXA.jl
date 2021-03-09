@@ -1,7 +1,7 @@
 """
     build_rxn_string(rxn::Reaction, compoundtype="kegg")
 
-Get rxn in string format for Equilibrator.
+Get a reaction in string format for Equilibrator.
 """
 function build_rxn_string(rxn::Reaction, compoundtype="kegg")
     pos_s = []
@@ -80,8 +80,6 @@ end
 
 Calculate the Gibbs free energy change taking only the external fluxes into account.
 NB: you need to account for the biomass function separately.
-
-Fluxres can be both a ReactionFluxes object or a Dict with rxnid -> flux.
 """
 function map_gibbs_external(fluxres::Dict{String, Float64}, gibbs)
     total_ΔG = 0.0 ± 0.0
@@ -103,8 +101,6 @@ end
 Calculate the Gibbs free energy change taking only the internal fluxes into account.
 NB: you need to account for the biomass function separately. 
 NB: the missing fluxes will pick up transporters...
-
-Fluxres are a Dict with rxnid -> flux.
 """
 function map_gibbs_internal(fluxres::Dict{String, Float64}, gibbs, biomassid="BIOMASS")
     total_ΔG = 0.0 ± 0.0
