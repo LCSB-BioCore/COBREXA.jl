@@ -1,5 +1,5 @@
 """
-Reaction struct (mutable).
+Reaction struct.
 
 # Fields
 ````

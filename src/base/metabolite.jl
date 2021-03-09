@@ -1,5 +1,5 @@
 """
-Metabolite struct (mutable).
+Metabolite struct.
 
 # Fields
 ````

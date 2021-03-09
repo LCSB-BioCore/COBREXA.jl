@@ -5,7 +5,7 @@ Return stoichiometrix matrix (S), mass balance right hand side (b), upper (ubs),
 That is, S*v=b with lbs ≤ v ≤ ubs where v is the flux vector. 
 This is useful if you want to construct your own optimization problem and just want the raw data.
 
-Returns: S, b, ubs, lbs. All these data are arrays.
+Returns: `S`, `b`, `ubs`, and `lbs`. All these data are arrays.
 """
 function get_core_model(model::CobraTools.Model)
     ubs = [rxn.ub for rxn in model.reactions]
@@ -46,7 +46,7 @@ function build_cbm(model::CobraTools.Model)
     return cbmodel, v, mb, ubs, lbs
 end
 
-@doc raw"""
+"""
     fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux balance analysis (FBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
@@ -57,15 +57,13 @@ This function builds the optimization problem from the model, and hence uses the
 Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
 
 # Example
+```
 optimizer = Gurobi.Optimizer
-
 atts = Dict("OutputFlag" => 0)
-
 model = CobraTools.read_model("iJO1366.json")
-
-biomass = findfirst(model.reactions, "BIOMASS\_Ec\_iJO1366\_WT\_53p95M")
-
+biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = fba(model, biomass, optimizer; solver_attributes=atts)
+```
 """
 function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
     cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model
@@ -135,15 +133,13 @@ This function builds the optimization problem from the model, and hence uses the
 Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
 
 # Example
+```
 optimizer = Gurobi.Optimizer
-
 atts = Dict("OutputFlag" => 0)
-
 model = CobraTools.read_model("iJO1366.json")
-
-biomass = findfirst(model.reactions, "BIOMASS\_Ec\_iJO1366\_WT\_53p95M")
-
+biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = pfba(model, biomass, optimizer; solver_attributes=atts)
+```
 """
 function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
     ## FBA ################################################
@@ -385,7 +381,7 @@ function metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Mo
 end
 
 
-@doc raw"""
+"""
     fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; optimum_bound=0.9999, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux variability analysis (FVA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
@@ -398,15 +394,13 @@ This function builds the optimization problem from the model, and hence uses the
 Returns two dictionaries (fva_max and fva_min) that each reaction `id`s to dictionaries of the resultant flux distributions (if solved successfully) when that `id` is optimized.
 
 # Example
+```
 optimizer = Gurobi.Optimizer
-
 atts = Dict("OutputFlag" => 0)
-
 model = CobraTools.read_model("iJO1366.json")
-
-biomass = findfirst(model.reactions, "BIOMASS\_Ec\_iJO1366\_WT\_53p95M")
-
-fva\_max, fva\_min = fva(model, biomass, optimizer; solver_attributes=atts)
+biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
+fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
+```
 """
 function fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; optimum_bound=0.9999, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
     cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model

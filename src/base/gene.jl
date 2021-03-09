@@ -1,5 +1,5 @@
 """
-Gene struct (mutable).
+Gene struct.
 
 # Fields
 ````
