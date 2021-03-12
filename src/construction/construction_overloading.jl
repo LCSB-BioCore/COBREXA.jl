@@ -76,4 +76,5 @@ function ⟷(substrates::Union{Metabolite, MetaboliteWithCoefficient, Array{Meta
     metdict = mkrxn(substrates, products)
     return Reaction("", metdict, "bidir")
 end
-const ↔ = ⟷
+const ↔ = ⟷ 
+const ⇌ = ⟷
