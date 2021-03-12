@@ -1,0 +1,3197 @@
+ID	1.1.1.10
+********************************************************************************
+*                                                                              *
+* Copyrighted by Dietmar Schomburg, Techn. University Braunschweig, GERMANY    *
+* Distributed under the License as stated at http:/www.brenda-enzymes.org      *
+*                                                                              *
+********************************************************************************
+
+PROTEIN
+PR	#1# Cavia porcellus   (#1# SULT1A2 <1,2,6,7>) <1,2,6,7>
+PR	#2# Mus musculus   <11,18,19>
+PR	#3# Homo sapiens   <11,12,18,20,22>
+PR	#4# Rattus norvegicus   <13,18,20>
+PR	#5# Sus scrofa   <18>
+PR	#6# Saccharomyces cerevisiae   <5>
+PR	#7# Neurospora crassa   <21>
+PR	#8# Aspergillus niger   <8,32>
+PR	#9# Mesocricetus auratus   <16>
+PR	#10# Meyerozyma guilliermondii   <30,31>
+PR	#11# Kluyveromyces marxianus   <36>
+PR	#12# Pantoea ananatis   <4>
+PR	#13# Chlorella sorokiniana   <35>
+PR	#14# Erwinia sp.   <3>
+PR	#15# Scheffersomyces stipitis   <9,23,24,25,26,27,37>
+PR	#16# Cricetinae   <10>
+PR	#17# Candida tenuis   <28>
+PR	#18# Homo sapiens Q7Z4W1 SwissProt <14,17,29>
+PR	#19# Ambrosiozyma monospora Q70FD1 SwissProt <15>
+PR	#20# Mus musculus Q91X52 SwissProt <14>
+PR	#21# Rattus norvegicus Q920P0 SwissProt <14>
+PR	#22# Cavia porcellus Q920N9 SwissProt <14>
+PR	#23# Mesocricetus auratus Q91XV4 SwissProt <14>
+PR	#24# Trichoderma reesei Q8NK50 UniProt <33>
+PR	#25# Caenorhabditis elegans Q21929 UniProt <34>
+
+RECOMMENDED_NAME
+RN	L-xylulose reductase
+
+
+SYSTEMATIC_NAME
+SN	xylitol:NADP+ 4-oxidoreductase (L-xylulose-forming)
+
+
+SYNONYMS
+SY	 reductase, L-xylulose
+SY	#10,15# xylose reductase <27,30,31>
+SY	#11# NADP(H)-preferring xylitol dehydrogenase <36>
+SY	#13# NADP+-linked xylitol dehydrogenase <35>
+SY	#13,15# XDH <23,25,35,37>
+SY	#15# xylitol dehydrogenase <9>
+SY	#15# NADP(+)-dependent xylitol dehydrogenase <23>
+SY	#15# NADP+-dependent xylitol dehydrogenase <37>
+SY	#15,17# NAD(P)H-dependent xylose reductase <26,28>
+SY	#18# P34H <14>
+SY	#2,3,4,18,20,21,22,23# XR <11,12,13,14,17>
+SY	#2,3,4,8# More (#8# xylitol:NAD+ 2-oxidoreductase, EC 1.1.1.9, is
+	termed as xylitol dehydrogenase <8>; #2,3,4# enzyme belongs to the
+	short-chain dehydrogenase/reductase family <11,13,17>) <8,11,13,17>
+SY	#24# LXR3 (#24# gene name <33>) <33>
+SY	#3,24# L-xylulose reductase <22,33>
+SY	#9# P31h <16>
+SY	#9,25# dicarbonyl/L-xylulose reductase <16,34>
+SY	#9,25# DCXR <16,34>
+
+REACTION
+RE	xylitol + NADP+ = L-xylulose + NADPH + H+ (#16# probably identical with
+	EC 1.1.1.5 diacetyl reductase <10>; #3# active site structure <12>; #3#
+	active site residues are Cys138, Val143, His146, Trp191, and Met200,
+	the catalytic tetrad is formed by Asn107, Ser136, Tyr149, and Lys153,
+	substrate binding site structure, enzyme with dual function showing
+	L-xylulose reductase activity and dicarbonyl reductase activity, EC
+	1.1.1.5 <17>; #20,21,22,23# enzyme with dual function showing
+	L-xylulose reductase and dicarbonyl reductase activities <14>; #2,3,18#
+	enzyme with dual function showing L-xylulose reductase and dicarbonyl
+	reductase activities, it is probably identical with sperm 34 kDa
+	protein P34H and diacetyl reductase, EC 1.1.1.5 <11,14>; #4# enzyme
+	with dual function showing L-xylulose reductase and dicarbonyl
+	reductase activities, it is probably identical with sperm 34 kDa
+	protein P34H and diacetyl reductase, EC 1.1.1.5, the amino acid
+	residues Ser136, Tyr149, and Lys153 form the catalytic triad <13>; #9#
+	immunological analysis revealed that the dicarbonyl/L-xylulose
+	reductase is not identical with the sperm protein P26h <16>)
+
+REACTION_TYPE
+RT	redox reaction
+RT	oxidation
+RT	reduction
+
+SOURCE_TISSUE
+ST	#1,2,3,4,5,16,18,20,21,22,23# liver (#18,21,22,23# high content <14>)
+	<1,2,6,7,10,14,18>
+ST	#1,2,3,4,5,16,18,20,21,22,23# kidney (#18,20,21,22,23# high content
+	<14>; #4# brush border <13>) <7,10,12,13,14,18,19>
+ST	#13# cell culture <35>
+ST	#13# more (#13# D-xylose utilization by the oleaginous microalga
+	Chlorella sorokiniana <35>) <35>
+ST	#18,20,21,22,23# heart (#18,20,21,23# low expression level <14>) <14>
+ST	#18,20,21,22,23# spleen (#18,20,22,23# low expression level <14>) <14>
+ST	#18,20,21,22,23# brain (#18,20,21,22,23# low expression level <14>) <14>
+ST	#18,20,21,22,23# lung (#22# high content <14>; #18,21,23# low
+	expression level <14>) <14>
+ST	#18,20,21,22,23# testis (#18,20,21,22,23# low expression level <14>)
+	<14>
+ST	#25# intestine <34>
+ST	#25# spermatid <34>
+ST	#25# gonadal sheath cell <34>
+ST	#25# uterine seam cell <34>
+ST	#25# spermathecal-uterine valve <34>
+ST	#3# MOLT-4 cell (#3# expression levels of L-xylulose reductase and its
+	mRNA in the T lymphoma cells are markedly enhanced after the exposure
+	to 9,10-phenanthrenequinone, and the induction is completely abolished
+	by the ROS scavengers. L-Xylulose reductase is upregulated in the
+	earlier step of the apoptosis and deteriorates the apoptotic signaling
+	through the generation of ROS by the redox cycling of
+	9,10-phenanthrenequinone <22>) <22>
+ST	#9# epithelium (#9# epididymal <16>) <16>
+ST	#9,18,20,21,22,23# epididymis (#20# high content <14>; #21,23# low
+	expression level <14>; #9# from caput, corpus, and cauda, activity in
+	descending order <16>) <14,16>
+
+LOCALIZATION
+LO	#22# cytosol <14>
+LO	#25# plasma membrane (#25# of spermatids <34>) <34>
+LO	#3# brush border <12>
+LO	#3,4# membrane <12,13>
+LO	#9# perinuclear space <16>
+
+NATURAL_SUBSTRATE_PRODUCT
+NSP	#13,24# xylitol + NADP+ = L-xylulose + NADPH + H+ {r} <33,35>
+NSP	#13,24# xylitol + NADP+ = L-xylulose + NADPH + H+ <33,35>
+NSP	#19# L-xylulose + NADH = L-xylitol + NAD+ (#19# part of the L-arabinose
+	catabolism <15>) {r} <15>
+NSP	#2,3,4,5,8# L-xylulose + NADPH + H+ = L-xylitol + NADP+ (#3# part of
+	the glucuronic acid pathway, enzyme may be involved in water
+	reabsorption and cellular osmoregulation <12>; #4# part of the uronate
+	cycle, involved in osmoregulation in the kidney <13>; #3# the enzyme is
+	involved in the uronate cycle of glucose metabolism <17>; #2,3,4,5#
+	uronate cycle of glucose metabolism <18>) {r} <8,12,13,17,18>
+NSP	#2,3,4,5,8# L-xylulose + NADPH + H+ = L-xylitol + NADP+ (#3# part of
+	the glucuronic acid pathway, enzyme may be involved in water
+	reabsorption and cellular osmoregulation <12>; #4# part of the uronate
+	cycle, involved in osmoregulation in the kidney <13>; #3# the enzyme is
+	involved in the uronate cycle of glucose metabolism <17>; #2,3,4,5#
+	uronate cycle of glucose metabolism <18>) {} <8,12,13,17,18>
+NSP	#2,3,4,5,8# L-xylulose + NADPH + H+ = L-xylitol + NADP+ (#3# part of
+	the glucuronic acid pathway, enzyme may be involved in water
+	reabsorption and cellular osmoregulation <12>; #4# part of the uronate
+	cycle, involved in osmoregulation in the kidney <13>; #3# the enzyme is
+	involved in the uronate cycle of glucose metabolism <17>; #2,3,4,5#
+	uronate cycle of glucose metabolism <18>) <8,12,13,17,18>
+NSP	#25# more = ? (#25# dicarbonyl/L-xylulose reductase is bifunctional
+	<34>) {} <34>
+NSP	#25# more = ? (#25# dicarbonyl/L-xylulose reductase is bifunctional
+	<34>) {} <34>
+NSP	#25# L-xylulose + NADPH + H+ = xylitol + NADP+ {ir} <34>
+NSP	#25# L-xylulose + NADPH + H+ = xylitol + NADP+ {r} <34>
+NSP	#4# diacetyl + NAD(P)H = acetoin + NAD(P)+ (#4# detoxification of
+	alpha-dicarbonyl compounds <13>) {} <13>
+NSP	#4# diacetyl + NAD(P)H = acetoin + NAD(P)+ (#4# detoxification of
+	alpha-dicarbonyl compounds <13>) {r} <13>
+
+SUBSTRATE_PRODUCT
+SP	#1,2,3,4,5,7,8,10,15,16,17,18,20,21,22,23# L-xylulose + NADPH + H+ =
+	L-xylitol + NADP+ (#16# also reduces 2,3-butadione <10>; #3# part of
+	the glucuronic acid pathway, enzyme may be involved in water
+	reabsorption and cellular osmoregulation <12>; #4# part of the uronate
+	cycle, involved in osmoregulation in the kidney <13>; #3# the enzyme is
+	involved in the uronate cycle of glucose metabolism <17>; #3,4#
+	L-xylulose reductase activity <13,17>; #18,20,21,22,23# reductase
+	activity <14>; #2,3,4,5# uronate cycle of glucose metabolism <18>; #15#
+	xylulose reductase has about 50% higher activity during xylose
+	consumption than during the coconsumption of glucose and xylose <27>)
+	{r} <6,7,8,10,11,12,13,14,17,18,21,25,26,27,28,30,31,32>
+SP	#1,2,3,4,5,7,8,10,15,16,17,18,20,21,22,23# L-xylulose + NADPH + H+ =
+	L-xylitol + NADP+ (#16# also reduces 2,3-butadione <10>; #3# part of
+	the glucuronic acid pathway, enzyme may be involved in water
+	reabsorption and cellular osmoregulation <12>; #4# part of the uronate
+	cycle, involved in osmoregulation in the kidney <13>; #3# the enzyme is
+	involved in the uronate cycle of glucose metabolism <17>; #3,4#
+	L-xylulose reductase activity <13,17>; #18,20,21,22,23# reductase
+	activity <14>; #2,3,4,5# uronate cycle of glucose metabolism <18>; #15#
+	xylulose reductase has about 50% higher activity during xylose
+	consumption than during the coconsumption of glucose and xylose <27>)
+	{} <6,7,8,10,11,12,13,14,17,18,21,25,26,27,28,30,31,32>
+SP	#1,2,3,4,5,7,8,10,15,16,17,18,20,21,22,23# L-xylulose + NADPH + H+ =
+	L-xylitol + NADP+ (#16# also reduces 2,3-butadione <10>; #3# part of
+	the glucuronic acid pathway, enzyme may be involved in water
+	reabsorption and cellular osmoregulation <12>; #4# part of the uronate
+	cycle, involved in osmoregulation in the kidney <13>; #3# the enzyme is
+	involved in the uronate cycle of glucose metabolism <17>; #3,4#
+	L-xylulose reductase activity <13,17>; #18,20,21,22,23# reductase
+	activity <14>; #2,3,4,5# uronate cycle of glucose metabolism <18>; #15#
+	xylulose reductase has about 50% higher activity during xylose
+	consumption than during the coconsumption of glucose and xylose <27>)
+	<6,7,8,10,11,12,13,14,17,18,21,25,26,27,28,30,31,32>
+SP	#1,3,4,8,12,13,14,15,16,24# xylitol + NADP+ = L-xylulose + NADPH + H+
+	(#15# engineered enzyme with altered cofactor specificity <37>) |#12#
+	strain DM101 and DM122, product identification is not exact, could also
+	be D-xylulose <4>| {r} <1,2,3,4,6,7,8,9,10,20,33,35,37>
+SP	#1,3,4,8,12,13,14,15,16,24# xylitol + NADP+ = L-xylulose + NADPH + H+
+	(#15# engineered enzyme with altered cofactor specificity <37>) |#12#
+	strain DM101 and DM122, product identification is not exact, could also
+	be D-xylulose <4>| <1,2,3,4,6,7,8,9,10,20,33,35,37>
+SP	#1,4,8,12,18,19,20,21,22,23,24,25# more = ? (#25# substrate
+	specificity, overview <34>; #8# minimal reductive activity also with
+	D-xylulose, D-erythrose and dihydroxyacetone <8>; #1# no activity in
+	the mitochondrial fraction with D-xylulose, D-sorbose, L-sorbose,
+	L-erythrulose, D-fructose, D-sorbitol, L-arabitol, D-gulitol, D-talitol
+	<7>; #12# minimal oxidative activity with D-arabitol, mannitol,
+	1,2-propanediol and 2,3-butanediol <4>; #19# NADH-linked enzyme form,
+	no activity with NADPH and NADP+, no activity with L-arabinitol,
+	adonitol or ribitol, dulcitol or galactitol, D-mannitol, and
+	D-sorbitol, no activity with D-sorbose, L-sorbose, D-psicose, and
+	D-fructose <15>; #18,20,21,22,23# substrate specificity for dicarbonyl
+	reductase activity, overview <14>; #4# the size and hydrophobicity of
+	the amino acid residues involved in substrate recognition, i.e. Q137,
+	L143, H146, N190, and W191, is important, mutants N190V, N190V/W191S,
+	Q137M/L143F/H146L, and N190V/W191S/Q137M/L143F/H146L show reductive
+	activity with 4-nitroacetophenone, 5beta-androstane-3,17-dione,
+	5beta-androstan-17beta-ol-3-one, and
+	5beta-androstane-3alpha,17beta-diol, overview <13>; #8# no substrate:
+	D-fructose, D-sorbose, L-sorbose, xylitol, D-arabitol, L-arabitol,
+	ribitol, D-sorbitol and galactitol <32>; #25# dicarbonyl/L-xylulose
+	reductase is bifunctional <34>; #24# substrate specificity, overview.
+	No activity with L-xylo-3-hexulose, D-sorbose, D-ribitol, D-arabitol,
+	or L-arabitol <33>) {} <4,7,8,13,14,15,32,33,34>
+SP	#1,4,8,12,18,19,20,21,22,23,24,25# more = ? (#25# substrate
+	specificity, overview <34>; #8# minimal reductive activity also with
+	D-xylulose, D-erythrose and dihydroxyacetone <8>; #1# no activity in
+	the mitochondrial fraction with D-xylulose, D-sorbose, L-sorbose,
+	L-erythrulose, D-fructose, D-sorbitol, L-arabitol, D-gulitol, D-talitol
+	<7>; #12# minimal oxidative activity with D-arabitol, mannitol,
+	1,2-propanediol and 2,3-butanediol <4>; #19# NADH-linked enzyme form,
+	no activity with NADPH and NADP+, no activity with L-arabinitol,
+	adonitol or ribitol, dulcitol or galactitol, D-mannitol, and
+	D-sorbitol, no activity with D-sorbose, L-sorbose, D-psicose, and
+	D-fructose <15>; #18,20,21,22,23# substrate specificity for dicarbonyl
+	reductase activity, overview <14>; #4# the size and hydrophobicity of
+	the amino acid residues involved in substrate recognition, i.e. Q137,
+	L143, H146, N190, and W191, is important, mutants N190V, N190V/W191S,
+	Q137M/L143F/H146L, and N190V/W191S/Q137M/L143F/H146L show reductive
+	activity with 4-nitroacetophenone, 5beta-androstane-3,17-dione,
+	5beta-androstan-17beta-ol-3-one, and
+	5beta-androstane-3alpha,17beta-diol, overview <13>; #8# no substrate:
+	D-fructose, D-sorbose, L-sorbose, xylitol, D-arabitol, L-arabitol,
+	ribitol, D-sorbitol and galactitol <32>; #25# dicarbonyl/L-xylulose
+	reductase is bifunctional <34>; #24# substrate specificity, overview.
+	No activity with L-xylo-3-hexulose, D-sorbose, D-ribitol, D-arabitol,
+	or L-arabitol <33>) {} <4,7,8,13,14,15,32,33,34>
+SP	#16# DL-threitol + NADP+ = D-erythrulose + NADPH (#16# probably
+	identical with erythrulose reductase, EC 1.1.1.162 and diacetyl
+	reductase,  EC 1.1.1.5 <10>) {r} <10>
+SP	#18,20,21,22,23# 1,4-dibromo-2,3-butanedione + NAD(P)H = ? + NAD(P)+
+	(#18,20,21,22,23# dicarbonyl reductase activity, best substrate, NADPH
+	is the preferred cofactor, forward reaction is preferred <14>) {r} <14>
+SP	#18,20,21,22,23# D-erythrose + NADPH = ? (#18,20,21,22,23# reductase
+	activity <14>) {r} <14>
+SP	#18,20,21,22,23# D-threose + NADPH = D-threitol + NADP+
+	(#18,20,21,22,23# reductase activity <14>) {r} <14>
+SP	#18,20,21,22,23# D-xylulose + NADPH + H+ = D-xylitol + NADP+
+	(#18,20,21,22,23# reductase activity <14>) {r} <14>
+SP	#18,20,21,22,23# DL-glyceraldehyde + NADPH = dihydroxyacetone + NADP+
+	(#18,20,21,22,23# reductase activity, forward reaction is highly
+	preferred <14>) {r} <14>
+SP	#18,20,21,22,23# L-erythrulose + NADPH = ? (#18,20,21,22,23# reductase
+	activity <14>) {r} <14>
+SP	#18,20,21,22,23# L-threose + NADPH = L-threitol + NADP+
+	(#18,20,21,22,23# reductase activity <14>) {r} <14>
+SP	#19# L-xylulose + NADH = L-xylitol + NAD+ (#19# part of the L-arabinose
+	catabolism <15>) {r} <15>
+SP	#19# D-ribulose + NADH = D-arabinitol + NAD+ {r} <15>
+SP	#2,3,4,18,20,21,22,23# diacetyl + NAD(P)H = acetoin + NAD(P)+ (#4#
+	detoxification of alpha-dicarbonyl compounds <13>; #2,3,4# dicarbonyl
+	reductase activity <11,13,17>; #18,20,21,22,23# dicarbonyl reductase
+	activity, NADPH is the preferred cofactor <14>) {} <11,13,14,17>
+SP	#2,3,4,18,20,21,22,23# diacetyl + NAD(P)H = acetoin + NAD(P)+ (#4#
+	detoxification of alpha-dicarbonyl compounds <13>; #2,3,4# dicarbonyl
+	reductase activity <11,13,17>; #18,20,21,22,23# dicarbonyl reductase
+	activity, NADPH is the preferred cofactor <14>) {r} <11,13,14,17>
+SP	#2,3,9,12# DL-threitol + NAD+ = D-threose + NADH {} <4,14>
+SP	#2,3,9,12# DL-threitol + NAD+ = D-threose + NADH {r} <4,14>
+SP	#24# D-sorbitol + NADP+ = D-sorbose + NADPH + H+ <33>
+SP	#24# L-sorbose + NADPH + H+ = L-sorbitol + NADP+ (#24# low activity
+	<33>) <33>
+SP	#24# D-fructose + NADPH + H+ = ? + NADP+ (#24# low activity <33>) <33>
+SP	#24# D-ribulose + NADPH + H+ = ? + NADP+ <33>
+SP	#24,25# L-xylulose + NADPH + H+ = xylitol + NADP+ (#24# preferred
+	substrate <33>) {ir} <33,34>
+SP	#24,25# L-xylulose + NADPH + H+ = xylitol + NADP+ (#24# preferred
+	substrate <33>) {r} <33,34>
+SP	#24,25# D-xylulose + NADPH + H+ = xylitol + NADP+ (#24# low activity
+	<33>) <33,34>
+SP	#25# D-erythrose + NADPH + H+ = ? + NADP+ {ir} <34>
+SP	#25# D-threose + NADPH + H+ = ? + NADP+ {ir} <34>
+SP	#25# L-erythrulose + NADPH + H+ = ? + NADP+ {ir} <34>
+SP	#25# L-ribulose + NADPH + H+ = ? + NADP+ (#25# low activity <34>) <34>
+SP	#3# diacetyl + NADPH + H+ = acetoin + NADP+ <29>
+SP	#3,19# D-xylulose + NADH + H+ = D-arabinitol + NAD+ (#19# about 100fold
+	lower activity compared to L-xylulose <15>) {} <14,15>
+SP	#3,19# D-xylulose + NADH + H+ = D-arabinitol + NAD+ (#19# about 100fold
+	lower activity compared to L-xylulose <15>) {r} <14,15>
+SP	#4# 1,4-dibromo-2,3-butanedione + NADPH = ? + NADP+ (#4# dicarbonyl
+	reductase activity <13>) {r} <13>
+SP	#7,18,20,21,22,23# D-ribulose + NADPH = D-ribitol + NADP+
+	(#18,20,21,22,23# reductase activity <14>) <14,21>
+SP	#7,18,20,21,22,23# D-ribulose + NADPH = D-ribitol + NADP+
+	(#18,20,21,22,23# reductase activity <14>) {r} <14,21>
+SP	#8# D-sorbitol + NADP+ = ? <8>
+SP	#8# D-ribulose + NADPH + H+ = D-ribitol + NADP+ <32>
+
+TURNOVER_NUMBER
+TN	#18# 0.52 {DL-glyceraldehyde}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.52 {D-ribulose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.52 {L-threose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 3.8 {NADH}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.1 {D-xylulose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 1.5 {NADPH}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 1.5 {NAD+}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 1.6 {diacetyl}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.65 {NADP+}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.65 {L-xylulose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.65 {acetoin}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.82 {D-threose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.6 {xylitol}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.6 {L-erythrulose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.43 {D-erythrose}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.48 {D-threitol}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#18# 0.23 {dihydroxyacetone}  (#18# pH 7.0, 25°C <14>) <14>
+TN	#20# 3.3 {dihydroxyacetone}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 15 {NADP+}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 34 {NADPH}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 3 {acetoin}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 55 {NAD+}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 7.4 {D-xylulose}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 17 {xylitol}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 41 {NADH}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 41 {diacetyl}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 26 {D-ribulose}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 24 {DL-glyceraldehyde}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 23 {L-erythrulose}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20# 23 {D-threose}  (#20# pH 7.0, 25°C <14>) <14>
+TN	#20,21# 18 {D-erythrose}  (#20,21# pH 7.0, 25°C <14>) <14>
+TN	#20,21# 16 {L-threose}  (#20,21# pH 7.0, 25°C <14>) <14>
+TN	#20,22# 37 {L-xylulose}  (#20,22# pH 7.0, 25°C <14>) <14>
+TN	#20,23# 16 {D-threitol}  (#20,23# pH 7.0, 25°C <14>) <14>
+TN	#21# 2-8 {D-threose}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 18 {D-xylulose}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 21 {DL-glyceraldehyde}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 39 {L-xylulose}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 10 {NADP+}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 10 {xylitol}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 25 {diacetyl}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 19 {D-ribulose}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 41 {NAD+}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 12 {D-threitol}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 5.1 {dihydroxyacetone}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21# 23 {NADH}  (#21# pH 7.0, 25°C <14>) <14>
+TN	#21,22,23# 6.9 {acetoin}  (#21,22,23# pH 7.0, 25°C <14>) <14>
+TN	#21,23# 25 {L-erythrulose}  (#21,23# pH 7.0, 25°C <14>) <14>
+TN	#22# 3.8 {dihydroxyacetone}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 2-8 {D-erythrose}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 15 {D-threitol}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 27 {L-threose}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 20 {xylitol}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 20 {DL-glyceraldehyde}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 76 {NADH}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 19 {D-xylulose}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 26 {NADPH}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 24 {diacetyl}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 24 {L-erythrulose}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 23 {NADP+}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 32 {D-threose}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#22# 7.8 {D-ribulose}  (#22# pH 7.0, 25°C <14>) <14>
+TN	#23# 22 {DL-glyceraldehyde}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 27 {NADPH}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 8.7 {dihydroxyacetone}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 30 {diacetyl}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 44 {NAD+}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 26 {NADP+}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 31 {D-ribulose}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 31 {D-threose}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 6.9 {D-xylulose}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 23 {D-erythrose}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#23# 23 {L-threose}  (#23# pH 7.0, 25°C <14>) <14>
+TN	#24# 1 {xylitol}  (#24# pH 7.0, 30°C, recombinant enzyme <33>) <33>
+TN	#24# 11.4 {L-xylulose}  (#24# pH 7.0, 30°C, recombinant enzyme <33>)
+	<33>
+TN	#24# 1.8 {D-sorbitol}  (#24# pH 7.0, 30°C, recombinant enzyme <33>) <33>
+TN	#24# 7.75 {NADPH}  (#24# pH 7.0, 30°C, recombinant enzyme, with
+	L-xylulose <33>) <33>
+TN	#24# 8.24 {D-ribulose}  (#24# pH 7.0, 30°C, recombinant enzyme <33>)
+	<33>
+TN	#25# 2.32 {D-threose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+TN	#25# 1.8 {D-erythrose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+TN	#25# 1.22 {D-xylulose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+TN	#25# 0.49 {L-ribulose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+TN	#25# 3.32 {L-erythrulose}  (#25# pH 7.0, temperature not specified in
+	the publication <34>) <34>
+TN	#25# 4.98 {L-xylulose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+TN	#3# 0.009 {diacetyl}  (#3# pH 7.0, 25°C, mutant N107D <17>) <17>
+TN	#3# 0.0008 {diacetyl}  (#3# pH 7.0, 25°C, mutant N107L <17>) <17>
+TN	#3# 1.57 {diacetyl}  (#3# pH 7.0, 25°C, wild-type enzyme <17>) <17>
+TN	#4# 0.0005 {NADPH}  (#4# pH 7.0, 25°C, mutant K153M <13>) <13>
+TN	#4# 9.5 {NADP+}  (#4# pH 7.0, 25°C, wild-type enzyme <13>) <13>
+TN	#4# 0.0009 {NADPH}  (#4# pH 7.0, 25°C, mutant Y149F <13>) <13>
+TN	#4# 0.0006 {NADPH}  (#4# pH 7.0, 25°C, mutant S136A <13>) <13>
+TN	#4,21# 25 {NADPH}  (#21# pH 7.0, 25°C <14>; #4# pH 7.0, 25°C, wild-type
+	enzyme <13>) <13,14>
+TN	#7# 5.6 {xylitol}  <21>
+TN	#7# 119 {D-ribulose}  <21>
+TN	#9# 3-6 {L-xylulose}  (#9# pH 7.0, 25°C <14>) <14>
+TN	#9# 2-8 {NADH}  (#9# pH 7.0, 25°C <14>) <14>
+TN	#9# 2-8 {xylitol}  (#9# pH 7.0, 25°C <14>) <14>
+
+KM_VALUE
+KM	#1# 0.29 {L-xylulose}  <1>
+KM	#12# 48 {xylitol}  <4>
+KM	#14# 72 {xylitol}  <3>
+KM	#18# 1.5 {acetoin}  (#18# pH 7.0, 25°C <14>) <14>
+KM	#18# 2.5 {L-erythrulose}  (#18# pH 7.0, 25°C <14>) <14>
+KM	#18# 5 {D-ribulose}  (#18# pH 7.0, 25°C <14>) <14>
+KM	#18# 25 {xylitol}  (#18# pH 7.0, 25°C <14>) <14>
+KM	#18# 18 {D-threitol}  (#18# pH 7.0, 25°C <14>) <14>
+KM	#19# 4.7 {D-ribulose}  (#19# pH 7.0, 30°C, purified recombinant enzyme
+	<15>) <15>
+KM	#19# 2.7 {D-arabinitol}  (#19# pH 9.0, 30°C, purified recombinant
+	enzyme <15>) <15>
+KM	#19# 9.6 {L-xylulose}  (#19# pH 7.0, 30°C, purified recombinant enzyme
+	<15>) <15>
+KM	#19# 7.2 {L-xylitol}  (#19# pH 9.0, 30°C, purified recombinant enzyme
+	<15>) <15>
+KM	#2# 0.22 {NADH}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 0.67 {diacetyl}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 2.4 {D-threose}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 5.7 {D-ribulose}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 5.7 {D-erythrose}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 4.8 {L-erythrulose}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 5.6 {L-threose}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 0.24 {L-xylulose}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2# 0.99 {NAD+}  (#2# pH 7.0, 25°C <14>) <14>
+KM	#2,22# 0.005 {NADPH}  (#2,22# pH 7.0, 25°C <14>) <14>
+KM	#2,4,9# 0.003 {NADP+}  (#4# pH 7.0, 25°C, wild-type enzyme <13>;
+	#2,4,9# pH 7.0, 25°C <14>) <13,14>
+KM	#20# 9 {acetoin}  (#20# pH 7.0, 25°C <14>) <14>
+KM	#20# 6 {DL-glyceraldehyde}  (#20# pH 7.0, 25°C <14>) <14>
+KM	#20# 15 {xylitol}  (#20# pH 7.0, 25°C <14>) <14>
+KM	#20# 37 {D-threitol}  (#20# pH 7.0, 25°C <14>) <14>
+KM	#20# 47 {dihydroxyacetone}  (#20# pH 7.0, 25°C <14>) <14>
+KM	#20,23# 12 {D-xylulose}  (#20,23# pH 7.0, 25°C <14>) <14>
+KM	#21# 1.5 {NAD+}  (#21# pH 7.0, 25°C <14>) <14>
+KM	#21# 4 {D-threose}  (#21# pH 7.0, 25°C <14>) <14>
+KM	#21# 11 {xylitol}  (#21# pH 7.0, 25°C <14>) <14>
+KM	#21# 16 {D-threitol}  (#21# pH 7.0, 25°C <14>) <14>
+KM	#21# 6 {D-erythrose}  (#21# pH 7.0, 25°C <14>) <14>
+KM	#21# 5.5 {L-erythrulose}  (#21# pH 7.0, 25°C <14>) <14>
+KM	#21,22# 18 {D-xylulose}  (#21,22# pH 7.0, 25°C <14>) <14>
+KM	#21,23# 60 {dihydroxyacetone}  (#21,23# pH 7.0, 25°C <14>) <14>
+KM	#22# 0.05 {L-xylulose}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 0.002 {NADP+}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 2 {L-erythrulose}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 2 {D-threose}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 1.4 {DL-glyceraldehyde}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 10 {xylitol}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 0.59 {D-erythrose}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 0.69 {NADH}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 14 {D-threitol}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 2.9 {L-threose}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 0.52 {diacetyl}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 36 {dihydroxyacetone}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 13 {acetoin}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#22# 7.8 {D-ribulose}  (#22# pH 7.0, 25°C <14>) <14>
+KM	#23# 40 {xylitol}  (#23# pH 7.0, 25°C <14>) <14>
+KM	#23# 34 {D-threitol}  (#23# pH 7.0, 25°C <14>) <14>
+KM	#24# 100 {xylitol}  (#24# pH 7.0, 30°C, recombinant enzyme <33>) <33>
+KM	#24# 0.13 {NADPH}  (#24# pH 7.0, 30°C, recombinant enzyme, with
+	L-xylulose <33>) <33>
+KM	#24# 16 {L-xylulose}  (#24# pH 7.0, 30°C, recombinant enzyme <33>) <33>
+KM	#24# 250 {D-sorbitol}  (#24# pH 7.0, 30°C, recombinant enzyme <33>) <33>
+KM	#24# 105 {D-ribulose}  (#24# pH 7.0, 30°C, recombinant enzyme <33>) <33>
+KM	#25# 0.17 {L-erythrulose}  (#25# pH 7.0, temperature not specified in
+	the publication <34>) <34>
+KM	#25# 0.18 {L-ribulose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+KM	#25# 0.66 {L-xylulose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+KM	#25# 0.27 {D-erythrose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+KM	#25# 0.68 {D-threose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+KM	#25# 2.58 {D-xylulose}  (#25# pH 7.0, temperature not specified in the
+	publication <34>) <34>
+KM	#3# 0.17 {NADH}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 0.001 {NADP+}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 0.21 {L-xylulose}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 0.22 {diacetyl}  (#3# mutant enzyme C138A, in 10 mM potassium
+	phosphate buffer <29>) <29>
+KM	#3# 2.4 {D-erythrose}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 1.2 {DL-glyceraldehyde}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 1.9 {D-threose}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 4.8 {D-xylulose}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 0.85 {NAD+}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 1.6 {dihydroxyacetone}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 4.2 {L-threose}  (#3# pH 7.0, 25°C <14>) <14>
+KM	#3# 26 {diacetyl}  (#3# pH 7.0, 25°C, mutant N107D <17>) <17>
+KM	#3# 0.077 {diacetyl}  (#3# pH 7.0, 25°C, wild-type enzyme <17>; #3# pH
+	7.0, 25°C <14>) <14,17>
+KM	#3# 31 {diacetyl}  (#3# pH 7.0, 25°C, mutant N107L <17>) <17>
+KM	#3# 95 {NADPH}  (#3# pH 7.0, 25°C, mutant N107D <17>) <17>
+KM	#3# 97 {NADPH}  (#3# pH 7.0, 25°C, mutant N107L <17>) <17>
+KM	#3# 0.0945 {diacetyl}  (#3# wild type enzyme, in 10 mM potassium
+	phosphate buffer <29>) <29>
+KM	#3,4# 0.002 {NADPH}  (#3# pH 7.0, 25°C, wild-type enzyme <17>; #3# pH
+	7.0, 25°C <14>; #4# pH 7.0, 25°C, mutant Y149F <13>) <13,14,17>
+KM	#4# 0.05 {1,4-dibromo-2,3-butanedione}  (#4# pH 7.0, 25°C, mutant S136A
+	<13>) <13>
+KM	#4# 0.1 {1,4-dibromo-2,3-butanedione}  (#4# pH 7.0, 25°C, mutant K153M
+	<13>) <13>
+KM	#4# 0.31 {L-xylulose}  (#4# pH 7.0, 25°C, mutant N190V <13>) <13>
+KM	#4# 0.013 {L-xylitol}  (#4# pH 7.0, 25°C, mutant S136A <13>) <13>
+KM	#4# 0.005 {1,4-dibromo-2,3-butanedione}  (#4# pH 7.0, 25°C, wild-type
+	enzyme <13>) <13>
+KM	#4# 0.0046 {NADPH}  (#4# pH 7.0, 25°C, mutant S136A <13>) <13>
+KM	#4# 0.14 {L-xylulose}  (#4# pH 7.0, 25°C, wild-type enzyme and mutant
+	L143F <13>) <13>
+KM	#4# 0.78 {diacetyl}  (#4# pH 7.0, 25°C, wild-type enzyme <13>) <13>
+KM	#4# 0.23 {L-xylulose}  (#4# pH 7.0, 25°C <14>) <14>
+KM	#4# 0.011 {L-xylitol}  (#4# pH 7.0, 25°C, wild-type enzyme <13>) <13>
+KM	#4# 1.2 {diacetyl}  (#4# pH 7.0, 25°C, mutant H146L <13>) <13>
+KM	#4# 3 {diacetyl}  (#4# pH 7.0, 25°C, mutant Q137M <13>) <13>
+KM	#4# 0.007 {NADPH}  (#4# pH 7.0, 25°C, wild-type enzyme <13>; #4# pH
+	7.0, 25°C <14>) <13,14>
+KM	#4# 0.085 {L-xylitol}  (#4# pH 7.0, 25°C, mutant K153M <13>) <13>
+KM	#4# 0.33 {L-xylulose}  (#4# pH 7.0, 25°C, mutant Q137M <13>) <13>
+KM	#4# 0.0013 {NADP+}  (#4# pH 7.0, 25°C, mutant Y149F <13>) <13>
+KM	#4# 0.36 {NADH}  (#4# pH 7.0, 25°C <14>) <14>
+KM	#4# 8.3 {L-threose}  (#4# pH 7.0, 25°C <14>) <14>
+KM	#4# 1.1 {diacetyl}  (#4# pH 7.0, 25°C <14>) <14>
+KM	#4# 2.7 {DL-glyceraldehyde}  (#4# pH 7.0, 25°C <14>) <14>
+KM	#4# 2.7 {diacetyl}  (#4# pH 7.0, 25°C, mutant
+	N190V/W191S/Q137M/L143F/H146L <13>) <13>
+KM	#4# 11 {diacetyl}  (#4# pH 7.0, 25°C, mutant Q137M/L143F <13>) <13>
+KM	#4# 0.053 {NADPH}  (#4# pH 7.0, 25°C, mutant K153M <13>) <13>
+KM	#4# 16 {diacetyl}  (#4# pH 7.0, 25°C, mutant N190V/W191S <13>) <13>
+KM	#4# 2.6 {diacetyl}  (#4# pH 7.0, 25°C, mutant N190V <13>) <13>
+KM	#4# 0.092 {L-xylulose}  (#4# pH 7.0, 25°C, mutant H146L <13>) <13>
+KM	#4# 3.6 {L-xylulose}  (#4# pH 7.0, 25°C, mutant Q137M/L143F <13>) <13>
+KM	#4# 42 {diacetyl}  (#4# pH 7.0, 25°C, mutant W191S <13>) <13>
+KM	#4# 9.6 {diacetyl}  (#4# pH 7.0, 25°C, mutant Q137M/L143F/H146L <13>)
+	<13>
+KM	#4# 5.2 {diacetyl}  (#4# pH 7.0, 25°C, mutant W191F <13>) <13>
+KM	#4# 6.2 {diacetyl}  (#4# pH 7.0, 25°C, mutant L143F <13>) <13>
+KM	#4# 7.2 {L-xylulose}  (#4# pH 7.0, 25°C, mutant W191F <13>) <13>
+KM	#4# 0.0099 {L-xylitol}  (#4# pH 7.0, 25°C, mutant Y149F <13>) <13>
+KM	#4# 0.139 {1,4-dibromo-2,3-butanedione}  (#4# pH 7.0, 25°C, mutant
+	Y149F <13>) <13>
+KM	#4# 0.117 {NADP+}  (#4# pH 7.0, 25°C, mutant K153M <13>) <13>
+KM	#4# 6.9 {acetoin}  (#4# pH 7.0, 25°C <14>) <14>
+KM	#4# 0.00067 {NADP+}  (#4# pH 7.0, 25°C, mutant S136A <13>) <13>
+KM	#4,9# 6.3 {D-ribulose}  (#4,9# pH 7.0, 25°C <14>) <14>
+KM	#7# 0.0026 {NADPH}  <21>
+KM	#7# 150 {D-ribulose}  <21>
+KM	#7# 0.153 {NADP+}  <21>
+KM	#7# 1239 {xylitol}  <21>
+KM	#8# 0.03 {NADPH}  <8>
+KM	#8# 0.13 {NADP+}  <8>
+KM	#8# 17 {L-xylulose}  <8>
+KM	#8# 25 {L-xylulose}  (#8# pH 7.0, 22°C <32>) <32>
+KM	#8# 925 {xylitol}  <8>
+KM	#9# 0.26 {L-xylulose}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 0.003 {NADPH}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 0.2 {diacetyl}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 0.12 {NADH}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 3.3 {acetoin}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 4.3 {L-threose}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 2.7 {D-threose}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 0.91 {NAD+}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 3.9 {D-erythrose}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 2.9 {L-erythrulose}  (#9# pH 7.0, 25°C <14>) <14>
+KM	#9# 5.1 {DL-glyceraldehyde}  (#9# pH 7.0, 25°C <14>) <14>
+
+PH_OPTIMUM
+PHO	#1# 7.5 (#1# approximately <6>) <6>
+PHO	#1,2,3,4,7,18,19,20,21,22,23,24,25# 7 (#2,3,4,18,20,21,22,23,25# assay
+	at <11,13,14,17,34>; #24# reduction reaction <33>; #7# reductase
+	activity <21>; #19# forward, reduction reaction <15>)
+	<1,11,13,14,15,17,21,33,34>
+PHO	#13# 8 <35>
+PHO	#7,19,24# 9 (#24# oxidation reaction <33>; #7# oxidase activity <21>;
+	#19# reverse, oxidation reaction <15>) <15,21,33>
+PHO	#8# 6.5 (#8# reduction of L-xylulose <8>) <8>
+PHO	#8# 10-11 (#8# oxidation of xylitol <8>) <8>
+
+PH_RANGE
+PHR	#13# 6-8 (#13# 92% of maximal activity at pH 6.0, 70% at pH 8.0, 60% at
+	pH 9.0, and maximal activity at pH 8.0 <35>) <35>
+PHR	#7# 4.5-8.5 (#7# pH 4.5: about 55% of maximal activity, pH 8.5: about
+	70% of maximal activity, reductase activity <21>) <21>
+PHR	#7# 7-10.5 (#7# pH 7.0: about 40% of maximal activity, pH 10.5: about
+	60% of maximal activity, oxidase activity <21>) <21>
+PHR	#8# 5-8.5 (#8# reduction of L-xylulose <8>) <8>
+PHR	#8# 8-11.5 (#8# oxidation of xylitol <8>) <8>
+
+SPECIFIC_ACTIVITY
+SA	#12# 0.23 (#12# xylitol dehydrogenase activity <4>) <4>
+SA	#13# 0.026 (#13# crude enzyme extract, induced cells, pH 8.0, 40°C
+	<35>) <35>
+SA	#15# 14.11 (#15# recombinant strains harboring genes Xr and mutated
+	XDH, pH and temperature not specified in the publication <37>) <37>
+SA	#22# 143.0 (#22# purified native enzyme, L-xylulose reductase activity
+	<14>) <14>
+SA	#23# 642.0 (#23# purified native enzyme, L-xylulose reductase activity
+	<14>) <14>
+SA	#8# 1.4 (#8# substrate ribulose, pH 7.0, 22°C <32>) <32>
+SA	#8# 1.0 (#8# substrate xylitol, pH 7.0, 22°C <32>) <32>
+SA	#8# 200.0 (#8# L-xylulose reduction, NADPH <8>) <8>
+SA	#8# 1.8 (#8# substrate L-xylulose, pH 7.0, 22°C <32>) <32>
+SA	#8# 33.0 (#8# xylitol oxidation, NADP+ <8>) <8>
+
+TEMPERATURE_OPTIMUM
+TO	#13# 50 <35>
+TO	#19# 30 (#19# assay at <15>) <15>
+TO	#2,3,4,18,20,21,22,23# 25 (#2,3,4,18,20,21,22,23# assay at
+	<11,13,14,17>) <11,13,14,17>
+TO	#7# 37 (#7# reductase activity <21>) <21>
+
+TEMPERATURE_RANGE
+TR	#13# 40-70 (#13# about 40% of maximal activity at 40°C, 7% at 70°C, and
+	maximal activity at 50°C <35>) <35>
+TR	#7# 15-55 (#7# 15°C: about 65% of maximal activity, 55°C: about 60% of
+	maximal activity, reductase activity <21>) <21>
+
+COFACTOR
+CF	#1,2,3,4,6,7,8,13,15,18,20,21,22,23,24# NADP+ (#13# specific for <35>;
+	#1# B-specific hydrogen transfer from xylitol to NADP+ <2>; #1# much
+	more effective than NAD+ <6>; #3# binding structure determination <17>;
+	#18,20,21,22,23# preferred cofactor, reverse reaction <14>; #15#
+	engineered enzyme with altered cofactor specificity <37>)
+	<2,5,6,8,11,13,14,17,20,21,33,35,37>
+CF	#1,6,8,12,15,18,19,20,21,22,23# NAD+ (#1# much less effective than
+	NADP+ <6>; #1,15# preference for, coenzyme-binding domain is a
+	beta-alpha-beta-fold typical for NAD+ dehydrogenases <2,9>; #8# no
+	activity with <8>; #19# specific for, no activity with NADP+ <15>)
+	<2,4,5,6,8,9,14,15>
+CF	#1,7,8,13,25# more (#25# no activity with NADH <34>; #8# determination
+	of Ki of NADP+ and NADPH in competition with each other <8>; #13# no
+	activity with NAD+ <35>; #7# the enzyme does not accept NAD+ <21>; #8#
+	no activitiy with NADH <32>) <1,8,21,32,34,35>
+CF	#18,19,20,21,22,23# NADH (#19# specific for no activity with NADPH
+	<15>) <14,15>
+CF	#2,3,4,5,8,10,15,17,18,20,21,22,23,24,25# NADPH (#10# dependent on
+	<30,31>; #8# preference for <8>; #3# binding structure determination
+	<17>; #18,20,21,22,23# preferred cofactor, forward reaction <14>; #15#
+	has a higher affinity for NADPH than for NADH <26>)
+	<8,11,12,13,14,17,18,20,25,26,27,28,29,30,31,32,33,34>
+
+INHIBITORS
+IN	#1# p-chloromercuribenzoate <1>
+IN	#1# phosphate buffer <7>
+IN	#1# iodoacetate (#1# not inhibitory <1>; #1# complete inhibition of
+	L-xylulose reductive activity at 5 mM <6>) <1,6>
+IN	#1# fluoride (#1# 50 mM <7>) <7>
+IN	#1# aminopyrine (#1# 70 mM <7>) <7>
+IN	#1,3,10,18,20,21,23# more (#1# not: EDTA <1>; #23# acetic acid is a
+	poor inhibitor <14>; #20# acetic acid, acetoacetic acid, 3-OH-butyric
+	acid, and octanoic acid are poor inhibitors <14>; #21# acetic acid,
+	oxaloacetic acid, and octanoic acid are poor inhibitors <14>; #18#
+	acetic acid, threonic acid, and octanoic acid are poor inhibitors <14>;
+	#3# modelling of structure-based inhibitor binding into the active site
+	<12>; #10# the level of xylose reductase decreases when the initial
+	xylose concentration is increased from 30 to 70 g/l <31>) <1,12,14,31>
+IN	#18,20,21,23# pentanoic acid (#21# 50% inhibition at 0.5 mM <14>; #18#
+	50% inhibition at 0.15 mM <14>; #23# 50% inhibition at 0.20 mM <14>;
+	#20# 50% inhibition at 0.38 mM <14>) <14>
+IN	#18,20,21,23# Pyruvic acid (#20# 50% inhibition at 1.5 mM <14>; #18#
+	50% inhibition at 0.50 mM <14>; #23# 50% inhibition at 0.88 mM <14>;
+	#21# 50% inhibition at 1.0 mM <14>) <14>
+IN	#18,20,21,23# heptanoic acid (#21# 50% inhibition at 2.5 mM <14>; #23#
+	50% inhibition at 1.4 mM <14>; #18# 50% inhibition at 0.38 mM <14>;
+	#20# 50% inhibition at 2.0 mM <14>) <14>
+IN	#18,20,21,23# propionic acid (#23# 50% inhibition at 0.096 mM <14>;
+	#21# 50% inhibition at 0.13 mM <14>; #20# 50% inhibition at 0.17 mM
+	<14>; #18# 50% inhibition at 0.38 mM <14>) <14>
+IN	#18,20,21,23# hexanoic acid (#18# 50% inhibition at 0.10 mM <14>; #23#
+	50% inhibition at 0.40 mM <14>; #21# 50% inhibition at 0.42 mM <14>;
+	#20# 50% inhibition at 1.1 mM <14>) <14>
+IN	#18,20,23# oxaloacetic acid (#20,23# 50% inhibition at 2.5 mM <14>;
+	#18# 50% inhibition at 0.91 mM <14>) <14>
+IN	#18,21,23# acetoacetic acid (#21# 50% inhibition at 2.5 mM <14>; #23#
+	50% inhibition at 1.8 mM <14>; #18# 50% inhibition at 0.63 mM <14>) <14>
+IN	#18,21,23# 3-hydroxybutyric acid (#23# 50% inhibition at 1.0 mM <14>;
+	#18# 50% inhibition at 1.1 mM <14>; #21# 50% inhibition at 2.0 mM <14>)
+	<14>
+IN	#20,21,23# threonic acid (#20# 50% inhibition at 1.5 mM <14>; #23# 50%
+	inhibition at 0.75 mM <14>; #21# 50% inhibition at 1.9 mM <14>) <14>
+IN	#23# octanoic acid (#23# 50% inhibition at 2.5 mM <14>) <14>
+IN	#3# cysteine (#3# the addition of cysteine (more than 2 mM) inactivates
+	human L-xylulose reductase and is accompanied by a 10fold decrease in
+	catalytic efficiency, the activity of the cysteine-inactivated enzyme
+	is not recovered by the addition of 10 mM dithiothreitol and
+	2-mercaptoethanol <29>) <29>
+IN	#3# potassium phosphate (#3# when the purified enzyme containing 2 mM
+	2-mercaptoethanol is diluted with 10 mM potassium phosphate pH 7.0, its
+	diacetyl reductase activity is gradually decreased <29>) <29>
+IN	#3,4# 4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid benzyloxyamide
+	(#4# IC50: 0.00023 mM for wild-type enzyme, 0.0019 mM for mutant enzyme
+	L143F, 0.0018 mM for mutant enzyme H146L, 0.0029 mM for mutant enzyme
+	W191S, 0.00079 mM for mutant enzyme W191F <20>) <20>
+IN	#3,4,18,20,21,23# n-butyric acid (#20# 50% inhibition at 0.05 mM <14>;
+	#23# 50% inhibition at 0.026 mM <14>; #21# 50% inhibition at 0.052 mM
+	<14>; #18# 50% inhibition at 0.064 mM <14>; #3# binds to the active
+	site of the enzyme, complex structure determination and analysis <12>;
+	#4# specific, binds to the enzyme-NADP+ complex, the mutant enzymes
+	show altered sensitivity to inhibition, overview <13>) <12,13,14>
+IN	#4# 4-methylthiophene-2-carboxylic acid
+	N'-(2,3,3-trichloroacryloyl)-hydrazide (#4# IC50: 0.0003 mM for
+	wild-type enzyme, 0.00056 mM for mutant enzyme L143F, 0.002 mM for
+	mutant enzyme H146L, 0.0002 mM for mutant enzyme W191S, 0.0022 mM for
+	mutant enzyme W191F <20>) <20>
+
+METALS_IONS
+ME	#1,19# Mg2+ <6,15>
+
+MOLECULAR_WEIGHT
+MW	#12# 136000 (#12# non-denaturing PAGE <4>) <4>
+MW	#14# 102000 (#14# 4D2P, nondenaturing PAGE <3>) <3>
+MW	#16# 40000 (#16# 4 * 40000, about, sequence calculation <10>) <10>
+MW	#4# 26500 (#4# x * 26500 <13>) <13>
+MW	#8# 250000 (#8# gel filtration <8>) <8>
+MW	#8# 32000 (#8# 8 * 32000, SDS-PAGE <8>) <8>
+MW	#9,24# 31000 (#9# x * 31000, SDS-PAGE <16>; #24# x * 31000 <33>) <16,33>
+
+SUBUNITS
+SU	#2# More (#2# the dimeric form is inactive <11>) <11>
+SU	#2,3,4,5,16# tetramer (#16# 4 * 40000, about, sequence calculation
+	<10>; #2,3# amino acid residues Trp242, Glu238, Arg203, and Cys244 are
+	important for tetramer formation <11>) <10,11,18,20>
+SU	#3# dimer (#3# x-ray crystallography <29>) <29>
+SU	#4,9,24# ? (#9# x * 31000, SDS-PAGE <16>; #24# x * 31000 <33>; #4# x *
+	26500 <13>) <13,16,33>
+SU	#8# octamer (#8# 8 * 32000, SDS-PAGE <8>) <8>
+
+APPLICATION
+AP	#13# synthesis (#13# the microalga Chlorella sorokiniana and provide a
+	target for genetic engineering to improve D-xylose utilization for
+	microalgal lipid production <35>) <35>
+AP	#3# pharmacology (#3# enzyme is a target for design and development of
+	potent and specific structure-based inhibitors binding in the active
+	site <12>) <12>
+
+ENGINEERING
+EN	#11,15,24,25# more (#15# several mutants per site-directed mutagenesis
+	to change the coenzyme binding specificity, mutants showed reduced NAD+
+	specificity <9>; #24# deletion of gene lxr3 leads to a significant
+	reduction in NADPH specific LXR activity after replacement to both
+	media containing L-arabinose <33>; #25# library screening and isolation
+	of a dhs-21 deletion mutant <34>; #11# engineering of strain YZJ088 for
+	ethanol production via the NADP(H)-preferring xylose reductase-xylitol
+	dehydrogenase pathway in the thermotolerant yeast Kluyveromyces
+	marxianus, method overview <36>; #15# enzyme XDH is changed from
+	NAD+-dependent to NADP+-dependent, xylitol accumulation is reduced and
+	ethanol production improved using protein engineering for reversing the
+	dependency of XDH from NAD+ to NADP+. Construction of a set of
+	recombinant Saccharomyces cerevisiae carrying a mutated strictly
+	NADPH-dependent XR and NADP+-dependent XDH genes with overexpression of
+	endogenous xylulokinase (XK), effects of complete NADPH/NADP+ recycling
+	on ethanol fermentation and xylitol accumulation, overview. The mutated
+	strains demonstrate 0% and 10% improvement in ethanol production, and
+	reduced xylitol accumulation, ranging 34.4-54.7% compared with the
+	control strain <37>) <9,33,34,36,37>
+EN	#15# S96C/S99C/Y102C/D207A/I208R/F209S (#15# mutation produces a
+	further 4fold improvement in the kcat/Km for NADP+ compared to mutant
+	enzyme D207/I208R/F209S <24>) <24>
+EN	#15# D207/I208R/F209S (#15# kcat/Km of mutant enzyme for NAD+ dropps
+	15fold compared with the native enzyme, kcat/Km for NADP+ increases up
+	to 4100fold <24>) <24>
+EN	#2# D238E (#2# site-directed mutagenesis, mutant exists in dimeric form
+	at low temperature like the wild-type enzyme resulting in cold
+	inactivation <11>) <11>
+EN	#2# L242W (#2# site-directed mutagenesis, mutation leads to partial
+	prevention of cold inactivation, mutant exists in dimeric and
+	tetrameric form at low temperature <11>) <11>
+EN	#2# T244C (#2# site-directed mutagenesis, mutant exists in dimeric form
+	at low temperature like the wild-type enzyme resulting in cold
+	inactivation <11>) <11>
+EN	#2# D238E/L242W (#2# site-directed mutagenesis, mutation leads to
+	complete prevention of cold inactivation, mutant exists in tetrameric
+	form at low temperature <11>) <11>
+EN	#2# L242W/T244C (#2# site-directed mutagenesis, double mutation leads
+	to partial prevention of cold inactivation, mutant exists in dimeric
+	and tetrameric form at low temperature <11>) <11>
+EN	#2# D238E/L242W/T244C (#2# site-directed mutagenesis, double mutation
+	leads to partial prevention of cold inactivation, mutant exists in
+	dimeric and tetrameric form at low temperature <11>) <11>
+EN	#3# N107L (#3# site-directed mutagenesis, active site residue mutant,
+	inactive <17>) <17>
+EN	#3# N107D (#3# site-directed mutagenesis, active site residue mutant,
+	inactive <17>) <17>
+EN	#4# Y149F (#4# site-directed mutagenesis, active site mutant, complete
+	loss of activity <13>) <13>
+EN	#4# K153M (#4# site-directed mutagenesis, active site mutant, complete
+	loss of activity <13>) <13>
+EN	#4# W191F (#4# site-directed mutagenesis, altered activity <13>; #4#
+	IC50-value for 4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide is 3.4fold higher than wild-type value, IC50-value for
+	4-methylthiophene-2-carboxylic acid
+	N-(2,3,3-trichloroacryloyl)-hydrazide is 7.3fold higher than wild-type
+	value <20>) <13,20>
+EN	#4# S136A (#4# site-directed mutagenesis, active site mutant, complete
+	loss of activity <13>) <13>
+EN	#4# N190V/W191S (#4# site-directed mutagenesis, almost complete loss of
+	L-xylulose reductase activity <13>) <13>
+EN	#4# Q137M/L143F (#4# site-directed mutagenesis, increased Km for
+	L-xylulose compared to the wild-type <13>) <13>
+EN	#4# Q137M/L143F/H146L (#4# site-directed mutagenesis, almost complete
+	loss of L-xylulose reductase activity, mutant shows 3-ketosteroid
+	reductase activity <13>) <13>
+EN	#4# N190V/W191S/Q137M/L143F/H146L (#4# site-directed mutagenesis,
+	almost complete loss of L-xylulose reductase activity, mutant shows
+	high 3-ketosteroid reductase activity <13>) <13>
+EN	#4# Q137M (#4# site-directed mutagenesis, altered activity, stable
+	against cold inactivation <13>) <13>
+EN	#4# Q137M/F241L (#4# site-directed mutagenesis, altered activity,
+	sensitive to cold inactivation like the wild-type enzyme <13>) <13>
+EN	#4# L143F (#4# site-directed mutagenesis, altered activity <13>; #4#
+	IC50-value for 4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide is 8.3fold higher than wild-type value, IC50-value for
+	4-methylthiophene-2-carboxylic acid
+	N-(2,3,3-trichloroacryloyl)-hydrazide is 1.9fold higher than wild-type
+	value <20>) <13,20>
+EN	#4# H146L (#4# site-directed mutagenesis, altered activity <13>; #4#
+	IC50-value for 4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide is 7.8fold higher than wild-type value, IC50-value for
+	4-methylthiophene-2-carboxylic acid
+	N-(2,3,3-trichloroacryloyl)-hydrazide is 6.7fold higher than wild-type
+	value <20>) <13,20>
+EN	#4# N190V (#4# site-directed mutagenesis, altered activity <13>) <13>
+EN	#4# W191S (#4# site-directed mutagenesis, altered activity <13>; #4#
+	IC50-value for 4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide is 13fold higher than wild-type value, IC50-value for
+	4-methylthiophene-2-carboxylic acid
+	N-(2,3,3-trichloroacryloyl)-hydrazide is 1.5fold lower than wild-type
+	value <20>) <13,20>
+
+CLONED
+CL	#2# (expression of wild-type and mutant enzymes in Escherichia coli
+	strain BL21(DE3)) <11>
+CL	#2# (transgenic mice over-expressing dicarbonyl/L-xylulose reductase
+	gene crossed with KK-A(y) diabetic model mice serve as an animal model
+	for the metabolism of renal carbonyl compounds) <19>
+CL	#3# (expression of wild-type and mutant enzymes in Escherichia coli)
+	<17>
+CL	#3# (expressed in Escherichia coli BL21 (DE3) cells) <29>
+CL	#4# (expression of wild-type and mutant enzymes in Escherichia coli)
+	<13>
+CL	#7# (expressed in Escherichia coli as a His6 tag fusion protein) <21>
+CL	#8# (expression in Saccharomyces cerevisiae) <32>
+CL	#12# (Tn5 transposon transfer) <4>
+CL	#15# (expressed in Saccharomyces cerevisiae) <27>
+CL	#15# (a recombinant Saccharomyces cerevisiae strain D-XR/ARSdR/XK, in
+	which protein engineered NADP+-dependent XDH is expressed, shows 40%
+	increased ethanol production and 23% decrease in xylitol excretion as
+	compared with the reference strain D-XR/XDH/XK expressing the wild-type
+	XDH) <23>
+CL	#15# (expression of Pichia stipitis mutated XYL2 (D207/I208R/F209S or
+	XYL2 S96C/S99C/Y102C/D207A/I208R/F209S) in Saccharomyces cerevisiae)
+	<24>
+CL	#15# (expressed in Saccharomyces cerevisiae strain MA-R4) <25>
+CL	#15# (expressed in Saccharomyces cerevisiae strains MA-N2, MA-N3,
+	MA-N4, and MA-N5) <26>
+CL	#15# (recombinant overexpression of strictly NADPH-dependent XR with
+	mutated strictly NADP+-dependent XDH leading to increased bioethanol
+	production and decreased xylitol accumulation in Saccharomyces
+	cerevisiae strain D452-2 resulting in mutant strains SK-N1 to SK-N4)
+	<37>
+CL	#17# (expressed in Saccharomyces cerevisiae) <28>
+CL	#19# (construction of a cDNA library, DNA sequence determination and
+	analysis, subcloning in Escherichia coli DH5alpha, overexpression as
+	His-tagged enzyme in Saccharomyces cerevisiae strain CEN.PK2) <15>
+CL	#22# (DNA sequence determination and analysis, expression in
+	Escherichia coli strain BL21(DE3)) <14>
+CL	#24# (gene lxr3, phylogenetic analysis, cloning in Escherichia coli
+	strain JM109, expression of N-terminal His-tagged in Saccharomyces
+	cerevisiae strain CEN.PK2-1D) <33>
+CL	#25# (gene dhs-21, DNA and amino acid sequence determination and
+	analysis, the dhs-21 gene is physically mapped to the cosmid R11D1
+	between the sma-1 and mes-4genes on chromosome V, expression of
+	His6-tagged enzyme. Spatial and temporal expression pattern of the
+	DHS-21-GFP construct in transgenic worms, overview) <34>
+CL	#274945# (DNA sequence determination and analysis, expression in
+	Escherichia coli strain BL21(DE3)) <14>
+
+CRYSTALLIZATION
+CR	#2# <18>
+CR	#3# <18>
+CR	#3# (structure of the biological tetramer of human L-xylulose reductase
+	in complex with NADP+ and the competitive inhibitor
+	4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid benzyloxyamide, vapor
+	diffusion method) <20>
+CR	#3# (vapour diffusion method, using 15% PEG 8000, 0.05 M potassium
+	phosphate and 0.1 M MES buffer, pH 6.5) <29>
+CR	#18# (18 mg/ml purified enzyme complexed with NADPH, in 10 mM Tris-HCl,
+	pH 7.5, 2 mM 2-mercaptoethanol, 20% glycerol, replacement buffer is 10
+	mM Tris-HCl, pH 7.5, 2 mM 2-mercaptoethanol, mixed with 12.9 mM NADPH,
+	in a molar ratio of enzyme and cofactor of 1:8, equal volume of 0.003
+	ml of enzyme complex mixture and well solution, containing 15% PEG
+	8000, 50 mM potassium phosphate, and 0.1 M MES, pH 6.5, 1 week, X-ray
+	diffraction structure determination and analysis, molecular replacement
+	method, 1.96 A resolution, molecular modeling) <17>
+CR	#18# (crystal structure analysis and modelling) <11>
+
+PURIFICATION
+PU	#1# (partial) <1>
+PU	#2# (recombinant wild-type and mutant enzymes from Escherichia coli)
+	<11>
+PU	#3# <29>
+PU	#7# (recombinant enzyme) <21>
+PU	#8# <8>
+PU	#9# (recombinant enzyme from Escherichia coli, native from liver) <14>
+PU	#12# (partial from strain DM101) <4>
+PU	#14# (strain 4D2P, partial) <3>
+PU	#16# <10>
+PU	#19# (recombinant His-tagged enzyme from Saccharomyces cerevisiae by
+	nickel affinity chromatography) <15>
+PU	#22# (recombinant enzyme from Escherichia coli, native from liver) <14>
+PU	#24# (recombinant N-terminal His-tagged enzyme from Saccharomyces
+	cerevisiae strain CEN.PK2-1D by nickel affinity chromatography) <33>
+PU	#274945# (recombinant enzyme from Escherichia coli) <14>
+
+GENERAL_STABILITY
+GS	#1# (inactivation during dialysis) <6>
+
+PH_STABILITY
+PHS	#1# 9 (#1# room temperature, several h stable <6>) <6>
+PHS	#1# 4 (#1# 2°C, 2 h stable <6>) <6>
+
+STORAGE_STABILITY
+SS	#1# (2°C, aqueous solution, many weeks) <6>
+SS	#1# (frozen, ammonium sulfate precipitate, several days) <1>
+SS	#1# (0°C, mitochondria, 0.15 M KCl- 0.01 M NaHCO3, minimum 2 days) <7>
+SS	#8# (4°C, Tris-HCl 20 mM, pH 7.0, at leat several weeks) <8>
+
+TEMPERATURE_STABILITY
+TS	#1# 50 (#1# 20 min stable <6>) <6>
+TS	#2,3,4,5# -999 (#2# dissociation into inactive dimers at low
+	temperatures <11>; #3# stable at low temperatures <11>; #2,4,5# rapidly
+	dissociates into the inactive dimeric form at low temperature <18>)
+	<11,18>
+
+REFERENCE
+RF	<1> Hickman, J.; Ashwell, G.: A sensitive and stereospecific enzymatic
+	assay for xylulose. J. Biol. Chem. (1959) 234, 758-761.
+	{Pubmed:13654257} (c)
+RF	<2> Alizade, M.A.; Brendel, K.; Gaede, K.: Chirality of
+	xylitol-oxidizing enzymes from mammalian liver. FEBS Lett. (1976) 67,
+	41-44. {Pubmed:8339} (c)
+RF	<3> Doten, R.C.; Mortlock, R.P.: Inducible xylitol dehydrogenases in
+	enteric bacteria. J. Bacteriol. (1985) 162, 845-848. {Pubmed:3886639}
+	(c)
+RF	<4> Doten, R.C.; Mortlock, R.P.: Characterization of xylitol-utilizing
+	mutants of Erwinia uredovora. J. Bacteriol. (1985) 161, 529-533.
+	{Pubmed:2981816}
+RF	<5> Lowe, C.R.; Mosbach, K.; Dean, P.D.G.: Some applications of
+	insolubilised cofactors to the purification of pyridine
+	nucleotide-dependent dehydrogenases. Biochem. Biophys. Res. Commun.
+	(1972) 48, 1004-1010. {Pubmed:4404621}
+RF	<6> Hollmann, S.; Touster, O.: The L-xylulose-xylitol enzyme and other
+	polyol dehydrogenases of guinea pig liver mitochondria. J. Biol. Chem.
+	(1957) 225, 87-102. {Pubmed:13416220}
+RF	<7> Touster, O.; Reynolds, V.H.; Hutcheson, R.M.: The reduction of
+	L-xylulose to xylitol by guinea pig liver mitochondria. J. Biol. Chem.
+	(1954) 221, 697-709. {Pubmed:13357463}
+RF	<8> Witteveen, C.F.B.; Weber, F.; Busink, R.; Visser, J.: Isolation and
+	characterization of two xylitol dehydrogenases from Aspergillus niger.
+	Microbiology (1994) 140, 1679-1685. {Pubmed:}
+RF	<9> Metzger, M.H.; Hollenberg, C.P.: Amino acid substitutions in the
+	yeast Pichia stipitis xylitol dehydrogenase coenzyme-binding domain
+	affect the coenzyme specificity. Eur. J. Biochem. (1995) 228, 50-54.
+	{Pubmed:7883010}
+RF	<10> Ishikura, S.; Isaji, T.; Usami, N.; Kitahara, K.; Nakagawa, J.;
+	Hara, A.: Molecular cloning, expression and tissue distribution of
+	hamster diacetyl reductase. Identity with L-xylulose reductase. Chem.
+	Biol. Interact. (2001) 130-132, 879-889. {Pubmed:11306103}
+RF	<11> Ishikura, S.; Usami, N.; El-Kabbani, O.; Hara, A.: Structural
+	determinant for cold inactivation of rodent L-xylulose reductase.
+	Biochem. Biophys. Res. Commun. (2003) 308, 68-72. {Pubmed:12890481}
+RF	<12> Carbone, V.; Darmanin, C.; Ishikura, S.; Hara, A.; El-Kabbani, O.:
+	Structure-based design of inhibitors of human L-xylulose reductase
+	modelled into the active site of the enzyme. Bioorg. Med. Chem. Lett.
+	(2003) 13, 1469-1474. {Pubmed:12668014}
+RF	<13> Ishikura, S.; Isaji, T.; Usami, N.; Nakagawa, J.; El-Kabbani, O.;
+	Hara, A.: Identification of amino acid residues involved in substrate
+	recognition of L-xylulose reductase by site-directed mutagenesis. Chem.
+	Biol. Interact. (2003) 143-144, 543-550. {Pubmed:12604240}
+RF	<14> Nakagawa, J.; Ishikura, S.; Asami, J.; Isaji, T.; Usami, N.; Hara,
+	A.; Sakurai, T.; Tsuritani, K.; Oda, K.; Takahashi, M.; Yoshimoto, M.;
+	Otsuka, N.; Kitamura, K.: Molecular characterization of mammalian
+	dicarbonyl/L-xylulose reductase and its localization in kidney. J.
+	Biol. Chem. (2002) 277, 17888-17891. {Pubmed:11882650}
+RF	<15> Verho, R.; Putkonen, M.; Londesborough, J.; Penttilä, M.; Richard,
+	P.: A novel NADH-linked L-xylulose reductase in the L-arabinose
+	catabolic pathway of yeast. J. Biol. Chem. (2004) 279, 14746-14751.
+	{Pubmed:14736891}
+RF	<16> Saint-Cyr, A.; Legare, C.; Frenette, G.; Gaudreault, C.; Sullivan,
+	R.: P26h and dicarbonyl/L-xylulose reductase are two distinct proteins
+	present in the hamster epididymis. Mol. Reprod. Dev. (2004) 69,
+	137-145. {Pubmed:15293214}
+RF	<17> El-Kabbani, O.; Ishikura, S.; Darmanin, C.; Carbone, V.; Chung,
+	R.P.T.; Usami, N.; Hara, A.: Crystal structure of human L-xylulose
+	reductase holoenzyme: probing the role of Asn107 with site-directed
+	mutagenesis. Proteins (2004) 55, 724-732. {Pubmed:15103634}
+RF	<18> Matsunaga, T.; Shintani, S.; Hara, A.: Multiplicity of mammalian
+	reductases for xenobiotic carbonyl compounds. Drug Metab.
+	Pharmacokinet. (2006) 21, 1-18. {Pubmed:16547389}
+RF	<19> Sudo, T.; Ishii, A.; Asami, J.; Uematsu, Y.; Saitoh, M.; Nakamura,
+	A.; Tada, N.; Ohnuki, T.; Komurasaki, T.; Nakagawa, J.: Transgenic mice
+	over-expressing dicarbonyl/L-xylulose reductase gene crossed with
+	KK-A(y) diabetic model mice: an animal model for the metabolism of
+	renal carbonyl compounds. Exp. Anim. (2005) 54, 385-394.
+	{Pubmed:16365515}
+RF	<20> El-Kabbani, O.; Carbone, V.; Darmanin, C.; Ishikura, S.; Hara, A.:
+	Structure of the tetrameric form of human L-xylulose reductase: probing
+	the inhibitor-binding site with molecular modeling and site-directed
+	mutagenesis. Proteins (2005) 60, 424-432. {Pubmed:15906319}
+RF	<21> Nair, N.; Zhao, H.: Biochemical characterization of an L-Xylulose
+	reductase from Neurospora crassa. Appl. Environ. Microbiol. (2007) 73,
+	2001-2004. {Pubmed:17261518}
+RF	<22> Matsunaga, T.; Kamiya, T.; Sumi, D.; Kumagai, Y.; Kalyanaraman,
+	B.; Hara, A.: L-Xylulose reductase is involved in
+	9,10-phenanthrenequinone-induced apoptosis in human T lymphoma cells.
+	Free Radic. Biol. Med. (2008) 44, 1191-1202. {Pubmed:18206670}
+RF	<23> Matsushika, A.; Watanabe, S.; Kodaki, T.; Makino, K.; Sawayama,
+	S.: Bioethanol production from xylose by recombinant Saccharomyces
+	cerevisiae expressing xylose reductase, NADP(+)-dependent xylitol
+	dehydrogenase, and xylulokinase. J. Biosci. Bioeng. (2008) 105,
+	296-299. {Pubmed:18397783}
+RF	<24> Hou, J.; Shen, Y.; Li, X.P.; Bao, X.M.: Effect of the reversal of
+	coenzyme specificity by expression of mutated Pichia stipitis xylitol
+	dehydrogenase in recombinant Saccharomyces cerevisiae. Lett. Appl.
+	Microbiol. (2007) 45, 184-189. {Pubmed:17651216}
+RF	<25> Matsushika, A.; Inoue, H.; Watanabe, S.; Kodaki, T.; Makino, K.;
+	Sawayama, S.: Efficient bioethanol production by a recombinant
+	flocculent Saccharomyces cerevisiae strain with a genome-integrated
+	NADP+-dependent xylitol dehydrogenase gene. Appl. Environ. Microbiol.
+	(2009) 75, 3818-3822. {Pubmed:19329659}
+RF	<26> Matsushika, A.; Watanabe, S.; Kodaki, T.; Makino, K.; Inoue, H.;
+	Murakami, K.; Takimura, O.; Sawayama, S.: Expression of protein
+	engineered NADP+-dependent xylitol dehydrogenase increases ethanol
+	production from xylose in recombinant Saccharomyces cerevisiae. Appl.
+	Microbiol. Biotechnol. (2008) 81, 243-255. {Pubmed:18751695}
+RF	<27> Hou, J.; Vemuri, G.N.; Bao, X.; Olsson, L.: Impact of
+	overexpressing NADH kinase on glucose and xylose metabolism in
+	recombinant xylose-utilizing Saccharomyces cerevisiae. Appl. Microbiol.
+	Biotechnol. (2009) 82, 909-919. {Pubmed:19221731}
+RF	<28> Krahulec, S.; Klimacek, M.; Nidetzky, B.: Engineering of a matched
+	pair of xylose reductase and xylitol dehydrogenase for xylose
+	fermentation by Saccharomyces cerevisiae. Biotechnol. J. (2009) 4,
+	684-694. {Pubmed:19452479}
+RF	<29> Zhao, H.T.; Endo, S.; Ishikura, S.; Chung, R.; Hogg, P.J.; Hara,
+	A.; El-Kabbani, O.: Structure/function analysis of a critical disulfide
+	bond in the active site of L-xylulose reductase. Cell. Mol. Life Sci.
+	(2009) 66, 1570-1579. {Pubmed:19337691}
+RF	<30> Branco, R.; dos Santos, J.; Sarrouh, B.; Rivaldi, J.; Pessoa Jr.,
+	A.; da Silva, S.: Profiles of xylose reductase, xylitol dehydrogenase
+	and xylitol production under different oxygen transfer volumetric
+	coefficient values. J. Chem. Technol. Biotechnol. (2009) 84, 326-330.
+	{Pubmed:}
+RF	<31> Gurpilhares, D.B.; Hasmann, F.A.; Pessoa, A.; Roberto, I.C.: The
+	behavior of key enzymes of xylose metabolism on the xylitol production
+	by Candida guilliermondii grown in hemicellulosic hydrolysate. J. Ind.
+	Microbiol. Biotechnol. (2009) 36, 87-93. {Pubmed:18830730}
+RF	<32> Mojzita, D.; Vuoristo, K.; Koivistoinen, O.M.; Penttilae, M.;
+	Richard, P.: The true L-xylulose reductase of filamentous fungi
+	identified in Aspergillus niger. FEBS Lett. (2010) 584, 3540-3544.
+	{Pubmed:20654618}
+RF	<33> Metz, B.; Mojzita, D.; Herold, S.; Kubicek, C.P.; Richard, P.;
+	Seiboth, B.: A novel L-xylulose reductase essential for L-arabinose
+	catabolism in Trichoderma reesei. Biochemistry (2013) 52, 2453-2460.
+	{Pubmed:23506391}
+RF	<34> Son, l.e..T.; Ko, K.M.; Cho, J.H.; Singaravelu, G.; Chatterjee,
+	I.; Choi, T.W.; Song, H.O.; Yu, J.R.; Park, B.J.; Lee, S.K.; Ahnn, J.:
+	DHS-21, a dicarbonyl/L-xylulose reductase (DCXR) ortholog, regulates
+	longevity and reproduction in Caenorhabditis elegans. FEBS Lett. (2011)
+	585, 1310-1316. {Pubmed:21477590}
+RF	<35> Zheng, Y.; Yu, X.; Li, T.; Xiong, X.; Chen, S.: Induction of
+	D-xylose uptake and expression of NAD(P)H-linked xylose reductase and
+	NADP+-linked xylitol dehydrogenase in the oleaginous microalga
+	Chlorella sorokiniana. Biotechnol. Biofuels (2014) 7, 125.
+	{Pubmed:25342968}
+RF	<36> Zhang, B.; Zhang, J.; Wang, D.; Gao, X.; Sun, L.; Hong, J.: Data
+	for rapid ethanol production at elevated temperatures by engineered
+	thermotolerant Kluyveromyces marxianus via the NADP(H)-preferring
+	xylose reductase-xylitol dehydrogenase pathway. Data Brief (2015) 5,
+	179-186. {Pubmed:26543879}
+RF	<37> Khattab, S.M.; Saimura, M.; Kodaki, T.: Boost in bioethanol
+	production using recombinant Saccharomyces cerevisiae with mutated
+	strictly NADPH-dependent xylose reductase and NADP+-dependent xylitol
+	dehydrogenase. J. Biotechnol. (2013) 165, 153-156. {Pubmed:23578809}
+
+KI_VALUE
+KI	#3# 0.00037 {4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide}  (#3# competitive with respect to xylitol <20>) <20>
+KI	#3# 0.00044 {4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide}  (#3# uncompetitive with respect to NADPH <20>) <20>
+
+IC50_VALUE
+IC50	#4# 0.0003 {4-methylthiophene-2-carboxylic acid
+	N'-(2,3,3-trichloroacryloyl)-hydrazide}  (#4# IC50: 0.0003 mM for
+	wild-type enzyme, 0.00056 mM for mutant enzyme L143F, 0.002 mM for
+	mutant enzyme H146L, 0.0002 mM for mutant enzyme W191S, 0.0022 mM for
+	mutant enzyme W191F <20>) <20>
+IC50	#4# 0.00023 {4-methyl-[1,2,3]-thiadiazole-5-carboxylic acid
+	benzyloxyamide}  (#4# IC50: 0.00023 mM for wild-type enzyme, 0.0019 mM
+	for mutant enzyme L143F, 0.0018 mM for mutant enzyme H146L, 0.0029 mM
+	for mutant enzyme W191S, 0.00079 mM for mutant enzyme W191F <20>) <20>
+
+KCAT_KM_VALUE
+KKM	#25# 7.55 (#25# pH 7.0, temperature not specified in the publication
+	<34>) <34>
+KKM	#25# 0.36 (#25# pH 7.0, temperature not specified in the publication
+	<34>) <34>
+KKM	#25# 0.47 (#25# pH 7.0, temperature not specified in the publication
+	<34>) <34>
+KKM	#25# 3.42 (#25# pH 7.0, temperature not specified in the publication
+	<34>) <34>
+KKM	#25# 6.75 (#25# pH 7.0, temperature not specified in the publication
+	<34>) <34>
+KKM	#25# 19.03 (#25# pH 7.0, temperature not specified in the publication
+	<34>) <34>
+
+EXPRESSION
+EXP	#25# down (#25# knock-down of daf-16 and elt-2 transcription factors
+	affects dhs-21 expression <34>) <34>
+EXP	#8,13,24# up (#8# expression is upregulated upon growth on L-arabinose
+	<32>; #24# transcription of lxr3 is specifically induced by L-arabinose
+	and L-arabitol <33>; #13# D-xylose uptake induces the enzyme, together
+	with the D-xylose reductase, EC 1.1.1.307 <35>) <32,33,35>
+
+GENERAL_INFORMATION
+GI	#13# more (#13# the transportation of D-xylose across the cell membrane
+	of Chlorella sorokiniana is realized by an inducible hexose symporter.
+	The uptake of D-xylose subsequently activates the expression of key
+	catalytic enzymes that enables D-xylose entering central metabolism
+	<35>) <35>
+GI	#15,24,25# metabolism (#25# dicarbonyl/L-xylulose reductase converts
+	L-xylulose into xylitol, and reduces various alpha-dicarbonyl
+	compounds, performing a dual role in carbohydrate metabolism and
+	detoxification <34>; #24# the enzyme catalyzes the NADPH-dependent
+	reduction of L-xylulose to xylitol in L-arabinose and glucuronic acid
+	catabolism <33>; #15# the redox balance between xylose reductase (XR)
+	and xylitol dehydrogenase (XDH) is thought to be an important factor in
+	effective xylose fermentation <37>) <33,34,37>
+GI	#24# evolution (#24# L-xylulose reductases belong to the superfamily of
+	short chain dehydrogenases and reductases (SDRs) <33>) <33>
+GI	#24,25# malfunction (#24# deletion of lxr3 affects growth on
+	L-arabinose and L-arabitol and reduces total NADPH-dependent LXR
+	activity in cell free extracts <33>; #25# dhs-21 null mutants show
+	defects in longevity, reproduction and egg-laying <34>) <33,34>
+GI	#8,15,24,25# physiological function (#8# deletion results in a strain
+	lacking the NADPH-specific L-xylulose reductase activity and having
+	reduced growth on L-arabinose <32>; #25# the enzyme is essential for
+	normal life span and reproduction <34>; #24# the L-xylulose reductase
+	is essential for L-arabinose catabolism in Trichoderma reesei <33>;
+	#15# strictly NADPH-dependent XR with mutated strict NADP+-dependent
+	XDH are more effective in increasing bioethanol production and
+	decreasing xylitol accumulation than the wild-type, overview <37>)
+	<32,33,34,37>
+
+///
+ID	1.1.1.100
+********************************************************************************
+*                                                                              *
+* Copyrighted by Dietmar Schomburg, Techn. University Braunschweig, GERMANY    *
+* Distributed under the License as stated at http:/www.brenda-enzymes.org      *
+*                                                                              *
+********************************************************************************
+
+PROTEIN
+PR	#1# Salmonella enterica subsp. enterica serovar Typhimurium   <19,48>
+PR	#2# Gallus gallus   <54>
+PR	#3# Staphylococcus aureus   <46,48>
+PR	#4# Bacillus subtilis   <13>
+PR	#5# Escherichia coli   <1,4,5,14,16,19,22,27,32,33,44,48>
+PR	#6# Homo sapiens   <53,62>
+PR	#7# Saccharomyces cerevisiae   <45,47>
+PR	#8# Euglena gracilis   <9>
+PR	#9# Spinacia oleracea   <1,8,10>
+PR	#10# Pisum sativum   <8>
+PR	#11# Arabidopsis thaliana   <39>
+PR	#12# Enterobacter cloacae   <48>
+PR	#13# Klebsiella aerogenes   <48>
+PR	#14# Pseudomonas aeruginosa   <20,28,32,46,48>
+PR	#15# Lactococcus lactis   <18>
+PR	#16# Brassica napus   <3,6,15,16>
+PR	#17# Acinetobacter calcoaceticus   <48>
+PR	#18# Haloferax volcanii   <41>
+PR	#19# Serratia marcescens   <48>
+PR	#20# Streptococcus pneumoniae   <24,46>
+PR	#21# Proteus vulgaris   <48>
+PR	#22# Caenorhabditis elegans   <45>
+PR	#23# Klebsiella pneumoniae   <48>
+PR	#24# Mycobacterium tuberculosis   <21,25,31,47,52>
+PR	#25# Staphylococcus epidermidis   <32,48>
+PR	#26# Plasmodium falciparum   <26,29,34,43,49>
+PR	#27# Persea americana   (#27# gene xyn11F63 <3>) <3,7,8,11>
+PR	#28# Salmonella enterica subsp. enterica serovar Typhi   <48>
+PR	#29# Vibrio cholerae serotype O1   <60>
+PR	#30# Brassica juncea   <8>
+PR	#31# Carthamus tinctorius   <2,8>
+PR	#32# Cuphea lanceolata   <12>
+PR	#33# Streptococcus sp.   <46>
+PR	#34# Shigella sonnei   <48>
+PR	#35# Shigella dysenteriae   <48>
+PR	#36# Cuphea lutea   <8>
+PR	#37# Shigella flexneri   <48>
+PR	#38# synthetic construct   <46>
+PR	#39# Enterococcus sp.   <48>
+PR	#40# Haloarcula hispanica   <41>
+PR	#41# Pseudomonas sp. Q4AE87 SwissProt <22>
+PR	#42# Plasmodium falciparum Q86RB1 SwissProt <23>
+PR	#43# Aquifex aeolicus VF5   <30>
+PR	#44# Bacillus anthracis Q81JG6 SwissProt <37,50>
+PR	#45# Pseudomonas putida A5HIF6 UniProt <38>
+PR	#46# Synechococcus elongatus PCC 7942 = FACHB-805 Q31QF3 UniProt <40>
+PR	#47# Mycobacterium tuberculosis P9WGT3 UniProt <47>
+PR	#48# Mycobacterium tuberculosis O53665 UniProt <47,57>
+PR	#49# Plasmodium falciparum K1   <35>
+PR	#50# Plasmodium falciparum Q965D6 Uniprot <17>
+PR	#51# Brassica napus Q949M3 Uniprot <36>
+PR	#52# Escherichia coli P0AEK2 Uniprot <42>
+PR	#53# Rickettsia prowazekii P50941 UniProt <51>
+PR	#54# Pseudomonas aeruginosa O54438 UniProt <55>
+PR	#55# Cupriavidus necator P14697 UniProt <56>
+PR	#56# Homo sapiens Q92506 UniProt <61>
+PR	#57# Saccharomyces cerevisiae P35731 UniProt <59>
+PR	#58# Mycolicibacterium smegmatis A0R723 UniProt <58>
+
+RECOMMENDED_NAME
+RN	3-oxoacyl-[acyl-carrier-protein] reductase
+
+
+SYSTEMATIC_NAME
+SN	(3R)-3-hydroxyacyl-[acyl-carrier protein]:NADP+ oxidoreductase
+
+
+SYNONYMS
+SY	 reductase, 3-oxoacyl-[acyl carrier protein]
+SY	 beta-ketoacyl-[acyl-carrier protein] (ACP) reductase
+SY	 beta-ketoacyl acyl carrier protein (ACP) reductase
+SY	 beta-ketoacyl thioester reductase
+SY	 3-ketoacyl acyl carrier protein reductase
+SY	 NADPH-specific 3-oxoacyl-[acylcarrier protein]reductase
+SY	 3-oxoacyl-[ACP]reductase
+SY	#1,3,5,12,13,14,17,18,19,20,21,23,24,25,26,28,33,34,35,37,38,39,40,49
+	58# beta-ketoacyl-ACP reductase <24,27,29,35,41,42,44,46,48,49,52,58>
+SY	#1,3,5,12,13,14,17,19,20,21,23,25,26,28,29,33,34,35,37,38,39,41,42,45
+	49,53,54,57,58# FabG (#53# gene name <51>)
+	<17,19,20,22,23,26,27,29,35,38,42,43,44,46,48,49,51,55,58,59,60>
+SY	#1,5,24# beta-ketoacyl-acyl carrier protein reductase <19,25>
+SY	#11# KCR1 <39>
+SY	#11# KCR2 <39>
+SY	#14# RhlG <28>
+SY	#14,26# beta-ketoacyl acyl carrier protein reductase <20,26,43>
+SY	#15,18,40,47# FabG1 <18,41,47>
+SY	#18,40# polyhydroxyalkanoate-specific acetoacetyl coenzyme A reductase
+	<41>
+SY	#18,40# PHA-specific acetoacetyl-CoA reductase <41>
+SY	#18,40,55# PhaB <41,56>
+SY	#20# KACPR <24>
+SY	#24# 3-ketoacyl-ACP(CoA) reductase <21>
+SY	#24# ACP reductase <25>
+SY	#24# MabA <25,52>
+SY	#29# beta-ketoacyl-(acyl carrier protein) reductase <60>
+SY	#42# OAR <23>
+SY	#44# 3-oxoacyl-(acyl carrier protein) reductase <50>
+SY	#45# 3-ketoacyl-ACP reductase <38>
+SY	#46# 3-ketoacyl-[acyl-carrier-protein] reductase <40>
+SY	#47,48# 3-oxoacyl-AcpM reductase <47>
+SY	#5# beta-ketoacyl-[acyl carrier protein] reductase <42>
+SY	#5,16# BKR <14,15,16>
+SY	#5,41,45# 3-ketoacyl-acyl carrier protein reductase <22,38>
+SY	#53# 3-ketoacyl-(acyl-carrier-protein) reductase <51>
+SY	#54# 3-oxo-acyl-ACP reductase <55>
+SY	#55# NADPH-dependent acetoacetyl coenzyme A reductase <56>
+SY	#56# KAR <61>
+SY	#56# 3-ketoacyl-ACP reductase/3R-hydroxyacyl-CoA dehydrogenase <61>
+SY	#56# 3-ketoacyl-thioester reductase <61>
+SY	#57# OAR1 <59>
+SY	#57# 3-oxoacyl-(acyl-carrier-protein) reductase <59>
+SY	#58# ketoacyl-acyl carrier protein reductase <58>
+SY	#58# MSMEG_6753 (#58# gene name <58>) <58>
+SY	#6,11,14,48# beta-ketoacyl reductase <28,39,57,62>
+SY	#7# Oar1p <45>
+SY	#7,22,24# 3-oxoacyl-thioester reductase <45,47>
+SY	#7,24,48# fabG4 <47,57>
+SY	#7,42,57# 3-oxoacyl-ACP reductase <23,45,59>
+
+REACTION
+RE	a (3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ = a
+	3-oxoacyl-[acyl-carrier protein] + NADPH + H+ (#16# belongs to family
+	of short-chain alcohol dehydrogenases (SDR) with catalytic triad
+	Ser154, Tyr167 and Lys171, catalytic mechanism <16>; #24# chemical and
+	kinetic mechanism <25>; #26# cofactor and substrate binding kinetics,
+	allosteric regulation mechanism, overview <26>; #42# ordered bi bi
+	kinetic mechanism, [acyl-carrier protein] recognition mechanism <23>;
+	#20# reaction mechanism, random bi bi kinetic mechanism <24>; #24#
+	positive cooperativity in binding of NADPH to enzyme, no cooperativity
+	in binding of acetoacyl-CoA. Pre-existing equilibrium of two forms of
+	free MabA in solution followed by a bimolecular association process
+	<31>)
+
+REACTION_TYPE
+RT	redox reaction
+RT	oxidation
+RT	reduction
+
+SOURCE_TISSUE
+ST	#11# embryo (#11# KCR1 and KCR2 <39>) <39>
+ST	#11# inflorescence (#11# KCR1 and KCR2 present in inflorescence stem
+	<39>) <39>
+ST	#11# silique (#11# KCR1 and KCR2 <39>) <39>
+ST	#11,32# root (#11# only KCR1 <39>) <12,39>
+ST	#11,32# flower (#11# KCR1 and KCR2 <39>) <12,39>
+ST	#2# liver <54>
+ST	#27# mesocarp <3,7,11>
+ST	#27,30,31,32,36# seed <2,8,12>
+ST	#45# cell culture (#45# strain KCTC1639 <38>) <38>
+ST	#6# MDA-MB-231 cell <53>
+ST	#6# U-251 cell <53>
+ST	#9,10,11,32# leaf (#11# KCR1 and KCR2 <39>) <1,8,10,12,39>
+
+LOCALIZATION
+LO	#11# endoplasmic reticulum (#11# KCR1 and KCR2 <39>) <39>
+LO	#7,22,57# mitochondrion <45,59>
+LO	#7,24,26# soluble (#26# recombinant enzyme from Escherichia coli <17>)
+	<17,47>
+
+NATURAL_SUBSTRATE_PRODUCT
+NSP	#1,5# beta-ketoacyl-[acyl-carrier protein] + NADPH =
+	beta-hydroxyacyl-[acyl-carrier protein] + NADP+ (#1,5# first reductive
+	step in the elongation cycle of fatty acid biosynthesis <19>) <19>
+NSP	#20# acetoacetyl-CoA + NADPH = 3-hydroxybutyryl-CoA + NADP+ <24>
+NSP	#20# acetoacetyl-CoA + NADPH = 3-hydroxybutyryl-CoA + NADP+ {r} <24>
+NSP	#24,26# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	3-hydroxyacyl-[acyl-carrier protein] + NADP+ {r} <25,26>
+NSP	#29# 3-oxoacyl-[acyl-carrier protein] + NADPH + H+ =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ <60>
+NSP	#45# (3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ =
+	3-oxoacyl-[acyl-carrier protein] + NADPH + H+ (#45# beta-oxidation
+	pathway <38>) <38>
+NSP	#5,14,15,45# more = ? (#5# catalyzes also the reduction of the
+	beta-keto group of unsaturated acyl chains during biosynthesis of
+	unsaturated fatty acids <16>; #15# FabG1 is responsible for the first
+	reductive step of the fatty acid synthetic cycle. FabG2 is inactive in
+	fatty acid synthesis <18>; #14# the beta-ketoacyl acyl carrier protein
+	reductase activity of the fatty acid biosynthetic pathway is a
+	determining factor of 3-oxo-homoserine lactone acyl chain lengths <20>;
+	#14# the enzyme is essential in the rhamnolipid biosynthetic pathway of
+	Pseudomonas aeruginosa <28>; #45# fabG overexpression tends to depress
+	the biosynthesis of medium-chain-length polyhydroxyalkanoate due to the
+	reversible conversion of (R)-3-hydroxyalkanoate monomer units into
+	3-ketoacyl-CoA <38>) {} <16,18,20,28,38>
+NSP	#5,14,15,45# more = ? (#5# catalyzes also the reduction of the
+	beta-keto group of unsaturated acyl chains during biosynthesis of
+	unsaturated fatty acids <16>; #15# FabG1 is responsible for the first
+	reductive step of the fatty acid synthetic cycle. FabG2 is inactive in
+	fatty acid synthesis <18>; #14# the beta-ketoacyl acyl carrier protein
+	reductase activity of the fatty acid biosynthetic pathway is a
+	determining factor of 3-oxo-homoserine lactone acyl chain lengths <20>;
+	#14# the enzyme is essential in the rhamnolipid biosynthetic pathway of
+	Pseudomonas aeruginosa <28>; #45# fabG overexpression tends to depress
+	the biosynthesis of medium-chain-length polyhydroxyalkanoate due to the
+	reversible conversion of (R)-3-hydroxyalkanoate monomer units into
+	3-ketoacyl-CoA <38>) {} <16,18,20,28,38>
+NSP	#5,9,16,27,31# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#16# enzyme is part
+	of the dissociable fatty acid synthase type II multienzyme complex for
+	de novo synthesis of fatty acids from acetyl-CoA and malonyl-CoA <16>;
+	#5,16,27# first reduction step of fatty acid synthase <3,4>; #9,16,31#
+	enzyme in fatty acid synthesis <2,10,16>) <2,3,4,10,16>
+NSP	#5,9,16,27,31# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#16# enzyme is part
+	of the dissociable fatty acid synthase type II multienzyme complex for
+	de novo synthesis of fatty acids from acetyl-CoA and malonyl-CoA <16>;
+	#5,16,27# first reduction step of fatty acid synthase <3,4>; #9,16,31#
+	enzyme in fatty acid synthesis <2,10,16>) {r} <2,3,4,10,16>
+NSP	#5,9,16,27,31# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#16# enzyme is part
+	of the dissociable fatty acid synthase type II multienzyme complex for
+	de novo synthesis of fatty acids from acetyl-CoA and malonyl-CoA <16>;
+	#5,16,27# first reduction step of fatty acid synthase <3,4>; #9,16,31#
+	enzyme in fatty acid synthesis <2,10,16>) {} <2,3,4,10,16>
+NSP	#55# acetoacetyl-CoA + NADPH + H+ = 3-hydroxybutyryl-CoA + NADP+ <56>
+NSP	#58# beta-ketoacyl-[acyl-carrier protein] + NADPH + H+ =
+	beta-hydroxyacyl-[acyl-carrier protein] + NADP+ <58>
+NSP	#6,57# a 3-oxoacyl-[acyl-carrier protein] + NADPH + H+ = a
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ <59,62>
+
+SUBSTRATE_PRODUCT
+SP	#1,5# beta-ketoacyl-[acyl-carrier protein] + NADPH =
+	beta-hydroxyacyl-[acyl-carrier protein] + NADP+ (#1,5# first reductive
+	step in the elongation cycle of fatty acid biosynthesis <19>) <19>
+SP	#1,5,9,16,26,27,32# acetoacetyl-CoA + NADPH = D-beta-hydroxybutyryl-CoA
+	+ NADP+ <1,3,5,6,7,12,16,17,19,42>
+SP	#1,5,9,16,26,27,32# acetoacetyl-CoA + NADPH = D-beta-hydroxybutyryl-CoA
+	+ NADP+ {r} <1,3,5,6,7,12,16,17,19,42>
+SP	#1,5,9,16,26,27,32# acetoacetyl-CoA + NADPH = D-beta-hydroxybutyryl-CoA
+	+ NADP+ {} <1,3,5,6,7,12,16,17,19,42>
+SP	#15# beta-ketobutyryl-CoA + NADPH = beta-hydroxybutyryl-CoA + NADP+
+	(#15# complementation of Escherichia coli fabG mutant with
+	Lactobacillus lactis fabG genes shows that fabG1 encodes a functional
+	beta-ketoacyl ACP reductase and fabG2 encodes an enzyme that has
+	activity with the model substrate beta-ketobutyryl-CoA, but lacks the
+	ability to support fatty acid synthesis both in vivo and in vitro <18>)
+	{} <18>
+SP	#24# acetoacetyl-CoA + NADPH = D-3-hydroxybutyryl-CoA + NADP+ <52>
+SP	#24,26# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#26# cooperative
+	transitions in the enzyme due to cofactor and [acyl-carrier-protein]
+	binding <26>) {r} <25,26>
+SP	#26# acetoacetyl-CoA + NADPH = ? + NADP+ (#26# wild-type shows less
+	activity with acetoacetyl-CoA than with acetoacetyl-[acyl-carrier
+	protein] <43>) <43>
+SP	#29# 3-oxoacyl-[acyl-carrier protein] + NADPH + H+ =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ <60>
+SP	#29,56,57,58# acetoacetyl-CoA + NADPH + H+ = ? (#56# low activity with
+	NADPH <61>) <58,59,60,61>
+SP	#45# (3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ =
+	3-oxoacyl-[acyl-carrier protein] + NADPH + H+ (#45# beta-oxidation
+	pathway <38>) <38>
+SP	#46# propiophenone + NADPH = ? + NADP+ (#46# 123% relative activity
+	compared to acetophenone <40>) <40>
+SP	#46# 1,1,1-trifluoroacetone + NADPH = ? + NADP+ (#46# 792% relative
+	activity compared to acetophenone <40>) <40>
+SP	#46# 2',3',4',5',6'-pentafluoroacetophenone + NADPH = ? + NADP+ (#46#
+	3023% relative activity compared to acetophenone <40>) <40>
+SP	#46# 2-octanone + NADPH = ? + NADP+ (#46# 15% relative activity
+	compared to acetophenone <40>) <40>
+SP	#46# 3'-fluoroacetophenone + NADPH = ? + NADP+ (#46# 100% relative
+	activity compared to acetophenone <40>) <40>
+SP	#46# 4'-chloroacetophenone + NADPH = ? + NADP+ (#46# 115% relative
+	activity compared to acetophenone <40>) <40>
+SP	#46# 4'-fluoroacetophenone + NADPH = ? + NADP+ (#46# 62% relative
+	activity compared to acetophenone <40>) <40>
+SP	#46# acetophenone + NADPH = ? + NADP+ (#46# 100% relative activity
+	<40>) <40>
+SP	#46# alpha-chloroacetophenone + NADPH = ? + NADP+ (#46# 1885% relative
+	activity compared to acetophenone <40>) <40>
+SP	#46# ethyl 4-chloroacetoacetate + NADPH = ? + NADP+ (#46# 29454%
+	relative activity compared to acetophenone <40>) <40>
+SP	#46# ethylbenzoylacetate + NADPH = ? + NADP+ (#46# 892% relative
+	activity compared to acetophenone <40>) <40>
+SP	#48# 3-oxohexanoyl-CoA + NADH + H+ = (3R)-3-hydroxyhexanoyl-CoA + NAD+
+	<57>
+SP	#5# ethyl acetoacetate + NADPH = ? + NADP+ <48>
+SP	#5# methyl acetoacetate + NADPH = ? + NADP+ (#5# is not a good
+	substrate as ethyl acetoacetate <44>) <44>
+SP	#5# propyl acetoacetate + NADPH = ? + NADP+ (#5# as substrate it is
+	limited to its weak solubility <44>) <44>
+SP	#5,16,27# acetoacetyl-N-cysteamine + NADPH =
+	D-3-hydroxybutyryl-N-cysteamine + NADP+ <3,6,7,16>
+SP	#5,20,24,26,41,42,49# acetoacetyl-CoA + NADPH = 3-hydroxybutyryl-CoA +
+	NADP+ <22,23,24,25,26,27,29,35,49>
+SP	#5,20,24,26,41,42,49# acetoacetyl-CoA + NADPH = 3-hydroxybutyryl-CoA +
+	NADP+ {r} <22,23,24,25,26,27,29,35,49>
+SP	#5,38# ethyl acetoacetate + NADPH = ethyl 3-hydroxybutyrate + NADP+
+	<44,46>
+SP	#5,41# 3-oxodecanoyl-CoA + NADPH = (R)-3-hydroxydecanoyl-CoA + NADP+
+	<22>
+SP	#5,41# 3-oxododecanoyl-CoA + NADPH = (R)-3-hydroxydodecanoyl-CoA +
+	NADP+ <22>
+SP	#5,41# 3-oxohexanoyl-CoA + NADPH = (R)-3-hydroxyhexanoyl-CoA + NADP+
+	<22>
+SP	#5,41# 3-oxooctanoyl-CoA + NADPH = (R)-3-hydroxyoctanoyl-CoA + NADP+
+	<22>
+SP	#5,8,9,10,16,26,27,30,31,36# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#16# belongs to
+	family of short-chain alcohol dehydrogenases (SDR) with catalytic
+	triade Ser154, Tyr167 and Lys171, catalytic mechanism <16>; #5# pH
+	6.0-7.0, equilibrium almost completely favors formation of the
+	beta-hydroxyacyl ACP derivatives <5>; #16# enzyme is part of the
+	dissociable fatty acid synthase type II multienzyme complex for de novo
+	synthesis of fatty acids from acetyl-CoA and malonyl-CoA <16>;
+	#5,16,27# first reduction step of fatty acid synthase <3,4>; #9,16,31#
+	enzyme in fatty acid synthesis <2,10,16>) |#5# product is the
+	D-(-)-stereoisomer <5>| <1,2,3,4,5,6,7,8,9,10,11,14,15,16,49>
+SP	#5,8,9,10,16,26,27,30,31,36# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#16# belongs to
+	family of short-chain alcohol dehydrogenases (SDR) with catalytic
+	triade Ser154, Tyr167 and Lys171, catalytic mechanism <16>; #5# pH
+	6.0-7.0, equilibrium almost completely favors formation of the
+	beta-hydroxyacyl ACP derivatives <5>; #16# enzyme is part of the
+	dissociable fatty acid synthase type II multienzyme complex for de novo
+	synthesis of fatty acids from acetyl-CoA and malonyl-CoA <16>;
+	#5,16,27# first reduction step of fatty acid synthase <3,4>; #9,16,31#
+	enzyme in fatty acid synthesis <2,10,16>) |#5# product is the
+	D-(-)-stereoisomer <5>| {r} <1,2,3,4,5,6,7,8,9,10,11,14,15,16,49>
+SP	#5,8,9,10,16,26,27,30,31,36# 3-oxoacyl-[acyl-carrier protein] + NADPH =
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ (#16# belongs to
+	family of short-chain alcohol dehydrogenases (SDR) with catalytic
+	triade Ser154, Tyr167 and Lys171, catalytic mechanism <16>; #5# pH
+	6.0-7.0, equilibrium almost completely favors formation of the
+	beta-hydroxyacyl ACP derivatives <5>; #16# enzyme is part of the
+	dissociable fatty acid synthase type II multienzyme complex for de novo
+	synthesis of fatty acids from acetyl-CoA and malonyl-CoA <16>;
+	#5,16,27# first reduction step of fatty acid synthase <3,4>; #9,16,31#
+	enzyme in fatty acid synthesis <2,10,16>) |#5# product is the
+	D-(-)-stereoisomer <5>| {} <1,2,3,4,5,6,7,8,9,10,11,14,15,16,49>
+SP	#5,9,14,15,16,27,41,45,47,58# more = ? (#58# no activity with NADH
+	<58>; #5# only D-(-) isomer is oxidized <4>; #5# beta-ketoacyl
+	thioesters of CoA and pantetheine metabolized at slower rates <4>;
+	#16,27# animals, yeast and Mycobacteria have fatty acid synthetase
+	containing all the individual activities on one or two multifunctional
+	polypeptide chains, plants and most bacterial systems, including E.
+	coli, possess individual monofunctional enzymes and a separate acyl
+	carrier protein <3>; #5# equally active on beta-ketoacyl-ACP
+	derivatives of C4 to C16 <4>; #5# broad specificity for chain length of
+	substrates <4,5>; #5,9# L-isomer completely inactive <1,4>; #5#
+	catalyzes also the reduction of the beta-keto group of unsaturated acyl
+	chains during biosynthesis of unsaturated fatty acids <16>; #15# FabG1
+	is responsible for the first reductive step of the fatty acid synthetic
+	cycle. FabG2 is inactive in fatty acid synthesis <18>; #14# the
+	beta-ketoacyl acyl carrier protein reductase activity of the fatty acid
+	biosynthetic pathway is a determining factor of 3-oxo-homoserine
+	lactone acyl chain lengths <20>; #14# the enzyme is essential in the
+	rhamnolipid biosynthetic pathway of Pseudomonas aeruginosa <28>; #5,41#
+	FabG substrate specificity overview <22>; #45# fabG overexpression
+	tends to depress the biosynthesis of medium-chain-length
+	polyhydroxyalkanoate due to the reversible conversion of
+	(R)-3-hydroxyalkanoate monomer units into 3-ketoacyl-CoA <38>; #47#
+	FabG1 is able to act on shorter (C4) acyl substrates <47>) {}
+	<1,3,4,5,16,18,20,22,28,38,47,58>
+SP	#5,9,14,15,16,27,41,45,47,58# more = ? (#58# no activity with NADH
+	<58>; #5# only D-(-) isomer is oxidized <4>; #5# beta-ketoacyl
+	thioesters of CoA and pantetheine metabolized at slower rates <4>;
+	#16,27# animals, yeast and Mycobacteria have fatty acid synthetase
+	containing all the individual activities on one or two multifunctional
+	polypeptide chains, plants and most bacterial systems, including E.
+	coli, possess individual monofunctional enzymes and a separate acyl
+	carrier protein <3>; #5# equally active on beta-ketoacyl-ACP
+	derivatives of C4 to C16 <4>; #5# broad specificity for chain length of
+	substrates <4,5>; #5,9# L-isomer completely inactive <1,4>; #5#
+	catalyzes also the reduction of the beta-keto group of unsaturated acyl
+	chains during biosynthesis of unsaturated fatty acids <16>; #15# FabG1
+	is responsible for the first reductive step of the fatty acid synthetic
+	cycle. FabG2 is inactive in fatty acid synthesis <18>; #14# the
+	beta-ketoacyl acyl carrier protein reductase activity of the fatty acid
+	biosynthetic pathway is a determining factor of 3-oxo-homoserine
+	lactone acyl chain lengths <20>; #14# the enzyme is essential in the
+	rhamnolipid biosynthetic pathway of Pseudomonas aeruginosa <28>; #5,41#
+	FabG substrate specificity overview <22>; #45# fabG overexpression
+	tends to depress the biosynthesis of medium-chain-length
+	polyhydroxyalkanoate due to the reversible conversion of
+	(R)-3-hydroxyalkanoate monomer units into 3-ketoacyl-CoA <38>; #47#
+	FabG1 is able to act on shorter (C4) acyl substrates <47>) {}
+	<1,3,4,5,16,18,20,22,28,38,47,58>
+SP	#5,9,16,26,27,31# acetoacetyl-[acyl-carrier protein] + NADPH =
+	D-beta-hydroxybutyryl-[acyl-carrier protein] + NADP+ (#16,27# much
+	greater specificity for acetoacetyl-ACP than for either of the model
+	substrates acetoacetyl-CoA or acetoacetyl-N-acetylcysteamine <3>; #26#
+	Arg187 and Arg230 are critical residues for the FabG-acyl-carrier
+	protein interactions, significance of the positively
+	charged/hydrophobic patch located adjacent to the active site cavities
+	of FabG for interactions with acyl carrier protein <43>)
+	<1,2,3,5,6,7,10,16,43>
+SP	#5,9,16,26,27,31# acetoacetyl-[acyl-carrier protein] + NADPH =
+	D-beta-hydroxybutyryl-[acyl-carrier protein] + NADP+ (#16,27# much
+	greater specificity for acetoacetyl-ACP than for either of the model
+	substrates acetoacetyl-CoA or acetoacetyl-N-acetylcysteamine <3>; #26#
+	Arg187 and Arg230 are critical residues for the FabG-acyl-carrier
+	protein interactions, significance of the positively
+	charged/hydrophobic patch located adjacent to the active site cavities
+	of FabG for interactions with acyl carrier protein <43>) {r}
+	<1,2,3,5,6,7,10,16,43>
+SP	#5,9,16,26,27,31# acetoacetyl-[acyl-carrier protein] + NADPH =
+	D-beta-hydroxybutyryl-[acyl-carrier protein] + NADP+ (#16,27# much
+	greater specificity for acetoacetyl-ACP than for either of the model
+	substrates acetoacetyl-CoA or acetoacetyl-N-acetylcysteamine <3>; #26#
+	Arg187 and Arg230 are critical residues for the FabG-acyl-carrier
+	protein interactions, significance of the positively
+	charged/hydrophobic patch located adjacent to the active site cavities
+	of FabG for interactions with acyl carrier protein <43>) {}
+	<1,2,3,5,6,7,10,16,43>
+SP	#54# 3-hydroxydecanoyl-N-acetylcysteamine + NADP+ =
+	3-oxodecanoyl-N-acetylcysteamine + NADPH + H+ <55>
+SP	#54,55# acetoacetyl-CoA + NADPH + H+ = 3-hydroxybutyryl-CoA + NADP+
+	<55,56>
+SP	#56# 9,10-phenanthrene quinone + NADH + H+ = ? <61>
+SP	#56# 9,10-phenanthrene quinone + NADPH + H+ = ? (#56# low activity with
+	NADPH <61>) <61>
+SP	#56# acetoacetyl-CoA + NADH + H+ = ? <61>
+SP	#58# beta-ketoacyl-[acyl-carrier protein] + NADPH + H+ =
+	beta-hydroxyacyl-[acyl-carrier protein] + NADP+ <58>
+SP	#6,57# a 3-oxoacyl-[acyl-carrier protein] + NADPH + H+ = a
+	(3R)-3-hydroxyacyl-[acyl-carrier protein] + NADP+ <59,62>
+
+TURNOVER_NUMBER
+TN	#20# 11 {NADPH}  (#20# pH 7.6, 30°C <24>) <24>
+TN	#20# 11 {acetoacetyl-CoA}  (#20# pH 7.6, 30°C <24>) <24>
+TN	#24# 7 {NADPH}  (#24# pH 7.6, 30°C <25>) <25>
+TN	#24# 7 {acetoacetyl-CoA}  (#24# pH 7.0, 25°C <25>) <25>
+TN	#26# 250 {NADPH}  (#26# without urea, pH 7.0, 25°C <49>) <49>
+TN	#26# 0.014 {acetoacetyl-CoA}  (#26# pH 7.5 <17>) <17>
+TN	#26# 259 {NADPH}  (#26# pH 6.8, 22°C, recombinant enzyme <26>) <26>
+TN	#26# 259 {acetoacetyl-CoA}  (#26# pH 6.8, 22°C, recombinant enzyme
+	<26>) <26>
+TN	#26# 344.7 {NADPH}  (#26# in the presence of 1 M urea, pH 7.0, 25°C
+	<49>) <49>
+TN	#26# 187.3 {NADPH}  (#26# in the presence of 1.5 M urea, pH 7.0, 25°C
+	<49>) <49>
+TN	#26# 148.6 {NADPH}  (#26# in the presence of 4 M urea, pH 7.0, 25°C
+	<49>) <49>
+TN	#42# 265 {NADPH}  (#42# pH 6.8, 25°C, recombinant enzyme <23>) <23>
+TN	#42# 265 {acetoacetyl-CoA}  (#42# pH 6.8, 25°C, recombinant enzyme
+	<23>) <23>
+TN	#5# 0.3 {ethyl acetoacetate}  <44>
+TN	#5# 0.59 {NADPH}  <44>
+TN	#55# 361 {NADPH}  (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>)
+	<56>
+TN	#55# 361 {acetoacetyl-CoA}  (#55# mutant enzyme Q47L, at pH 8.0 and
+	30°C <56>) <56>
+TN	#55# 102 {NADPH}  (#55# wild type enzyme, at pH 8.0 and 30°C <56>) <56>
+TN	#55# 102 {acetoacetyl-CoA}  (#55# wild type enzyme, at pH 8.0 and 30°C
+	<56>) <56>
+TN	#55# 249 {NADPH}  (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>)
+	<56>
+TN	#55# 249 {acetoacetyl-CoA}  (#55# mutant enzyme Q47L, at pH 8.0 and
+	30°C <56>) <56>
+TN	#57# 91.4 {NADPH}  (#57# mutant enzyme S40A, at pH 8.0 and 25°C <59>)
+	<59>
+TN	#57# 91.4 {acetoacetyl-CoA}  (#57# mutant enzyme S40A, at pH 8.0 and
+	25°C <59>) <59>
+TN	#57# 117.5 {NADPH}  (#57# wild type enzyme, at pH 8.0 and 25°C <59>)
+	<59>
+TN	#57# 117.5 {acetoacetyl-CoA}  (#57# wild type enzyme, at pH 8.0 and
+	25°C <59>) <59>
+TN	#57# 108.2 {NADPH}  (#57# mutant enzyme S36A, at pH 8.0 and 25°C <59>)
+	<59>
+TN	#57# 108.2 {acetoacetyl-CoA}  (#57# mutant enzyme S36A, at pH 8.0 and
+	25°C <59>) <59>
+
+KM_VALUE
+KM	#15# 0.29 {beta-ketobutyryl-CoA}  (#15# pH 7.0, 30°C, FabG1 <18>) <18>
+KM	#15# 4.06 {beta-ketobutyryl-CoA}  (#15# pH 7.0, 30°C, FabG2 <18>) <18>
+KM	#16# 0.003 {acetoacetyl-[acyl-carrier protein]}  <6>
+KM	#16# 0.023 {NADPH}  (#16# + acetoacetyl-[acyl-carrier-protein] <6>) <6>
+KM	#16# 0.035 {N-(2-sulfanylethyl)acetamide}  <6>
+KM	#16# 0.261 {acetoacetyl-CoA}  <6>
+KM	#20# 0.4 {NADPH}  (#20# pH 7.6, 30°C <24>) <24>
+KM	#20# 2.2 {acetoacetyl-CoA}  (#20# pH 7.6, 30°C <24>) <24>
+KM	#24# 0.026 {NADPH}  (#24# pH 7.6, 30°C <25>) <25>
+KM	#24# 0.165 {acetoacetyl-CoA}  (#24# pH 7.6, 30°C <25>) <25>
+KM	#26# 0.45 {acetoacetyl-CoA}  (#26# mutant R187A <43>) <43>
+KM	#26# 0.49 {acetoacetyl-CoA}  (#26# mutant R230E <43>) <43>
+KM	#26# 0.43 {acetoacetyl-CoA}  (#26# wild-type <43>; #26# pH 6.8, 22°C,
+	recombinant enzyme <26>) <26,43>
+KM	#26# 0.58 {acetoacetyl-CoA}  (#26# mutant R187E/R230E <43>) <43>
+KM	#26# 0.075 {acetoacetyl-CoA}  (#26# pH 7.5 <17>) <17>
+KM	#26# 0.44 {acetoacetyl-CoA}  (#26# mutant R230A <43>) <43>
+KM	#26# 0.043 {NADPH}  (#26# pH 6.8, 22°C, recombinant enzyme <26>) <26>
+KM	#26# 0.0461 {NADPH}  (#26# without urea, pH 7.0, 25°C <49>) <49>
+KM	#26# 0.0434 {NADPH}  (#26# in the presence of 1 M urea, pH 7.0, 25°C
+	<49>) <49>
+KM	#26# 0.0412 {NADPH}  (#26# in the presence of 1.5 M urea, pH 7.0, 25°C
+	<49>) <49>
+KM	#26# 0.4553 {NADPH}  (#26# in the presence of 4 M urea, pH 7.0, 25°C
+	<49>) <49>
+KM	#26,27# 0.47 {acetoacetyl-CoA}  (#26# mutant R187A/R230A <43>; #26#
+	mutant R187E <43>) <7,43>
+KM	#27# 48 {acetoacetyl-N-acetylcysteamine}  <7>
+KM	#27# 0.0093 {NADPH}  <7>
+KM	#27# 0.0079 {acetoacetyl-[acyl-carrier protein]}  <7>
+KM	#31# 0.009 {acetoacetyl-[acyl-carrier protein]}  <2>
+KM	#31# 0.016 {NADPH}  <2>
+KM	#42# 0.51 {acetoacetyl-CoA}  (#42# pH 6.8, 25°C, recombinant enzyme
+	<23>) <23>
+KM	#42# 0.0475 {NADPH}  (#42# pH 6.8, 25°C, recombinant enzyme <23>) <23>
+KM	#46# 1.92 {ethylbenzoylacetate}  (#46# with 4 mM NADPH, in 0.1 M sodium
+	phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 6.03 {propiophenone}  (#46# with 4 mM NADPH, in 0.1 M sodium
+	phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 2.71 {alpha-chloroacetophenone}  (#46# with 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 5.72 {2',3',4',5',6'-pentafluoroacetophenone}  (#46# with 4 mM
+	NADPH, in 0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 8.31 {ethyl 4-chloroacetoacetate}  (#46# with 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 7.38 {3'-fluoroacetophenone}  (#46# with 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 46.92 {acetophenone}  (#46# with 4 mM NADPH, in 0.1 M sodium
+	phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 14.34 {4'-chloroacetophenone}  (#46# with 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 12.29 {4'-fluoroacetophenone}  (#46# with 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#46# 89.2 {1,1,1-trifluoroacetone}  (#46# with 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+KM	#5# 0.01 {NADPH}  <44>
+KM	#5# 0.127 {ethyl acetoacetate}  <44>
+KM	#54# 1 {acetoacetyl-CoA}  (#54# pH and temperature not specified in the
+	publication <55>) <55>
+KM	#54# 0.29 {NADPH}  (#54# with acetoacetyl-CoA as cosubstrate, pH and
+	temperature not specified in the publication <55>) <55>
+KM	#54# 0.29 {NADP+}  (#54# with 3-hydroxydecanoyl-N-acetylcysteamine as
+	cosubstrate, pH and temperature not specified in the publication <55>)
+	<55>
+KM	#55# 0.0057 {acetoacetyl-CoA}  (#55# wild type enzyme, at pH 8.0 and
+	30°C <56>) <56>
+KM	#55# 0.149 {NADPH}  (#55# wild type enzyme, at pH 8.0 and 30°C <56>)
+	<56>
+KM	#55# 0.617 {NADPH}  (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>)
+	<56>
+KM	#55# 0.0136 {acetoacetyl-CoA}  (#55# mutant enzyme Q47L, at pH 8.0 and
+	30°C <56>) <56>
+KM	#55# 0.0159 {acetoacetyl-CoA}  (#55# mutant enzyme Q47L, at pH 8.0 and
+	30°C <56>) <56>
+KM	#55# 0.289 {NADPH}  (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>)
+	<56>
+KM	#57# 0.0205 {NADPH}  (#57# wild type enzyme, at pH 8.0 and 25°C <59>)
+	<59>
+KM	#57# 0.0264 {NADPH}  (#57# mutant enzyme S36A, at pH 8.0 and 25°C <59>)
+	<59>
+KM	#57# 0.0571 {NADPH}  (#57# mutant enzyme S40A, at pH 8.0 and 25°C <59>)
+	<59>
+KM	#57# 0.8158 {acetoacetyl-CoA}  (#57# wild type enzyme, at pH 8.0 and
+	25°C <59>) <59>
+KM	#57# 0.8871 {acetoacetyl-CoA}  (#57# mutant enzyme S36A, at pH 8.0 and
+	25°C <59>) <59>
+KM	#57# 0.9913 {acetoacetyl-CoA}  (#57# mutant enzyme S40A, at pH 8.0 and
+	25°C <59>) <59>
+KM	#9# 0.015 {NADPH}  <10>
+KM	#9# 0.025 {NADPH}  <1>
+KM	#9# 0.25 {acetoacetyl-CoA}  <1>
+KM	#9# 0.017 {acetoacetyl-[acyl-carrier protein]}  <10>
+KM	#9# 0.0037 {acetoacetyl-[acyl-carrier protein]}  <1>
+KM	#9,20,24,26,27,42# -999 {more}  (#26# cooperativity kinetics, binding
+	constants of substrates and cofactors <26>; #24# detailed kinetic and
+	thermodynamic analysis, solvent and multiple kinetic isotope effects,
+	kinetic mechanism <25>; #20# detailed steady-state kinetic analysis,
+	solvent and multiple kinetic isotope effects, random bi bi kinetic
+	mechanism <24>; #42# kinetic analysis of the recombinant enzyme,
+	kinetic mechanism <23>) <10,11,23,24,25,26>
+
+PH_OPTIMUM
+PHO	#20# 7.6 <24>
+PHO	#24# -999 (#24# increase in alpha-secondary deuterium kinetic isotope
+	effect values measured at pH 10 as compared to those obtained at pH 7
+	points to isotope- and pH-sensitive steps occurring concomitantly <31>)
+	<31>
+PHO	#26# 7.5 (#26# assay at <29>) <29>
+PHO	#26,42# 6.8 (#26# assay at <26>) <23,26>
+PHO	#27# 6.5 <11>
+PHO	#5# 6-7 <5>
+PHO	#5,24,38# 7 (#5,24# assay at <25,27,52>; #38# assay conditions <46>)
+	<25,27,46,52>
+PHO	#5,41,46# 8 (#5,41# assay at <22>) <22,40,44>
+PHO	#9# 5.7-6.2 <10>
+
+PH_RANGE
+PHR	#20# 5.5-9.5 (#20# pH profile, detailed mechanistic pH-dependence
+	analysis, overview <24>) <24>
+PHR	#24# 5.8-10 (#24# pH profile, pH-dependence analysis, overview <25>)
+	<25>
+PHR	#27# 5.5-8.5 (#27# about 50% of activity maximum at pH 5.5 and 8.5
+	<11>) <11>
+PHR	#46# 4-10 (#46# pH 4: about 60% of maximal activity, pH 10: about 75%
+	of maximal activity <40>) <40>
+PHR	#9# 6-8.7 (#9# both reaction directions <1>) <1>
+
+SPECIFIC_ACTIVITY
+SA	#10# 0.0132 <8>
+SA	#16# 136000.0 (#16# purified enzyme, protein determination by
+	calculation from absorption at 280 nm <6>) <6>
+SA	#26# 6.9 (#26# mutant R187A, acyl-carrier protein-dependent
+	spectroscopic assay <43>) <43>
+SA	#26# 45.6 (#26# mutant R187A/R230A, acyl-carrier protein-independent
+	spectroscopic assay <43>) <43>
+SA	#26# 3.0 (#26# mutant R187A/R230A, acyl-carrier protein-dependent
+	spectroscopic assay <43>) <43>
+SA	#26# 4.0 (#26# mutant R230E, acyl-carrier protein-dependent
+	spectroscopic assay <43>) <43>
+SA	#26# 59.8 (#26# purified recombinant enzyme <26>; #26# wild-type,
+	acyl-carrier protein-independent spectroscopic assay <43>) <26,43>
+SA	#26# 55.3 (#26# mutant R230A, acyl-carrier protein-independent
+	spectroscopic assay <43>) <43>
+SA	#26# 6.1 (#26# mutant R230A, acyl-carrier protein-dependent
+	spectroscopic assay <43>) <43>
+SA	#26# 54.2 (#26# mutant R230E, acyl-carrier protein-independent
+	spectroscopic assay <43>) <43>
+SA	#26# 0.0019 (#26# recombinant soluble enzyme <29>) <29>
+SA	#26# 54.5 (#26# mutant R187E, acyl-carrier protein-independent
+	spectroscopic assay <43>) <43>
+SA	#26# 57.9 (#26# mutant R187A, acyl-carrier protein-independent
+	spectroscopic assay <43>) <43>
+SA	#26# 0.0017 (#26# recombinant refolded enzyme <29>) <29>
+SA	#26# 42.6 (#26# mutant R187E/R230E, acyl-carrier protein-independent
+	spectroscopic assay <43>) <43>
+SA	#26# 70.6 (#26# wild-type, acyl-carrier protein-dependent spectroscopic
+	assay <43>) <43>
+SA	#26,56# 2.0 (#26# mutant R187E/R230E, acyl-carrier protein-dependent
+	spectroscopic assay <43>; #56# mutant enzyme Y169A, with
+	acetoacetyl-CoA and NADPH, pH 7.4 and 25°C <61>) <43,61>
+SA	#26,56# 6.3 (#26# mutant R187E, acyl-carrier protein-dependent
+	spectroscopic assay <43>; #56# mutant enzyme R168E, with
+	acetoacetyl-CoA and NADPH, pH 7.4 and 25°C <61>) <43,61>
+SA	#27# 280.0 (#27# acetoacetyl-N-acetylcysteamine <7>) <7>
+SA	#27# 450.0 (#27# acetoacetyl-CoA <7>) <7>
+SA	#27# 530.0 (#27# acetoacteyl-ACP <7>) <7>
+SA	#27# 9401.0 (#27# purified enzyme, protein determination by amino acid
+	analysis <7>) <7>
+SA	#30# 0.0366 <8>
+SA	#31# 0.0197 <2>
+SA	#31# 0.0189 <8>
+SA	#32# 3839.0 (#32# recombinant protein, cosubstrate NADH, pH 7.0,
+	phosphate buffer <12>) <12>
+SA	#32# 180400.0 (#32# recombinant protein, cosubstrate NADPH, pH 7.0,
+	phosphate buffer <12>) <12>
+SA	#32# 83140.0 (#32# cosubstrate NADPH, pH 8.35, carbonate buffer <12>)
+	<12>
+SA	#36# 0.0168 <8>
+SA	#45# -999.0 (#45# the intrinsic NADPH dependent 3-ketoacyl-CoA
+	reductase activity in the transformant Pseudomonas putida with
+	overexpressed fabG gene increased about 1.6-fold from 0.87 to 1.39
+	units/mg protein, indicating successful overexpression of the fabGJ
+	genes in Pseudomonas putida KCTC1639. <38>) <38>
+SA	#46# 0.08 (#46# with 4-fluoroacetophenone as substrate, 4 mM NADPH, in
+	0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 0.15 (#46# with 4-chloroacetophenone as substrate, 4 mM NADPH, in
+	0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 2.45 (#46# with alpha-chloroacetophenone as substrate, 4 mM NADPH,
+	in 0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 0.16 (#46# with propiophenone as substrate, 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 1.03 (#46# with 1,1,1-trifluoroacetone as substrate, 4 mM NADPH,
+	in 0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 0.02 (#46# with 2-octanone as substrate, 4 mM NADPH, in 0.1 M
+	sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 1.16 (#46# with ethylbenzoylacetate as substrate, 4 mM NADPH, in
+	0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 0.13 (#46# with 3-fluoroacetophenone as substrate, 4 mM NADPH, in
+	0.1 M sodium phosphate buffer, pH 7.0 <40>; #46# with acetophenone as
+	substrate, 4 mM NADPH, in 0.1 M sodium phosphate buffer, pH 7.0 <40>)
+	<40>
+SA	#46# 3.93 (#46# with 2,3,4,5,6-pentafluoroacetophenone as substrate, 4
+	mM NADPH, in 0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#46# 38.29 (#46# with ethyl 4-chloroacetoacetate as substrate, 4 mM
+	NADPH, in 0.1 M sodium phosphate buffer, pH 7.0 <40>) <40>
+SA	#5# 0.0032 <1>
+SA	#5# 4930.0 (#5# purified enzyme <5>) <5>
+SA	#56# 1.2 (#56# mutant enzyme K173A, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 0.06 (#56# mutant enzyme K173A, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 2.4 (#56# mutant enzyme K173A, with acetoacetyl-CoA and NADPH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 3.5 (#56# wild type enzyme, with acetoacetyl-CoA and NADPH, pH 7.4
+	and 25°C <61>) <61>
+SA	#56# 4.5 (#56# mutant enzyme K173A, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 0.85 (#56# mutant enzyme Y169A, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 7.9 (#56# mutant enzyme R168E, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 1.7 (#56# mutant enzyme Q126E/K169E, with 9,10-phenanthrene
+	quinone and NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 1.3 (#56# mutant enzyme K169E, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 20.0 (#56# mutant enzyme D42A, with acetoacetyl-CoA and NADPH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 22.0 (#56# mutant enzyme K152A, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 31.8 (#56# mutant enzyme Q126E/K169E, with acetoacetyl-CoA and
+	NADH, pH 7.4 and 25°C <61>) <61>
+SA	#56# 5.4 (#56# mutant enzyme D42A, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 2.6 (#56# wild type enzyme, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 1.6 (#56# mutant enzyme R168E, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 0.5 (#56# mutant enzyme Q126E/R168E/K169E, with acetoacetyl-CoA
+	and NADPH, pH 7.4 and 25°C <61>) <61>
+SA	#56# 21.7 (#56# mutant enzyme R168E, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 0.65 (#56# mutant enzyme Y169A, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 20.8 (#56# wild type enzyme, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 21.0 (#56# mutant enzyme R34A, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 14.8 (#56# mutant enzyme Q126E/R168E/K169E, with acetoacetyl-CoA
+	and NADH, pH 7.4 and 25°C <61>) <61>
+SA	#56# 25.5 (#56# mutant enzyme K152A, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 7.3 (#56# mutant enzyme D42A, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 4.3 (#56# mutant enzyme Q126E/K169E, with acetoacetyl-CoA and
+	NADPH, pH 7.4 and 25°C <61>) <61>
+SA	#56# 8.4 (#56# mutant enzyme Q126E/R168E/K169E, with 9,10-phenanthrene
+	quinone and NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 20.5 (#56# wild type enzyme, with acetoacetyl-CoA and NADH, pH 7.4
+	and 25°C <61>) <61>
+SA	#56# 20.7 (#56# mutant enzyme R34A, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 15.7 (#56# mutant enzyme K169E, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 17.4 (#56# mutant enzyme Q126E/K169E, with 9,10-phenanthrene
+	quinone and NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 0.44 (#56# mutant enzyme R34A, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>; #56# mutant enzyme R34A, with
+	acetoacetyl-CoA and NADPH, pH 7.4 and 25°C <61>) <61>
+SA	#56# 3.1 (#56# mutant enzyme Y169A, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 5.5 (#56# mutant enzyme K169E, with acetoacetyl-CoA and NADPH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 0.46 (#56# mutant enzyme K152A, with 9,10-phenanthrene quinone and
+	NADP+, pH 7.4 and 25°C <61>) <61>
+SA	#56# 19.3 (#56# mutant enzyme K169E, with acetoacetyl-CoA and NADH, pH
+	7.4 and 25°C <61>) <61>
+SA	#56# 74.6 (#56# mutant enzyme D42A, with 9,10-phenanthrene quinone and
+	NAD+, pH 7.4 and 25°C <61>) <61>
+SA	#9# 0.005 <1>
+SA	#9# 0.0192 <8>
+SA	#9# 7.95 <1>
+
+TEMPERATURE_OPTIMUM
+TO	#20,45# 30 (#20,45# assay at <24,38>) <24,38>
+TO	#24,42# 25 (#24,42# assay at <23,25,52>) <23,25,52>
+TO	#46# 44 <40>
+TO	#5# 45 <44>
+TO	#5# 37 (#5# assay at <27>) <27>
+TO	#5,26,41# 22 (#5,26,41# assay at room temperature <22,26>) <22,26>
+
+TEMPERATURE_RANGE
+TR	#24# 15-37 (#24# temperature profile <25>) <25>
+TR	#46# 30-55 (#46# 30°C: about 55% of maximal activity, 55°C: about 65%
+	of maximal activity <40>) <40>
+
+COFACTOR
+CF	#1,5,6,8,9,10,14,16,20,24,26,27,29,30,31,32,36,38,40,41,42,49,56,57,58#
+	NADPH (#40# dependent on <41>; #5,16,27# absolute specificity for NADPH
+	<3,5,16>; #9# much more effective than NADH <10>; #26# exhibits
+	negative cooperativity for its interaction with the enzyme <17>; #42#
+	cofactor binding structure and mechanism <23>; #26# cooperative
+	transitions in the enzyme due to cofactor and [acyl-carrier-protein]
+	binding, cooperative allosteric cofactor binding in presence of
+	[acyl-carrier-protein] <26>; #24# positive cooperativity in binding to
+	enzyme <31>; #26# 3fold enhancement in acyl-carrier protein binding to
+	wild-type in the presence of NADPH <43>; #56# low activity with NADPH
+	<61>)
+	<1,2,3,4,5,6,7,8,9,10,11,12,16,17,19,20,22,23,24,25,26,27,29,31,35,41
+	42,43,44,46,48,49,58,59,60,61,62>
+CF	#5,9,24,26,45,54,55# NADP+ (#26# cooperative transitions in the enzyme
+	due to cofactor and [acyl-carrier-protein] binding, cooperative
+	cofactor binding <26>) <1,14,25,26,38,55,56>
+CF	#8,27# more (#8,27# NADH is used by NADH-dependent 3-oxoacyl
+	[ACP]-reductase, EC 1.1.1.121 <9,11>) <9,11>
+CF	#9,48,56# NADH (#9# NADPH is much more effective than NADH <1,10>)
+	<1,10,57,61>
+
+ACTIVATING_COMPOUND
+AC	#26,46# more (#26# affinity of acyl-carrier protein for FabG is
+	increased by 3fold in the presence of 1 M urea <49>; #46# variation of
+	the buffer molarity between 25 mM and 200 mM or addition of NaCl up to
+	500 mM has no significant effect on enzyme activity <40>) <40,49>
+
+INHIBITORS
+IN	#1,3,5,12,13,14,17,19,21,23,25,28,34,35,37,39# Tannic acid (#3,25#
+	displays very strong inhibition <48>; #5# strongest inhibition on FabG,
+	shows time-dependent irreversible inhibition <48>) <48>
+IN	#1,3,5,9,12,13,14,17,19,20,21,23,25,28,33,34,35,37,38,39,42# more (#9#
+	not: N-ethylmaleimide, arsenite <1>; #42# no inhibition by triclosan
+	<23>; #5# cinnamic acid derivatives can be accommodated in the
+	substrate-binding region of the active site, above the nicotinamide
+	moiety of the NADPH cofactor <42>; #38# FabG is inhibited by extract of
+	galangal (rhizome of Alpinia officinarum), strongest inhibition with
+	40% ethanol extract of galangal. Inhibition is consisted of both
+	reversible and irreversible inhibition. Inhibits FabG in a competitive
+	pattern against NADPH, irreversible inhibition presents two phases
+	(slow and fast one) <46>; #20# FabG is inhibited by extract of galangal
+	(rhizome of Alpinia officinarum). Minimum inhibitory concentration is
+	0.01-0.02 mM <46>; #33# FabG is inhibited by extract of galangal
+	(rhizome of Alpinia officinarum). Minimum inhibitory concentration is
+	0.025-0.05 mM <46>; #3# FabG is inhibited by extract of galangal
+	(rhizome of Alpinia officinarum). Minimum inhibitory concentration is
+	0.32-0.64 mM <46>; #14# FabG is inhibited by extract of galangal
+	(rhizome of Alpinia officinarum). Minimum inhibitory concentration is
+	above 1.28 mM <46>; #1,3,5,12,13,14,17,19,23,34,37,39# inhibition by
+	leaf extracts from Acer platanoides, Acer campestre, Acer rubrum, Acer
+	saccharum and Acer truncatum Bunge <48>; #25# inhibition by leaf
+	extracts from Acer platanoides, Acer campestre, Acer rubrum, Acer
+	saccharum and Acer truncatum Bunge, except strain 04-5 <48>; #21,28,35#
+	inhibition by leaf extracts from Acer platanoides, Acer campestre, Acer
+	rubrum, Acer saccharum and Acer truncatum Bunge. Is inhibited by the
+	leaf extracts from all five kinds of maples more effectively than are
+	other Gram-negative bacteria strains <48>; #5# inhibition by leaf
+	extracts from Acer platanoides, Acer campestre, Acer rubrum, Acer
+	saccharum and Acer truncatum Bunge. Leaf extracts of Acer saccharum and
+	Acer truncatum Bunge display time-dependent irreversible inhibition of
+	FabG, whereas leaf extracts of Acer platanoides, Acer campestre and
+	Acer rubrum show reversible inhibition <48>) <1,23,42,46,48>
+IN	#11# RNAi (#11# suppresses KCR activity, which results in a reduction
+	of cuticular wax load and affects very-long-chain fatty acid
+	composition of sphingolipids, seed triacylglycerols, and root
+	glycerolipids. RNAi-suppressed Arabidopsis KCR1 plants display fused
+	vegetative and reproductive organs, an abnormal root morphology and
+	have abnormal trichome and epidermal cell morphology <39>) <39>
+IN	#15# Acyl carrier protein (#15# beta-ketobutyryl-CoA reductase activity
+	of FabG1 is inhibited, activity of FabG2 is unaffected <18>) <18>
+IN	#2# resveratrol (#2# inhibits the overall reaction and beta-ketoacyl
+	reductase reaction of FAS with IC50 values of 11.1 microg/ml and 21.9
+	microg/ml, respectively. In 3 T3-L1 preadipocytes, resveratrol reduces
+	lipid accumulation remarkably <54>) <54>
+IN	#2# grape skin extract (#2# inhibits the overall reaction and
+	beta-ketoacyl reductase reaction of FAS with IC50 values of 4.61
+	microg/ml and 20.3 microg/ml, respectively. Inhibits the overall
+	reaction of FAS competitively with acetyl-CoA, noncompetitively with
+	malonyl-CoA and in a mixed manner with NADPH <54>) <54>
+IN	#20# DL-3-hydroxybutyryl-CoA (#20# competitive product inhibition <24>)
+	<24>
+IN	#24,42# 3-hydroxybutyryl-CoA (#42# competitive product inhibition <23>;
+	#24# noncompetitive product inhibition pattern <25>) <23,25>
+IN	#26# Guanidinium chloride (#26# FabG is fully unfolded at 4 M,
+	approximately 90% of the enzyme activity can be recovered on dialyzing
+	the denaturant. In presence of NADPH, there is no stabilization of FabG
+	in case of equilibrium unfolding with guanidinium chloride <49>) <49>
+IN	#26# Urea (#26# FabG is fully unfolded at 6 M, approximately 90% of the
+	enzyme activity can be recovered on dialyzing the denaturant. Two
+	states in the reversible unfolding process of FabG in presence of
+	NADPH, one is an activity-enhanced state and the other, an inactive
+	state in case of equilibrium unfolding with urea <49>) <49>
+IN	#26# acyl-carrier protein (#26# inhibition of wild-type with increasing
+	concentrations <43>) <43>
+IN	#27,32# Phenylglyoxal (#27# with NADPH 45% remaining activity, without
+	total loss of activity <7>) <7,12>
+IN	#38# kaempferol <46>
+IN	#42# bromochlorophen (#42# an anthelmintic agent, over 75% inhibition
+	at 0.02 mM, IC50: 0.0154 mM <23>) <23>
+IN	#42# Hexachlorophene (#42# an anthelmintic and antimicrobial agent,
+	over 75% inhibition at 0.02 mM, IC50: 0.002 mM <23>) <23>
+IN	#42# di-resorcinol sulfide (#42# over 75% inhibition at 0.02 mM, IC50:
+	0.0038 mM <23>) <23>
+IN	#42# bithionol (#42# over 75% inhibition at 0.02 mM, IC50: 0.010 mM
+	<23>) <23>
+IN	#49# anthecotulide (#49# linear sesquiterpene lactone from Anthemis
+	auriculata <35>) <35>
+IN	#49# 4-hydroxyanthecotulide (#49# linear sesquiterpene lactone from
+	Anthemis auriculata <35>) <35>
+IN	#49# 4-acetoxyanthecotulide (#49# most active linear sesquiterpene
+	lactone from Anthemis auriculata against FabG <35>) <35>
+IN	#5# epigallocatechin gallate <44>
+IN	#5# (E)-4-cyanophenyl 3-(benzo[d][1,3]dioxol-5-yl)acrylate <42>
+IN	#5# (E)-2-nitrophenyl cinnamate <42>
+IN	#5# chlorogenic acid (#5# IC50: 0.881-0.948 mM <27>) <27>
+IN	#5# (E)-3-phenoxybenzyl 3-(benzo[d][1,3]dioxol-5-yl)acrylate (#5# 61%
+	residual activity <42>) <42>
+IN	#5# (E)-phenyl 3-(benzo[d][1,3]dioxol-5-yl)acrylate (#5# 69% residual
+	activity <42>) <42>
+IN	#5# N-(1,3-dioxoisoindolin-2-yl)-2-oxo-2H-chromene-3-carboxamide (#5#
+	69% residual activity <42>) <42>
+IN	#5# (E)-benzyl 3-(benzo[d][1,3]dioxol-5-yl)acrylate (#5# 71% residual
+	activity <42>) <42>
+IN	#5# (E)-1-(4-methylpiperidin-1-yl)-3-phenylprop-2-en-1-one (#5# 80%
+	residual activity <42>) <42>
+IN	#5,20,24# NADP+ (#5,20# competitive product inhibition <24,27>; #24#
+	noncompetitive product inhibition pattern <25>) <24,25,27>
+IN	#5,38# quercetin <46,48>
+IN	#5,6,14,25# 1,2,3,4,6-penta-O-galloyl-beta-D-glucose (#14# minimal
+	inhibitory concentration 0.125 mg/ml <32>; #25# minimal inhibitory
+	concentration 0.25 mg/ml <32>; #5# mixed type of inhibition. IC50 value
+	0.9 microgramm per ml, Ki value 0.21 microgramm per ml <32>; #6#
+	compound is transported across cancer cell membrane to further
+	down-regulate FAS and activate caspase-3 in MDA-MB-231 cells. Compared
+	with other FAS inhibitors, including catechin gallate and morin,
+	1,2,3,4,6-penta-O-galloyl-beta-D-glucose involves a higher reversible
+	fast-binding inhibition with an irreversible slow-binding inhibition,
+	i.e. saturation kinetics with a dissociation constant of 0.59 microM
+	and a limiting rate constant of 0.16 per min. The major reacting site
+	of PGG is on the beta-ketoacyl reduction domain of FAS. Compound
+	exhibits different types of inhibitions against the three substrates in
+	the FAS overall reaction <53>) <32,53>
+IN	#9# p-chloromercuribenzoate <1>
+
+METALS_IONS
+ME	#42# more (#42# the enzyme activity is maximal at a ionic strength of
+	325 mM <23>) <23>
+
+MOLECULAR_WEIGHT
+MW	#11# 35000 (#11# sequence analysis, KCR2 <39>) <39>
+MW	#14# 116000 (#14# recombinant enzyme, analytical ultracentrifugation,
+	tetrameric at higher enzyme concentrations <28>) <28>
+MW	#14# 29000 (#14# 2 * 29000, recombinant enzyme, SDS-PAGE <28>; #14# 4 *
+	29000, SDS-PAGE, tetrameric at higher enzyme concentrations <28>) <28>
+MW	#14# 50400 (#14# recombinant enzyme, gel filtration <28>) <28>
+MW	#14# 58400 (#14# recombinant enzyme, analytical ultracentrifugation
+	<28>) <28>
+MW	#15,29# 25000 (#15# x * 25000, recombinant methionine-labelled FabG1,
+	SDS-PAGE <18>) <18,60>
+MW	#16# 120000 (#16# gel filtration <6>) <6>
+MW	#26# 110000 (#26# gel filtration, wild-type and mutants <43>) <43>
+MW	#26# 31000 (#26# 4 * 31000, SDS-PAGE, wild-type and mutants <43>) <43>
+MW	#26,27# 28000 (#26# x * 28000, SDS-PAGE <17>; #27# 4 * 28000, SDS-PAGE
+	<7>) <7,17>
+MW	#27# 130000 (#27# gel filtration <7>) <7>
+MW	#27# 40000-46000 (#27# gel filtration, sucrose density gradient
+	centrifugation <11>) <11>
+MW	#32# 27000 (#32# ? * 27000, DNA sequence calculation <12>) <12>
+MW	#4,15# 24000 (#4# ? * 24000, SDS-PAGE <13>; #15# x * 24000, recombinant
+	methionine-labelled FabG2, SDS-PAGE <18>) <13,18>
+MW	#45,46# 25500 (#45# derived from amino acid sequence containing 246
+	amino acids <38>; #46# 4 * 25500, SDS-PAGE <40>) <38,40>
+MW	#46# 102000 (#46# gel filtration <40>) <40>
+MW	#58# 100000 (#58# x * 100000, SDS-PAGE <58>) <58>
+MW	#8# 44000 (#8# gel filtration <9>) <9>
+MW	#9# 97000 (#9# gel filtration <1>) <1>
+MW	#9# 64000 (#9# gel filtration <10>) <10>
+MW	#9# 24200 (#9# 4 * 24200, SDS-PAGE <1>) <1>
+
+POSTTRANSLATIONAL_MODIFICATION
+PM	#42# more (#42# the enzyme contains a signal peptide <23>) <23>
+
+SUBUNITS
+SU	#14# dimer (#14# 2 * 29000, recombinant enzyme, SDS-PAGE <28>) <28>
+SU	#16,27# More (#16,27# animals, yeast and Mycobacteria have fatty acid
+	synthetases containing all the individual activities on one or two
+	multifunctional polypeptide chains, plants and most bacterial systems,
+	including Escherichia coli, possess individual monofunctional enzymes
+	and a separate acyl carrier protein <3>) <3>
+SU	#26# homotetramer (#26# 4 * 31000, SDS-PAGE, wild-type and mutants
+	<43>) <43>
+SU	#29# homodimer or homotetramer (#29# 2 or 4 * 25000, SDS-PAGE <60>) <60>
+SU	#4,15,26,32,58# ? (#58# x * 100000, SDS-PAGE <58>; #26# x * 28000,
+	SDS-PAGE <17>; #32# ? * 27000, DNA sequence calculation <12>; #4# ? *
+	24000, SDS-PAGE <13>; #15# x * 24000, recombinant methionine-labelled
+	FabG2, SDS-PAGE <18>; #15# x * 25000, recombinant methionine-labelled
+	FabG1, SDS-PAGE <18>) <12,13,17,18,58>
+SU	#56# heterotetramer <61>
+SU	#57# homodimer (#57# x-ray crystallography <59>) <59>
+SU	#9,14,16,26,27,42,44,46# tetramer (#27# 4 * 28000, SDS-PAGE <7>; #9# 4
+	* 24200, SDS-PAGE <1>; #16# 4 * 20000-30000, SDS-PAGE <3,6>; #46# 4 *
+	25500, SDS-PAGE <40>; #44# crystallization data <37>; #44#
+	crystallography <50>; #14# 4 * 29000, SDS-PAGE, tetrameric at higher
+	enzyme concentrations <28>; #42# crystal structure and ultrafiltration,
+	quarternary structure analysis, monomer interactions, conformations in
+	absence and presence of cofactor NADP+ <23>; #26# cross-linking of
+	native and up to 1 M urea-treated FabG <49>) <1,3,6,7,23,28,37,40,49,50>
+
+PI_VALUE
+PI	#45# 5.9 (#45# predicted <38>) <38>
+
+APPLICATION
+AP	#1,3,5,12,13,14,17,19,20,21,23,25,26,28,33,34,35,37,38,39# drug
+	development (#26# the enzyme has no isoforms and thus is a good target
+	for inhibitor design <26>;
+	#1,3,5,12,13,14,17,19,21,23,25,28,34,35,37,39# FabG is the antibacteria
+	target of maple leaf extracts and tannic acid, and both reversible and
+	irreversible inhibitions of FabG are important for the antibacterial
+	effect <48>; #3,14,20,33,38# galangal extract inhibits FabG, thereby
+	displaying antibacterial ability <46>) <26,46,48>
+AP	#5# synthesis (#5# coexpression with fabH mutant F87T and
+	polyhydroxyalkanoate synthase genes enhances the production of short
+	chain length-medium chain length polyhydroxyalkanoate copolymer from
+	both related and unrelated carbon sources. Analysis of
+	polyhydroxyalkanoate accumulation and physical characterization of
+	copolymer <33>) <33>
+
+ENGINEERING
+EN	#1# M125I/S233T (#1# temperature-sensitive mutant enzyme does not allow
+	growth of Escherichia coli at 42°C in complementation assay <19>) <19>
+EN	#1,5# E233K (#1# temperature-sensitive mutant enzyme does not allow
+	growth of Escherichia coli at 42°C in complementation assay <19>; #5#
+	temperature-sensitive phenoptype, reductase activity is much more
+	thermolabile than the activity of the wild-type strain <19>) <19>
+EN	#24# S140A (#24# mutant shows no enzymatic activity. S140A mutant does
+	not bind to NADPH <52>) <52>
+EN	#24# S140T (#24# mutant shows no enzymatic activity. Mutant S140T shows
+	impaired NADPH binding <52>) <52>
+EN	#26# R187A (#26# kinetic constants (Km and acyl-carrier
+	protein-independent specific activities) remain largely unchanged with
+	respect to wild-type. Exhibits very poor activity in the acyl-carrier
+	protein-dependent spectroscopic assay. No inhibition by increasing
+	concentrations of acyl-carrier protein. 3fold decreased affinity
+	binding to acyl-carrier protein with respect to wild-type <43>) <43>
+EN	#26# R230A (#26# kinetic constants (Km and acyl-carrier
+	protein-independent specific activities) remain largely unchanged with
+	respect to wild-type. Exhibits very poor activity in the acyl-carrier
+	protein-dependent spectroscopic assay. No inhibition by increasing
+	concentrations of acyl-carrier protein. 5fold decreased affinity
+	binding to acyl-carrier protein with respect to wild-type <43>) <43>
+EN	#26# R187E (#26# kinetic constants (Km and acyl-carrier
+	protein-independent specific activities) remain largely unchanged with
+	respect to wild-type. Exhibits very poor activity in the acyl-carrier
+	protein-dependent spectroscopic assay. No inhibition by increasing
+	concentrations of acyl-carrier protein. 4fold decreased affinity
+	binding to acyl-carrier protein with respect to wild-type <43>) <43>
+EN	#26# R230E (#26# kinetic constants (Km and acyl-carrier
+	protein-independent specific activities) remain largely unchanged with
+	respect to wild-type. Exhibits very poor activity in the acyl-carrier
+	protein-dependent spectroscopic assay. No inhibition by increasing
+	concentrations of acyl-carrier protein. 41fold decreased affinity
+	binding to acyl-carrier protein with respect to wild-type <43>) <43>
+EN	#26# R187A/R230A (#26# kinetic constants (Km and acyl-carrier
+	protein-independent specific activities) remain largely unchanged with
+	respect to wild-type. Exhibits very poor activity in the acyl-carrier
+	protein-dependent spectroscopic assay. 5fold decreased affinity binding
+	to acyl-carrier protein with respect to wild-type <43>) <43>
+EN	#26# R187E/R230E (#26# kinetic constants (Km and acyl-carrier
+	protein-independent specific activities) remain largely unchanged with
+	respect to wild-type. Exhibits very poor activity in the acyl-carrier
+	protein-dependent spectroscopic assay. 80fold decreased affinity
+	binding to acyl-carrier protein with respect to wild-type <43>) <43>
+EN	#26# R187K (#26# no decreased affinity binding to acyl-carrier protein
+	with respect to wild-type <43>) <43>
+EN	#29# Y155F (#29# the mutant shows less than 3% of wild type activity
+	<60>) <60>
+EN	#29# G92D (#29# the mutant shows less than 5% of wild type activity
+	<60>) <60>
+EN	#29# G141A (#29# the mutant shows less than 5% of wild type activity
+	<60>) <60>
+EN	#29# G92A (#29# the mutant shows less than 60% of wild type activity
+	<60>) <60>
+EN	#29# Q152A (#29# the mutant shows less than 10% of wild type activity
+	<60>) <60>
+EN	#5# A154T/E233K (#5# temperature-sensitive phenoptype, reductase
+	activity is much more thermolabile than the activity of the wild-type
+	strain <19>) <19>
+EN	#5# A154T (#5# similar thermal stability as wild-type enzyme <19>) <19>
+EN	#5# F87T (#5# coexpression with fabH mutant F87T and
+	polyhydroxyalkanoate synthase genes enhances the production of short
+	chain length-medium chain length polyhydroxyalkanoate copolymer from
+	both related and unrelated carbon sources <33>) <33>
+EN	#55# Q47L (#55# the mutant with increased specific activity exhibits a
+	kcat value that is 2.4fold higher than that of the wild type enzyme
+	<56>) <56>
+EN	#55# T173S (#55# the mutant with increased specific activity exhibits a
+	kcat value that is 3.5fold higher than that of the wild type enzyme
+	<56>) <56>
+EN	#56# K173A (#56# the mutant shows 0.3% activity with acetoacetyl-CoA
+	and NADH, 2.4% activity with acetoacetyl-CoA and NADPH, 6% activity
+	with 9,10-phenanthrene and NAD+, and 22% activity with
+	9,10-phenanthrene and NADP+, compared to the wild type enzyme,
+	respectively <61>) <61>
+EN	#56# D42A (#56# the mutant shows 36% activity with acetoacetyl-CoA and
+	NADH, 20% activity with acetoacetyl-CoA and NADPH, 4% activity with
+	9,10-phenanthrene and NAD+, and 26% activity with 9,10-phenanthrene and
+	NADP+, compared to the wild type enzyme, respectively <61>) <61>
+EN	#56# K152A (#56# the mutant shows 109% activity with acetoacetyl-CoA
+	and NADH, no activity with acetoacetyl-CoA and NADPH, 123% activity
+	with 9,10-phenanthrene and NAD+, and 2.2% activity with
+	9,10-phenanthrene and NADP+, compared to the wild type enzyme,
+	respectively <61>) <61>
+EN	#56# Y169A (#56# the mutant shows 3% activity with acetoacetyl-CoA and
+	NADH, 2% activity with acetoacetyl-CoA and NADPH, 4% activity with
+	9,10-phenanthrene and NAD+, and 15% activity with 9,10-phenanthrene and
+	NADP+, compared to the wild type enzyme, respectively <61>) <61>
+EN	#56# R34A (#56# the mutant shows 102% activity with acetoacetyl-CoA and
+	NADH, 100% activity with acetoacetyl-CoA and NADPH, 40.44% activity
+	with 9,10-phenanthrene and NAD+, and 2.1% activity with
+	9,10-phenanthrene and NADP+, compared to the wild type enzyme,
+	respectively <61>) <61>
+EN	#56# R168E (#56# the mutant shows 106% activity with acetoacetyl-CoA
+	and NADH, 6.3% activity with acetoacetyl-CoA and NADPH, 38% activity
+	with 9,10-phenanthrene and NAD+, and 8% activity with 9,10-phenanthrene
+	and NADP+, compared to the wild type enzyme, respectively <61>) <61>
+EN	#56# K169E (#56# the mutant shows 95% activity with acetoacetyl-CoA and
+	NADH, 5.5% activity with acetoacetyl-CoA and NADPH, 76% activity with
+	9,10-phenanthrene and NAD+, and 6% activity with 9,10-phenanthrene and
+	NADP+, compared to the wild type enzyme, respectively <61>) <61>
+EN	#56# Q126E/K169E (#56# the mutant shows 156% activity with
+	acetoacetyl-CoA and NADH, 4.3% activity with acetoacetyl-CoA and NADPH,
+	84% activity with 9,10-phenanthrene and NAD+, and 8% activity with
+	9,10-phenanthrene and NADP+, compared to the wild type enzyme,
+	respectively <61>) <61>
+EN	#56# Q126E/R168E/K169E (#56# the mutant shows 72% activity with
+	acetoacetyl-CoA and NADH, 0.5% activity with acetoacetyl-CoA and NADPH,
+	40% activity with 9,10-phenanthrene and NAD+, and no activity with
+	9,10-phenanthrene and NADP+, compared to the wild type enzyme,
+	respectively <61>) <61>
+EN	#57# S36A (#57# the mutant shows reduced activity compared to the wild
+	type enzyme <59>) <59>
+EN	#57# R14A (#57# inactive <59>) <59>
+EN	#57# S40A (#57# the mutant shows reduced activity compared to the wild
+	type enzyme <59>) <59>
+EN	#7,11,16,32# more (#32# glutathione-S-transferase fusion protein
+	without transit peptide, expressed in Escherichia coli <12>; #16#
+	transformation with 3-oxoacyl-[acyl-carrier-protein] reductase in
+	antisense orientation, driven by either the cauliflower mosaic virus
+	35S promoter or a seed-specific acyl carrier protein promoter. In
+	plants with altered reductase activity, total seed yield is reduced in
+	all cases. In less severely affected plant lines, seeds have a normal
+	appearance and composition but the yield of seeds is reduced by
+	approximately 50%. In more severely affected lines, reductions in both
+	seed fatty acid content and the number of seeds produced per plant are
+	evident, resulting in a 90% reduction in fatty acid synthesized per
+	plant. Phenotypes are independent of the promoter used. In severely
+	affected lines, a large proportion of seeds show precocious
+	germination, and these have a reduced oleate content and increased
+	levels of polyunsaturated 18-carbon fatty acids, compared with normal
+	seeds of the same line <36>; #11# insertional mutants in KCR1 and KCR2
+	<39>; #7# mutant cells lacking the homologous mitochondrial FASII
+	enzyme 3-oxoacyl-ACP reductase Oar1p <45>; #7# oar1-DELTA mutants, lack
+	3-oxoacyl-ACP reductase acitivity, expression of FabG4 gene of
+	Mycobacterium tuberculosis <47>) <12,36,39,45,47>
+
+CLONED
+CL	#4# (expression in Escherichia coli) <13>
+CL	#5# (overexpression of fabG gene in Escherichia coli strain BL21 (DE3))
+	<14>
+CL	#5# (gene fabG, expression of N-terminally His-tagged enzyme in
+	Escherichia coli strain BL21(DE3)) <27>
+CL	#5# (gene fabG, overexpression of His-tagged enzyme in strain
+	BL21(DE3)) <22>
+CL	#5# (coexpression in Escherichia coli LS5218 with fabH mutant F87T and
+	polyhydroxyalkanoate synthase genes) <33>
+CL	#5# (His-tagged FabG expressed in Escherichia coli strain BL21 (DE3))
+	<48>
+CL	#5# (NH2-terminally His-tagged FabG expressed in Escherichia coli
+	strain BL21(DE3)) <44>
+CL	#5# (pET15b-fabG vector construct transformed into the Escherichia coli
+	BL21 DE3 strain) <42>
+CL	#11# (YFP-KCR1 and CFP-KCR2 fusion constructs transiently expressed in
+	tobacco under the control of the 35S promoter or in Arabidopsis. KCR1
+	and KCR2 expressed in the yeast ybr159DELTA mutant) <39>
+CL	#14# (gene rhlG, expression of His-tagged enzyme in Escherichia coli
+	strain BL21(DE3) or, as selenomethionine-labeled variant in Escherichia
+	coli strain B834 in minimal medium) <28>
+CL	#15# (complementation of Escherichia coli fabG mutant with
+	Lactobacillus lactis fabG genes shows that fabG1 encodes a functional
+	beta-ketoacyl ACP reductase and fabG2 encodes an enzyme that has
+	activity with the model substrate beta-ketobutyryl-CoA, but lacks the
+	ability to support fatty acid synthesis both in vivo and in vitro) <18>
+CL	#16# (overexpression in Escherichia coli strain BL21 (DE3)) <15>
+CL	#16# (transformation with 3-oxoacyl-[acyl-carrier-protein] reductase in
+	antisense orientation, driven by either the cauliflower mosaic virus
+	35S promoter or a seed-specific acyl carrier protein promoter) <36>
+CL	#18# (heterologous coexpression of the polyhydroxyalkanoate synthase
+	genes phaEC together with Haloarcula hispanica fabG1 reconstructs the
+	polyhydroxyalkanoate biosynthetic pathway) <41>
+CL	#22# (expression in Saccharomyces cerevisae mutant cells lacking the
+	homologous mitochondrial FASII enzyme 3-oxoacyl-ACP reductase Oar1p)
+	<45>
+CL	#24# (expression in Escherichia coli) <31>
+CL	#24# (expressed in Escherichia coli) <52>
+CL	#24# (selection of an Escherichia coli, BL21(DE3)NH host that stably
+	expresses mutant forms of 3-ketoacyl-ACP(CoA) reductase) <21>
+CL	#24# (expression in Streptomyces cerevisiae cells lacking 3-oxoacyl-ACP
+	reductase) <47>
+CL	#26# (expression in Escherichia coli) <17>
+CL	#26# (gene fabG, DNA and amino acid sequence determination and
+	analysis, expression of C-terminally His-tagged enzyme in Escherichia
+	coli strain BL21(DE3)) <26>
+CL	#26# (overexpression of His-tagged enzyme in Escherichia coli strain
+	BL21(DE3) in inclusion bodies) <29>
+CL	#26# (into pET-28a vector and expressed in Escherichia coli BL21 (DE3)
+	codon plus) <49>
+CL	#26# (wild-type and mutants cloned into the pET-28a(+) vector and
+	expressed in Escherichia coli BL21 (DE3) codon plus) <43>
+CL	#29# (expressed in Escherichia coli BL21-CodonPlus(DE3)-RIPL cells) <60>
+CL	#32# (expression of protein without transit peptide in Escherichia
+	coli) <12>
+CL	#38# (overexpressed in Escherichia coli BL21 (DE3)) <46>
+CL	#40# (heterologous coexpression of the polyhydroxyalkanoate synthase
+	genes phaEC together with fabG1 in Haloferax volcanii) <41>
+CL	#41# (gene fabG, overexpression of His-tagged enzyme in strain
+	BL21(DE3), recombinant expression in Escherichia coli strain JM109
+	leads to enhanced production of polyhydroxyalkanoate, PHA, copolymer
+	from glucose, PHA composition, overview) <22>
+CL	#42# (gene fabG, DNA and amino acid sequence determination and
+	analysis, expression of His10-tagged enzyme in Escherichia coli) <23>
+CL	#43# (expression in Escherichia coli) <30>
+CL	#44# (expression in Escherichia coli) <37>
+CL	#44# (PCR product recombined with pDONR221 and insert from this vector
+	transferred in the LR reaction to the expression vector pET15g which
+	adds a histidine tag and a 3C protease cleavage site, expressed in
+	Escherichia coli B834(DE3) cells) <50>
+CL	#45# (Recombinant Escherichia coli (strain DH5alpha) co-expresses the
+	fabG gene. The fabG gene is PCR-cloned using primers derived from the
+	up and down-stream regions of the Pseudomonas putida KT2440 genome.)
+	<38>
+CL	#46# (transformation of the fabG gene encoding
+	3-ketoacyl-[acyl-carrier-protein] reductase in fusion with a
+	His6-MBP-tag (ligated into vector pETM-41) into Escherichia coli XL-10
+	Gold. After isolation from XL-10 cells and DNA sequencing, transformed
+	into Escherichia coli Tuner (DE3) cells) <40>
+CL	#47# (FabG1 expressed from vector pPLM189 as mitochondrial protein in
+	the Saccharomyces cerevisiae oar1DELTA mutant strain. FabG1 can restore
+	respiratory growth of Saccharomyces cerevisiae oar1DELTA cells and
+	renews lipoic acid production) <47>
+CL	#48# (FabG4 expressed from vector pPLM192 as mitochondrial protein in
+	the Saccharomyces cerevisiae oar1DELTA mutant strain. FabG4 can restore
+	respiratory growth of Saccharomyces cerevisiae oar1DELTA cells and
+	renews lipoic acid production) <47>
+CL	#53# (expressed in Escherichia coli as a His-tagged fusion protein) <51>
+CL	#55# (expressed in Escherichia coli BL21(DE3) cells and in
+	Corynebacterium glutamicum) <56>
+CL	#56# (expressed in Escherichia coli BL21 (RARE) cells) <61>
+CL	#57# (expressed in Escherichia coli BL21(DE3) cells) <59>
+CL	#58# (expressed in Escherichia coli BL21 Rosetta 2 (DE3) pLysS cells)
+	<58>
+
+CRYSTALLIZATION
+CR	#5# <14>
+CR	#14# (purified native and selenomethionine-labeled recombinant enzyme,
+	hanging drop vapour diffusion method, 18°C, 2.5 mg/ml protein in 50 mm
+	HEPES, pH 7.0, 5 mM Tris, pH 8.0, 0.15 mM ammonium sulfate, 6% PEG
+	4000, 0.1 M NaCl, 0.5 mM EDTA, and 0.5 mM DTT, mixed with reservoir
+	solution containing 1 M HEPES, pH 7.0, 0.3 M ammonium sulfate, and 12%
+	PEG 4000, plus 1 mM NADPH, X-ray diffraction structure determination
+	and analysis at 2.3 A resolution) <28>
+CR	#16# <15>
+CR	#16# (structure determination and similarities within short-chain
+	alcohol dehydrogenase family, catalytic mechanism) <16>
+CR	#29# (hanging drop vapor diffusion method, using 2.0-2.7 M ammonium
+	sulfate and 0.1 M Tris (pH 9.0)) <60>
+CR	#42# (purified recombinant enzyme, vapour diffusion method, 10 mg/ml
+	protein in 20 mM HEPES, pH 6.8, 0.5 M NaCl, 1 mM DTT, and 0.5 mM EDTA,
+	is mixed with an equal volume of reservoir solution containing 0.1 M
+	MES, pH 6.0, 35% v/v 2-methyl-2,4-pentanediol, and 0.2 M LiSO4,
+	equilibration against 1 ml of mother liquor, room temperature, 6 weeks,
+	X-ray diffraction structure determination and analysis at 1.9 A
+	resolution) <23>
+CR	#43# (diffraction to 1.8 A, determinantion of initial phases by
+	molecular replacement) <30>
+CR	#44# (diffraction to 2.4 A. Final model contains two tetramers
+	displaying 222 symmetry and 575 water molecules in the crystallographic
+	asymmetric unit, but no bound cofactors or substrates) <37>
+CR	#44# (at 2.4 A resolution, space group P21 with unit-cell parameters a
+	= 70.6, b = 120.7, c = 136.4 and beta = 104.4. The structure contains
+	two tetramers displaying 222 symmetry (all chains are completely
+	traced, although for some chains the electron density for residues
+	189-203 is poor) and 575 water molecules in the crystallographic
+	asymmetric unit, but no bound cofactors or substrates) <50>
+CR	#48# (in complex with hexanoyl-CoA, hanging drop vapor diffusion
+	method, using) <57>
+CR	#53# (crystalized at a resolution of 2.25 A) <51>
+CR	#55# (vapor diffusion method, using 0.1 M MES (pH 7.1), 1.6 M ammonium
+	sulfate, and 10% (w/v) 1,4-dioxane) <56>
+CR	#56# (sitting drop vapor diffusion method, using 15-18% (w/v) PEG3350
+	and 0.4 M ammonium acetate in sodium acetate buffer at pH 5.0) <61>
+CR	#57# (apo-form complexed with NADPH, vapor diffusion method, using 10%
+	(w/v) polyethylene glycol 4000, 10% (v/v) 2-propanol, 0.1 M HEPES pH
+	7.0 and 30% (v/v) jeffamine ED2001, 0.1 M HEPES pH 7.5) <59>
+CR	#58# (hanging drop vapor diffusion method, apoenzyme is crystallized by
+	using 100 mM Na-HEPES (pH 7.5), 30% (w/v) PEG 400 and 200 mM magnesium
+	chloride hexahydrate, while the complex with NADP+ is crystallized by
+	using 200 mM sodium citrate tribasic dehydrate and 20% (w/v) PEG 3350)
+	<58>
+
+PURIFICATION
+PU	#5# <5,14>
+PU	#5# (recombinant His-tagged enzyme from strain BL21(DE3) by nickel
+	affinity chromatography) <22>
+PU	#5# (by nickel affinity chromatography) <44>
+PU	#5# (recombinant N-terminally His-tagged enzyme from Escherichia coli
+	strain BL21(DE3) by nickel affinity chromatography) <27>
+PU	#5# (by nickel chelation affinity chromatography) <48>
+PU	#5# (by sonication, centrifugation and on Ni-NTA column) <42>
+PU	#9# <1,10>
+PU	#14# (recombinant His-tagged enzyme from Escherichia coli strain
+	BL21(DE3) by nickel affinity chromatography) <28>
+PU	#16# <3,6,15>
+PU	#24# (recombinant protein, modified purification protocol) <31>
+PU	#26# <49>
+PU	#26# (recombinant C-terminally His-tagged enzyme from Escherichia coli
+	strain BL21(DE3) by nickel affinity chromatography) <26>
+PU	#26# (recombinant His-tagged enzyme from Escherichia coli strain
+	BL21(DE3) solubilized from inclusion bodies and refolded is further
+	purified by nickel affinity chromatography) <29>
+PU	#26# (wild-type and mutants purified to homogeneity using an
+	Ni2+-nitrilotriacetic acid affinity column) <43>
+PU	#27# <3,7,11>
+PU	#29# (Ni-NTA agarose column chromatography and Superdex 200 pg gel
+	filtration) <60>
+PU	#38# (by nickel chelation affinity chromatography) <46>
+PU	#41# (recombinant His-tagged enzyme from strain BL21(DE3) by nickel
+	affinity chromatography) <22>
+PU	#42# (recombinant His10-tagged enzyme from Escherichia coli by nickel
+	affinity chromatography and gel filtration) <23>
+PU	#43# (recombinant protein) <30>
+PU	#44# (by nickel-affinity chromatography) <50>
+PU	#46# (by gel filtration and ion exchange chromatography, to
+	homogeneity) <40>
+PU	#53# (using Ni-NTA chromatography) <51>
+PU	#55# (His-Bind resin column chromatography and Superdex 200 pg gel
+	filtration) <56>
+PU	#56# (Ni-NTA column chromatography and Superdex 200 gel filtration) <61>
+PU	#57# (Ni-NTA resin column chromatography and Superdex 200 gel
+	filtration) <59>
+PU	#58# (nickel Sepharose column chromatography and ENrich SEC 650 gel
+	filtration) <58>
+
+RENATURED
+REN	#26# (solubilization of overexpressed recombinant His-tagged enzyme
+	from Escherichia coli strain BL21(DE3) inclusion bodies by 8 M urea,
+	and refolding by dialysis, cation exchange chromatography, and dilution
+	in presence of 0.001 mM NADPH in 20 mM sodium acetate, pH 5.3, 10%
+	glycerol, and 0.05% Tween 20, the refolded enzyme shows 90-95% of
+	soluble enzyme activity) <29>
+REN	#26# (study on guanidinium chloride-induced isothermal and thermal
+	denaturation. Folding/unfolding is completely reversible and a
+	two-state process. Conformational stability, i.e. DELTAGS, and the
+	DELTACP value for the protein unfolding, are 22.68 kcal/mole and 5.83
+	kcal/(mole K)) <34>
+
+GENERAL_STABILITY
+GS	#16,27# (inactivation by dilution can be partly prevented by inclusion
+	of NADPH) <6,7>
+GS	#42# (the purified recombinant enzyme is stable at room temperature at
+	concentrations above 0.2 mg/ml, but unstable at 0.01 mg/ml) <23>
+
+STORAGE_STABILITY
+SS	#16# (4°C, 100 mM potassium phosphate, 52% loss of activity after 24 h)
+	<6>
+SS	#16# (27°C, 100 mM potassium phosphate buffer, 13% loss of activity
+	after 24 h) <6>
+SS	#27# (27°C, 2 M NaCl, 24 h stable) <7>
+SS	#5# (-80°C, 10% glycerol) <42>
+SS	#5# (-20°C, phosphate buffer, 10% glycerol) <44>
+SS	#5,38# (-80°C, 50% glycerol) <46,48>
+SS	#9# (-20°C, stable for 2 months) <1>
+
+TEMPERATURE_STABILITY
+TS	#5# 37 (#5# wild-type enzyme: about 40% loss of activity after 15 min,
+	mutant enzyme E233K: about 90% loss of activity after 10 min, mutant
+	enzyme A164T: about 25% loss of activity after 15 min, mutant enzyme
+	A154T/E233K: about 80% loss of activity after 5 min <19>) <19>
+TS	#5# 30 (#5# wild-type enzyme: about 15% loss of activity after 15 min,
+	mutant enzyme E233K: about 60% loss of activity after 10 min,mutant
+	enzyme A164T: about 20% loss of activity after 15 min, mutant enzyme
+	A154T/E233K: about 80% loss of activity after 15 min <19>) <19>
+TS	#5# 45 (#5# wild-type enzyme: about 70% loss of activity after 15 min,
+	mutant enzyme E233K: complete loss of activity after 10 min, mutant
+	enzyme A164T: about 60% loss of activity after 15 min, mutant enzyme
+	A154T/E233K: complete loss of activity after 5 min <19>) <19>
+
+REFERENCE
+RF	<1> Shimakata, T.; Stumpf, P.K.: Purification and characterizations of
+	beta-ketoacyl-[acyl-carrier-protein] reductase,
+	beta-hydroxyacyl-[acylcarrier-protein] dehydrase, and
+	enoyl-[acyl-carrier-protein] reductase from Spinacia oleracea leaves.
+	Arch. Biochem. Biophys. (1982) 218, 77-91. {Pubmed:6756317}
+RF	<2> Shimakata, T.; Stumpf, P.K.: The procaryotic nature of the fatty
+	acid synthetase of developing Carthamus tinctorius L. (Safflower)
+	seeds. Arch. Biochem. Biophys. (1982) 217, 144-154. {Pubmed:7125663}
+RF	<3> Sheldon, P.S.; Safford, R.; Slabas, A.R.; Kekwick, R.G.O.:
+	3-Oxoacyl-[acyl carrier protein] reductase: a component of plant fatty
+	acid synthase. Biochem. Soc. Trans. (1988) 16, 392-393. {Pubmed:}
+	(review)
+RF	<4> Volpe, J.J.; Vagelos, P.R.: Saturated fatty acid biosynthesis and
+	its regulation. Annu. Rev. Biochem. (1973) 42, 21-60. {Pubmed:4147183}
+	(review)
+RF	<5> Toomey, R.E.; Wakil, S.J.: Studies on the mechanism of fatty acid
+	synthesis. XV. Preparation and general properties of beta-ketoacyl acyl
+	carrier protein reductase from Escherichia coli. Biochim. Biophys. Acta
+	(1966) 116, 189-197. {Pubmed:4381013}
+RF	<6> Sheldon, P.S.; Kekwick, R.G.O.; Smith, C.G.; Sidebottom, C.;
+	Slabas, A.R.: 3-Oxoacyl-[ACP] reductase from oil seed rape (Brassica
+	napus). Biochim. Biophys. Acta (1992) 1130, 151-159. {Pubmed:1562581}
+RF	<7> Sheldon, P.S.; Kekwick, R.G.O.; Sidebottom, C.; Smith, C.G.;
+	Slabas, A.R.: 3-Oxoacyl-(acyl-carrier protein) reductase from avocado
+	(Persea americana) fruit mesocarp. Biochem. J. (1990) 271, 713-720.
+	{Pubmed:2244875}
+RF	<8> Shimakata, T.; Stumpf, P.K.: The purification and function of
+	acetyl coenzyme A:acyl carrier protein transacylase. J. Biol. Chem.
+	(1983) 258, 3592-3598. {Pubmed:6833216}
+RF	<9> Hendren, R.W.; Bloch, K.: Fatty acid synthetases from Euglena
+	gracilis. Separation of component activities of the ACP-dependent fatty
+	acid synthetase and partial purification of the beta-ketoacyl-ACP
+	synthetase. J. Biol. Chem. (1980) 255, 1504-1508. {Pubmed:6766450}
+RF	<10> Shimakata, T.; Stumpf, P.K.: Fatty acid synthetase of Spinacia
+	oleracea leaves. Plant Physiol. (1982) 69, 1257-1262. {Pubmed:16662382}
+RF	<11> Caughey, I.; Kekwick, R.G.O.: The characteristics of some
+	components of the fatty acid synthetase system in the plastids from the
+	mesocarp of avocado (Persea americana) fruit. Eur. J. Biochem. (1982)
+	123, 553-561. {Pubmed:7075600}
+RF	<12> Klein, B.; Pawlowski, K.; Höricke-Grandpierre, C.; Schell, J.;
+	Töpfer, R.: Isolation and characterization of a cDNA from Cuphea
+	lanceolata encoding a beta-ketoacyl-ACP reductase. Mol. Gen. Genet.
+	(1992) 233, 122-128. {Pubmed:1376402}
+RF	<13> Morbidoni, H.R.; de Mendoza, D.; Cronan, J.E.: Bacillus subtilis
+	acyl carrier protein is encoded in a cluster of lipid biosynthesis
+	genes. J. Bacteriol. (1996) 178, 4794-4800. {Pubmed:8759840}
+RF	<14> Rafferty, J.B.; Fisher, M.; Langridge, S.J.; Martindale, W.;
+	Thomas, N.C.; Simon, J.W.; Bithell, S.; Slabas, A.R.; Rice, D.W.:
+	Crystallization of the NADP-dependent beta-keto acyl carrier protein
+	reductase from Escherichia coli. Acta Crystallogr. Sect. D (1998) 54,
+	427-429. {Pubmed:9761917}
+RF	<15> Fisher, M.; Sedelnikowa, S.E.; Martindale, W.; Thomas, N.C.;
+	Simon, J.W.; Slabas, A.R.; Rafferty, J.B.: Crystallization of the
+	NADP-dependent beta-keto acyl-carrier protein reductase from Brassica
+	napus. Acta Crystallogr. Sect. D (2000) 56, 86-88. {Pubmed:10666637}
+RF	<16> Fisher, M.; Kroon, J.T.M.; Martindale, W.; Stuitje, A.R.; Slabas,
+	A.R.; Rafferty, J.B.: The x-ray structure of Brassica napus beta-keto
+	acyl carrier protein reductase and its implications for substrate
+	binding and catalysis. Structure (2000) 8, 339-347. {Pubmed:10801480}
+RF	<17> Pillai, S.; Rajagopal, C.; Kapoor, M.; Kumar, G.; Gupta, A.;
+	Surolia, N.: Functional characterization of beta-ketoacyl-ACP reductase
+	(FabG) from Plasmodium falciparum. Biochem. Biophys. Res. Commun.
+	(2003) 303, 387-392. {Pubmed:12646215} (c)
+RF	<18> Wang, H.; Cronan, J.E.: Only one of the two annotated Lactococcus
+	lactis fabG genes encodes a functional beta-ketoacyl-acyl carrier
+	protein reductase. Biochemistry (2004) 43, 11782-11789.
+	{Pubmed:15362862} (c)
+RF	<19> Lai, C.Y.; Cronan, J.E.: Isolation and characterization of
+	beta-ketoacyl-acyl carrier protein reductase (fabG) mutants of
+	Escherichia coli and Salmonella enterica serovar typhimurium. J.
+	Bacteriol. (2004) 186, 1869-1878. {Pubmed:14996818} (c)
+RF	<20> Hoang, T.T.; Sullivan, S.A.; Cusick, J.K.; Schweizer, H.P.:
+	beta-Ketoacyl acyl carrier protein reductase (FabG) activity of the
+	fatty acid biosynthetic pathway is a determining factor of
+	3-oxo-homoserine lactone acyl chain lengths. Microbiology (2002) 148,
+	3849-3856. {Pubmed:12480888} (c)
+RF	<21> Poletto, S.S.; da Fonseca, I.O.; de Carvalho, L.P.; Basso, L.A.;
+	Santos, D.S.: Selection of an Escherichia coli host that expresses
+	mutant forms of Mycobacterium tuberculosis 2-trans enoyl-ACP(CoA)
+	reductase and 3-ketoacyl-ACP(CoA) reductase enzymes. Protein Expr.
+	Purif. (2004) 34, 118-125. {Pubmed:14766307} (c)
+RF	<22> Nomura, C.T.; Taguchi, K.; Gan, Z.; Kuwabara, K.; Tanaka, T.;
+	Takase, K.; Doi, Y.: Expression of 3-ketoacyl-acyl carrier protein
+	reductase (fabG) genes enhances production of polyhydroxyalkanoate
+	copolymer from glucose in recombinant Escherichia coli JM109. Appl.
+	Environ. Microbiol. (2005) 71, 4297-4306. {Pubmed:16085817}
+RF	<23> Wickramasinghe, S.R.; Inglis, K.A.; Urch, J.E.; Mueller, S.; van
+	Aalten, D.M.; Fairlamb, A.H.: Kinetic, inhibition and structural
+	studies on 3-oxoacyl-ACP reductase from Plasmodium falciparum, a key
+	enzyme in fatty acid biosynthesis. Biochem. J. (2006) 393, 447-457.
+	{Pubmed:16225460}
+RF	<24> Patel, M.P.; Liu, W.S.; West, J.; Tew, D.; Meek, T.D.; Thrall,
+	S.H.: Kinetic and chemical mechanisms of the fabG-encoded Streptococcus
+	pneumoniae beta-ketoacyl-ACP reductase. Biochemistry (2005) 44,
+	16753-16765. {Pubmed:16342966}
+RF	<25> Silva, R.G.; de Carvalho, L.P.; Blanchard, J.S.; Santos, D.S.;
+	Basso, L.A.: Mycobacterium tuberculosis beta-ketoacyl-acyl carrier
+	protein (ACP) reductase: kinetic and chemical mechanisms. Biochemistry
+	(2006) 45, 13064-13073. {Pubmed:17059223}
+RF	<26> Karmodiya, K.; Surolia, N.: Analyses of co-operative transitions
+	in Plasmodium falciparum beta-ketoacyl acyl carrier protein reductase
+	upon co-factor and acyl carrier protein binding. FEBS J. (2006) 273,
+	4093-4103. {Pubmed:16934037}
+RF	<27> Li, B.H.; Ma, X.F.; Wu, X.D.; Tian, W.X.: Inhibitory activity of
+	chlorogenic acid on enzymes involved in the fatty acid synthesis in
+	animals and bacteria. IUBMB Life (2006) 58, 39-46. {Pubmed:16540431}
+RF	<28> Miller, D.J.; Zhang, Y.M.; Rock, C.O.; White, S.W.: Structure of
+	RhlG, an essential beta-ketoacyl reductase in the rhamnolipid
+	biosynthetic pathway of Pseudomonas aeruginosa. J. Biol. Chem. (2006)
+	281, 18025-18032. {Pubmed:16624803}
+RF	<29> Karmodiya, K.; Srivastav, R.K.; Surolia, N.: Production and
+	purification of refolded recombinant Plasmodium falciparum
+	beta-ketoacyl-ACP reductase from inclusion bodies. Protein Expr. Purif.
+	(2005) 42, 131-136. {Pubmed:15939298}
+RF	<30> Mao, Q.; Duax, W.L.; Umland, T.C.: Crystallization and X-ray
+	diffraction analysis of the beta-ketoacyl-acyl carrier protein
+	reductase FabG from Aquifex aeolicus VF5. Acta Crystallogr. Sect. F
+	(2007) 63, 106-109. {Pubmed:17277451}
+RF	<31> Silva, R.G.; Rosado, L.A.; Santos, D.S.; Basso, L.A.:
+	Mycobacterium tuberculosis beta-ketoacyl-ACP reductase: alpha-secondary
+	kinetic isotope effects and kinetic and equilibrium mechanisms of
+	substrate binding. Arch. Biochem. Biophys. (2008) 471, 1-10.
+	{Pubmed:18155153}
+RF	<32> Zhang, F.; Luo, S.Y.; Ye, Y.B.; Zhao, W.H.; Sun, X.G.; Wang, Z.Q.;
+	Li, R.; Sun, Y.H.; Tian, W.X.; Zhang, Y.X.: The antibacterial efficacy
+	of aceraceous plant may be related to inhibition of bacterial
+	beta-ketoacyl-ACP reductase (FabG). Biotechnol. Appl. Biochem. (2008)
+	51, 73-78. {Pubmed:18208374}
+RF	<33> Nomura, C.T.; Tanaka, T.; Eguen, T.E.; Appah, A.S.; Matsumoto, K.;
+	Taguchi, S.; Ortiz, C.L.; Doi, Y.: FabG mediates polyhydroxyalkanoate
+	production from both related and nonrelated carbon sources in
+	recombinant Escherichia coli LS5218. Biotechnol. Prog. (2008) 24,
+	342-351. {Pubmed:18215055}
+RF	<34> Karmodiya, K.; Sajad, S.; Sinha, S.; Maity, K.; Suguna, K.;
+	Surolia, N.: Conformational stability and thermodynamic
+	characterization of homotetrameric Plasmodium falciparum
+	beta-ketoacyl-ACP reductase. IUBMB Life (2007) 59, 441-449.
+	{Pubmed:17654120}
+RF	<35> Karioti, A.; Skaltsa, H.; Zhang, X.; Tonge, P.J.; Perozzo, R.;
+	Kaiser, M.; Franzblau, S.G.; Tasdemir, D.: Inhibiting enoyl-ACP
+	reductase (FabI) across pathogenic microorganisms by linear
+	sesquiterpene lactones from Anthemis auriculata. Phytomedicine (2008)
+	15, 1125-1129. {Pubmed:18424102}
+RF	<36> OHara, P.; Slabas, A.R.; Fawcett, T.: Antisense expression of
+	3-oxoacyl-ACP reductase affects whole plant productivity and causes
+	collateral changes in activity of fatty acid synthase components. Plant
+	Cell Physiol. (2007) 48, 736-744. {Pubmed:17401135}
+RF	<37> Zaccai, N.R.; Carter, L.G.; Berrow, N.S.; Sainsbury, S.;
+	Nettleship, J.E.; Walter, T.S.; Harlos, K.; Owens, R.J.; Wilson, K.S.;
+	Stuart, D.I.; Esnouf, R.M.: Crystal structure of a 3-oxoacyl-(acyl
+	carrier protein) reductase (BA3989) from Bacillus anthracis at
+	2.4-.ANG. resolution. Proteins Struct. Funct. Bioinform. (2007) 70,
+	562-567. {Pubmed:}
+RF	<38> Vo, M.T.; Lee, K.W.; Jung, Y.M.; Lee, Y.H.: Comparative effect of
+	overexpressed phaJ and fabG genes supplementing (R)-3-hydroxyalkanoate
+	monomer units on biosynthesis of mcl-polyhydroxyalkanoate in
+	Pseudomonas putida KCTC1639. J. Biosci. Bioeng. (2008) 106, 95-98.
+	{Pubmed:18691538}
+RF	<39> Beaudoin, F.; Wu, X.; Li, F.; Haslam, R.P.; Markham, J.E.; Zheng,
+	H.; Napier, J.A.; Kunst, L.: Functional characterization of the
+	Arabidopsis beta-ketoacyl-coenzyme A reductase candidates of the fatty
+	acid elongase. Plant Physiol. (2009) 150, 1174-1191. {Pubmed:19439572}
+RF	<40> Hoelsch, K.; Havel, J.; Haslbeck, M.; Weuster-Botz, D.:
+	Identification, cloning, and characterization of a novel ketoreductase
+	from the cyanobacterium Synechococcus sp. strain PCC 7942. Appl.
+	Environ. Microbiol. (2008) 74, 6697-6702. {Pubmed:18791006}
+RF	<41> Han, J.; Lu, Q.; Zhou, L.; Liu, H.; Xiang, H.: Identification of
+	the polyhydroxyalkanoate (PHA)-specific acetoacetyl coenzyme A
+	reductase among multiple FabG paralogs in Haloarcula hispanica and
+	reconstruction of the PHA biosynthetic pathway in Haloferax volcanii.
+	Appl. Environ. Microbiol. (2009) 75, 6168-6175. {Pubmed:19648370}
+RF	<42> Kristan, K.; Bratkovic, T.; Sova, M.; Gobec, S.; Prezelj, A.;
+	Urleb, U.: Novel inhibitors of beta-ketoacyl-ACP reductase from
+	Escherichia coli. Chem. Biol. Interact. (2009) 178, 310-316.
+	{Pubmed:18977209}
+RF	<43> Karmodiya, K.; Modak, R.; Sahoo, N.; Sajad, S.; Surolia, N.:
+	Deciphering the key residues in Plasmodium falciparum beta-ketoacyl
+	acyl carrier protein reductase responsible for interactions with
+	Plasmodium falciparum acyl carrier protein. FEBS J. (2008) 275,
+	4756-4766. {Pubmed:18721141}
+RF	<44> Sun, Y.H.; Cheng, Q.; Tian, W.X.; Wu, X.D.: A substitutive
+	substrate for measurements of beta-ketoacyl reductases in two fatty
+	acid synthase systems. J. Biochem. Biophys. Methods (2008) 70, 850-856.
+	{Pubmed:18201766}
+RF	<45> Gurvitz, A.: Caenorhabditis elegans F09E10.3 encodes a putative
+	3-oxoacyl-thioester reductase of mitochondrial type 2 fatty acid
+	synthase FASII that is functional in yeast. J. Biomed. Biotechnol.
+	(2009) 2009, 235868. {Pubmed:19746209}
+RF	<46> Huang, H.; Wu, D.; Tian, W.X.; Ma, X.F.; Wu, X.D.: Antimicrobial
+	effect by extracts of rhizome of Alpinia officinarum Hance may relate
+	to its inhibition of beta-ketoacyl-ACP reductase. J. Enzyme Inhib. Med.
+	Chem. (2008) 23, 362-368. {Pubmed:18569341}
+RF	<47> Gurvitz, A.: The essential mycobacterial genes, fabG1 and fabG4,
+	encode 3-oxoacyl-thioester reductases that are functional in yeast
+	mitochondrial fatty acid synthase type 2. Mol. Genet. Genomics (2009)
+	282, 407-416. {Pubmed:19685079}
+RF	<48> Wu, D.; Wu, X.D.; You, X.F.; Ma, X.F.; Tian, W.X.: Inhibitory
+	effects on bacterial growth and b-ketoacyl-ACP reductase by different
+	species of maple leaf extracts and tannic acid. Phytother. Res. (2009)
+	24, 535-541. {Pubmed:}
+RF	<49> Karmodiya, K.; Surolia, N.: A unique and differential effect of
+	denaturants on cofactor mediated activation of Plasmodium falciparum
+	beta-ketoacyl-ACP reductase. Proteins Struct. Funct. Genet. (2008) 70,
+	528-538. {Pubmed:17879351}
+RF	<50> Zaccai, N.; Carter, L.; Berrow, N.; Sainsbury, S.; Nettleship, J.;
+	Walter, T.; Harlos, K.; Owens, R.; Wilson, K.; Stuart, D.; Esnouf, R.:
+	Crystal structure of a 3-oxoacyl-(acyl carrier protein) reductase
+	(BA3989) from Bacillus anthracis at 2.4 A resolution. Proteins Struct.
+	Funct. Genet. (2008) 70, 562-567. {Pubmed:17894349}
+RF	<51> Subramanian, S.; Abendroth, J.; Phan, I.Q.; Olsen, C.; Staker,
+	B.L.; Napuli, A.; Van Voorhis, W.C.; Stacy, R.; Myler, P.J.: Structure
+	of 3-ketoacyl-(acyl-carrier-protein) reductase from Rickettsia
+	prowazekii at 2.25 A resolution. Acta Crystallogr. Sect. F (2011) 67,
+	1118-1122. {Pubmed:21904060}
+RF	<52> Rosado, L.A.; Caceres, R.A.; de Azevedo, W.F.; Basso, L.A.;
+	Santos, D.S.: Role of Serine140 in the mode of action of Mycobacterium
+	tuberculosis beta-ketoacyl-ACP Reductase (MabA). BMC Res. Notes (2012)
+	5, 526. {Pubmed:23006410}
+RF	<53> Zhao, W.; Wang, Y.; Hao, W.; Zhao, M.; Peng, S.: In vitro
+	inhibition of fatty acid synthase by
+	1,2,3,4,6-penta-O-galloyl-beta-D-glucose plays a vital role in
+	anti-tumour activity. Biochem. Biophys. Res. Commun. (2014) 445,
+	346-351. {Pubmed:24508804}
+RF	<54> Liang, Y.; Tian, W.; Ma, X.: Inhibitory effects of grape skin
+	extract and resveratrol on fatty acid synthase. BMC Complement. Altern.
+	Med. (2013) 13, 361. {Pubmed:24341420}
+RF	<55> Cukier, C.D.; Hope, A.G.; Elamin, A.A.; Moynie, L.; Schnell, R.;
+	Schach, S.; Kneuper, H.; Singh, M.; Naismith, J.H.; Lindqvist, Y.;
+	Gray, D.W.; Schneider, G.: Discovery of an allosteric inhibitor binding
+	site in 3-oxo-acyl-ACP reductase from Pseudomonas aeruginosa. ACS Chem.
+	Biol. (2013) 8, 2518-2527. {Pubmed:24015914}
+RF	<56> Matsumoto, K.; Tanaka, Y.; Watanabe, T.; Motohashi, R.; Ikeda, K.;
+	Tobitani, K.; Yao, M.; Tanaka, I.; Taguchi, S.: Directed evolution and
+	structural analysis of NADPH-dependent acetoacetyl coenzyme A
+	(acetoacetyl-CoA) reductase from Ralstonia eutropha reveals two
+	mutations responsible for enhanced kinetics. Appl. Environ. Microbiol.
+	(2013) 79, 6134-6139. {Pubmed:23913421}
+RF	<57> Dutta, D.; Bhattacharyya, S.; Roychowdhury, A.; Biswas, R.; Das,
+	A.: Crystal structure of hexanoyl-CoA bound to beta-ketoacyl reductase
+	FabG4 of Mycobacterium tuberculosis. Biochem. J. (2013) 450, 127-139.
+	{Pubmed:23163771}
+RF	<58> Blaise, M.; Van Wyk, N.; Baneres-Roquet, F.; Guerardel, Y.;
+	Kremer, L.: Binding of NADP+ triggers an open-to-closed transition in a
+	mycobacterial FabG beta-ketoacyl-ACP reductase. Biochem. J. (2017) 474,
+	907-921. {Pubmed:28126742}
+RF	<59> Zhang, Y.; Ning, F.; Li, X.; Teng, M.: Structural insights into
+	cofactor recognition of yeast mitochondria 3-oxoacyl-ACP reductase
+	OAR1. IUBMB Life (2013) 65, 154-162. {Pubmed:23300157}
+RF	<60> Hou, J.; Zheng, H.; Chruszcz, M.; Zimmerman, M.D.; Shumilin, I.A.;
+	Osinski, T.; Demas, M.; Grimshaw, S.; Minor, W.: Dissecting the
+	structural elements for the activation of beta-ketoacyl-(acyl carrier
+	protein) reductase from Vibrio cholerae. J. Bacteriol. (2015) 198,
+	463-476. {Pubmed:26553852}
+RF	<61> Venkatesan, R.; Sah-Teli, S.K.; Awoniyi, L.O.; Jiang, G.; Prus,
+	P.; Kastaniotis, A.J.; Hiltunen, J.K.; Wierenga, R.K.; Chen, Z.:
+	Insights into mitochondrial fatty acid synthesis from the structure of
+	heterotetrameric 3-ketoacyl-ACP reductase/3R-hydroxyacyl-CoA
+	dehydrogenase. Nat. Commun. (2014) 5, 4805. {Pubmed:25203508}
+RF	<62> Medina, F.E.; Neves, R.P.; Ramos, M.J.; Fernandes, P.A.: A QM/MM
+	study of the reaction mechanism of human beta-ketoacyl reductase. Phys.
+	Chem. Chem. Phys. (2016) 19, 347-355. {Pubmed:27905606}
+
+KI_VALUE
+KI	#42# 0.0102 {3-hydroxybutyryl-CoA}  (#42# pH 6.8, 25°C, recombinant
+	enzyme <23>) <23>
+KI	#5,24# -999 {more}  (#5# inhibition kinetic analysis <27>; #24# product
+	inhibition kinetics, overview <25>) <25,27>
+
+IC50_VALUE
+IC50	#2# -999 {resveratrol}  (#2# IC50 value is 21.9 microg/ml, pH 7.0, 37°C
+	<54>) <54>
+IC50	#2# -999 {grape skin extract}  (#2# IC50 value is 20.3 microg/ml, pH
+	7.0, 37°C <54>) <54>
+IC50	#38# 0.0212 {kaempferol}  (#38# pH 7.0 <46>) <46>
+IC50	#38# -999 {more}  (#38# IC(50) value of 4.47 microg/ml for extract of
+	galangal, pH 7.0 <46>) <46>
+IC50	#38# 0.3048 {quercetin}  (#38# pH 7.0 <46>) <46>
+IC50	#42# 0.002 {Hexachlorophene}  (#42# an anthelmintic and antimicrobial
+	agent, over 75% inhibition at 0.02 mM, IC50: 0.002 mM <23>) <23>
+IC50	#42# 0.01 {bithionol}  (#42# over 75% inhibition at 0.02 mM, IC50:
+	0.010 mM <23>) <23>
+IC50	#42# 0.0038 {di-resorcinol sulfide}  (#42# over 75% inhibition at 0.02
+	mM, IC50: 0.0038 mM <23>) <23>
+IC50	#42# 0.0154 {bromochlorophen}  (#42# an anthelmintic agent, over 75%
+	inhibition at 0.02 mM, IC50: 0.0154 mM <23>) <23>
+IC50	#49# 1 {anthecotulide}  (#49# pH 7.0, 25°C <35>) <35>
+IC50	#49# 0.5 {4-acetoxyanthecotulide}  (#49# pH 7.0, 25°C <35>) <35>
+IC50	#49# 0.75 {4-hydroxyanthecotulide}  (#49# pH 7.0, 25°C <35>) <35>
+IC50	#5# 0.18 {(E)-phenyl 3-(benzo[d][1,3]dioxol-5-yl)acrylate}  (#5# pH 7.0
+	<42>) <42>
+IC50	#5# 0.18 {(E)-4-cyanophenyl 3-(benzo[d][1,3]dioxol-5-yl)acrylate}  (#5#
+	pH 7.0 <42>) <42>
+IC50	#5# 0.45 {(E)-2-nitrophenyl cinnamate}  (#5# pH 7.0 <42>) <42>
+IC50	#5# 0.12 {epigallocatechin gallate}  (#5# at pH 9.0 <44>) <44>
+IC50	#5# 0.00078 {Tannic acid}  <48>
+IC50	#5# 0.0084 {epigallocatechin gallate}  (#5# at pH 8.3 <44>) <44>
+IC50	#5# 0.0105 {epigallocatechin gallate}  (#5# at pH 7.5 <44>) <44>
+IC50	#5# 0.881-0.948 {chlorogenic acid}  (#5# IC50: 0.881-0.948 mM <27>) <27>
+IC50	#5# 0.215
+	{N-(1,3-dioxoisoindolin-2-yl)-2-oxo-2H-chromene-3-carboxamide}  (#5# pH
+	7.0 <42>) <42>
+IC50	#5# 0.0578 {epigallocatechin gallate}  (#5# at pH 7.0 <44>) <44>
+IC50	#5# 0.0336 {epigallocatechin gallate}  (#5# at pH 8.5 <44>) <44>
+IC50	#5# 0.00554 {epigallocatechin gallate}  (#5# at pH 8.0 <44>) <44>
+IC50	#5# 0.1223 {epigallocatechin gallate}  (#5# at pH 6.5 <44>) <44>
+
+KCAT_KM_VALUE
+KKM	#55# 18000 (#55# wild type enzyme, at pH 8.0 and 30°C <56>) <56>
+KKM	#55# 26500 (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>) <56>
+KKM	#55# 685 (#55# wild type enzyme, at pH 8.0 and 30°C <56>) <56>
+KKM	#55# 862 (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>) <56>
+KKM	#55# 15200 (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>) <56>
+KKM	#55# 585 (#55# mutant enzyme Q47L, at pH 8.0 and 30°C <56>) <56>
+
+GENERAL_INFORMATION
+GI	#11,18,40# malfunction (#40# DELTAfabG1 cells lose the ability to
+	accumulate poly(3-hydroxybutyrate-co-3-hydroxyvalerate). When the
+	DELTAfabG1 strain is transformed with the fabG1 expression plasmid
+	pWLG1, the capability of polyhydroxyalkanoate accumulation is restored.
+	When the fabG1 gene is disrupted or knocked out, the NADPH-dependent
+	activity of acetoacetyl-CoA reductase in the mutant, the DELTAfabG1 or
+	fabG1-1 strain, is greatly decreased <41>; #11# loss of KCR1 function
+	results in embryo lethality, which cannot be rescued by KCR2 expression
+	using the KCR1 promoter. Disruption of the KCR2 gene has no obvious
+	phenotypic effect <39>; #18# polyhydroxyalkanoate-defective
+	haloarchaeon <41>) <39,41>
+GI	#11,40# physiological function (#40# FabG1 has the function of
+	supplying precursors for polyhydroxyalkanoate biosynthesis <41>; #11#
+	only KCR1 is a functional KCR isoform involved in microsomal fatty acid
+	elongation <39>) <39,41>
+
+///
+ID	1.1.1.101
+********************************************************************************
+*                                                                              *
+* Copyrighted by Dietmar Schomburg, Techn. University Braunschweig, GERMANY    *
+* Distributed under the License as stated at http:/www.brenda-enzymes.org      *
+*                                                                              *
+********************************************************************************
+
+PROTEIN
+PR	#1# Cavia porcellus   <1,5,7,9>
+PR	#2# Mus musculus   <5,13>
+PR	#3# Homo sapiens   <6>
+PR	#4# Rattus norvegicus   <1,2,3,5>
+PR	#5# Saccharomyces cerevisiae   <8,10,11,12>
+PR	#6# Trypanosoma brucei   <4>
+
+RECOMMENDED_NAME
+RN	acylglycerone-phosphate reductase
+
+
+SYSTEMATIC_NAME
+SN	1-palmitoylglycerol-3-phosphate:NADP+ oxidoreductase
+
+
+SYNONYMS
+SY	 reductase, palmitoyl dihydroxyacetone phosphate
+SY	 palmitoyl-dihydroxyacetone-phosphate reductase
+SY	 acyldihydroxyacetone phosphate reductase
+SY	 palmitoyl dihydroxyacetone phosphate reductase
+SY	 palmitoyldihydroxyacetone-phosphate reductase
+SY	 acyldihydroxyacetone-phosphate:NADPH oxidoreductase
+SY	 acyldihydroxyacetone-phosphate oxidoreductase
+SY	 1-acylglycerol-3-phosphate:NADP+ oxidoreductase
+SY	 acyl/alkyl dihydroxyacetone-phosphate reductase
+
+REACTION
+RE	1-palmitoylglycerol 3-phosphate + NADP+ = palmitoylglycerone phosphate
+	+ NADPH + H+
+
+REACTION_TYPE
+RT	oxidation
+RT	reduction
+
+SOURCE_TISSUE
+ST	#1# spleen <1>
+ST	#1# lung <1>
+ST	#1,2,4# liver <1,2,3,5,7,9>
+ST	#1,4# testis <1>
+ST	#1,4# ascites tumor cell (#1,4# grown in the abdomen of swiss white
+	mice <1>) <1>
+ST	#2# preadipocyte (#2# 3T3-L1, fibroblast-like cell <13>) <13>
+ST	#3# skin fibroblast (#3# Zellweger syndrome cell lines GM0228 and
+	GM4340 and normal control cells <6>) <6>
+ST	#4# kidney <1>
+ST	#4# heart <1>
+ST	#4# brain <1>
+ST	#4# adipose tissue <1>
+
+NATURAL_SUBSTRATE_PRODUCT
+NSP	#1,2,3,4,5# acyldihydroxyacetone phosphate + NADPH = 1-acyl-sn-glycerol
+	3-phosphate + NADP+ (#3,5# acyldihydroxyacetone phosphate pathway
+	<6,8,10>; #2# reaction involved during conversion of 3T3-L1
+	preadipocytes to adipocytes <13>; #1# enzyme links acyldihydroxyacetone
+	phosphate pathway intermediates to cellular glycerolipid biosynthesis
+	<7>; #1,2,4,5# reaction in non-ether lipids biosynthesis
+	<1,2,5,8,10,11,12>) <1,2,5,6,7,8,10,11,12,13>
+NSP	#1,2,3,4,5# alkyldihydroxyacetone phosphate + NADPH + H+ =
+	1-alkyl-sn-glycerol 3-phosphate + NADP+ (#3,5# acyldihydroxyacetone
+	phosphate pathway <6,8>; #2# reaction involved during conversion of
+	3T3-L1 preadipocytes to adipocytes <13>; #1# enzyme links
+	acyldihydroxyacetone phosphate pathway intermediates to cellular
+	glycerolipid biosynthesis <7>; #1,2,4,5# reaction in ether lipids
+	biosynthesis <1,2,5,8>) <1,2,5,6,7,8,13>
+
+SUBSTRATE_PRODUCT
+SP	#1,2,3,4,5,6# acyldihydroxyacetone phosphate + NADPH =
+	1-acyl-sn-glycerol 3-phosphate + NADP+ (#3,5# acyldihydroxyacetone
+	phosphate pathway <6,8,10>; #2# reaction involved during conversion of
+	3T3-L1 preadipocytes to adipocytes <13>; #1# enzyme links
+	acyldihydroxyacetone phosphate pathway intermediates to cellular
+	glycerolipid biosynthesis <7>; #1,2,4,5# reaction in non-ether lipids
+	biosynthesis <1,2,5,8,10,11,12>) |#5# i.e. lysophosphatidic acid
+	<10,11>| <1,2,3,4,5,6,7,8,9,10,11,12,13>
+SP	#1,2,3,4,5,6# alkyldihydroxyacetone phosphate + NADPH + H+ =
+	1-alkyl-sn-glycerol 3-phosphate + NADP+ (#1,4# ether analog of acyl
+	dihydroxyacetone phosphate <5>; #3,5# acyldihydroxyacetone phosphate
+	pathway <6,8>; #2# reaction involved during conversion of 3T3-L1
+	preadipocytes to adipocytes <13>; #1# enzyme links acyldihydroxyacetone
+	phosphate pathway intermediates to cellular glycerolipid biosynthesis
+	<7>; #1,2,4,5# reaction in ether lipids biosynthesis <1,2,5,8>)
+	<1,2,3,4,5,6,7,8,9,13>
+SP	#1,3,4,5,6# hexadecyldihydroxyacetone phosphate + NADPH =
+	1-hexadecyl-sn-glycerol 3-phosphate + NADP+ <1,2,3,4,5,6,7,8,9,10>
+SP	#1,4,5,6# palmitoylglycerone phosphate + NADPH = 1-palmitoylglycerol
+	3-phosphate + NADP+ (#1,4,5,6# i.e. palmitoyldihydroxyacetone phosphate
+	<1,2,3,4,5,7,8,9>) <1,2,3,4,5,7,8,9>
+
+TURNOVER_NUMBER
+TN	#1# 100 {NADPH}  <7>
+
+KM_VALUE
+KM	#1# 0.05 {NADPH}  (#1# hexadecyldihydroxyacetone phosphate, peroxisomal
+	enzyme <5>; #1# liver mitochondria <1>) <1,5>
+KM	#1# 0.06 {NADPH}  (#1# cosubstrate palmitoyldihydroxyacetone phosphate,
+	peroxisomal enzyme <5>) <5>
+KM	#1# 1.7 {NADH}  <7,9>
+KM	#1# 0.021 {Hexadecyldihydroxyacetone phosphate}  (#1# cosubstrate NADPH
+	<9>) <7,9>
+KM	#1# 0.07 {NADPH}  (#1# in presence of NADP+, microsomal enzyme <5>) <5>
+KM	#1# 0.8 {NADH}  (#1# cosubstrate hexadecyldihydroxyacetone phosphate,
+	peroxisomal enzyme <5>) <5>
+KM	#1# 0.08 {NADH}  (#1# cosubstrate hexadecyldihydroxyacetone phosphate,
+	microsomal enzyme, NADPH, cosubstrate hexadecyldihydroxyacetone
+	phosphate, peroxisomal enzyme <5>) <5>
+KM	#1# 0.13 {NADPH}  (#1# in presence of NADP+, peroxisomal enzyme <5>) <5>
+KM	#1# 0.0154 {Palmitoyldihydroxyacetone phosphate}  <7>
+KM	#1,4# 0.01 {NADPH}  (#1# Km-value below: hexadecyldihydroxyacetone
+	phosphate + NADPH, microsomal enzyme <5>; #1,4# ascites microsomes <1>)
+	<1,5>
+KM	#1,5# 0.015 {NADPH}  (#1# cosubstrate palmitoydihydroxyacetone
+	phosphate <9>; #5# cosubstrate hexadecyldihydroxyacetone phosphate <8>)
+	<8,9>
+KM	#1,5# 0.02 {NADPH}  (#1# cosubstrate hexadecyldihydroxyacetone
+	phosphate <9>; #1# cosubstrate palmitoyldihydroxyacetone phosphate,
+	microsomal enzyme <5>; #1# ,cosubstrate hexadecyldihydroxyacetone
+	phosphate, microsomal enzyme <5>) <5,7,8,9>
+KM	#3# 0.0054 {NADPH}  (#3# skin Zellwenger syndrome fibroblasts <6>) <6>
+KM	#3# 0.0051 {NADPH}  (#3# skin fibroblasts, normal cells <6>) <6>
+KM	#4# 0.005 {NADPH}  (#4# cosubstrate hexadecyldihydroxyacetone
+	phosphate, brain <1>) <1>
+KM	#4# 0.007 {NADPH}  (#4# cosubstrate palmitoyldihydroxyacetone
+	phosphate, brain <1>) <1>
+
+PH_OPTIMUM
+PHO	#1# 6.5 <5>
+PHO	#1,4# 6.5-7.5 (#1,4# broad optimum <1,9>) <1,9>
+PHO	#5# 6.7-7.2 (#5# broad optimum <8>) <8>
+
+PH_RANGE
+PHR	#1# 5.5-8.2 (#1# about half-maximal activity at pH 5.5 and 8.2 <5>) <5>
+
+SPECIFIC_ACTIVITY
+SA	#1# 62.5 <7,9>
+SA	#2# 0.0186 (#2# light mitochondrial fraction <5>) <5>
+SA	#2# 0.0296 (#2# light mitochondrial fraction, clofibrate-fed animals
+	<5>) <5>
+SA	#2# 0.0101 (#2# at day 0 during differentiation induced by insulin,
+	dexamethasone, and methylisobutylxanthine <13>) <13>
+SA	#4# 0.00158 <3>
+SA	#4# 0.00546 (#4# light mitochondrial fraction <2>) <2>
+SA	#5# 0.00393 (#5# glucose grown cells <10>) <10>
+
+TEMPERATURE_OPTIMUM
+TO	#5# 40 <8>
+
+TEMPERATURE_RANGE
+TR	#5# 28-43 (#5# about half-maximal activity at 28°C and 43°C <8>) <8>
+
+COFACTOR
+CF	#1,2,3,4,5,6# NADPH (#1,4,5# specific for NADPH <1,8,11,12>;
+	#1,2,3,4,5,6# hydrogen from B-side of nicotinamide ring is transferred
+	to reduce keto substrates <1,2,3,4,5,6,7,8,9,10,11,12,13>)
+	<1,2,3,4,5,6,7,8,9,10,11,12,13>
+CF	#1,4# NADH (#4# at high concentrations, rat liver <1>; #1# can
+	substitute for NADPH with very low activity and affinity <9>; #1# can
+	substitute for NADPH <7>) <1,5,7,9>
+
+ACTIVATING_COMPOUND
+AC	#1# phosphatidylcholine (#1# micelles, activation, in presence of
+	Triton X-100, slight stimulation at low concentrations <7>) <7>
+AC	#1# phosphatidylglycerol (#1# micelles, activation, in presence of
+	Triton X-100, slight stimulation at low concentrations <7>) <7>
+AC	#1,4# Triton X-100 (#4# activation <3>; #1# destabilizes during
+	solubilization <7>) <3,7>
+AC	#1,4# EDTA (#1,4# activation, acyldihydroxyacetone phosphate as
+	substrate <1>) <1>
+AC	#2# Clofibrate (#2# activation <5>) <5>
+AC	#5# glycerol (#5# activation, used as nonfermentable carbon source in
+	wild type cell cultures, greater activity compared to activity in
+	glucose-grown cells <10>) <10>
+AC	#5# glycerol/ethanol (#5# activation, used as nonfermentable carbon
+	source in wild type cell cultures, greater activity compared to
+	activity in glucose-grown cells <10>) <10>
+AC	#5# ethanol (#5# activation, used as nonfermentable carbon source in
+	wild type and tpa1 mutant cell cultures, greater activity compared to
+	activity in glucose-grown cells <10>) <10>
+AC	#5# dihydroxyacetone (#5# activation, used as carbon source in wild
+	type cell cultures, greater activity compared to activity in
+	glucose-grown cells <10>) <10>
+
+INHIBITORS
+IN	#1# NADP+ (#1# competitive to NADPH <5>) <5,7>
+IN	#1# PCMB <7>
+IN	#1# palmitoyl-CoA (#1# competitive to NADPH, not to
+	alkyldihydroxyacetone phosphate <7>) <5,7>
+IN	#1# phosphatidylinositol <7>
+IN	#1# phosphatidylethanolamine <7>
+IN	#1# phosphatidylcholine (#1# at high concentrations <7>) <7>
+IN	#1# phosphatidylglycerol (#1# at high concentrations <7>) <7>
+IN	#1# alkyldihydroxyacetone phosphate (#1# at high concentrations <5>) <5>
+IN	#1# Palmitoyldihydroxyacetone phosphate (#1# competitive to
+	hexadecyldihydroxyacetone phosphate <7>) <7>
+IN	#1# more (#1# stable to N-ethylmaleimide <5,7>; #1# DTNB and thiols
+	<5>) <5,7>
+IN	#1,4# Trypsin (#1,4# inactivation <3,5>) <3,5>
+IN	#1,5# N-ethylmaleimide (#1# not inhibitory <7>; #5# strong inhibitor
+	<8>) <7,8>
+IN	#4# chymotrypsin (#4# inactivation <3>) <3>
+IN	#5# EDTA (#5# weak inhibition <8>) <8>
+IN	#5# F- (#5# weak inhibition <8>) <8>
+IN	#5# divalent cations (#5# i.e. Cu2+, Co2+, Ca2+, Mg2+, Mn2+, Ni2+,
+	Zn2+, strong inhibition <8>) <8>
+
+MOLECULAR_WEIGHT
+MW	#1# 75000 (#1# liver peroxisomes, gel filtration in the presence of
+	octylglucoside <9>) <9>
+MW	#1# 60000 (#1# 1 * 60000, SDS-PAGE <7,9>) <7,9>
+MW	#1# 70000-75000 (#1# gel filtration <7>) <7>
+MW	#5# 33000 (#5# lipid particles from wild type, systematic amino acid
+	sequence analysis by mass spectrometry <12>) <12>
+
+SUBUNITS
+SU	#1# monomer (#1# 1 * 60000, SDS-PAGE <7,9>) <7,9>
+SU	#1# More (#1# 27% hydrophobic amino acids by amino acid analysis <7>)
+	<7>
+
+CLONED
+CL	#5# (expression in Escherichia coli, YIL124w is the structural gene of
+	the enzyme) <12>
+
+PURIFICATION
+PU	#1# (affinity chromatography on NADPH-agarose gel matrix) <7,9>
+PU	#1# (partial, solubilization) <5>
+
+GENERAL_STABILITY
+GS	#1# (freeze-thawing leads to rapid loss of activity) <7>
+GS	#1# (NADPH enhances thermal stability) <5>
+GS	#1# (Triton X-100, stable to solubilization in the presence of high
+	salt concentrations) <5>
+GS	#1# (stable toward high concentrations of N-ethylmaleimide or DTNB) <5>
+GS	#1# (thiols stabilize solubilized enzyme) <5>
+GS	#1# (NADPH stabilizes during storage and solubilization) <7>
+GS	#1# (DTT stabilizes during storage) <7>
+GS	#1# (high ionic strength facilitates solubilization with neutral or
+	anionic detergents) <7>
+GS	#1# (Triton X-100, enzyme becomes unstable during solubilization unless
+	NADPH and 1 M KCl are present) <7>
+GS	#1# (unstable in the absence of NADPH) <9>
+GS	#1# (unstable on freezing and thawing) <9>
+GS	#1,4# (trypsin inactivates) <3,5>
+GS	#1,4# (freeze-thawing, stable after several cycles) <1>
+GS	#4# (chymotrypsin inactivates) <3>
+
+ORGANIC_SOLVENT_STABILITY
+OSS	#1# Glycerol (#1# stabilizes <7>) <7>
+
+STORAGE_STABILITY
+SS	#1# (4°C, stable in the presence of DTT and NADPH, 1 month) <7>
+SS	#5# (-80°C, membrane fraction stable) <8>
+SS	#5# (-20°C, membrane fraction stable) <8>
+
+TEMPERATURE_STABILITY
+TS	#1# 55 (#1# 10% loss of activity after 15 min, NADPH enhances thermal
+	stability <5>) <5>
+TS	#1# 4 (#1# stable for 4-6 weeks in the presence of octylglucoside and
+	NADPH <9>) <9>
+TS	#1,4# 100 (#1,4# complete inactivation after 10 min <1>) <1>
+TS	#3# 50 (#3# t1/2: 15 min, control fibroblasts, t1/2: 20 min, Zellweger
+	syndrome fibroblasts <6>) <6>
+TS	#5# 30 (#5# 10 min stable below <8>) <8>
+TS	#5# 45 (#5# t1/2: 10 min <8>) <8>
+
+REFERENCE
+RF	<1> LaBelle, E.F.; Hajra, A.K.: Enzymatic reduction of alkyl and acyl
+	derivatives of dihydroxyacetone phosphate by reduced pyridine
+	nucleotides. J. Biol. Chem. (1972) 247, 5825-5834. {Pubmed:4403490}
+RF	<2> Hajra, A.K.; Burke, C.L.; Jones, C.L.: Subcellular localization of
+	acyl coenzyme A: dihydroxyacetone phosphate acyltransferase in rat
+	liver peroxisomes (microbodies). J. Biol. Chem. (1979) 254,
+	10896-10900. {Pubmed:500614}
+RF	<3> Ballas, L.M.; Bell, R.M.: Topography of glycerolipid synthetic
+	enzymes. Synthesis of phosphatidylserine, phosphatidylinositol and
+	glycerolipid intermediates occurs on the cytoplasmic surface of rat
+	liver microsomal vesicles. Biochim. Biophys. Acta (1981) 665, 586-595.
+	{Pubmed:6271231}
+RF	<4> Opperdoes, F.R.: Localization of the initial steps in
+	alkoxyphospholipid biosynthesis in glycosomes (microbodies) of
+	Trypanosoma brucei. FEBS Lett. (1984) 169, 35-39. {Pubmed:6562019}
+RF	<5> Ghosh, M.K.; Hajra, A.K.: Subcellular distribution and properties
+	of acyl/alkyl dihydroxyacetone phosphate reductase in rodent livers.
+	Arch. Biochem. Biophys. (1986) 245, 523-530. {Pubmed:3954368}
+RF	<6> Webber, K.O.; Datta, N.S.; Hajra, A.K.: Properties of the enzymes
+	catalyzing the biosynthesis of lysophosphatidate and its ether analog
+	in cultured fibroblasts from Zellweger syndrome patients and normal
+	controls. Arch. Biochem. Biophys. (1987) 254, 611-620. {Pubmed:3646870}
+RF	<7> Datta, S.C.; Ghosh, M.K.; Hajra, A.K.: Purification and properties
+	of acyl/alkyl dihydroxyacetone-phosphate reductase from guinea pig
+	liver peroxisomes. J. Biol. Chem. (1990) 265, 8268-8274.
+	{Pubmed:2335525}
+RF	<8> Racenis, P.V.; Lai, J.L.; Das, A.K.; Mullick, P.C.; Hajra, A.K.;
+	Greenberg, M.L.: The acyl dihydroxyacetone phosphate pathway enzymes
+	for glycerolipid biosynthesis are present in the yeast Saccharomyces
+	cerevisiae. J. Bacteriol. (1992) 174, 5704-5710. {Pubmed:}
+RF	<9> Hajra, A.K.; Datta, S.C.; Ghosh, M.K.: Acyl/alkyldihydroxyacetone
+	phosphate reductase from guinea pig liver peroxisomes. Methods Enzymol.
+	(1992) 209, 402-407. {Pubmed:1495422}
+RF	<10> Minskoff, S.A.; Racenis, P.V.; Granger, J.; Larkins, L.; Hajra,
+	A.K.; Greenberg, M.L.: Regulation of phosphatidic acid biosynthetic
+	enzymes in Saccharomyces cerevisiae. J. Lipid Res. (1994) 35,
+	2254-2262. {Pubmed:7897322}
+RF	<11> Athenstaedt, K.; Weys, S.; Paltauf, F.; Daum, G.: Redundant
+	systems of phosphatidic acid biosynthesis via acylation of
+	glycerol-3-phosphate or dihydroxyacetone phosphate in the yeast
+	Saccharomyces cerevisiae. J. Bacteriol. (1999) 181, 1458-1463.
+	{Pubmed:10049376}
+RF	<12> Athenstaedt, K.; Daum, G.: 1-Acyldihydroxyacetone-phosphate
+	reductase (Ayr1p) of the yeast Saccharomyces cerevisiae encoded by the
+	open reading frame YIL124w is a major component of lipid particles. J.
+	Biol. Chem. (2000) 275, 235-240. {Pubmed:10617610}
+RF	<13> Hajra, A.K.; Larkins, L.K.; Das, A.K.; Hemati, N.; Erickson, R.L.;
+	MacDougald, O.A.: Induction of the peroxisomal
+	glycerolipid-synthesizing enzymes during differentiation of 3T3-L1
+	adipocytes. Role in triacylglycerol synthesis. J. Biol. Chem. (2000)
+	275, 9441-9446. {Pubmed:10734090}
+
+///
