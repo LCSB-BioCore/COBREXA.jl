@@ -11,8 +11,8 @@ function get_core_model(model::CobraTools.Model)
     ubs = [rxn.ub for rxn in model.reactions]
     lbs = [rxn.lb for rxn in model.reactions]
     
-    b = spzeros(length(model.metabolites))
-    S = spzeros(length(model.metabolites), length(model.reactions))
+    b = SparseArrays.spzeros(length(model.metabolites))
+    S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
 
     metids = [met.id for met in model.metabolites] # need indices for S matrix construction
     for (i, rxn) in enumerate(model.reactions) # column
@@ -391,7 +391,7 @@ The model is then constrained to produce objective flux bounded by `optimum_boun
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
 This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
-Returns two dictionaries (fva_max and fva_min) that each reaction `id`s to dictionaries of the resultant flux distributions (if solved successfully) when that `id` is optimized.
+Returns two dictionaries (`fva_max` and `fva_min`) that each reaction `id`s to dictionaries of the resultant flux distributions (if solved successfully) when that `id` is optimized.
 
 # Example
 ```
