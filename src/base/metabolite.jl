@@ -12,7 +12,7 @@ notes :: Dict{String, Array{String, 1}}
 annotation :: Dict{String, Union{Array{String, 1}, String}}
 ````
 """
-mutable struct Metabolite <: ModelComponent
+mutable struct Metabolite
     id::String
     name::String
     formula::String

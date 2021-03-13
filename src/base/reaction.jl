@@ -15,7 +15,7 @@ annotation :: Dict{String, Union{Array{String, 1}, String}}
 objective_coefficient :: Float64
 ````
 """
-mutable struct Reaction <: ModelComponent
+mutable struct Reaction
     id::String
     name::String
     metabolites::Dict{Metabolite,Float64}

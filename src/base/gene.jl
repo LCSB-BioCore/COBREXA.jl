@@ -9,7 +9,7 @@ notes :: Dict{String, Array{String, 1}}
 annotation :: Dict{String, Union{Array{String, 1}, String}}
 ````   
 """
-mutable struct Gene <: ModelComponent
+mutable struct Gene
     id::String
     name::String
     notes::Dict{String,Array{String,1}}

@@ -10,9 +10,6 @@ using JuMP, Tulip, OSQP # OSQP sucks for LPs
 
 import Base: findfirst, getindex, show
 
-# abstract types
-abstract type ModelComponent end # for Reactions, Metabolites and Genes. All ModelComponents have an `id` field.
-
 # definitions of structs
 include(joinpath("base", "metabolite.jl"))
 include(joinpath("base", "gene.jl"))
