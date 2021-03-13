@@ -68,7 +68,7 @@
 
     @testset "pFBA" begin
         @test !isempty(solworks)
-        @test isapprox(sol["PGM"], -14.737442319041387, atol = 1e-6)
+        @test isapprox(sol["PGM"], -14.737442319041387, atol = 1e-3)
     end
 
     # FVA
