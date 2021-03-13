@@ -1,4 +1,4 @@
-
+#! format: off
 function __init__()
     py"""
     try:
