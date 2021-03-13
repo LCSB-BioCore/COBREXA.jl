@@ -10,7 +10,7 @@ Returns: `S`, `b`, `ubs`, and `lbs`. All these data are arrays.
 function get_core_model(model::CobraTools.Model)
     ubs = [rxn.ub for rxn in model.reactions]
     lbs = [rxn.lb for rxn in model.reactions]
-    
+
     b = SparseArrays.spzeros(length(model.metabolites))
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
 
@@ -18,7 +18,9 @@ function get_core_model(model::CobraTools.Model)
     for (i, rxn) in enumerate(model.reactions) # column
         for (met, coeff) in rxn.metabolites
             j = findfirst(x -> x == met.id, metids) # row
-            isnothing(j) ? (@error "S matrix construction error: $(met.id) not defined."; continue) : nothing
+            isnothing(j) ?
+            (@error "S matrix construction error: $(met.id) not defined."; continue) :
+            nothing
             S[j, i] = coeff
         end
     end
@@ -40,7 +42,7 @@ function build_cbm(model::CobraTools.Model)
     cbmodel = JuMP.Model()
     nvars = size(S, 2) # number of variables in model
     v = @variable(cbmodel, v[1:nvars]) # flux variables
-    mb = @constraint(cbmodel, mb, S*v .== b) # mass balance
+    mb = @constraint(cbmodel, mb, S * v .== b) # mass balance
     lbs = @constraint(cbmodel, lbs, lbs .<= v) # lower bounds
     ubs = @constraint(cbmodel, ubs, v .<= ubs) # upper bounds
     return cbmodel, v, mb, ubs, lbs
@@ -65,20 +67,27 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = fba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
-function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+function fba(
+    model::CobraTools.Model,
+    objective_rxns::Union{Reaction,Array{Reaction,1}},
+    optimizer;
+    weights = Float64[],
+    solver_attributes = Dict{Any,Any}(),
+    constraints = Dict{String,Tuple{Float64,Float64}}(),
+)
     cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model
 
     set_optimizer(cbm, optimizer) # choose optimizer
     if !isempty(solver_attributes) # set other attributes
         for (k, val) in solver_attributes
             set_optimizer_attribute(cbm, k, val)
-       end
+        end
     end
 
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub=con[1], lb=con[2])
+        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
     end
 
     # ensure that an array of objective indices are fed in
@@ -87,12 +96,12 @@ function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
     else
         objective_indices = [model[rxn] for rxn in objective_rxns]
     end
-    
+
     if isempty(weights)
         weights = ones(length(objective_indices))
     end
     opt_weights = zeros(length(model.reactions))
-    
+
     # update the objective function tracker
     wcounter = 1
     for i in eachindex(model.reactions)
@@ -104,18 +113,21 @@ function fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
             model.reactions[i].objective_coefficient = 0.0
         end
     end
-    
-    v = all_variables(cbm)
-    @objective(cbm, Max, sum(opt_weights[i]*v[i] for i in objective_indices))
-    optimize!(cbm)    
 
-    status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
-    
+    v = all_variables(cbm)
+    @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+    optimize!(cbm)
+
+    status = (
+        termination_status(cbm) == MOI.OPTIMAL ||
+        termination_status(cbm) == MOI.LOCALLY_SOLVED
+    )
+
     if status
-        return map_fluxes(v, model)      
+        return map_fluxes(v, model)
     else
         @warn "Optimization issues occurred."
-        return Dict{String, Float64}()
+        return Dict{String,Float64}()
     end
 end
 
@@ -141,30 +153,37 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
-function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+function pfba(
+    model::CobraTools.Model,
+    objective_rxns::Union{Reaction,Array{Reaction,1}},
+    optimizer;
+    weights = Float64[],
+    solver_attributes = Dict{Any,Any}(),
+    constraints = Dict{String,Tuple{Float64,Float64}}(),
+)
     ## FBA ################################################
     cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
-        set_optimizer(cbm, optimizer[1]) 
+        set_optimizer(cbm, optimizer[1])
         if !isempty(solver_attributes["opt1"]) # set other attributes
             for (k, v) in solver_attributes["opt1"]
                 set_optimizer_attribute(cbm, k, v)
-           end
+            end
         end
     else
         set_optimizer(cbm, optimizer) # choose optimizer
         if !isempty(solver_attributes) # set other attributes
             for (k, v) in solver_attributes
                 set_optimizer_attribute(cbm, k, v)
-           end
+            end
         end
     end
 
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub=con[1], lb=con[2])
+        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
     end
 
     # ensure that an array of objective indices are fed in
@@ -173,12 +192,12 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
     else
         objective_indices = [model[rxn] for rxn in objective_rxns]
     end
-    
+
     if isempty(weights)
         weights = ones(length(objective_indices))
     end
     opt_weights = zeros(length(model.reactions))
-    
+
     # update the objective function tracker
     wcounter = 1
     for i in eachindex(model.reactions)
@@ -190,52 +209,65 @@ function pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Rea
             model.reactions[i].objective_coefficient = 0.0
         end
     end
-    
-    v = all_variables(cbm)
-    @objective(cbm, Max, sum(opt_weights[i]*v[i] for i in objective_indices))
-    optimize!(cbm)    
 
-    fba_status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
+    v = all_variables(cbm)
+    @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+    optimize!(cbm)
+
+    fba_status = (
+        termination_status(cbm) == MOI.OPTIMAL ||
+        termination_status(cbm) == MOI.LOCALLY_SOLVED
+    )
 
     ## pFBA ###############################################
     λ = objective_value(cbm)
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
-        set_optimizer(cbm, optimizer[2]) 
+        set_optimizer(cbm, optimizer[2])
         if !isempty(solver_attributes["opt2"]) # set other attributes
             for (k, v) in solver_attributes["opt2"]
                 set_optimizer_attribute(cbm, k, v)
-           end
+            end
         end
     end
 
-    @constraint(cbm, pfbacon, 0.999999*λ <= sum(opt_weights[i]*v[i] for i in objective_indices) <= λ) # constrain model - 0.9999 should be close enough?
+    @constraint(
+        cbm,
+        pfbacon,
+        0.999999 * λ <= sum(opt_weights[i] * v[i] for i in objective_indices) <= λ
+    ) # constrain model - 0.9999 should be close enough?
     @objective(cbm, Min, sum(dot(v, v)))
     optimize!(cbm)
 
-    if termination_status(cbm) != MOI.OPTIMAL && termination_status(cbm) != MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
+    if termination_status(cbm) != MOI.OPTIMAL &&
+       termination_status(cbm) != MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
         JuMP.delete(cbm, pfbacon)
-        @constraint(cbm, 0.99999*λ <= sum(v[i] for i in objective_indices) <= λ) 
-        optimize!(cbm)    
+        @constraint(cbm, 0.99999 * λ <= sum(v[i] for i in objective_indices) <= λ)
+        optimize!(cbm)
     end
-    if termination_status(cbm) != MOI.OPTIMAL && termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
+    if termination_status(cbm) != MOI.OPTIMAL &&
+       termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
         JuMP.delete(cbm, pfbacon)
-        @constraint(cbm, 0.9999*λ <= sum(v[i] for i in objective_indices) <= λ) 
-        optimize!(cbm)    
+        @constraint(cbm, 0.9999 * λ <= sum(v[i] for i in objective_indices) <= λ)
+        optimize!(cbm)
     end
-    if termination_status(cbm) != MOI.OPTIMAL && termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
+    if termination_status(cbm) != MOI.OPTIMAL &&
+       termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
         JuMP.delete(cbm, pfbacon)
-        @constraint(cbm, 0.999*λ <= sum(v[i] for i in objective_indices) <= λ) 
-        optimize!(cbm)    
+        @constraint(cbm, 0.999 * λ <= sum(v[i] for i in objective_indices) <= λ)
+        optimize!(cbm)
     end
 
-    pfba_status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
-    
+    pfba_status = (
+        termination_status(cbm) == MOI.OPTIMAL ||
+        termination_status(cbm) == MOI.LOCALLY_SOLVED
+    )
+
     if fba_status && pfba_status
-        return map_fluxes(v, model)      
+        return map_fluxes(v, model)
     else
         @warn "Optimization issues occurred."
-        return Dict{String, Float64}() # something went wrong
+        return Dict{String,Float64}() # something went wrong
     end
 end
 
@@ -247,7 +279,7 @@ Map fluxes from an optimization problem (`v`) to rxns in a model.
 Assumes they are in order of `model.reactions`, which they should be since the optimization problem is constructed from the model.
 """
 function map_fluxes(v::Array{Float64,1}, model::CobraTools.Model)
-    rxndict = Dict{String, Float64}()
+    rxndict = Dict{String,Float64}()
     for i in eachindex(model.reactions)
         rxndict[model.reactions[i].id] = v[i]
     end
@@ -255,7 +287,7 @@ function map_fluxes(v::Array{Float64,1}, model::CobraTools.Model)
 end
 
 function map_fluxes(v::Array{VariableRef,1}, model::CobraTools.Model)
-    rxndict = Dict{String, Float64}()
+    rxndict = Dict{String,Float64}()
     for i in eachindex(model.reactions)
         rxndict[model.reactions[i].id] = value(v[i])
     end
@@ -269,8 +301,8 @@ Helper function to set the bounds of variables.
 The JuMP `set_normalized_rhs` function is a little confusing, so this function simplifies setting
 constraints. Just supply the constraint `index` and the bound objects (`ubconstaintref`, `lbconstaintref`) and they will be set to `ub` and `lb`.
 """
-function set_bound(vind, ubs, lbs; ub=1000, lb=-1000)
-    if lb <= 0 
+function set_bound(vind, ubs, lbs; ub = 1000, lb = -1000)
+    if lb <= 0
         set_normalized_rhs(lbs[vind], abs(lb))
     else
         set_normalized_rhs(lbs[vind], -abs(lb))
@@ -284,14 +316,14 @@ end
 Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`. 
 Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
 """
-function atom_exchange(flux_dict::Dict{String, Float64}, model::CobraTools.Model)
-    atom_flux = Dict{String, Float64}()
+function atom_exchange(flux_dict::Dict{String,Float64}, model::CobraTools.Model)
+    atom_flux = Dict{String,Float64}()
     for (rxnid, flux) in flux_dict
         if startswith(rxnid, "EX_") || startswith(rxnid, "DM_") # exchange, demand reaction
             for (met, stoich) in findfirst(model.reactions, rxnid).metabolites
                 adict = get_atoms(met)
                 for (atom, stoich) in adict
-                    atom_flux[atom] = get(atom_flux, atom, 0.0) + flux*stoich
+                    atom_flux[atom] = get(atom_flux, atom, 0.0) + flux * stoich
                 end
             end
         end
@@ -308,7 +340,12 @@ Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.
 Return these reactions in two dictionaries: `consuming`, `producing`
 """
-function exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000.0, verbose=true)
+function exchange_reactions(
+    rxndict::Dict{String,Float64};
+    topN = 8,
+    ignorebound = 1000.0,
+    verbose = true,
+)
     fluxes = Float64[]
     rxns = String[]
     for (k, v) in rxndict
@@ -317,15 +354,19 @@ function exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=
             push!(fluxes, v)
         end
     end
-    inds_prod = sortperm(fluxes, rev=true)
+    inds_prod = sortperm(fluxes, rev = true)
     inds_cons = sortperm(fluxes)
 
-    consuming = Dict{String, Float64}()
-    producing = Dict{String, Float64}()
+    consuming = Dict{String,Float64}()
+    producing = Dict{String,Float64}()
     verbose && println("Consuming fluxes:")
-    for i in 1:min(topN, length(rxndict))
+    for i = 1:min(topN, length(rxndict))
         if rxndict[rxns[inds_cons[i]]] < -eps()
-            verbose && println(rxns[inds_cons[i]], " = ", round(rxndict[rxns[inds_cons[i]]], digits=4))
+            verbose && println(
+                rxns[inds_cons[i]],
+                " = ",
+                round(rxndict[rxns[inds_cons[i]]], digits = 4),
+            )
             consuming[rxns[inds_cons[i]]] = rxndict[rxns[inds_cons[i]]]
         else
             continue
@@ -333,9 +374,13 @@ function exchange_reactions(rxndict::Dict{String, Float64}; topN=8, ignorebound=
     end
 
     verbose && println("Producing fluxes:")
-    for i in 1:min(topN, length(rxndict))
+    for i = 1:min(topN, length(rxndict))
         if rxndict[rxns[inds_prod[i]]] > eps()
-            verbose && println(rxns[inds_prod[i]], " = ", round(rxndict[rxns[inds_prod[i]]], digits=4))
+            verbose && println(
+                rxns[inds_prod[i]],
+                " = ",
+                round(rxndict[rxns[inds_prod[i]]], digits = 4),
+            )
             producing[rxns[inds_prod[i]]] = rxndict[rxns[inds_prod[i]]]
         else
             continue
@@ -349,18 +394,18 @@ end
 
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or produce them given the flux distribution supplied in `fluxdict`.
 """
-function metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
+function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::CobraTools.Model)
     S, _, _, _ = get_core_model(model)
     S = Array(S) # full
-    met_flux = Dict{String, Float64}()
+    met_flux = Dict{String,Float64}()
     rxnids = [rxn.id for rxn in model.reactions]
-    metids= [met.id for met in model.metabolites]
+    metids = [met.id for met in model.metabolites]
 
-    producing = Dict{String, Dict{String, Float64}}()
-    consuming = Dict{String, Dict{String, Float64}}()
+    producing = Dict{String,Dict{String,Float64}}()
+    consuming = Dict{String,Dict{String,Float64}}()
     for (row, metid) in enumerate(metids)
         for (col, rxnid) in enumerate(rxnids)
-            mf = fluxdict[rxnid]*S[row, col]
+            mf = fluxdict[rxnid] * S[row, col]
             # ignore zero flux
             if mf < -eps() # consuming rxn
                 if haskey(consuming, metid)
@@ -372,8 +417,8 @@ function metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Mo
                 if haskey(producing, metid)
                     producing[metid][rxnid] = mf
                 else
-                    producing[metid] = Dict(rxnid => mf)                    
-                end                
+                    producing[metid] = Dict(rxnid => mf)
+                end
             end
         end
     end
@@ -402,20 +447,28 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
-function fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; optimum_bound=0.9999, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+function fva(
+    model::CobraTools.Model,
+    objective_rxns::Union{Reaction,Array{Reaction,1}},
+    optimizer;
+    optimum_bound = 0.9999,
+    weights = Float64[],
+    solver_attributes = Dict{Any,Any}(),
+    constraints = Dict{String,Tuple{Float64,Float64}}(),
+)
     cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model
 
     set_optimizer(cbm, optimizer) # choose optimizer
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
             set_optimizer_attribute(cbm, k, v)
-       end
+        end
     end
 
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub=con[1], lb=con[2])
+        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
     end
 
     # ensure that an array of objective indices are fed in
@@ -424,12 +477,12 @@ function fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
     else
         objective_indices = [model[rxn] for rxn in objective_rxns]
     end
-    
+
     if isempty(weights)
         weights = ones(length(objective_indices))
     end
     opt_weights = zeros(length(model.reactions))
-    
+
     # update the objective function tracker
     wcounter = 1
     for i in eachindex(model.reactions)
@@ -441,15 +494,18 @@ function fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
             model.reactions[i].objective_coefficient = 0.0
         end
     end
-    
+
     v = all_variables(cbm)
-    @objective(cbm, Max, sum(opt_weights[i]*v[i] for i in objective_indices))
-    optimize!(cbm)    
+    @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+    optimize!(cbm)
 
-    status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
+    status = (
+        termination_status(cbm) == MOI.OPTIMAL ||
+        termination_status(cbm) == MOI.LOCALLY_SOLVED
+    )
 
-    fva_min = Dict{String, Dict{String, Float64}}()
-    fva_max = Dict{String, Dict{String, Float64}}()
+    fva_min = Dict{String,Dict{String,Float64}}()
+    fva_max = Dict{String,Dict{String,Float64}}()
 
     if !status
         @warn "Error getting the initial optimum, aborting "
@@ -457,12 +513,18 @@ function fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
     end
 
     λ = objective_value(cbm) # objective value
-    @constraint(cbm, optimum_bound*λ <= sum(opt_weights[i]*v[i] for i in objective_indices) <= λ) # for stability
+    @constraint(
+        cbm,
+        optimum_bound * λ <= sum(opt_weights[i] * v[i] for i in objective_indices) <= λ
+    ) # for stability
 
-    for i in 1:length(v)
+    for i = 1:length(v)
         @objective(cbm, Max, v[i])
-        optimize!(cbm)    
-        status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
+        optimize!(cbm)
+        status = (
+            termination_status(cbm) == MOI.OPTIMAL ||
+            termination_status(cbm) == MOI.LOCALLY_SOLVED
+        )
         if status
             fva_max[model.reactions[i].id] = map_fluxes(v, model)
         else
@@ -470,8 +532,11 @@ function fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reac
         end
 
         @objective(cbm, Min, v[i])
-        optimize!(cbm)    
-        status = (termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED)
+        optimize!(cbm)
+        status = (
+            termination_status(cbm) == MOI.OPTIMAL ||
+            termination_status(cbm) == MOI.LOCALLY_SOLVED
+        )
         if status
             fva_min[model.reactions[i].id] = map_fluxes(v, model)
         else
