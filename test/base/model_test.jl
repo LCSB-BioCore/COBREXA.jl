@@ -18,7 +18,7 @@
     r1.ub = 100.0
     r1.grr = [[g1, g2], [g3]]
     r1.subsystem = "glycolysis"
-    r1.notes = Dict("notes"=>["blah", "blah"])
+    r1.notes = Dict("notes" => ["blah", "blah"])
     r1.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
@@ -30,14 +30,15 @@
     mets = [m1, m2, m3, m4]
     genes = [g1, g2, g3]
     rxns = [r1, r2, r3, r4]
-    
+
     model = CobraTools.Model()
     model.id = "model"
     model.reactions = rxns
     model.metabolites = mets
     model.genes = genes
-    
-    @test sprint(show, MIME("text/plain"), model) == "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n"
+
+    @test sprint(show, MIME("text/plain"), model) ==
+          "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n"
 
     @test model[r2] == 2
 
