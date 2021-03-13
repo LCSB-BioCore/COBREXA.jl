@@ -10,20 +10,30 @@ genes :: Array{Gene, 1}
 ````
 """
 mutable struct Model
-    id :: String
-    reactions :: Array{Reaction, 1} 
-    metabolites :: Array{Metabolite, 1}
-    genes :: Array{Gene, 1}
+    id::String
+    reactions::Array{Reaction,1}
+    metabolites::Array{Metabolite,1}
+    genes::Array{Gene,1}
 end
 
 """
 Pretty printing of model::CobraTools.Model.
 """
 function Base.show(io::IO, ::MIME"text/plain", m::CobraTools.Model)
-    println(io, "Constraint based model: ", m.id, "\n",
-              "Number of reactions: ", length(m.reactions), "\n",
-              "Number of metabolites: ", length(m.metabolites), "\n",
-              "Number of genes: ", length(m.genes))
+    println(
+        io,
+        "Constraint based model: ",
+        m.id,
+        "\n",
+        "Number of reactions: ",
+        length(m.reactions),
+        "\n",
+        "Number of metabolites: ",
+        length(m.metabolites),
+        "\n",
+        "Number of genes: ",
+        length(m.genes),
+    )
 end
 
 """
@@ -32,7 +42,7 @@ Model()
 Empty model constructor.
 """
 function Model()
-    CobraTools.Model("blank", Array{Reaction, 1}(), Array{Metabolite, 1}(), Array{Gene, 1}())
+    CobraTools.Model("blank", Array{Reaction,1}(), Array{Metabolite,1}(), Array{Gene,1}())
 end
 
 """

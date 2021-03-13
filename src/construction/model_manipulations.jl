@@ -3,7 +3,7 @@
 
 Add `rxn(s)` to `model` if they are not already present based on reaction `id`.
 """
-function add!(model::CobraTools.Model, rxns::Array{Reaction, 1})
+function add!(model::CobraTools.Model, rxns::Array{Reaction,1})
     for rxn in rxns
         add!(model, rxn)
     end
@@ -23,7 +23,7 @@ end
 
 Add `met(s)` to `model` if they are not already present, based on metabolite `id`.
 """
-function add!(model::CobraTools.Model, mets::Array{Metabolite, 1})
+function add!(model::CobraTools.Model, mets::Array{Metabolite,1})
     for met in mets
         add!(model, met)
     end
@@ -43,7 +43,7 @@ end
 
 Add `gene(s)` to `model` if they are not already present based on gene `id`.
 """
-function add!(model::CobraTools.Model, genes::Array{Gene, 1})
+function add!(model::CobraTools.Model, genes::Array{Gene,1})
     for gene in genes
         add!(model, gene)
     end
@@ -63,7 +63,7 @@ end
 
 Remove all `rxn(s)` from `model` if the `id`s match those in `rxns`.
 """
-function rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
+function rm!(model::CobraTools.Model, rxns::Union{Array{Reaction,1},Reaction})
     new_rxn_list = Reaction[]
     for r in model.reactions
         if typeof(rxns) == Reaction
@@ -71,7 +71,7 @@ function rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
                 push!(new_rxn_list, r)
             end
         else
-            if !(r.id in [rr.id for rr in rxns]) 
+            if !(r.id in [rr.id for rr in rxns])
                 push!(new_rxn_list, r)
             end
         end
@@ -85,7 +85,7 @@ end
 
 Remove `met(s)` from `model` based on metabolite `id`.
 """
-function rm!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metabolite})
+function rm!(model::CobraTools.Model, mets::Union{Array{Metabolite,1},Metabolite})
     new_met_list = Metabolite[]
     for m in model.metabolites
         if typeof(mets) == Metabolite
@@ -93,7 +93,7 @@ function rm!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metaboli
                 push!(new_met_list, m)
             end
         else
-            if !(m.id in [mm.id for mm in mets]) 
+            if !(m.id in [mm.id for mm in mets])
                 push!(new_met_list, m)
             end
         end
@@ -107,7 +107,7 @@ end
 
 Remove `gene(s)` from `model` based on gene `id`.
 """
-function rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
+function rm!(model::CobraTools.Model, genes::Union{Array{Gene,1},Gene})
     new_gene_list = Gene[]
     for g in model.genes
         if typeof(genes) == Gene
@@ -115,7 +115,7 @@ function rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
                 push!(new_gene_list, g)
             end
         else
-            if !(g.id in [gg.id for gg in genes]) 
+            if !(g.id in [gg.id for gg in genes])
                 push!(new_gene_list, g)
             end
         end
@@ -160,11 +160,12 @@ function fix_model!(model::CobraTools.Model)
     model_mets_ids = [x.id for x in model.metabolites]
     rxn_gene_ids = [x.id for x in rxn_genes]
     rxn_mets_ids = [x.id for x in rxn_mets]
-    
+
     extra_genes = setdiff(model_gene_ids, rxn_gene_ids)
     !isempty(extra_genes) && rm!(model, [findfirst(model.genes, x) for x in extra_genes])
     extra_mets = setdiff(model_mets_ids, rxn_mets_ids)
-    !isempty(extra_mets) && rm!(model, [findfirst(model.metabolites, x) for x in extra_mets])
+    !isempty(extra_mets) &&
+        rm!(model, [findfirst(model.metabolites, x) for x in extra_mets])
 
     missing_genes = setdiff(rxn_gene_ids, model_gene_ids)
     for mg in missing_genes

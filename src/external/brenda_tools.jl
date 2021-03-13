@@ -10,10 +10,10 @@ temperature :: Union{Nothing, Float64}
 ```
 """
 struct EnzymeParams
-    val :: Union{Nothing, Float64}
-    substrate :: Union{Nothing, String}
-    ph :: Union{Nothing, Float64}
-    temperature :: Union{Nothing, Float64}
+    val::Union{Nothing,Float64}
+    substrate::Union{Nothing,String}
+    ph::Union{Nothing,Float64}
+    temperature::Union{Nothing,Float64}
 end
 
 function Base.show(io::IO, m::EnzymeParams)
@@ -36,11 +36,11 @@ KKM :: Array{EnzymeParams, 1}
 ```
 """
 struct BrendaEntry
-    ID :: String # EC number
-    TN :: Array{EnzymeParams, 1}
-    KI :: Array{EnzymeParams, 1} 
-    KM :: Array{EnzymeParams, 1} 
-    KKM :: Array{EnzymeParams, 1} 
+    ID::String # EC number
+    TN::Array{EnzymeParams,1}
+    KI::Array{EnzymeParams,1}
+    KM::Array{EnzymeParams,1}
+    KKM::Array{EnzymeParams,1}
 
     # Keywords below are not implemented (yet)...
     # AC	# activating compound
@@ -96,13 +96,13 @@ Returns an array of `BrendaEntry`s.
 See also: [`BrendaEntry`](@ref), [`EnzymeParams`](@ref)
 """
 function parse_brenda(brenda_loc)
-    brenda_data = Array{BrendaEntry, 1}()
+    brenda_data = Array{BrendaEntry,1}()
     open(brenda_loc) do io
         ID = ""
-        TN = Array{EnzymeParams, 1}()
-        KI = Array{EnzymeParams, 1}()
-        KM = Array{EnzymeParams, 1}()
-        KKM = Array{EnzymeParams, 1}()
+        TN = Array{EnzymeParams,1}()
+        KI = Array{EnzymeParams,1}()
+        KM = Array{EnzymeParams,1}()
+        KKM = Array{EnzymeParams,1}()
         firstline = true
         for ln in eachline(io)
             # println(ID)
@@ -113,10 +113,10 @@ function parse_brenda(brenda_loc)
                     push!(brenda_data, BrendaEntry(ID, TN, KI, KM, KKM))
                 end
                 ID = split(split(ln, "\t")[2], " ")[1]
-                TN = Array{EnzymeParams, 1}()
-                KI = Array{EnzymeParams, 1}()
-                KM = Array{EnzymeParams, 1}()
-                KKM = Array{EnzymeParams, 1}()
+                TN = Array{EnzymeParams,1}()
+                KI = Array{EnzymeParams,1}()
+                KM = Array{EnzymeParams,1}()
+                KKM = Array{EnzymeParams,1}()
             end
 
             if startswith(ln, "TN\t")
@@ -156,10 +156,10 @@ Return enzyme data from line in Brenda txt file.
 """
 function get_enzyme_data(ln::String)
     prts = split(ln, "\t")[2]
-    
-    val_ = length(split(prts," ")) < 2 ? nothing : split(prts," ")[2]
+
+    val_ = length(split(prts, " ")) < 2 ? nothing : split(prts, " ")[2]
     val = isnothing(val_) || contains(val_, "-") ? nothing : parse(Float64, val_)
-    
+
     substrate_ = match(r"\{{1}\d*\D*\d*\}{1}", prts)
     substrate = isnothing(substrate_) ? nothing : substrate_.match[2:end-1]
 
@@ -167,7 +167,7 @@ function get_enzyme_data(ln::String)
     ph = isnothing(ph_) ? nothing : parse(Float64, split(ph_.match, " ")[2])
 
     temp_ = match(r"\d+\.?\d{0,2}°C", prts)
-    temp = isnothing(temp_) ? nothing : parse(Float64, split(temp_.match,"°")[1])
+    temp = isnothing(temp_) ? nothing : parse(Float64, split(temp_.match, "°")[1])
 
     return EnzymeParams(val, substrate, ph, temp)
 end
