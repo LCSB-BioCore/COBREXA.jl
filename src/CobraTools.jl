@@ -30,26 +30,56 @@ include(joinpath("external", "equilibrator_tools.jl"))
 
 ∅ = Metabolite("∅") # for exchange reactions
 
-export
-    ∅,
+export ∅,
 
     # base
-    Model, Gene, Reaction, Metabolite, check_duplicate_annotations, get_atoms, check_same_formula, is_mass_balanced, check_duplicate_reaction,
-    
+    Model,
+    Gene,
+    Reaction,
+    Metabolite,
+    check_duplicate_annotations,
+    get_atoms,
+    check_same_formula,
+    is_mass_balanced,
+    check_duplicate_reaction,
+
     # construction
-    ⟶, →, ←, ⟵, ↔, ⟷, add!, rm!, fix_model!,
-    
+    ⟶,
+    →,
+    ←,
+    ⟵,
+    ↔,
+    ⟷,
+    add!,
+    rm!,
+    fix_model!,
+
     # io
-    read_model, save_model,
-    
+    read_model,
+    save_model,
+
     # optimization_analysis
-    get_core_model, build_cbm, fba, map_fluxes, set_bound, pfba, atom_exchange, exchange_reactions, metabolite_fluxes, fva,
+    get_core_model,
+    build_cbm,
+    fba,
+    map_fluxes,
+    set_bound,
+    pfba,
+    atom_exchange,
+    exchange_reactions,
+    metabolite_fluxes,
+    fva,
 
     # sampling
-    hit_and_run, test_samples, achr,
+    hit_and_run,
+    test_samples,
+    achr,
 
     # external
-    parse_brenda, map_gibbs_rxns, map_gibbs_external, map_gibbs_internal
+    parse_brenda,
+    map_gibbs_rxns,
+    map_gibbs_external,
+    map_gibbs_internal
 
 # Initialization functions
 include("init_functions.jl")
