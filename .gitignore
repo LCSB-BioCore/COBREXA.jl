@@ -2,3 +2,7 @@
 /Manifest.toml
 docs/build
 test/data/ecoli_core.xml
+
+# Ignore vscode clutter
+/vscode
+/.vscode
