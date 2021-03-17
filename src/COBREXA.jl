@@ -27,8 +27,7 @@ include(joinpath("header", "types.jl"))
 
 const PKG_ROOT_DIR = normpath(joinpath(@__DIR__, ".."))
 include_dependency(joinpath(PKG_ROOT_DIR, "Project.toml"))
-const COBREXA_VERSION =
-    VersionNumber(Pkg.TOML.parsefile(joinpath(PKG_ROOT_DIR, "Project.toml"))["version"])
+const COBREXA_VERSION = VersionNumber(Pkg.TOML.parsefile(joinpath(PKG_ROOT_DIR, "Project.toml"))["version"])
 
 c = Base.text_colors
 tx = c[:normal] # text
@@ -59,34 +58,17 @@ loadSource(["io", "reconstruction", "analysis", "sampling"], @__DIR__)
 
 # export functions
 ∅ = Metabolite("∅") # for exchange reactions
-export speye,
-    LinearModel,
-    nReactions,
-    nMetabolites,
-    nCouplingConstraints,
-    addReaction,
-    addReactions,
-    removeReactions,
-    changeBounds!,
-    addCouplingConstraints!,
-    addCouplingConstraints,
-    removeCouplingConstraints!,
-    removeCouplingConstraints,
-    changeCouplingBounds!,
-    changeCouplingBounds,
-    verifyConsistency,
-    findExchangeReactions,
-    findExchangeMetabolites,
-    solveLP,
-    loadModel,
-    loadSBMLModel,
-    writeModel,
-    fluxBalanceAnalysis,
-    fluxVariabilityAnalysis,
-    parFVA,
-    convertToExportable,
-
-    # from CobraTools 
+export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
+       addReaction, addReactions, removeReactions, changeBounds!,
+       addCouplingConstraints!, addCouplingConstraints,
+       removeCouplingConstraints!, removeCouplingConstraints,
+       changeCouplingBounds!, changeCouplingBounds,
+       verifyConsistency, findExchangeReactions, findExchangeMetabolites,
+       solveLP, loadModel, loadSBMLModel, writeModel,
+       fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA,
+       convertToExportable,
+    
+       # from CobraTools 
     ∅,
     # base
     CobraModel,

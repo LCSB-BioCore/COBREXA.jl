@@ -1,10 +1,7 @@
 
-sbmlfile = joinpath("data", "ecoli_core.xml")
+sbmlfile = joinpath("data","ecoli_core.xml")
 if !isfile(sbmlfile)
-    download(
-        "http://systemsbiology.ucsd.edu/sites/systemsbiology.ucsd.edu/files/Attachments/Images/downloads/Ecoli_core/ecoli_core_model.xml",
-        sbmlfile,
-    )
+    download("http://systemsbiology.ucsd.edu/sites/systemsbiology.ucsd.edu/files/Attachments/Images/downloads/Ecoli_core/ecoli_core_model.xml", sbmlfile)
 end
 
 cksum = bytes2hex(sha256(open(sbmlfile)))
@@ -15,8 +12,8 @@ end
 @testset "SBML import" begin
     m = loadSBMLModel(sbmlfile)
 
-    @test size(m.C) == (0, 95)
-    @test size(m.S) == (92, 95)
+    @test size(m.C) == (0,95)
+    @test size(m.S) == (92,95)
     @test length(m.S.nzval) == 380
     @test length(m.b) == 92
     @test all([length(m.xl), length(m.xu), length(m.c)] .== 95)
