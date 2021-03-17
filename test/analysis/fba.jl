@@ -4,13 +4,13 @@
     (lp, x) = fluxBalanceAnalysis(cp, optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
-    @test sol ≈ [1., 2.]
+    @test sol ≈ [1.0, 2.0]
 
     optimizer = Clp.Optimizer
     (lp, x) = fluxBalanceAnalysis(cp, optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
-    @test sol ≈ [1., 2.]
+    @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
@@ -18,7 +18,7 @@
     (lp, x) = fluxBalanceAnalysis(cp, optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
-    @test sol ≈ [-1., 2.]
+    @test sol ≈ [-1.0, 2.0]
 
     # test with a more biologically meaningfull model
     modelPath = joinpath("data", "fba.mat")
