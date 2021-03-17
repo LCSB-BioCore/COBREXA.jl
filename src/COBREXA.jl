@@ -9,6 +9,16 @@ using MAT
 using Distributed
 using SBML
 using DistributedData
+using Requires
+using JSON
+using Measurements
+using Statistics
+using Random
+using PyCall
+using Tulip # for LPs
+using OSQP # for QPs, but it kinda sucks
+
+import Base: findfirst, getindex, show
 import Pkg
 
 # import src files
@@ -40,6 +50,7 @@ print(banner)
 loadSource(["base", "io", "reconstruction", "analysis"], @__DIR__)
 
 # export functions
+∅ = Metabolite("∅") # for exchange reactions
 export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
        addReaction, addReactions, removeReactions, changeBounds!,
        addCouplingConstraints!, addCouplingConstraints,
@@ -48,42 +59,12 @@ export speye, LinearModel, nReactions, nMetabolites, nCouplingConstraints,
        verifyConsistency, findExchangeReactions, findExchangeMetabolites,
        solveLP, loadModel, loadSBMLModel, writeModel,
        fluxBalanceAnalysis, fluxVariabilityAnalysis, parFVA,
-       convertToExportable
-
-end
-
-
-##########################################################
-using Requires
-using JSON
-using Measurements
-using Statistics, Random
-using PyCall
-using JuMP, Tulip, OSQP # OSQP sucks for LPs
-
-import Base: findfirst, getindex, show
-
-# definitions of structs
-include(joinpath("base", "metabolite.jl"))
-include(joinpath("base", "gene.jl"))
-include(joinpath("base", "reaction.jl"))
-include(joinpath("base", "model.jl"))
-
-# Tools
-include(joinpath("io", "io_tools.jl"))
-include(joinpath("construction", "construction_overloading.jl"))
-include(joinpath("construction", "model_manipulations.jl"))
-include(joinpath("optimization_analysis", "basic_analysis.jl"))
-include(joinpath("sampling", "sampling_tools.jl"))
-include(joinpath("external", "brenda_tools.jl"))
-include(joinpath("external", "equilibrator_tools.jl"))
-
-∅ = Metabolite("∅") # for exchange reactions
-
-export ∅,
-
+       convertToExportable,
+    
+       # from CobraTools 
+    ∅,
     # base
-    Model,
+    CobraModel,
     Gene,
     Reaction,
     Metabolite,
@@ -123,13 +104,6 @@ export ∅,
     # sampling
     hit_and_run,
     test_samples,
-    achr,
+    achr
 
-    # external
-    parse_brenda,
-    map_gibbs_rxns,
-    map_gibbs_external,
-    map_gibbs_internal
-
-# Initialization functions
-include("init_functions.jl")
+end # module
