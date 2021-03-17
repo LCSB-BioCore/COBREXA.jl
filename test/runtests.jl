@@ -15,21 +15,19 @@ function runTestFile(path...)
     @info "$(fn) done in $(round(t; digits = 2))s"
 end
 
+function runTestDir(dir, comment = "Directory $dir/")
+    @testset "$comment" begin
+        runTestFile.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
+    end
+end
+
 # load the test models
-include(joinpath("data", "testModels.jl"))
+runTestFile("data", "testModels.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    @testset "Base functionality" begin
-        runTestFile.("base", ["types.jl", "solver.jl", "utilities.jl"])
-    end
-    @testset "I/O" begin
-        runTestFile.("io", ["reader.jl", "writer.jl", "sbml.jl"])
-    end
-    @testset "Reconstruction" begin
-        runTestFile.("reconstruction", ["coupling.jl", "modeling.jl"])
-    end
-    @testset "Analysis" begin
-        runTestFile.("analysis", ["fba.jl", "fva.jl"])
-    end
+    runTestDir("base", "Base functionality")
+    runTestDir("io", "I/O functions")
+    runTestDir("reconstruction")
+    runTestDir("analysis")
 end
