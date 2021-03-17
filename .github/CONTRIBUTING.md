@@ -74,5 +74,6 @@ The guidelines can be summarized as such:
 - do not push to another branch unless it is your own
 - try to get a review before merging unless the change is trivial and
   non-impacting
-- consider prefixing your branch names your initials (e.g. `ad-somefeature` by
+- consider prefixing your branch names with your initials, so that one can
+  easily see who owns which branch (e.g. `ad-somefeature` would be committed by
   Arthur Dent)
