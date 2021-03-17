@@ -7,15 +7,12 @@ Sampling methods have been developed to uniformly sample from this feasible solu
 hit_and_run
 achr
 ``` 
-```@setup sample
-model_location = download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "core.json")
-```
 ```@example sample
 using COBREXA
 using JuMP
 using Tulip
 
-model = read_model(model_location)
+model = read_model("e_coli_core.json")
 optimizer = Tulip.Optimizer
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 cons = Dict("EX_glc__D_e" => (-12.0, -12.0))

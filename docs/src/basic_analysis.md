@@ -19,15 +19,12 @@ using any `JuMP` compatible solver. Typically ``I`` is a singleton set that only
 fba
 ```
 Here, we use `Tulip.jl`, a pure Julia interior point linear program solver, with the `fba` function from `COBREXA.jl`.
-```@setup fba
-model_location = joinpath("..","..", "models", "e_coli_core.json")
-```
 ```@example fba
 using COBREXA
 using JuMP
 using Tulip
 
-model = read_model(model_location)
+model = read_model("e_coli_core.json")
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 optimizer = Tulip.Optimizer
@@ -115,7 +112,7 @@ using COBREXA
 using JuMP
 using Tulip
 
-model = read_model(model_location)
+model = read_model("e_coli_core.json")
 cbm, v, mb, ubs, lbs = build_cbm(model)
 glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
 set_bound(glucose_index, ubs, lbs; ub=-12.0, lb=-12.0)

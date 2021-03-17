@@ -9,9 +9,8 @@ read_model(file_location::String)
 
 ```@example ioexample
 using COBREXA
-
-model_location = download("http://bigg.ucsd.edu/static/models/iJO1366.json" ,"iJO1366.json") 
-model = read_model(model_location)
+ 
+model = read_model("e_coli_core.json")
 model # pretty printing
 ```
 
@@ -23,9 +22,8 @@ save_model(model::CobraModel, file_location::String)
 ```
 
 ```@example ioexample
-model_location = joinpath("e_coli_json_model.json")
-save_model(model, model_location)
-rm(model_location) # hide
+save_model(model, "e_coli_core2.json")
+rm("e_coli_core2.json") # hide
 ```
 
 ## IO Problems?
