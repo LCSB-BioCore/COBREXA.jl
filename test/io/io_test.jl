@@ -1,24 +1,15 @@
 @testset "IO" begin
 
     # E. coli models - realistic size models
-    iJO1366_xml = download(
-        "http://bigg.ucsd.edu/static/models/iJO1366.xml",
-        joinpath("data", "iJO1366.xml"),
-    )
+    iJO1366_xml = download("http://bigg.ucsd.edu/static/models/iJO1366.xml", joinpath("data", "iJO1366.xml")) 
     sbmlmodel_ecoli = read_model(iJO1366_xml)
     @test_broken length(sbmlmodel_ecoli.reactions) == 2583
 
-    iJO1366_mat = download(
-        "http://bigg.ucsd.edu/static/models/iJO1366.mat",
-        joinpath("data", "iJO1366.mat"),
-    )
+    iJO1366_mat = download("http://bigg.ucsd.edu/static/models/iJO1366.mat", joinpath("data", "iJO1366.mat"))
     matlabmodel_ecoli = read_model(iJO1366_mat)
     @test length(matlabmodel_ecoli.reactions) == 2583
 
-    iJO1366_json = download(
-        "http://bigg.ucsd.edu/static/models/iJO1366.json",
-        joinpath("data", "iJO1366.json"),
-    )
+    iJO1366_json = download("http://bigg.ucsd.edu/static/models/iJO1366.json", joinpath("data", "iJO1366.json"))
     jsonmodel_ecoli = read_model(iJO1366_json)
     @test length(jsonmodel_ecoli.reactions) == 2583
 

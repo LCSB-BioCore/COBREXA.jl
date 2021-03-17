@@ -4,7 +4,7 @@ loadSource(srcDirs, root=@__DIR__)
 
 Load source files
 """
-function loadSource(srcDirs, rootDir = @__DIR__, testMode = false)
+function loadSource(srcDirs, rootDir=@__DIR__, testMode=false)
     returnFlag = []
     for d in srcDirs
         srcDir = joinpath(rootDir, d)

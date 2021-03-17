@@ -31,7 +31,7 @@ end
 # load the test models
 include(joinpath("data", "testModels.jl"))
 # load some convenience functions for testing
-include("testing_functions.jl")
+include("testing_functions.jl") 
 
 # import base files
 @testset "COBREXA test suite" begin
@@ -41,3 +41,4 @@ include("testing_functions.jl")
         end
     end
 end
+
