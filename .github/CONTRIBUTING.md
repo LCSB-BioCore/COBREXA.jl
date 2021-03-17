@@ -5,9 +5,11 @@
 
 ## How to test a development version of the package?
 
-You can use the "devel" feature of Julia packaging system. One possible way is here:
+You can use the "develop" feature of Julia packaging system. One possible way
+is here:
 
-1. Clone the repository as usual, `cd` into the directory
+1. Clone the repository as usual (or find your cloned copy), `cd` into the
+   directory
 2. Start `julia`, type `]` to switch to the packaging interface and type
    `develop --local .`
 3. The package will be always recompiled and loaded from your local repository.
@@ -15,7 +17,7 @@ You can use the "devel" feature of Julia packaging system. One possible way is h
 Alternatively, you can checkout the whole repository directly using Julia, by
 typing:
 ```
-develop https://github.com/LCSB-BioCore/COBREXA.jl
+develop COBREXA
 ```
 
 That will create the repo for you in `~/.julia/dev/`, which you can use for
