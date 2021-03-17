@@ -1,6 +1,11 @@
 @testset "Sampling Tests" begin
     # these tests are not very good - sampling needs work
-    model = read_model(download("http://bigg.ucsd.edu/static/models/e_coli_core.json", joinpath("data", "e_coli_core.json")))
+    model = read_model(
+        download(
+            "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+            joinpath("data", "e_coli_core.json"),
+        ),
+    )
     @test length(model.reactions) == 95 # read in correctly
 
 
