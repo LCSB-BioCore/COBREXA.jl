@@ -2,3 +2,5 @@
 /Manifest.toml
 docs/build
 test/data/ecoli_core.xml
+/vscode
+/.vscode

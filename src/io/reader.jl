@@ -21,7 +21,7 @@ Convert a dictionary read from a MAT file to LinearModel
 function convertToLinearModel(model::Dict)
     modelKeys = ["S", "b", "c", "ub", "lb"]
 
-    for key = modelKeys
+    for key in modelKeys
         if !(key in keys(model))
             error("No variable $key found in the MAT file.")
         end
