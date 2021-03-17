@@ -1,7 +1,7 @@
 # Model Construction
 
 ## Defining genes
-Genes are represented by the `Gene` type in `CobraTools.jl`, see [Model Structure](@ref) for details.
+Genes are represented by the `Gene` type in `COBREXA.jl`, see [Model Structure](@ref) for details.
 `Gene`s can be constructed using either an empty constructor, or a constructor taking only
 the string `id` of the gene.
 ```@docs
@@ -9,7 +9,7 @@ Gene()
 Gene(::String)
 ```
 ```@example
-using CobraTools # hide
+using COBREXA
 
 gene = Gene("gene1")
 gene.name = "gene 1 name"
@@ -21,7 +21,7 @@ findfirst(::Array{Gene, 1}, ::String)
 getindex(::Array{Gene, 1}, ::Gene)
 ```
 ## Defining metabolites
-Metabolites are represented by the `Metabolite` type in `CobraTools.jl`, see [Model Structure](@ref) for details. 
+Metabolites are represented by the `Metabolite` type in `COBREXA.jl`, see [Model Structure](@ref) for details. 
 The simplest way to define a new metabolite is by using the empty constructor `Metabolite()`. 
 Alternatively, `Metabolite(id::String)` can be used to assign only the `id` field of the `Metabolite`. 
 ```@docs
@@ -30,8 +30,7 @@ Metabolite(::String)
 ```
 The other fields can be modified as usual, if desired.
 ```@example
-using CobraTools
-
+using COBREXA # hide
 atp = Metabolite("atp")
 atp.name = "Adenosine triphosphate"
 atp.formula = "C10H12N5O13P3"
@@ -44,14 +43,13 @@ Basic analysis of `Metabolite`s is also possible. The molecular structure of a m
 `get_atoms(met::Metabolite)`.
 This function is useful for checking atom balances across reactions, or the entire model.
 ```@docs
-CobraTools.get_atoms(met::Metabolite)
+get_atoms(met::Metabolite)
 ```
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
 atp.formula = "C10H12N5O13P3" # hide
-
 get_atoms(atp)
 ```
 Helper functions from Base have also been overwritten to make accessing arrays of metabolites easy.
@@ -60,7 +58,7 @@ findfirst(mets::Array{Metabolite, 1}, metid::String)
 getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 ```
 ## Defining reactions
-Reactions are represented by the `Reaction` type in `CobraTools.jl`, see [Model Structure](@ref) for details.
+Reactions are represented by the `Reaction` type in `COBREXA.jl`, see [Model Structure](@ref) for details.
 The simplest way to define a new reaction is by using the empty constructor `Reaction()`. 
 All the other fields still need to be assigned.
 ```@docs
@@ -74,13 +72,12 @@ The remaining fields still need to be assigned, if desired.
 Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
 ```
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
 atp.formula = "C10H12N5O13P3" # hide
 atp.charge = -4 # hide
 gene = Gene("gene1") # hide
-
 adp = Metabolite("adp") # define another metabolite
 
 metdict = Dict(atp => -1.0, adp => 1.0) # nb stoichiometries need to be floats
@@ -97,7 +94,7 @@ Yet another way of defining a reaction is through overloading of the operators: 
 The longer and shorter arrows mean the same thing, i.e. `⟶` is the same as `→`, etc.
 The other fields of the reaction still need to be set directly.
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
 atp.formula = "C10H12N5O13P3" # hide
@@ -111,7 +108,7 @@ another_rxn
 ```
 When building exchange, demand, or sinks reactions the `∅` empty metabolite should be used to indicate that a metabolite is being created or destroyed.
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 adp = Metabolite("adp") # hide
 adp.formula = "C10H12N5O10P2" # hide
 
@@ -123,7 +120,7 @@ Note, this function requires that all the metabolites in the reaction have formu
 is_mass_balanced
 ```
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
 atp.formula = "C10H12N5O13P3" # hide
@@ -145,9 +142,9 @@ using the empty model constructor:
 ```@docs
 Model()
 ```
-The fields of `CobraTools.Model` can then be assigned as usual.
+The fields of `CobraModel` can then be assigned as usual.
 ```@example
-using CobraTools
+using COBREXA
 
 atp = Metabolite("atp")
 adp = Metabolite("adp")
@@ -175,7 +172,7 @@ mets = [atp, adp, pp, h2o, glc, lac]
 genes = [g1, g2, g3, g4]
 rxns = [catabolism, anabolism, lac_ex, glc_ex]
 
-model = Model()
+model = CobraModel()
 model.id = "Test model"
 add!(model, mets)
 add!(model, rxns)
@@ -185,9 +182,9 @@ model # pretty printing
 ```
 Here the `add` functions were used to add the reactions, metabolites and genes to the model.
 ```@docs
-add!(model::CobraTools.Model, rxns::Array{Reaction, 1})
-add!(model::CobraTools.Model, mets::Array{Metabolite, 1})
-add!(model::CobraTools.Model, genes::Array{Gene, 1})
+add!(model::CobraModel, rxns::Array{Reaction, 1})
+add!(model::CobraModel, mets::Array{Metabolite, 1})
+add!(model::CobraModel, genes::Array{Gene, 1})
 ```
 Checking for duplicates of genes, metabolites or reactions can also be done. 
 Note that duplicate checking is NOT performed when models are imported. 
@@ -200,7 +197,7 @@ check_same_formula(mets::Array{Metabolite, 1}, met::Metabolite)
 check_duplicate_reaction(rxns::Array{Reaction, 1}, crxn::Reaction)
 ```
 ```@example duplex
-using CobraTools
+using COBREXA
 
 met1 = Metabolite()
 met1.id = "met1"
@@ -228,12 +225,12 @@ mms = check_same_formula([met3, met1], met2)
 Similar functionality exists for genes and reactions. 
 Duplicate reactions, metabolites or genes can be removed using `rm!`.
 ```@docs
-rm!(model::CobraTools.Model, rxns::Union{Array{Reaction, 1}, Reaction})
-rm!(model::CobraTools.Model, mets::Union{Array{Metabolite, 1}, Metabolite})
-rm!(model::CobraTools.Model, genes::Union{Array{Gene, 1}, Gene})
+rm!(model::CobraModel, rxns::Union{Array{Reaction, 1}, Reaction})
+rm!(model::CobraModel, mets::Union{Array{Metabolite, 1}, Metabolite})
+rm!(model::CobraModel, genes::Union{Array{Gene, 1}, Gene})
 ```
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 atp = Metabolite("atp")
 atp2 = Metabolite("atp2") 
 
@@ -247,10 +244,10 @@ rm!(model, atp2)
 A model can also be checked to ensure that no metabolites or genes are missing relative to the reactions. 
 `fix_model` also ensures that no extra metabolites are present.
 ```@docs
-fix_model!(model::CobraTools.Model)
+fix_model!(model::CobraModel)
 ```
 ```@example
-using CobraTools # hide
+using COBREXA # hide
 atp = Metabolite("atp") 
 adp = Metabolite("adp") 
 
@@ -271,7 +268,7 @@ model # now has 2 metabolites
 ```
 Helper functions from Base have also been overwritten to make accessing reactions, metabolites and genes easy from a model.
 ```@docs
-getindex(model::CobraTools.Model, rxn::Reaction)
-getindex(model::CobraTools.Model, rxn::Metabolite)
-getindex(model::CobraTools.Model, rxn::Gene)
+getindex(model::CobraModel, rxn::Reaction)
+getindex(model::CobraModel, rxn::Metabolite)
+getindex(model::CobraModel, rxn::Gene)
 ```
