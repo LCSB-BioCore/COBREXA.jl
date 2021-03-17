@@ -37,11 +37,11 @@ function Base.show(io::IO, ::MIME"text/plain", m::CobraModel)
 end
 
 """
-Model()
+CobraModel()
 
 Empty model constructor.
 """
-function Model()
+function CobraModel()
     CobraModel("blank", Array{Reaction,1}(), Array{Metabolite,1}(), Array{Gene,1}())
 end
 

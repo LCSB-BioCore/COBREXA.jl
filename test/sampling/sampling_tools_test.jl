@@ -1,5 +1,6 @@
 @testset "Sampling Tests" begin
-    model = CobraTools.read_model(joinpath("data", "e_coli_core.json"))
+    # these tests are not very good - sampling needs work
+    model = read_model(download("http://bigg.ucsd.edu/static/models/e_coli_core.json", joinpath("data", "e_coli_core.json")))
     @test length(model.reactions) == 95 # read in correctly
 
 

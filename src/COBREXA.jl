@@ -7,7 +7,6 @@ using LinearAlgebra
 using JuMP
 using MAT
 using Distributed
-using SBML
 using DistributedData
 using Requires
 using JSON
@@ -20,6 +19,7 @@ using OSQP # for QPs, but it kinda sucks
 
 import Base: findfirst, getindex, show
 import Pkg
+import SBML # conflict with Reaction struct name
 
 # import src files
 include(joinpath("header", "header.jl"))
@@ -46,8 +46,15 @@ banner = "
 
 print(banner)
 
+# order issue
+include("base/gene.jl")
+include("base/metabolite.jl")
+include("base/reaction.jl")
+include("base/model.jl")
+include("base/solver.jl")
+include("base/utilities.jl")
 
-loadSource(["base", "io", "reconstruction", "analysis"], @__DIR__)
+loadSource(["io", "reconstruction", "analysis", "sampling"], @__DIR__)
 
 # export functions
 ∅ = Metabolite("∅") # for exchange reactions
