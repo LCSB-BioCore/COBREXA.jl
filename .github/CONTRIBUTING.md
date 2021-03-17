@@ -32,3 +32,14 @@ Please follow these steps to have your contribution considered by the maintainer
 
 After you submitted a pull request, a label might be assigned that allows us
 to track and manage issues and pull requests.
+
+## What is the workflow?
+
+The workflow is based on [GitLab flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html), i.e., a
+`master` branch with `feature` branches being merged into the `master` branch.
+
+Here are some very straightforward guidelines:
+
+- when making a contribution, create a new branch and open a PR
+- do not push to another branch unless it is your own
+- try to get a review before merging unless it is a trivial non-impacting change
