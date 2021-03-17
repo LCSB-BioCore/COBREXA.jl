@@ -1,7 +1,7 @@
 """
     read_model(file_location::String))
 
-Reads a model at `file_location` and returns a constraint based `model::CobraTools.Model`.
+Reads a model at `file_location` and returns a constraint based `model::CobraModel`.
 Currently supported formats include SBML (.xml), Matlab (.mat) and JSON (.json) models.
 The model format is inferred from the `file_location` extension.
 
@@ -25,25 +25,25 @@ function read_model(file_location::String)
             model = reconstruct_model_json(file_location)
         catch err
             @error "JSON model reading error.\n$err"
-            model = CobraTools.Model()
+            model = CobraModel()
         end
     elseif endswith(file_location, ".xml")
         try
             model = reconstruct_model_sbml(file_location)
         catch err
             @error "SBML model reading error.\n$err"
-            model = CobraTools.Model()
+            model = CobraModel()
         end
     elseif endswith(file_location, ".mat")
         try
             model = reconstruct_model_matlab(file_location)
         catch err
             @error "Matlab model reading error.\n$err"
-            model = CobraTools.Model()
+            model = CobraModel()
         end
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
-        model = CobraTools.Model()
+        model = CobraModel()
     end
     return model
 end
@@ -234,7 +234,7 @@ function reconstruct_model_json(file_location::String)
         )
     end
 
-    return CobraTools.Model(modelid, rxns, mets, genes)
+    return CobraModel(modelid, rxns, mets, genes)
 end
 
 """
@@ -375,7 +375,7 @@ function reconstruct_model_matlab(file_location::String)
         )
     end
 
-    return CobraTools.Model(model_id, rxns, mets, genes)
+    return CobraModel(model_id, rxns, mets, genes)
 end
 
 """
@@ -388,11 +388,11 @@ function reconstruct_model_sbml(file_location::String)
     # m.species
     # m.compartments
     # return Model()
-    return CobraTools.Model()
+    return CobraModel()
 end
 
 """
-    save_model(model::CobraTools.Model, file_location::String)
+    save_model(model::CobraModel, file_location::String)
 
 Save model at `file_location`. Infers format from `file_location` extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
@@ -400,7 +400,7 @@ Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA
 Note, only the fields contained in model are saved. Make sure that information isn't
 lost between reading a model and writing a model (e.g. check gene reaction rules, notes and annotations).
 """
-function save_model(model::CobraTools.Model, file_location::String)
+function save_model(model::CobraModel, file_location::String)
     if endswith(file_location, ".json")
         save_json_model(model, file_location)
     elseif endswith(file_location, ".xml")
@@ -413,9 +413,9 @@ function save_model(model::CobraTools.Model, file_location::String)
 end
 
 """
-    save_json_model(model::CobraTools.Model, file_location::String)
+    save_json_model(model::CobraModel, file_location::String)
 """
-function save_json_model(model::CobraTools.Model, file_location::String)
+function save_json_model(model::CobraModel, file_location::String)
     modeldict = Dict{String,Any}()
     modeldict["id"] = model.id
 
@@ -467,11 +467,11 @@ function save_json_model(model::CobraTools.Model, file_location::String)
 end
 
 """
-    save_matlab_model(model::CobraTools.Model, file_location::String)
+    save_matlab_model(model::CobraModel, file_location::String)
 
 Some information is lost here, e.g. notes and some annotations.
 """
-function save_matlab_model(model::CobraTools.Model, file_location::String)
+function save_matlab_model(model::CobraModel, file_location::String)
     S, b, ubs, lbs = get_core_model(model)
 
     mdict = Dict(
@@ -520,8 +520,8 @@ function save_matlab_model(model::CobraTools.Model, file_location::String)
 end
 
 """
-    save_sbml_model(model::CobraTools.Model, file_location::String)
+    save_sbml_model(model::CobraModel, file_location::String)
 """
-function save_sbml_model(model::CobraTools.Model, file_location::String)
+function save_sbml_model(model::CobraModel, file_location::String)
     # To do...
 end

@@ -75,7 +75,7 @@ function get_bound_vectors(ubconref, lbconref)
 end
 
 """
-    hit_and_run(N::Int64, model::CobraTools.Model, optimizer; constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
+    hit_and_run(N::Int64, model::CobraModel, optimizer; constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
 
 Perform basic hit and run sampling for `N` iterations using `model` with `optimizer` from `JuMP`. 
 Additional constraints supplied by `constraints` as a dictionary of reaction `id`s mapped to a tuple of `(ub, lb)` of fluxes.
@@ -91,7 +91,7 @@ See also: [`achr`](@ref)
 """
 function hit_and_run(
     N::Int64,
-    model::CobraTools.Model,
+    model::CobraModel,
     optimizer;
     constraints = Dict{String,Tuple{Float64,Float64}}(),
     keepevery = 100,
@@ -187,11 +187,11 @@ function hit_and_run(
 end
 
 """
-    test_samples(samples::Array{Float64, 2}, model::CobraTools.Model, ubs, lbs)
+    test_samples(samples::Array{Float64, 2}, model::CobraModel, ubs, lbs)
 
 Test if samples pass tests: mass balances and constraints are satisfied..
 """
-function test_samples(samples::Array{Float64,2}, model::CobraTools.Model, ubs, lbs)
+function test_samples(samples::Array{Float64,2}, model::CobraModel, ubs, lbs)
     S, _, _, _ = get_core_model(model) # assume S has not been modified from model
     violations = Int64[]
     tol = 1e-6
@@ -213,7 +213,7 @@ function test_samples(samples::Array{Float64,2}, model::CobraTools.Model, ubs, l
 end
 
 """
-    achr(N::Int64, model::CobraTools.Model, optimizer;constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
+    achr(N::Int64, model::CobraModel, optimizer;constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
 
 Perform artificially centered hit and run.
 Uses the same arguments as the `hit_and_run` sampler.
@@ -223,7 +223,7 @@ See also: [`hit_and_run`](@ref)
 """
 function achr(
     N::Int64,
-    model::CobraTools.Model,
+    model::CobraModel,
     optimizer;
     constraints = Dict{String,Tuple{Float64,Float64}}(),
     keepevery = 100,

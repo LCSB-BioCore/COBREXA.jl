@@ -1,5 +1,5 @@
 """
-    get_core_model(model::CobraTools.Model)
+    get_core_model(model::CobraModel)
 
 Return stoichiometrix matrix (S), mass balance right hand side (b), upper (ubs), and lower bounds (lbs) of constraint based `model`.
 That is, S*v=b with lbs ≤ v ≤ ubs where v is the flux vector. 
@@ -7,7 +7,7 @@ This is useful if you want to construct your own optimization problem and just w
 
 Returns: `S`, `b`, `ubs`, and `lbs`. All these data are arrays.
 """
-function get_core_model(model::CobraTools.Model)
+function get_core_model(model::CobraModel)
     ubs = [rxn.ub for rxn in model.reactions]
     lbs = [rxn.lb for rxn in model.reactions]
 
@@ -28,16 +28,16 @@ function get_core_model(model::CobraTools.Model)
 end
 
 """
-    build_cbm(model::CobraTools.Model)
+    build_cbm(model::CobraModel)
 
 Initialize a constraint based `model` using `JuMP`. 
 Creates a model that satisfies the mass balance and flux constraints but no objective or optimizer is set. 
-This is useful if you want to write your own optimization problem, but want `CobraTools.jl` to construct the basic optimization problem for you.
+This is useful if you want to write your own optimization problem, but want `Cobrajl` to construct the basic optimization problem for you.
 
 Returns: `cbmodel`, `v`, `mb`, `ubs`, and `lbs`, where `cbmodel` is the JuMP model, `v` are the fluxes, `mb` is S*v == 0, and lbs <= v <= ubs.
 All these variables are JuMP objects (not arrays).
 """
-function build_cbm(model::CobraTools.Model)
+function build_cbm(model::CobraModel)
     S, b, ubs, lbs = get_core_model(model) # Construct S, b, lbs, ubs from model
     cbmodel = JuMP.Model()
     nvars = size(S, 2) # number of variables in model
@@ -49,7 +49,7 @@ function build_cbm(model::CobraTools.Model)
 end
 
 """
-    fba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    fba(model::CobraModel, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux balance analysis (FBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
 Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (ub, lb) flux constraints.
@@ -68,7 +68,7 @@ sol = fba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
 function fba(
-    model::CobraTools.Model,
+    model::CobraModel,
     objective_rxns::Union{Reaction,Array{Reaction,1}},
     optimizer;
     weights = Float64[],
@@ -132,7 +132,7 @@ function fba(
 end
 
 @doc raw"""
-    pfba(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    pfba(model::CobraModel, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run parsimonious flux balance analysis (pFBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction) for the initial FBA problem.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
@@ -154,7 +154,7 @@ sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
 function pfba(
-    model::CobraTools.Model,
+    model::CobraModel,
     objective_rxns::Union{Reaction,Array{Reaction,1}},
     optimizer;
     weights = Float64[],
@@ -272,13 +272,13 @@ function pfba(
 end
 
 """
-    map_fluxes(v, model::CobraTools.Model)
+    map_fluxes(v, model::CobraModel)
 
 Map fluxes from an optimization problem (`v`) to rxns in a model. 
 `v` can be a JuMP object (fluxes) or an array of Float64 fluxes.
 Assumes they are in order of `model.reactions`, which they should be since the optimization problem is constructed from the model.
 """
-function map_fluxes(v::Array{Float64,1}, model::CobraTools.Model)
+function map_fluxes(v::Array{Float64,1}, model::CobraModel)
     rxndict = Dict{String,Float64}()
     for i in eachindex(model.reactions)
         rxndict[model.reactions[i].id] = v[i]
@@ -286,7 +286,7 @@ function map_fluxes(v::Array{Float64,1}, model::CobraTools.Model)
     return rxndict
 end
 
-function map_fluxes(v::Array{VariableRef,1}, model::CobraTools.Model)
+function map_fluxes(v::Array{VariableRef,1}, model::CobraModel)
     rxndict = Dict{String,Float64}()
     for i in eachindex(model.reactions)
         rxndict[model.reactions[i].id] = value(v[i])
@@ -311,12 +311,12 @@ function set_bound(vind, ubs, lbs; ub = 1000, lb = -1000)
 end
 
 """
-    atom_exchange(flux_dict::Dict{String, Float64}, model::CobraTools.Model)
+    atom_exchange(flux_dict::Dict{String, Float64}, model::CobraModel)
 
 Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`. 
 Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
 """
-function atom_exchange(flux_dict::Dict{String,Float64}, model::CobraTools.Model)
+function atom_exchange(flux_dict::Dict{String,Float64}, model::CobraModel)
     atom_flux = Dict{String,Float64}()
     for (rxnid, flux) in flux_dict
         if startswith(rxnid, "EX_") || startswith(rxnid, "DM_") # exchange, demand reaction
@@ -390,11 +390,11 @@ function exchange_reactions(
 end
 
 """
-    metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraTools.Model)
+    metabolite_fluxes(fluxdict::Dict{String, Float64}, model::CobraModel)
 
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or produce them given the flux distribution supplied in `fluxdict`.
 """
-function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::CobraTools.Model)
+function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::CobraModel)
     S, _, _, _ = get_core_model(model)
     S = Array(S) # full
     met_flux = Dict{String,Float64}()
@@ -427,7 +427,7 @@ end
 
 
 """
-    fva(model::CobraTools.Model, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; optimum_bound=0.9999, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    fva(model::CobraModel, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; optimum_bound=0.9999, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux variability analysis (FVA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
 It runs fba on the model once to determine the optimum of the objective.
@@ -442,13 +442,13 @@ Returns two dictionaries (`fva_max` and `fva_min`) that each reaction `id`s to d
 ```
 optimizer = Gurobi.Optimizer
 atts = Dict("OutputFlag" => 0)
-model = CobraTools.read_model("iJO1366.json")
+model = Cobraread_model("iJO1366.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
 function fva(
-    model::CobraTools.Model,
+    model::CobraModel,
     objective_rxns::Union{Reaction,Array{Reaction,1}},
     optimizer;
     optimum_bound = 0.9999,
