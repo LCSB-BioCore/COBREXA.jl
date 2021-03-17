@@ -109,6 +109,4 @@
     @test bal
 
     @test isnothing(findfirst(rxns, "nope"))
-
-
 end

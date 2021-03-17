@@ -26,7 +26,7 @@
 
     rxns = [r1, r2]
 
-    model = CobraTools.Model()
+    model = CobraModel()
     model.id = "model"
     model.reactions = rxns
     model.metabolites = mets

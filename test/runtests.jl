@@ -9,7 +9,6 @@ using MAT
 using SHA
 using Distributed
 using JuMP
-
 using Tulip
 using OSQP
 using Statistics
@@ -31,38 +30,15 @@ end
 
 # load the test models
 include(joinpath("data", "testModels.jl"))
+# load some convenience functions for testing
+include("testing_functions.jl") 
 
 # import base files
 @testset "COBREXA test suite" begin
-    for testSet in ["base", "io", "reconstruction", "analysis"]
+    for testSet in ["base", "io", "reconstruction", "analysis", "sampling"]
         @testset "$testSet" begin
             runSuite(testSet)
         end
-    end
-end
-
-
-const testdir = dirname(@__FILE__)
-
-include("testing_functions.jl") # load some testing functions
-
-tests = [
-    "base/gene_test.jl",
-    "base/metabolite_test.jl",
-    "base/model_test.jl",
-    "base/reaction_test.jl",
-    "io/io_tools_test.jl",
-    "construction/construction_overloading_test.jl",
-    "construction/model_manipulations_test.jl",
-    "optimization_analysis/basic_analysis_test.jl",
-    "sampling/sampling_tools_test.jl",
-    "external/brenda_tests.jl",
-]
-
-@testset "CobraTools" begin
-    for t in tests
-        tp = joinpath(testdir, t)
-        include(tp)
     end
 end
 

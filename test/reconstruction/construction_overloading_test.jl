@@ -1,5 +1,5 @@
 @testset "Construction overloading" begin
-    model = CobraTools.read_model(joinpath("data", "iJO1366.json"))
+    model = read_model(joinpath("data", "iJO1366.json"))
 
     rxn_original = findfirst(model.reactions, "NADH16pp")
     nadh = findfirst(model.metabolites, "nadh_c")

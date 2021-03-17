@@ -32,8 +32,8 @@ function model_comparison_test(model1, model2)
     grrs_same = true
     for rxn1 in model1.reactions
         rxn2 = findfirst(model2.reactions, rxn1.id)
-        rxn1_grr_string = string(split(CobraTools.unparse_grr(rxn1.grr), "")) # use hash
-        rxn2_grr_string = string(split(CobraTools.unparse_grr(rxn2.grr), ""))
+        rxn1_grr_string = string(split(COBREXA.unparse_grr(rxn1.grr), ""))
+        rxn2_grr_string = string(split(COBREXA.unparse_grr(rxn2.grr), ""))
         rxn1_ints = sum(Int.([x[1] for x in rxn1_grr_string]))
         rxn2_ints = sum(Int.([x[1] for x in rxn2_grr_string]))
         if rxn1_ints != rxn2_ints
@@ -51,18 +51,9 @@ Test if model is the same after it was read in, saved, and then re-read.
 function read_write_read_test(model, format)
     tmpfile = joinpath("data", "temp." * format)
 
-    CobraTools.save_model(model, tmpfile)
-    tmpmodel = CobraTools.read_model(tmpfile)
+    save_model(model, tmpfile)
+    tmpmodel = read_model(tmpfile)
 
     rm(tmpfile)
     model_comparison_test(model, tmpmodel)
 end
-
-
-
-# function atom_test(model)
-#     biomass_rxn = findfirst(model.rxns, "BIOMASS_Ec_iJO1366_WT_53p95M")
-#     pfbasol = CobraTools.pfba(model, biomass_rxn)
-#     ad = CobraTools.atom_exchange(pfbasol)
-#     return ad["C"]/ad["H"] ≈ 0.6362486422376349
-# end
