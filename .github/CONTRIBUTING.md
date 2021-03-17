@@ -2,10 +2,6 @@
 
 :+1::tada: Thanks for taking the time to contribute to [COBREXA.jl](https://github.com/LCSB-BioCore/COBREXA.jl)! :tada::+1:
 
-## How can I contribute?
-
-A complete technical guide on how to get started contributing is given [here](https://lcsb-biocore.github.io/COBREXA.jl/stable/howToContribute/).
-
 ## How to report a bug or suggest an enhancement
 
 Please use the [GitHub issue tracker](https://github.com/LCSB-BioCore/COBREXA.jl/issues) to report any problems with the software, and discuss any potential questions about COBREXA use.
