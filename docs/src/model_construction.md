@@ -140,7 +140,7 @@ getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 Once you have defined some metabolites, genes, and reactions, you can construct a model! This is most simply done by
 using the empty model constructor:
 ```@docs
-Model()
+CobraModel()
 ```
 The fields of `CobraModel` can then be assigned as usual.
 ```@example
@@ -236,7 +236,7 @@ atp2 = Metabolite("atp2")
 
 mets = [atp, atp2]
 
-model = Model()
+model = CobraModel()
 add!(model, mets)
 
 rm!(model, atp2)
@@ -257,7 +257,7 @@ anabolism.id = "anabolism"
 mets = [atp]
 rxns = [anabolism]
 
-model = Model()
+model = CobraModel()
 model.id = "Test model"
 add!(model, mets) # missing adp
 add!(model, rxns)
