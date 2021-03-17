@@ -1,3 +1,0 @@
-# Thermodynamic Analysis
-
-TBD.
