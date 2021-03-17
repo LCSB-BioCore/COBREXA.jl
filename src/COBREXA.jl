@@ -14,15 +14,10 @@ import Pkg
 include("banner.jl")
 _printBanner()
 
+# autoloading
 const _inc(path...) = include(joinpath(path...))
-
-_inc.("types", ["linearModel.jl", "reactionStatus.jl"])
-
-_inc.("base", ["solver.jl", "utilities.jl"])
-_inc.("io", ["reader.jl", "writer.jl", "sbml.jl"])
-_inc.("reconstruction", ["coupling.jl", "modeling.jl"])
-_inc.("analysis", ["fba.jl", "fva.jl"])
-
+const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
+_inc_all.(joinpath.(@__DIR__, ["types", "base", "io", "reconstruction", "analysis"]))
 
 # export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
 for sym in names(@__MODULE__, all = true)
