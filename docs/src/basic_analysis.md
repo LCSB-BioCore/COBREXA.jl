@@ -1,6 +1,6 @@
 # Optimization Based Analysis
 A selection of standard COBRA functions have been implemented to make basic model analysis more convenient.
-Additionally, `CobraTools.jl` allows you to easily formulate your own optimization problems using the structure of a constraint based model.
+Additionally, `COBREXA.jl` allows you to easily formulate your own optimization problems using the structure of a constraint based model.
 This makes it easy to experiment with custom algorithms etc.
 
 ## Flux balance analysis (FBA)
@@ -18,12 +18,12 @@ using any `JuMP` compatible solver. Typically ``I`` is a singleton set that only
 ```@docs
 fba
 ```
-Here, we use `Tulip.jl`, a pure Julia interior point linear program solver, with the `fba` function from `CobraTools.jl`.
+Here, we use `Tulip.jl`, a pure Julia interior point linear program solver, with the `fba` function from `COBREXA.jl`.
 ```@setup fba
 model_location = joinpath("..","..", "models", "e_coli_core.json")
 ```
 ```@example fba
-using CobraTools
+using COBREXA
 using JuMP
 using Tulip
 
@@ -69,7 +69,7 @@ Suppose that FBA has found the optimum of ``v_\mu = \mu``, pFBA then solves,
 & & v_\mu = \mu
 \end{aligned}
 ```
-again using any JuMP compatible solver(s). In the `CobraTools.jl` implementation of pFBA, both the FBA and QP problem are solved internally in `pfba`, using similar input arguments as in `fba`. If multiple solvers are given, the first solver is used to solve the LP, and the second solver the QP, otherwise the same solver is used to solve both problems.
+again using any JuMP compatible solver(s). In the `COBREXA.jl` implementation of pFBA, both the FBA and QP problem are solved internally in `pfba`, using similar input arguments as in `fba`. If multiple solvers are given, the first solver is used to solve the LP, and the second solver the QP, otherwise the same solver is used to solve both problems.
 This is useful if the QP solver does not handle the LP problem well, as with OSQP. 
 
 An alternative, related formulation of this idea exists, called "CycleFreeFlux". 
@@ -78,7 +78,7 @@ really have much benefit beyond only solving two linear programs. See [Building 
 ```@docs
 pfba
 ```
-Here, we use `Tulip.jl` followed by `OSQP.jl`, with the `pfba` function from `CobraTools.jl`. Note that `OSQP.jl` has iffy performance, and is only included here because it is open source. We recommend that a commercial solver, e.g. `Gubobi.jl`, be used to simplify your user experience.
+Here, we use `Tulip.jl` followed by `OSQP.jl`, with the `pfba` function from `COBREXA.jl`. Note that `OSQP.jl` has iffy performance, and is only included here because it is open source. We recommend that a commercial solver, e.g. `Gubobi.jl`, be used to simplify your user experience.
 ```@example fba
 using OSQP
 
@@ -87,7 +87,7 @@ sol = pfba(model, biomass, [Tulip.Optimizer, OSQP.Optimizer]; solver_attributes=
 ```
 ## Flux variability analysis (FVA)
 Flux variability analysis can also be used to investigate the degeneracy associated with flux balance analysis derived solutions (see also [Sampling Tools](@ref)).
-`CobraTools.jl` exposes `fva` that sequentially maximizes and minimizes each reaction in a model subject to the constraint that each optimization problem also satisfies an initial FBA type objective optimum, below denoted by ``v_{\mu}=\mu``,
+`COBREXA.jl` exposes `fva` that sequentially maximizes and minimizes each reaction in a model subject to the constraint that each optimization problem also satisfies an initial FBA type objective optimum, below denoted by ``v_{\mu}=\mu``,
 ```math
 \begin{aligned}
 & \underset{v}{\text{max or min}}
@@ -102,16 +102,16 @@ Flux variability analysis can also be used to investigate the degeneracy associa
 fva
 ```
 ## Building your own optimization analysis script
-`CobraTools.jl` also makes it simple to construct customized optimization problems by making judicious use of [JuMP](https://jump.dev/). 
+`COBREXA.jl` also makes it simple to construct customized optimization problems by making judicious use of [JuMP](https://jump.dev/). 
 Convenience functions make optimization problem construction, modification and data extraction from JuMP result objects easy.
 ```@docs
 get_core_model
 build_cbm
 set_bound
-map_fluxes(::Array{Float64,1}, ::CobraTools.Model)
+map_fluxes(::Array{Float64,1}, ::CobraModel)
 ```
 ```@example fba
-using CobraTools
+using COBREXA
 using JuMP
 using Tulip
 
