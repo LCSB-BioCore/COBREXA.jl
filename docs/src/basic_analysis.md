@@ -24,6 +24,7 @@ using COBREXA
 using JuMP
 using Tulip
 
+download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 model = read_model("e_coli_core.json")
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
@@ -121,5 +122,6 @@ set_optimizer(cbm, Tulip.Optimizer)
 @objective(cbm, Max, v[model[biomass]])
 optimize!(cbm)    
 
-sol = map_fluxes(v, model) 
+sol = map_fluxes(v, model)
+rm("e_coli_core.json") # hide 
 ```
