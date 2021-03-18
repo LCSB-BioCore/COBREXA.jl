@@ -24,7 +24,8 @@ using COBREXA
 using JuMP
 using Tulip
 
-model = read_model("e_coli_core.json")
+model_location = "e_coli_core.json" # hide
+model = read_model(model_location)
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 optimizer = Tulip.Optimizer
@@ -38,6 +39,7 @@ using JSON
 open("fluxes.json", "w") do io
     JSON.print(io, sol)
 end
+rm("fluxes.json") # hide
 ```
 
 ## Solution inspection
@@ -112,7 +114,9 @@ using COBREXA
 using JuMP
 using Tulip
 
-model = read_model("e_coli_core.json")
+model_location = "e_coli_core.json" # hide
+model = read_model(model_location)
+
 cbm, v, mb, ubs, lbs = build_cbm(model)
 glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
 set_bound(glucose_index, ubs, lbs; ub=-12.0, lb=-12.0)

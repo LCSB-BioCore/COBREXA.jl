@@ -12,7 +12,9 @@ using COBREXA
 using JuMP
 using Tulip
 
-model = read_model("e_coli_core.json")
+model_location = "e_coli_core.json" # hide
+model = read_model(model_location)
+
 optimizer = Tulip.Optimizer
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
