@@ -46,18 +46,17 @@ The optimization solvers are implemented through `JuMP` and thus this package sh
 
 ## Quick Example
 Let's perform flux balance analysis on a constraint based model.
-```@example
+```@example intro
 using COBREXA
 using JuMP
 using Tulip
 
-# Download a model from the BIGG database
-download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
-
-# Read that model into Julia
 model = read_model("e_coli_core.json")
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 optimizer = Tulip.Optimizer
 sol = fba(model, biomass, optimizer)
 ```
+
+
+
