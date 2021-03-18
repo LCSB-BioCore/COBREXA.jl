@@ -1,7 +1,7 @@
 using Documenter, COBREXA
 
 # download core model
-download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+# download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 
 makedocs(modules = [COBREXA],
         clean = false,
