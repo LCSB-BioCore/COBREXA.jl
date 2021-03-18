@@ -13,6 +13,36 @@
 
     @test size(fluxes) == (1, 2)
     @test fluxes == Array{Float64,2}([2 2])
+
+    cp = LinearModel(
+        [
+            -1.0 -1.0 -1.0
+        ],
+        [0.],
+        [1.0, 0., 0.],
+        [0., 0., -1.0],
+        1.0 * ones(3),
+        ["r$x" for x = 1:3],
+        ["m1"],
+    )
+    fluxes = fluxVariabilityAnalysis(cp, optimizer)
+    @test fluxes ≈ [
+        1.0   1.0;
+        0.0   0.0;
+        -1.0  -1.0;
+    ]
+    fluxes = fluxVariabilityAnalysis(cp, optimizer, 0.5)
+    @test fluxes ≈ [
+        0.5   1.0;
+        0.0   0.5;
+        -1.0  -0.5;
+    ]
+    fluxes = fluxVariabilityAnalysis(cp, optimizer, 0.)
+    @test fluxes ≈ [
+        0.   1.0;
+        0.0   1.0;
+        -1.0  0.;
+    ]
 end
 
 @testset "Parallel FVA" begin
