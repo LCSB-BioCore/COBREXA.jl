@@ -11,14 +11,13 @@ s.t. S x = b
 where Z₀:= cᵀx₀ is the objective value of an optimal solution to the associated
 FBA problem
 """
-function fluxVariabilityAnalysis(model::LinearModel, optimizer)
+function fluxVariabilityAnalysis(model::LinearModel, optimizer, γ::AbstractFloat=1.0)
     (m, n) = size(model.S)
-    return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
+    return fluxVariabilityAnalysis(model, collect(1:n), optimizer, γ)
 end
 
-function fluxVariabilityAnalysis(model::LinearModel, reactions::Vector{Int64}, optimizer)
+function fluxVariabilityAnalysis(model::LinearModel, reactions::Vector{Int64}, optimizer, γ::AbstractFloat=1.0)
     (maximum(reactions) > length(model.rxns)) && error("Index exceeds number of reactions.")
-    γ = 1.0
     fluxes = zeros(length(reactions), 2)
 
     (optimization_model, x₀) = fluxBalanceAnalysis(model::LinearModel, optimizer)
@@ -53,12 +52,11 @@ function parFVA_get_opt(model, rid)
     return JuMP.objective_value(model)
 end
 
-function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers)
+function parFVA(model::LinearModel, reactions::Vector{Int}, optimizer, workers, gamma::AbstractFloat=1.0)
     if any(reactions .> length(model.rxns))
         throw(ArgumentError("reactions contain an out-of-bounds index"))
     end
 
-    gamma = 1.0 #TODO parametrize?
     (optimization_model, x0) = fluxBalanceAnalysis(model::LinearModel, optimizer)
     Z0 = JuMP.objective_value(optimization_model)
 
