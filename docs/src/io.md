@@ -7,9 +7,13 @@ Currently, JSON and Matlab formatted models can be imported.
 read_model(file_location::String)
 ```
 
-```@example ioexample
+```@example io
 using COBREXA
- 
+
+# Download a model from the BIGG database
+download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+
+# Read that model into Julia
 model = read_model("e_coli_core.json")
 model # pretty printing
 ```
@@ -21,8 +25,8 @@ Currently, JSON and Matlab models can be exported.
 save_model(model::CobraModel, file_location::String)
 ```
 
-```@example ioexample
-save_model(model, "e_coli_core2.json")
+```@example io
+save_model(model, "e_coli_core_saved.json")
 rm("e_coli_core2.json") # hide
 ```
 
