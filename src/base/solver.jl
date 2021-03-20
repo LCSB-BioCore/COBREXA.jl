@@ -6,7 +6,7 @@ function makeOptimizationModel(
     model::LM,
     optimizer;
     sense = MOI.MAX_SENSE,
-) where {LM<:AbstractLinearModel}
+) where {LM<:AbstractCobraModel}
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
@@ -21,11 +21,7 @@ end
 """
 Use JuMP to solve an instance of LinearModel
 """
-function solveLP(
-    model::LM,
-    optimizer;
-    sense = MOI.MIN_SENSE,
-) where {LM<:AbstractLinearModel}
+function solveLP(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
     optimization_model, x = makeOptimizationModel(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
     return (optimization_model, x)

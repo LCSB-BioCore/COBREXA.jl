@@ -1,12 +1,12 @@
 
 """
-    abstract type AbstractLinearModel end
+    abstract type AbstractCobraModel end
 
 A helper supertype that wraps everything usable as a LinearModel for COBREXA
 functions. If you want to use your own type, make it a subtype (so that the
 functions typecheck) and add instances for the data accessor methods below.
 """
-abstract type AbstractLinearModel end
+abstract type AbstractCobraModel end
 
 const SpMtx = SparseMatrixCSC{Float64,Int}
 const SpVec = SparseVector{Float64,Int}
@@ -17,47 +17,47 @@ const ST = AbstractVector{String}
 
 _missingImplError = (m, a) -> throw(MethodError(m, a))
 
-function reactions(a::LM)::StrVec where {LM<:AbstractLinearModel}
+function reactions(a::LM)::StrVec where {LM<:AbstractCobraModel}
     _missingImplError(reactions, (a,))
 end
 
-function metabolites(a::LM)::StrVec where {LM<:AbstractLinearModel}
+function metabolites(a::LM)::StrVec where {LM<:AbstractCobraModel}
     _missingImplError(metabolites, (a,))
 end
 
-function nReactions(a::LM)::Int where {LM<:AbstractLinearModel}
+function nReactions(a::LM)::Int where {LM<:AbstractCobraModel}
     length(reactions(a))
 end
 
-function nMetabolites(a::LM)::Int where {LM<:AbstractLinearModel}
+function nMetabolites(a::LM)::Int where {LM<:AbstractCobraModel}
     length(metabolites(a))
 end
 
-function stoichiometry(a::LM)::SpMtx where {LM<:AbstractLinearModel}
+function stoichiometry(a::LM)::SpMtx where {LM<:AbstractCobraModel}
     _missingImplError(stoichiometry, (a,))
 end
 
-function bounds(a::LM)::Tuple{SpVec,SpVec} where {LM<:AbstractLinearModel}
+function bounds(a::LM)::Tuple{SpVec,SpVec} where {LM<:AbstractCobraModel}
     _missingImplError(bounds, (a,))
 end
 
-function balance(a::LM)::SpVec where {LM<:AbstractLinearModel}
+function balance(a::LM)::SpVec where {LM<:AbstractCobraModel}
     _missingImplError(balance, (a,))
 end
 
-function objective(a::LM)::SpVec where {LM<:AbstractLinearModel}
+function objective(a::LM)::SpVec where {LM<:AbstractCobraModel}
     _missingImplError(objective, (a,))
 end
 
-function coupling(a::LM)::SpMtx where {LM<:AbstractLinearModel}
+function coupling(a::LM)::SpMtx where {LM<:AbstractCobraModel}
     _missingImplError(coupling, (a,))
 end
 
-function nCouplingConstraints(a::LM)::Int where {LM<:AbstractLinearModel}
+function nCouplingConstraints(a::LM)::Int where {LM<:AbstractCobraModel}
     size(coupling(a), 1)
 end
 
-function couplingBounds(a::LM)::Tuple{SpVec,SpVec} where {LM<:AbstractLinearModel}
+function couplingBounds(a::LM)::Tuple{SpVec,SpVec} where {LM<:AbstractCobraModel}
     _missingImplError(couplingBounds, (a,))
 end
 
@@ -73,7 +73,7 @@ s.t. S x = b
 
 This is the default model supported by COBREXA model building functions.
 """
-mutable struct LinearModel <: AbstractLinearModel
+mutable struct LinearModel <: AbstractCobraModel
     S::SpMtx
     b::SpVec
     C::SpMtx
