@@ -16,7 +16,7 @@ function fluxVariabilityAnalysis(
     optimizer;
     gamma::AbstractFloat = 1.0,
 ) where {LM<:AbstractLinearModel}
-    n = size(model.S, 2)
+    n = nReactions(model)
     return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
 end
 
