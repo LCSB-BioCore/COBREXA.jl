@@ -1,68 +1,5 @@
 
 """
-    abstract type AbstractCobraModel end
-
-A helper supertype that wraps everything usable as a LinearModel for COBREXA
-functions. If you want to use your own type, make it a subtype (so that the
-functions typecheck) and add instances for the data accessor methods below.
-"""
-abstract type AbstractCobraModel end
-
-const SpMtx = SparseMatrixCSC{Float64,Int}
-const SpVec = SparseVector{Float64,Int}
-const StrVec = Vector{String}
-const MT = AbstractMatrix{Float64}
-const VT = AbstractVector{Float64}
-const ST = AbstractVector{String}
-
-_missingImplError = (m, a) -> throw(MethodError(m, a))
-
-function reactions(a::LM)::StrVec where {LM<:AbstractCobraModel}
-    _missingImplError(reactions, (a,))
-end
-
-function metabolites(a::LM)::StrVec where {LM<:AbstractCobraModel}
-    _missingImplError(metabolites, (a,))
-end
-
-function nReactions(a::LM)::Int where {LM<:AbstractCobraModel}
-    length(reactions(a))
-end
-
-function nMetabolites(a::LM)::Int where {LM<:AbstractCobraModel}
-    length(metabolites(a))
-end
-
-function stoichiometry(a::LM)::SpMtx where {LM<:AbstractCobraModel}
-    _missingImplError(stoichiometry, (a,))
-end
-
-function bounds(a::LM)::Tuple{SpVec,SpVec} where {LM<:AbstractCobraModel}
-    _missingImplError(bounds, (a,))
-end
-
-function balance(a::LM)::SpVec where {LM<:AbstractCobraModel}
-    _missingImplError(balance, (a,))
-end
-
-function objective(a::LM)::SpVec where {LM<:AbstractCobraModel}
-    _missingImplError(objective, (a,))
-end
-
-function coupling(a::LM)::SpMtx where {LM<:AbstractCobraModel}
-    _missingImplError(coupling, (a,))
-end
-
-function nCouplingConstraints(a::LM)::Int where {LM<:AbstractCobraModel}
-    size(coupling(a), 1)
-end
-
-function couplingBounds(a::LM)::Tuple{SpVec,SpVec} where {LM<:AbstractCobraModel}
-    _missingImplError(couplingBounds, (a,))
-end
-
-
-"""
 A concrete linear optimization problem of the form:
 ```
 min c^T x
@@ -74,16 +11,16 @@ s.t. S x = b
 This is the default model supported by COBREXA model building functions.
 """
 mutable struct LinearModel <: AbstractCobraModel
-    S::SpMtx
-    b::SpVec
-    C::SpMtx
-    cl::SpVec
-    cu::SpVec
-    c::SpVec
-    xl::SpVec
-    xu::SpVec
-    rxns::StrVec
-    mets::StrVec
+    S::SparseMtx
+    b::SparseVec
+    C::SparseMtx
+    cl::SparseVec
+    cu::SparseVec
+    c::SparseVec
+    xl::SparseVec
+    xu::SparseVec
+    rxns::Vector{String}
+    mets::Vector{String}
 
     function LinearModel(
         S::M,
@@ -93,7 +30,7 @@ mutable struct LinearModel <: AbstractCobraModel
         xu::V,
         rxns::K,
         mets::K,
-    ) where {V<:VT,M<:MT,K<:ST}
+    ) where {V<:VecType,M<:MtxType,K<:StringVecType}
 
         sS = sparse(S)
         sb = sparse(b)
@@ -118,7 +55,7 @@ mutable struct LinearModel <: AbstractCobraModel
         xu::V,
         rxns::K,
         mets::K,
-    ) where {V<:VT,M1<:MT,M2<:MT,K<:ST}
+    ) where {V<:VecType,M1<:MtxType,M2<:MtxType,K<:StringVecType}
 
         checkInputDimensions(S, b, C, cl, cu, c, xl, xu, rxns, mets)
 
@@ -135,34 +72,34 @@ mutable struct LinearModel <: AbstractCobraModel
     end
 end
 
-function reactions(a::LinearModel)::StrVec
+function reactions(a::LinearModel)::Vector{String}
     a.rxns
 end
 
-function metabolites(a::LinearModel)::StrVec
+function metabolites(a::LinearModel)::Vector{String}
     a.mets
 end
 
-function stoichiometry(a::LinearModel)::SpMtx
+function stoichiometry(a::LinearModel)::SparseMtx
     a.S
 end
 
-function bounds(a::LinearModel)::Tuple{SpVec,SpVec}
+function bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
     (a.xl, a.xu)
 end
 
-function balance(a::LinearModel)::SpVec
+function balance(a::LinearModel)::SparseVec
     a.b
 end
 
-function objective(a::LinearModel)::SpVec
+function objective(a::LinearModel)::SparseVec
     a.c
 end
 
-function coupling(a::LinearModel)::SpMtx
+function coupling(a::LinearModel)::SparseMtx
     a.C
 end
 
-function couplingBounds(a::LinearModel)::Tuple{SpVec,SpVec}
+function couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
     (a.cl, a.cu)
 end

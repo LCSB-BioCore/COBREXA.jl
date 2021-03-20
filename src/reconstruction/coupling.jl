@@ -6,7 +6,7 @@ function checkCouplingConstraintsInputDimensions(
     C::M,
     cl::V,
     cu::V,
-) where {M<:MT,V<:VT}
+) where {M<:MtxType,V<:VecType}
 
     length(cu) == length(cl) ||
         throw(DimensionMismatch("`cl` and `cu` don't have the same size"))
@@ -37,7 +37,7 @@ function addCouplingConstraints!(
     c::V,
     cl::AbstractFloat,
     cu::AbstractFloat,
-) where {V<:VT}
+) where {V<:VecType}
     return addCouplingConstraints!(
         m,
         sparse(reshape(c, (1, length(c)))),
@@ -47,7 +47,12 @@ function addCouplingConstraints!(
 end
 
 
-function addCouplingConstraints!(m::LinearModel, C::M, cl::V, cu::V) where {M<:MT,V<:VT}
+function addCouplingConstraints!(
+    m::LinearModel,
+    C::M,
+    cl::V,
+    cu::V,
+) where {M<:MtxType,V<:VecType}
 
     C = sparse(C)
     cl = sparse(cl)
@@ -97,7 +102,7 @@ function changeCouplingBounds!(
     constraints::Vector{Int};
     cl::V = Array{Float64}(undef, 0),
     cu::V = Array{Float64}(undef, 0),
-) where {V<:VT}
+) where {V<:VecType}
     found = [index ∈ 1:nCouplingConstraints(model) for index in constraints]
     redConstraints = constraints[found]
 
