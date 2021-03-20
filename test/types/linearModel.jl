@@ -1,5 +1,5 @@
 
-struct FakeModel <: AbstractLinearModel
+struct FakeModel <: AbstractCobraModel
     dummy::Int
 end
 
