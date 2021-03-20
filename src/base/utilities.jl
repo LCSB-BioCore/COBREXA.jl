@@ -25,3 +25,20 @@ function Base.copy(model::LinearModel)
         model.mets,
     )
 end
+
+
+"""
+    set_bound(index, ubconstaintref, lbconstaintref; ub=1000, lb=-1000)
+
+Helper function to set the bounds of variables.
+The JuMP `set_normalized_rhs` function is a little confusing, so this function simplifies setting
+constraints. Just supply the constraint `index` and the bound objects (`ubconstaintref`, `lbconstaintref`) and they will be set to `ub` and `lb`.
+"""
+function set_bound(vind, ubs, lbs; ub = 1000, lb = -1000)
+    if lb <= 0
+        set_normalized_rhs(lbs[vind], abs(lb))
+    else
+        set_normalized_rhs(lbs[vind], -abs(lb))
+    end
+    set_normalized_rhs(ubs[vind], ub)
+end

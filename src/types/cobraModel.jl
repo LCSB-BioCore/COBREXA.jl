@@ -9,7 +9,7 @@ metabolites :: Array{Metabolite, 1}
 genes :: Array{Gene, 1}
 ````
 """
-mutable struct CobraModel
+mutable struct CobraModel <: AbstractCobraModel
     id::String
     reactions::Array{Reaction,1}
     metabolites::Array{Metabolite,1}
@@ -79,4 +79,53 @@ Typical usage: ind = model[gene]
 """
 function Base.getindex(model::CobraModel, gene::Gene)
     return model.genes[gene]
+end
+
+# generic interface functions
+
+function reactions(model::CobraModel)::Vector{String}
+    [r.id for r in model.reactions]
+end
+
+function metabolites(model::CobraModel)::Vector{String}
+    [m.id in model.metabolites]
+end
+
+function stoichiometry(model::CobraModel)::SparseMtx
+    S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
+    for (i, rxn) in enumerate(model.reactions) # column
+        for (met, coeff) in rxn.metabolites
+            j = findfirst(x -> x == met.id, metids) # row
+            isnothing(j) ?
+            (@error "S matrix construction error: $(met.id) not defined."; continue) :
+            nothing
+            S[j, i] = coeff
+        end
+    end
+    return S
+end
+
+function bounds(model::CobraModel)::Tuple{SparseVec,SparseVec}
+    ubs = [rxn.ub for rxn in model.reactions]
+    lbs = [rxn.lb for rxn in model.reactions]
+    return lbs, ubs
+end
+
+function balance(model::CobraModel)::SparseVec
+    SparseArrays.spzeros(length(model.metabolites))
+end
+
+function objective(model::CobraModel)::SparseVec
+    obj_arr = SparseArrays.spzeros(length(model.reactions))
+    j = -1
+    for (i, r) in enumerate(model.reactions)
+        if r.objective_coefficient != 0.0
+            j = i
+            break
+        end
+    end
+    if j != -1 # objective assigned, otherwise return array of 0s
+        obj_arr[j] = 1.0
+    end
+    return obj_arr
 end
