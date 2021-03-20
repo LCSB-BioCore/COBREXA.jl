@@ -9,7 +9,7 @@ function addReactions(
     xl::AbstractFloat,
     xu::AbstractFloat;
     checkConsistency = false,
-) where {V1<:VT,V2<:VT}
+) where {V1<:VecType,V2<:VecType}
     return addReactions(
         m,
         sparse(reshape(s, (length(s), 1))),
@@ -32,7 +32,7 @@ function addReactions(
     rxn::String,
     mets::K;
     checkConsistency = false,
-) where {V1<:VT,V2<:VT,K<:ST}
+) where {V1<:VecType,V2<:VecType,K<:StringVecType}
     return addReactions(
         m,
         sparse(reshape(s, (length(s), 1))),
@@ -54,7 +54,7 @@ function addReactions(
     xl::V,
     xu::V;
     checkConsistency = false,
-) where {M<:MT,V<:VT}
+) where {M<:MtxType,V<:VecType}
     rxns = ["r$x" for x = length(m.rxns)+1:length(m.rxns)+length(xu)]
     mets = ["m$x" for x = length(m.mets)+1:length(m.mets)+size(Sp)[1]]
     return addReactions(
@@ -96,7 +96,7 @@ function addReactions(
     rxns::K,
     mets::K;
     checkConsistency = false,
-) where {M<:MT,V<:VT,K<:ST}
+) where {M<:MtxType,V<:VecType,K<:StringVecType}
 
     Sp = sparse(Sp)
     b = sparse(b)
@@ -158,7 +158,7 @@ function checkInputDimensions(
     xu::V,
     rxns::K,
     mets::K,
-) where {M1<:MT,M2<:MT,V<:VT,K<:ST}
+) where {M1<:MtxType,M2<:MtxType,V<:VecType,K<:StringVecType}
     n_c = length(c)
 
     length(cu) == length(cl) ||
@@ -178,7 +178,7 @@ function checkInputDimensions(
     xu::V,
     rxns::K,
     mets::K,
-) where {M<:MT,V<:VT,K<:ST}
+) where {M<:MtxType,V<:VecType,K<:StringVecType}
 
     n_c = length(c)
     n_b = length(b)
@@ -208,7 +208,7 @@ function verifyConsistency(
     mets::K,
     newReactions,
     newMetabolites,
-) where {M<:MT,V<:VT,K<:ST}
+) where {M<:MtxType,V<:VecType,K<:StringVecType}
 
     if !isempty(newReactions)
         statuses = Array{ReactionStatus}(undef, length(names))
@@ -333,7 +333,7 @@ function changeBounds!(
     rxns::Vector{Int};
     xl::V = Array{Float64}(undef, 0),
     xu::V = Array{Float64}(undef, 0),
-) where {V<:VT}
+) where {V<:VecType}
     found = [index ∈ 1:nReactions(model) for index in rxns]
     length(rxns[found]) == length(unique(rxns[found])) ||
         error("`rxns` appears to contain duplicates")
@@ -356,7 +356,7 @@ function changeBounds!(
     rxns::Array{String,1};
     xl::V = Array{Float64}(undef, 0),
     xu::V = Array{Float64}(undef, 0),
-) where {V<:VT}
+) where {V<:VecType}
     found = [name ∈ model.rxns for name in rxns]
     rxnIndices = zeros(Int, length(rxns))
     rxnIndices[found] = [findfirst(isequal(name), model.rxns) for name in rxns[found]]
