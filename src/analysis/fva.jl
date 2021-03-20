@@ -15,7 +15,7 @@ function fluxVariabilityAnalysis(
     model::LM,
     optimizer;
     gamma::AbstractFloat = 1.0,
-) where {LM<:AbstractLinearModel}
+) where {LM<:AbstractCobraModel}
     n = nReactions(model)
     return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
 end
@@ -26,7 +26,7 @@ function fluxVariabilityAnalysis(
     optimizer,
     workers = [myid()];
     gamma::AbstractFloat = 1.0,
-) where {LM<:AbstractLinearModel}
+) where {LM<:AbstractCobraModel}
 
     if any(reactions .< 1) || any(reactions .> nReactions(model))
         throw(DomainError(reactions, "Index exceeds number of reactions."))
