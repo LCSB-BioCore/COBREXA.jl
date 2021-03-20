@@ -17,7 +17,7 @@ function fluxVariabilityAnalysis(
     gamma::AbstractFloat = 1.0,
 ) where {LM<:AbstractCobraModel}
     n = nReactions(model)
-    return fluxVariabilityAnalysis(model, collect(1:n), optimizer)
+    return fluxVariabilityAnalysis(model, collect(1:n), optimizer; gamma = gamma)
 end
 
 function fluxVariabilityAnalysis(
