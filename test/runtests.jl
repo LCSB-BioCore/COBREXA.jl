@@ -8,6 +8,12 @@ using COBREXA
 using MAT
 using SHA
 using Distributed
+using JuMP
+using Tulip
+using OSQP
+using Statistics
+using JSON
+using Measurements
 
 function runTestFile(path...)
     fn = joinpath(path...)
