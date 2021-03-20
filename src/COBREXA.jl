@@ -7,9 +7,19 @@ using LinearAlgebra
 using JuMP
 using MAT
 using Distributed
-using SBML
 using DistributedData
+using Requires
+using JSON
+using Measurements
+using Statistics
+using Random
+using PyCall
+using Tulip # for LPs
+using OSQP # for QPs, but it kinda sucks
+
+import Base: findfirst, getindex, show
 import Pkg
+import SBML # conflict with Reaction struct name
 
 include("banner.jl")
 _printBanner()
@@ -27,4 +37,4 @@ for sym in names(@__MODULE__, all = true)
     @eval export $sym
 end
 
-end
+end # module
