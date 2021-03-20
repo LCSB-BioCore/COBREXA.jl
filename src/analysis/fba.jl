@@ -9,11 +9,10 @@ s.t. S x = b
 fluxBalanceAnalysis(model::LM, optimizer) where {LM<:AbstractCobraModel} =
     solveLP(model, optimizer; sense = MOI.MAX_SENSE)
 
-
 """
-    fba(model::CobraModel, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    fba(model::CobraModel, optimizer; objective_rxns::Union{Reaction, Array{Reaction, 1}}, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
-Run flux balance analysis (FBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction).
+Run flux balance analysis (FBA) on the `model` optionally specifying `objective_rxn(s)` and their `weights` (empty `weights` mean equal weighting per reaction).
 Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (ub, lb) flux constraints.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
@@ -84,7 +83,7 @@ function fba(
 
         @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
-    
+
     optimize!(cbm)
 
     status = (
