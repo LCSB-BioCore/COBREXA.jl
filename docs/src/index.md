@@ -51,11 +51,13 @@ using COBREXA
 using JuMP
 using Tulip
 
-download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+if !isfile("e_coli_core.json")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+end
+
 model = read_model("e_coli_core.json")
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 optimizer = Tulip.Optimizer
 sol = fba(model, biomass, optimizer)
-rm("e_coli_core.json") # hide
 ```
