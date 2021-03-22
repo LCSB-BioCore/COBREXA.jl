@@ -1,6 +1,12 @@
 """
-Convert LinearModel to the JuMP model, place objectives and the equality
-constraint.
+    makeOptimizationModel(
+        model::LM,
+        optimizer;
+        sense = MOI.MAX_SENSE,
+    ) where {LM<:AbstractCobraModel}
+
+Convert LinearModel to a JuMP model, and place objectives, flux bounds and
+equality "balance" constraint.
 """
 function makeOptimizationModel(
     model::LM,
@@ -19,7 +25,10 @@ function makeOptimizationModel(
 end
 
 """
-Use JuMP to solve an instance of LinearModel
+    solveLP(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
+
+Use JuMP to solveLP an instance of LinearModel. Returns a tuple that contains the
+new model and a vector of its variables.
 """
 function solveLP(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
     optimization_model, x = makeOptimizationModel(model, optimizer; sense = sense)
