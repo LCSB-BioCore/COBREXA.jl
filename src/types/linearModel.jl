@@ -1,5 +1,7 @@
 
 """
+    struct LinearModel <: AbstractCobraModel
+
 A concrete linear optimization problem of the form:
 ```
 min c^T x
@@ -7,8 +9,6 @@ s.t. S x = b
     cₗ ≤ C x ≤ cᵤ
     xₗ ≤ x ≤ xᵤ
 ```
-
-This is the default model supported by COBREXA model building functions.
 """
 mutable struct LinearModel <: AbstractCobraModel
     S::SparseMat
@@ -72,34 +72,74 @@ mutable struct LinearModel <: AbstractCobraModel
     end
 end
 
+"""
+    reactions(a::LinearModel)::Vector{String}
+
+Get the reactions in a `LinearModel`.
+"""
 function reactions(a::LinearModel)::Vector{String}
     a.rxns
 end
 
+"""
+    metabolites(a::LinearModel)::Vector{String}
+
+Metabolites in a `LinearModel`.
+"""
 function metabolites(a::LinearModel)::Vector{String}
     a.mets
 end
 
+"""
+    stoichiometry(a::LinearModel)::SparseMat
+
+`LinearModel` stoichiometry matrix.
+"""
 function stoichiometry(a::LinearModel)::SparseMat
     a.S
 end
 
+"""
+    bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+
+`LinearModel` flux bounds.
+"""
 function bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
     (a.xl, a.xu)
 end
 
+"""
+    balance(a::LinearModel)::SparseVec
+
+`LinearModel` target flux balance.
+"""
 function balance(a::LinearModel)::SparseVec
     a.b
 end
 
+"""
+    objective(a::LinearModel)::SparseVec
+
+`LinearModel` objective vector.
+"""
 function objective(a::LinearModel)::SparseVec
     a.c
 end
 
+"""
+    coupling(a::LinearModel)::SparseMat
+
+Coupling constraint matrix for a `LinearModel`.
+"""
 function coupling(a::LinearModel)::SparseMat
     a.C
 end
 
+"""
+    couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+
+Coupling bounds for a `LinearModel`.
+"""
 function couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
     (a.cl, a.cu)
 end
