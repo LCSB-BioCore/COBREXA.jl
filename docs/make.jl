@@ -1,8 +1,5 @@
 using Documenter, COBREXA
 
-# download core model
-# download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
-
 makedocs(modules = [COBREXA],
         clean = false,
         sitename = "COBREXA.jl",
@@ -25,6 +22,3 @@ makedocs(modules = [COBREXA],
                 "Sampling Tools" => "sampling_tools.md",
                 ],
         )
-
-# delete core model
-rm("e_coli_core.json")
