@@ -1,7 +1,16 @@
 """
-Flux variability analysis (FVA)
+    fluxVariabilityAnalysis(
+        model::LM,
+        reactions::Vector{Int},
+        optimizer,
+        workers = [myid()];
+        gamma::AbstractFloat = 1.0,
+    )::Matrix{Float64} where {LM<:AbstractCobraModel}
 
-FVA solves the pair of optimization problems for each flux xᵢ
+# Flux variability analysis (FVA)
+
+FVA solves the pair of optimization problems in `model` for each flux xᵢ listed
+in `reactions`
 ```
 min/max xᵢ
 s.t. S x = b
@@ -9,24 +18,20 @@ s.t. S x = b
      cᵀx ≥ γ Z₀
 ```
 where Z₀:= cᵀx₀ is the objective value of an optimal solution to the associated
-FBA problem
-"""
-function fluxVariabilityAnalysis(
-    model::LM,
-    optimizer;
-    gamma::AbstractFloat = 1.0,
-) where {LM<:AbstractCobraModel}
-    n = nReactions(model)
-    return fluxVariabilityAnalysis(model, collect(1:n), optimizer; gamma = gamma)
-end
+FBA problem.
 
+Internally uses the specified JuMP-compatible `optimizer`, and the work is
+scheduled in parallel on `workers`.
+
+Returns a matrix of minima and maxima of size (length(reactions),2).
+"""
 function fluxVariabilityAnalysis(
     model::LM,
     reactions::Vector{Int},
     optimizer,
     workers = [myid()];
     gamma::AbstractFloat = 1.0,
-) where {LM<:AbstractCobraModel}
+)::Matrix{Float64} where {LM<:AbstractCobraModel}
 
     if any(reactions .< 1) || any(reactions .> nReactions(model))
         throw(DomainError(reactions, "Index exceeds number of reactions."))
@@ -40,7 +45,7 @@ function fluxVariabilityAnalysis(
     save_model = :(
         begin
             optmodel, x = COBREXA.makeOptimizationModel($model, $optimizer)
-            COBREXA._parFVA_add_constraint(optmodel, $(objective(model)), x, $Z0, $gamma)
+            COBREXA._FVA_add_constraint(optmodel, $(objective(model)), x, $Z0, $gamma)
             optmodel
         end
     )
@@ -49,7 +54,7 @@ function fluxVariabilityAnalysis(
 
     # schedule FVA parts parallely using pmap
     fluxes = dpmap(
-        rid -> :(COBREXA._parFVA_get_opt(cobrexa_parfva_model, $rid)),
+        rid -> :(COBREXA._FVA_optimize_reaction(cobrexa_parfva_model, $rid)),
         CachingPool(workers),
         [-reactions reactions],
     )
@@ -60,11 +65,42 @@ function fluxVariabilityAnalysis(
     return fluxes
 end
 
-function _parFVA_add_constraint(model, c, x, Z0, gamma)
+"""
+    fluxVariabilityAnalysis(
+        model::LM,
+        optimizer;
+        gamma::AbstractFloat = 1.0,
+    ) where {LM<:AbstractCobraModel}
+
+A simpler version of FVA that maximizes and minimizes all reactions in the model.
+"""
+function fluxVariabilityAnalysis(
+    model::LM,
+    optimizer;
+    gamma::AbstractFloat = 1.0,
+) where {LM<:AbstractCobraModel}
+    n = nReactions(model)
+    return fluxVariabilityAnalysis(model, collect(1:n), optimizer; gamma = gamma)
+end
+
+
+"""
+    _FVA_add_constraint(model, c, x, Z0, gamma)
+
+Internal helper function for adding constraints to a model. Exists mainly
+because for avoiding namespace problems on remote workers.
+"""
+function _FVA_add_constraint(model, c, x, Z0, gamma)
     JuMP.@constraint(model, c' * x ≥ gamma * Z0)
 end
 
-function _parFVA_get_opt(model, rid)
+"""
+    _FVA_get_opt(model, rid)
+
+Helper for creating the optimized model on a remote worker, for avoiding
+namespace problems.
+"""
+function _FVA_optimize_reaction(model, rid)
     sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
     var = JuMP.all_variables(model)[abs(rid)]
 
