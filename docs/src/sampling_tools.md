@@ -1,12 +1,21 @@
 # Sampling Tools
-It is well known that the FBA does not yield a unique solution, i.e. many flux distributions are capable of satisfying the system constraints as well as optimizing the imposed objective function. 
-Let the feasible space be defined by ``\mathcal{P} = \left\{ v : Sv = 0 \cap v_{\text{min}} \leq v \leq v_{\text{max}} \right\}``. 
-Sampling methods have been developed to uniformly sample from this feasible solution space. 
-`COBREXA.jl` implements both `hit_and_run` and `achr` to sample from ``\mathcal{P}``.
+
+It is well known that the FBA does not yield a unique solution, i.e. many flux
+distributions are capable of satisfying the system constraints as well as
+optimizing the imposed objective function.
+
+Let the feasible space be defined by
+``\mathcal{P} = \left\{ v : Sv = 0 \cap v_{\text{min}} \leq v \leq v_{\text{max}} \right\}``.
+
+Sampling methods have been developed to uniformly sample from this feasible
+solution space.  `COBREXA.jl` implements both `hit_and_run` and `achr` to
+sample from ``\mathcal{P}``.
+
 ```@docs
 hit_and_run
 achr
-``` 
+```
+
 ```@example sample
 using COBREXA
 using JuMP
