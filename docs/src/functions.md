@@ -1,29 +1,36 @@
 # Functions
 
-## Base and header modules
+## Types
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = ["header/types.jl", "base/types,jl", "base/solver.jl", "base/utilities.jl"]
+Pages = map(file -> joinpath("types", file), readdir("types"))
 ```
 
-## I/O module
+## Base functions
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = ["io/reader.jl"]
+Pages = map(file -> joinpath("base", file), readdir("base"))
 ```
 
-## Reconstruction module
+## File I/O and serialization
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = ["reconstruction/coupling.jl", "reconstruction/microbiome.jl","reconstruction/modeling.jl"]
+Pages = map(file -> joinpath("io", file), readdir("io"))
 ```
 
-## Analysis module
+## Model reconstruction
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = ["analysis/fba.jl", "analysis/fva.jl"]
+Pages = map(file -> joinpath("reconstruction", file), readdir("reconstruction"))
+```
+
+## Analysis functions
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("analysis", file), readdir("analysis"))
 ```
