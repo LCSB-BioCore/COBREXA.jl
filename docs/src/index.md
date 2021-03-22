@@ -8,64 +8,73 @@
 
 # Constraint-Based Reconstruction and EXascale Analysis
 
-# Functions
+COBREXA provides the base toolkit for working with big models and running
+tremendous amount of analyses in parallel. Its main purpose is to make the
+COBRA approach easy to use on problems that require the use of huge computer
+clusters and HPC environment, allowing it to approach the realistic
+pre-exascale capacities.
 
-A full reference to all functions is given here:
+In the package, you will find the usual COBRA-like functions that inteface to
+the underlying linear programming solvers. We use
+[`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) as the unified interface for
+many solvers; you can plug in whatever compatible solver you want, such as
+`Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`.
 
-```@contents
-Pages = ["functions.md"]
+## Quick start guide
+
+You can install COBREXA from Julia repositories as usual, by pressing `]` to
+switch to Packaging environment, and typing:
+```
+add COBREXA
 ```
 
-# How to contribute?
+With the package installed, let's perform a simple flux balance analysis on a
+constraint based model:
 
-If you want to contribute, please read these guidelines first:
-
-```@contents
-Pages = ["howToContribute.md"]
-```
-
-
-## Contents
-```@contents
-    Pages = [
-        "model_structure.md",
-        "io.md",
-        "model_construction.md",
-        "basic_analysis.md",
-        "sampling_tools.md",
-        "external_tools.md",
-        "thermodynamics.md"
-    ]
-    Depth=2
-```
-
-## Installation
-
-To install this package: `] add https://github.com/stelmo/CobraTools.jl`.
-
-Some of the optional features used in this package require external programs and/or data to be available. These are described below:
-
-* The Equilibrator interface requires that the Equilibrator-API has been installed and can be accessed through Julia's PyCall package. Refer to the [Equilibrator-API website](https://gitlab.com/equilibrator/equilibrator-api) for installation instructions. Within Julia, if you can call `pyimport("equilibrator_api")` successfully, then you will be able to use the functions exposed here. To actually use the functions insert `using PyCall` in your main level script (before or after `using CobraTools`).
-* To extract turnover numbers, Km, Kcat/Km and Ki from the Brenda database, you will need to download the database as a txt file [available here](https://www.brenda-enzymes.org/download_brenda_without_registration.php) (~250 MB).
-
-The optimization solvers are implemented through `JuMP` and thus this package should be solver agnostic. All tests are conducted using `Tulip.jl` and `OSQP.jl`, but other solvers should also work (I mostly use `Gurobi.jl`). 
-
-## Quick Example
-Let's perform flux balance analysis on a constraint based model.
-```@setup intro
-model_location = joinpath("..","..", "models", "e_coli_core.json")
-```
 ```@example intro
-using CobraTools
+using COBREXA
 using JuMP
 using Tulip
 
-model = read_model(model_location)
+if !isfile("e_coli_core.json")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+end
+
+model = read_model("e_coli_core.json")
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 optimizer = Tulip.Optimizer
 sol = fba(model, biomass, optimizer)
 ```
 
+## Tutorials
 
+**Note:** All tutorials assume that you have downloaded the `e_coli_core.json`
+model as above.
 
+```@contents
+Pages = [
+    "model_structure.md",
+    "io.md",
+    "model_construction.md",
+    "basic_analysis.md",
+    "sampling_tools.md",
+    "external_tools.md",
+    "thermodynamics.md"
+]
+Depth = 2
+```
+
+## Functions reference
+
+```@contents
+Pages = ["functions.md"]
+```
+
+## Contribution guide
+
+If you want to contribute, please read these guidelines first:
+
+```@contents
+Pages = ["howToContribute.md"]
+```
