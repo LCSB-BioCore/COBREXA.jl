@@ -10,10 +10,12 @@ read_model(file_location::String)
 ```@example ioexample
 using COBREXA
 
-download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+if !isfile("e_coli_core.json")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+end
+
 model = read_model("e_coli_core.json")
-rm("e_coli_core.json") # hide
-model # pretty printing
+model # pretty print the model
 ```
 
 ## Writing constraint based models
@@ -25,7 +27,6 @@ save_model(model::CobraModel, file_location::String)
 
 ```@example ioexample
 save_model(model, "e_coli_core2.json")
-rm("e_coli_core2.json") # hide
 ```
 
 ## IO Problems?

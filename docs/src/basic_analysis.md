@@ -24,7 +24,10 @@ using COBREXA
 using JuMP
 using Tulip
 
-download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+if !isfile("e_coli_core.json")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+end
+
 model = read_model("e_coli_core.json")
 
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
@@ -108,11 +111,8 @@ build_cbm
 set_bound
 map_fluxes(::Array{Float64,1}, ::CobraModel)
 ```
-```@example fba
-using COBREXA
-using JuMP
-using Tulip
 
+```@example fba
 model = read_model("e_coli_core.json")
 cbm, v, mb, ubs, lbs = build_cbm(model)
 glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
@@ -123,5 +123,4 @@ set_optimizer(cbm, Tulip.Optimizer)
 optimize!(cbm)    
 
 sol = map_fluxes(v, model)
-rm("e_coli_core.json") # hide 
 ```
