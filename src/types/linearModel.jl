@@ -11,9 +11,9 @@ s.t. S x = b
 This is the default model supported by COBREXA model building functions.
 """
 mutable struct LinearModel <: AbstractCobraModel
-    S::SparseMtx
+    S::SparseMat
     b::SparseVec
-    C::SparseMtx
+    C::SparseMat
     cl::SparseVec
     cu::SparseVec
     c::SparseVec
@@ -30,7 +30,7 @@ mutable struct LinearModel <: AbstractCobraModel
         xu::V,
         rxns::K,
         mets::K,
-    ) where {V<:VecType,M<:MtxType,K<:StringVecType}
+    ) where {V<:VecType,M<:MatType,K<:StringVecType}
 
         sS = sparse(S)
         sb = sparse(b)
@@ -55,7 +55,7 @@ mutable struct LinearModel <: AbstractCobraModel
         xu::V,
         rxns::K,
         mets::K,
-    ) where {V<:VecType,M1<:MtxType,M2<:MtxType,K<:StringVecType}
+    ) where {V<:VecType,M1<:MatType,M2<:MatType,K<:StringVecType}
 
         checkInputDimensions(S, b, C, cl, cu, c, xl, xu, rxns, mets)
 
@@ -80,7 +80,7 @@ function metabolites(a::LinearModel)::Vector{String}
     a.mets
 end
 
-function stoichiometry(a::LinearModel)::SparseMtx
+function stoichiometry(a::LinearModel)::SparseMat
     a.S
 end
 
@@ -96,7 +96,7 @@ function objective(a::LinearModel)::SparseVec
     a.c
 end
 
-function coupling(a::LinearModel)::SparseMtx
+function coupling(a::LinearModel)::SparseMat
     a.C
 end
 

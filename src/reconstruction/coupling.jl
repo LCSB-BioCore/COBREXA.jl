@@ -6,7 +6,7 @@ function checkCouplingConstraintsInputDimensions(
     C::M,
     cl::V,
     cu::V,
-) where {M<:MtxType,V<:VecType}
+) where {M<:MatType,V<:VecType}
 
     length(cu) == length(cl) ||
         throw(DimensionMismatch("`cl` and `cu` don't have the same size"))
@@ -52,7 +52,7 @@ function addCouplingConstraints!(
     C::M,
     cl::V,
     cu::V,
-) where {M<:MtxType,V<:VecType}
+) where {M<:MatType,V<:VecType}
 
     C = sparse(C)
     cl = sparse(cl)
