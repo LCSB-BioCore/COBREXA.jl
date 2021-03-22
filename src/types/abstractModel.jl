@@ -8,9 +8,9 @@ the functions typecheck) and add instances for the data accessor methods below.
 """
 abstract type AbstractCobraModel end
 
-const SparseMtx = SparseMatrixCSC{Float64,Int}
+const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}
-const MtxType = AbstractMatrix{Float64}
+const MatType = AbstractMatrix{Float64}
 const VecType = AbstractVector{Float64}
 const StringVecType = AbstractVector{String}
 
@@ -32,7 +32,7 @@ function nMetabolites(a::LM)::Int where {LM<:AbstractCobraModel}
     length(metabolites(a))
 end
 
-function stoichiometry(a::LM)::SparseMtx where {LM<:AbstractCobraModel}
+function stoichiometry(a::LM)::SparseMat where {LM<:AbstractCobraModel}
     _missingImplError(stoichiometry, (a,))
 end
 
@@ -48,7 +48,7 @@ function objective(a::LM)::SparseVec where {LM<:AbstractCobraModel}
     _missingImplError(objective, (a,))
 end
 
-function coupling(a::LM)::SparseMtx where {LM<:AbstractCobraModel}
+function coupling(a::LM)::SparseMat where {LM<:AbstractCobraModel}
     _missingImplError(coupling, (a,))
 end
 

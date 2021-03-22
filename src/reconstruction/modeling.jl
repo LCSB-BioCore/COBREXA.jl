@@ -54,7 +54,7 @@ function addReactions(
     xl::V,
     xu::V;
     checkConsistency = false,
-) where {M<:MtxType,V<:VecType}
+) where {M<:MatType,V<:VecType}
     rxns = ["r$x" for x = length(m.rxns)+1:length(m.rxns)+length(xu)]
     mets = ["m$x" for x = length(m.mets)+1:length(m.mets)+size(Sp)[1]]
     return addReactions(
@@ -96,7 +96,7 @@ function addReactions(
     rxns::K,
     mets::K;
     checkConsistency = false,
-) where {M<:MtxType,V<:VecType,K<:StringVecType}
+) where {M<:MatType,V<:VecType,K<:StringVecType}
 
     Sp = sparse(Sp)
     b = sparse(b)
@@ -158,7 +158,7 @@ function checkInputDimensions(
     xu::V,
     rxns::K,
     mets::K,
-) where {M1<:MtxType,M2<:MtxType,V<:VecType,K<:StringVecType}
+) where {M1<:MatType,M2<:MatType,V<:VecType,K<:StringVecType}
     n_c = length(c)
 
     length(cu) == length(cl) ||
@@ -178,7 +178,7 @@ function checkInputDimensions(
     xu::V,
     rxns::K,
     mets::K,
-) where {M<:MtxType,V<:VecType,K<:StringVecType}
+) where {M<:MatType,V<:VecType,K<:StringVecType}
 
     n_c = length(c)
     n_b = length(b)
@@ -208,7 +208,7 @@ function verifyConsistency(
     mets::K,
     newReactions,
     newMetabolites,
-) where {M<:MtxType,V<:VecType,K<:StringVecType}
+) where {M<:MatType,V<:VecType,K<:StringVecType}
 
     if !isempty(newReactions)
         statuses = Array{ReactionStatus}(undef, length(names))
