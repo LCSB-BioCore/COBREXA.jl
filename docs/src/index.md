@@ -22,12 +22,14 @@ many solvers; you can plug in whatever compatible solver you want, such as
 
 ## Quick start guide
 
-You can install COBREXA from Julia repositories as usual, by pressing `]` to switch to Packaging environment, and typing:
+You can install COBREXA from Julia repositories as usual, by pressing `]` to
+switch to Packaging environment, and typing:
 ```
 add COBREXA
 ```
 
-With the package installed, let's perform a simple flux balance analysis on a constraint based model:
+With the package installed, let's perform a simple flux balance analysis on a
+constraint based model:
 
 ```@example intro
 using COBREXA
