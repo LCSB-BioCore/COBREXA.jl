@@ -10,10 +10,10 @@ fluxBalanceAnalysis(model::LM, optimizer) where {LM<:AbstractCobraModel} =
     solveLP(model, optimizer; sense = MOI.MAX_SENSE)
 
 """
-    fba(model::CobraModel, optimizer; objective_rxns::Union{Reaction, Array{Reaction, 1}}, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux balance analysis (FBA) on the `model` optionally specifying `objective_rxn(s)` and their `weights` (empty `weights` mean equal weighting per reaction).
-Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (ub, lb) flux constraints.
+Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
 This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
@@ -31,16 +31,14 @@ sol = fba(model, biomass, optimizer; solver_attributes=atts)
 function fba(
     model::CobraModel,
     optimizer;
-    objective_rxns::Union{Reaction,Array{Reaction,1}},
+    objective_func::Union{Reaction,Array{Reaction,1}} = Array{Reaction,1}(),
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),
     sense = MOI.MAX_SENSE
 )
     # get core optimization problem
-    cbm, v = makeOptimizationModel(model, optimizer, sense=sense)
-    ubcons = all_constraints(cbm, VariableRef, MOI.GreaterThan{Float64})
-    lbcons = all_constraints(cbm, VariableRef, MOI.LessThan{Float64})
+    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer)
 
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
@@ -52,16 +50,16 @@ function fba(
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
+        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
     end
 
     # if an objective function is supplied, modify the default objective
-    if !isempty(objective_rxns)
+    if typeof(objective_func) != Reaction && !isempty(objective_func)
         # ensure that an array of objective indices are fed in
-        if typeof(objective_rxns) == Reaction
-            objective_indices = [model[objective_rxns]]
+        if typeof(objective_func) == Reaction
+            objective_indices = [model[objective_func]]
         else 
-            objective_indices = [model[rxn] for rxn in objective_rxns]
+            objective_indices = [model[rxn] for rxn in objective_func]
         end
 
         if isempty(weights)
@@ -70,18 +68,21 @@ function fba(
         opt_weights = zeros(length(model.reactions))
 
         # update the objective function tracker
+        # don't update model objective function - silly thing to do
         wcounter = 1
         for i in eachindex(model.reactions)
             if i in objective_indices
-                model.reactions[i].objective_coefficient = weights[wcounter]
+                # model.reactions[i].objective_coefficient = weights[wcounter]
                 opt_weights[i] = weights[wcounter]
                 wcounter += 1
-            else
-                model.reactions[i].objective_coefficient = 0.0
+            # else
+                # model.reactions[i].objective_coefficient = 0.0
             end
         end
 
         @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+    else # use default objective
+        # automatically assigned by makeOptimizationModel
     end
 
     optimize!(cbm)
