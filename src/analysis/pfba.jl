@@ -3,7 +3,7 @@
 
 Run parsimonious flux balance analysis (pFBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction) for the initial FBA problem.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
-Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (ub, lb) flux constraints.
+Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
 When `optimizer` is an array of optimizers, e.g. `[opt1, opt2]`, then `opt1` is used to solve the FBA problem, and `opt2` is used to solve the QP problem.
 This strategy is useful when the QP solver is not good at solving the LP problem.
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, k, v)`.
@@ -50,7 +50,7 @@ function pfba(
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
+        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
     end
 
     # ensure that an array of objective indices are fed in
