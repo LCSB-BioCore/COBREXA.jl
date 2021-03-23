@@ -10,7 +10,7 @@ fluxBalanceAnalysis(model::LM, optimizer) where {LM<:AbstractCobraModel} =
     solveLP(model, optimizer; sense = MOI.MAX_SENSE)
 
 """
-    fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}, weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux balance analysis (FBA) on the `model` optionally specifying `objective_rxn(s)` and their `weights` (empty `weights` mean equal weighting per reaction).
 Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
@@ -31,7 +31,7 @@ sol = fba(model, biomass, optimizer; solver_attributes=atts)
 function fba(
     model::CobraModel,
     optimizer;
-    objective_func::Union{Reaction,Array{Reaction,1}} = Array{Reaction,1}(),
+    objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[],
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),

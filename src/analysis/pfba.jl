@@ -1,5 +1,5 @@
 """
-    pfba(model::CobraModel, objective_rxns::Union{Reaction, Array{Reaction, 1}}, optimizer; weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    pfba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}(), sense=MOI.MAX_SENSE)
 
 Run parsimonious flux balance analysis (pFBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction) for the initial FBA problem.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
@@ -22,14 +22,15 @@ sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 """
 function pfba(
     model::CobraModel,
-    objective_rxns::Union{Reaction,Array{Reaction,1}},
     optimizer;
+    objective_func::Union{Reaction,Array{Reaction,1}}=Reaction[],
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),
+    sense = MOI.MAX_SENSE
 )
     ## FBA ################################################
-    cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model
+    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer)
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
         set_optimizer(cbm, optimizer[1])
@@ -53,32 +54,34 @@ function pfba(
         set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
     end
 
-    # ensure that an array of objective indices are fed in
-    if typeof(objective_rxns) == Reaction
-        objective_indices = [model[objective_rxns]]
-    else
-        objective_indices = [model[rxn] for rxn in objective_rxns]
-    end
-
-    if isempty(weights)
-        weights = ones(length(objective_indices))
-    end
-    opt_weights = zeros(length(model.reactions))
-
-    # update the objective function tracker
-    wcounter = 1
-    for i in eachindex(model.reactions)
-        if i in objective_indices
-            model.reactions[i].objective_coefficient = weights[wcounter]
-            opt_weights[i] = weights[wcounter]
-            wcounter += 1
+    # check if default objective should be used
+    if typeof(objective_func) != Reaction && !isempty(objective_func)
+        # check if an array of objective indices are fed in
+        if typeof(objective_func) == Reaction
+            objective_indices = [model[objective_func]]
         else
-            model.reactions[i].objective_coefficient = 0.0
+            objective_indices = [model[rxn] for rxn in objective_func]
         end
-    end
 
-    v = all_variables(cbm)
-    @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+        if isempty(weights)
+            weights = ones(length(objective_indices))
+        end
+        opt_weights = zeros(length(model.reactions))
+
+        # update the objective function tracker
+        wcounter = 1
+        for i in eachindex(model.reactions)
+            if i in objective_indices
+                model.reactions[i].objective_coefficient = weights[wcounter]
+                opt_weights[i] = weights[wcounter]
+                wcounter += 1
+            else
+                model.reactions[i].objective_coefficient = 0.0
+            end
+        end
+
+        @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+    end
     optimize!(cbm)
 
     fba_status = (
@@ -106,23 +109,14 @@ function pfba(
     @objective(cbm, Min, sum(dot(v, v)))
     optimize!(cbm)
 
-    if termination_status(cbm) != MOI.OPTIMAL &&
-       termination_status(cbm) != MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
-        JuMP.delete(cbm, pfbacon)
-        @constraint(cbm, 0.99999 * λ <= sum(v[i] for i in objective_indices) <= λ)
-        optimize!(cbm)
-    end
-    if termination_status(cbm) != MOI.OPTIMAL &&
-       termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
-        JuMP.delete(cbm, pfbacon)
-        @constraint(cbm, 0.9999 * λ <= sum(v[i] for i in objective_indices) <= λ)
-        optimize!(cbm)
-    end
-    if termination_status(cbm) != MOI.OPTIMAL &&
-       termination_status(cbm) != MOI.LOCALLY_SOLVED  # try to relax bound if failed optimization
-        JuMP.delete(cbm, pfbacon)
-        @constraint(cbm, 0.999 * λ <= sum(v[i] for i in objective_indices) <= λ)
-        optimize!(cbm)
+    for lbconval in [0.99999, 0.9999, 0.999, 0.99] # relax bound for stability
+        if termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization 
+            break
+        else
+            JuMP.delete(cbm, pfbacon)
+            @constraint(cbm, lbconval * λ <= sum(v[i] for i in objective_indices) <= λ)
+            optimize!(cbm)    
+        end
     end
 
     pfba_status = (
