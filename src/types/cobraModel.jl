@@ -88,11 +88,12 @@ function reactions(model::CobraModel)::Vector{String}
 end
 
 function metabolites(model::CobraModel)::Vector{String}
-    [m.id in model.metabolites]
+    [m.id for m in model.metabolites]
 end
 
 function stoichiometry(model::CobraModel)::SparseMtx
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
+    metids = metabolites(model)
     for (i, rxn) in enumerate(model.reactions) # column
         for (met, coeff) in rxn.metabolites
             j = findfirst(x -> x == met.id, metids) # row
