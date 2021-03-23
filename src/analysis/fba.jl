@@ -38,7 +38,7 @@ function fba(
     sense = MOI.MAX_SENSE
 )
     # get core optimization problem
-    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer)
+    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense=sense)
 
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
@@ -80,7 +80,7 @@ function fba(
             end
         end
 
-        @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     else # use default objective
         # automatically assigned by makeOptimizationModel
     end
