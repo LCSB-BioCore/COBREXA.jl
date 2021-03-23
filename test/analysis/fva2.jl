@@ -2,6 +2,8 @@
     model = read_model(download("http://bigg.ucsd.edu/static/models/e_coli_core.json", joinpath("data", "e_coli_core.json")))
     @test length(model.reactions) == 95 # read in correctly
 
+    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+
     # FVA
     optimizer = Tulip.Optimizer
     atts = Dict("IPM_IterationsLimit" => 400)
