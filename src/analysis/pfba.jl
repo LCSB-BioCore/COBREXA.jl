@@ -33,14 +33,14 @@ function pfba(
     
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
-        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer[1])
+        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer[1], sense=sense)
         if !isempty(solver_attributes["opt1"]) # set other attributes
             for (k, v) in solver_attributes["opt1"]
                 set_optimizer_attribute(cbm, k, v)
             end
         end
     else # singe optimizer
-        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer)
+        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense=sense)
         if !isempty(solver_attributes) # set other attributes
             for (k, v) in solver_attributes
                 set_optimizer_attribute(cbm, k, v)
@@ -79,7 +79,7 @@ function pfba(
             end
         end
 
-        @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     else
         # objective_indices = findnz(objective(model))
         # opt_weights = ones(length(objective_indices)) # assume equal weighting, assume sense is max

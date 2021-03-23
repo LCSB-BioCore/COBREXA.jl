@@ -96,16 +96,16 @@ fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 """
 function fva(
     model::CobraModel,
-    objective_rxns::Union{Reaction,Array{Reaction,1}},
     optimizer;
+    objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[],
     optimum_bound = 0.9999,
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),
+    sense = MOI.MAX_SENSE
 )
-    cbm, _, _, ubcons, lbcons = build_cbm(model) # get the base constraint based model
+    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense=sense)
 
-    set_optimizer(cbm, optimizer) # choose optimizer
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
             set_optimizer_attribute(cbm, k, v)
@@ -115,35 +115,38 @@ function fva(
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
+        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
     end
 
-    # ensure that an array of objective indices are fed in
-    if typeof(objective_rxns) == Reaction
-        objective_indices = [model[objective_rxns]]
-    else
-        objective_indices = [model[rxn] for rxn in objective_rxns]
-    end
-
-    if isempty(weights)
-        weights = ones(length(objective_indices))
-    end
-    opt_weights = zeros(length(model.reactions))
-
-    # update the objective function tracker
-    wcounter = 1
-    for i in eachindex(model.reactions)
-        if i in objective_indices
-            model.reactions[i].objective_coefficient = weights[wcounter]
-            opt_weights[i] = weights[wcounter]
-            wcounter += 1
-        else
-            model.reactions[i].objective_coefficient = 0.0
+    # if an objective function is supplied, modify the default objective
+    if typeof(objective_func) == Reaction || !isempty(objective_func)
+        # ensure that an array of objective indices are fed in
+        if typeof(objective_func) == Reaction
+            objective_indices = [model[objective_func]]
+        else 
+            objective_indices = [model[rxn] for rxn in objective_func]
         end
+
+        if isempty(weights)
+            weights = ones(length(objective_indices))
+        end
+        opt_weights = zeros(length(model.reactions))
+
+        # update the objective function tracker
+        # don't update model objective function - silly thing to do
+        wcounter = 1
+        for i in eachindex(model.reactions)
+            if i in objective_indices
+                # model.reactions[i].objective_coefficient = weights[wcounter]
+                opt_weights[i] = weights[wcounter]
+                wcounter += 1
+            # else
+                # model.reactions[i].objective_coefficient = 0.0
+            end
+        end
+        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
 
-    v = all_variables(cbm)
-    @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
     optimize!(cbm)
 
     status = (
@@ -159,6 +162,7 @@ function fva(
         return fva_max, fva_min
     end
 
+    # Now do FVA
     λ = objective_value(cbm) # objective value
     @constraint(
         cbm,
