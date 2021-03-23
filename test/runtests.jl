@@ -27,6 +27,8 @@ function runTestDir(dir, comment = "Directory $dir/")
     end
 end
 
+include("testing_functions.jl") # load misc. testing functions
+
 # load the test models
 runTestFile("data", "testModels.jl")
 
@@ -36,5 +38,5 @@ runTestFile("data", "testModels.jl")
     runTestDir("base", "Base functionality")
     runTestDir("io", "I/O functions")
     runTestDir("reconstruction")
-    runTestDir("analysis")
+    # runTestDir("analysis")
 end

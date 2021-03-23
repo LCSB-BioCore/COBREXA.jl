@@ -27,7 +27,7 @@ _printBanner()
 # autoloading
 const _inc(path...) = include(joinpath(path...))
 const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
-_inc_all.(joinpath.(@__DIR__, ["types", "base","analysis"]))#"io", "reconstruction", "analysis"]))
+_inc_all.(joinpath.(@__DIR__, ["types", "base", "io", "reconstruction", "analysis"]))
 
 # export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
 for sym in names(@__MODULE__, all = true)
@@ -36,5 +36,8 @@ for sym in names(@__MODULE__, all = true)
     end
     @eval export $sym
 end
+
+∅ = Metabolite("∅") # for exchange reactions
+export ∅
 
 end # module
