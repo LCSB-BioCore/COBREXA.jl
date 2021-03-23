@@ -23,24 +23,24 @@ sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 function pfba(
     model::CobraModel,
     optimizer;
-    objective_func::Union{Reaction,Array{Reaction,1}}=Reaction[],
+    objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[],
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),
     sense = MOI.MAX_SENSE
 )
     ## FBA ################################################
-    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer)
+    
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
-        set_optimizer(cbm, optimizer[1])
+        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer[1])
         if !isempty(solver_attributes["opt1"]) # set other attributes
             for (k, v) in solver_attributes["opt1"]
                 set_optimizer_attribute(cbm, k, v)
             end
         end
-    else
-        set_optimizer(cbm, optimizer) # choose optimizer
+    else # singe optimizer
+        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer)
         if !isempty(solver_attributes) # set other attributes
             for (k, v) in solver_attributes
                 set_optimizer_attribute(cbm, k, v)
@@ -55,7 +55,7 @@ function pfba(
     end
 
     # check if default objective should be used
-    if typeof(objective_func) != Reaction && !isempty(objective_func)
+    if typeof(objective_func) == Reaction || !isempty(objective_func)
         # check if an array of objective indices are fed in
         if typeof(objective_func) == Reaction
             objective_indices = [model[objective_func]]
@@ -68,20 +68,23 @@ function pfba(
         end
         opt_weights = zeros(length(model.reactions))
 
-        # update the objective function tracker
         wcounter = 1
         for i in eachindex(model.reactions)
             if i in objective_indices
-                model.reactions[i].objective_coefficient = weights[wcounter]
+                # model.reactions[i].objective_coefficient = weights[wcounter]
                 opt_weights[i] = weights[wcounter]
                 wcounter += 1
-            else
-                model.reactions[i].objective_coefficient = 0.0
+            # else
+                # model.reactions[i].objective_coefficient = 0.0
             end
         end
 
         @objective(cbm, Max, sum(opt_weights[i] * v[i] for i in objective_indices))
+    else
+        # objective_indices = findnz(objective(model))
+        # opt_weights = ones(length(objective_indices)) # assume equal weighting, assume sense is max
     end
+
     optimize!(cbm)
 
     fba_status = (
@@ -104,12 +107,13 @@ function pfba(
     @constraint(
         cbm,
         pfbacon,
-        0.999999 * λ <= sum(opt_weights[i] * v[i] for i in objective_indices) <= λ
-    ) # constrain model - 0.9999 should be close enough?
+        λ <= sum(opt_weights[i] * v[i] for i in objective_indices) <= λ
+    )
     @objective(cbm, Min, sum(dot(v, v)))
+
     optimize!(cbm)
 
-    for lbconval in [0.99999, 0.9999, 0.999, 0.99] # relax bound for stability
+    for lbconval in [0.999999, 0.99999, 0.9999, 0.999, 0.99] # relax bound for stability
         if termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization 
             break
         else

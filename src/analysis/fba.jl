@@ -54,7 +54,7 @@ function fba(
     end
 
     # if an objective function is supplied, modify the default objective
-    if typeof(objective_func) != Reaction && !isempty(objective_func)
+    if typeof(objective_func) == Reaction || !isempty(objective_func)
         # ensure that an array of objective indices are fed in
         if typeof(objective_func) == Reaction
             objective_indices = [model[objective_func]]
