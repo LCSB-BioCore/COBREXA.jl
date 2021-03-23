@@ -34,9 +34,9 @@ runTestFile("data", "testModels.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    # runTestDir("types", "Data structures")
-    # runTestDir("base", "Base functionality")
-    # runTestDir("io", "I/O functions")
-    # runTestDir("reconstruction")
+    runTestDir("types", "Data structures")
+    runTestDir("base", "Base functionality")
+    runTestDir("io", "I/O functions")
+    runTestDir("reconstruction")
     runTestDir("analysis")
 end
