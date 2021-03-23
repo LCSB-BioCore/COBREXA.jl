@@ -106,11 +106,10 @@ end
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or produce them given the flux distribution supplied in `fluxdict`.
 """
 function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::CobraModel)
-    S, _, _, _ = get_core_model(model)
-    S = Array(S) # full
+    S = Array(stoichiometry(model))
     met_flux = Dict{String,Float64}()
-    rxnids = [rxn.id for rxn in model.reactions]
-    metids = [met.id for met in model.metabolites]
+    rxnids = reactions(model)
+    metids = metabolites(model)
 
     producing = Dict{String,Dict{String,Float64}}()
     consuming = Dict{String,Dict{String,Float64}}()
