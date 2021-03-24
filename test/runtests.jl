@@ -39,4 +39,5 @@ runTestFile("data", "testModels.jl")
     runTestDir("io", "I/O functions")
     runTestDir("reconstruction")
     runTestDir("analysis")
+    runTestDir("sampling")
 end
