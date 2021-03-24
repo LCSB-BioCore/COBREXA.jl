@@ -104,11 +104,13 @@ function addReactions(
     xl = sparse(xl)
     xu = sparse(xu)
 
-    checkInputDimensions(Sp, b, c, xl, xu, rxns, mets)
+    all([length(b), length(mets)] .== size(Sp, 1)) ||
+        throw(DimensionMismatch("inconsistent number of metabolites"))
+    all(length.([c, xl, xu, rxns]) .== size(Sp, 2)) ||
+        throw(DimensionMismatch("inconsistent number of reactions"))
 
     newReactions = findall(Bool[!(rxn in m.rxns) for rxn in rxns])
     newMetabolites = findall(Bool[!(met in m.mets) for met in mets])
-
 
     if checkConsistency
         (newReactions1, newMetabolites1) =
@@ -130,68 +132,19 @@ function addReactions(
 
     newS = hcat(extS, extSp)
     newb = vcat(m.b, b[newMetabolites])
-    newC = hcat(m.C, spzeros(size(m.C, 1), length(newReactions)))
+    #newC = hcat(m.C, spzeros(size(m.C, 1), length(newReactions)))
     newc = vcat(m.c, c[newReactions])
     newxl = vcat(m.xl, xl[newReactions])
     newxu = vcat(m.xu, xu[newReactions])
     newRxns = vcat(m.rxns, rxns[newReactions])
-    newLp = LinearModel(newS, newb, newC, m.cl, m.cu, newc, newxl, newxu, newRxns, newMets)
+    #newLp = LinearModel(newS, newb, newC, m.cl, m.cu, newc, newxl, newxu, newRxns, newMets)
+    newLp = LinearModel(newS, newb, newc, newxl, newxu, newRxns, newMets)
 
     if checkConsistency
         return (newLp, newReactions, newMetabolites)
     else
         return newLp
     end
-end
-
-"""
-Verifies that vectors and matrices have the expected dimensions.
-"""
-function checkInputDimensions(
-    S::M1,
-    b::V,
-    C::M2,
-    cl::V,
-    cu::V,
-    c::V,
-    xl::V,
-    xu::V,
-    rxns::K,
-    mets::K,
-) where {M1<:MatType,M2<:MatType,V<:VecType,K<:StringVecType}
-    n_c = length(c)
-
-    length(cu) == length(cl) ||
-        throw(DimensionMismatch("`cl` and `cu` don't have the same size"))
-    size(C) == (length(cu), n_c) ||
-        throw(DimensionMismatch("`C` shape doesn't match with `cu` and `c`"))
-
-    checkInputDimensions(S, b, c, xl, xu, rxns, mets)
-
-end
-
-function checkInputDimensions(
-    S::M,
-    b::V,
-    c::V,
-    xl::V,
-    xu::V,
-    rxns::K,
-    mets::K,
-) where {M<:MatType,V<:VecType,K<:StringVecType}
-
-    n_c = length(c)
-    n_b = length(b)
-
-    length(xu) == length(xl) ||
-        throw(DimensionMismatch("`xl` and `xu` don't have the same size"))
-    n_c == length(xl) || throw(DimensionMismatch("`c` doesn't have the same size as `xl`"))
-
-    size(S) == (n_b, n_c) ||
-        throw(DimensionMismatch("`S` shape doesn't match with `c` and `mets`"))
-
-    length(rxns) == n_c || throw(DimensionMismatch("`rxns` size doesn't match with `S`"))
-    length(mets) == n_b || throw(DimensionMismatch("`mets` size doesn't match with `S`"))
 end
 
 """
@@ -250,14 +203,15 @@ function removeReactions(m::LinearModel, rxns::Vector{Int})
     unique!(metsToKeep)
     newS = m.S[metsToKeep, rxnsToKeep]
     newb = m.b[metsToKeep]
-    newC = m.C[:, rxnsToKeep]
+    #newC = m.C[:, rxnsToKeep]
     newc = m.c[rxnsToKeep]
     newxl = m.xl[rxnsToKeep]
     newxu = m.xu[rxnsToKeep]
     newRxns = m.rxns[rxnsToKeep]
     newMets = m.mets[metsToKeep]
     newModel =
-        LinearModel(newS, newb, newC, m.cl, m.cu, newc, newxl, newxu, newRxns, newMets)
+    #LinearModel(newS, newb, newC, m.cl, m.cu, newc, newxl, newxu, newRxns, newMets)
+        LinearModel(newS, newb, newc, newxl, newxu, newRxns, newMets)
     return newModel
 end
 
@@ -271,7 +225,7 @@ function removeReactions(m::LinearModel, rxn::String)
 end
 
 
-function removeReactions(m::LinearModel, rxns::Array{String,1})
+function removeReactions(m::LinearModel, rxns::Vector{String})
     rxnIndices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
     if isempty(rxnIndices)
         return m

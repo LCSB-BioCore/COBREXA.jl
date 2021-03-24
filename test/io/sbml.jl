@@ -15,7 +15,6 @@ end
 @testset "SBML import" begin
     m = loadSBMLModel(sbmlfile)
 
-    @test size(m.C) == (0, 95)
     @test size(m.S) == (92, 95)
     @test length(m.S.nzval) == 380
     @test length(m.b) == 92
