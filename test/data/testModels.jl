@@ -41,15 +41,17 @@ test_sparseLP() = LinearModel(
     ["m$x" for x = 1:4000],
 )
 
-test_coupledLP() = LinearModel(
-    sprand(4000, 3000, 0.5),
-    sprand(4000, 0.5),
+test_coupledLP() = CoupledLinearModel(
+    LinearModel(
+        sprand(4000, 3000, 0.5),
+        sprand(4000, 0.5),
+        sprand(3000, 0.5),
+        sprand(3000, 0.5),
+        sprand(3000, 0.5),
+        ["r$x" for x = 1:3000],
+        ["m$x" for x = 1:4000],
+    ),
     sprand(2000, 3000, 0.5),
     sprand(2000, 0.5),
     sprand(2000, 0.5),
-    sprand(3000, 0.5),
-    sprand(3000, 0.5),
-    sprand(3000, 0.5),
-    ["r$x" for x = 1:3000],
-    ["m$x" for x = 1:4000],
 )

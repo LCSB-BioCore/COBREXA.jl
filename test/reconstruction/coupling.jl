@@ -1,16 +1,16 @@
 @testset "Coupling constraints" begin
-    cp = test_LP()
-    @test size(cp.S) == (4, 3)
-    newCp = addCouplingConstraints(cp, cp.S[end, :], -1.0, 1.0)
+    cp = convert(CoupledLinearModel, test_LP())
+    @test size(cp.lm.S) == (4, 3)
+    newCp = addCouplingConstraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
     @test nCouplingConstraints(cp) + 1 == nCouplingConstraints(newCp)
 
-    newCp = addCouplingConstraints(cp, cp.S[1:2, :], [-1.0; -1.0], [1.0; 1.0])
+    newCp = addCouplingConstraints(cp, stoichiometry(cp)[1:2, :], [-1.0; -1.0], [1.0; 1.0])
     @test nCouplingConstraints(cp) + 2 == nCouplingConstraints(newCp)
 
     nC = nCouplingConstraints(cp)
-    addCouplingConstraints!(cp, cp.S[end, :], -1.0, 1.0)
+    addCouplingConstraints!(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
     @test nC + 1 == nCouplingConstraints(cp)
-    addCouplingConstraints!(cp, cp.S[1:2, :], [-1.0; -1.0], [1.0; 1.0])
+    addCouplingConstraints!(cp, stoichiometry(cp)[1:2, :], [-1.0; -1.0], [1.0; 1.0])
     @test nC + 3 == nCouplingConstraints(cp)
 
     nC = nCouplingConstraints(cp)
