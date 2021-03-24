@@ -1,30 +1,19 @@
 """
-Verifies that vectors and matrices have the expected dimensions.
-"""
-function checkCouplingConstraintsInputDimensions(
-    m::LinearModel,
-    C::M,
-    cl::V,
-    cu::V,
-) where {M<:MatType,V<:VecType}
-
-    length(cu) == length(cl) ||
-        throw(DimensionMismatch("`cl` and `cu` don't have the same size"))
-    size(C) == (length(cl), nReactions(m)) || throw(
-        DimensionMismatch("`C` size should be length(cl) x the number of reactions in m"),
-    )
-end
-
-"""
-Add constraints of the following form to a LinearModel and return a modified one.
+Add constraints of the following form to a CoupledLinearModel and return a modified one.
 
 The arguments are same as for in-place `addCouplingConstraints!`.
 """
-function addCouplingConstraints(m::LinearModel, args...)
+function addCouplingConstraints(m::CoupledLinearModel, args...)
     newLp = deepcopy(m)
     addCouplingConstraints!(newLp, args...)
     return newLp
 end
+
+"""
+Add constraints to a plain `LinearModel` (converts it to the coupled type)
+"""
+addCouplingConstraints(m::LinearModel, args...) =
+    addCouplingConstraints(convert(CoupledLinearModel, m), args...)
 
 """
 In-place add coupling constraints in form
@@ -33,7 +22,7 @@ In-place add coupling constraints in form
 ```
 """
 function addCouplingConstraints!(
-    m::LinearModel,
+    m::CoupledLinearModel,
     c::V,
     cl::AbstractFloat,
     cu::AbstractFloat,
@@ -48,21 +37,20 @@ end
 
 
 function addCouplingConstraints!(
-    m::LinearModel,
+    m::CoupledLinearModel,
     C::M,
     cl::V,
     cu::V,
 ) where {M<:MatType,V<:VecType}
 
-    C = sparse(C)
-    cl = sparse(cl)
-    cu = sparse(cu)
+    all([length(cu), length(cl)] .== size(C, 1)) ||
+        throw(DimensionMismatch("mismatched numbers of constraints"))
+    size(C, 2) == nReactions(m) ||
+        throw(DimensionMismatch("mismatched number of reactions"))
 
-    checkCouplingConstraintsInputDimensions(m, C, cl, cu)
-
-    m.C = vcat(m.C, C)
-    m.cl = vcat(m.cl, cl)
-    m.cu = vcat(m.cu, cu)
+    m.C = vcat(m.C, sparse(C))
+    m.cl = vcat(m.cl, sparse(cl))
+    m.cu = vcat(m.cu, sparse(cu))
 end
 
 
@@ -71,7 +59,7 @@ Remove coupling constraints from the linear model and return the modified model.
 
 Arguments are the same as for in-place version `removeCouplingConstraints!`.
 """
-function removeCouplingConstraints(m::LinearModel, args...)
+function removeCouplingConstraints(m::CoupledLinearModel, args...)
     newModel = deepcopy(m)
     removeCouplingConstraints!(newModel, args...)
     return newModel
@@ -79,14 +67,14 @@ end
 
 
 """
-Removes a set of coupling constraints from a LinearModel in-place.
+Removes a set of coupling constraints from a CoupledLinearModel in-place.
 """
-function removeCouplingConstraints!(m::LinearModel, constraint::Int)
+function removeCouplingConstraints!(m::CoupledLinearModel, constraint::Int)
     removeCouplingConstraints!(m, [constraint])
 end
 
 
-function removeCouplingConstraints!(m::LinearModel, constraints::Vector{Int})
+function removeCouplingConstraints!(m::CoupledLinearModel, constraints::Vector{Int})
     toBeKept = filter(e -> e ∉ constraints, 1:nCouplingConstraints(m))
     m.C = m.C[toBeKept, :]
     m.cl = m.cl[toBeKept]
@@ -98,7 +86,7 @@ end
 Change the lower and/or upper bounds ('cl' and 'cu') for given coupling constraints
 """
 function changeCouplingBounds!(
-    model::LinearModel,
+    model::CoupledLinearModel,
     constraints::Vector{Int};
     cl::V = Array{Float64}(undef, 0),
     cu::V = Array{Float64}(undef, 0),

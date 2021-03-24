@@ -6,16 +6,12 @@ A concrete linear optimization problem of the form:
 ```
 min c^T x
 s.t. S x = b
-    cₗ ≤ C x ≤ cᵤ
-    xₗ ≤ x ≤ xᵤ
+      xₗ ≤ x ≤ xᵤ
 ```
 """
 mutable struct LinearModel <: MetabolicModel
     S::SparseMat
     b::SparseVec
-    C::SparseMat
-    cl::SparseVec
-    cu::SparseVec
     c::SparseVec
     xl::SparseVec
     xu::SparseVec
@@ -32,43 +28,13 @@ mutable struct LinearModel <: MetabolicModel
         mets::K,
     ) where {V<:VecType,M<:MatType,K<:StringVecType}
 
-        sS = sparse(S)
-        sb = sparse(b)
-        sC = spzeros(0, length(c))
-        scl = spzeros(0)
-        scu = spzeros(0)
-        sc = sparse(c)
-        sxl = sparse(xl)
-        sxu = sparse(xu)
+        all([length(b), length(mets)] .== size(S, 1)) ||
+            throw(DimensionMismatch("inconsistent number of reactions"))
 
-        LinearModel(sS, sb, sC, scl, scu, sc, sxl, sxu, rxns, mets)
-    end
+        all([length(c), length(xl), length(xu), length(rxns)] .== size(S, 2)) ||
+            throw(DimensionMismatch("inconsistent number of reactions"))
 
-    function LinearModel(
-        S::M1,
-        b::V,
-        C::M2,
-        cl::V,
-        cu::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K,
-    ) where {V<:VecType,M1<:MatType,M2<:MatType,K<:StringVecType}
-
-        checkInputDimensions(S, b, C, cl, cu, c, xl, xu, rxns, mets)
-
-        sS = sparse(S)
-        sb = sparse(b)
-        sC = sparse(C)
-        scl = sparse(cl)
-        scu = sparse(cu)
-        sc = sparse(c)
-        sxl = sparse(xl)
-        sxu = sparse(xu)
-
-        new(sS, sb, sC, scl, scu, sc, sxl, sxu, rxns, mets)
+        new(sparse(S), sparse(b), sparse(c), sparse(xl), sparse(xu), rxns, mets)
     end
 end
 
@@ -129,17 +95,36 @@ end
 """
     coupling(a::LinearModel)::SparseMat
 
-Coupling constraint matrix for a `LinearModel`.
+Coupling constraint matrix for a `LinearModel`, actually empty.
 """
 function coupling(a::LinearModel)::SparseMat
-    a.C
+    spzeros(0, nReactions(a))
 end
 
 """
     couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
 
-Coupling bounds for a `LinearModel`.
+Coupling bounds for a `LinearModel`, in fact always empty.
 """
 function couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
-    (a.cl, a.cu)
+    (spzeros(0), spzeros(0))
+end
+
+
+"""
+    Base.convert(::Type{LinearModel}, m::M) where {M <: MetabolicModel}
+
+Make a `LinearModel` out of any compatible model type.
+"""
+function Base.convert(::Type{LinearModel}, m::M) where {M<:MetabolicModel}
+    (xl, xu) = bounds(m)
+    LinearModel(
+        stoichiometry(m),
+        balance(m),
+        objective(m),
+        xl,
+        xu,
+        reactions(m),
+        metabolites(m),
+    )
 end
