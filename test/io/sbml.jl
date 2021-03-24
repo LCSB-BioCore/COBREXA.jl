@@ -12,8 +12,8 @@ if cksum != "78692f8509fb36534f4f9b6ade23b23552044f3ecd8b48d84d484636922ae907"
     @warn "The downloaded E Coli core model seems to be different from the expected one. Tests may fail." cksum
 end
 
-@testset "SBML import" begin
-    m = loadSBMLModel(sbmlfile)
+@testset "SBML import and conversion" begin
+    m = convert(LinearModel, loadSBMLModel(sbmlfile))
 
     @test size(m.S) == (92, 95)
     @test length(m.S.nzval) == 380
