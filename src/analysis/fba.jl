@@ -8,7 +8,7 @@ s.t. S x = b
      xₗ ≤ x ≤ xᵤ
 ```
 
-Returns a solved model from [`solveLP`](@ref).
+Returns a solved model from [`optimizeModel`](@ref).
 """
 fluxBalanceAnalysis(model::LM, optimizer) where {LM<:AbstractCobraModel} =
-    solveLP(model, optimizer; sense = MOI.MAX_SENSE)
+    optimizeModel(model, optimizer; sense = MOI.MAX_SENSE)

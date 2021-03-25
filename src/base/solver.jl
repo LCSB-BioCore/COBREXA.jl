@@ -25,12 +25,12 @@ function makeOptimizationModel(
 end
 
 """
-    solveLP(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
+    optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
 
-Use JuMP to solveLP an instance of LinearModel. Returns a tuple that contains the
-new model and a vector of its variables.
+Use JuMP to optimize an instance of a COBRA model. Returns a tuple that
+contains the new model and a vector of its variables.
 """
-function solveLP(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
+function optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
     optimization_model, x = makeOptimizationModel(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
     return (optimization_model, x)
