@@ -12,4 +12,5 @@
 
     cp = test_coupledLP()
     @test nCouplingConstraints(cp) == 2000
+    @test isequal(cp, copy(cp))
 end
