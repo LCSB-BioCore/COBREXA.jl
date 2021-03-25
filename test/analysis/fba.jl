@@ -1,21 +1,18 @@
 @testset "Flux balance analysis" begin
     cp = test_simpleLP()
-    optimizer = GLPK.Optimizer
-    (lp, x) = fluxBalanceAnalysis(cp, optimizer)
+    (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
-    optimizer = Clp.Optimizer
-    (lp, x) = fluxBalanceAnalysis(cp, optimizer)
+    (lp, x) = fluxBalanceAnalysis(cp, Clp.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
-    optimizer = GLPK.Optimizer
-    (lp, x) = fluxBalanceAnalysis(cp, optimizer)
+    (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [-1.0, 2.0]
@@ -27,10 +24,16 @@
     expectedOptimum = matread(modelPath)["optimum"]
     close(file)
 
-    optimizer = GLPK.Optimizer
-    (lp, x) = fluxBalanceAnalysis(cp, optimizer)
+    (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test objective_value(lp) ≈ expectedOptimum
     @test cp.c' * sol ≈ expectedOptimum
+
+    # test the "nicer output" variants
+    fluxesVec = fluxBalanceAnalysisVec(cp, GLPK.Optimizer)
+    @test all(fluxesVec .== sol)
+    fluxesDict = fluxBalanceAnalysisDict(cp, GLPK.Optimizer)
+    rxns = reactions(cp)
+    @test all([fluxesDict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
