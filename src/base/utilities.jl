@@ -1,8 +1,3 @@
-"""
-`n` by `n` sparse identity matrix.
-"""
-speye(n) = sparse(1.0I, n, n)
-
 function Base.isequal(model1::LinearModel, model2::LinearModel)
     return model1.S == model2.S &&
            model1.b == model2.b &&
