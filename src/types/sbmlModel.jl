@@ -38,21 +38,18 @@ function bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec}
     getunit = (_, unit)::Tuple -> unit
 
     allunits = unique([getunit.(lbu) getunit.(ubu)])
+    length(allunits) == 1 || throw(
+        DomainError(
+            allunits,
+            "The SBML file uses multiple units; loading needs conversion",
+        ),
+    )
 
-    if length(allunits) != 1
-        throw(
-            DomainError(
-                allunits,
-                "The SBML file uses multiple units; loading needs conversion",
-            ),
-        )
-    end
-
-    return (getvalue.(lbu), getvalue.(ubu))
+    return sparse.((getvalue.(lbu), getvalue.(ubu)))
 end
 
 balance(a::SBMLModel)::SparseVec = spzeros(nMetabolites(a))
 objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
 coupling(a::SBMLModel)::SparseMat = spzeros(0, nReactions(a))
 nCouplingConstraints(a::SBMLModel)::Int = 0
-couplingBounds(a::SBMLModel)::Tuple{SparseVec,SparseVec} = ([], [])
+couplingBounds(a::SBMLModel)::Tuple{SparseVec,SparseVec} = (spzeros(0), spzeros(0))
