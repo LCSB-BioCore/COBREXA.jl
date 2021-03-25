@@ -1,5 +1,5 @@
 
-struct FakeModel <: AbstractCobraModel
+struct FakeModel <: MetabolicModel
     dummy::Int
 end
 

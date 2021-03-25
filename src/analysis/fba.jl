@@ -1,5 +1,5 @@
 """
-    fluxBalanceAnalysis(model::LM, optimizer) where {LM<:AbstractCobraModel}
+    fluxBalanceAnalysis(model::LM, optimizer) where {LM<:MetabolicModel}
 
 Flux balance analysis solves the following problem for the input `model`:
 ```
@@ -10,5 +10,5 @@ s.t. S x = b
 
 Returns a solved model from [`optimizeModel`](@ref).
 """
-fluxBalanceAnalysis(model::LM, optimizer) where {LM<:AbstractCobraModel} =
+fluxBalanceAnalysis(model::LM, optimizer) where {LM<:MetabolicModel} =
     optimizeModel(model, optimizer; sense = MOI.MAX_SENSE)
