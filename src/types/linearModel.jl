@@ -1,13 +1,8 @@
-const VT = AbstractVector{Float64}
-const Vt = SparseVector{Float64,Int64}
-const MT = AbstractMatrix{Float64}
-const Mt = SparseMatrixCSC{Float64,Int64}
-const ST = AbstractVector{String}
-const St = Vector{String}
-
 
 """
-A linear optimization problem of the form:
+    struct LinearModel <: MetabolicModel
+
+A concrete linear optimization problem of the form:
 ```
 min c^T x
 s.t. S x = b
@@ -15,27 +10,27 @@ s.t. S x = b
     xₗ ≤ x ≤ xᵤ
 ```
 """
-mutable struct LinearModel
-    S::Mt
-    b::Vt
-    C::Mt
-    cl::Vt
-    cu::Vt
-    c::Vt
-    xl::Vt
-    xu::Vt
-    rxns::St
-    mets::St
+mutable struct LinearModel <: MetabolicModel
+    S::SparseMat
+    b::SparseVec
+    C::SparseMat
+    cl::SparseVec
+    cu::SparseVec
+    c::SparseVec
+    xl::SparseVec
+    xu::SparseVec
+    rxns::Vector{String}
+    mets::Vector{String}
 
     function LinearModel(
-        S::MX,
-        b::VX,
-        c::VX,
-        xl::VX,
-        xu::VX,
-        rxns::SX,
-        mets::SX,
-    ) where {VX<:VT,MX<:MT,SX<:ST}
+        S::M,
+        b::V,
+        c::V,
+        xl::V,
+        xu::V,
+        rxns::K,
+        mets::K,
+    ) where {V<:VecType,M<:MatType,K<:StringVecType}
 
         sS = sparse(S)
         sb = sparse(b)
@@ -50,17 +45,17 @@ mutable struct LinearModel
     end
 
     function LinearModel(
-        S::MX,
-        b::VX,
-        C::MX2,
-        cl::VX,
-        cu::VX,
-        c::VX,
-        xl::VX,
-        xu::VX,
-        rxns::SX,
-        mets::SX,
-    ) where {VX<:VT,MX<:MT,MX2<:MT,SX<:ST}
+        S::M1,
+        b::V,
+        C::M2,
+        cl::V,
+        cu::V,
+        c::V,
+        xl::V,
+        xu::V,
+        rxns::K,
+        mets::K,
+    ) where {V<:VecType,M1<:MatType,M2<:MatType,K<:StringVecType}
 
         checkInputDimensions(S, b, C, cl, cu, c, xl, xu, rxns, mets)
 
@@ -75,4 +70,76 @@ mutable struct LinearModel
 
         new(sS, sb, sC, scl, scu, sc, sxl, sxu, rxns, mets)
     end
+end
+
+"""
+    reactions(a::LinearModel)::Vector{String}
+
+Get the reactions in a `LinearModel`.
+"""
+function reactions(a::LinearModel)::Vector{String}
+    a.rxns
+end
+
+"""
+    metabolites(a::LinearModel)::Vector{String}
+
+Metabolites in a `LinearModel`.
+"""
+function metabolites(a::LinearModel)::Vector{String}
+    a.mets
+end
+
+"""
+    stoichiometry(a::LinearModel)::SparseMat
+
+`LinearModel` stoichiometry matrix.
+"""
+function stoichiometry(a::LinearModel)::SparseMat
+    a.S
+end
+
+"""
+    bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+
+`LinearModel` flux bounds.
+"""
+function bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+    (a.xl, a.xu)
+end
+
+"""
+    balance(a::LinearModel)::SparseVec
+
+`LinearModel` target flux balance.
+"""
+function balance(a::LinearModel)::SparseVec
+    a.b
+end
+
+"""
+    objective(a::LinearModel)::SparseVec
+
+`LinearModel` objective vector.
+"""
+function objective(a::LinearModel)::SparseVec
+    a.c
+end
+
+"""
+    coupling(a::LinearModel)::SparseMat
+
+Coupling constraint matrix for a `LinearModel`.
+"""
+function coupling(a::LinearModel)::SparseMat
+    a.C
+end
+
+"""
+    couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+
+Coupling bounds for a `LinearModel`.
+"""
+function couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+    (a.cl, a.cu)
 end
