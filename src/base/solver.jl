@@ -3,7 +3,7 @@
         model::LM,
         optimizer;
         sense = MOI.MAX_SENSE,
-    ) where {LM<:AbstractCobraModel}
+    ) where {LM<:MetabolicModel}
 
 Convert LinearModel to a JuMP model, and place objectives, flux bounds and
 equality "balance" constraint.
@@ -12,7 +12,7 @@ function makeOptimizationModel(
     model::LM,
     optimizer;
     sense = MOI.MAX_SENSE,
-) where {LM<:AbstractCobraModel}
+) where {LM<:MetabolicModel}
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
@@ -25,12 +25,12 @@ function makeOptimizationModel(
 end
 
 """
-    optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
+    optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:MetabolicModel}
 
-Use JuMP to optimize an instance of a COBRA model. Returns a tuple that
-contains the new model and a vector of its variables.
+Use JuMP to optimize an instance of a [`MetabolicModel`](@ref). Returns a tuple
+that contains the new model and a vector of its variables.
 """
-function optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
+function optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:MetabolicModel}
     optimization_model, x = makeOptimizationModel(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
     return (optimization_model, x)

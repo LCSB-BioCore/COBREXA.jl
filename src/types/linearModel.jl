@@ -1,6 +1,6 @@
 
 """
-    struct LinearModel <: AbstractCobraModel
+    struct LinearModel <: MetabolicModel
 
 A concrete linear optimization problem of the form:
 ```
@@ -10,7 +10,7 @@ s.t. S x = b
     xₗ ≤ x ≤ xᵤ
 ```
 """
-mutable struct LinearModel <: AbstractCobraModel
+mutable struct LinearModel <: MetabolicModel
     S::SparseMat
     b::SparseVec
     C::SparseMat

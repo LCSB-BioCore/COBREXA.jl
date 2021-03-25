@@ -5,7 +5,7 @@
         optimizer,
         workers = [myid()];
         gamma::AbstractFloat = 1.0,
-    )::Matrix{Float64} where {LM<:AbstractCobraModel}
+    )::Matrix{Float64} where {LM<:MetabolicModel}
 
 # Flux variability analysis (FVA)
 
@@ -31,7 +31,7 @@ function fluxVariabilityAnalysis(
     optimizer,
     workers = [myid()];
     gamma::AbstractFloat = 1.0,
-)::Matrix{Float64} where {LM<:AbstractCobraModel}
+)::Matrix{Float64} where {LM<:MetabolicModel}
 
     if any(reactions .< 1) || any(reactions .> nReactions(model))
         throw(DomainError(reactions, "Index exceeds number of reactions."))
@@ -70,7 +70,7 @@ end
         model::LM,
         optimizer;
         gamma::AbstractFloat = 1.0,
-    ) where {LM<:AbstractCobraModel}
+    ) where {LM<:MetabolicModel}
 
 A simpler version of FVA that maximizes and minimizes all reactions in the model.
 """
@@ -78,7 +78,7 @@ function fluxVariabilityAnalysis(
     model::LM,
     optimizer;
     gamma::AbstractFloat = 1.0,
-) where {LM<:AbstractCobraModel}
+) where {LM<:MetabolicModel}
     n = nReactions(model)
     return fluxVariabilityAnalysis(model, collect(1:n), optimizer; gamma = gamma)
 end
