@@ -2,7 +2,7 @@
 """
 Import a LinearModel from a SBML file
 """
-function loadSBMLModel(filename::String)
+function loadSBMLModel(filename::String)::LinearModel
     model = SBML.readSBML(filename)
 
     mets, rxns, S = SBML.getS(model)
