@@ -23,11 +23,9 @@ Arguments are passed to [`fluxBalanceAnalysis`](@ref).
 """
 function fluxBalanceAnalysisVec(args...)::Maybe{Vector{Float64}}
     (optmodel, vars) = fluxBalanceAnalysis(args...)
-    if termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
-        value.(vars)
-    else
-        nothing
-    end
+
+    termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
+    value.(vars)
 end
 
 """
@@ -42,9 +40,6 @@ function fluxBalanceAnalysisDict(
     args...,
 )::Maybe{Dict{String,Float64}} where {M<:MetabolicModel}
     v = fluxBalanceAnalysisVec(model, args...)
-    if isnothing(v)
-        nothing
-    else
-        Dict(zip(reactions(model), v))
-    end
+    isnothing(v) && return nothing
+    Dict(zip(reactions(model), v))
 end
