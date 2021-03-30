@@ -472,7 +472,9 @@ end
 Some information is lost here, e.g. notes and some annotations.
 """
 function save_matlab_model(model::CobraModel, file_location::String)
-    S, b, ubs, lbs = get_core_model(model)
+    S = stoichiometry(model)
+    b = balance(model)
+    lbs, ubs = bounds(model)
 
     mdict = Dict(
         "c" => [r.objective_coefficient for r in model.reactions],

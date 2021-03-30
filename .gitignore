@@ -1,3 +1,6 @@
+.DS_Store
+test/data/ecoli_core.xml
+
 # ignore VScode clutter
 /.vscode
 /vscode

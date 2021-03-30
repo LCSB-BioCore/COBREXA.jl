@@ -1,5 +1,5 @@
 """
-    get_warmup_points(cbmodel, v, mb, ubs, lbs; random_objective=false, numstop=1e10)
+    get_warmup_points(cbmodel, v, mb, lbs, ubs; random_objective=false, numstop=1e10)
 
 Generate warmup points for all the reactions on the model that 
 are not fixed. Assumes you feed in a JuMP model that is already
@@ -8,7 +8,7 @@ Note, extra constraints applied to ubs and lbs will have no effect.
 
 numstop = 2*number of warmup points - to reduce the time this takes
 """
-function get_warmup_points(cbmodel, v, ubs, lbs; random_objective = false, numstop = 1e10)
+function get_warmup_points(cbmodel, v, lbs, ubs; random_objective = false, numstop = 1e10)
     # determine which rxns should be max/min-ized
     fixed_rxns = Int64[]
     for i in eachindex(v)
@@ -58,9 +58,9 @@ end
 """
     get_bound_vectors(ubconref, lbconref)
 
-Return Float64 vectors of the upper and lower bounds of the JuMP constraint refs.
+Return Float64 vectors of the lower and upper bounds of the JuMP constraint refs.
 """
-function get_bound_vectors(ubconref, lbconref)
+function get_bound_vectors(lbconref, ubconref)
     lbs = zeros(length(lbconref))
     for i in eachindex(lbs)
         lbval = normalized_rhs(lbconref[i])
@@ -71,14 +71,14 @@ function get_bound_vectors(ubconref, lbconref)
         end
     end
     ubs = [normalized_rhs(ubconref[i]) for i in eachindex(ubconref)]
-    return ubs, lbs
+    return lbs, ubs
 end
 
 """
     hit_and_run(N::Int64, model::CobraModel, optimizer; constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
 
 Perform basic hit and run sampling for `N` iterations using `model` with `optimizer` from `JuMP`. 
-Additional constraints supplied by `constraints` as a dictionary of reaction `id`s mapped to a tuple of `(ub, lb)` of fluxes.
+Additional constraints supplied by `constraints` as a dictionary of reaction `id`s mapped to a tuple of `(lb, ub)` of fluxes.
 Every `keepevery` iteration is logged as a sample, where the sample size matrix has `samplesize` columns.
 Solver specific settings can be set using `solver_attributes`.
 Warm up points are generated in a flux variability sense, unless `random_objective` is true, in which case a randomly weighted objective is used 2*number of reactions to define the warmup points.
@@ -98,10 +98,11 @@ function hit_and_run(
     samplesize = 1000,
     solver_attributes = Dict{Any,Any}(),
     random_objective = false,
+    sense = MOI.MAX_SENSE
 )
-    cbmodel, v, _, ubcons, lbcons = build_cbm(model)
+    # get core optimization problem
+    cbmodel, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense=sense)
 
-    set_optimizer(cbmodel, optimizer) # choose optimizer
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
             set_optimizer_attribute(cbmodel, k, v)
@@ -111,13 +112,13 @@ function hit_and_run(
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, ubcons, lbcons; ub = con[1], lb = con[2])
+        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
     end
 
-    ubs, lbs = get_bound_vectors(ubcons, lbcons) # get actual ub and lb constraints
+    lbs, ubs = get_bound_vectors(lbcons, ubcons) # get actual ub and lb constraints, can't use model function because the user may have changed them in the function arguments
 
     wpoints =
-        get_warmup_points(cbmodel, v, ubcons, lbcons, random_objective = random_objective)
+        get_warmup_points(cbmodel, v, lbcons, ubcons, random_objective = random_objective)
 
     nwpts = size(wpoints, 2) # number of warmup points generated
     samples = zeros(size(wpoints, 1), samplesize) # sample storage
@@ -192,7 +193,7 @@ end
 Test if samples pass tests: mass balances and constraints are satisfied..
 """
 function test_samples(samples::Array{Float64,2}, model::CobraModel, ubs, lbs)
-    S, _, _, _ = get_core_model(model) # assume S has not been modified from model
+    S = stoichiometry(model) # assume S has not been modified from model AND b is zero
     violations = Int64[]
     tol = 1e-6
     for i = 1:size(samples, 2)
