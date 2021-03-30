@@ -14,6 +14,7 @@ using OSQP
 using Statistics
 using JSON
 using Measurements
+using Downloads # need this for download(...), depr warning
 
 function runTestFile(path...)
     fn = joinpath(path...)
@@ -34,10 +35,10 @@ runTestFile("data", "testModels.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    runTestDir("types", "Data structures")
-    runTestDir("base", "Base functionality")
-    runTestDir("io", "I/O functions")
-    runTestDir("reconstruction")
+    # runTestDir("types", "Data structures")
+    # runTestDir("base", "Base functionality")
+    # runTestDir("io", "I/O functions")
+    # runTestDir("reconstruction")
     runTestDir("analysis")
-    runTestDir("sampling")
+    # runTestDir("sampling")
 end
