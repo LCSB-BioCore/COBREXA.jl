@@ -91,7 +91,7 @@ function metabolites(model::CobraModel)::Vector{String}
     [m.id for m in model.metabolites]
 end
 
-function stoichiometry(model::CobraModel)::SparseMtx
+function stoichiometry(model::CobraModel)::SparseMat
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
     metids = metabolites(model)
     for (i, rxn) in enumerate(model.reactions) # column
