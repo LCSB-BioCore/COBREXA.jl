@@ -15,30 +15,29 @@ using Statistics
 using JSON
 using Measurements
 
-"""
-    runSuite(baseDir)
+function runTestFile(path...)
+    fn = joinpath(path...)
+    t = @elapsed include(fn)
+    @info "$(fn) done in $(round(t; digits = 2))s"
+end
 
-Runs the tests located in the `baseDir` and outputs the time it took
-"""
-function runSuite(baseDir)
-    for file in filter(f -> endswith(f, ".jl"), readdir(baseDir))
-        t = time()
-        include(joinpath(baseDir, file))
-        @info "$(file) took $(round(time() - t; digits = 2)) seconds"
+function runTestDir(dir, comment = "Directory $dir/")
+    @testset "$comment" begin
+        runTestFile.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
     end
 end
 
+include("testing_functions.jl") # load misc. testing functions
+
 # load the test models
-include(joinpath("data", "testModels.jl"))
-# load some convenience functions for testing
-include("testing_functions.jl") 
+runTestFile("data", "testModels.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    for testSet in ["base", "io", "reconstruction", "analysis", "sampling"]
-        @testset "$testSet" begin
-            runSuite(testSet)
-        end
-    end
+    runTestDir("types", "Data structures")
+    runTestDir("base", "Base functionality")
+    runTestDir("io", "I/O functions")
+    runTestDir("reconstruction")
+    runTestDir("analysis")
+    runTestDir("sampling")
 end
-

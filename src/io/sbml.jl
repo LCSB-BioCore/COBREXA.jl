@@ -2,7 +2,7 @@
 """
 Import a LinearModel from a SBML file
 """
-function loadSBMLModel(filename::String)
+function loadSBMLModel(filename::String)::LinearModel
     model = SBML.readSBML(filename)
 
     mets, rxns, S = SBML.getS(model)
@@ -18,14 +18,18 @@ function loadSBMLModel(filename::String)
     # error if not.
 
     unit = lbu[1][2]
-    getvalue = (val,_)::Tuple -> val
+    getvalue = (val, _)::Tuple -> val
     getunit = (_, unit)::Tuple -> unit
-    
+
     allunits = unique([getunit.(lbu) getunit.(ubu)])
 
     if length(allunits) != 1
-        throw(DomainError(allunits,
-            "The SBML file uses multiple units; loading needs conversion"))
+        throw(
+            DomainError(
+                allunits,
+                "The SBML file uses multiple units; loading needs conversion",
+            ),
+        )
     end
 
     return LinearModel(S, b, c, getvalue.(lbu), getvalue.(ubu), rxns, mets)

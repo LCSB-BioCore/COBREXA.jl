@@ -25,8 +25,8 @@ function model_comparison_test(model1, model2)
     lbs_same = sum(abs, lbs1) == sum(abs, lbs2)
     ubs_same = sum(abs, ubs1) == sum(abs, ubs2)
 
-    S1, _, _, _ = get_core_model(model1)
-    S2, _, _, _ = get_core_model(model2)
+    S1 = stoichiometry(model1)
+    S2 = stoichiometry(model2)
     Ss_same = sum(S1) == sum(S2) ? true : false
 
     grrs_same = true
