@@ -8,6 +8,12 @@ using COBREXA
 using MAT
 using SHA
 using Distributed
+using JuMP
+using Tulip
+using OSQP
+using Statistics
+using JSON
+using Measurements
 
 function runTestFile(path...)
     fn = joinpath(path...)
@@ -21,6 +27,8 @@ function runTestDir(dir, comment = "Directory $dir/")
     end
 end
 
+include("testing_functions.jl") # load misc. testing functions
+
 # load the test models
 runTestFile("data", "testModels.jl")
 
@@ -31,4 +39,5 @@ runTestFile("data", "testModels.jl")
     runTestDir("io", "I/O functions")
     runTestDir("reconstruction")
     runTestDir("analysis")
+    runTestDir("sampling")
 end
