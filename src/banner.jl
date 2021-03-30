@@ -19,5 +19,6 @@ function _printBanner()
 | |  | | | |  _ \\| |_) |  _|  $(g)\\$(n)  $(r)/$(n)   / _ \\   | and EXascale Analysis in Julia
 | |__| |_| | |_) |  _ <| |___ $(m)/$(n)  $(b)\\$(n)  / ___ \\  |
  \\____\\___/|____/|_| \\_\\_____$(m)/_/$(n)$(b)\\_\\$(n)/_/   \\_\\ | Version: v$(COBREXA_VERSION)
-                                             |")
+                                             |",
+    )
 end
