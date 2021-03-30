@@ -9,7 +9,7 @@ metabolites :: Array{Metabolite, 1}
 genes :: Array{Gene, 1}
 ````
 """
-mutable struct CobraModel <: AbstractCobraModel
+mutable struct CobraModel <: MetabolicModel
     id::String
     reactions::Array{Reaction,1}
     metabolites::Array{Metabolite,1}
