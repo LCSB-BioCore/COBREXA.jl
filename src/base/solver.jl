@@ -23,7 +23,11 @@ end
 """
 Use JuMP to solve an instance of LinearModel
 """
-function optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:MetabolicModel}
+function optimizeModel(
+    model::LM,
+    optimizer;
+    sense = MOI.MIN_SENSE,
+) where {LM<:MetabolicModel}
     optimization_model, x, _, _, _ = makeOptimizationModel(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
     return (optimization_model, x)
