@@ -11,7 +11,7 @@ s.t. S x = b
 Returns a solved model from [`optimizeModel`](@ref).
 """
 fluxBalanceAnalysis(model::M, optimizer) where {M<:MetabolicModel} =
-    solveLP(model, optimizer; sense = MOI.MAX_SENSE)
+optimizeModel(model, optimizer; sense = MOI.MAX_SENSE)
 
 """
     fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
