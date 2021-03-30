@@ -39,10 +39,10 @@ function fba(
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),
-    sense = MOI.MAX_SENSE
+    sense = MOI.MAX_SENSE,
 )
     # get core optimization problem
-    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense=sense)
+    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense = sense)
 
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
@@ -62,7 +62,7 @@ function fba(
         # ensure that an array of objective indices are fed in
         if typeof(objective_func) == Reaction
             objective_indices = [model[objective_func]]
-        else 
+        else
             objective_indices = [model[rxn] for rxn in objective_func]
         end
 
@@ -79,7 +79,7 @@ function fba(
                 # model.reactions[i].objective_coefficient = weights[wcounter]
                 opt_weights[i] = weights[wcounter]
                 wcounter += 1
-            # else
+                # else
                 # model.reactions[i].objective_coefficient = 0.0
             end
         end

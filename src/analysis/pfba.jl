@@ -27,20 +27,21 @@ function pfba(
     weights = Float64[],
     solver_attributes = Dict{Any,Any}(),
     constraints = Dict{String,Tuple{Float64,Float64}}(),
-    sense = MOI.MAX_SENSE
+    sense = MOI.MAX_SENSE,
 )
     ## FBA ################################################
-    
+
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
-        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer[1], sense=sense)
+        cbm, v, mb, lbcons, ubcons =
+            makeOptimizationModel(model, optimizer[1], sense = sense)
         if !isempty(solver_attributes["opt1"]) # set other attributes
             for (k, v) in solver_attributes["opt1"]
                 set_optimizer_attribute(cbm, k, v)
             end
         end
     else # singe optimizer
-        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense=sense)
+        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense = sense)
         if !isempty(solver_attributes) # set other attributes
             for (k, v) in solver_attributes
                 set_optimizer_attribute(cbm, k, v)
@@ -74,7 +75,7 @@ function pfba(
                 # model.reactions[i].objective_coefficient = weights[wcounter]
                 opt_weights[i] = weights[wcounter]
                 wcounter += 1
-            # else
+                # else
                 # model.reactions[i].objective_coefficient = 0.0
             end
         end
@@ -114,12 +115,13 @@ function pfba(
     optimize!(cbm)
 
     for lbconval in [0.999999, 0.99999, 0.9999, 0.999, 0.99] # relax bound for stability
-        if termination_status(cbm) == MOI.OPTIMAL || termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization 
+        if termination_status(cbm) == MOI.OPTIMAL ||
+           termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization 
             break
         else
             JuMP.delete(cbm, pfbacon)
             @constraint(cbm, lbconval * λ <= sum(v[i] for i in objective_indices) <= λ)
-            optimize!(cbm)    
+            optimize!(cbm)
         end
     end
 
