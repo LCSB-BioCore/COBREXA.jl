@@ -7,9 +7,19 @@ using LinearAlgebra
 using JuMP
 using MAT
 using Distributed
-using SBML
 using DistributedData
+using Requires
+using JSON
+using Measurements
+using Statistics
+using Random
+using PyCall
+using Tulip # for LPs
+using OSQP # for QPs, but it kinda sucks
+
+import Base: findfirst, getindex, show
 import Pkg
+import SBML # conflict with Reaction struct name
 
 include("banner.jl")
 _printBanner()
@@ -17,7 +27,7 @@ _printBanner()
 # autoloading
 const _inc(path...) = include(joinpath(path...))
 const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
-_inc_all.(joinpath.(@__DIR__, ["types", "base", "io", "reconstruction", "analysis"]))
+_inc_all.(joinpath.(@__DIR__, ["types", "base", "io", "reconstruction", "analysis", "sampling"]))
 
 # export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
 for sym in names(@__MODULE__, all = true)
@@ -27,4 +37,7 @@ for sym in names(@__MODULE__, all = true)
     @eval export $sym
 end
 
-end
+∅ = Metabolite("∅") # for exchange reactions
+export ∅
+
+end # module

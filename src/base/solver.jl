@@ -1,41 +1,31 @@
 """
-    makeOptimizationModel(
-        model::LM,
-        optimizer;
-        sense = MOI.MAX_SENSE,
-    ) where {LM<:MetabolicModel}
-
-Convert LinearModel to a JuMP model, and place objectives, flux bounds and
-equality "balance" constraint.
+Convert LinearModel to the JuMP model, place objectives and the equality
+constraint.
 """
 function makeOptimizationModel(
     model::LM,
     optimizer;
     sense = MOI.MAX_SENSE,
-) where {LM<:MetabolicModel}
+) where {LM<:AbstractCobraModel}
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
     optimization_model = JuMP.Model(optimizer)
-    @variable(optimization_model, x[i = 1:n], lower_bound = xl[i], upper_bound = xu[i])
+    @variable(optimization_model, x[i = 1:n])
     @objective(optimization_model, sense, objective(model)' * x)
-    @constraint(optimization_model, stoichiometry(model) * x .== balance(model))
+    mb = @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
+    lbs = @constraint(optimization_model, lbs, xl .<= x) # lower bounds
+    ubs = @constraint(optimization_model, ubs, x .<= xu) # upper bounds
 
-    return (optimization_model, x)
+    return optimization_model, x, mb, lbs, ubs
 end
 
 """
-    optimizeModel(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:MetabolicModel}
-
-Use JuMP to optimize an instance of a [`MetabolicModel`](@ref). Returns a tuple
-that contains the new model and a vector of its variables.
+Use JuMP to solve an instance of LinearModel
 """
-function optimizeModel(
-    model::LM,
-    optimizer;
-    sense = MOI.MIN_SENSE,
-) where {LM<:MetabolicModel}
-    optimization_model, x = makeOptimizationModel(model, optimizer; sense = sense)
+function solveLP(model::LM, optimizer; sense = MOI.MIN_SENSE) where {LM<:AbstractCobraModel}
+    optimization_model, x, _, _, _ = makeOptimizationModel(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
     return (optimization_model, x)
 end
+
