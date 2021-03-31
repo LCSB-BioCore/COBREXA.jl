@@ -83,11 +83,11 @@ end
 """
     getindex(mets::Array{Metabolite, 1}, met::Metabolite)
 
-Get the index of a `met` in an array of `mets`, based on `id` equality. 
+Get the index of a `met` in an array of `mets`, based on `id` equality.
 Return -1 if no matches found.
 This function overrides the `[]` notation from Base.
 
-Typically used: `index = mets[met]` works. 
+Typically used: `index = mets[met]` works.
 """
 function Base.getindex(mets::Array{Metabolite,1}, met::Metabolite)
     for i in eachindex(mets)
@@ -101,8 +101,8 @@ end
 """
     findfirst(mets::Array{Metabolite, 1}, metid::String)
 
-Return the metabolite in `mets` with `metid`, based in `id` field. 
-If nothing matches, return `nothing`. 
+Return the metabolite in `mets` with `metid`, based in `id` field.
+If nothing matches, return `nothing`.
 
 Typically used: `met = findfirst(model.mets, metid)`.
 """

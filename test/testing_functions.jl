@@ -46,7 +46,7 @@ function model_comparison_test(model1, model2)
 end
 
 """
-Test if model is the same after it was read in, saved, and then re-read. 
+Test if model is the same after it was read in, saved, and then re-read.
 """
 function read_write_read_test(model, format)
     tmpfile = joinpath("data", "temp." * format)

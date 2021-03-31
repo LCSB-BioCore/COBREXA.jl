@@ -1,7 +1,7 @@
 """
     map_fluxes(v, model::CobraModel)
 
-Map fluxes from an optimization problem (`v`) to rxns in a model. 
+Map fluxes from an optimization problem (`v`) to rxns in a model.
 `v` can be a JuMP object (fluxes) or an array of Float64 fluxes.
 Assumes they are in order of `model.reactions`, which they should be since the optimization problem is constructed from the model.
 """
@@ -24,7 +24,7 @@ end
 """
     atom_exchange(flux_dict::Dict{String, Float64}, model::CobraModel)
 
-Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`. 
+Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`.
 Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
 """
 function atom_exchange(flux_dict::Dict{String,Float64}, model::CobraModel)
@@ -45,7 +45,7 @@ end
 """
     get_exchanges(rxndict::Dict{String, Float64}; top_n=8, ignorebound=1000.0, verbose=true)
 
-Display the top_n producing and consuming exchange fluxes. 
+Display the top_n producing and consuming exchange fluxes.
 Set top_n to a large number to get all the consuming/producing fluxes.
 Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.

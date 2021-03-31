@@ -48,7 +48,7 @@ end
 """
     getindex(model::CobraModel, rxn::Reaction)
 
-Get the index of `rxn` in `model`, based on reaction `id`. 
+Get the index of `rxn` in `model`, based on reaction `id`.
 Return -1 if not found.
 
 Typical usage: ind = model[rxn]
@@ -60,7 +60,7 @@ end
 """
     getindex(model::CobraModel, met::Metabolite)
 
-Get the index of `met` in `model`, based on metabolite `id`. 
+Get the index of `met` in `model`, based on metabolite `id`.
 Return -1 if not found.
 
 Typical usage: ind = model[met]
@@ -72,7 +72,7 @@ end
 """
     getindex(model::CobraModel, gene::Gene)
 
-Get the index of `gene` in `model`, based on gene `id`. 
+Get the index of `gene` in `model`, based on gene `id`.
 Return -1 if not found.
 
 Typical usage: ind = model[gene]

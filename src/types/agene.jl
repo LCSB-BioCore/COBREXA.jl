@@ -7,7 +7,7 @@ id :: String
 name :: String
 notes :: Dict{String, Array{String, 1}}
 annotation :: Dict{String, Union{Array{String, 1}, String}}
-````   
+````
 """
 mutable struct Gene
     id::String
@@ -74,7 +74,7 @@ end
 """
     getindex(genes::Array{Gene, 1}, gene::Gene)
 
-Get the index of a `gene` in an array of `genes` based on `id` field. 
+Get the index of a `gene` in an array of `genes` based on `id` field.
 Return -1 if no matches found.
 
 Typically used `index = genes[gene]`.
@@ -92,7 +92,7 @@ end
     findfirst(genes::Array{Gene, 1}, geneid::String)
 
 Return the gene with `geneid` in `genes` or else `nothing`.
-Based on matching `id` fields. 
+Based on matching `id` fields.
 
 Typically used: `gene = findfirst(model.genes, geneid)`.
 """
