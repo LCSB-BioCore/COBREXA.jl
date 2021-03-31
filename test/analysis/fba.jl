@@ -19,6 +19,11 @@
 
     # test with a more biologically meaningfull model
     modelPath = joinpath("data", "fba.mat")
+    downloadDataFile(
+        "http://bigg.ucsd.edu/static/models/iJR904.mat",
+        modelPath,
+        "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
+    )
     cp = loadModel(modelPath, "model")
     file = matopen(modelPath)
     expectedOptimum = matread(modelPath)["optimum"]

@@ -28,6 +28,24 @@ function runTestDir(dir, comment = "Directory $dir/")
     end
 end
 
+function checkDataFileHash(path, expected_checksum)
+    actual_checksum = bytes2hex(sha256(open(path)))
+    if actual_checksum != expected_checksum
+        @error "The downloaded data file `$path' seems to be different from the expected one. Tests will likely fail." actual_checksum expected_checksum
+    end
+end
+
+function downloadDataFile(url, path, hash)
+    if isfile(path)
+        checkDataFileHash(path, hash)
+        return path
+    end
+
+    Downloads.download(url, path)
+    checkDataFileHash(path, hash)
+    return path
+end
+
 include("testing_functions.jl") # load misc. testing functions
 
 # load the test models
