@@ -11,7 +11,7 @@ function loadModel(filePath::String, varName::String)
     if haskey(vars, varName)
         return convertToLinearModel(vars[varName])
     else
-        error("Variable `varName` does not exist in the specified MAT file.")
+        error("Variable `$varName` does not exist in the specified MAT file.")
     end
 end
 
