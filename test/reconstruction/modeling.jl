@@ -12,12 +12,12 @@ end
 
 @testset "Find exchange reactions and metabolites" begin
     cp = test_LP()
-    @test isempty(findExchangeReactions(cp))
-    @test isempty(findExchangeMetabolites(cp))
+    @test isempty(find_exchange_reactions(cp))
+    @test isempty(find_exchange_metabolites(cp))
 
     cp = test_simpleLP()
-    @test isempty(findExchangeReactions(cp))
-    @test isempty(findExchangeMetabolites(cp))
+    @test isempty(find_exchange_reactions(cp))
+    @test isempty(find_exchange_metabolites(cp))
 
     cp = LinearModel(
         [-1.0 -1 -2; 0 -1 0; 0 0 0],
@@ -28,7 +28,7 @@ end
         ["EX_m1"; "r2"; "r3"],
         ["m1"; "m2"; "m3"],
     )
-    @test findExchangeReactions(cp) == [1]
+    @test find_exchange_reactions(cp) == [1]
 
     cp = LinearModel(
         [-1.0 0 0; 0 0 -1; 0 -1 0],
@@ -39,27 +39,29 @@ end
         ["EX_m1"; "Exch_m3"; "Ex_m2"],
         ["m1"; "m2"; "m3"],
     )
-    @test findExchangeReactions(cp) == [1; 2; 3]
-    @test findExchangeMetabolites(cp) == [1; 3; 2]
-    @test findExchangeReactions(cp, excPrefs = ["Exch_"]) == [2]
-    @test findExchangeMetabolites(cp, excPrefs = ["Exch_"]) == [3]
+    @test find_exchange_reactions(cp) == [1; 2; 3]
+    @test find_exchange_metabolites(cp) == [1; 3; 2]
+    @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
+    @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
 
-    cp = loadModel(joinpath("data", "toyModel1.mat"), "model")
-    @test findExchangeReactions(cp) == [4; 5; 6]
-    @test findExchangeMetabolites(cp) == [4; 5; 6]
-    @test findExchangeReactions(cp, excludeBiomass = true) == [4; 5]
-    @test findExchangeMetabolites(cp, excludeBiomass = true) == [4; 5]
-    @test findExchangeReactions(cp, excludeBiomass = true, biomassStr = "biom") == [4; 5]
-    @test findExchangeMetabolites(cp, excludeBiomass = true, biomassStr = "biom") == [4; 5]
+    cp = load_model(joinpath("data", "toyModel1.mat"), "model")
+    @test find_exchange_reactions(cp) == [4; 5; 6]
+    @test find_exchange_metabolites(cp) == [4; 5; 6]
+    @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5]
+    @test find_exchange_metabolites(cp, exclude_biomass = true) == [4; 5]
+    @test find_exchange_reactions(cp, exclude_biomass = true, biomass_str = "biom") ==
+          [4; 5]
+    @test find_exchange_metabolites(cp, exclude_biomass = true, biomass_str = "biom") ==
+          [4; 5]
 end
 
 
 @testset "Change bounds" begin
     cp = test_LP()
-    changeBounds!(cp, [3; 1], xl = [-10.0; -20], xu = [10.0; 20])
+    change_bounds!(cp, [3; 1], xl = [-10.0; -20], xu = [10.0; 20])
     @test cp.xl == [-20; 1; -10]
     @test cp.xu == [20; 1; 10]
-    changeBounds!(
+    change_bounds!(
         cp,
         ["gibberish1"; "r3"; "r1"; "gibberish2"],
         xl = [0; -30.0; -40; 0],
@@ -67,14 +69,14 @@ end
     )
     @test cp.xl == [-40; 1; -30]
     @test cp.xu == [40; 1; 30]
-    changeBounds!(cp, ["r1"; "r3"], xl = [-50.0; -60])
+    change_bounds!(cp, ["r1"; "r3"], xl = [-50.0; -60])
     @test cp.xl == [-50; 1; -60]
 end
 
 @testset "Verify consistency" begin
     cp = test_LP()
     @test size(cp.S) == (4, 3)
-    (newReactions, newMets) = verifyConsistency(
+    (new_reactions, new_mets) = verify_consistency(
         cp,
         reshape(cp.S[:, end], :, 1),
         [1.0, 2.0, 3.0, 4.0],
@@ -86,10 +88,10 @@ end
         [1],
         [4],
     )
-    @test newReactions == [1]
-    @test newMets == [4]
+    @test new_reactions == [1]
+    @test new_mets == [4]
 
-    (newReactions, newMets) = verifyConsistency(
+    (new_reactions, new_mets) = verify_consistency(
         cp,
         reshape(cp.S[:, end], :, 1),
         [1.0, 2.0, 3.0, 4.0],
@@ -101,8 +103,8 @@ end
         [],
         [4],
     )
-    @test newReactions == []
-    @test newMets == [4]
+    @test new_reactions == []
+    @test new_mets == [4]
 end
 
 
@@ -110,18 +112,18 @@ end
 @testset "Add reactions (checking existence and consistency)" begin
     cp = test_LP()
     @test size(cp.S) == (4, 3)
-    (newCp, newReactions, newMets) = addReactions(
+    (new_cp, new_reactions, new_mets) = add_reactions(
         cp,
         cp.S[:, end],
         [1.0, 2.0, 3.0, 4.0],
         2.0,
         -1.0,
         1.0,
-        checkConsistency = true,
+        check_consistency = true,
     )
-    @test nReactions(cp) + 1 == nReactions(newCp)
+    @test n_reactions(cp) + 1 == n_reactions(new_cp)
 
-    (newCp, newReactions, newMets) = addReactions(
+    (new_cp, new_reactions, new_mets) = add_reactions(
         cp,
         cp.S[:, end],
         [1.0, 2.0, 3.0, 4.0],
@@ -130,20 +132,20 @@ end
         1.0,
         "r1",
         ["m1", "m2", "m3", "m6"],
-        checkConsistency = true,
+        check_consistency = true,
     )
-    @test nReactions(cp) == nReactions(newCp)
-    @test nMetabolites(cp) + 1 == nMetabolites(newCp)
+    @test n_reactions(cp) == n_reactions(new_cp)
+    @test n_metabolites(cp) + 1 == n_metabolites(new_cp)
 end
 
 @testset "Add reactions" begin
     cp = test_LP()
     @test size(cp.S) == (4, 3)
-    cp = addReactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0)
+    cp = add_reactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0)
     @test size(cp.S) == (8, 4)
-    cp = addReactions(cp, 2.0 * ones(4, 1), 3 .* ones(4), 2 .* ones(1), -ones(1), ones(1))
+    cp = add_reactions(cp, 2.0 * ones(4, 1), 3 .* ones(4), 2 .* ones(1), -ones(1), ones(1))
     @test size(cp.S) == (12, 5)
-    cp = addReactions(
+    cp = add_reactions(
         cp,
         2.0 * ones(4, 10),
         3 .* ones(4),
@@ -155,9 +157,9 @@ end
 
     cp = test_sparseLP()
     @test size(cp.S) == (4000, 3000)
-    cp = addReactions(cp, 2.0 * sprand(4000, 0.5), 3 .* sprand(4000, 0.5), 2.0, -1.0, 1.0)
+    cp = add_reactions(cp, 2.0 * sprand(4000, 0.5), 3 .* sprand(4000, 0.5), 2.0, -1.0, 1.0)
     @test size(cp.S) == (8000, 3001)
-    cp = addReactions(
+    cp = add_reactions(
         cp,
         2.0 * sprand(4000, 1, 0.5),
         3 .* sprand(4000, 0.5),
@@ -166,7 +168,7 @@ end
         sprand(1, 0.5),
     )
     @test size(cp.S) == (12000, 3002)
-    cp = addReactions(
+    cp = add_reactions(
         cp,
         2.0 * sprand(4000, 1000, 0.5),
         3 .* sprand(4000, 0.5),
@@ -178,9 +180,9 @@ end
 
     cp = test_sparseLP()
     @test size(cp.S) == (4000, 3000)
-    cp = addReactions(cp, 2.0 * ones(4000), 3 .* ones(4000), 2.0, -1.0, 1.0)
+    cp = add_reactions(cp, 2.0 * ones(4000), 3 .* ones(4000), 2.0, -1.0, 1.0)
     @test size(cp.S) == (8000, 3001)
-    cp = addReactions(
+    cp = add_reactions(
         cp,
         2.0 * ones(4000, 1),
         3 .* ones(4000),
@@ -189,7 +191,7 @@ end
         ones(1),
     )
     @test size(cp.S) == (12000, 3002)
-    cp = addReactions(
+    cp = add_reactions(
         cp,
         2.0 * ones(4000, 1000),
         3 .* ones(4000),
@@ -201,10 +203,10 @@ end
 
     # proper subset of existing metabolites
     cp = test_LP()
-    newCp = addReactions(cp, [-1.0], zeros(1), 1.0, 0.0, 1.0, "r4", ["m1"])
-    @test nReactions(cp) + 1 == nReactions(newCp)
+    new_cp = add_reactions(cp, [-1.0], zeros(1), 1.0, 0.0, 1.0, "r4", ["m1"])
+    @test n_reactions(cp) + 1 == n_reactions(new_cp)
 
-    @test_throws DimensionMismatch addReactions(
+    @test_throws DimensionMismatch add_reactions(
         cp,
         2.0 * ones(4000, 1),
         3 .* ones(4000),
@@ -218,17 +220,17 @@ end
 @testset "Remove reactions" begin
     cp = test_LP()
     @test size(cp.S) == (4, 3)
-    cp = removeReactions(cp, 2)
+    cp = remove_reactions(cp, 2)
     @test size(cp.S) == (0, 2)
-    cp = removeReactions(cp, [2, 1])
+    cp = remove_reactions(cp, [2, 1])
     @test size(cp.S) == (0, 0)
 
     cp = test_LP()
     @test size(cp.S) == (4, 3)
-    cp = removeReactions(cp, "r0")
+    cp = remove_reactions(cp, "r0")
     @test size(cp.S) == (4, 3)
-    cp = removeReactions(cp, "r1")
+    cp = remove_reactions(cp, "r1")
     @test size(cp.S) == (0, 2)
-    cp = removeReactions(cp, ["r2"])
+    cp = remove_reactions(cp, ["r2"])
     @test size(cp.S) == (0, 1)
 end

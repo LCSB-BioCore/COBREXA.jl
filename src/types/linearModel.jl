@@ -98,15 +98,15 @@ end
 Coupling constraint matrix for a `LinearModel`, actually empty.
 """
 function coupling(a::LinearModel)::SparseMat
-    spzeros(0, nReactions(a))
+    spzeros(0, n_reactions(a))
 end
 
 """
-    couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+    coupling_bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
 
 Coupling bounds for a `LinearModel`, in fact always empty.
 """
-function couplingBounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
+function coupling_bounds(a::LinearModel)::Tuple{SparseVec,SparseVec}
     (spzeros(0), spzeros(0))
 end
 

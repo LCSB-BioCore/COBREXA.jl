@@ -5,7 +5,7 @@ include_dependency(joinpath(_PKG_ROOT_DIR, "Project.toml"))
 const COBREXA_VERSION =
     VersionNumber(Pkg.TOML.parsefile(joinpath(_PKG_ROOT_DIR, "Project.toml"))["version"])
 
-function _printBanner()
+function _print_banner()
     c = Base.text_colors
     n = c[:normal] # text
     b = c[:bold] * c[:blue]

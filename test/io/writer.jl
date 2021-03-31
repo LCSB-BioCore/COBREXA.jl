@@ -1,9 +1,9 @@
 @testset "Export MAT" begin
     filepath = joinpath("data", "toyModel1.mat")
-    loaded = loadModel(filepath, "model")
-    writeModel("testModel.mat", loaded, "model")
-    wrote = loadModel("testModel.mat", "model")
+    loaded = load_model(filepath, "model")
+    write_model("test_model.mat", loaded, "model")
+    wrote = load_model("test_model.mat", "model")
     @test wrote isa LinearModel
     @test isequal(wrote, loaded)
-    rm("testModel.mat")
+    rm("test_model.mat")
 end

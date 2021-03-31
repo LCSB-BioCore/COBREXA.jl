@@ -101,7 +101,8 @@ function hit_and_run(
     sense = MOI.MAX_SENSE,
 )
     # get core optimization problem
-    cbmodel, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense = sense)
+    cbmodel, v, mb, lbcons, ubcons =
+        make_optimization_model(model, optimizer, sense = sense)
 
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes

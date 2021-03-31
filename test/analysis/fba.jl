@@ -1,45 +1,45 @@
 @testset "Flux balance analysis" begin
     cp = test_simpleLP()
-    (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
+    (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
-    (lp, x) = fluxBalanceAnalysis(cp, Clp.Optimizer)
+    (lp, x) = flux_balance_analysis(cp, Clp.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
-    (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
+    (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
     @test sol ≈ [-1.0, 2.0]
 
     # test with a more biologically meaningfull model
-    modelPath = joinpath("data", "fba.mat")
-    downloadDataFile(
+    model_path = joinpath("data", "fba.mat")
+    download_data_file(
         "http://bigg.ucsd.edu/static/models/iJR904.mat",
-        modelPath,
+        model_path,
         "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
     )
-    cp = loadModel(modelPath, "iJR904")
-    expectedOptimum = 0.9219480950504393
+    cp = load_model(model_path, "iJR904")
+    expected_optimum = 0.9219480950504393
 
-    (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
+    (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(x)
-    @test objective_value(lp) ≈ expectedOptimum
-    @test cp.c' * sol ≈ expectedOptimum
+    @test objective_value(lp) ≈ expected_optimum
+    @test cp.c' * sol ≈ expected_optimum
 
     # test the "nicer output" variants
     @test_broken false # reminder to implement these methods
-    # fluxesVec = fluxBalanceAnalysisVec(cp, GLPK.Optimizer)
-    # @test_broken all(fluxesVec .== sol)
-    # fluxesDict = fluxBalanceAnalysisDict(cp, GLPK.Optimizer)
+    # fluxes_vec = flux_balance_analysis_vec(cp, GLPK.Optimizer)
+    # @test_broken all(fluxes_vec .== sol)
+    # fluxes_dict = flux_balance_analysis_dict(cp, GLPK.Optimizer)
     # rxns = reactions(cp)
-    # @test all([fluxesDict[rxns[i]] == sol[i] for i in eachindex(rxns)])
+    # @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
 
 @testset "Flux balance analysis with CobraModel" begin
@@ -82,7 +82,7 @@ end
     @test isapprox(producing["atp_c"]["PYK"], 1.75818, atol = 1e-3)
 
     # set bounds
-    cbm, v, mb, lbs, ubs = makeOptimizationModel(model, optimizer)
+    cbm, v, mb, lbs, ubs = make_optimization_model(model, optimizer)
     glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
     o2_index = model[findfirst(model.reactions, "EX_o2_e")]
     atpm_index = model[findfirst(model.reactions, "ATPM")]

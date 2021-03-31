@@ -10,8 +10,8 @@ end
 
 reactions(a::SBMLModel)::Vector{String} = [k for k in keys(a.m.reactions)]
 metabolites(a::SBMLModel)::Vector{String} = [k for k in keys(a.m.species)]
-nReactions(a::SBMLModel)::Int = length(a.m.reactions)
-nMetabolites(a::SBMLModel)::Int = length(a.m.species)
+n_reactions(a::SBMLModel)::Int = length(a.m.reactions)
+n_metabolites(a::SBMLModel)::Int = length(a.m.species)
 
 """
     stoichiometry(a::SBMLModel)::SparseMat
@@ -48,8 +48,8 @@ function bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec}
     return sparse.((getvalue.(lbu), getvalue.(ubu)))
 end
 
-balance(a::SBMLModel)::SparseVec = spzeros(nMetabolites(a))
+balance(a::SBMLModel)::SparseVec = spzeros(n_metabolites(a))
 objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
-coupling(a::SBMLModel)::SparseMat = spzeros(0, nReactions(a))
-nCouplingConstraints(a::SBMLModel)::Int = 0
-couplingBounds(a::SBMLModel)::Tuple{SparseVec,SparseVec} = (spzeros(0), spzeros(0))
+coupling(a::SBMLModel)::SparseMat = spzeros(0, n_reactions(a))
+n_coupling_constraints(a::SBMLModel)::Int = 0
+coupling_bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec} = (spzeros(0), spzeros(0))

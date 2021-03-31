@@ -3,25 +3,25 @@ Load a model in MAT (Matlab) format and returns a `LinearModel`
 
 See also: `MAT.jl`
 """
-function loadModel(filePath::String, varName::String)
+function load_model(file_path::String, var_name::String)
 
     # read file
-    vars = matread(filePath)
+    vars = matread(file_path)
 
-    if haskey(vars, varName)
-        return convertToLinearModel(vars[varName])
+    if haskey(vars, var_name)
+        return convert_to_linear_model(vars[var_name])
     else
-        error("Variable `$varName` does not exist in the specified MAT file.")
+        error("Variable `$var_name` does not exist in the specified MAT file.")
     end
 end
 
 """
 Convert a dictionary read from a MAT file to LinearModel
 """
-function convertToLinearModel(model::Dict)
-    modelKeys = ["S", "b", "c", "ub", "lb"]
+function convert_to_linear_model(model::Dict)
+    model_keys = ["S", "b", "c", "ub", "lb"]
 
-    for key in modelKeys
+    for key in model_keys
         if !(key in keys(model))
             error("No variable $key found in the MAT file.")
         end

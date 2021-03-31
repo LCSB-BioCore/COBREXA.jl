@@ -1,28 +1,28 @@
 """
 Adds reactions to the model `m`
 """
-function addReactions(
+function add_reactions(
     m::LinearModel,
     s::V1,
     b::V2,
     c::AbstractFloat,
     xl::AbstractFloat,
     xu::AbstractFloat;
-    checkConsistency = false,
+    check_consistency = false,
 ) where {V1<:VecType,V2<:VecType}
-    return addReactions(
+    return add_reactions(
         m,
         sparse(reshape(s, (length(s), 1))),
         sparse(b),
         sparse([c]),
         sparse([xl]),
         sparse([xu]),
-        checkConsistency = checkConsistency,
+        check_consistency = check_consistency,
     )
 end
 
 
-function addReactions(
+function add_reactions(
     m::LinearModel,
     s::V1,
     b::V2,
@@ -31,9 +31,9 @@ function addReactions(
     xu::AbstractFloat,
     rxn::String,
     mets::K;
-    checkConsistency = false,
+    check_consistency = false,
 ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
-    return addReactions(
+    return add_reactions(
         m,
         sparse(reshape(s, (length(s), 1))),
         sparse(b),
@@ -42,22 +42,22 @@ function addReactions(
         sparse([xu]),
         [rxn],
         mets,
-        checkConsistency = checkConsistency,
+        check_consistency = check_consistency,
     )
 end
 
-function addReactions(
+function add_reactions(
     m::LinearModel,
     Sp::M,
     b::V,
     c::V,
     xl::V,
     xu::V;
-    checkConsistency = false,
+    check_consistency = false,
 ) where {M<:MatType,V<:VecType}
     rxns = ["r$x" for x = length(m.rxns)+1:length(m.rxns)+length(xu)]
     mets = ["m$x" for x = length(m.mets)+1:length(m.mets)+size(Sp)[1]]
-    return addReactions(
+    return add_reactions(
         m,
         Sp,
         b,
@@ -66,13 +66,13 @@ function addReactions(
         xu,
         rxns,
         mets,
-        checkConsistency = checkConsistency,
+        check_consistency = check_consistency,
     )
 end
 
 
-function addReactions(m1::LinearModel, m2::LinearModel; checkConsistency = false)
-    return addReactions(
+function add_reactions(m1::LinearModel, m2::LinearModel; check_consistency = false)
+    return add_reactions(
         m1,
         m2.S,
         m2.b,
@@ -81,12 +81,12 @@ function addReactions(m1::LinearModel, m2::LinearModel; checkConsistency = false
         m2.xu,
         m2.rxns,
         m2.mets,
-        checkConsistency = checkConsistency,
+        check_consistency = check_consistency,
     )
 end
 
 
-function addReactions(
+function add_reactions(
     m::LinearModel,
     Sp::M,
     b::V,
@@ -95,7 +95,7 @@ function addReactions(
     xu::V,
     rxns::K,
     mets::K;
-    checkConsistency = false,
+    check_consistency = false,
 ) where {M<:MatType,V<:VecType,K<:StringVecType}
 
     Sp = sparse(Sp)
@@ -109,48 +109,58 @@ function addReactions(
     all(length.([c, xl, xu, rxns]) .== size(Sp, 2)) ||
         throw(DimensionMismatch("inconsistent number of reactions"))
 
-    newReactions = findall(Bool[!(rxn in m.rxns) for rxn in rxns])
-    newMetabolites = findall(Bool[!(met in m.mets) for met in mets])
+    new_reactions = findall(Bool[!(rxn in m.rxns) for rxn in rxns])
+    new_metabolites = findall(Bool[!(met in m.mets) for met in mets])
 
-    if checkConsistency
-        (newReactions1, newMetabolites1) =
-            verifyConsistency(m, Sp, b, c, xl, xu, rxns, mets, newReactions, newMetabolites)
+    if check_consistency
+        (newReactions1, newMetabolites1) = verify_consistency(
+            m,
+            Sp,
+            b,
+            c,
+            xl,
+            xu,
+            rxns,
+            mets,
+            new_reactions,
+            new_metabolites,
+        )
     end
 
-    newMets = vcat(m.mets, mets[newMetabolites])
+    new_mets = vcat(m.mets, mets[new_metabolites])
 
-    zeroBlock = spzeros(length(newMetabolites), nReactions(m))
-    extS = vcat(sparse(m.S), zeroBlock)
+    zero_block = spzeros(length(new_metabolites), n_reactions(m))
+    ext_s = vcat(sparse(m.S), zero_block)
 
-    mapping = [findfirst(isequal(met), newMets) for met in mets]
-    (I, J, elements) = findnz(sparse(Sp[:, newReactions]))
-    extSp = spzeros(length(newMets), length(newReactions))
+    mapping = [findfirst(isequal(met), new_mets) for met in mets]
+    (I, J, elements) = findnz(sparse(Sp[:, new_reactions]))
+    ext_sp = spzeros(length(new_mets), length(new_reactions))
     for (k, i) in enumerate(I)
-        newI = mapping[i]
-        extSp[newI, J[k]] = elements[k]
+        new_i = mapping[i]
+        ext_sp[new_i, J[k]] = elements[k]
     end
 
-    newS = hcat(extS, extSp)
-    newb = vcat(m.b, b[newMetabolites])
-    #newC = hcat(m.C, spzeros(size(m.C, 1), length(newReactions)))
-    newc = vcat(m.c, c[newReactions])
-    newxl = vcat(m.xl, xl[newReactions])
-    newxu = vcat(m.xu, xu[newReactions])
-    newRxns = vcat(m.rxns, rxns[newReactions])
-    #newLp = LinearModel(newS, newb, newC, m.cl, m.cu, newc, newxl, newxu, newRxns, newMets)
-    newLp = LinearModel(newS, newb, newc, newxl, newxu, newRxns, newMets)
+    new_s = hcat(ext_s, ext_sp)
+    newb = vcat(m.b, b[new_metabolites])
+    #new_c = hcat(m.C, spzeros(size(m.C, 1), length(new_reactions)))
+    newc = vcat(m.c, c[new_reactions])
+    newxl = vcat(m.xl, xl[new_reactions])
+    newxu = vcat(m.xu, xu[new_reactions])
+    new_rxns = vcat(m.rxns, rxns[new_reactions])
+    #new_lp = LinearModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
+    new_lp = LinearModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
 
-    if checkConsistency
-        return (newLp, newReactions, newMetabolites)
+    if check_consistency
+        return (new_lp, new_reactions, new_metabolites)
     else
-        return newLp
+        return new_lp
     end
 end
 
 """
 Verifies the consistency of a given model
 """
-function verifyConsistency(
+function verify_consistency(
     m::LinearModel,
     Sp::M,
     b::V,
@@ -159,78 +169,78 @@ function verifyConsistency(
     xu::V,
     names::K,
     mets::K,
-    newReactions,
-    newMetabolites,
+    new_reactions,
+    new_metabolites,
 ) where {M<:MatType,V<:VecType,K<:StringVecType}
 
-    if !isempty(newReactions)
+    if !isempty(new_reactions)
         statuses = Array{ReactionStatus}(undef, length(names))
         for (i, name) in enumerate(names)
-            rxnIndex = findfirst(isequal(name), m.rxns)
+            rxn_index = findfirst(isequal(name), m.rxns)
             reaction = Sp[:, i]
-            stoichIndex = findfirst(Bool[reaction == m.S[:, j] for j = 1:size(m.S, 2)])
-            if isnothing(rxnIndex) & isnothing(stoichIndex)
+            stoich_index = findfirst(Bool[reaction == m.S[:, j] for j = 1:size(m.S, 2)])
+            if isnothing(rxn_index) & isnothing(stoich_index)
                 statuses[i] = ReactionStatus(false, 0, "new")
             end
 
-            if !isnothing(rxnIndex) & isnothing(stoichIndex)
+            if !isnothing(rxn_index) & isnothing(stoich_index)
                 statuses[i] = ReactionStatus(true, 0, "same name")
             end
 
-            if isnothing(rxnIndex) & !isnothing(stoichIndex)
+            if isnothing(rxn_index) & !isnothing(stoich_index)
                 statuses[i] = ReactionStatus(true, 0, "same stoichiometry")
             end
 
-            if !isnothing(rxnIndex) & !isnothing(stoichIndex)
+            if !isnothing(rxn_index) & !isnothing(stoich_index)
                 statuses[i] = ReactionStatus(true, 0, "same name, same stoichiometry")
             end
         end
     end
 
-    return (newReactions, newMetabolites)
+    return (new_reactions, new_metabolites)
 end
 
 """
 Removes a set of reactions from a LinearModel.
 Also removes the metabolites not involved in any reaction.
 """
-function removeReactions(m::LinearModel, rxns::Vector{Int})
-    rxnsToKeep = filter(e -> e ∉ rxns, 1:nReactions(m))
-    tempS = m.S[:, rxnsToKeep]
+function remove_reactions(m::LinearModel, rxns::Vector{Int})
+    rxns_to_keep = filter(e -> e ∉ rxns, 1:n_reactions(m))
+    temp_s = m.S[:, rxns_to_keep]
 
-    (metsToKeep, J, val) = findnz(tempS)
-    sort!(metsToKeep)
-    unique!(metsToKeep)
-    newS = m.S[metsToKeep, rxnsToKeep]
-    newb = m.b[metsToKeep]
-    #newC = m.C[:, rxnsToKeep]
-    newc = m.c[rxnsToKeep]
-    newxl = m.xl[rxnsToKeep]
-    newxu = m.xu[rxnsToKeep]
-    newRxns = m.rxns[rxnsToKeep]
-    newMets = m.mets[metsToKeep]
-    newModel =
-    #LinearModel(newS, newb, newC, m.cl, m.cu, newc, newxl, newxu, newRxns, newMets)
-        LinearModel(newS, newb, newc, newxl, newxu, newRxns, newMets)
-    return newModel
+    (mets_to_keep, J, val) = findnz(temp_s)
+    sort!(mets_to_keep)
+    unique!(mets_to_keep)
+    new_s = m.S[mets_to_keep, rxns_to_keep]
+    newb = m.b[mets_to_keep]
+    #new_c = m.C[:, rxns_to_keep]
+    newc = m.c[rxns_to_keep]
+    newxl = m.xl[rxns_to_keep]
+    newxu = m.xu[rxns_to_keep]
+    new_rxns = m.rxns[rxns_to_keep]
+    new_mets = m.mets[mets_to_keep]
+    new_model =
+    #LinearModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
+        LinearModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
+    return new_model
 end
 
-function removeReactions(m::LinearModel, rxn::Integer)
-    return removeReactions(m, [rxn])
-end
-
-
-function removeReactions(m::LinearModel, rxn::String)
-    return removeReactions(m, [rxn])
+function remove_reactions(m::LinearModel, rxn::Integer)
+    return remove_reactions(m, [rxn])
 end
 
 
-function removeReactions(m::LinearModel, rxns::Vector{String})
-    rxnIndices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
-    if isempty(rxnIndices)
+function remove_reactions(m::LinearModel, rxn::String)
+    return remove_reactions(m, [rxn])
+end
+
+
+function remove_reactions(m::LinearModel, rxns::Vector{String})
+    rxn_indices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
+    if isempty(rxn_indices)
         return m
     else
-        return removeReactions(m, rxnIndices)
+        return remove_reactions(m, rxn_indices)
     end
 end
 
@@ -239,56 +249,56 @@ end
 Returns indices of exchange reactions.
 Exchange reactions are identified based on most commonly used prefixes.
 """
-function findExchangeReactions(
+function find_exchange_reactions(
     model::LinearModel;
-    excludeBiomass = false,
-    biomassStr::String = "biomass",
-    excPrefs = ["EX_"; "Exch_"; "Ex_"],
+    exclude_biomass = false,
+    biomass_str::String = "biomass",
+    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
 )
-    isExc = falses(nReactions(model))
-    for pref in excPrefs
-        isExc = isExc .| startswith.(model.rxns, pref)
+    is_exc = falses(n_reactions(model))
+    for pref in exc_prefs
+        is_exc = is_exc .| startswith.(model.rxns, pref)
     end
-    excInds = findall(isExc)
-    if excludeBiomass
-        biomInds = findall(x -> occursin(biomassStr, x), model.rxns)
-        excInds = setdiff(excInds, biomInds)
+    exc_inds = findall(is_exc)
+    if exclude_biomass
+        biom_inds = findall(x -> occursin(biomass_str, x), model.rxns)
+        exc_inds = setdiff(exc_inds, biom_inds)
     end
-    return excInds
+    return exc_inds
 end
 
 """
 Returns indices of exchanged metabolites, ie, the outermost metabolites in the network
-In practice returns the metabolites consumed by the reactions given by `findExchangeReactions`
+In practice returns the metabolites consumed by the reactions given by `find_exchange_reactions`
 and if called with the same arguments, the two outputs correspond.
 """
-function findExchangeMetabolites(
+function find_exchange_metabolites(
     model::LinearModel;
-    excludeBiomass = false,
-    biomassStr::String = "biomass",
-    excPrefs = ["EX_"; "Exch_"; "Ex_"],
+    exclude_biomass = false,
+    biomass_str::String = "biomass",
+    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
 )
-    excRxnInds = findExchangeReactions(
+    exc_rxn_inds = find_exchange_reactions(
         model,
-        excludeBiomass = excludeBiomass,
-        biomassStr = biomassStr,
-        excPrefs = excPrefs,
+        exclude_biomass = exclude_biomass,
+        biomass_str = biomass_str,
+        exc_prefs = exc_prefs,
     )
-    excMetInds = [findfirst(x -> x == -1, model.S[:, j]) for j in excRxnInds]
-    return excMetInds
+    exc_met_inds = [findfirst(x -> x == -1, model.S[:, j]) for j in exc_rxn_inds]
+    return exc_met_inds
 end
 
 
 """
 Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
 """
-function changeBounds!(
+function change_bounds!(
     model::LinearModel,
     rxns::Vector{Int};
     xl::V = Array{Float64}(undef, 0),
     xu::V = Array{Float64}(undef, 0),
 ) where {V<:VecType}
-    found = [index ∈ 1:nReactions(model) for index in rxns]
+    found = [index ∈ 1:n_reactions(model) for index in rxns]
     length(rxns[found]) == length(unique(rxns[found])) ||
         error("`rxns` appears to contain duplicates")
 
@@ -305,14 +315,14 @@ function changeBounds!(
 end
 
 
-function changeBounds!(
+function change_bounds!(
     model::LinearModel,
     rxns::Array{String,1};
     xl::V = Array{Float64}(undef, 0),
     xu::V = Array{Float64}(undef, 0),
 ) where {V<:VecType}
     found = [name ∈ model.rxns for name in rxns]
-    rxnIndices = zeros(Int, length(rxns))
-    rxnIndices[found] = [findfirst(isequal(name), model.rxns) for name in rxns[found]]
-    changeBounds!(model, rxnIndices, xl = xl, xu = xu)
+    rxn_indices = zeros(Int, length(rxns))
+    rxn_indices[found] = [findfirst(isequal(name), model.rxns) for name in rxns[found]]
+    change_bounds!(model, rxn_indices, xl = xl, xu = xu)
 end

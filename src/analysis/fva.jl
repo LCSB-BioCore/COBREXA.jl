@@ -1,5 +1,5 @@
 """
-    fluxVariabilityAnalysis(
+    flux_variability_analysis(
         model::LM,
         reactions::Vector{Int},
         optimizer,
@@ -25,7 +25,7 @@ scheduled in parallel on `workers`.
 
 Returns a matrix of minima and maxima of size (length(reactions),2).
 """
-function fluxVariabilityAnalysis(
+function flux_variability_analysis(
     model::LM,
     reactions::Vector{Int},
     optimizer,
@@ -33,18 +33,18 @@ function fluxVariabilityAnalysis(
     gamma::AbstractFloat = 1.0,
 )::Matrix{Float64} where {LM<:MetabolicModel}
 
-    if any(reactions .< 1) || any(reactions .> nReactions(model))
+    if any(reactions .< 1) || any(reactions .> n_reactions(model))
         throw(DomainError(reactions, "Index exceeds number of reactions."))
     end
 
-    (optimization_model, x0) = fluxBalanceAnalysis(model, optimizer)
+    (optimization_model, x0) = flux_balance_analysis(model, optimizer)
     Z0 = JuMP.objective_value(optimization_model)
     optimization_model = nothing # we won't need this one anymore, so free the memory
 
     # store a JuMP optimization model at all workers
     save_model = :(
         begin
-            optmodel, x = COBREXA.makeOptimizationModel($model, $optimizer)
+            optmodel, x = COBREXA.make_optimization_model($model, $optimizer)
             COBREXA._FVA_add_constraint(optmodel, $(objective(model)), x, $Z0, $gamma)
             optmodel
         end
@@ -66,7 +66,7 @@ function fluxVariabilityAnalysis(
 end
 
 """
-    fluxVariabilityAnalysis(
+    flux_variability_analysis(
         model::LM,
         optimizer;
         gamma::AbstractFloat = 1.0,
@@ -74,13 +74,13 @@ end
 
 A simpler version of FVA that maximizes and minimizes all reactions in the model.
 """
-function fluxVariabilityAnalysis(
+function flux_variability_analysis(
     model::LM,
     optimizer;
     gamma::AbstractFloat = 1.0,
 ) where {LM<:MetabolicModel}
-    n = nReactions(model)
-    return fluxVariabilityAnalysis(model, collect(1:n), optimizer; gamma = gamma)
+    n = n_reactions(model)
+    return flux_variability_analysis(model, collect(1:n), optimizer; gamma = gamma)
 end
 
 
@@ -140,7 +140,7 @@ function fva(
     constraints = Dict{String,Tuple{Float64,Float64}}(),
     sense = MOI.MAX_SENSE,
 )
-    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense = sense)
+    cbm, v, mb, lbcons, ubcons = make_optimization_model(model, optimizer, sense = sense)
 
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
