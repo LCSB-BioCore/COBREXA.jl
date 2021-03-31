@@ -1,7 +1,7 @@
 
 sbmlfile = joinpath("data", "ecoli_core.xml")
 if !isfile(sbmlfile)
-    download(
+    Downloads.download(
         "http://systemsbiology.ucsd.edu/sites/systemsbiology.ucsd.edu/files/Attachments/Images/downloads/Ecoli_core/ecoli_core_model.xml",
         sbmlfile,
     )
