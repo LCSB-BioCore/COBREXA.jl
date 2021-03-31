@@ -117,7 +117,7 @@ function pfba(
 
     for lbconval in [0.999999, 0.99999, 0.9999, 0.999, 0.99] # relax bound for stability
         if termination_status(cbm) == MOI.OPTIMAL ||
-           termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization 
+           termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
             break
         else
             JuMP.delete(cbm, pfbacon)

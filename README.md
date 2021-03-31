@@ -7,7 +7,7 @@
 
 [docs-img]:https://img.shields.io/badge/docs-latest-blue.svg
 [docs-url]: https://stelmo.github.io/CobraTools.jl/dev
- 
+
 [ci-img]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push
 [ci-url]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml
 
@@ -40,9 +40,9 @@ using JuMP
 using Tulip # pick any solver supported by JuMP
 
 # Import E. coli models (models have pretty printing)
-model_1 = read_model("iJO1366.json") 
-model_2 = read_model("iJO1366.json") 
-model_3 = read_model("iJO1366.json") 
+model_1 = read_model("iJO1366.json")
+model_2 = read_model("iJO1366.json")
+model_3 = read_model("iJO1366.json")
 
 # Build an exascale model
 exascale_model = join(model_1, model_2, model_3,...)

@@ -129,7 +129,7 @@ end
 
 Inspect metabolites and genes of `model` relative to the reactions of `model`.
 Remove genes or metabolites that are not used in the reactions.
-Add genes or metabolites that are not present in `model.genes` or `model.metabolites` but are used in `model.reactions`. 
+Add genes or metabolites that are not present in `model.genes` or `model.metabolites` but are used in `model.reactions`.
 Everything is based on the `id` of metabolites and genes, thus is it possible for a metabolite or gene to be duplicated but using
 a different `id`. Other functions are provided to help identify these cases.
 

@@ -7,17 +7,17 @@ The model format is inferred from the `file_location` extension.
 
 Note, some meta-information may be lost when importing a model. Importantly, only information regarding the
 reactions, metabolites and genes are imported. Currently reading JSON models captures the most meta-information
-regarding reactions, metabolites and genes (e.g. the notes and annotation fields). 
+regarding reactions, metabolites and genes (e.g. the notes and annotation fields).
 
 When importing Matlab models some annotation and notes may not be imported because of non-standard field names used by some models.
-Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`, 
+Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`,
 where `or` can be interchanged with `OR, |, ||` and `and` can be interchanged with `AND, &, &&`.
-Other gene reaction rules formats are not supported yet, but file an issue if your format is standard and needs to be included. 
+Other gene reaction rules formats are not supported yet, but file an issue if your format is standard and needs to be included.
 
-However, in all cases the basic information needed to perform constraint based analysis should be imported successfully, 
+However, in all cases the basic information needed to perform constraint based analysis should be imported successfully,
 e.g. stoichiometrix matrix, constraints etc..
 Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
-Always inspect the imported model before running analysis (garbage in -> garbage out). 
+Always inspect the imported model before running analysis (garbage in -> garbage out).
 """
 function read_model(file_location::String)
     if endswith(file_location, ".json")
@@ -73,7 +73,7 @@ end
 """
     parsegrr(string_rule, genes::Array{Gene, 1})
 
-Parse a gene reaction rule string `string_rule` into a nested `gene` array `Array{Array{Gene, 1}, 1}`. 
+Parse a gene reaction rule string `string_rule` into a nested `gene` array `Array{Array{Gene, 1}, 1}`.
 
 Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
 """

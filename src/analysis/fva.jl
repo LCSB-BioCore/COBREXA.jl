@@ -116,7 +116,7 @@ Run flux variability analysis (FVA) on the `model` with `objective_rxn(s)` and o
 It runs fba on the model once to determine the optimum of the objective.
 Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (ub, lb) flux constraints.
 The model is then constrained to produce objective flux bounded by `optimum_bound` from below (set to slightly less than 1.0 for stability) and each flux in the model sequentially minimized and maximized.
-Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
+Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
 This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
 Returns two dictionaries (`fva_max` and `fva_min`) that each reaction `id`s to dictionaries of the resultant flux distributions (if solved successfully) when that `id` is optimized.

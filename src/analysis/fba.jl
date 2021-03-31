@@ -18,7 +18,7 @@ flux_balance_analysis(model::M, optimizer) where {M<:MetabolicModel} =
 
 Run flux balance analysis (FBA) on the `model` optionally specifying `objective_rxn(s)` and their `weights` (empty `weights` mean equal weighting per reaction).
 Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
-Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work. 
+Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
 The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
 This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
 Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.

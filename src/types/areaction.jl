@@ -125,7 +125,7 @@ end
     Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
 
 Assign the `id`, `metabolites` (and their associated stoichiometries), and the direcionality (`dir`) of a reaction to a `Reaction` struct.
-Directionality is specified using `"for"` (forward), `"rev"` (reverse), or any other string for bidirectional reactions. 
+Directionality is specified using `"for"` (forward), `"rev"` (reverse), or any other string for bidirectional reactions.
 All other fields are left unassigned.
 
 See also: [`Reaction()`](@ref).
@@ -164,7 +164,7 @@ end
 """
     getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
 
-Get the index of a reaction `rxn` in an array of reactions `rxns`, based in `id`. 
+Get the index of a reaction `rxn` in an array of reactions `rxns`, based in `id`.
 Return -1 if no matches found.
 
 Typically used, `index = rxns[rxn]`.
@@ -197,9 +197,9 @@ end
 """
     check_duplicate_reaction(rxns::Array{Reaction, 1}, rxn::Reaction)
 
-Check if `rxn` already exists in `rxns` but has another id. 
+Check if `rxn` already exists in `rxns` but has another id.
 Looks through all the reaction equations of `rxns` and compares metabolite `id`s and their stoichiometric coefficients to those of `rxn`.
-If `rxn` has the same reaction equation as another reaction in `rxns`, the return true and the index of the first match. 
+If `rxn` has the same reaction equation as another reaction in `rxns`, the return true and the index of the first match.
 
 See also: [`is_mass_balanced`](@ref)
 """

@@ -1,7 +1,7 @@
 """
     get_warmup_points(cbmodel, v, mb, lbs, ubs; random_objective=false, numstop=1e10)
 
-Generate warmup points for all the reactions on the model that 
+Generate warmup points for all the reactions on the model that
 are not fixed. Assumes you feed in a JuMP model that is already
 constrained i.e. the constrains are already applied into cbmodel.
 Note, extra constraints applied to ubs and lbs will have no effect.
@@ -77,14 +77,14 @@ end
 """
     hit_and_run(N::Int64, model::CobraModel, optimizer; constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
 
-Perform basic hit and run sampling for `N` iterations using `model` with `optimizer` from `JuMP`. 
+Perform basic hit and run sampling for `N` iterations using `model` with `optimizer` from `JuMP`.
 Additional constraints supplied by `constraints` as a dictionary of reaction `id`s mapped to a tuple of `(lb, ub)` of fluxes.
 Every `keepevery` iteration is logged as a sample, where the sample size matrix has `samplesize` columns.
 Solver specific settings can be set using `solver_attributes`.
 Warm up points are generated in a flux variability sense, unless `random_objective` is true, in which case a randomly weighted objective is used 2*number of reactions to define the warmup points.
 
-Note that N needs to be >> samplesize. 
-Sample size is the size of the samples kept in memory. 
+Note that N needs to be >> samplesize.
+Sample size is the size of the samples kept in memory.
 The larger samplesize is the better the approximation becomes, but the more memory the sampler requires.
 
 See also: [`achr`](@ref)
@@ -126,13 +126,13 @@ function hit_and_run(
     current_point = zeros(size(wpoints, 1))
     current_point .= wpoints[:, rand(1:nwpts)] # pick random initial point
 
-    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue) 
+    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue)
     sample_num = 0
     samplelength = 0
     updatesamplesizelength = true
     for n = 1:N
 
-        # direction = random point - current point 
+        # direction = random point - current point
         if updatesamplesizelength
             direction_point = (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
         else
@@ -157,7 +157,7 @@ function hit_and_run(
                 upper = 1e10
             end
             lower > λmin && (λmin = lower) # max min step size that satisfies all bounds
-            upper < λmax && (λmax = upper) # min max step size that satisfies all bounds   
+            upper < λmax && (λmax = upper) # min max step size that satisfies all bounds
         end
 
         if λmax <= λmin || λmin == -1e10 || λmax == 1e10 # this sometimes can happen
@@ -260,12 +260,12 @@ function achr(
 
     shat = mean(wpoints, dims = 2)[:] # mean point
 
-    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue) 
+    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue)
     sample_num = 0
     samplelength = 0
     updatesamplesizelength = true
     for n = 1:N
-        if updatesamplesizelength # switch to samples 
+        if updatesamplesizelength # switch to samples
             direction_point = (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
         else
             direction_point = (@view samples[:, rand(1:(samplelength))]) - (@view shat[:]) # after warmup phase, only find directions in sampled space
@@ -287,7 +287,7 @@ function achr(
                 upper = 1e10
             end
             lower > λmin && (λmin = lower) # max min step size that satisfies all bounds
-            upper < λmax && (λmax = upper) # min max step size that satisfies all bounds   
+            upper < λmax && (λmax = upper) # min max step size that satisfies all bounds
         end
 
         if λmax <= λmin || λmin == -1e10 || λmax == 1e10 # this sometimes can happen
