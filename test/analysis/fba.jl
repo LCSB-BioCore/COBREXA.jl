@@ -24,10 +24,8 @@
         modelPath,
         "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
     )
-    cp = loadModel(modelPath, "model")
-    file = matopen(modelPath)
-    expectedOptimum = matread(modelPath)["optimum"]
-    close(file)
+    cp = loadModel(modelPath, "iJR904")
+    expectedOptimum = 0.9219480950504393
 
     (lp, x) = fluxBalanceAnalysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
