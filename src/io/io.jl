@@ -120,7 +120,7 @@ end
     reconstruct_model_sbml(file_location::String)
 """
 function reconstruct_model_sbml(file_location::String)
-    # m = readSBML(file_location)
+    # m = read_sbml(file_location)
     # m is now a Model structure with:
     # m.reactions
     # m.species

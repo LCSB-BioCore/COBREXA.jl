@@ -1,8 +1,8 @@
 @testset "LinearModel simple functions" begin
     cp = test_LP()
-    @test nReactions(cp) == 3
-    @test nMetabolites(cp) == 4
-    @test nCouplingConstraints(cp) == 0
+    @test n_reactions(cp) == 3
+    @test n_metabolites(cp) == 4
+    @test n_coupling_constraints(cp) == 0
 
     cp2 = test_LP()
     @test isequal(cp, cp2)
@@ -11,6 +11,6 @@
     @test isequal(cp, copy(cp))
 
     cp = test_coupledLP()
-    @test nCouplingConstraints(cp) == 2000
+    @test n_coupling_constraints(cp) == 2000
     @test isequal(cp, copy(cp))
 end

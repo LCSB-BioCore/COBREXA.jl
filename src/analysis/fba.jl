@@ -1,5 +1,5 @@
 """
-    fluxBalanceAnalysis(model::M, optimizer) where {M<:MetabolicModel}
+    flux_balance_analysis(model::M, optimizer) where {M<:MetabolicModel}
 
 Flux balance analysis solves the following problem for the input `model`:
 ```
@@ -8,10 +8,10 @@ s.t. S x = b
      xₗ ≤ x ≤ xᵤ
 ```
 
-Returns a solved model from [`optimizeModel`](@ref).
+Returns a solved model from [`optimize_model`](@ref).
 """
-fluxBalanceAnalysis(model::M, optimizer) where {M<:MetabolicModel} =
-    optimizeModel(model, optimizer; sense = MOI.MAX_SENSE)
+flux_balance_analysis(model::M, optimizer) where {M<:MetabolicModel} =
+    optimize_model(model, optimizer; sense = MOI.MAX_SENSE)
 
 """
     fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
@@ -42,7 +42,7 @@ function fba(
     sense = MOI.MAX_SENSE,
 )
     # get core optimization problem
-    cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense = sense)
+    cbm, v, mb, lbcons, ubcons = make_optimization_model(model, optimizer, sense = sense)
 
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
@@ -86,7 +86,7 @@ function fba(
 
         @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     else # use default objective
-        # automatically assigned by makeOptimizationModel
+        # automatically assigned by make_optimization_model
     end
 
     optimize!(cbm)

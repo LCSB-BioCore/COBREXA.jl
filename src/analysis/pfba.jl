@@ -34,14 +34,15 @@ function pfba(
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
         cbm, v, mb, lbcons, ubcons =
-            makeOptimizationModel(model, optimizer[1], sense = sense)
+            make_optimization_model(model, optimizer[1], sense = sense)
         if !isempty(solver_attributes["opt1"]) # set other attributes
             for (k, v) in solver_attributes["opt1"]
                 set_optimizer_attribute(cbm, k, v)
             end
         end
     else # singe optimizer
-        cbm, v, mb, lbcons, ubcons = makeOptimizationModel(model, optimizer, sense = sense)
+        cbm, v, mb, lbcons, ubcons =
+            make_optimization_model(model, optimizer, sense = sense)
         if !isempty(solver_attributes) # set other attributes
             for (k, v) in solver_attributes
                 set_optimizer_attribute(cbm, k, v)

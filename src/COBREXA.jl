@@ -22,7 +22,7 @@ import Pkg
 import SBML # conflict with Reaction struct name
 
 include("banner.jl")
-_printBanner()
+_print_banner()
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))

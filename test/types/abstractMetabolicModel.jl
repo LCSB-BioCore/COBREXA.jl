@@ -14,7 +14,7 @@ end
         balance,
         objective,
         coupling,
-        couplingBounds,
+        coupling_bounds,
     ]
         @test_throws MethodError m(x)
     end

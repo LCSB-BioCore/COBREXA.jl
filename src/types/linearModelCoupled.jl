@@ -22,7 +22,7 @@ mutable struct CoupledLinearModel <: MetabolicModel
 
         length(cu) == length(cl) ||
             throw(DimensionMismatch("`cl` and `cu` need to have the same size"))
-        size(C) == (length(cu), nReactions(lm)) ||
+        size(C) == (length(cu), n_reactions(lm)) ||
             throw(DimensionMismatch("wrong dimensions of `C`"))
 
         new(convert(LinearModel, lm), sparse(C), sparse(cl), sparse(cu))
@@ -46,20 +46,20 @@ function coupling(a::CoupledLinearModel)::SparseMat
 end
 
 """
-    nCouplingConstraints(a::CoupledLinearModel)::Int
+    n_coupling_constraints(a::CoupledLinearModel)::Int
 
 The number of coupling constraints in a `CoupledLinearModel`.
 """
-function nCouplingConstraints(a::CoupledLinearModel)::Int
+function n_coupling_constraints(a::CoupledLinearModel)::Int
     return size(a.C, 1)
 end
 
 """
-    couplingBounds(a::CoupledLinearModel)::Tuple{SparseVec,SparseVec}
+    coupling_bounds(a::CoupledLinearModel)::Tuple{SparseVec,SparseVec}
 
 Coupling bounds for a `CoupledLinearModel`.
 """
-function couplingBounds(a::CoupledLinearModel)::Tuple{SparseVec,SparseVec}
+function coupling_bounds(a::CoupledLinearModel)::Tuple{SparseVec,SparseVec}
     (a.cl, a.cu)
 end
 
@@ -69,6 +69,6 @@ end
 Make a `CoupledLinearModel` out of any compatible model type.
 """
 function Base.convert(::Type{CoupledLinearModel}, m::M) where {M<:MetabolicModel}
-    (cl, cu) = couplingBounds(m)
+    (cl, cu) = coupling_bounds(m)
     CoupledLinearModel(convert(LinearModel, m), coupling(m), cl, cu)
 end

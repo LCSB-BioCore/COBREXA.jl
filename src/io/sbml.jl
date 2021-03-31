@@ -2,4 +2,4 @@
 """
 Import a LinearModel from a SBML file
 """
-loadSBMLModel(filename::String)::SBMLModel = SBMLModel(SBML.readSBML(filename))
+load_sbml_model(filename::String)::SBMLModel = SBMLModel(SBML.readSBML(filename))

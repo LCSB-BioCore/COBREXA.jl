@@ -2,7 +2,7 @@
 Convert LinearModel to the JuMP model, place objectives and the equality
 constraint.
 """
-function makeOptimizationModel(
+function make_optimization_model(
     model::LM,
     optimizer;
     sense = MOI.MAX_SENSE,
@@ -23,12 +23,13 @@ end
 """
 Use JuMP to solve an instance of LinearModel
 """
-function optimizeModel(
+function optimize_model(
     model::LM,
     optimizer;
     sense = MOI.MIN_SENSE,
 ) where {LM<:MetabolicModel}
-    optimization_model, x, _, _, _ = makeOptimizationModel(model, optimizer; sense = sense)
+    optimization_model, x, _, _, _ =
+        make_optimization_model(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
     return (optimization_model, x)
 end

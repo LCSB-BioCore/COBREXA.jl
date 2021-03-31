@@ -1,19 +1,19 @@
 """
 Add constraints of the following form to a CoupledLinearModel and return a modified one.
 
-The arguments are same as for in-place `addCouplingConstraints!`.
+The arguments are same as for in-place `add_coupling_constraints!`.
 """
-function addCouplingConstraints(m::CoupledLinearModel, args...)
-    newLp = deepcopy(m)
-    addCouplingConstraints!(newLp, args...)
-    return newLp
+function add_coupling_constraints(m::CoupledLinearModel, args...)
+    new_lp = deepcopy(m)
+    add_coupling_constraints!(new_lp, args...)
+    return new_lp
 end
 
 """
 Add constraints to a plain `LinearModel` (converts it to the coupled type)
 """
-addCouplingConstraints(m::LinearModel, args...) =
-    addCouplingConstraints(convert(CoupledLinearModel, m), args...)
+add_coupling_constraints(m::LinearModel, args...) =
+    add_coupling_constraints(convert(CoupledLinearModel, m), args...)
 
 """
 In-place add coupling constraints in form
@@ -21,13 +21,13 @@ In-place add coupling constraints in form
     cₗ ≤ C x ≤ cᵤ
 ```
 """
-function addCouplingConstraints!(
+function add_coupling_constraints!(
     m::CoupledLinearModel,
     c::V,
     cl::AbstractFloat,
     cu::AbstractFloat,
 ) where {V<:VecType}
-    return addCouplingConstraints!(
+    return add_coupling_constraints!(
         m,
         sparse(reshape(c, (1, length(c)))),
         sparse([cl]),
@@ -36,7 +36,7 @@ function addCouplingConstraints!(
 end
 
 
-function addCouplingConstraints!(
+function add_coupling_constraints!(
     m::CoupledLinearModel,
     C::M,
     cl::V,
@@ -45,7 +45,7 @@ function addCouplingConstraints!(
 
     all([length(cu), length(cl)] .== size(C, 1)) ||
         throw(DimensionMismatch("mismatched numbers of constraints"))
-    size(C, 2) == nReactions(m) ||
+    size(C, 2) == n_reactions(m) ||
         throw(DimensionMismatch("mismatched number of reactions"))
 
     m.C = vcat(m.C, sparse(C))
@@ -57,54 +57,54 @@ end
 """
 Remove coupling constraints from the linear model and return the modified model.
 
-Arguments are the same as for in-place version `removeCouplingConstraints!`.
+Arguments are the same as for in-place version `remove_coupling_constraints!`.
 """
-function removeCouplingConstraints(m::CoupledLinearModel, args...)
-    newModel = deepcopy(m)
-    removeCouplingConstraints!(newModel, args...)
-    return newModel
+function remove_coupling_constraints(m::CoupledLinearModel, args...)
+    new_model = deepcopy(m)
+    remove_coupling_constraints!(new_model, args...)
+    return new_model
 end
 
 
 """
 Removes a set of coupling constraints from a CoupledLinearModel in-place.
 """
-function removeCouplingConstraints!(m::CoupledLinearModel, constraint::Int)
-    removeCouplingConstraints!(m, [constraint])
+function remove_coupling_constraints!(m::CoupledLinearModel, constraint::Int)
+    remove_coupling_constraints!(m, [constraint])
 end
 
 
-function removeCouplingConstraints!(m::CoupledLinearModel, constraints::Vector{Int})
-    toBeKept = filter(e -> e ∉ constraints, 1:nCouplingConstraints(m))
-    m.C = m.C[toBeKept, :]
-    m.cl = m.cl[toBeKept]
-    m.cu = m.cu[toBeKept]
+function remove_coupling_constraints!(m::CoupledLinearModel, constraints::Vector{Int})
+    to_be_kept = filter(e -> e ∉ constraints, 1:n_coupling_constraints(m))
+    m.C = m.C[to_be_kept, :]
+    m.cl = m.cl[to_be_kept]
+    m.cu = m.cu[to_be_kept]
 end
 
 
 """
 Change the lower and/or upper bounds ('cl' and 'cu') for given coupling constraints
 """
-function changeCouplingBounds!(
+function change_coupling_bounds!(
     model::CoupledLinearModel,
     constraints::Vector{Int};
     cl::V = Array{Float64}(undef, 0),
     cu::V = Array{Float64}(undef, 0),
 ) where {V<:VecType}
-    found = [index ∈ 1:nCouplingConstraints(model) for index in constraints]
-    redConstraints = constraints[found]
+    found = [index ∈ 1:n_coupling_constraints(model) for index in constraints]
+    red_constraints = constraints[found]
 
-    length(redConstraints) == length(unique(redConstraints)) ||
+    length(red_constraints) == length(unique(red_constraints)) ||
         error("`constraints` appears to contain duplicates")
     if !isempty(cl)
         length(constraints) == length(cl) ||
             throw(DimensionMismatch("`constraints` size doesn't match with `cl`"))
-        model.cl[redConstraints] = cl[found]
+        model.cl[red_constraints] = cl[found]
     end
 
     if !isempty(cu)
         length(constraints) == length(cu) ||
             throw(DimensionMismatch("`constraints` size doesn't match with `cu`"))
-        model.cu[redConstraints] = cu[found]
+        model.cu[red_constraints] = cu[found]
     end
 end

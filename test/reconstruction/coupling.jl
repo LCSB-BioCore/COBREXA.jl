@@ -2,43 +2,44 @@
     cp = convert(CoupledLinearModel, test_LP())
     @test size(cp.lm.S) == (4, 3)
     @test size(stoichiometry(convert(LinearModel, cp))) == (4, 3)
-    newCp = addCouplingConstraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
-    @test nCouplingConstraints(cp) + 1 == nCouplingConstraints(newCp)
+    new_cp = add_coupling_constraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
+    @test n_coupling_constraints(cp) + 1 == n_coupling_constraints(new_cp)
 
-    newCp = addCouplingConstraints(cp, stoichiometry(cp)[1:2, :], [-1.0; -1.0], [1.0; 1.0])
-    @test nCouplingConstraints(cp) + 2 == nCouplingConstraints(newCp)
+    new_cp =
+        add_coupling_constraints(cp, stoichiometry(cp)[1:2, :], [-1.0; -1.0], [1.0; 1.0])
+    @test n_coupling_constraints(cp) + 2 == n_coupling_constraints(new_cp)
 
-    nC = nCouplingConstraints(cp)
-    addCouplingConstraints!(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
-    @test nC + 1 == nCouplingConstraints(cp)
-    addCouplingConstraints!(cp, stoichiometry(cp)[1:2, :], [-1.0; -1.0], [1.0; 1.0])
-    @test nC + 3 == nCouplingConstraints(cp)
+    n_c = n_coupling_constraints(cp)
+    add_coupling_constraints!(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
+    @test n_c + 1 == n_coupling_constraints(cp)
+    add_coupling_constraints!(cp, stoichiometry(cp)[1:2, :], [-1.0; -1.0], [1.0; 1.0])
+    @test n_c + 3 == n_coupling_constraints(cp)
 
-    nC = nCouplingConstraints(cp)
-    removeCouplingConstraints!(cp, 1)
-    @test nC - 1 == nCouplingConstraints(cp)
-    removeCouplingConstraints!(cp, [1, 2])
-    @test nC - 3 == nCouplingConstraints(cp)
-    @test nCouplingConstraints(cp) == 0
-
-    cp = test_coupledLP()
-    nC = nCouplingConstraints(cp)
-    newCp = removeCouplingConstraints(cp, 1)
-    @test size(coupling(cp)) == (nC, nReactions(cp))
-    @test nC - 1 == nCouplingConstraints(newCp)
-    @test nCouplingConstraints(cp) == nC
-    newCp = removeCouplingConstraints(cp, [1, 2])
-    @test nC - 2 == nCouplingConstraints(newCp)
-    newCp = removeCouplingConstraints(cp, Array(1:nCouplingConstraints(cp)))
-    @test nCouplingConstraints(newCp) == 0
-    @test nCouplingConstraints(cp) == nC
+    n_c = n_coupling_constraints(cp)
+    remove_coupling_constraints!(cp, 1)
+    @test n_c - 1 == n_coupling_constraints(cp)
+    remove_coupling_constraints!(cp, [1, 2])
+    @test n_c - 3 == n_coupling_constraints(cp)
+    @test n_coupling_constraints(cp) == 0
 
     cp = test_coupledLP()
-    changeCouplingBounds!(cp, [3, 1], cl = [-10.0, -20], cu = [10.0, 20])
-    cl, cu = couplingBounds(cp)
+    n_c = n_coupling_constraints(cp)
+    new_cp = remove_coupling_constraints(cp, 1)
+    @test size(coupling(cp)) == (n_c, n_reactions(cp))
+    @test n_c - 1 == n_coupling_constraints(new_cp)
+    @test n_coupling_constraints(cp) == n_c
+    new_cp = remove_coupling_constraints(cp, [1, 2])
+    @test n_c - 2 == n_coupling_constraints(new_cp)
+    new_cp = remove_coupling_constraints(cp, Array(1:n_coupling_constraints(cp)))
+    @test n_coupling_constraints(new_cp) == 0
+    @test n_coupling_constraints(cp) == n_c
+
+    cp = test_coupledLP()
+    change_coupling_bounds!(cp, [3, 1], cl = [-10.0, -20], cu = [10.0, 20])
+    cl, cu = coupling_bounds(cp)
     @test cl[[1, 3]] == [-20, -10]
     @test cu[[1, 3]] == [20, 10]
-    changeCouplingBounds!(cp, [1000, 1001], cl = [-50.0, -60.0])
-    cl, cu = couplingBounds(cp)
+    change_coupling_bounds!(cp, [1000, 1001], cl = [-50.0, -60.0])
+    cl, cu = coupling_bounds(cp)
     @test cl[[1000, 1001]] == [-50.0, -60.0]
 end

@@ -43,17 +43,17 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::CobraModel)
 end
 
 """
-    get_exchanges(rxndict::Dict{String, Float64}; topN=8, ignorebound=1000.0, verbose=true)
+    get_exchanges(rxndict::Dict{String, Float64}; top_n=8, ignorebound=1000.0, verbose=true)
 
-Display the topN producing and consuming exchange fluxes. 
-Set topN to a large number to get all the consuming/producing fluxes.
+Display the top_n producing and consuming exchange fluxes. 
+Set top_n to a large number to get all the consuming/producing fluxes.
 Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.
 Return these reactions in two dictionaries: `consuming`, `producing`
 """
 function exchange_reactions(
     rxndict::Dict{String,Float64};
-    topN = 8,
+    top_n = 8,
     ignorebound = 1000.0,
     verbose = true,
 )
@@ -71,7 +71,7 @@ function exchange_reactions(
     consuming = Dict{String,Float64}()
     producing = Dict{String,Float64}()
     verbose && println("Consuming fluxes:")
-    for i = 1:min(topN, length(rxndict))
+    for i = 1:min(top_n, length(rxndict))
         if rxndict[rxns[inds_cons[i]]] < -eps()
             verbose && println(
                 rxns[inds_cons[i]],
@@ -85,7 +85,7 @@ function exchange_reactions(
     end
 
     verbose && println("Producing fluxes:")
-    for i = 1:min(topN, length(rxndict))
+    for i = 1:min(top_n, length(rxndict))
         if rxndict[rxns[inds_prod[i]]] > eps()
             verbose && println(
                 rxns[inds_prod[i]],
