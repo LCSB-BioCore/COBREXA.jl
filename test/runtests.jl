@@ -14,6 +14,7 @@ using OSQP
 using Statistics
 using JSON
 using Measurements
+using Downloads # need this for download(...), depr warning
 
 function runTestFile(path...)
     fn = joinpath(path...)

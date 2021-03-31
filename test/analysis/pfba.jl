@@ -1,5 +1,10 @@
 @testset "Parsimonious flux balance analysis with CobraModel" begin
-    model = read_model(download("http://bigg.ucsd.edu/static/models/e_coli_core.json", joinpath("data", "e_coli_core.json")))
+    model = read_model(
+        Downloads.download(
+            "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+            joinpath("data", "e_coli_core.json"),
+        ),
+    )
     @test length(model.reactions) == 95 # read in correctly
 
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
@@ -13,7 +18,13 @@
         "max_iter" => 100_000,
         "verbose" => false,
     )
-    solworks = pfba(model, optimizer; objective_func=biomass, solver_attributes = atts, constraints = cons) # just see if it works - OSQP is a terrible LP solver
+    solworks = pfba(
+        model,
+        optimizer;
+        objective_func = biomass,
+        solver_attributes = atts,
+        constraints = cons,
+    ) # just see if it works - OSQP is a terrible LP solver
     sol = pfba(
         model,
         [Tulip.Optimizer, OSQP.Optimizer];
