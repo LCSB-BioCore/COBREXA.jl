@@ -9,7 +9,7 @@ metabolites :: Array{Metabolite, 1}
 genes :: Array{Gene, 1}
 ````
 """
-mutable struct CobraModel <: AbstractCobraModel
+mutable struct CobraModel <: MetabolicModel
     id::String
     reactions::Array{Reaction,1}
     metabolites::Array{Metabolite,1}
@@ -91,7 +91,7 @@ function metabolites(model::CobraModel)::Vector{String}
     [m.id for m in model.metabolites]
 end
 
-function stoichiometry(model::CobraModel)::SparseMtx
+function stoichiometry(model::CobraModel)::SparseMat
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
     metids = metabolites(model)
     for (i, rxn) in enumerate(model.reactions) # column
