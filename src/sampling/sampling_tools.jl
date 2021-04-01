@@ -60,7 +60,9 @@ end
 
 Return Float64 vectors of the lower and upper bounds of the JuMP constraint refs.
 """
-function get_bound_vectors(lbconref, ubconref)
+function get_bound_vectors(opt_model)
+    lbconref = opt_model[:lbs]
+    ubconref = opt_model[:ubs]
     lbs = zeros(length(lbconref))
     for i in eachindex(lbs)
         lbval = normalized_rhs(lbconref[i])
