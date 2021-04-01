@@ -14,13 +14,13 @@ flux_balance_analysis(model::M, optimizer) where {M<:MetabolicModel} =
     optimize_model(model, optimizer; sense = MOI.MAX_SENSE)
 
 """
-    flux_balance_analysis_vec(args...)::Maybe{Vector{Float64}}
+    flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
 
 A variant of FBA that returns a vector of fluxes in the same order as reactions
 of the model, if the solution is found.
 Arguments are passed to [`flux_balance_analysis`](@ref).
 """
-function flux_balance_analysis_vec(args...)::Maybe{Vector{Float64}}
+function flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
     (optmodel, vars) = flux_balance_analysis(args...)
 
     termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
@@ -28,7 +28,7 @@ function flux_balance_analysis_vec(args...)::Maybe{Vector{Float64}}
 end
 
 """
-    flux_balance_analysis_dict(model::M, args...)::Maybe{Dict{String, Float64}} where {M <: MetabolicModel}
+    flux_balance_analysis_dict(model::M, args...)::Union{Dict{String, Float64},Nothing} where {M <: MetabolicModel}
 
 A variant of FBA that returns a dictionary assigning fluxes to reactions, if
 the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
@@ -36,7 +36,7 @@ the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
 function flux_balance_analysis_dict(
     model::M,
     args...,
-)::Maybe{Dict{String,Float64}} where {M<:MetabolicModel}
+)::Union{Dict{String,Float64},Nothing} where {M<:MetabolicModel}
     v = flux_balance_analysis_vec(model, args...)
     isnothing(v) && return nothing
     Dict(zip(reactions(model), v))
