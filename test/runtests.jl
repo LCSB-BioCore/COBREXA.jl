@@ -14,7 +14,7 @@ using OSQP
 using Statistics
 using JSON
 using Measurements
-using Downloads # need this for download(...), depr warning
+using Downloads
 
 function run_test_file(path...)
     fn = joinpath(path...)
@@ -38,6 +38,7 @@ end
 function download_data_file(url, path, hash)
     if isfile(path)
         check_data_file_hash(path, hash)
+        @info "using cached `$path'"
         return path
     end
 
