@@ -21,3 +21,7 @@ Manifest.toml
 
 # Ignore temporary script for testing functions
 temp.jl
+test/data/e_coli_core.json
+test/data/iJO1366.json
+test/data/iJO1366.mat
+test/data/agora-model.mat
