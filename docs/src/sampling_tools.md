@@ -23,7 +23,7 @@ using Tulip
 
 model = read_model("e_coli_core.json")
 
-optimizer = Tulip.Optimizer
+optimizer = COBREXA.Tulip.Optimizer
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
 sol = fba(model, biomass, optimizer, constraints=cons) # classic flux balance analysis
