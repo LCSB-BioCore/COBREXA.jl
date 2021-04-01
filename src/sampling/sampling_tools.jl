@@ -1,12 +1,12 @@
 """
-    get_warmup_points(cbm; random_objective=false, numstop=1e10)
+    get_warmup_points(cbm, v, mb, lbs, ubs; random_objective=false, numstop=1e10)
 
-Generate warmup points for all the reactions in the model that
+Generate warmup points for all the reactions on the model that
 are not fixed. Assumes you feed in a JuMP model that is already
-constrained i.e. the constrains are already applied into `cbm`.
+constrained i.e. the constrains are already applied into cbm.
+Note, extra constraints applied to ubs and lbs will have no effect.
 
-numstop (maximum value is 2*number of warmup points). Reduce this to prematurely 
-stop finding warmup points.
+numstop = 2*number of warmup points - to reduce the time this takes
 """
 function get_warmup_points(cbm; random_objective = false, numstop = 1e10)
     v = cbm[:x]
@@ -59,7 +59,7 @@ function get_warmup_points(cbm; random_objective = false, numstop = 1e10)
 end
 
 """
-    get_bound_vectors(opt_model)
+    get_bound_vectors(ubconref, lbconref)
 
 Return Float64 vectors of the lower and upper bounds of the JuMP constraint refs.
 """
