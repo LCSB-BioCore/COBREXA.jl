@@ -6,20 +6,17 @@
 # Constraint-Based Reconstruction and EXascale Analysis
 
 [docs-img]:https://img.shields.io/badge/docs-latest-blue.svg
-[docs-url]: https://stelmo.github.io/CobraTools.jl/dev
+[docs-url]: http://lcsb-biocore.github.io/COBREXA.jl
 
-[ci-img]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push
-[ci-url]: https://github.com/stelmo/CobraTools.jl/actions/workflows/ci.yml
+[ci-img]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master&event=push
+[ci-url]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml
 
-[cov-img]: https://codecov.io/gh/stelmo/CobraTools.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG
-[cov-url]: https://codecov.io/gh/stelmo/CobraTools.jl
+[cov-img]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG
+[cov-url]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl
 
 [contrib]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
 
-[license-img]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
-[license-url]: LICENSE.md
-
-[![][license-img]][license-url] [![contributions welcome][contrib]](https://github.com/LCSB-BioCore/COBREXA.jl/issues)
+[![contributions welcome][contrib]](https://github.com/LCSB-BioCore/COBREXA.jl/issues)
 
 | **Documentation** | **Tests** | **Coverage** |
 |:--------------:|:-------:|:---------:|
