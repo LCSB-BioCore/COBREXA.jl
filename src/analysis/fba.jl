@@ -21,8 +21,7 @@ of the model, if the solution is found.
 Arguments are passed to [`flux_balance_analysis`](@ref).
 """
 function flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
-    optmodel = flux_balance_analysis(args...)
-    vars = optmodel[:x]
+    (optmodel, vars) = flux_balance_analysis(args...)
 
     termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     value.(vars)
@@ -74,7 +73,7 @@ function fba(
     # get core optimization problem
     cbm = make_optimization_model(model, optimizer, sense = sense)
     v = cbm[:x] # fluxes
-
+    
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
         for (k, val) in solver_attributes
