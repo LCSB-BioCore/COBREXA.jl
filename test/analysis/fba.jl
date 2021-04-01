@@ -1,18 +1,21 @@
 @testset "Flux balance analysis" begin
     cp = test_simpleLP()
-    (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
+    lp = flux_balance_analysis(cp, GLPK.Optimizer)
+    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
     sol = COBREXA.JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
-    (lp, x) = flux_balance_analysis(cp, Clp.Optimizer)
+    lp = flux_balance_analysis(cp, Clp.Optimizer)
+    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
     sol = COBREXA.JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
-    (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
+    lp = flux_balance_analysis(cp, GLPK.Optimizer)
+    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
     sol = COBREXA.JuMP.value.(x)
     @test sol ≈ [-1.0, 2.0]
@@ -27,7 +30,8 @@
     cp = load_model(model_path, "iJR904")
     expected_optimum = 0.9219480950504393
 
-    (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
+    lp = flux_balance_analysis(cp, GLPK.Optimizer)
+    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
     sol = COBREXA.JuMP.value.(x)
     @test objective_value(lp) ≈ expected_optimum
@@ -82,14 +86,16 @@ end
     @test isapprox(producing["atp_c"]["PYK"], 1.75818, atol = 1e-3)
 
     # set bounds
-    cbm, v, mb, lbs, ubs = make_optimization_model(model, optimizer)
+    cbm = make_optimization_model(model, optimizer)
+    ubs = cbm[:ubs]
+    lbs = cbm[:lbs]
     glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
     o2_index = model[findfirst(model.reactions, "EX_o2_e")]
     atpm_index = model[findfirst(model.reactions, "ATPM")]
-    set_bound(glucose_index, lbs, ubs; ub = -1.0, lb = -1.0)
+    set_bound(glucose_index, cbm; ub = -1.0, lb = -1.0)
     @test normalized_rhs(ubs[glucose_index]) == -1.0
     @test normalized_rhs(lbs[glucose_index]) == 1.0
-    set_bound(o2_index, lbs, ubs; ub = 1.0, lb = 1.0)
+    set_bound(o2_index, cbm; ub = 1.0, lb = 1.0)
     @test normalized_rhs(ubs[o2_index]) == 1.0
     @test normalized_rhs(lbs[o2_index]) == -1.0
 end

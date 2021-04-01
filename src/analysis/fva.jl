@@ -37,14 +37,15 @@ function flux_variability_analysis(
         throw(DomainError(reactions, "Index exceeds number of reactions."))
     end
 
-    (optimization_model, x0) = flux_balance_analysis(model, optimizer)
+    optimization_model = flux_balance_analysis(model, optimizer)
     Z0 = COBREXA.JuMP.objective_value(optimization_model)
     optimization_model = nothing # we won't need this one anymore, so free the memory
 
     # store a JuMP optimization model at all workers
     save_model = :(
         begin
-            optmodel, x = COBREXA.make_optimization_model($model, $optimizer)
+            optmodel = COBREXA.make_optimization_model($model, $optimizer)
+            x = optmodel[:x]
             COBREXA._FVA_add_constraint(optmodel, $(objective(model)), x, $Z0, $gamma)
             optmodel
         end
@@ -140,7 +141,8 @@ function fva(
     constraints = Dict{String,Tuple{Float64,Float64}}(),
     sense = MOI.MAX_SENSE,
 )
-    cbm, v, mb, lbcons, ubcons = make_optimization_model(model, optimizer, sense = sense)
+    cbm = make_optimization_model(model, optimizer, sense = sense)
+    v = cbm[:x]
 
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
@@ -151,7 +153,7 @@ function fva(
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
+        set_bound(ind, cbm; lb = con[1], ub = con[2])
     end
 
     # if an objective function is supplied, modify the default objective

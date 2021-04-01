@@ -1,14 +1,17 @@
 """
-    get_warmup_points(cbmodel, v, mb, lbs, ubs; random_objective=false, numstop=1e10)
+    get_warmup_points(cbm; random_objective=false, numstop=1e10)
 
-Generate warmup points for all the reactions on the model that
+Generate warmup points for all the reactions in the model that
 are not fixed. Assumes you feed in a JuMP model that is already
-constrained i.e. the constrains are already applied into cbmodel.
-Note, extra constraints applied to ubs and lbs will have no effect.
+constrained i.e. the constrains are already applied into `cbm`.
 
-numstop = 2*number of warmup points - to reduce the time this takes
+numstop (maximum value is 2*number of warmup points). Reduce this to prematurely 
+stop finding warmup points.
 """
-function get_warmup_points(cbmodel, v, lbs, ubs; random_objective = false, numstop = 1e10)
+function get_warmup_points(cbm; random_objective = false, numstop = 1e10)
+    v = cbm[:x]
+    ubs = cbm[:ubs]
+    lbs = cbm[:lbs]
     # determine which rxns should be max/min-ized
     fixed_rxns = Int64[]
     for i in eachindex(v)
@@ -30,23 +33,23 @@ function get_warmup_points(cbmodel, v, lbs, ubs; random_objective = false, numst
         i > NN && break
 
         if random_objective
-            @objective(cbmodel, Max, sum(rand() * v[iii] for iii in var_rxn_inds))
+            @objective(cbm, Max, sum(rand() * v[iii] for iii in var_rxn_inds))
         else
-            @objective(cbmodel, Max, v[var_rxn_inds[i]])
+            @objective(cbm, Max, v[var_rxn_inds[i]])
         end
 
-        optimize!(cbmodel)
+        optimize!(cbm)
         for j = 1:size(wpoints, 1)
             wpoints[j, ii] = value(v[j])
         end
 
         if random_objective
-            @objective(cbmodel, Min, sum(rand() * v[iii] for iii in var_rxn_inds))
+            @objective(cbm, Min, sum(rand() * v[iii] for iii in var_rxn_inds))
         else
-            @objective(cbmodel, Min, v[var_rxn_inds[i]])
+            @objective(cbm, Min, v[var_rxn_inds[i]])
         end
 
-        optimize!(cbmodel)
+        optimize!(cbm)
         for j = 1:size(wpoints, 1)
             wpoints[j, ii+1] = value(v[j])
         end
@@ -56,11 +59,13 @@ function get_warmup_points(cbmodel, v, lbs, ubs; random_objective = false, numst
 end
 
 """
-    get_bound_vectors(ubconref, lbconref)
+    get_bound_vectors(opt_model)
 
 Return Float64 vectors of the lower and upper bounds of the JuMP constraint refs.
 """
-function get_bound_vectors(lbconref, ubconref)
+function get_bound_vectors(opt_model)
+    lbconref = opt_model[:lbs]
+    ubconref = opt_model[:ubs]
     lbs = zeros(length(lbconref))
     for i in eachindex(lbs)
         lbval = normalized_rhs(lbconref[i])
@@ -101,25 +106,24 @@ function hit_and_run(
     sense = MOI.MAX_SENSE,
 )
     # get core optimization problem
-    cbmodel, v, mb, lbcons, ubcons =
-        make_optimization_model(model, optimizer, sense = sense)
+    cbm = make_optimization_model(model, optimizer, sense = sense)
+    v = cbm[:x]
 
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
-            set_optimizer_attribute(cbmodel, k, v)
+            set_optimizer_attribute(cbm, k, v)
         end
     end
 
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
+        set_bound(ind, cbm; lb = con[1], ub = con[2])
     end
 
-    lbs, ubs = get_bound_vectors(lbcons, ubcons) # get actual ub and lb constraints, can't use model function because the user may have changed them in the function arguments
+    lbs, ubs = get_bound_vectors(cbm) # get actual ub and lb constraints, can't use model function because the user may have changed them in the function arguments
 
-    wpoints =
-        get_warmup_points(cbmodel, v, lbcons, ubcons, random_objective = random_objective)
+    wpoints = get_warmup_points(cbm; random_objective = random_objective)
 
     nwpts = size(wpoints, 2) # number of warmup points generated
     samples = zeros(size(wpoints, 1), samplesize) # sample storage
@@ -233,12 +237,12 @@ function achr(
     solver_attributes = Dict{Any,Any}(),
     random_objective = false,
 )
-    cbmodel, v, _, ubcons, lbcons = build_cbm(model)
+    cbm, v, _, ubcons, lbcons = build_cbm(model)
 
-    set_optimizer(cbmodel, optimizer) # choose optimizer
+    set_optimizer(cbm, optimizer) # choose optimizer
     if !isempty(solver_attributes) # set other attributes
         for (k, v) in solver_attributes
-            set_optimizer_attribute(cbmodel, k, v)
+            set_optimizer_attribute(cbm, k, v)
         end
     end
 
@@ -250,8 +254,7 @@ function achr(
 
     ubs, lbs = get_bound_vectors(ubcons, lbcons) # get actual ub and lb constraints
 
-    wpoints =
-        get_warmup_points(cbmodel, v, ubcons, lbcons, random_objective = random_objective)
+    wpoints = get_warmup_points(cbm, v, ubcons, lbcons, random_objective = random_objective)
 
     nwpts = size(wpoints, 2) # number of warmup points generated
     samples = zeros(size(wpoints, 1), samplesize) # sample storage
