@@ -1,3 +1,7 @@
+#ignore data files
+*.json
+*.mat
+
 .DS_Store
 test/data/*.xml
 test/data/*.mat
