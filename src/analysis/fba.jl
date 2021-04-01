@@ -65,27 +65,28 @@ sol = fba(model, biomass, optimizer; solver_attributes=atts)
 function fba(
     model::CobraModel,
     optimizer;
-    objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[],
-    weights = Float64[],
-    solver_attributes = Dict{Any,Any}(),
-    constraints = Dict{String,Tuple{Float64,Float64}}(),
-    sense = MOI.MAX_SENSE,
+    modifications = [(model, opt_model)->nothing]
 )
+
+objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[]
+weights = Float64[]
+solver_attributes = Dict{Any,Any}()
+sense = MOI.MAX_SENSE
+
     # get core optimization problem
     cbm = make_optimization_model(model, optimizer, sense = sense)
     v = cbm[:x] # fluxes
+
+    # apply callbacks
+    for mod in modifications
+        mod(model, cbm)
+    end
 
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
         for (k, val) in solver_attributes
             set_optimizer_attribute(cbm, k, val)
         end
-    end
-
-    # set additional constraints
-    for (rxnid, con) in constraints
-        ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, cbm; lb = con[1], ub = con[2])
     end
 
     # if an objective function is supplied, modify the default objective

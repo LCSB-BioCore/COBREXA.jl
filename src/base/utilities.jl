@@ -34,3 +34,15 @@ function set_bound(vind, opt_model; ub = 1000, lb = -1000)
     end
     set_normalized_rhs(opt_model[:ubs][vind], ub)
 end
+
+"""
+    modify_constraint(reaction::Reaction, lb, ub)
+
+Modify constraints of model reaction.
+"""
+function modify_constraint(reaction::Reaction, lb, ub)
+    (model, opt_model) -> begin
+        ind = model.reactions[reaction]
+        set_bound(ind, opt_model, lb=lb, ub=ub)
+    end
+end
