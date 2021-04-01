@@ -44,7 +44,7 @@ function flux_balance_analysis_dict(
 end
 
 """
-    fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    flux_balance_analysis(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
 
 Run flux balance analysis (FBA) on the `model` optionally specifying `objective_rxn(s)` and their `weights` (empty `weights` mean equal weighting per reaction).
 Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
@@ -62,63 +62,21 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = fba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
-function fba(
+function flux_balance_analysis(
     model::CobraModel,
     optimizer;
-    modifications = [(model, opt_model)->nothing]
+    modifications::Union{Vector, Function} = [(model, opt_model)->nothing]
 )
-
-objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[]
-weights = Float64[]
-solver_attributes = Dict{Any,Any}()
-sense = MOI.MAX_SENSE
-
     # get core optimization problem
-    cbm = make_optimization_model(model, optimizer, sense = sense)
-    v = cbm[:x] # fluxes
+    cbm = make_optimization_model(model, optimizer)
 
-    # apply callbacks
-    for mod in modifications
-        mod(model, cbm)
-    end
-
-    # modify core optimization problem according to user specifications
-    if !isempty(solver_attributes) # set other attributes
-        for (k, val) in solver_attributes
-            set_optimizer_attribute(cbm, k, val)
-        end
-    end
-
-    # if an objective function is supplied, modify the default objective
-    if typeof(objective_func) == Reaction || !isempty(objective_func)
-        # ensure that an array of objective indices are fed in
-        if typeof(objective_func) == Reaction
-            objective_indices = [model[objective_func]]
-        else
-            objective_indices = [model[rxn] for rxn in objective_func]
-        end
-
-        if isempty(weights)
-            weights = ones(length(objective_indices))
-        end
-        opt_weights = zeros(length(model.reactions))
-
-        # update the objective function tracker
-        # don't update model objective function - silly thing to do
-        wcounter = 1
-        for i in eachindex(model.reactions)
-            if i in objective_indices
-                # model.reactions[i].objective_coefficient = weights[wcounter]
-                opt_weights[i] = weights[wcounter]
-                wcounter += 1
-                # else
-                # model.reactions[i].objective_coefficient = 0.0
-            end
-        end
-
-        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
-    else # use default objective
-        # automatically assigned by make_optimization_model
+    # apply callbacks - user can also just put in a function
+    if typeof(modifications) <: Vector
+        for mod in modifications
+            mod(model, cbm)
+        end    
+    else
+        modifications(model, cbm)
     end
 
     optimize!(cbm)
