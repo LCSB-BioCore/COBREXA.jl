@@ -23,14 +23,9 @@ sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 function pfba(
     model::CobraModel,
     optimizer;
-    objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[],
-    weights = Float64[],
-    solver_attributes = Dict{Any,Any}(),
-    constraints = Dict{String,Tuple{Float64,Float64}}(),
-    sense = MOI.MAX_SENSE,
+    modifications = [(model, opt_model) -> nothing]
 )
     ## FBA ################################################
-
 
     if typeof(optimizer) <: AbstractArray # choose optimizer
         cbm = make_optimization_model(model, optimizer[1], sense = sense)
