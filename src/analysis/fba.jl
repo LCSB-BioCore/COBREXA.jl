@@ -71,8 +71,9 @@ function fba(
     sense = MOI.MAX_SENSE,
 )
     # get core optimization problem
-    cbm, v, mb, lbcons, ubcons = make_optimization_model(model, optimizer, sense = sense)
-
+    cbm = make_optimization_model(model, optimizer, sense = sense)
+    v = cbm[:x] # fluxes
+    
     # modify core optimization problem according to user specifications
     if !isempty(solver_attributes) # set other attributes
         for (k, val) in solver_attributes
@@ -83,7 +84,7 @@ function fba(
     # set additional constraints
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, lbcons, ubcons; lb = con[1], ub = con[2])
+        set_bound(ind, cbm; lb = con[1], ub = con[2])
     end
 
     # if an objective function is supplied, modify the default objective
