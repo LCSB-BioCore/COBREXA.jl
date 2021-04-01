@@ -1,6 +1,6 @@
 name = "COBREXA"
 uuid = "babc4406-5200-4a30-9033-bf5ae714c842"
-authors = ["Some people"]
+authors = ["The developers of COBREXA.jl"]
 version = "0.1.0"
 
 [deps]
@@ -22,7 +22,6 @@ MAT = "23992714-dd62-5051-b70f-ba57cb901cac"
 Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 OSQP = "ab2f91bb-94b4-55e3-9ba0-7f65df51de79"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
