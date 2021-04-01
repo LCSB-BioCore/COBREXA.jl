@@ -22,10 +22,9 @@ Arguments are passed to [`flux_balance_analysis`](@ref).
 """
 function flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
     optmodel = flux_balance_analysis(args...)
-    vars = optmodel[:x]
-
+    
     termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
-    value.(vars)
+    value.(optmodel[:x])
 end
 
 """
@@ -69,7 +68,7 @@ function flux_balance_analysis(
 )
     # get core optimization problem
     cbm = make_optimization_model(model, optimizer)
-
+    
     # apply callbacks - user can also just put in a function
     if typeof(modifications) <: Vector
         for mod in modifications
@@ -80,16 +79,22 @@ function flux_balance_analysis(
     end
 
     optimize!(cbm)
+    
+    return cbm
+end
 
-    status = (
-        termination_status(cbm) == MOI.OPTIMAL ||
-        termination_status(cbm) == MOI.LOCALLY_SOLVED
-    )
+function flux_balance_analysis_vec()
 
-    if status
-        return map_fluxes(v, model)
-    else
-        @warn "Optimization issues occurred."
-        return Dict{String,Float64}()
-    end
+end
+
+status = (
+    termination_status(cbm) == MOI.OPTIMAL ||
+    termination_status(cbm) == MOI.LOCALLY_SOLVED
+)
+
+if status
+    return map_fluxes(cbm[:v], model)
+else
+    @warn "Optimization issues occurred."
+    return Dict{String,Float64}()
 end
