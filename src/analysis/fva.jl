@@ -38,7 +38,7 @@ function flux_variability_analysis(
     end
 
     (optimization_model, x0) = flux_balance_analysis(model, optimizer)
-    Z0 = JuMP.objective_value(optimization_model)
+    Z0 = COBREXA.JuMP.objective_value(optimization_model)
     optimization_model = nothing # we won't need this one anymore, so free the memory
 
     # store a JuMP optimization model at all workers
@@ -91,7 +91,7 @@ Internal helper function for adding constraints to a model. Exists mainly
 because for avoiding namespace problems on remote workers.
 """
 function _FVA_add_constraint(model, c, x, Z0, gamma)
-    JuMP.@constraint(model, c' * x ≥ gamma * Z0)
+    COBREXA.JuMP.@constraint(model, c' * x ≥ gamma * Z0)
 end
 
 """
@@ -102,11 +102,11 @@ namespace problems.
 """
 function _FVA_optimize_reaction(model, rid)
     sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
-    var = JuMP.all_variables(model)[abs(rid)]
+    var = COBREXA.JuMP.all_variables(model)[abs(rid)]
 
-    JuMP.@objective(model, sense, var)
-    JuMP.optimize!(model)
-    return JuMP.objective_value(model)
+    COBREXA.JuMP.@objective(model, sense, var)
+    COBREXA.JuMP.optimize!(model)
+    return COBREXA.JuMP.objective_value(model)
 end
 
 """

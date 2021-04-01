@@ -27,7 +27,7 @@
     ) # just see if it works - OSQP is a terrible LP solver
     sol = pfba(
         model,
-        [Tulip.Optimizer, OSQP.Optimizer];
+        [COBREXA.Tulip.Optimizer, COBREXA.OSQP.Optimizer];
         objective_func = biomass,
         solver_attributes = Dict("opt1" => Dict{Any,Any}(), "opt2" => atts),
     ) # try two optimizers

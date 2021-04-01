@@ -14,7 +14,6 @@ using OSQP
 using Statistics
 using JSON
 using Measurements
-using Downloads
 
 function run_test_file(path...)
     fn = joinpath(path...)
@@ -42,7 +41,7 @@ function download_data_file(url, path, hash)
         return path
     end
 
-    Downloads.download(url, path)
+    COBREXA.Downloads.download(url, path)
     check_data_file_hash(path, hash)
     return path
 end

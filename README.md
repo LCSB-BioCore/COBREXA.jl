@@ -30,16 +30,18 @@ This is package aims to provide constraint based reconstruction and analysis too
 To install this package: `] add ???`. See the documentation for more information.
 
 ## Quick Example
+
 Let's use `COBREXA.jl` to perform classic flux balance analysis on an *E. coli* community.
 ```julia
 using COBREXA
-using JuMP
-using Tulip # pick any solver supported by JuMP
+
+# download the model
+model_file = COBREXA.Downloads.download("http://bigg.ucsd.edu/static/models/iJO1366.json", "iJO1366.json")
 
 # Import E. coli models (models have pretty printing)
-model_1 = read_model("iJO1366.json")
-model_2 = read_model("iJO1366.json")
-model_3 = read_model("iJO1366.json")
+model_1 = read_model(model_file)
+model_2 = read_model(model_file)
+model_3 = read_model(model_file)
 
 # Build an exascale model
 exascale_model = join(model_1, model_2, model_3,...)

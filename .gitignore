@@ -1,7 +1,9 @@
+#ignore data files
+*.json
+*.mat
+*.xml
+
 .DS_Store
-test/data/*.xml
-test/data/*.mat
-test/data/*.json
 
 # ignore VScode clutter
 /.vscode

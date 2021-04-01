@@ -120,7 +120,7 @@ function pfba(
            termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
             break
         else
-            JuMP.delete(cbm, pfbacon)
+            COBREXA.JuMP.delete(cbm, pfbacon)
             @constraint(cbm, lbconval * λ <= sum(v[i] for i in objective_indices) <= λ)
             optimize!(cbm)
         end

@@ -2,19 +2,19 @@
     cp = test_simpleLP()
     (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = JuMP.value.(x)
+    sol = COBREXA.JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
     (lp, x) = flux_balance_analysis(cp, Clp.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = JuMP.value.(x)
+    sol = COBREXA.JuMP.value.(x)
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
     (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = JuMP.value.(x)
+    sol = COBREXA.JuMP.value.(x)
     @test sol ≈ [-1.0, 2.0]
 
     # test with a more biologically meaningfull model
@@ -29,7 +29,7 @@
 
     (lp, x) = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = JuMP.value.(x)
+    sol = COBREXA.JuMP.value.(x)
     @test objective_value(lp) ≈ expected_optimum
     @test cp.c' * sol ≈ expected_optimum
 
@@ -54,7 +54,7 @@ end
     # FBA
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
     cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
-    optimizer = Tulip.Optimizer # quiet by default
+    optimizer = COBREXA.Tulip.Optimizer # quiet by default
     sol = fba(model, optimizer; objective_func = biomass, constraints = cons)
     pfl = findfirst(model.reactions, "PFL")
     solmulti = fba(model, optimizer; objective_func = [biomass, pfl], weights = [0.8, 0.2]) # classic flux balance analysis
