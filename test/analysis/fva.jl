@@ -74,7 +74,7 @@ end
     pfl = findfirst(model.reactions, "PFL")
 
     # FVA
-    optimizer = Tulip.Optimizer
+    optimizer = COBREXA.Tulip.Optimizer
     atts = Dict("IPM_IterationsLimit" => 500)
     cons = Dict("EX_glc__D_e" => (-10.0, -10.0))
     fva_max, fva_min =
