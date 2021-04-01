@@ -10,7 +10,7 @@ function make_optimization_model(
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
-    optimization_model = JuMP.Model(optimizer)
+    optimization_model = COBREXA.JuMP.Model(optimizer)
     @variable(optimization_model, x[i = 1:n])
     @objective(optimization_model, sense, objective(model)' * x)
     mb = @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
@@ -30,6 +30,6 @@ function optimize_model(
 ) where {LM<:MetabolicModel}
     optimization_model, x, _, _, _ =
         make_optimization_model(model, optimizer; sense = sense)
-    JuMP.optimize!(optimization_model)
+        COBREXA.JuMP.optimize!(optimization_model)
     return (optimization_model, x)
 end

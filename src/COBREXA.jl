@@ -8,12 +8,12 @@ using JuMP
 using MAT
 using Distributed
 using DistributedData
+using Downloads
 using Requires
 using JSON
 using Measurements
 using Statistics
 using Random
-using PyCall
 using Tulip # for LPs
 using OSQP # for QPs, but it kinda sucks
 
