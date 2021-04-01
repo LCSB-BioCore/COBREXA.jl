@@ -34,12 +34,11 @@
     @test cp.c' * sol ≈ expected_optimum
 
     # test the "nicer output" variants
-    @test_broken false # reminder to implement these methods
-    # fluxes_vec = flux_balance_analysis_vec(cp, GLPK.Optimizer)
-    # @test_broken all(fluxes_vec .== sol)
-    # fluxes_dict = flux_balance_analysis_dict(cp, GLPK.Optimizer)
-    # rxns = reactions(cp)
-    # @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
+    fluxes_vec = flux_balance_analysis_vec(cp, GLPK.Optimizer)
+    @test all(fluxes_vec .== sol)
+    fluxes_dict = flux_balance_analysis_dict(cp, GLPK.Optimizer)
+    rxns = reactions(cp)
+    @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
 
 @testset "Flux balance analysis with CobraModel" begin
