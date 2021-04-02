@@ -1,3 +1,25 @@
+"""
+    @flux_balance_analysis model optimizer
+"""
+macro flux_balance_analysis_vec(model, optimizer)
+    model = esc(model)
+    optimizer = esc(optimizer)
+    return :(flux_balance_analysis_vec($model, $optimizer))
+end
+
+"""
+    @flux_balance_analysis model optimizer
+"""
+macro flux_balance_analysis_vec(model, optimizer, kws)
+    model = esc(model)
+    optimizer = esc(optimizer)
+    v = Expr(:vect)
+    for m in MacroTools.striplines(esc(kws).args).args
+        push!(v.args, m)
+    end
+    kwarg = Expr(:kw, :modification, :($v)) # ????
+    # return flux_balance_analysis_vec($model, $optimizer; kwarg)
+end
 
 """
     flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
