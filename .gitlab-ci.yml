@@ -5,7 +5,51 @@ stages:
   - check
   - deploy-doc
 
-test:
+variables:
+    GIT_STRATEGY: clone
+
+.global_settings: &global_settings
+  tags:
+   - artenolis
+   - slave01
+  rules:
+   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+   - if: $CI_COMMIT_BRANCH == "master"
+
+.global_testing: &global_testing_linux
+  script:
+    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
+
+.global_testing_win: &global_testing_win
+  script:
+    - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'"
+
+linux julia v1.5:
+  stage: test
+  variables:
+    JULIA_VER: "v1.5.3"
+  <<: *global_settings
+  <<: *global_testing_linux
+
+windows10:
+  stage: test
+  tags:
+    - artenolis
+    - windows10
+  variables:
+    JULIA_VER: "v1.5.3"
+  <<: *global_testing_win
+
+windows8:
+  stage: test
+  tags:
+    - artenolis
+    - windows8
+  variables:
+    JULIA_VER: "v1.5.3"
+  <<: *global_testing_win
+
+docker:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
@@ -43,4 +87,3 @@ pages:
       - public
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
-
