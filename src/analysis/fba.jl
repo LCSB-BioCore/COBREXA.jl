@@ -20,8 +20,8 @@ A variant of FBA that returns a vector of fluxes in the same order as reactions
 of the model, if the solution is found.
 Arguments are passed to [`flux_balance_analysis`](@ref).
 """
-function flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
-    optmodel = flux_balance_analysis(args...)
+function flux_balance_analysis_vec(args...; kwargs...)::Union{Vector{Float64},Nothing}
+    optmodel = flux_balance_analysis(args...; kwargs...)
 
     JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     value.(optmodel[:x])
@@ -35,9 +35,10 @@ the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
 """
 function flux_balance_analysis_dict(
     model::M,
-    args...,
+    args...;
+    kwargs...,
 )::Union{Dict{String,Float64},Nothing} where {M<:MetabolicModel}
-    v = flux_balance_analysis_vec(model, args...)
+    v = flux_balance_analysis_vec(model, args...; kwargs...)
     isnothing(v) && return nothing
     Dict(zip(reactions(model), v))
 end
@@ -81,42 +82,4 @@ function flux_balance_analysis(
     JuMP.optimize!(cbm)
 
     return cbm
-end
-
-"""
-    flux_balance_analysis_vec(model::StandardModel, optimizer; modifications)
-
-Perform flux balance analysis on `model` using `optimizer`. 
-Returns a vector fluxes in the order supplied in `model`.
-Calls [`flux_balance_analysis`](@ref) internally.
-"""
-function flux_balance_analysis_vec(
-    model::StandardModel,
-    optimizer;
-    modifications = [(model, opt_model) -> nothing],
-)
-    cbm = flux_balance_analysis(model, optimizer; modifications = modifications)
-
-    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
-
-    return value.(cbm[:x])
-end
-
-"""
-    flux_balance_analysis_dict(model::StandardModel, optimizer; modifications)
-
-Perform flux balance analysis on `model` using `optimizer`. 
-Returns a dictionary mapping reaction `id`s to fluxes. 
-Calls [`flux_balance_analysis`](@ref) internally.
-"""
-function flux_balance_analysis_dict(
-    model::StandardModel,
-    optimizer;
-    modifications = [(model, opt_model) -> nothing],
-)
-    cbm = flux_balance_analysis(model, optimizer; modifications = modifications)
-
-    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
-    
-    return Dict(zip(reactions(model), value.(cbm[:x])))
 end
