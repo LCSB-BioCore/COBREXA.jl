@@ -26,7 +26,7 @@ Use JuMP to solve an instance of LinearModel
 function optimize_model(
     model::LM,
     optimizer;
-    sense = MOI.MAX_SENSE,
+    sense = MOI.MIN_SENSE,
 ) where {LM<:MetabolicModel}
     optimization_model = make_optimization_model(model, optimizer; sense = sense)
     JuMP.optimize!(optimization_model)
