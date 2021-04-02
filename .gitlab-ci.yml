@@ -7,8 +7,8 @@ stages:
 
 test:
   stage: test
-  only:
-    - external_pull_requests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
@@ -16,12 +16,12 @@ test:
 
 format:
   stage: check
-  only:
-    - external_pull_requests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
   script:
-    - julia -e 'using JuliaFormatter; format(".", verbose=true)'
+    - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true)'
   after_script:
-    - julia -e 'out = Cmd(`git diff --name-only`) |> read |> String;
+    - julia --project=@. -e 'out = Cmd(`git diff --name-only`) |> read |> String;
           if out == ""
               exit(0)
           else
