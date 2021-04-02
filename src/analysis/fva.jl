@@ -38,7 +38,7 @@ function flux_variability_analysis(
     end
 
     optimization_model = flux_balance_analysis(model, optimizer)
-    Z0 = JuMP.objective_value(optimization_model)
+    Z0 = COBREXA.JuMP.objective_value(optimization_model)
     optimization_model = nothing # we won't need this one anymore, so free the memory
 
     # store a JuMP optimization model at all workers
@@ -92,7 +92,7 @@ Internal helper function for adding constraints to a model. Exists mainly
 because for avoiding namespace problems on remote workers.
 """
 function _FVA_add_constraint(model, c, x, Z0, gamma)
-    JuMP.@constraint(model, c' * x ≥ gamma * Z0)
+    COBREXA.JuMP.@constraint(model, c' * x ≥ gamma * Z0)
 end
 
 """
@@ -103,11 +103,11 @@ namespace problems.
 """
 function _FVA_optimize_reaction(model, rid)
     sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
-    var = JuMP.all_variables(model)[abs(rid)]
+    var = COBREXA.JuMP.all_variables(model)[abs(rid)]
 
-    JuMP.@objective(model, sense, var)
-    JuMP.optimize!(model)
-    return JuMP.objective_value(model)
+    COBREXA.JuMP.@objective(model, sense, var)
+    COBREXA.JuMP.optimize!(model)
+    return COBREXA.JuMP.objective_value(model)
 end
 
 """
@@ -134,20 +134,60 @@ fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 function fva(
     model::CobraModel,
     optimizer;
+    objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[],
     optimum_bound = 0.9999,
-    modifications = [(model, opt_model) -> nothing]
+    weights = Float64[],
+    solver_attributes = Dict{Any,Any}(),
+    constraints = Dict{String,Tuple{Float64,Float64}}(),
+    sense = MOI.MAX_SENSE,
 )
+<<<<<<< Updated upstream
+    cbm = make_optimization_model(model, optimizer, sense = sense)
+    v = cbm[:x]
+=======
     # get core optimization problem
     cbm = make_optimization_model(model, optimizer)
-    v = cbm[:x]
+>>>>>>> Stashed changes
 
-    # apply callbacks - user can also just put in a function
-    if typeof(modifications) <: Vector
-        for mod in modifications
-            mod(model, cbm)
-        end    
-    else
-        modifications(model, cbm)
+    if !isempty(solver_attributes) # set other attributes
+        for (k, v) in solver_attributes
+            set_optimizer_attribute(cbm, k, v)
+        end
+    end
+
+    # set additional constraints
+    for (rxnid, con) in constraints
+        ind = model.reactions[findfirst(model.reactions, rxnid)]
+        set_bound(ind, cbm; lb = con[1], ub = con[2])
+    end
+
+    # if an objective function is supplied, modify the default objective
+    if typeof(objective_func) == Reaction || !isempty(objective_func)
+        # ensure that an array of objective indices are fed in
+        if typeof(objective_func) == Reaction
+            objective_indices = [model[objective_func]]
+        else
+            objective_indices = [model[rxn] for rxn in objective_func]
+        end
+
+        if isempty(weights)
+            weights = ones(length(objective_indices))
+        end
+        opt_weights = zeros(length(model.reactions))
+
+        # update the objective function tracker
+        # don't update model objective function - silly thing to do
+        wcounter = 1
+        for i in eachindex(model.reactions)
+            if i in objective_indices
+                # model.reactions[i].objective_coefficient = weights[wcounter]
+                opt_weights[i] = weights[wcounter]
+                wcounter += 1
+                # else
+                # model.reactions[i].objective_coefficient = 0.0
+            end
+        end
+        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
 
     optimize!(cbm)
@@ -166,6 +206,8 @@ function fva(
     end
 
     # Now do FVA
+    v = cbm[:x]
+
     λ = objective_value(cbm) # objective value
     @constraint(
         cbm,

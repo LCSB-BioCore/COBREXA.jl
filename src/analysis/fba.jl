@@ -89,6 +89,7 @@ sense = MOI.MAX_SENSE
         end
     end
 
+<<<<<<< Updated upstream
     # if an objective function is supplied, modify the default objective
     if typeof(objective_func) == Reaction || !isempty(objective_func)
         # ensure that an array of objective indices are fed in
@@ -123,10 +124,32 @@ sense = MOI.MAX_SENSE
 
     optimize!(cbm)
 
+=======
+function flux_balance_analysis_vec(args)
+    cbm = flux_balance_analysis(args...)
+    
     status = (
         termination_status(cbm) == MOI.OPTIMAL ||
         termination_status(cbm) == MOI.LOCALLY_SOLVED
     )
+    
+    if status
+        return value.(cbm[:x])
+    else
+        @warn "Optimization issues occurred."
+        return Vector{Float64}[]
+    end    
+end
+
+function flux_balance_analysis_dict(model, args)
+    cbm = flux_balance_analysis(model, args...)
+    
+>>>>>>> Stashed changes
+    status = (
+        termination_status(cbm) == MOI.OPTIMAL ||
+        termination_status(cbm) == MOI.LOCALLY_SOLVED
+    )
+<<<<<<< Updated upstream
 
     if status
         return map_fluxes(v, model)
@@ -134,4 +157,13 @@ sense = MOI.MAX_SENSE
         @warn "Optimization issues occurred."
         return Dict{String,Float64}()
     end
+=======
+    
+    if status
+        return Dict(zip(reactions(model), value.(cbm[:x])))
+    else
+        @warn "Optimization issues occurred."
+        return Dict{String, Float64}()
+    end   
+>>>>>>> Stashed changes
 end
