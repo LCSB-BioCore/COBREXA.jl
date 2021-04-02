@@ -1,17 +1,3 @@
-"""
-    flux_balance_analysis(model::M, optimizer) where {M<:MetabolicModel}
-
-Flux balance analysis solves the following problem for the input `model`:
-```
-max cᵀx
-s.t. S x = b
-     xₗ ≤ x ≤ xᵤ
-```
-
-Returns a solved model from [`optimize_model`](@ref).
-"""
-flux_balance_analysis(model::M, optimizer) where {M<:MetabolicModel} =
-    optimize_model(model, optimizer; sense = MOI.MAX_SENSE)
 
 """
     flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
@@ -44,42 +30,57 @@ function flux_balance_analysis_dict(
 end
 
 """
-    flux_balance_analysis(model::StandardModel, optimizer; modifications)
+    flux_balance_analysis(
+        model::M,
+        optimizer;
+        modifications = [(model, opt_model) -> nothing],
+    ) where {M<:MetabolicModel}
 
-Run flux balance analysis (FBA) on the `model` optionally specifying `modifications` to the problem.
-These modifications can be entered as an array of modifications, or a single modification.
-Leave this keyword argument out if you do not want to modify the problem.
-See [`modify_constraint`](@ref), [`modify_solver_attribute`](@ref),[`modify_objective`](@ref), and [`modify_sense`](@ref)
-for possible modifications.
-Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
-Returns a solved JuMP model.
+Run flux balance analysis (FBA) on the `model` optionally specifying
+`modifications` to the problem.
+
+Effectively solves the optimization problem:
+```
+max cᵀx
+s.t. S x = b
+     xₗ ≤ x ≤ xᵤ
+```
+
+Optionally, you may specify one or more `modifications` to be applied to the models.
+See [`modify_constraint`](@ref),
+[`modify_solver_attribute`](@ref),[`modify_objective`](@ref), or
+[`modify_sense`](@ref) for examples of modifications.
+
+The `optimizer` must be set to perform the analysis, any JuMP solver will work.
+
+Returns a solved JuMP model from [`optimize_model`](@ref).
 
 # Example
 ```
-optimizer = Gurobi.Optimizer
+optimizer = GLPK.Optimizer
 model = CobraTools.read_model("e_coli_core.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 solved_model = fba(model, optimizer; modifications=[modify_objective(biomass)])
 ```
+
 """
 function flux_balance_analysis(
-    model::StandardModel,
+    model::M,
     optimizer;
     modifications = [(model, opt_model) -> nothing],
-)
-    # get core optimization problem
-    cbm = make_optimization_model(model, optimizer)
+) where {M<:MetabolicModel}
 
-    # apply callbacks
-    if typeof(modifications) <: Vector # many modifications
+    opt_model = make_optimization_model(model, optimizer)
+
+    # support for multiple modification, fallback to single one
+    if typeof(modifications) <: AbstractVector
         for mod in modifications
-            mod(model, cbm)
+            mod(model, opt_model)
         end
-    else # single modification
-        modifications(model, cbm)
+    else
+        modifications(model, opt_model)
     end
 
-    JuMP.optimize!(cbm)
-
-    return cbm
+    JuMP.optimize!(opt_model)
+    return opt_model
 end
