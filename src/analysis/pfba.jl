@@ -20,7 +20,7 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
-function parsimonious_flux_balance_analysis(model::StandardModel, optimizer; modifications = [(model, opt_model) -> nothing], qp_solver = [(model, opt_model) -> nothing], qp_solver_attributes=[(model, opt_model) -> nothing])
+function parsimonious_flux_balance_analysis(model::MetabolicModel, optimizer; modifications = [(model, opt_model) -> nothing], qp_solver = [(model, opt_model) -> nothing], qp_solver_attributes=[(model, opt_model) -> nothing])
     # Run FBA
     cbm = flux_balance_analysis(model, optimizer)#; modifications=modifications)
     JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing # FBA failed
