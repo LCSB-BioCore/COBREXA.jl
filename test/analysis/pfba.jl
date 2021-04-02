@@ -1,5 +1,4 @@
-@testset "Parsimonious flux balance analysis with CobraModel" begin
-
+@testset "Parsimonious flux balance analysis with StandardModel" begin
     model = read_model(
         download_data_file(
             "http://bigg.ucsd.edu/static/models/e_coli_core.json",
@@ -9,29 +8,11 @@
     )
 
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
-
-    # pFBA
-    atts = Dict(
-        "eps_abs" => 5e-4,
-        "eps_rel" => 5e-4,
-        "max_iter" => 100_000,
-        "verbose" => false,
-    )
-    solworks = pfba(
-        model,
-        OSQP.Optimizer;
-        objective_func = biomass,
-        solver_attributes = atts,
-        constraints = cons,
-    ) # just see if it works - OSQP is a terrible LP solver
-    sol = pfba(
-        model,
-        [COBREXA.Tulip.Optimizer, COBREXA.OSQP.Optimizer];
-        objective_func = biomass,
-        solver_attributes = Dict("opt1" => Dict{Any,Any}(), "opt2" => atts),
-    ) # try two optimizers
-
-    @test !isempty(solworks)
-    @test isapprox(sol["PGM"], -14.737442319041387, atol = 1e-3)
+    glucose = findfirst(model.reactions, "EX_glc__D_e")
+    
+    d = parsimonious_flux_balance_analysis_dict(model, Tulip.Optimizer; modifications=modify_constraint(glucose, -12, -12), qp_solver=modify_solver(OSQP.Optimizer), qp_solver_attributes=modify_solver_attribute("verbose", false))
+    v = parsimonious_flux_balance_analysis_vec(model, Tulip.Optimizer; modifications=modify_constraint(glucose, -12, -12), qp_solver=modify_solver(OSQP.Optimizer), qp_solver_attributes=modify_solver_attribute("verbose", false))
+    
+    @test isapprox(d["PGM"], -14.751259785795853, atol = 1e-3)
+    @test isapprox(v[8], -14.751259785795853, atol = 1e-3)    
 end

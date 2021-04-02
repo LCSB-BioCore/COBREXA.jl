@@ -1,23 +1,20 @@
-@testset "Flux balance analysis" begin
+@testset "Flux balance analysis with LinearModel" begin
     cp = test_simpleLP()
     lp = flux_balance_analysis(cp, GLPK.Optimizer)
-    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = COBREXA.JuMP.value.(x)
+    sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
 
     lp = flux_balance_analysis(cp, Clp.Optimizer)
-    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = COBREXA.JuMP.value.(x)
+    sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
     lp = flux_balance_analysis(cp, GLPK.Optimizer)
-    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = COBREXA.JuMP.value.(x)
+    sol = JuMP.value.(lp[:x])
     @test sol ≈ [-1.0, 2.0]
 
     # test with a more biologically meaningfull model
@@ -31,9 +28,8 @@
     expected_optimum = 0.9219480950504393
 
     lp = flux_balance_analysis(cp, GLPK.Optimizer)
-    x = lp[:x]
     @test termination_status(lp) === MOI.OPTIMAL
-    sol = COBREXA.JuMP.value.(x)
+    sol = JuMP.value.(lp[:x])
     @test objective_value(lp) ≈ expected_optimum
     @test cp.c' * sol ≈ expected_optimum
 
@@ -45,7 +41,7 @@
     @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
 
-@testset "Flux balance analysis with CobraModel" begin
+@testset "Flux balance analysis with StandardModel" begin
     model = read_model(
         download_data_file(
             "http://bigg.ucsd.edu/static/models/e_coli_core.json",
@@ -53,49 +49,15 @@ end
             "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
         ),
     )
-    @test length(model.reactions) == 95 # read in correctly
 
-    # FBA
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
-    optimizer = COBREXA.Tulip.Optimizer # quiet by default
-    sol = fba(model, optimizer; objective_func = biomass, constraints = cons)
-    pfl = findfirst(model.reactions, "PFL")
-    solmulti = fba(model, optimizer; objective_func = [biomass, pfl], weights = [0.8, 0.2]) # classic flux balance analysis
-
-
-    flux_vec = [sol[rxn.id] for rxn in model.reactions]
-    sol_mapped = map_fluxes(flux_vec, model)
-    @test isapprox(sol_mapped["BIOMASS_Ecoli_core_w_GAM"], 1.0572509997013568, atol = 1e-6)
+    glucose = findfirst(model.reactions, "EX_glc__D_e")
+    sol = flux_balance_analysis_dict(model, Tulip.Optimizer; modifications=[modify_objective(biomass), modify_constraint(glucose, -12, -12), modify_sense(MOI.MAX_SENSE), modify_solver_attribute("IPM_IterationsLimit", 110)])
     @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 1.0572509997013568, atol = 1e-6)
-    @test !isempty(solmulti)
 
-    sol = fba(model, optimizer; objective_func = biomass)
-
-    # atom tracker
-    atom_fluxes = atom_exchange(sol, model)
-    @test isapprox(atom_fluxes["C"], -37.1902, atol = 1e-3)
-
-    # exchange trackers
-    consuming, producing = exchange_reactions(sol; verbose = false)
-    @test isapprox(consuming["EX_nh4_e"], -4.76532, atol = 1e-3)
-
-    # metabolite trackers
-    consuming, producing = metabolite_fluxes(sol, model)
-    @test isapprox(consuming["atp_c"]["PFK"], -7.47738, atol = 1e-3)
-    @test isapprox(producing["atp_c"]["PYK"], 1.75818, atol = 1e-3)
-
-    # set bounds
-    cbm = make_optimization_model(model, optimizer)
-    ubs = cbm[:ubs]
-    lbs = cbm[:lbs]
-    glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
-    o2_index = model[findfirst(model.reactions, "EX_o2_e")]
-    atpm_index = model[findfirst(model.reactions, "ATPM")]
-    set_bound(glucose_index, cbm; ub = -1.0, lb = -1.0)
-    @test normalized_rhs(ubs[glucose_index]) == -1.0
-    @test normalized_rhs(lbs[glucose_index]) == 1.0
-    set_bound(o2_index, cbm; ub = 1.0, lb = 1.0)
-    @test normalized_rhs(ubs[o2_index]) == 1.0
-    @test normalized_rhs(lbs[o2_index]) == -1.0
+    pfl = findfirst(model.reactions, "PFL")
+    pfl_frac = 0.8
+    biomass_frac = 0.2
+    sol_multi = flux_balance_analysis_dict(model, Tulip.Optimizer; modifications= modify_objective([biomass, pfl]; weights = [biomass_frac, pfl_frac]))
+    @test isapprox(biomass_frac*sol_multi["BIOMASS_Ecoli_core_w_GAM"] + pfl_frac*sol_multi["PFL"], 31.999999998962604, atol = 1e-6)
 end

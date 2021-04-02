@@ -18,31 +18,3 @@ Base.isequal(model1::CoupledLinearModel, model2::CoupledLinearModel) =
 
 Base.copy(model::CoupledLinearModel) =
     CoupledLinearModel(model.lm, model.C, model.cl, model.cu)
-
-
-"""
-    set_bound(index, optimization_model; ub=1000, lb=-1000)
-Helper function to set the bounds of variables.
-The JuMP `set_normalized_rhs` function is a little confusing, so this function simplifies setting
-constraints. Just supply the constraint `index` and the model and they will be set to `ub` and `lb`.
-"""
-function set_bound(vind, opt_model; ub = 1000, lb = -1000)
-    if lb <= 0
-        set_normalized_rhs(opt_model[:lbs][vind], abs(lb))
-    else
-        set_normalized_rhs(opt_model[:lbs][vind], -abs(lb))
-    end
-    set_normalized_rhs(opt_model[:ubs][vind], ub)
-end
-
-"""
-    modify_constraint(reaction::Reaction, lb, ub)
-
-Modify constraints of model reaction.
-"""
-function modify_constraint(reaction::Reaction, lb, ub)
-    (model, opt_model) -> begin
-        ind = model.reactions[reaction]
-        set_bound(ind, opt_model, lb=lb, ub=ub)
-    end
-end

@@ -136,5 +136,5 @@ function read_matlab_model(file_location::String)
         )
     end
 
-    return CobraModel(model_id, rxns, mets, genes)
+    return StandardModel(model_id, rxns, mets, genes)
 end

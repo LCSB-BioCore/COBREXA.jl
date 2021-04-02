@@ -1,15 +1,15 @@
 """
-    pfba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}(), sense=MOI.MAX_SENSE)
+    pfba(model::StandardModel, optimizer; modifications, qp_solver, qp_solver_attributes)
 
-Run parsimonious flux balance analysis (pFBA) on the `model` with `objective_rxn(s)` and optionally specifying their `weights` (empty `weights` mean equal weighting per reaction) for the initial FBA problem.
+Run parsimonious flux balance analysis (pFBA) on the `model`.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
-Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
-When `optimizer` is an array of optimizers, e.g. `[opt1, opt2]`, then `opt1` is used to solve the FBA problem, and `opt2` is used to solve the QP problem.
-This strategy is useful when the QP solver is not good at solving the LP problem.
-The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, k, v)`.
-If more than one solver is specified in `optimizer`, then `solver_attributes` must be a dictionary of dictionaries with keys "opt1" and "opt2", e.g. Dict("opt1" => Dict{Any, Any}(),"opt2" => Dict{Any, Any}()).
-This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
-Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
+Optionally, specify problem `modifications` as in [`flux_balance_analysis`](@ref).
+Also, `qp_solver` can be set to be different from `optimizer`, where the latter is then the LP optimizer only.
+Also note that `qp_solver_attributes` is meant to set the attributes for the `qp_solver` and NOT `modifications`.
+Any solver attributes changed in `modifications` will only affect he LP solver.
+This function automatically relaxes the constraint that the FBA solution objective matches the pFBA solution. 
+This is iteratively relaxed like 1.0, 0.999999, 0.9999, etc. of the bound until 0.99 when the function fails and returns nothing.
+Return a solved pFBA model.
 
 # Example
 ```
@@ -20,116 +20,67 @@ biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 ```
 """
-function pfba(
-    model::CobraModel,
-    optimizer;
-    modifications = [(model, opt_model) -> nothing]
-)
-    ## FBA ################################################
-
-    if typeof(optimizer) <: AbstractArray # choose optimizer
-        cbm = make_optimization_model(model, optimizer[1], sense = sense)
-        v = cbm[:x]
-        if !isempty(solver_attributes["opt1"]) # set other attributes
-            for (k, v) in solver_attributes["opt1"]
-                set_optimizer_attribute(cbm, k, v)
-            end
-        end
-    else # singe optimizer
-        cbm = make_optimization_model(model, optimizer, sense = sense)
-        v = cbm[:x]
-        if !isempty(solver_attributes) # set other attributes
-            for (k, v) in solver_attributes
-                set_optimizer_attribute(cbm, k, v)
-            end
-        end
-    end
-
-    # set additional constraints
-    for (rxnid, con) in constraints
-        ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, cbm; lb = con[1], ub = con[2])
-    end
-
-    # check if default objective should be used
-    if typeof(objective_func) == Reaction || !isempty(objective_func)
-        # check if an array of objective indices are fed in
-        if typeof(objective_func) == Reaction
-            objective_indices = [model[objective_func]]
-        else
-            objective_indices = [model[rxn] for rxn in objective_func]
-        end
-
-        if isempty(weights)
-            weights = ones(length(objective_indices))
-        end
-        opt_weights = zeros(length(model.reactions))
-
-        wcounter = 1
-        for i in eachindex(model.reactions)
-            if i in objective_indices
-                # model.reactions[i].objective_coefficient = weights[wcounter]
-                opt_weights[i] = weights[wcounter]
-                wcounter += 1
-                # else
-                # model.reactions[i].objective_coefficient = 0.0
-            end
-        end
-
-        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
-    else
-        # objective_indices = findnz(objective(model))
-        # opt_weights = ones(length(objective_indices)) # assume equal weighting, assume sense is max
-    end
-
-    optimize!(cbm)
-
-    fba_status = (
-        termination_status(cbm) == MOI.OPTIMAL ||
-        termination_status(cbm) == MOI.LOCALLY_SOLVED
-    )
-
-    ## pFBA ###############################################
+function parsimonious_flux_balance_analysis(model::StandardModel, optimizer; modifications = [(model, opt_model) -> nothing], qp_solver = [(model, opt_model) -> nothing], qp_solver_attributes=[(model, opt_model) -> nothing])
+    # Run FBA
+    cbm = flux_balance_analysis(model, optimizer)#; modifications=modifications)
+    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing # FBA failed
+ 
+    # Run pFBA
     λ = objective_value(cbm)
+    old_objective = JuMP.objective_function(cbm)
 
-    if typeof(optimizer) <: AbstractArray # choose optimizer
-        set_optimizer(cbm, optimizer[2])
-        if !isempty(solver_attributes["opt2"]) # set other attributes
-            for (k, v) in solver_attributes["opt2"]
-                set_optimizer_attribute(cbm, k, v)
-            end
+    qp_solver(model, cbm) # change the solver if specified, otherwise default argument does nothing
+    if typeof(qp_solver_attributes) <: Vector # many modifications
+        for mod in qp_solver_attributes
+            mod(model, cbm)
         end
+    else # single modification
+        qp_solver_attributes(model, cbm)
     end
 
-    @constraint(
-        cbm,
-        pfbacon,
-        λ <= sum(opt_weights[i] * v[i] for i in objective_indices) <= λ
-    )
+    v = cbm[:x] # fluxes
     @objective(cbm, Min, sum(dot(v, v)))
 
-    optimize!(cbm)
-
-    for lbconval in [0.999999, 0.99999, 0.9999, 0.999, 0.99] # relax bound for stability
-        if termination_status(cbm) == MOI.OPTIMAL ||
-           termination_status(cbm) == MOI.LOCALLY_SOLVED # try to relax bound if failed optimization
-            break
-        else
-            COBREXA.JuMP.delete(cbm, pfbacon)
-            @constraint(cbm, lbconval * λ <= sum(v[i] for i in objective_indices) <= λ)
-            optimize!(cbm)
-        end
+    for lbconval in [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99] # sequentially relax bound for stability
+        @constraint(
+            cbm,
+            pfbacon,
+            lbconval * λ <= old_objective <= λ * 1.0/lbconval # in case of negative objective and minimized fba
+        )
+        optimize!(cbm)
+        JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] && break
+        COBREXA.JuMP.delete(cbm, pfbacon)
     end
 
-    pfba_status = (
-        termination_status(cbm) == MOI.OPTIMAL ||
-        termination_status(cbm) == MOI.LOCALLY_SOLVED
-    )
+    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing # pFBA failed
 
-    if fba_status && pfba_status
-        return map_fluxes(v, model)
-    else
-        @warn "Optimization issues occurred."
-        return Dict{String,Float64}() # something went wrong
-    end
+    return cbm
+end
+
+"""
+    parsimonious_flux_balance_analysis_dict(model::StandardModel, optimizer; modifications, qp_solver, qp_solver_attributes)
+
+Perform parsimonious flux balance analysis on `model` using `optimizer`. 
+Returns a vector of fluxes in the same order as the reactions in `model`. 
+Calls [`parsimonious_flux_balance_analysis_dict`](@ref) internally.
+"""
+function parsimonious_flux_balance_analysis_vec(model::StandardModel, optimizer; modifications = [(model, opt_model) -> nothing], qp_solver = [(model, opt_model) -> nothing], qp_solver_attributes=[(model, opt_model) -> nothing])
+    cbm = parsimonious_flux_balance_analysis(model, optimizer; modifications=modifications, qp_solver=qp_solver, qp_solver_attributes=qp_solver_attributes)
+    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
+   
+    return value.(cbm[:x])
+end
+
+"""
+    parsimonious_flux_balance_analysis_dict(model::StandardModel, optimizer; modifications, qp_solver, qp_solver_attributes)
+
+Perform parsimonious flux balance analysis on `model` using `optimizer`. 
+Returns a dictionary mapping reaction `id`s to fluxes. 
+Calls [`parsimonious_flux_balance_analysis_dict`](@ref) internally.
+"""
+function parsimonious_flux_balance_analysis_dict(model::StandardModel, optimizer; modifications = [(model, opt_model) -> nothing], qp_solver = [(model, opt_model) -> nothing], qp_solver_attributes=[(model, opt_model) -> nothing])
+    cbm = parsimonious_flux_balance_analysis(model, optimizer; modifications=modifications, qp_solver=qp_solver, qp_solver_attributes=qp_solver_attributes)
+    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
+   
+    return Dict(zip(reactions(model), value.(cbm[:x])))
 end

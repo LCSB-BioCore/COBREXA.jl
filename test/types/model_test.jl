@@ -31,7 +31,7 @@
     genes = [g1, g2, g3]
     rxns = [r1, r2, r3, r4]
 
-    model = CobraModel()
+    model = StandardModel()
     model.id = "model"
     model.reactions = rxns
     model.metabolites = mets

@@ -29,7 +29,6 @@ function optimize_model(
     sense = MOI.MIN_SENSE,
 ) where {LM<:MetabolicModel}
     optimization_model = make_optimization_model(model, optimizer; sense = sense)
-    x = optimization_model[:x]
     JuMP.optimize!(optimization_model)
     return optimization_model
 end

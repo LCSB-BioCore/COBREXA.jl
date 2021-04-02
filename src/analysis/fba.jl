@@ -22,10 +22,9 @@ Arguments are passed to [`flux_balance_analysis`](@ref).
 """
 function flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
     optmodel = flux_balance_analysis(args...)
-    vars = optmodel[:x]
 
-    termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
-    value.(vars)
+    JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
+    value.(optmodel[:x])
 end
 
 """
@@ -44,126 +43,80 @@ function flux_balance_analysis_dict(
 end
 
 """
-    fba(model::CobraModel, optimizer; objective_func::Union{Reaction, Array{Reaction, 1}}=Reaction[], weights=Float64[], solver_attributes=Dict{Any, Any}(), constraints=Dict{String, Tuple{Float64,Float64}}())
+    flux_balance_analysis(model::StandardModel, optimizer; modifications)
 
-Run flux balance analysis (FBA) on the `model` optionally specifying `objective_rxn(s)` and their `weights` (empty `weights` mean equal weighting per reaction).
-Optionally also specify any additional flux constraints with `constraints`, a dictionary mapping reaction `id`s to tuples of (lb, ub) flux constraints.
+Run flux balance analysis (FBA) on the `model` optionally specifying `modifications` to the problem.
+These modifications can be entered as an array of modifications, or a single modification.
+Leave this keyword argument out if you do not want to modify the problem.
+See [`modify_constraint`](@ref), [`modify_solver_attribute`](@ref),[`modify_objective`](@ref), and [`modify_sense`](@ref)
+for possible modifications.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
-The `solver_attributes` can also be specified in the form of a dictionary where each (key, value) pair will be passed to `set_optimizer_attribute(cbmodel, key, value)`.
-This function builds the optimization problem from the model, and hence uses the constraints implied by the model object.
-Returns a dictionary of reaction `id`s mapped to fluxes if solved successfully, otherwise an empty dictionary.
+Returns a solved JuMP model.
 
 # Example
 ```
 optimizer = Gurobi.Optimizer
-atts = Dict("OutputFlag" => 0)
-model = CobraTools.read_model("iJO1366.json")
-biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
-sol = fba(model, biomass, optimizer; solver_attributes=atts)
+model = CobraTools.read_model("e_coli_core.json")
+biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+solved_model = fba(model, optimizer; modifications=[modify_objective(biomass)])
 ```
 """
-function fba(
-    model::CobraModel,
+function flux_balance_analysis(
+    model::StandardModel,
     optimizer;
-    modifications = [(model, opt_model)->nothing]
+    modifications = [(model, opt_model) -> nothing],
 )
-
-objective_func::Union{Reaction,Array{Reaction,1}} = Reaction[]
-weights = Float64[]
-solver_attributes = Dict{Any,Any}()
-sense = MOI.MAX_SENSE
-
     # get core optimization problem
-    cbm = make_optimization_model(model, optimizer, sense = sense)
-    v = cbm[:x] # fluxes
+    cbm = make_optimization_model(model, optimizer)
 
     # apply callbacks
-    for mod in modifications
-        mod(model, cbm)
+    if typeof(modifications) <: Vector # many modifications
+        for mod in modifications
+            mod(model, cbm)
+        end
+    else # single modification
+        modifications(model, cbm)
     end
 
-    # modify core optimization problem according to user specifications
-    if !isempty(solver_attributes) # set other attributes
-        for (k, val) in solver_attributes
-            set_optimizer_attribute(cbm, k, val)
-        end
-    end
+    JuMP.optimize!(cbm)
 
-<<<<<<< Updated upstream
-    # if an objective function is supplied, modify the default objective
-    if typeof(objective_func) == Reaction || !isempty(objective_func)
-        # ensure that an array of objective indices are fed in
-        if typeof(objective_func) == Reaction
-            objective_indices = [model[objective_func]]
-        else
-            objective_indices = [model[rxn] for rxn in objective_func]
-        end
-
-        if isempty(weights)
-            weights = ones(length(objective_indices))
-        end
-        opt_weights = zeros(length(model.reactions))
-
-        # update the objective function tracker
-        # don't update model objective function - silly thing to do
-        wcounter = 1
-        for i in eachindex(model.reactions)
-            if i in objective_indices
-                # model.reactions[i].objective_coefficient = weights[wcounter]
-                opt_weights[i] = weights[wcounter]
-                wcounter += 1
-                # else
-                # model.reactions[i].objective_coefficient = 0.0
-            end
-        end
-
-        @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
-    else # use default objective
-        # automatically assigned by make_optimization_model
-    end
-
-    optimize!(cbm)
-
-=======
-function flux_balance_analysis_vec(args)
-    cbm = flux_balance_analysis(args...)
-    
-    status = (
-        termination_status(cbm) == MOI.OPTIMAL ||
-        termination_status(cbm) == MOI.LOCALLY_SOLVED
-    )
-    
-    if status
-        return value.(cbm[:x])
-    else
-        @warn "Optimization issues occurred."
-        return Vector{Float64}[]
-    end    
+    return cbm
 end
 
-function flux_balance_analysis_dict(model, args)
-    cbm = flux_balance_analysis(model, args...)
-    
->>>>>>> Stashed changes
-    status = (
-        termination_status(cbm) == MOI.OPTIMAL ||
-        termination_status(cbm) == MOI.LOCALLY_SOLVED
-    )
-<<<<<<< Updated upstream
+"""
+    flux_balance_analysis_vec(model::StandardModel, optimizer; modifications)
 
-    if status
-        return map_fluxes(v, model)
-    else
-        @warn "Optimization issues occurred."
-        return Dict{String,Float64}()
-    end
-=======
+Perform flux balance analysis on `model` using `optimizer`. 
+Returns a vector fluxes in the order supplied in `model`.
+Calls [`flux_balance_analysis`](@ref) internally.
+"""
+function flux_balance_analysis_vec(
+    model::StandardModel,
+    optimizer;
+    modifications = [(model, opt_model) -> nothing],
+)
+    cbm = flux_balance_analysis(model, optimizer; modifications = modifications)
+
+    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
+
+    return value.(cbm[:x])
+end
+
+"""
+    flux_balance_analysis_dict(model::StandardModel, optimizer; modifications)
+
+Perform flux balance analysis on `model` using `optimizer`. 
+Returns a dictionary mapping reaction `id`s to fluxes. 
+Calls [`flux_balance_analysis`](@ref) internally.
+"""
+function flux_balance_analysis_dict(
+    model::StandardModel,
+    optimizer;
+    modifications = [(model, opt_model) -> nothing],
+)
+    cbm = flux_balance_analysis(model, optimizer; modifications = modifications)
+
+    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     
-    if status
-        return Dict(zip(reactions(model), value.(cbm[:x])))
-    else
-        @warn "Optimization issues occurred."
-        return Dict{String, Float64}()
-    end   
->>>>>>> Stashed changes
+    return Dict(zip(reactions(model), value.(cbm[:x])))
 end

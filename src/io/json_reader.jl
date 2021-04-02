@@ -138,5 +138,5 @@ function read_json_model(file_location::String)
         )
     end
 
-    return CobraModel(modelid, rxns, mets, genes)
+    return StandardModel(modelid, rxns, mets, genes)
 end
