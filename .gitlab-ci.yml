@@ -7,19 +7,19 @@ stages:
 
 test:
   stage: test
-
+  only:
+    - external_pull_requests
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
-
   after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
 
 format:
   stage: check
-
+  only:
+    - external_pull_requests
   script:
     - julia -e 'using JuliaFormatter; format(".", verbose=true)'
-
   after_script:
     - julia -e 'out = Cmd(`git diff --name-only`) |> read |> String;
           if out == ""
