@@ -10,7 +10,6 @@ variables:
 
 .global_settings: &global_settings
   tags:
-   - artenolis
    - slave01
   rules:
    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
@@ -34,7 +33,6 @@ linux v1.5.3:
 windows10 v1.5.3:
   stage: test
   tags:
-    - artenolis
     - windows10
   variables:
     JULIA_VER: "v1.5.3"
@@ -43,7 +41,6 @@ windows10 v1.5.3:
 windows8 v1.5.3:
   stage: test
   tags:
-    - artenolis
     - windows8
   variables:
     JULIA_VER: "v1.5.3"
