@@ -59,22 +59,22 @@ function add!(model::StandardModel, gene::Gene)
 end
 
 """
-    @add_reactions(model::CobraModel, ex::Expr)
+    @add_reactions!(model::CobraModel, ex::Expr)
 
 Shortcut to add multiple reactions and their lower and upper bounds
 
 Call variants
 -------------
 ```
-@add_reactions model begin
+@add_reactions! model begin
     reaction_name, reaction
 end
 
-@add_reactions model begin
+@add_reactions! model begin
     reaction_name, reaction, lower_bound
 end
 
-@add_reactions model begin
+@add_reactions! model begin
     reaction_name, reaction, lower_bound, upper_bound
 end
 ```
@@ -83,7 +83,7 @@ end
 Examples
 --------
 ```
-@add_reactions model begin
+@add_reactions! model begin
     v1, ∅ ⟶ A, 0, 500
     v2, A ⟷ B, -500
     v3, B ⟶ ∅
