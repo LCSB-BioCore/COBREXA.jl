@@ -11,6 +11,7 @@ using DistributedData
 using Downloads
 using Requires
 using JSON
+using MacroTools
 using Measurements
 using Statistics
 using Random
@@ -40,7 +41,7 @@ _inc_all.(
 )
 
 # export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
-for sym in names(@__MODULE__, all = true)
+for sym in names(@__MODULE__, all=true)
     if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
         continue
     end
