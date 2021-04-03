@@ -1,5 +1,10 @@
 """
-    @flux_balance_analysis model optimizer
+    @flux_balance_analysis_vec
+
+# Example
+```
+vec = @flux_balance_analysis_vec model Tulip.Optimizer
+```
 """
 macro flux_balance_analysis_vec(model, optimizer)
     model = esc(model)
@@ -8,17 +13,63 @@ macro flux_balance_analysis_vec(model, optimizer)
 end
 
 """
-    @flux_balance_analysis model optimizer
+    @flux_balance_analysis_vec
+
+# Example
+```
+@flux_balance_analysis_vec model Tulip.Optimizer begin
+    modify_objective(biomass)
+    modify_constraint(glucose, -8.0, -8.0)
+end
+```
 """
 macro flux_balance_analysis_vec(model, optimizer, kws)
     model = esc(model)
     optimizer = esc(optimizer)
-    v = Expr(:vect)
-    for m in MacroTools.striplines(esc(kws).args).args
-        push!(v.args, m)
+    fs = [m for m in MacroTools.striplines(kws).args]
+    mods = Expr(:vect)
+    for f in fs
+        push!(mods.args, esc(f))
     end
-    kwarg = Expr(:kw, :modification, :($v)) # ????
-    # return flux_balance_analysis_vec($model, $optimizer; kwarg)
+    kwarg = Expr(:kw, :modifications, mods)
+    return :(flux_balance_analysis_vec($model, $optimizer; $kwarg))
+end
+
+"""
+    @flux_balance_analysis_dict
+
+# Example
+```
+dict = @flux_balance_analysis_dict model Tulip.Optimizer
+```
+"""
+macro flux_balance_analysis_dict(model, optimizer)
+    model = esc(model)
+    optimizer = esc(optimizer)
+    return :(flux_balance_analysis_dict($model, $optimizer))
+end
+
+"""
+    @flux_balance_analysis_dict
+
+# Example
+```
+@flux_balance_analysis_dict model Tulip.Optimizer begin
+    modify_objective(biomass)
+    modify_constraint(glucose, -8.0, -8.0)
+end
+```
+"""
+macro flux_balance_analysis_dict(model, optimizer, kws)
+    model = esc(model)
+    optimizer = esc(optimizer)
+    fs = [m for m in MacroTools.striplines(kws).args]
+    mods = Expr(:vect)
+    for f in fs
+        push!(mods.args, esc(f))
+    end
+    kwarg = Expr(:kw, :modifications, mods)
+    return :(flux_balance_analysis_dict($model, $optimizer; $kwarg))
 end
 
 """
