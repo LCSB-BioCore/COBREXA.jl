@@ -84,7 +84,9 @@ mac:v1.5:
     - mac
   variables:
     JULIA_VER: "v1.5.3"
-  <<: *global_settings
+  rules:
+   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+   - if: $CI_COMMIT_BRANCH == "master"
   <<: *global_testing_mac
 
 # Test Julia v1.6
@@ -125,7 +127,9 @@ mac:v1.6:
     - mac
   variables:
     JULIA_VER: "v1.6.0"
-  <<: *global_settings
+  rules:
+   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+   - if: $CI_COMMIT_BRANCH == "master"
   <<: *global_testing_mac
 
 # Test Docker run with Julia v1.6
