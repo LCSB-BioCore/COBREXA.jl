@@ -71,7 +71,18 @@ end
 
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
     glucose = findfirst(model.reactions, "EX_glc__D_e")
-    fva_max, fva_min = flux_variability_analysis(model, Tulip.Optimizer; modifications=[modify_solver_attribute("IPM_IterationsLimit", 500), modify_constraint(glucose, -10, -10)])
-    @test isapprox(fva_max["PDH"]["PDH"], 9.338920475333763, atol = 1e-6)
-    @test isapprox(fva_min["PDH"]["PDH"], 9.270274952732315, atol = 1e-6)    
+    oxygen = findfirst(model.reactions, "EX_o2_e")
+    fva_max, fva_min = flux_variability_analysis(
+        model,
+        Tulip.Optimizer;
+        optimum_bound=0.99,
+        modifications = [
+            change_solver_attribute("IPM_IterationsLimit", 500),
+            change_constraint(glucose, -10, -10),
+            change_constraint(oxygen, 0.0, 0.0),
+        ],
+    )
+    
+    @test isapprox(fva_max["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = 1e-6)
+    @test isapprox(fva_min["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = 1e-6)
 end

@@ -1,4 +1,4 @@
-@testset "Sampling Tests" begin
+@testset "Artificially centered hit and run test" begin
     # these tests are not very good - sampling needs work
     model = read_model(
         download_data_file(
@@ -10,19 +10,18 @@
 
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
     glucose = findfirst(model.reactions, "EX_glc__D_e")
-    cbm = flux_balance_analysis(model, Tulip.Optimizer; modifications=[modify_objective(biomass), modify_constraint(glucose, -12, -12), modify_solver_attribute("IPM_IterationsLimit", 500)])
-    biomass_index = model[biomass]
-    λ = JuMP.value(cbm[:x][biomass_index])
-    modify_constraint(biomass, 0.99*λ, λ)(model, cbm)
-
-    samples = hit_and_run(
-        100_000,
-        cbm,
-        keepevery = 10,
-        samplesize = 5000,
+    opt_model = flux_balance_analysis(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective(biomass),
+            change_constraint(glucose, -12, -12),
+            change_solver_attribute("IPM_IterationsLimit", 500),
+        ],
     )
-
-    @test isapprox(mean(samples[64, :]), 8.9, atol = 0.5) # only tests if the sampler approximately converged
+    biomass_index = model[biomass]
+    λ = JuMP.value(opt_model[:x][biomass_index])
+    change_constraint(biomass, 0.99 * λ, λ)(model, opt_model)
 
     # samples = achr(
     #     100_000,

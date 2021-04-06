@@ -52,12 +52,32 @@ end
 
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
     glucose = findfirst(model.reactions, "EX_glc__D_e")
-    sol = flux_balance_analysis_dict(model, Tulip.Optimizer; modifications=[modify_objective(biomass), modify_constraint(glucose, -12, -12), modify_sense(MOI.MAX_SENSE), modify_solver_attribute("IPM_IterationsLimit", 110)])
+    sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective(biomass),
+            change_constraint(glucose, -12, -12),
+            change_sense(MOI.MAX_SENSE),
+            change_solver_attribute("IPM_IterationsLimit", 110),
+        ],
+    )
     @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 1.0572509997013568, atol = 1e-6)
 
     pfl = findfirst(model.reactions, "PFL")
     pfl_frac = 0.8
     biomass_frac = 0.2
-    sol_multi = flux_balance_analysis_dict(model, Tulip.Optimizer; modifications= modify_objective([biomass, pfl]; weights = [biomass_frac, pfl_frac]))
-    @test isapprox(biomass_frac*sol_multi["BIOMASS_Ecoli_core_w_GAM"] + pfl_frac*sol_multi["PFL"], 31.999999998962604, atol = 1e-6)
+    sol_multi = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = change_objective(
+            [biomass, pfl];
+            weights = [biomass_frac, pfl_frac],
+        ),
+    )
+    @test isapprox(
+        biomass_frac * sol_multi["BIOMASS_Ecoli_core_w_GAM"] + pfl_frac * sol_multi["PFL"],
+        31.999999998962604,
+        atol = 1e-6,
+    )
 end

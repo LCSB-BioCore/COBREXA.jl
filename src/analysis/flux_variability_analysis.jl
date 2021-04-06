@@ -116,16 +116,19 @@ function _FVA_optimize_reaction(model, rid)
 end
 
 """
-    fva(model::StandardModel, optimizer; optimum_bound=0.9999, modifications)
+    fva(model::StandardModel, optimizer; optimum_bound=1.0-DEFAULT_FVA_TOL, modifications)
 
 Run flux variability analysis (FVA) on the `model` (of type `StandardModel`). 
 Optionally specifying problem modifications like in [`flux_balance_analysis`](@ref).
 This algorithm runs FBA on the model to determine the optimum of the objective.
-This optimum then constrains subsequent problems, where `optimum_bound` can be used to relax this constraint as a fraction of the FBA optimum.
+This optimum then constrains subsequent problems, where `optimum_bound` can be used to 
+relax this constraint as a fraction of the FBA optimum, e.g. 
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
 Note, this function only runs serially. 
 Consider using a different model type for parallel implementations. 
 Returns two dictionaries (`fva_max` and `fva_min`) that map each reaction `id` to dictionaries of the resultant flux distributions when that `id` is optimized.
+
+See also: [`LinearModel`](@ref)
 
 # Example
 ```
@@ -138,50 +141,58 @@ fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 function flux_variability_analysis(
     model::StandardModel,
     optimizer;
-    optimum_bound = 0.9999,
+    optimum_bound = 1.0-DEFAULT_FVA_TOL,
     modifications = [(model, opt_model) -> nothing],
 )
     # Run FBA
-    cbm = flux_balance_analysis(model, optimizer; modifications=modifications)
+    opt_model = flux_balance_analysis(model, optimizer; modifications = modifications)
 
-    JuMP.termination_status(cbm) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || (return nothing, nothing)
+    COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
+        (return nothing, nothing)
 
-    fva_min = Dict{String,Union{Nothing, Dict{String,Float64}}}()
-    fva_max = Dict{String,Union{Nothing, Dict{String,Float64}}}()
+    fva_min = Dict{String,Union{Nothing,Dict{String,Float64}}}()
+    fva_max = Dict{String,Union{Nothing,Dict{String,Float64}}}()
 
     # Now do FVA
-    v = cbm[:x]
+    v = opt_model[:x]
 
-    λ = JuMP.objective_value(cbm) # objective value
-    JuMP.@constraint(
-        cbm,
-        optimum_bound * λ <= JuMP.objective_function(cbm) <= λ * 1.0/optimum_bound # in case there is a negative bound and the problem has min sense
-    ) # for stability
+    λ = COBREXA.JuMP.objective_value(opt_model) # objective value
+    λmin = min(optimum_bound*λ, λ * 1.0 / optimum_bound)
+    λmax = max(optimum_bound*λ, λ * 1.0 / optimum_bound)
+
+    COBREXA.JuMP.@constraint(
+        opt_model,
+        λmin <=
+        COBREXA.JuMP.objective_function(opt_model) <=
+        λmax # in case there is a negative bound
+    )
 
     for i = 1:length(v)
-        JuMP.@objective(cbm, Max, v[i])
-        JuMP.optimize!(cbm)
+        COBREXA.JuMP.@objective(opt_model, Max, v[i])
+        COBREXA.JuMP.optimize!(opt_model)
         status = (
-            JuMP.termination_status(cbm) == MOI.OPTIMAL ||
-            JuMP.termination_status(cbm) == MOI.LOCALLY_SOLVED
+            COBREXA.JuMP.termination_status(opt_model) == MOI.OPTIMAL ||
+            COBREXA.JuMP.termination_status(opt_model) == MOI.LOCALLY_SOLVED
         )
         if status
-            fva_max[model.reactions[i].id] = Dict(zip(reactions(model), value.(cbm[:x])))
+            fva_max[model.reactions[i].id] =
+                Dict(zip(reactions(model), value.(opt_model[:x]) ))
         else
-            @warn "Error maximizing index: $i with error $(termination_status(cbm))"
+            @warn "Error maximizing index: $i with error $(termination_status(opt_model))"
             fva_max[model.reactions[i].id] = nothing
         end
 
-        @objective(cbm, Min, v[i])
-        optimize!(cbm)
+        @objective(opt_model, Min, v[i])
+        optimize!(opt_model)
         status = (
-            termination_status(cbm) == MOI.OPTIMAL ||
-            termination_status(cbm) == MOI.LOCALLY_SOLVED
+            termination_status(opt_model) == MOI.OPTIMAL ||
+            termination_status(opt_model) == MOI.LOCALLY_SOLVED
         )
         if status
-            fva_min[model.reactions[i].id] = Dict(zip(reactions(model), value.(cbm[:x])))
+            fva_min[model.reactions[i].id] =
+                Dict(zip(reactions(model), value.(opt_model[:x]) ))
         else
-            @warn "Error minimizing index: $i with error $(termination_status(cbm))"
+            @warn "Error minimizing index: $i with error $(termination_status(opt_model))"
             fva_min[model.reactions[i].id] = nothing
         end
     end

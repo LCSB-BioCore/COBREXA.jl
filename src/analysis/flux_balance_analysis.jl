@@ -82,7 +82,8 @@ Arguments are passed to [`flux_balance_analysis`](@ref).
 function flux_balance_analysis_vec(args...; kwargs...)::Union{Vector{Float64},Nothing}
     optmodel = flux_balance_analysis(args...; kwargs...)
 
-    JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
+    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
+        return nothing
     value.(optmodel[:x])
 end
 
@@ -154,6 +155,6 @@ function flux_balance_analysis(
         modifications(model, opt_model)
     end
 
-    JuMP.optimize!(opt_model)
+    COBREXA.JuMP.optimize!(opt_model)
     return opt_model
 end
