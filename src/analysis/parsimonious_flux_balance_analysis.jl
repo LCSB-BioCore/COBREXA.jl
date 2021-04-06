@@ -49,8 +49,8 @@ function parsimonious_flux_balance_analysis(
     @objective(opt_model, Min, sum(dot(v, v)))
 
     for lbconval in [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99] # sequentially relax bound for stability
-        λmin = min(lbconval*λ, λ * 1.0 / lbconval)
-        λmax = max(lbconval*λ, λ * 1.0 / lbconval)
+        λmin = min(lbconval * λ, λ * 1.0 / lbconval)
+        λmax = max(lbconval * λ, λ * 1.0 / lbconval)
         @constraint(
             opt_model,
             pfbacon,

@@ -141,7 +141,7 @@ fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 function flux_variability_analysis(
     model::StandardModel,
     optimizer;
-    optimum_bound = 1.0-DEFAULT_FVA_TOL,
+    optimum_bound = 1.0 - DEFAULT_FVA_TOL,
     modifications = [(model, opt_model) -> nothing],
 )
     # Run FBA
@@ -157,14 +157,12 @@ function flux_variability_analysis(
     v = opt_model[:x]
 
     λ = COBREXA.JuMP.objective_value(opt_model) # objective value
-    λmin = min(optimum_bound*λ, λ * 1.0 / optimum_bound)
-    λmax = max(optimum_bound*λ, λ * 1.0 / optimum_bound)
+    λmin = min(optimum_bound * λ, λ * 1.0 / optimum_bound)
+    λmax = max(optimum_bound * λ, λ * 1.0 / optimum_bound)
 
     COBREXA.JuMP.@constraint(
         opt_model,
-        λmin <=
-        COBREXA.JuMP.objective_function(opt_model) <=
-        λmax # in case there is a negative bound
+        λmin <= COBREXA.JuMP.objective_function(opt_model) <= λmax # in case there is a negative bound
     )
 
     for i = 1:length(v)
@@ -176,7 +174,7 @@ function flux_variability_analysis(
         )
         if status
             fva_max[model.reactions[i].id] =
-                Dict(zip(reactions(model), value.(opt_model[:x]) ))
+                Dict(zip(reactions(model), value.(opt_model[:x])))
         else
             @warn "Error maximizing index: $i with error $(termination_status(opt_model))"
             fva_max[model.reactions[i].id] = nothing
@@ -190,7 +188,7 @@ function flux_variability_analysis(
         )
         if status
             fva_min[model.reactions[i].id] =
-                Dict(zip(reactions(model), value.(opt_model[:x]) ))
+                Dict(zip(reactions(model), value.(opt_model[:x])))
         else
             @warn "Error minimizing index: $i with error $(termination_status(opt_model))"
             fva_min[model.reactions[i].id] = nothing

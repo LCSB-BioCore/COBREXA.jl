@@ -75,14 +75,14 @@ end
     fva_max, fva_min = flux_variability_analysis(
         model,
         Tulip.Optimizer;
-        optimum_bound=0.99,
+        optimum_bound = 0.99,
         modifications = [
             change_solver_attribute("IPM_IterationsLimit", 500),
             change_constraint(glucose, -10, -10),
             change_constraint(oxygen, 0.0, 0.0),
         ],
     )
-    
+
     @test isapprox(fva_max["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = 1e-6)
     @test isapprox(fva_min["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = 1e-6)
 end
