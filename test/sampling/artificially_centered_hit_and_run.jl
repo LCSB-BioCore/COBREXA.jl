@@ -1,4 +1,4 @@
-@testset "Sampling Tests" begin
+@testset "Artificially centered hit and run test" begin
     # these tests are not very good - sampling needs work
     model = read_model(
         download_data_file(
@@ -8,28 +8,20 @@
         ),
     )
 
-    optimizer = COBREXA.Tulip.Optimizer
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
-    atts = Dict("IPM_IterationsLimit" => 110)
-
-    sol = fba(model, optimizer; objective_func = biomass, constraints = cons)
-
-    cons["BIOMASS_Ecoli_core_w_GAM"] =
-        (sol["BIOMASS_Ecoli_core_w_GAM"] * 0.99, sol["BIOMASS_Ecoli_core_w_GAM"])
-
-    samples = hit_and_run(
-        100_000,
+    glucose = findfirst(model.reactions, "EX_glc__D_e")
+    opt_model = flux_balance_analysis(
         model,
-        optimizer;
-        keepevery = 10,
-        samplesize = 5000,
-        constraints = cons,
-        solver_attributes = atts,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective(biomass),
+            change_constraint(glucose, -12, -12),
+            change_solver_attribute("IPM_IterationsLimit", 500),
+        ],
     )
-
-    # TODO
-    # @test isapprox(mean(samples[64, :]), 8.9, atol = 0.5) # only tests if the sampler approximately converged
+    biomass_index = model[biomass]
+    λ = JuMP.value(opt_model[:x][biomass_index])
+    change_constraint(biomass, 0.99 * λ, λ)(model, opt_model)
 
     # samples = achr(
     #     100_000,

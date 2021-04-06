@@ -1,9 +1,9 @@
 """
-    write_matlab_model(model::CobraModel, file_location::String)
+    write_matlab_model(model::StandardModel, file_location::String)
 
 Some information is lost here, e.g. notes and some annotations.
 """
-function write_matlab_model(model::CobraModel, file_location::String)
+function write_matlab_model(model::StandardModel, file_location::String)
     S = stoichiometry(model)
     b = balance(model)
     lbs, ubs = bounds(model)

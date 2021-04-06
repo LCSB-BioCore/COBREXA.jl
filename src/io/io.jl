@@ -1,7 +1,7 @@
 """
     read_model(file_location::String))
 
-Reads a model at `file_location` and returns a constraint based `model::CobraModel`.
+Reads a model at `file_location` and returns a constraint based `model::StandardModel`.
 Currently supported formats include SBML (.xml), Matlab (.mat) and JSON (.json) models.
 The model format is inferred from the `file_location` extension.
 
@@ -25,31 +25,31 @@ function read_model(file_location::String)
             model = read_json_model(file_location)
         catch err
             @error "JSON model reading error.\n$err"
-            model = CobraModel()
+            model = StandardModel()
         end
     elseif endswith(file_location, ".xml")
         try
             model = reconstruct_model_sbml(file_location)
         catch err
             @error "SBML model reading error.\n$err"
-            model = CobraModel()
+            model = StandardModel()
         end
     elseif endswith(file_location, ".mat")
         try
             model = read_matlab_model(file_location)
         catch err
             @error "Matlab model reading error.\n$err"
-            model = CobraModel()
+            model = StandardModel()
         end
     else
         @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
-        model = CobraModel()
+        model = StandardModel()
     end
     return model
 end
 
 """
-    save_model(model::CobraModel, file_location::String)
+    save_model(model::StandardModel, file_location::String)
 
 Save model at `file_location`. Infers format from `file_location` extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
@@ -57,7 +57,7 @@ Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA
 Note, only the fields contained in model are saved. Make sure that information isn't
 lost between reading a model and writing a model (e.g. check gene reaction rules, notes and annotations).
 """
-function save_model(model::CobraModel, file_location::String)
+function save_model(model::StandardModel, file_location::String)
     if endswith(file_location, ".json")
         write_json_model(model, file_location)
     elseif endswith(file_location, ".xml")
@@ -126,13 +126,13 @@ function reconstruct_model_sbml(file_location::String)
     # m.species
     # m.compartments
     # return Model()
-    return CobraModel()
+    return StandardModel()
 end
 
 
 """
-    save_sbml_model(model::CobraModel, file_location::String)
+    save_sbml_model(model::StandardModel, file_location::String)
 """
-function save_sbml_model(model::CobraModel, file_location::String)
+function save_sbml_model(model::StandardModel, file_location::String)
     # To do...
 end

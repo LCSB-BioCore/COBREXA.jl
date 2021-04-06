@@ -1,7 +1,7 @@
 """
-    save_json_model(model::CobraModel, file_location::String)
+    save_json_model(model::StandardModel, file_location::String)
 """
-function write_json_model(model::CobraModel, file_location::String)
+function write_json_model(model::StandardModel, file_location::String)
     modeldict = Dict{String,Any}()
     modeldict["id"] = model.id
 

@@ -16,6 +16,7 @@ using Statistics
 using Random
 using Tulip # for LPs
 using OSQP # for QPs, but it kinda sucks
+using MacroTools # for DSL :)
 
 import Base: findfirst, getindex, show
 import Pkg
@@ -23,6 +24,9 @@ import SBML # conflict with Reaction struct name
 
 include("banner.jl")
 _print_banner()
+
+# Constants
+const DEFAULT_FVA_TOL = 1e-6 # for numerical stability when doing FVA
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))
