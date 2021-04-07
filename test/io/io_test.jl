@@ -22,7 +22,7 @@
         joinpath("data", "iJO1366.json"),
         "9376a93f62ad430719f23e612154dd94c67e0d7c9545ed9d17a4d0c347672313",
     )
-    jsonmodel_ecoli = read_model(iJO1366_json)
+    jsonmodel_ecoli = read_model(StandardModel, JSONFile, iJO1366_json)
     @test length(jsonmodel_ecoli.reactions) == 2583
 
     @test model_comparison_test(jsonmodel_ecoli, matlabmodel_ecoli)
