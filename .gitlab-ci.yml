@@ -1,31 +1,51 @@
 stages:
   - format-check
-  #- test-required
-  #- test-containers
+  - test-required
+  - test-containers
   - test-additional-v1.5
-  #- test-additional-v1.6
+  - test-additional-v1.6
   - deploy-doc
 
 variables:
     GIT_STRATEGY: clone
 
 .global_settings: &global_settings
-  tags:
-   - slave01
   rules:
    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
    - if: $CI_COMMIT_BRANCH == "master"
 
-.global_testing: &global_testing_linux
+.global_testing_v15: &global_testing_v15
+  variables:
+    JULIA_VER: "v1.5.3"
+
+.global_testing_v16: &global_testing_v16
+  variables:
+    JULIA_VER: "v1.6.0"
+
+# platform-specific test settings
+# --------------------------------------
+
+.global_testing_linux: &global_testing_linux
+  tags:
+   - slave01
   script:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
+.global_testing_win8: &global_testing_win8
+  tags:
+    - windows8
+
+.global_testing_win10: &global_testing_win10
+  tags:
+    - windows10
+
 .global_testing_win: &global_testing_win
   script:
-    - env
     - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'"
 
 .global_testing_mac: &global_testing_mac
+  tags:
+    - mac
   script:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
@@ -53,103 +73,78 @@ format:
 # Test Julia v1.5
 # --------------------------------------
 
-#linux:v1.5:
-#  stage: test-required
-#  variables:
-#    JULIA_VER: "v1.5.3"
-#  <<: *global_settings
-#  <<: *global_testing_linux
+linux:v1.5:
+  stage: test-required
+  <<: *global_settings
+  <<: *global_testing_v15
+  <<: *global_testing_linux
 
 windows10:v1.5:
   stage: test-additional-v1.5
-  tags:
-    - windows10
-  rules:
-   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-   - if: $CI_COMMIT_BRANCH == "master"
-  variables:
-    JULIA_VER: "v1.5.3"
+  <<: *global_settings
+  <<: *global_testing_v15
+  <<: *global_testing_win10
   <<: *global_testing_win
 
 windows8:v1.5:
   stage: test-additional-v1.5
-  tags:
-    - windows8
-  rules:
-   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-   - if: $CI_COMMIT_BRANCH == "master"
-  variables:
-    JULIA_VER: "v1.5.3"
+  <<: *global_settings
+  <<: *global_testing_v15
+  <<: *global_testing_win8
   <<: *global_testing_win
 
-#mac:v1.5:
-#  stage: test-additional-v1.5
-#  tags:
-#    - mac
-#  variables:
-#    JULIA_VER: "v1.5.3"
-#  rules:
-#   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-#   - if: $CI_COMMIT_BRANCH == "master"
-#  <<: *global_testing_mac
+mac:v1.5:
+  stage: test-additional-v1.5
+  <<: *global_settings
+  <<: *global_testing_v15
+  <<: *global_testing_mac
 
 # Test Julia v1.6
 # --------------------------------------
 
-#linux:v1.6:
-#  stage: test-additional-v1.6
-#  needs: ["linux:v1.5"]
-#  variables:
-#    JULIA_VER: "v1.6.0"
-#  <<: *global_settings
-#  <<: *global_testing_linux
+linux:v1.6:
+  stage: test-additional-v1.6
+  needs: ["linux:v1.5"]
+  <<: *global_settings
+  <<: *global_testing_v16
+  <<: *global_testing_linux
 
-#windows10:v1.6:
-#  stage: test-additional-v1.6
-#  needs: ["windows10:v1.5"]
-#  tags:
-#    - windows10
-#  variables:
-#    JULIA_VER: "v1.6.0"
-#  <<: *global_settings
-#  <<: *global_testing_win
-#
-#windows8:v1.6:
-#  stage: test-additional-v1.6
-#  needs: ["windows8:v1.5"]
-#  tags:
-#    - windows8
-#  variables:
-#    JULIA_VER: "v1.6.0"
-#  <<: *global_settings
-#  <<: *global_testing_win
+windows10:v1.6:
+  stage: test-additional-v1.6
+  needs: ["windows10:v1.5"]
+  <<: *global_settings
+  <<: *global_testing_v16
+  <<: *global_testing_win10
+  <<: *global_testing_win
 
-#mac:v1.6:
-#  stage: test-additional-v1.6
-#  needs: ["mac:v1.5"]
-#  tags:
-#    - mac
-#  variables:
-#    JULIA_VER: "v1.6.0"
-#  rules:
-#   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-#   - if: $CI_COMMIT_BRANCH == "master"
-#  <<: *global_testing_mac
+windows8:v1.6:
+  stage: test-additional-v1.6
+  needs: ["windows8:v1.5"]
+  <<: *global_settings
+  <<: *global_testing_v16
+  <<: *global_testing_win8
+  <<: *global_testing_win
+
+mac:v1.6:
+  stage: test-additional-v1.6
+  needs: ["mac:v1.5"]
+  <<: *global_settings
+  <<: *global_testing_v16
+  <<: *global_testing_mac
 
 # Test Docker run with Julia v1.6
 # --------------------------------------
 
-#docker:v1.6:
-#  stage: test-containers
-#  image: $CI_REGISTRY/r3/docker/julia-custom
-#  rules:
-#    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-#    - if: $CI_COMMIT_BRANCH == "master"
-#  script:
-#    - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
-#  after_script:
-#    - julia --project=test/coverage test/coverage/coverage-summary.jl
-
+docker:v1.6:
+  stage: test-containers
+  image: $CI_REGISTRY/r3/docker/julia-custom
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+    - if: $CI_COMMIT_BRANCH == "master"
+  script:
+    - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+  after_script:
+    - julia --project=test/coverage test/coverage/coverage-summary.jl
 
 # Deploy the documentation
 # --------------------------------------
