@@ -62,7 +62,11 @@ end
             change_solver_attribute("IPM_IterationsLimit", 110),
         ],
     )
-    @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 1.0572509997013568, atol = default_constants.TEST_TOL)
+    @test isapprox(
+        sol["BIOMASS_Ecoli_core_w_GAM"],
+        1.0572509997013568,
+        atol = default_constants.TEST_TOL,
+    )
 
     pfl = findfirst(model.reactions, "PFL")
     pfl_frac = 0.8

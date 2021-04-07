@@ -29,7 +29,7 @@ _print_banner()
 default_constants = (
     FVA_TOL = 1e-6, # optimum bound
     TEST_TOL = 1e-6, # default tolerance used for tests
-    TEST_RELAX_TOL = 0.5 # relaxed tolerance used for tests
+    TEST_RELAX_TOL = 0.5, # relaxed tolerance used for tests
 )
 
 # autoloading
