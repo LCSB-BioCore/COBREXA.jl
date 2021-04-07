@@ -10,6 +10,6 @@ end
 function _read_model(file_location::String, ::Type{SBMLFile}, ::Type{StandardModel})
     m = _read_model(file_location, SBMLFile, SBMLModel) # use other import
     # do more processing
-    
+
     return StandardModel()
 end

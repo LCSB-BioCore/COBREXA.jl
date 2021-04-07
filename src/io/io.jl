@@ -68,7 +68,7 @@ function write_model(model::MetabolicModel, file_location::String)
         @warn "File type not supported."
         return nothing
     else
-         _write_model(model, inferred_type, file_location)
+        _write_model(model, inferred_type, file_location)
         return nothing
     end
 end

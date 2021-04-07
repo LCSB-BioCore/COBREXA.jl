@@ -7,7 +7,7 @@ download_data_file(
 )
 
 @testset "SBML import and conversion" begin
-    sbmlm = load_sbml_model(sbmlfile)
+    sbmlm = read_model(sbmlfile, SBMLModel)
     m = convert(LinearModel, sbmlm)
 
     @test size(stoichiometry(sbmlm)) == (92, 95)

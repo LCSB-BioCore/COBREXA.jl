@@ -140,5 +140,5 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{LinearModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1] # assume only one model per m-file
     # of not then need to make this more resilient, maybe keyword args.. ?
-    return _convert_m_dict_to_linear_model(matfile[model_name])    
+    return _convert_m_dict_to_linear_model(matfile[model_name])
 end
