@@ -29,7 +29,7 @@ variables:
   tags:
    - slave01
   script:
-    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
+    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
 .global_testing_win8: &global_testing_win8
   tags:
@@ -41,13 +41,17 @@ variables:
 
 .global_testing_win: &global_testing_win
   script:
-    - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'"
+    - try {
+          Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'"
+      } catch {
+          exit(1)
+      }
 
 .global_testing_mac: &global_testing_mac
   tags:
     - mac
   script:
-    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
+    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
 # Check the format of the code
 # --------------------------------------
