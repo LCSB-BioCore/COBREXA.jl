@@ -26,7 +26,7 @@ variables:
 
 .global_testing_mac: &global_testing_mac
   script:
-    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
+    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
 # Check the format of the code
 # --------------------------------------
