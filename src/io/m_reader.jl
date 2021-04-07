@@ -1,7 +1,4 @@
-"""
-    read_matlab_model(file_location::String)
-"""
-function read_matlab_model(file_location::String)
+function _read_m_model(file_location::String, ::Type{StandardModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1]
     modeldict = matfile[model_name]
@@ -137,4 +134,16 @@ function read_matlab_model(file_location::String)
     end
 
     return StandardModel(model_id, rxns, mets, genes)
+end
+
+function _read_m_model(file_path::String, var_name::String)
+
+    # read file
+    vars = matread(file_path)
+
+    if haskey(vars, var_name)
+        return convert_to_linear_model(vars[var_name])
+    else
+        error("Variable `$var_name` does not exist in the specified MAT file.")
+    end
 end

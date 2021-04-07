@@ -1,9 +1,5 @@
-"""
-    write_matlab_model(model::StandardModel, file_location::String)
-
-Some information is lost here, e.g. notes and some annotations.
-"""
-function write_matlab_model(model::StandardModel, file_location::String)
+function _write_m_model(model::StandardModel, file_location::String)
+    # Some information is lost here, e.g. notes and some annotations.
     S = stoichiometry(model)
     b = balance(model)
     lbs, ubs = bounds(model)
@@ -51,4 +47,16 @@ function write_matlab_model(model::StandardModel, file_location::String)
     )
 
     matwrite(file_location, Dict("model" => mdict))
+end
+
+"""
+Write a model into a MAT (Matlab) format
+
+NB: Does NOT export general inequality constraints (eg coupling)
+
+See also: `MAT.jl`
+"""
+function _write_m_model(model::LinearModel, file_path::String)
+    var_name::String = "model" # maybe make a field for this in the model?
+    matwrite(file_path, Dict(var_name => _convert_to_exportable(model)))
 end

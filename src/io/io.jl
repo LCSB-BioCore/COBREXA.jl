@@ -1,5 +1,29 @@
+struct JSONFile end
+struct SBMLFile end
+struct MFile end
+struct YAMLFile end
+struct UNKNOWNFile end
+
 """
-    read_model(file_location::String))
+    _infer_file_type(file_name::String)
+
+Infer the file type.
+"""
+function _infer_file_type(file_name::String)
+    if endswith(file_name, ".json")
+        return JSONFile
+    elseif endswith(file_name, ".xml")
+        return SBMLFile
+    elseif endswith(file_name, ".mat")
+        return MFILE
+    elseif endswith(file_name, ".yml")
+        return YAMLFile
+    end
+    return UNKNOWNFile
+end
+
+"""
+    read_model(file_location::String, ::Type{StandardModel})
 
 Reads a model at `file_location` and returns a constraint based `model::StandardModel`.
 Currently supported formats include SBML (.xml), Matlab (.mat) and JSON (.json) models.
@@ -19,33 +43,14 @@ e.g. stoichiometrix matrix, constraints etc..
 Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
 Always inspect the imported model before running analysis (garbage in -> garbage out).
 """
-function read_model(file_location::String)
-    if endswith(file_location, ".json")
-        try
-            model = read_json_model(file_location)
-        catch err
-            @error "JSON model reading error.\n$err"
-            model = StandardModel()
-        end
-    elseif endswith(file_location, ".xml")
-        try
-            model = reconstruct_model_sbml(file_location)
-        catch err
-            @error "SBML model reading error.\n$err"
-            model = StandardModel()
-        end
-    elseif endswith(file_location, ".mat")
-        try
-            model = read_matlab_model(file_location)
-        catch err
-            @error "Matlab model reading error.\n$err"
-            model = StandardModel()
-        end
+function read_model(file_location::String, ::Type{StandardModel})
+    inferred_type = _infer_file_type(file_location)
+    if inferred_type == UNKNOWNFile
+        @warn "File type not supported."
+        return StandardModel()
     else
-        @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
-        model = StandardModel()
+        return _read_model(file_location, inferred_type, StandardModel)
     end
-    return model
 end
 
 """
@@ -58,81 +63,16 @@ Note, only the fields contained in model are saved. Make sure that information i
 lost between reading a model and writing a model (e.g. check gene reaction rules, notes and annotations).
 """
 function save_model(model::StandardModel, file_location::String)
-    if endswith(file_location, ".json")
-        write_json_model(model, file_location)
-    elseif endswith(file_location, ".xml")
-        @warn "Not implemented!"
-    elseif endswith(file_location, ".mat")
-        write_matlab_model(model, file_location)
+    inferred_type = _infer_file_type(file_location)
+    if inferred_type == UNKNOWNFile
+        @warn "File type not supported."
+        return nothing
     else
-        @error "Model format not supported. The format is inferred from the file extension. Supported formats: *.mat, *.xml, *.json."
+         _write_model(model, inferred_type, file_location)
+        return nothing
     end
 end
 
-
-"""
-    parsegrr(string_rule, genes::Array{Gene, 1})
-
-Parse a gene reaction rule string `string_rule` into a nested `gene` array `Array{Array{Gene, 1}, 1}`.
-
-Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
-"""
-function parse_grr(s::String, genes::Array{Gene,1})
-    if s == "" || isnothing(s)
-        return Array{Array{Gene,1},1}()
-    end
-    # first get the gene id list in string format
-    gene_string_rules = Array{Array{String,1},1}()
-    or_genes = split(s, r"\s?(or|OR|(\|\|)|\|)\s?") # separate or terms
-    for or_gene in or_genes
-        and_genes = split(replace(or_gene, r"\(|\)" => ""), r"\s?(and|AND|(\&\&)|\&)\s?")
-        push!(gene_string_rules, and_genes)
-    end
-    # now map these gene string ids to genes
-    grr = Array{Array{Gene,1},1}()
-    for gsr in gene_string_rules
-        gene_list = Array{Gene,1}()
-        for g in gsr
-            gene = findfirst(genes, g)
-            isnothing(gene) && (@warn "Gene not found..."; continue)
-            push!(gene_list, gene)
-        end
-        push!(grr, gene_list)
-    end
-    return grr
-end
-
-"""
-    unparse_grr(grr::Array{Array{Gene, 1}, 1}
-
-Converts a nested `gene` array, `grr`, back into a grr string.
-"""
-function unparse_grr(grr::Array{Array{Gene,1},1})
-    grr_strings = String[]
-    for gr in grr
-        push!(grr_strings, "(" * join([g.id for g in gr], " and ") * ")")
-    end
-    grr_string = join(grr_strings, " or ")
-    return grr_string
-end
-
-"""
-    reconstruct_model_sbml(file_location::String)
-"""
-function reconstruct_model_sbml(file_location::String)
-    # m = read_sbml(file_location)
-    # m is now a Model structure with:
-    # m.reactions
-    # m.species
-    # m.compartments
-    # return Model()
-    return StandardModel()
-end
-
-
-"""
-    save_sbml_model(model::StandardModel, file_location::String)
-"""
-function save_sbml_model(model::StandardModel, file_location::String)
-    # To do...
+function read_model(file_location::String, ::Type{LinearModel})
+ # similar 
 end

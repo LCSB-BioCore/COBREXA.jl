@@ -1,21 +1,4 @@
 """
-Load a model in MAT (Matlab) format and returns a `LinearModel`
-
-See also: `MAT.jl`
-"""
-function load_model(file_path::String, var_name::String)
-
-    # read file
-    vars = matread(file_path)
-
-    if haskey(vars, var_name)
-        return convert_to_linear_model(vars[var_name])
-    else
-        error("Variable `$var_name` does not exist in the specified MAT file.")
-    end
-end
-
-"""
 Convert a dictionary read from a MAT file to LinearModel
 """
 function convert_to_linear_model(model::Dict)
@@ -36,4 +19,20 @@ function convert_to_linear_model(model::Dict)
     mets = vec(string.(model["mets"]))
 
     return LinearModel(S, b, c, lb, ub, rxns, mets)
+end
+
+"""
+Convert a LinearModel to exportable format
+SparseVectors are not written and read properly, SparseMatrix is okay
+"""
+function _convert_to_exportable(model::LinearModel)
+    return Dict(
+        "S" => model.S,
+        "b" => Array(model.b),
+        "c" => Array(model.c),
+        "ub" => Array(model.xu),
+        "lb" => Array(model.xl),
+        "rxns" => model.rxns,
+        "mets" => model.mets,
+    )
 end

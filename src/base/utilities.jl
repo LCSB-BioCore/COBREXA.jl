@@ -306,3 +306,49 @@ function test_samples(samples::Array{Float64,2}, mass_balance, balance, lbs, ubs
 
     return violations
 end
+
+"""
+    parsegrr(string_rule, genes::Array{Gene, 1})
+
+Parse a gene reaction rule string `string_rule` into a nested `gene` array `Array{Array{Gene, 1}, 1}`.
+
+Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
+"""
+function _parse_grr(s::String, genes::Array{Gene,1})
+    if s == "" || isnothing(s)
+        return Array{Array{Gene,1},1}()
+    end
+    # first get the gene id list in string format
+    gene_string_rules = Array{Array{String,1},1}()
+    or_genes = split(s, r"\s?(or|OR|(\|\|)|\|)\s?") # separate or terms
+    for or_gene in or_genes
+        and_genes = split(replace(or_gene, r"\(|\)" => ""), r"\s?(and|AND|(\&\&)|\&)\s?")
+        push!(gene_string_rules, and_genes)
+    end
+    # now map these gene string ids to genes
+    grr = Array{Array{Gene,1},1}()
+    for gsr in gene_string_rules
+        gene_list = Array{Gene,1}()
+        for g in gsr
+            gene = findfirst(genes, g)
+            isnothing(gene) && (@warn "Gene not found..."; continue)
+            push!(gene_list, gene)
+        end
+        push!(grr, gene_list)
+    end
+    return grr
+end
+
+"""
+    unparse_grr(grr::Array{Array{Gene, 1}, 1}
+
+Converts a nested `gene` array, `grr`, back into a grr string.
+"""
+function _unparse_grr(grr::Array{Array{Gene,1},1})
+    grr_strings = String[]
+    for gr in grr
+        push!(grr_strings, "(" * join([g.id for g in gr], " and ") * ")")
+    end
+    grr_string = join(grr_strings, " or ")
+    return grr_string
+end

@@ -1,7 +1,4 @@
-"""
-    read_model(::Type{StandardModel}, ::Type{JSON_MODEL}, file_location::String)
-"""
-function read_model(::Type{StandardModel}, ::Type{JSONFile}, file_location::String)
+function _read_json_model(file_location::String, ::Type{JSONFile}, ::Type{StandardModel})
     modeldict = JSON.parsefile(file_location)
 
     modelid = modeldict["id"]
