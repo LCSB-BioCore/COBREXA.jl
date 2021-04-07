@@ -15,7 +15,7 @@ function _infer_file_type(file_name::String)
     elseif endswith(file_name, ".xml")
         return SBMLFile
     elseif endswith(file_name, ".mat")
-        return MFILE
+        return MFile
     elseif endswith(file_name, ".yml")
         return YAMLFile
     end
@@ -43,18 +43,18 @@ e.g. stoichiometrix matrix, constraints etc..
 Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
 Always inspect the imported model before running analysis (garbage in -> garbage out).
 """
-function read_model(file_location::String, ::Type{StandardModel})
+function read_model(file_location::String, modelType)
     inferred_type = _infer_file_type(file_location)
     if inferred_type == UNKNOWNFile
         @warn "File type not supported."
-        return StandardModel()
+        return nothing
     else
-        return _read_model(file_location, inferred_type, StandardModel)
+        return _read_model(file_location, inferred_type, modelType)
     end
 end
 
 """
-    save_model(model::StandardModel, file_location::String)
+    write_model(model::StandardModel, file_location::String)
 
 Save model at `file_location`. Infers format from `file_location` extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
@@ -62,7 +62,7 @@ Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA
 Note, only the fields contained in model are saved. Make sure that information isn't
 lost between reading a model and writing a model (e.g. check gene reaction rules, notes and annotations).
 """
-function save_model(model::StandardModel, file_location::String)
+function write_model(model::MetabolicModel, file_location::String)
     inferred_type = _infer_file_type(file_location)
     if inferred_type == UNKNOWNFile
         @warn "File type not supported."
@@ -71,8 +71,4 @@ function save_model(model::StandardModel, file_location::String)
          _write_model(model, inferred_type, file_location)
         return nothing
     end
-end
-
-function read_model(file_location::String, ::Type{LinearModel})
- # similar 
 end

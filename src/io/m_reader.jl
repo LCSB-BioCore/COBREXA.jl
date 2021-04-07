@@ -1,4 +1,4 @@
-function _read_m_model(file_location::String, ::Type{StandardModel})
+function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1]
     modeldict = matfile[model_name]
@@ -114,7 +114,7 @@ function _read_m_model(file_location::String, ::Type{StandardModel})
         end
 
         # get gene reaction rule
-        grr = parse_grr(grr_string, genes)
+        grr = _parse_grr(grr_string, genes)
 
         push!(
             rxns,
@@ -136,14 +136,9 @@ function _read_m_model(file_location::String, ::Type{StandardModel})
     return StandardModel(model_id, rxns, mets, genes)
 end
 
-function _read_m_model(file_path::String, var_name::String)
-
-    # read file
-    vars = matread(file_path)
-
-    if haskey(vars, var_name)
-        return convert_to_linear_model(vars[var_name])
-    else
-        error("Variable `$var_name` does not exist in the specified MAT file.")
-    end
+function _read_model(file_location::String, ::Type{MFile}, ::Type{LinearModel})
+    matfile = matread(file_location)
+    model_name = collect(keys(matfile))[1] # assume only one model per m-file
+    # of not then need to make this more resilient, maybe keyword args.. ?
+    return _convert_m_dict_to_linear_model(matfile[model_name])    
 end

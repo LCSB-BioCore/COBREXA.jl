@@ -1,7 +1,7 @@
 """
 Convert a dictionary read from a MAT file to LinearModel
 """
-function convert_to_linear_model(model::Dict)
+function _convert_m_dict_to_linear_model(model::Dict)
     model_keys = ["S", "b", "c", "ub", "lb"]
 
     for key in model_keys
@@ -25,14 +25,15 @@ end
 Convert a LinearModel to exportable format
 SparseVectors are not written and read properly, SparseMatrix is okay
 """
-function _convert_to_exportable(model::LinearModel)
+function _convert_to_m_exportable_dict(model::LinearModel)
+    xl, xu = bounds(model)
     return Dict(
-        "S" => model.S,
-        "b" => Array(model.b),
-        "c" => Array(model.c),
-        "ub" => Array(model.xu),
-        "lb" => Array(model.xl),
-        "rxns" => model.rxns,
-        "mets" => model.mets,
+        "S" => stoichiometry(model),
+        "b" => balance(model),
+        "c" => objective(model),
+        "ub" => xu,
+        "lb" => xl,
+        "rxns" => reactions(model),
+        "mets" => metabolites(model),
     )
 end

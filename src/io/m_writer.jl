@@ -1,4 +1,4 @@
-function _write_m_model(model::StandardModel, file_location::String)
+function _write_model(model::StandardModel, ::Type{MFile}, file_location::String)
     # Some information is lost here, e.g. notes and some annotations.
     S = stoichiometry(model)
     b = balance(model)
@@ -15,7 +15,7 @@ function _write_m_model(model::StandardModel, file_location::String)
         "rxnNames" => [r.name for r in model.reactions],
         "description" => model.id,
         "genes" => [g.id for g in model.genes],
-        "grRules" => [unparse_grr(r.grr) for r in model.reactions],
+        "grRules" => [_unparse_grr(r.grr) for r in model.reactions],
         "S" => Array(S),
         "metNames" => [m.name for m in model.metabolites],
         "lb" => Array(lbs),
@@ -56,7 +56,7 @@ NB: Does NOT export general inequality constraints (eg coupling)
 
 See also: `MAT.jl`
 """
-function _write_m_model(model::LinearModel, file_path::String)
-    var_name::String = "model" # maybe make a field for this in the model?
-    matwrite(file_path, Dict(var_name => _convert_to_exportable(model)))
+function _write_model(model::LinearModel, ::Type{MFile}, file_path::String)
+    var_name = "model" # maybe make a field for this in the model?
+    matwrite(file_path, Dict(var_name => _convert_to_m_exportable_dict(model)))
 end

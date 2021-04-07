@@ -1,3 +1,3 @@
-function _write_sbml_model(model::StandardModel, file_location::String)
+function _write_model(model::StandardModel, ::Type{SBMLFile}, file_location::String)
     # To do...
 end
