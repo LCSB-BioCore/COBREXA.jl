@@ -26,7 +26,7 @@ include("banner.jl")
 _print_banner()
 
 # Constants
-const DEFAULT_FVA_TOL = 1e-6 # for numerical stability when doing FVA
+default_constants = (FVA_TOL = 1e-6)
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))

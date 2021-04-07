@@ -141,7 +141,7 @@ fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 function flux_variability_analysis(
     model::StandardModel,
     optimizer;
-    optimum_bound = 1.0 - DEFAULT_FVA_TOL,
+    optimum_bound = 1.0 - default_constants.FVA_TOL,
     modifications = [(model, opt_model) -> nothing],
 )
     # Run FBA
