@@ -26,30 +26,17 @@ function create_loopless_test_model()
     C = Metabolite("C")
     D = Metabolite("D")
 
-    v1 = ∅ ⟶ A
-    v1.id = "v1"
-    v1.ub = 1
-
-    v2 = A ⟷ B
-    v2.id = "v2"
-
-    v3 = A ⟶ C
-    v3.id = "v3"
-
-    v4 = C ⟶ B
-    v4.id = "v4"
-
-    v5 = B ⟶ ∅
-    v5.id = "v5"
-
     add!(model, A)
     add!(model, B)
     add!(model, C)
-    add!(model, v1)
-    add!(model, v2)
-    add!(model, v3)
-    add!(model, v4)
-    add!(model, v5)
+    
+    @add_reactions! model begin
+        v1, ∅ ⟶ A, 0, 1
+        v2, A ⟷ B
+        v3, A ⟶ C
+        v4, C ⟶ B
+        v5, B ⟶ ∅
+    end
     return model
 end
 
