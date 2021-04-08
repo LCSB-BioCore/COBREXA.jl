@@ -59,7 +59,7 @@ function add!(model::StandardModel, gene::Gene)
 end
 
 """
-    @add_reactions!(model::CobraModel, ex::Expr)
+    @add_reactions!(model::Symbol, ex::Expr)
 
 Shortcut to add multiple reactions and their lower and upper bounds
 

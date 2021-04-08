@@ -1,5 +1,5 @@
 @testset "add_reactions_macro" begin
-    mod = CobraModel()
+    mod = StandardModel()
     A = Metabolite("A")
     B = Metabolite("B")
     C = Metabolite("C")
