@@ -3,11 +3,11 @@
 Before reading, writing, or building models, it is important to understand how
 they are represented internally in `COBREXA.jl`.
 
-Each model is a struct of the type `CobraModel`, which is composed of a model
+Each model is a struct of the type `StandardModel`, which is composed of a model
 `id`, and arrays of `Reaction`s, `Metabolite`s and `Gene`s.
 
 ```@docs
-CobraModel
+StandardModel
 ```
 
 The fields of `Reaction`, `Metabolite`, `Gene` types are shown below.  When

@@ -20,7 +20,7 @@ important that they are greater than the influx
 | v5  | 1    |
 """
 function create_loopless_test_model()
-    model = CobraModel()
+    model = StandardModel()
     A = Metabolite("A")
     B = Metabolite("B")
     C = Metabolite("C")
@@ -59,12 +59,12 @@ end
     optimizer = Tulip.Optimizer
     # first test that fba in fact does not give the loopless solution
     objective = findfirst(model.reactions, "v5")
-    res_fba = fba(model, optimizer, objective_func=objective)
+    res_fba = flux_balance_analysis_dict(model, optimizer, modifications=[change_objective(objective)])
     # Check if there is any flux that exceeds the input
     @test !all(abs.(values(res_fba)) .<= 1)
 
     # Now check that the flux we get the right solution
-    res_loopless = loopless(model, optimizer, objective)
+    res_loopless = loopless_flux_balance_analysis(model, optimizer, objective_func=objective)
     # Check that there is no flux that exceeds the input
     @test all(abs.(values(res_loopless)) .<= 1)
 end

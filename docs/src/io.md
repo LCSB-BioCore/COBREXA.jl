@@ -22,7 +22,7 @@ model # pretty print the model
 Currently, JSON and Matlab models can be exported.
 
 ```@docs
-save_model(model::CobraModel, file_location::String)
+save_model(model::StandardModel, file_location::String)
 ```
 
 ```@example ioexample

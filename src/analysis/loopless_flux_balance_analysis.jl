@@ -1,19 +1,19 @@
-function _get_boundary_reactions(model::CobraModel)
+function _get_boundary_reactions(model::StandardModel)
     return [i for i in model.reactions if length(i.metabolites) == 1]
 end
 
-function _set_solver_attibutes!(cbm, solver_attributes)
+function _set_solver_attibutes!(opt_model, solver_attributes)
     if !isempty(solver_attributes) # set other attributes
         for (k, val) in solver_attributes
-            set_optimizer_attribute(cbm, k, val)
+            set_optimizer_attribute(opt_model, k, val)
         end
     end
 end
 
-function _set_additional_constraints!(model, cbm, constraints)
+function _set_additional_constraints!(model, opt_model, constraints)
     for (rxnid, con) in constraints
         ind = model.reactions[findfirst(model.reactions, rxnid)]
-        set_bound(ind, cbm; lb=con[1], ub=con[2])
+        set_bound(ind, opt_model; lb=con[1], ub=con[2])
     end
 end
 
@@ -43,15 +43,17 @@ function _get_objective_weights(model, objective_indices, weights)
     return opt_weights
 end
 
-function _constrain_objective_value!(cbm, opt_weights, v, objective_indices)
-    λ = objective_value(cbm)
+function _constrain_objective_value!(opt_model, opt_weights, objective_indices)
+    λ = objective_value(opt_model)
+    v = opt_model[:x]
     @constraint(
-        cbm,
+        opt_model,
         λ <= sum(opt_weights[i] * v[i] for i in objective_indices) <= λ
     )
 end
 
-function _add_cycle_free!(model, cbm, objective_indices, v, fluxes)
+function _add_cycle_free!(model, opt_model, objective_indices, fluxes)
+    v = opt_model[:x]
     boundary_ids = [i.id for i in _get_boundary_reactions(model)]
     min_objectives = zeros(Int64, 1, length(v))
     for (i, reaction) in enumerate(model.reactions)
@@ -72,22 +74,9 @@ function _add_cycle_free!(model, cbm, objective_indices, v, fluxes)
             ub = min(0, reaction.ub)            
             min_objectives[i] = -1
         end
-        set_bound(i, cbm; ub=ub, lb=lb)
+        set_bound(i, opt_model; ub=ub, lb=lb)
     end    
-    @objective(cbm, Min, dot(min_objectives, v))
-end
-
-function _check_status(cbm)
-    status = (
-        termination_status(cbm) == MOI.OPTIMAL ||
-        termination_status(cbm) == MOI.LOCALLY_SOLVED
-    )
-    if status
-        return true
-    else
-        @warn "Optimization issues occurred."
-        return false
-    end
+    @objective(opt_model, Min, dot(min_objectives, v))
 end
 
 
@@ -103,20 +92,18 @@ References:
     10.1093/bioinformatics/btv096.
 """
 function loopless_solution(
-    model::CobraModel,
-    cbm,
+    model::M,
+    opt_model,
     opt_weights,
     objective_indices,
-    v,
     fluxes,
-)
-    _constrain_objective_value!(cbm, opt_weights, v, objective_indices)
-    _add_cycle_free!(model, cbm, objective_indices, v, fluxes)
-    optimize!(cbm)
-    if !_check_status(cbm)
+)::Union{Dict{String,Float64},Nothing} where {M <: MetabolicModel}
+    _constrain_objective_value!(opt_model, opt_weights, objective_indices)
+    _add_cycle_free!(model, opt_model, objective_indices, fluxes)
+    optimize!(opt_model)
+    COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
         return nothing
-    end
-    return map_fluxes(v, model)
+    return Dict(zip(reactions(model), value.(opt_model[:x])))
 end
 
 """
@@ -130,34 +117,46 @@ References:
     G, Lercher MJ. Bioinformatics. 2015 Jul 1;31(13):2159-65. doi:
     10.1093/bioinformatics/btv096.
 """
-function loopless(
-    model::CobraModel,
-    optimizer,
-    objective_func::Union{Reaction,Array{Reaction,1}};
-    weights=Float64[],
-    solver_attributes=Dict{Any,Any}(),
-    constraints=Dict{String,Tuple{Float64,Float64}}(),
-    sense=MOI.MAX_SENSE
-)
+function loopless_flux_balance_analysis(
+    model::M,
+    optimizer;
+    objective_func::Union{Reaction,Array{Reaction,1}},
+    weights=[],
+    modifications=[(model, opt_model) -> nothing],
+
+)::Union{Dict{String,Float64},Nothing} where {M <: MetabolicModel}
     # FBA PART
-    cbm = make_optimization_model(model, optimizer, sense=sense)
-    v = cbm[:x]
-    _set_solver_attibutes!(cbm, solver_attributes)
-    _set_additional_constraints!(model, cbm, constraints)
+    opt_model = make_optimization_model(model, optimizer)
+
+    # Is there a way to get the objective indices if we set the 
+    # objective via `change_objective`? then we could recycle the flux_balance_analysis
+    # method in a better way
     objective_indices = _get_reaction_indices(model, objective_func)
     opt_weights = _get_objective_weights(model, objective_indices, weights)
-    @objective(cbm, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
-    optimize!(cbm)
-    if !_check_status(cbm)
-        return nothing
+    change_objective(objective_func, weights=weights)(model, opt_model)
+
+    # support for multiple modification, fallback to single one
+    if typeof(modifications) <: AbstractVector
+        for mod in modifications
+            mod(model, opt_model)
+        end
+    else
+        modifications(model, opt_model)
     end
-    fluxes = map_fluxes(v, model)
+
+    optimize!(opt_model)
+    COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
+        return nothing
+    
+    fluxes = Dict(zip(reactions(model), value.(opt_model[:x])))
     return loopless_solution(
         model,
-        cbm,
+        opt_model,
         opt_weights,
         objective_indices,
-        v,
         fluxes,
     )
 end
+
+
+
