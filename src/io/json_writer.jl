@@ -1,7 +1,4 @@
-"""
-    save_json_model(model::StandardModel, file_location::String)
-"""
-function write_json_model(model::StandardModel, file_location::String)
+function _write_model(model::StandardModel, ::Type{JSONFile}, file_location::String)
     modeldict = Dict{String,Any}()
     modeldict["id"] = model.id
 
@@ -38,7 +35,7 @@ function write_json_model(model::StandardModel, file_location::String)
         rdict["metabolites"] = Dict{String,Float64}(k.id => v for (k, v) in r.metabolites)
         rdict["lower_bound"] = r.lb
         rdict["upper_bound"] = r.ub
-        rdict["gene_reaction_rule"] = unparse_grr(r.grr)
+        rdict["gene_reaction_rule"] = _unparse_grr(r.grr)
         rdict["subsystem"] = r.subsystem
         rdict["notes"] = r.notes
         rdict["annotation"] = r.annotation

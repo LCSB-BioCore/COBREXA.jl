@@ -1,7 +1,4 @@
-"""
-    read_matlab_model(file_location::String)
-"""
-function read_matlab_model(file_location::String)
+function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1]
     modeldict = matfile[model_name]
@@ -117,7 +114,7 @@ function read_matlab_model(file_location::String)
         end
 
         # get gene reaction rule
-        grr = parse_grr(grr_string, genes)
+        grr = _parse_grr(grr_string, genes)
 
         push!(
             rxns,
@@ -137,4 +134,11 @@ function read_matlab_model(file_location::String)
     end
 
     return StandardModel(model_id, rxns, mets, genes)
+end
+
+function _read_model(file_location::String, ::Type{MFile}, ::Type{LinearModel})
+    matfile = matread(file_location)
+    model_name = collect(keys(matfile))[1] # assume only one model per m-file
+    # of not then need to make this more resilient, maybe keyword args.. ?
+    return _convert_m_dict_to_linear_model(matfile[model_name])
 end

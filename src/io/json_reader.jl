@@ -1,7 +1,4 @@
-"""
-    read_json_model(modeldict::String)
-"""
-function read_json_model(file_location::String)
+function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardModel})
     modeldict = JSON.parsefile(file_location)
 
     modelid = modeldict["id"]
@@ -102,7 +99,7 @@ function read_json_model(file_location::String)
             elseif k == "upper_bound"
                 ub = v
             elseif k == "gene_reaction_rule"
-                grr = parse_grr(v, genes)
+                grr = _parse_grr(v, genes)
             elseif k == "subsystem"
                 subsystem = v
             elseif k == "notes"
