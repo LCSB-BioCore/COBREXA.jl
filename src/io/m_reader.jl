@@ -102,7 +102,8 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         end
 
         if haskey(modeldict, "grRules")
-            rxn.grr_string = modeldict["grRules"][i]
+            grr_string = modeldict["grRules"][i]
+            rxn.grr = _parse_grr(grr_string, genes)
         end
 
         rxn.subsystem = join(modeldict["subSystems"][i], "; ")
@@ -132,9 +133,6 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         if haskey(modeldict, "rxnNotes")
             rxn.notes["note"] = string.(split(string(modeldict["rxnNotes"][i]), "; "))
         end
-
-        # get gene reaction rule
-        rxn.grr = _parse_grr(grr_string, genes)
 
         push!(rxns, rxn)
     end
