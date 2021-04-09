@@ -57,7 +57,7 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
-    get_exchanges(rxndict::Dict{String, Float64}; top_n=8, ignorebound=1000.0, verbose=true)
+    get_exchanges(rxndict::Dict{String, Float64}; top_n=8, ignorebound=_constants.default_reaction_bound, verbose=true)
 
 Display the top_n producing and consuming exchange fluxes.
 Set top_n to a large number to get all the consuming/producing fluxes.
@@ -68,7 +68,7 @@ Return these reactions in two dictionaries: `consuming`, `producing`
 function exchange_reactions(
     rxndict::Dict{String,Float64};
     top_n = 8,
-    ignorebound = 1000.0,
+    ignorebound = _constants.default_reaction_bound,
     verbose = true,
 )
     fluxes = Float64[]
@@ -151,7 +151,9 @@ function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
-    set_bound(index, optimization_model; ub=1000, lb=-1000)
+    set_bound(index, optimization_model;
+        ub=_constants.default_reaction_rate,
+        lb=-_constants.default_reaction_rate)
 
 Helper function to set the bounds of variables.
 The JuMP `set_normalized_rhs` function is a little confusing, 
@@ -164,7 +166,12 @@ change the constraints.
 Just supply the constraint `index` and the JuMP model (`opt_model`) that 
 will be solved, and the variable's bounds will be set to `ub` and `lb`.
 """
-function set_bound(vind, opt_model; ub = 1000, lb = -1000)
+function set_bound(
+    vind,
+    opt_model;
+    ub = _constants.default_reaction_rate,
+    lb = -_constants.default_reaction_rate,
+)
     if lb <= 0
         set_normalized_rhs(opt_model[:lbs][vind], abs(lb))
     else

@@ -39,8 +39,8 @@ See also: [`achr`](@ref)
 function hit_and_run(
     N::Int,
     opt_model;
-    keepevery = 100,
-    samplesize = 1000,
+    keepevery = _constants.sampling_keep_iters,
+    samplesize = _constants.sampling_size,
     random_objective = false,
 )
 
@@ -53,7 +53,6 @@ function hit_and_run(
     current_point = zeros(size(wpoints, 1))
     current_point .= wpoints[:, rand(1:nwpts)] # pick random initial point
 
-    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue)
     sample_num = 0
     samplelength = 0
     updatesamplesizelength = true
@@ -67,27 +66,27 @@ function hit_and_run(
                 (@view samples[:, rand(1:(samplelength))]) - (@view current_point[:]) # after warmup phase, only find directions in sampled space
         end
 
-        λmax = 1e10
-        λmin = -1e10
+        λmax = Inf
+        λmin = -Inf
         for i in eachindex(lbs)
             δlower = lbs[i] - current_point[i]
             δupper = ubs[i] - current_point[i]
             # only consider the step size bound if the direction of travel is non-negligible
-            if direction_point[i] < -δdirtol
+            if direction_point[i] < -_constants.tolerance
                 lower = δupper / direction_point[i]
                 upper = δlower / direction_point[i]
-            elseif direction_point[i] > δdirtol
+            elseif direction_point[i] > _constants.tolerance
                 lower = δlower / direction_point[i]
                 upper = δupper / direction_point[i]
             else
-                lower = -1e10
-                upper = 1e10
+                lower = -Inf
+                upper = Inf
             end
             lower > λmin && (λmin = lower) # max min step size that satisfies all bounds
             upper < λmax && (λmax = upper) # min max step size that satisfies all bounds
         end
 
-        if λmax <= λmin || λmin == -1e10 || λmax == 1e10 # this sometimes can happen
+        if λmax <= λmin || λmin == -Inf || λmax == Inf # this sometimes can happen
             @warn "Infeasible direction at iteration $(n)..."
             continue
         end
