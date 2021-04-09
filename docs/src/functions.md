@@ -21,6 +21,13 @@ Modules = [COBREXA]
 Pages = map(file -> joinpath("io", file), readdir("../src/io"))
 ```
 
+### Pretty printing
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("io", file), readdir("../src/io/show"))
+```
+
 ## Model reconstruction
 
 ```@autodocs
@@ -33,4 +40,11 @@ Pages = map(file -> joinpath("reconstruction", file), readdir("../src/reconstruc
 ```@autodocs
 Modules = [COBREXA]
 Pages = map(file -> joinpath("analysis", file), readdir("../src/analysis"))
+```
+
+## Miscellaneous utilities
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("base", file), readdir("../src/utils"))
 ```
