@@ -83,14 +83,6 @@ end
         ],
     )
 
-    @test isapprox(
-        fva_max["EX_ac_e"]["EX_ac_e"],
-        8.518549434876208,
-        atol = default_constants.TEST_TOL,
-    )
-    @test isapprox(
-        fva_min["EX_ac_e"]["EX_ac_e"],
-        7.448388738973361,
-        atol = default_constants.TEST_TOL,
-    )
+    @test isapprox(fva_max["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = TEST_TOLERANCE)
+    @test isapprox(fva_min["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = TEST_TOLERANCE)
 end

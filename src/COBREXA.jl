@@ -26,13 +26,6 @@ import SBML # conflict with Reaction struct name
 include("banner.jl")
 _print_banner()
 
-# Constants
-default_constants = (
-    FVA_TOL = 1e-6, # optimum bound
-    TEST_TOL = 1e-6, # default tolerance used for tests
-    TEST_RELAX_TOL = 0.5, # relaxed tolerance used for tests
-)
-
 # autoloading
 const _inc(path...) = include(joinpath(path...))
 const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
