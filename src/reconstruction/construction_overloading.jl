@@ -77,7 +77,7 @@ function ⟶(
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
     metdict = mkrxn(substrates, products)
-    return Reaction("", metdict, "for")
+    return Reaction("", metdict, :forward)
 end
 const → = ⟶
 
@@ -93,7 +93,7 @@ function ⟵(
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
     metdict = mkrxn(substrates, products)
-    return Reaction("", metdict, "rev")
+    return Reaction("", metdict, :reverse)
 end
 const ← = ⟵
 
@@ -109,6 +109,6 @@ function ⟷(
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
     metdict = mkrxn(substrates, products)
-    return Reaction("", metdict, "bidir")
+    return Reaction("", metdict, :bidirectional)
 end
 const ↔ = ⟷
