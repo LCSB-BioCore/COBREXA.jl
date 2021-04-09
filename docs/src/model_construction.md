@@ -184,10 +184,10 @@ Once you have defined some metabolites, genes, and reactions, you can construct
 a model! This is most simply done by using the empty model constructor:
 
 ```@docs
-CobraModel()
+StandardModel()
 ```
 
-The fields of `CobraModel` can then be assigned as usual.
+The fields of `StandardModel` can then be assigned as usual.
 
 ```@example
 using COBREXA
@@ -218,7 +218,7 @@ mets = [atp, adp, pp, h2o, glc, lac]
 genes = [g1, g2, g3, g4]
 rxns = [catabolism, anabolism, lac_ex, glc_ex]
 
-model = CobraModel()
+model = StandardModel()
 model.id = "Test model"
 add!(model, mets)
 add!(model, rxns)
@@ -231,9 +231,9 @@ Here the `add` functions were used to add the reactions, metabolites and genes
 to the model.
 
 ```@docs
-add!(model::CobraModel, rxns::Array{Reaction, 1})
-add!(model::CobraModel, mets::Array{Metabolite, 1})
-add!(model::CobraModel, genes::Array{Gene, 1})
+add!(model::StandardModel, rxns::Array{Reaction, 1})
+add!(model::StandardModel, mets::Array{Metabolite, 1})
+add!(model::StandardModel, genes::Array{Gene, 1})
 ```
 
 Checking for duplicates of genes, metabolites or reactions can also be done.
@@ -281,9 +281,9 @@ Similar functionality exists for genes and reactions. Duplicate reactions,
 metabolites or genes can be removed using `rm!`.
 
 ```@docs
-rm!(model::CobraModel, rxns::Union{Array{Reaction, 1}, Reaction})
-rm!(model::CobraModel, mets::Union{Array{Metabolite, 1}, Metabolite})
-rm!(model::CobraModel, genes::Union{Array{Gene, 1}, Gene})
+rm!(model::StandardModel, rxns::Union{Array{Reaction, 1}, Reaction})
+rm!(model::StandardModel, mets::Union{Array{Metabolite, 1}, Metabolite})
+rm!(model::StandardModel, genes::Union{Array{Gene, 1}, Gene})
 ```
 
 ```@example
@@ -293,7 +293,7 @@ atp2 = Metabolite("atp2")
 
 mets = [atp, atp2]
 
-model = CobraModel()
+model = StandardModel()
 add!(model, mets)
 
 rm!(model, atp2)
@@ -304,7 +304,7 @@ relative to the reactions.  `fix_model` also ensures that no extra metabolites
 are present.
 
 ```@docs
-fix_model!(model::CobraModel)
+fix_model!(model::StandardModel)
 ```
 
 ```@example
@@ -318,7 +318,7 @@ anabolism.id = "anabolism"
 mets = [atp]
 rxns = [anabolism]
 
-model = CobraModel()
+model = StandardModel()
 model.id = "Test model"
 add!(model, mets) # missing adp
 add!(model, rxns)
@@ -332,7 +332,7 @@ Helper functions from Base have also been overwritten to make accessing
 reactions, metabolites and genes easy from a model.
 
 ```@docs
-getindex(model::CobraModel, rxn::Reaction)
-getindex(model::CobraModel, rxn::Metabolite)
-getindex(model::CobraModel, rxn::Gene)
+getindex(model::StandardModel, rxn::Reaction)
+getindex(model::StandardModel, rxn::Metabolite)
+getindex(model::StandardModel, rxn::Gene)
 ```
