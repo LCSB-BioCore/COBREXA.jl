@@ -31,8 +31,8 @@ mutable struct Reaction
         id = "";
         name = "",
         metabolites = Dict{Metabolite,Float64}(),
-        lb = -1000.0,
-        ub = 1000.0,
+        lb = -_constants.default_reaction_bound,
+        ub = _constants.default_reaction_bound,
         grr = Vector{Vector{Gene}}(),
         subsystem = "",
         notes = Dict{String,Vector{String}}(),
@@ -54,18 +54,18 @@ mutable struct Reaction
     function Reaction(
         id::String,
         metabolites::Dict{Metabolite,Float64},
-        dir = "bidir";
-        default_rate = 1000.0,
+        dir = :bidirectional;
+        default_bound = _constants.default_reaction_bound,
     )
-        if dir == "for"
+        if dir == :forward
             lb = 0.0
-            ub = default_rate
-        elseif dir == "rev"
-            lb = -default_rate
+            ub = default_bound
+        elseif dir == :reverse
+            lb = -default_bound
             ub = 0.0
         else
-            lb = -default_rate
-            ub = default_rate
+            lb = -default_bound
+            ub = default_bound
         end
         Reaction(id; metabolites = metabolites, lb = lb, ub = ub)
     end
