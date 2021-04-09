@@ -63,7 +63,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
 
     genes = Gene[]
     for i in eachindex(modeldict["genes"])
-        gene = Gene
+        gene = Gene()
         if haskey(modeldict, "genes")
             gene.id = modeldict["genes"][i]
         else
