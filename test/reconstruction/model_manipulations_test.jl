@@ -17,12 +17,12 @@
     g6 = Gene("g6")
     g7 = Gene("g7")
 
-    r1 = Reaction("r1", Dict(m1 => -1.0, m2 => 1.0), "for")
-    r2 = Reaction("r2", Dict(m2 => -2.0, m3 => 1.0), "bidir")
+    r1 = Reaction("r1", Dict(m1 => -1.0, m2 => 1.0), :forward)
+    r2 = Reaction("r2", Dict(m2 => -2.0, m3 => 1.0), :bidirectional)
     r2.grr = [[g2], [g1, g3]]
-    r3 = Reaction("r3", Dict(m1 => -1.0, m4 => 2.0), "rev")
-    r4 = Reaction("r4", Dict(m1 => -5.0, m4 => 2.0), "rev")
-    r5 = Reaction("r5", Dict(m1 => -11.0, m4 => 2.0, m3 => 2.0), "rev")
+    r3 = Reaction("r3", Dict(m1 => -1.0, m4 => 2.0), :reverse)
+    r4 = Reaction("r4", Dict(m1 => -5.0, m4 => 2.0), :reverse)
+    r5 = Reaction("r5", Dict(m1 => -11.0, m4 => 2.0, m3 => 2.0), :reverse)
 
     rxns = [r1, r2]
 

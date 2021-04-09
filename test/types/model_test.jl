@@ -22,9 +22,9 @@
     r1.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), "rev")
-    r3 = Reaction("r3", Dict(m3 => -1.0, m4 => 1.0), "for")
-    r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), "bidir")
+    r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), :reverse)
+    r3 = Reaction("r3", Dict(m3 => -1.0, m4 => 1.0), :forward)
+    r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), :bidirectional)
     r4.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
 
     mets = [m1, m2, m3, m4]

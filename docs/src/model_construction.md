@@ -89,13 +89,13 @@ Reaction()
 ```
 
 Another option is to use
-`Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")`,
+`Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir=:bidirectional)`,
 which assigns the reaction `id`, the reaction stoichiometry (through the
 metabolite dictionary argument), and the directionality of the reaction.  The
 remaining fields still need to be assigned, if desired.
 
 ```@docs
-Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
+Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir=:bidirectional)
 ```
 
 ```@example
@@ -109,7 +109,7 @@ adp = Metabolite("adp") # define another metabolite
 
 metdict = Dict(atp => -1.0, adp => 1.0) # nb stoichiometries need to be floats
 
-rxn = Reaction("dummy rxn", metdict, "for")
+rxn = Reaction("dummy rxn", metdict, :forward)
 rxn.annotation["ec-code"] = ["0.0.0.0"]
 rxn.grr = [[gene]] # only gene1 is required for this reaction to work
 

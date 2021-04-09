@@ -49,7 +49,7 @@
             m11 => 1.0,
             m12 => 1.0,
         ),
-        "for",
+        :forward,
     )
     @test occursin("...", sprint(show, MIME("text/plain"), rlongfor)) # from dictionaries so order is not consistent.
 
@@ -69,14 +69,14 @@
             m11 => 1.0,
             m12 => 1.0,
         ),
-        "rev",
+        :reverse,
     )
     @test occursin("...", sprint(show, MIME("text/plain"), rlongrev))
 
-    r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), "rev")
+    r2 = Reaction("r2", Dict(m1 => -2.0, m4 => 1.0), :reverse)
     @test r2.lb == -1000.0 && r2.ub == 0.0
 
-    r3 = Reaction("r3", Dict(m3 => -1.0, m4 => 1.0), "for")
+    r3 = Reaction("r3", Dict(m3 => -1.0, m4 => 1.0), :forward)
     @test r3.lb == 0.0 && r3.ub == 1000.0
 
     rxns = [r1, r2, r3]
@@ -88,7 +88,7 @@
     rr = findfirst(rxns, "r2")
     @test rr.id == r2.id
 
-    r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), "bidir")
+    r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), :bidirectional)
     r4.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
@@ -101,7 +101,7 @@
     dup, ind = check_duplicate_annotations(rxns, r2)
     @test !dup && ind == -1
 
-    r5 = Reaction("r5", Dict(m3 => -11.0, m4 => 1.0), "bidir")
+    r5 = Reaction("r5", Dict(m3 => -11.0, m4 => 1.0), :bidirectional)
     dup, ind = check_duplicate_reaction(rxns, r5)
     @test !dup && ind == -1
 
