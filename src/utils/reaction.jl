@@ -96,7 +96,7 @@ and the associated balance of atoms for convenience (useful if not balanced).
 See also: [`get_atoms`](@ref), [`check_duplicate_reaction`](@ref)
 """
 function is_mass_balanced(rxn::Reaction)
-    atom_balances = Dict{String,Float64}() # float here because stoichiometry is not Int64
+    atom_balances = Dict{String,Float64}() # float here because stoichiometry is not Int
     for (met, stoich) in rxn.metabolites
         atoms = get_atoms(met)
         isempty(atoms) && continue # ignore blanks

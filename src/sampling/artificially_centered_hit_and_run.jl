@@ -1,5 +1,5 @@
 """
-    achr(N::Int64, model::StandardModel, optimizer;constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
+    achr(N::Int, model::StandardModel, optimizer;constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
 
 Perform artificially centered hit and run.
 Uses the same arguments as the `hit_and_run` sampler.
@@ -8,7 +8,7 @@ Needs work, for long iterations it becomes unstable (violates bounds).
 See also: [`hit_and_run`](@ref)
 """
 function achr(
-    N::Int64,
+    N::Int,
     model::StandardModel,
     optimizer;
     constraints = Dict{String,Tuple{Float64,Float64}}(),

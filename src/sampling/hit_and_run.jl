@@ -1,5 +1,5 @@
 """
-    hit_and_run(N::Int64, opt_model; keepevery=100, samplesize=1000, random_objective=false)
+    hit_and_run(N::Int, opt_model; keepevery=100, samplesize=1000, random_objective=false)
 
 Perform basic hit and run sampling for `N` iterations on `opt_model`, where `opt_model` is a constraint based model.
 Note that `opt_model` is a JuMP model that contains whatever solver will be used to find the warmup points.
@@ -37,7 +37,7 @@ samples = hit_and_run(100_000, opt_model; keepevery=10, samplesize=5000)
 See also: [`achr`](@ref)
 """
 function hit_and_run(
-    N::Int64,
+    N::Int,
     opt_model;
     keepevery = 100,
     samplesize = 1000,

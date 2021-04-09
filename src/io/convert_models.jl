@@ -29,10 +29,10 @@ function _convert_to_m_exportable_dict(model::LinearModel)
     xl, xu = bounds(model)
     return Dict(
         "S" => stoichiometry(model),
-        "b" => Array(balance(model)),
-        "c" => Array(objective(model)),
-        "ub" => Array(xu),
-        "lb" => Array(xl),
+        "b" => Vector(balance(model)),
+        "c" => Vector(objective(model)),
+        "ub" => Vector(xu),
+        "lb" => Vector(xl),
         "rxns" => reactions(model),
         "mets" => metabolites(model),
     )

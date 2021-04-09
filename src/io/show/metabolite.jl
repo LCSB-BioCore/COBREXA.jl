@@ -20,8 +20,8 @@ function Base.show(io::IO, ::MIME"text/plain", m::Metabolite)
 end
 
 """
-Pretty printing of metabolites::Array{Metabolite, 1}.
+Pretty printing of metabolites::Vector{Metabolite}.
 """
-function Base.show(io::IO, ::MIME"text/plain", ms::Array{Metabolite,1})
+function Base.show(io::IO, ::MIME"text/plain", ms::Vector{Metabolite})
     println(io, "Metabolite set of length: ", length(ms))
 end

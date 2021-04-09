@@ -174,7 +174,7 @@ function verify_consistency(
 ) where {M<:MatType,V<:VecType,K<:StringVecType}
 
     if !isempty(new_reactions)
-        statuses = Array{ReactionStatus}(undef, length(names))
+        statuses = Vector{ReactionStatus}(undef, length(names))
         for (i, name) in enumerate(names)
             rxn_index = findfirst(isequal(name), m.rxns)
             reaction = Sp[:, i]
@@ -295,8 +295,8 @@ Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
 function change_bounds!(
     model::LinearModel,
     rxns::Vector{Int};
-    xl::V = Array{Float64}(undef, 0),
-    xu::V = Array{Float64}(undef, 0),
+    xl::V = Float64[],
+    xu::V = Float64[],
 ) where {V<:VecType}
     found = [index ∈ 1:n_reactions(model) for index in rxns]
     length(rxns[found]) == length(unique(rxns[found])) ||
@@ -317,9 +317,9 @@ end
 
 function change_bounds!(
     model::LinearModel,
-    rxns::Array{String,1};
-    xl::V = Array{Float64}(undef, 0),
-    xu::V = Array{Float64}(undef, 0),
+    rxns::Vector{String};
+    xl::V = Float64[],
+    xu::V = Float64[],
 ) where {V<:VecType}
     found = [name ∈ model.rxns for name in rxns]
     rxn_indices = zeros(Int, length(rxns))
