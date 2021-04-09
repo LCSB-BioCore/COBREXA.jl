@@ -25,7 +25,7 @@ Pages = map(file -> joinpath("io", file), readdir("../src/io"))
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("io", file), readdir("../src/io/show"))
+Pages = map(file -> joinpath("io", "show", file), readdir("../src/io/show"))
 ```
 
 ## Model reconstruction
@@ -53,5 +53,5 @@ Pages = map(file -> joinpath("mods", file), readdir("../src/mods"))
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", file), readdir("../src/utils"))
+Pages = map(file -> joinpath("utils", file), readdir("../src/utils"))
 ```
