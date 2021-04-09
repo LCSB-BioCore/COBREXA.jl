@@ -22,7 +22,7 @@ mutable struct Metabolite
     annotation::Dict{String,Union{Vector{String},String}} # everything is a String[] except sbo, which is a String
 
     Metabolite(
-        id = "",
+        id = "";
         name = "",
         formula = "",
         charge = 0,
