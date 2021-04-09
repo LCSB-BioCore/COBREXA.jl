@@ -119,8 +119,9 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         )
 
         for (anno, kid) in anno_kids
-            haskey(modeldict, anno) && rxn.annotation[kid] =
-                string.(split(string(modeldict[anno][i]), "; "))
+            if haskey(modeldict, anno)
+                rxn.annotation[kid] = string.(split(string(modeldict[anno][i]), "; "))
+            end
         end
 
         if haskey(modeldict, "rxnSBOTerms")
