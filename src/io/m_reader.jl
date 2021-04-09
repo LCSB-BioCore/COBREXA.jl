@@ -9,29 +9,35 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
 
     mets = Metabolite[]
     for i in eachindex(modeldict["mets"])
-        id = haskey(modeldict, "mets") ? modeldict["mets"][i] : ""
-        if id == ""
+        met = Metabolite()
+
+        if haskey(modeldict, "mets")
+            met.id = modeldict["mets"][i]
+        else
             continue
         end
 
-        name = haskey(modeldict, "metNames") ? modeldict["metNames"][i] : ""
-        compartment = ""
-        formula = ""
-        if haskey(modeldict, "metFormulas")
-            formula = string(modeldict["metFormulas"][i])
-        elseif haskey(modeldict, "metFormula")
-            formula = string(modeldict["metFormula"][i])
+        if haskey(modeldict, "metNames")
+            met.name = modeldict["metNames"][i]
         end
 
-        charge = 0 # sometimes inconsistently named
+        if haskey(modeldict, "metFormulas")
+            met.formula = string(modeldict["metFormulas"][i])
+        end
+
+        if haskey(modeldict, "metFormula")
+            met.formula = string(modeldict["metFormula"][i])
+        end
+
         if haskey(modeldict, "metCharge") && !isnan(modeldict["metCharge"][i])
-            charge = modeldict["metCharge"][i]
-        elseif haskey(modeldict, "metCharges") && !isnan(modeldict["metCharges"][i])
-            charge = modeldict["metCharges"][i]
+            met.charge = modeldict["metCharge"][i]
+        end
+
+        if haskey(modeldict, "metCharges") && !isnan(modeldict["metCharges"][i])
+            met.charge = modeldict["metCharges"][i]
         end
 
         # look for annotation data, assume delimited by "; "
-        annotation = Dict{String,Union{Array{String,1},String}}()
         anno_kid = Dict(
             "metBiGGID" => "bigg.metabolite",
             "metKEGGID" => "kegg.compound",
@@ -40,97 +46,96 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         )
         for (anno, kid) in anno_kid
             if haskey(modeldict, anno)
-                annotation[kid] = string.(split(string(modeldict[anno][i]), "; "))
+                met.annotation[kid] = string.(split(string(modeldict[anno][i]), "; "))
             end
         end
+
         if haskey(modeldict, "metSBOTerms")
-            annotation["sbo"] = string(modeldict["metSBOTerms"][i])
+            met.annotation["sbo"] = string(modeldict["metSBOTerms"][i])
         end
 
-        # look for some notes
-        notes = Dict{String,Array{String,1}}()
         if haskey(modeldict, "metNotes")
-            notes["note"] = string.(split(string(modeldict["metNotes"][i]), "; "))
+            met.notes["note"] = string.(split(string(modeldict["metNotes"][i]), "; "))
         end
 
-        push!(mets, Metabolite(id, name, formula, charge, compartment, notes, annotation))
+        push!(mets, met)
     end
 
     genes = Gene[]
     for i in eachindex(modeldict["genes"])
-        id = haskey(modeldict, "genes") ? modeldict["genes"][i] : ""
-        if id == ""
-            continue # skip blanks
+        gene = Gene
+        if haskey(modeldict, "genes")
+            gene.id = modeldict["genes"][i]
+        else
+            continue
         end
 
-        # these fields often don't exist in the matlab models, ignore for now
-        name = ""
-        notes = Dict{String,Array{String,1}}()
-        annotation = Dict{String,Union{Array{String,1},String}}()
+        # name and other fields don't generally exist in the matlab models,
+        # ignoring them for now
 
-        push!(genes, Gene(id, name, notes, annotation))
+        push!(genes, gene)
     end
 
     rxns = Reaction[]
     for i in eachindex(modeldict["rxns"])
-        id = haskey(modeldict, "rxns") ? modeldict["rxns"][i] : ""
-        if id == ""
-            continue # skip blanks
+        rxn = Reaction()
+        if haskey(modeldict, "rxns")
+            rxn.id = modeldict["rxns"][i]
+        else
+            continue
         end
 
-        name = haskey(modeldict, "rxnNames") ? modeldict["rxnNames"][i] : ""
+        if haskey(modeldict, "rxnNames")
+            rxn.name = modeldict["rxnNames"][i]
+        end
+
         metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
-        metabolites =
+        rxn.metabolites =
             Dict{Metabolite,Float64}(mets[j] => modeldict["S"][j, i] for j in metinds)
 
-        lb = haskey(modeldict, "lb") ? modeldict["lb"][i] : -1000.0 # reversible by default
-        ub = haskey(modeldict, "ub") ? modeldict["ub"][i] : 1000.0 # reversible by default
+        if haskey(modeldict, "lb")
+            rxn.lb = modeldict["lb"][i]
+        end
 
-        grr_string = haskey(modeldict, "grRules") ? modeldict["grRules"][i] : ""
-        subsystem = join(modeldict["subSystems"][i], "; ")
+        if haskey(modeldict, "ub")
+            rxn.ub = modeldict["ub"][i]
+        end
 
-        objective_coefficient = haskey(modeldict, "c") ? modeldict["c"][i] : 0.0
+        if haskey(modeldict, "grRules")
+            rxn.grr_string = modeldict["grRules"][i]
+        end
+
+        rxn.subsystem = join(modeldict["subSystems"][i], "; ")
+
+        if haskey(modeldict, "c")
+            rxn.objective_coefficient = modeldict["c"][i]
+        end
 
         # look for some annotations
-        annotation = Dict{String,Union{Array{String,1},String}}()
         anno_kids = Dict(
             "rxnKEGGID" => "kegg.reaction",
             "rxnECNumbers" => "ec-code",
             "rxnBiGGID" => "bigg.reaction",
         )
+
         for (anno, kid) in anno_kids
-            if haskey(modeldict, anno)
-                annotation[kid] = string.(split(string(modeldict[anno][i]), "; "))
-            end
+            haskey(modeldict, anno) && rxn.annotation[kid] =
+                string.(split(string(modeldict[anno][i]), "; "))
         end
+
         if haskey(modeldict, "rxnSBOTerms")
-            annotation["sbo"] = string(modeldict["rxnSBOTerms"][i])
+            rxn.annotation["sbo"] = string(modeldict["rxnSBOTerms"][i])
         end
 
         # look for some notes
-        notes = Dict{String,Array{String,1}}()
         if haskey(modeldict, "rxnNotes")
-            notes["note"] = string.(split(string(modeldict["rxnNotes"][i]), "; "))
+            rxn.notes["note"] = string.(split(string(modeldict["rxnNotes"][i]), "; "))
         end
 
         # get gene reaction rule
-        grr = _parse_grr(grr_string, genes)
+        rxn.grr = _parse_grr(grr_string, genes)
 
-        push!(
-            rxns,
-            Reaction(
-                id,
-                name,
-                metabolites,
-                lb,
-                ub,
-                grr,
-                subsystem,
-                notes,
-                annotation,
-                objective_coefficient,
-            ),
-        )
+        push!(rxns, rxn)
     end
 
     return StandardModel(model_id, rxns, mets, genes)
