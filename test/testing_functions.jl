@@ -54,6 +54,10 @@ function read_write_read_test(model, format)
     write_model(model, tmpfile)
     tmpmodel = read_model(tmpfile, StandardModel)
 
-    rm(tmpfile)
+    try
+        rm(tmpfile)
+    catch
+        @warn "The file $tmpfile could not be removed"
+    end
     model_comparison_test(model, tmpmodel)
 end
