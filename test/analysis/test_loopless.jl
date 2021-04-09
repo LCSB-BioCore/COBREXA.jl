@@ -51,7 +51,7 @@ end
     @test !all(abs.(values(res_fba)) .<= 1)
 
     # Now check that the flux we get the right solution
-    res_loopless = loopless_flux_balance_analysis(model, optimizer, objective_func=objective)
+    res_loopless = loopless_flux_balance_analysis_dict(model, optimizer, modifications=[change_objective(objective)])
     # Check that there is no flux that exceeds the input
     @test all(abs.(values(res_loopless)) .<= 1)
 end
