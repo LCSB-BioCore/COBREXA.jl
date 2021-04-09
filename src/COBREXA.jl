@@ -48,6 +48,7 @@ _inc_all.(
             "sampling",
             "reconstruction",
             "analysis",
+            "mods",
             "utils",
         ],
     ),

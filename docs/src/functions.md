@@ -42,6 +42,13 @@ Modules = [COBREXA]
 Pages = map(file -> joinpath("analysis", file), readdir("../src/analysis"))
 ```
 
+### Model modifiers
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("mods", file), readdir("../src/mods"))
+```
+
 ## Miscellaneous utilities
 
 ```@autodocs
