@@ -44,21 +44,24 @@ function add_cycle_free(fluxes::Dict{String,Float64})
 end
 
 
-function add_loopless(model::M, opt_model, fluxes::Dict{String,Float64})::JuMP.Model where {M <: MetabolicModel}
+function add_loopless(model::M, opt_model, fluxes::Dict{String,Float64})::Union{JuMP.Model,Nothing} where {M <: MetabolicModel}
     constrain_objective_value()(model, opt_model)
     add_cycle_free(fluxes)(model, opt_model)
-    COBREXA.JuMP.optimize!(opt_model)
+    COBREXA.JuMP.optimize!(opt_model)    
+    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     return opt_model
 end
 
-function add_loopless_vec(model::M, opt_model, fluxes::Dict{String,Float64})::Array{Float64,1} where {M <: MetabolicModel}
+function add_loopless_vec(model::M, opt_model, fluxes::Dict{String,Float64})::Union{Array{Float64,1},Nothing} where {M <: MetabolicModel}
     opt_model = add_loopless(model, opt_model, fluxes)
+    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     return value.(opt_model[:x])
 end
 
-function add_loopless_dict(model::M, opt_model, fluxes::Dict{String,Float64})::Dict{String,Float64} where {M <: MetabolicModel}
-    values = add_loopless_vec(model, opt_model, fluxes)
-    return Dict(zip(reactions(model), values))
+function add_loopless_dict(model::M, opt_model, fluxes::Dict{String,Float64})::Union{Dict{String,Float64},Nothing} where {M <: MetabolicModel}
+    v = add_loopless_vec(model, opt_model, fluxes)
+    isnothing(v) && return nothing
+    return Dict(zip(reactions(model), v))
 end
 
 function loopless_flux_balance_analysis(
@@ -66,10 +69,9 @@ function loopless_flux_balance_analysis(
     optimizer;
     modifications=[(model, opt_model) -> nothing],
 
-)::JuMP.Model where {M <: MetabolicModel}
+)::Union{JuMP.Model,Nothing} where {M <: MetabolicModel}
     opt_model = flux_balance_analysis(model, optimizer,  modifications=modifications)
-    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
-        return nothing
+    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     fluxes = Dict(zip(reactions(model), value.(opt_model[:x])))
     return add_loopless(
         model,
@@ -83,8 +85,9 @@ function loopless_flux_balance_analysis_vec(
     optimizer;
     modifications=[(model, opt_model) -> nothing],
 
-)::Array{Float64,1} where {M <: MetabolicModel}
+)::Union{Array{Float64,1},Nothing} where {M <: MetabolicModel}
     opt_model = loopless_flux_balance_analysis(model, optimizer, modifications=modifications)
+    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] || return nothing
     return value.(opt_model[:x])
 end
 
@@ -93,6 +96,8 @@ function loopless_flux_balance_analysis_dict(
     optimizer;
     modifications=[(model, opt_model) -> nothing],
 
-)::Dict{String,Float64} where {M <: MetabolicModel}
-    return Dict(zip(reactions(model), loopless_flux_balance_analysis_vec(model, optimizer, modifications=modifications)))
+)::Union{Dict{String,Float64},Nothing} where {M <: MetabolicModel}
+    v = loopless_flux_balance_analysis_vec(model, optimizer, modifications=modifications)
+    isnothing(v) && return nothing
+    return Dict(zip(reactions(model), ))
 end
