@@ -4,92 +4,31 @@ StandardModel struct of a constraint based metabolic model.
 # Fields
 ````
 id :: String
-reactions :: Array{Reaction, 1}
-metabolites :: Array{Metabolite, 1}
-genes :: Array{Gene, 1}
+reactions :: Vector{Reaction}
+metabolites :: Vector{Metabolite}
+genes :: Vector{Gene}
 ````
 """
 mutable struct StandardModel <: MetabolicModel
     id::String
-    reactions::Array{Reaction,1}
-    metabolites::Array{Metabolite,1}
-    genes::Array{Gene,1}
+    reactions::Vector{Reaction}
+    metabolites::Vector{Metabolite}
+    genes::Vector{Gene}
+
+    StandardModel(
+        id = "",
+        reactions::Vector{Reaction} = Reaction[],
+        metabolites::Vector{Metabolite} = Metabolite[],
+        genes::Vector{Gene} = Gene[],
+    ) = new(id, reactions, metabolites, genes)
 end
 
-"""
-Pretty printing of model::StandardModel.
-"""
-function Base.show(io::IO, ::MIME"text/plain", m::StandardModel)
-    println(
-        io,
-        "Constraint based model: ",
-        m.id,
-        "\n",
-        "Number of reactions: ",
-        length(m.reactions),
-        "\n",
-        "Number of metabolites: ",
-        length(m.metabolites),
-        "\n",
-        "Number of genes: ",
-        length(m.genes),
-    )
-end
+# MetabolicModel interface follows
+reactions(model::StandardModel)::Vector{String} = [r.id for r in model.reactions]
+n_reactions(model::StandardModel)::Int = length(model.reactions)
 
-"""
-StandardModel()
-
-Empty model constructor.
-"""
-function StandardModel()
-    StandardModel("blank", Array{Reaction,1}(), Array{Metabolite,1}(), Array{Gene,1}())
-end
-
-"""
-    getindex(model::StandardModel, rxn::Reaction)
-
-Get the index of `rxn` in `model`, based on reaction `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[rxn]
-"""
-function Base.getindex(model::StandardModel, rxn::Reaction)
-    return model.reactions[rxn]
-end
-
-"""
-    getindex(model::StandardModel, met::Metabolite)
-
-Get the index of `met` in `model`, based on metabolite `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[met]
-"""
-function Base.getindex(model::StandardModel, met::Metabolite)
-    return model.metabolites[met]
-end
-
-"""
-    getindex(model::StandardModel, gene::Gene)
-
-Get the index of `gene` in `model`, based on gene `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[gene]
-"""
-function Base.getindex(model::StandardModel, gene::Gene)
-    return model.genes[gene]
-end
-
-# generic interface functions
-
-function reactions(model::StandardModel)::Vector{String}
-    [r.id for r in model.reactions]
-end
-
-function metabolites(model::StandardModel)::Vector{String}
-    [m.id for m in model.metabolites]
-end
+metabolites(model::StandardModel)::Vector{String} = [m.id for m in model.metabolites]
+n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 function stoichiometry(model::StandardModel)::SparseMat
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
@@ -112,9 +51,7 @@ function bounds(model::StandardModel)::Tuple{SparseVec,SparseVec}
     return lbs, ubs
 end
 
-function balance(model::StandardModel)::SparseVec
-    SparseArrays.spzeros(length(model.metabolites))
-end
+balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 
 function objective(model::StandardModel)::SparseVec
     obj_arr = SparseArrays.spzeros(length(model.reactions))

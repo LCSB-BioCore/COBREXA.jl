@@ -1,5 +1,41 @@
 
 """
+    getindex(model::StandardModel, rxn::Reaction)
+
+Get the index of `rxn` in `model`, based on reaction `id`.
+Return -1 if not found.
+
+Typical usage: ind = model[rxn]
+"""
+function Base.getindex(model::StandardModel, rxn::Reaction)
+    return model.reactions[rxn]
+end
+
+"""
+    getindex(model::StandardModel, met::Metabolite)
+
+Get the index of `met` in `model`, based on metabolite `id`.
+Return -1 if not found.
+
+Typical usage: ind = model[met]
+"""
+function Base.getindex(model::StandardModel, met::Metabolite)
+    return model.metabolites[met]
+end
+
+"""
+    getindex(model::StandardModel, gene::Gene)
+
+Get the index of `gene` in `model`, based on gene `id`.
+Return -1 if not found.
+
+Typical usage: ind = model[gene]
+"""
+function Base.getindex(model::StandardModel, gene::Gene)
+    return model.genes[gene]
+end
+
+"""
     atom_exchange(flux_dict::Dict{String, Float64}, model::StandardModel)
 
 Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`.
