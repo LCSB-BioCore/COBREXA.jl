@@ -51,9 +51,9 @@ Return these reactions in two dictionaries: `consuming`, `producing`
 """
 function exchange_reactions(
     rxndict::Dict{String,Float64};
-    top_n = 8,
-    ignorebound = 1000.0,
-    verbose = true,
+    top_n=8,
+    ignorebound=1000.0,
+    verbose=true,
 )
     fluxes = Float64[]
     rxns = String[]
@@ -63,7 +63,7 @@ function exchange_reactions(
             push!(fluxes, v)
         end
     end
-    inds_prod = sortperm(fluxes, rev = true)
+    inds_prod = sortperm(fluxes, rev=true)
     inds_cons = sortperm(fluxes)
 
     consuming = Dict{String,Float64}()
@@ -74,7 +74,7 @@ function exchange_reactions(
             verbose && println(
                 rxns[inds_cons[i]],
                 " = ",
-                round(rxndict[rxns[inds_cons[i]]], digits = 4),
+                round(rxndict[rxns[inds_cons[i]]], digits=4),
             )
             consuming[rxns[inds_cons[i]]] = rxndict[rxns[inds_cons[i]]]
         else
@@ -88,7 +88,7 @@ function exchange_reactions(
             verbose && println(
                 rxns[inds_prod[i]],
                 " = ",
-                round(rxndict[rxns[inds_prod[i]]], digits = 4),
+                round(rxndict[rxns[inds_prod[i]]], digits=4),
             )
             producing[rxns[inds_prod[i]]] = rxndict[rxns[inds_prod[i]]]
         else
@@ -148,7 +148,7 @@ change the constraints.
 Just supply the constraint `index` and the JuMP model (`opt_model`) that 
 will be solved, and the variable's bounds will be set to `ub` and `lb`.
 """
-function set_bound(vind, opt_model; ub = 1000, lb = -1000)
+function set_bound(vind, opt_model; ub=1000, lb=-1000)
     if lb <= 0
         set_normalized_rhs(opt_model[:lbs][vind], abs(lb))
     else
@@ -165,7 +165,7 @@ Change the lower and upper bounds (`lb` and `ub` respectively) of `reaction`.
 function change_constraint(reaction::Reaction, lb, ub)
     (model, opt_model) -> begin
         ind = model.reactions[reaction]
-        set_bound(ind, opt_model, lb = lb, ub = ub)
+        set_bound(ind, opt_model, lb=lb, ub=ub)
     end
 end
 
@@ -205,17 +205,17 @@ Note, this function sets the sense of the objective to `MOI.MAX_SENSE` by defaul
 """
 function change_objective(
     objective_functions::Union{Reaction,Array{Reaction,1}};
-    weights = [],
-    sense = MOI.MAX_SENSE,
+    weights=[],
+    sense=MOI.MAX_SENSE,
 )
     (model, opt_model) -> begin
 
         # Construct objective_indices array
         if typeof(objective_functions) == Reaction
-            objective_indices = [model[objective_functions]]
-        else
-            objective_indices = [model[rxn] for rxn in objective_functions]
-        end
+        objective_indices = [model[objective_functions]]
+    else
+        objective_indices = [model[rxn] for rxn in objective_functions]
+    end
 
         # Initialize weights
         opt_weights = zeros(length(model.reactions))
@@ -224,11 +224,11 @@ function change_objective(
 
         wcounter = 1
         for i in eachindex(model.reactions)
-            if i in objective_indices
-                opt_weights[i] = weights[wcounter]
-                wcounter += 1
-            end
+        if i in objective_indices
+            opt_weights[i] = weights[wcounter]
+            wcounter += 1
         end
+    end
 
         v = opt_model[:x]
         @objective(opt_model, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
@@ -291,7 +291,7 @@ function test_samples(samples::Array{Float64,2}, mass_balance, balance, lbs, ubs
     violations = Int64[]
     tol = 1e-6
     for i = 1:size(samples, 2)
-        if isapprox(mass_balance * samples[:, i], balance; atol = tol)
+        if isapprox(mass_balance * samples[:, i], balance; atol=tol)
             equality = true
         else
             equality = false
@@ -351,4 +351,17 @@ function _unparse_grr(grr::Array{Array{Gene,1},1})
     end
     grr_string = join(grr_strings, " or ")
     return grr_string
+end
+
+function constrain_objective_value(optimum_bound)
+    return (model, opt_model) -> begin
+        λ = objective_value(opt_model)
+        λmin = min(optimum_bound * λ, λ * 1.0 / optimum_bound)
+        λmax = max(optimum_bound * λ, λ * 1.0 / optimum_bound)
+        old_objective = objective_function(opt_model)
+        @constraint(
+            opt_model,
+            λmin <= sum(old_objective) <= λmax
+        )
+    end
 end
