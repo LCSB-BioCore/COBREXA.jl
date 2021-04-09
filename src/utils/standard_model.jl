@@ -86,7 +86,7 @@ function exchange_reactions(
     producing = Dict{String,Float64}()
     verbose && println("Consuming fluxes:")
     for i = 1:min(top_n, length(rxndict))
-        if rxndict[rxns[inds_cons[i]]] < -eps()
+        if rxndict[rxns[inds_cons[i]]] < -_constants.tolerance
             verbose && println(
                 rxns[inds_cons[i]],
                 " = ",
@@ -100,7 +100,7 @@ function exchange_reactions(
 
     verbose && println("Producing fluxes:")
     for i = 1:min(top_n, length(rxndict))
-        if rxndict[rxns[inds_prod[i]]] > eps()
+        if rxndict[rxns[inds_prod[i]]] > _constants.tolerance
             verbose && println(
                 rxns[inds_prod[i]],
                 " = ",
@@ -132,13 +132,13 @@ function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
         for (col, rxnid) in enumerate(rxnids)
             mf = fluxdict[rxnid] * S[row, col]
             # ignore zero flux
-            if mf < -eps() # consuming rxn
+            if mf < -_constants.tolerance # consuming rxn
                 if haskey(consuming, metid)
                     consuming[metid][rxnid] = mf
                 else
                     consuming[metid] = Dict(rxnid => mf)
                 end
-            elseif mf > eps()
+            elseif mf > _constants.tolerance
                 if haskey(producing, metid)
                     producing[metid][rxnid] = mf
                 else
