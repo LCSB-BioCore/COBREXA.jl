@@ -1,9 +1,9 @@
 """
-    add!(model::StandardModel, rxns::Union{Array{Reaction, 1}, Reaction})
+    add!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
 
 Add `rxn(s)` to `model` if they are not already present based on reaction `id`.
 """
-function add!(model::StandardModel, rxns::Array{Reaction,1})
+function add!(model::StandardModel, rxns::Vector{Reaction})
     for rxn in rxns
         add!(model, rxn)
     end
@@ -19,11 +19,11 @@ function add!(model::StandardModel, rxn::Reaction)
 end
 
 """
-    add!(model::StandardModel, mets::Union{Array{Metabolite, 1}, Metabolite})
+    add!(model::StandardModel, mets::Union{Vector{Metabolite}, Metabolite})
 
 Add `met(s)` to `model` if they are not already present, based on metabolite `id`.
 """
-function add!(model::StandardModel, mets::Array{Metabolite,1})
+function add!(model::StandardModel, mets::Vector{Metabolite})
     for met in mets
         add!(model, met)
     end
@@ -39,11 +39,11 @@ function add!(model::StandardModel, met::Metabolite)
 end
 
 """
-    add!(model::StandardModel, genes::Union{Array{Gene, 1}, Gene})
+    add!(model::StandardModel, genes::Union{Vector{Gene}, Gene})
 
 Add `gene(s)` to `model` if they are not already present based on gene `id`.
 """
-function add!(model::StandardModel, genes::Array{Gene,1})
+function add!(model::StandardModel, genes::Vector{Gene})
     for gene in genes
         add!(model, gene)
     end
@@ -115,11 +115,11 @@ macro add_reactions!(model::Symbol, ex::Expr)
 end
 
 """
-    rm!(model::StandardModel, rxns::Union{Array{Reaction, 1}, Reaction})
+    rm!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
 
 Remove all `rxn(s)` from `model` if the `id`s match those in `rxns`.
 """
-function rm!(model::StandardModel, rxns::Union{Array{Reaction,1},Reaction})
+function rm!(model::StandardModel, rxns::Union{Vector{Reaction},Reaction})
     new_rxn_list = Reaction[]
     for r in model.reactions
         if typeof(rxns) == Reaction
@@ -137,11 +137,11 @@ function rm!(model::StandardModel, rxns::Union{Array{Reaction,1},Reaction})
 end
 
 """
-    rm!(model::StandardModel, mets::Union{Array{Metabolite, 1}, Metabolite})
+    rm!(model::StandardModel, mets::Union{Vector{Metabolite}, Metabolite})
 
 Remove `met(s)` from `model` based on metabolite `id`.
 """
-function rm!(model::StandardModel, mets::Union{Array{Metabolite,1},Metabolite})
+function rm!(model::StandardModel, mets::Union{Vector{Metabolite},Metabolite})
     new_met_list = Metabolite[]
     for m in model.metabolites
         if typeof(mets) == Metabolite
@@ -159,11 +159,11 @@ function rm!(model::StandardModel, mets::Union{Array{Metabolite,1},Metabolite})
 end
 
 """
-    rm!(model::StandardModel, genes::Union{Array{Gene, 1}, Gene})
+    rm!(model::StandardModel, genes::Union{Vector{Gene}, Gene})
 
 Remove `gene(s)` from `model` based on gene `id`.
 """
-function rm!(model::StandardModel, genes::Union{Array{Gene,1},Gene})
+function rm!(model::StandardModel, genes::Union{Vector{Gene},Gene})
     new_gene_list = Gene[]
     for g in model.genes
         if typeof(genes) == Gene

@@ -22,7 +22,7 @@ function Base.:+(
 end
 
 function Base.:+(
-    m1::Array{MetaboliteWithCoefficient,1},
+    m1::Vector{MetaboliteWithCoefficient},
     m2::Union{Metabolite,MetaboliteWithCoefficient},
 )
     if typeof(m2) == Metabolite
@@ -72,13 +72,9 @@ function ⟶(
     substrates::Union{
         Metabolite,
         MetaboliteWithCoefficient,
-        Array{MetaboliteWithCoefficient,1},
+        Vector{MetaboliteWithCoefficient},
     },
-    products::Union{
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Array{MetaboliteWithCoefficient,1},
-    },
+    products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
     metdict = mkrxn(substrates, products)
     return Reaction("", metdict, "for")
@@ -92,13 +88,9 @@ function ⟵(
     substrates::Union{
         Metabolite,
         MetaboliteWithCoefficient,
-        Array{MetaboliteWithCoefficient,1},
+        Vector{MetaboliteWithCoefficient},
     },
-    products::Union{
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Array{MetaboliteWithCoefficient,1},
-    },
+    products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
     metdict = mkrxn(substrates, products)
     return Reaction("", metdict, "rev")
@@ -112,13 +104,9 @@ function ⟷(
     substrates::Union{
         Metabolite,
         MetaboliteWithCoefficient,
-        Array{MetaboliteWithCoefficient,1},
+        Vector{MetaboliteWithCoefficient},
     },
-    products::Union{
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Array{MetaboliteWithCoefficient,1},
-    },
+    products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
     metdict = mkrxn(substrates, products)
     return Reaction("", metdict, "bidir")

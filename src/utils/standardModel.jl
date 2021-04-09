@@ -121,7 +121,7 @@ Return two dictionaries of metabolite `id`s mapped to reactions that consume or
 produce them given the flux distribution supplied in `fluxdict`.
 """
 function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
-    S = Array(stoichiometry(model))
+    S = stoichiometry(model)
     met_flux = Dict{String,Float64}()
     rxnids = reactions(model)
     metids = metabolites(model)

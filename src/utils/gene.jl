@@ -63,27 +63,27 @@ function check_duplicate_annotations(genes::Vector{Gene}, cgene::Gene)
 end
 
 """
-    parsegrr(string_rule, genes::Array{Gene, 1})
+    parsegrr(string_rule, genes::Vector{Gene})
 
-Parse a gene reaction rule string `string_rule` into a nested `gene` array `Array{Array{Gene, 1}, 1}`.
+Parse a gene reaction rule string `string_rule` into a nested `gene` array `Vector{Vector{Gene}}`.
 
 Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
 """
-function _parse_grr(s::String, genes::Array{Gene,1})
+function _parse_grr(s::String, genes::Vector{Gene})
     if s == "" || isnothing(s)
-        return Array{Array{Gene,1},1}()
+        return Vector{Vector{Gene}}()
     end
     # first get the gene id list in string format
-    gene_string_rules = Array{Array{String,1},1}()
+    gene_string_rules = Vector{Vector{String}}()
     or_genes = split(s, r"\s?(or|OR|(\|\|)|\|)\s?") # separate or terms
     for or_gene in or_genes
         and_genes = split(replace(or_gene, r"\(|\)" => ""), r"\s?(and|AND|(\&\&)|\&)\s?")
         push!(gene_string_rules, and_genes)
     end
     # now map these gene string ids to genes
-    grr = Array{Array{Gene,1},1}()
+    grr = Vector{Vector{Gene}}()
     for gsr in gene_string_rules
-        gene_list = Array{Gene,1}()
+        gene_list = Vector{Gene}()
         for g in gsr
             gene = findfirst(genes, g)
             isnothing(gene) && (@warn "Gene not found..."; continue)
@@ -95,11 +95,11 @@ function _parse_grr(s::String, genes::Array{Gene,1})
 end
 
 """
-    unparse_grr(grr::Array{Array{Gene, 1}, 1}
+    unparse_grr(grr::Vector{Vector{Gene}}
 
 Converts a nested `gene` array, `grr`, back into a grr string.
 """
-function _unparse_grr(grr::Array{Array{Gene,1},1})
+function _unparse_grr(grr::Vector{Vector{Gene}})
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g.id for g in gr], " and ") * ")")

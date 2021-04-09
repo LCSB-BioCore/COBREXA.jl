@@ -12,7 +12,7 @@
     fluxes = flux_variability_analysis(cp, [2], optimizer)
 
     @test size(fluxes) == (1, 2)
-    @test fluxes == Array{Float64,2}([2 2])
+    @test fluxes == Matrix{Float64}([2 2])
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
     cp = LinearModel(

@@ -88,8 +88,8 @@ Change the lower and/or upper bounds ('cl' and 'cu') for given coupling constrai
 function change_coupling_bounds!(
     model::CoupledLinearModel,
     constraints::Vector{Int};
-    cl::V = Array{Float64}(undef, 0),
-    cu::V = Array{Float64}(undef, 0),
+    cl::V = Float64[],
+    cu::V = Float64[],
 ) where {V<:VecType}
     found = [index ∈ 1:n_coupling_constraints(model) for index in constraints]
     red_constraints = constraints[found]

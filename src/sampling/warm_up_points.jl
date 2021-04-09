@@ -18,7 +18,7 @@ function get_warmup_points(cbm; random_objective = false, numstop = 1e10)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
     # determine which rxns should be max/min-ized (non fixed fluxes)
-    fixed_rxns = Int64[]
+    fixed_rxns = Int[]
     for i in eachindex(v)
         ub_val = normalized_rhs(ubs[i])
         lb_val = normalized_rhs(lbs[i])

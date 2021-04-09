@@ -11,7 +11,7 @@ function change_constraint(reaction::Reaction, lb, ub)
 end
 
 """
-    change_objective(objective_functions::Union{Reaction, Array{Reaction, 1}}; weights=[], sense=MOI.MAX_SENSE)
+    change_objective(objective_functions::Union{Reaction, Vector{Reaction}}; weights=[], sense=MOI.MAX_SENSE)
 
 Callback function to change the objective function used in a constraint based analysis function. 
 `objective_functions` can be a single reaction or an array of reactions (of type `Reaction`).
@@ -19,7 +19,7 @@ Optionally specify their `weights` and the sense of the new objective (`MOI.MAX_
 Note, this function sets the sense of the objective to `MOI.MAX_SENSE` by default if not specified.
 """
 function change_objective(
-    objective_functions::Union{Reaction,Array{Reaction,1}};
+    objective_functions::Union{Reaction,Vector{Reaction}};
     weights = [],
     sense = MOI.MAX_SENSE,
 )

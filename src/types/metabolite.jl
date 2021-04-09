@@ -6,7 +6,7 @@ Metabolite struct.
 id :: String
 name :: String
 formula :: String
-charge :: Int64
+charge :: Int
 compartment :: String
 notes :: Dict{String, Vector{String}}
 annotation :: Dict{String, Union{Vector{String}, String}}
@@ -16,7 +16,7 @@ mutable struct Metabolite
     id::String
     name::String
     formula::String
-    charge::Int64
+    charge::Int
     compartment::String
     notes::Dict{String,Vector{String}}
     annotation::Dict{String,Union{Vector{String},String}} # everything is a String[] except sbo, which is a String

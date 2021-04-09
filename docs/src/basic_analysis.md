@@ -170,7 +170,7 @@ data extraction from JuMP result objects easy.
 get_core_model
 build_cbm
 set_bound
-map_fluxes(::Array{Float64,1}, ::StandardModel)
+map_fluxes(::Vector{Float64}, ::StandardModel)
 ```
 
 ```@example fba
