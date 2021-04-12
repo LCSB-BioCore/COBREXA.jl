@@ -97,7 +97,7 @@ function flux_balance_analysis_dict(
     model::M,
     args...;
     kwargs...,
-)::Union{Dict{String,Float64},Nothing} where {M <: MetabolicModel}
+)::Union{Dict{String,Float64},Nothing} where {M<:MetabolicModel}
     v = flux_balance_analysis_vec(model, args...; kwargs...)
     isnothing(v) && return nothing
     Dict(zip(reactions(model), v))
@@ -141,8 +141,8 @@ solved_model = fba(model, optimizer; modifications=[modify_objective(biomass)])
 function flux_balance_analysis(
     model::M,
     optimizer;
-    modifications=[(model, opt_model) -> nothing],
-) where {M <: MetabolicModel}
+    modifications = [(model, opt_model) -> nothing],
+) where {M<:MetabolicModel}
 
     opt_model = make_optimization_model(model, optimizer)
 

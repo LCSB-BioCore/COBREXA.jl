@@ -29,7 +29,7 @@ function create_loopless_test_model()
     add!(model, A)
     add!(model, B)
     add!(model, C)
-    
+
     @add_reactions! model begin
         v1, ∅ ⟶ A, 0, 1
         v2, A ⟷ B
@@ -46,12 +46,20 @@ end
     optimizer = Tulip.Optimizer
     # first test that fba in fact does not give the loopless solution
     objective = findfirst(model.reactions, "v5")
-    res_fba = flux_balance_analysis_dict(model, optimizer, modifications=[change_objective(objective)])
+    res_fba = flux_balance_analysis_dict(
+        model,
+        optimizer,
+        modifications = [change_objective(objective)],
+    )
     # Check if there is any flux that exceeds the input
     @test !all(abs.(values(res_fba)) .<= 1)
 
     # Now check that the flux we get the right solution
-    res_loopless = loopless_flux_balance_analysis_dict(model, optimizer, modifications=[change_objective(objective)])
+    res_loopless = loopless_flux_balance_analysis_dict(
+        model,
+        optimizer,
+        modifications = [change_objective(objective)],
+    )
     # Check that there is no flux that exceeds the input
     @test all(abs.(values(res_loopless)) .<= 1)
 end

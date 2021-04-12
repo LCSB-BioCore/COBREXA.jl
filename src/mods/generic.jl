@@ -52,9 +52,6 @@ function constrain_objective_value(optimum_bound)
         λmin = min(optimum_bound * λ, λ * 1.0 / optimum_bound)
         λmax = max(optimum_bound * λ, λ * 1.0 / optimum_bound)
         old_objective = objective_function(opt_model)
-        @constraint(
-            opt_model,
-            λmin <= sum(old_objective) <= λmax
-        )
+        @constraint(opt_model, λmin <= sum(old_objective) <= λmax)
     end
 end
