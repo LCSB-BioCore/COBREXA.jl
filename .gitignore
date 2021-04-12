@@ -23,5 +23,9 @@ docs/site/
 # environment.
 Manifest.toml
 
-# Ignore temporary script for testing functions
-temp.jl
+# Ignore temporary files for testing functions
+temp.*
+
+# Ignore jupyter notebook stuff
+.ipynb_checkpoints
+
