@@ -22,8 +22,8 @@ Helper functions from Base have also been overwritten to make accessing arrays
 of genes easy.
 
 ```@docs
-findfirst(::Array{Gene, 1}, ::String)
-getindex(::Array{Gene, 1}, ::Gene)
+findfirst(::Vector{Gene}, ::String)
+getindex(::Vector{Gene}, ::Gene)
 ```
 
 ## Defining metabolites
@@ -73,8 +73,8 @@ Helper functions from Base have also been overwritten to make accessing arrays
 of metabolites easy.
 
 ```@docs
-findfirst(mets::Array{Metabolite, 1}, metid::String)
-getindex(mets::Array{Metabolite, 1}, met::Metabolite)
+findfirst(mets::Vector{Metabolite}, metid::String)
+getindex(mets::Vector{Metabolite}, met::Metabolite)
 ```
 
 ## Defining reactions
@@ -89,13 +89,13 @@ Reaction()
 ```
 
 Another option is to use
-`Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")`,
+`Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir=:bidirectional)`,
 which assigns the reaction `id`, the reaction stoichiometry (through the
 metabolite dictionary argument), and the directionality of the reaction.  The
 remaining fields still need to be assigned, if desired.
 
 ```@docs
-Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir="bidir")
+Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir=:bidirectional)
 ```
 
 ```@example
@@ -109,7 +109,7 @@ adp = Metabolite("adp") # define another metabolite
 
 metdict = Dict(atp => -1.0, adp => 1.0) # nb stoichiometries need to be floats
 
-rxn = Reaction("dummy rxn", metdict, "for")
+rxn = Reaction("dummy rxn", metdict, :forward)
 rxn.annotation["ec-code"] = ["0.0.0.0"]
 rxn.grr = [[gene]] # only gene1 is required for this reaction to work
 
@@ -174,8 +174,8 @@ Helper functions from Base have also been overwritten to make accessing arrays
 of reactions easy.
 
 ```@docs
-findfirst(rxns::Array{Reaction, 1}, rxnid::String)
-getindex(rxns::Array{Reaction, 1}, rxn::Reaction)
+findfirst(rxns::Vector{Reaction}, rxnid::String)
+getindex(rxns::Vector{Reaction}, rxn::Reaction)
 ```
 
 ## Building models
@@ -231,9 +231,9 @@ Here the `add` functions were used to add the reactions, metabolites and genes
 to the model.
 
 ```@docs
-add!(model::StandardModel, rxns::Array{Reaction, 1})
-add!(model::StandardModel, mets::Array{Metabolite, 1})
-add!(model::StandardModel, genes::Array{Gene, 1})
+add!(model::StandardModel, rxns::Vector{Reaction})
+add!(model::StandardModel, mets::Vector{Metabolite})
+add!(model::StandardModel, genes::Vector{Gene})
 ```
 
 Checking for duplicates of genes, metabolites or reactions can also be done.
@@ -242,11 +242,11 @@ suspect the model quality you should check each reaction, metabolite and gene
 yourself.
 
 ```@docs
-check_duplicate_annotations(genes::Array{Gene, 1}, gene::Gene)
-check_duplicate_annotations(mets::Array{Metabolite, 1}, cmet::Metabolite)
-check_duplicate_annotations(rxns::Array{Reaction, 1}, crxn::Reaction)
-check_same_formula(mets::Array{Metabolite, 1}, met::Metabolite)
-check_duplicate_reaction(rxns::Array{Reaction, 1}, crxn::Reaction)
+check_duplicate_annotations(genes::Vector{Gene}, gene::Gene)
+check_duplicate_annotations(mets::Vector{Metabolite}, cmet::Metabolite)
+check_duplicate_annotations(rxns::Vector{Reaction}, crxn::Reaction)
+check_same_formula(mets::Vector{Metabolite}, met::Metabolite)
+check_duplicate_reaction(rxns::Vector{Reaction}, crxn::Reaction)
 ```
 
 ```@example duplex
@@ -281,9 +281,9 @@ Similar functionality exists for genes and reactions. Duplicate reactions,
 metabolites or genes can be removed using `rm!`.
 
 ```@docs
-rm!(model::StandardModel, rxns::Union{Array{Reaction, 1}, Reaction})
-rm!(model::StandardModel, mets::Union{Array{Metabolite, 1}, Metabolite})
-rm!(model::StandardModel, genes::Union{Array{Gene, 1}, Gene})
+rm!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
+rm!(model::StandardModel, mets::Union{Vector{Metabolite}, Metabolite})
+rm!(model::StandardModel, genes::Union{Vector{Gene}, Gene})
 ```
 
 ```@example

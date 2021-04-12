@@ -116,7 +116,7 @@ function _FVA_optimize_reaction(model, rid)
 end
 
 """
-    fva(model::StandardModel, optimizer; optimum_bound=1.0-DEFAULT_FVA_TOL, modifications)
+    fva(model::StandardModel, optimizer; optimum_bound=1.0-_constants.tolerance, modifications)
 
 Run flux variability analysis (FVA) on the `model` (of type `StandardModel`). 
 Optionally specifying problem modifications like in [`flux_balance_analysis`](@ref).
@@ -141,7 +141,7 @@ fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 function flux_variability_analysis(
     model::StandardModel,
     optimizer;
-    optimum_bound = 1.0 - default_constants.FVA_TOL,
+    optimum_bound = 1.0 - _constants.tolerance,
     modifications = [(model, opt_model) -> nothing],
 )
     # Run FBA

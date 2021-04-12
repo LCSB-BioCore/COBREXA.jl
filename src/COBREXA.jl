@@ -26,22 +26,30 @@ import SBML # conflict with Reaction struct name
 include("banner.jl")
 _print_banner()
 
-# Constants
-default_constants = (
-    FVA_TOL = 1e-6, # optimum bound
-    TEST_TOL = 1e-6, # default tolerance used for tests
-    TEST_RELAX_TOL = 0.5, # relaxed tolerance used for tests
-)
-
 # autoloading
 const _inc(path...) = include(joinpath(path...))
 const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
+
 _inc_all.(
-    joinpath.(@__DIR__, ["types", "base", "io", "reconstruction", "analysis", "sampling"]),
+    joinpath.(
+        @__DIR__,
+        [
+            joinpath("types", "abstract"),
+            "types",
+            "base",
+            "io",
+            joinpath("io", "show"),
+            "sampling",
+            "reconstruction",
+            "analysis",
+            "mods",
+            "utils",
+        ],
+    ),
 )
 
 # export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
-for sym in names(@__MODULE__, all=true)
+for sym in names(@__MODULE__, all = true)
     if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
         continue
     end

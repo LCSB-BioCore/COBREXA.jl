@@ -15,6 +15,10 @@ using Statistics
 using JSON
 using Measurements
 
+# tolerance for comparing analysis results (should be a bit bigger than the
+# error tolerance in computations)
+TEST_TOLERANCE = 10 * COBREXA._constants.tolerance
+
 function run_test_file(path...)
     fn = joinpath(path...)
     t = @elapsed include(fn)

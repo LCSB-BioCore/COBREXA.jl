@@ -12,7 +12,7 @@
     fluxes = flux_variability_analysis(cp, [2], optimizer)
 
     @test size(fluxes) == (1, 2)
-    @test fluxes == Array{Float64,2}([2 2])
+    @test fluxes == Matrix{Float64}([2 2])
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
     cp = LinearModel(
@@ -83,14 +83,6 @@ end
         ],
     )
 
-    @test isapprox(
-        fva_max["EX_ac_e"]["EX_ac_e"],
-        8.518549434876208,
-        atol = default_constants.TEST_TOL,
-    )
-    @test isapprox(
-        fva_min["EX_ac_e"]["EX_ac_e"],
-        7.448388738973361,
-        atol = default_constants.TEST_TOL,
-    )
+    @test isapprox(fva_max["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = TEST_TOLERANCE)
+    @test isapprox(fva_min["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = TEST_TOLERANCE)
 end

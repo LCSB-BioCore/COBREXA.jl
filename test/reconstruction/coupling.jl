@@ -30,7 +30,7 @@
     @test n_coupling_constraints(cp) == n_c
     new_cp = remove_coupling_constraints(cp, [1, 2])
     @test n_c - 2 == n_coupling_constraints(new_cp)
-    new_cp = remove_coupling_constraints(cp, Array(1:n_coupling_constraints(cp)))
+    new_cp = remove_coupling_constraints(cp, Vector(1:n_coupling_constraints(cp)))
     @test n_coupling_constraints(new_cp) == 0
     @test n_coupling_constraints(cp) == n_c
 

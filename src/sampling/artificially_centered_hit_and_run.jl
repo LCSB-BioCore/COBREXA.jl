@@ -1,5 +1,5 @@
 """
-    achr(N::Int64, model::StandardModel, optimizer;constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=100, samplesize=1000, solver_attributes=Dict{Any, Any}(), random_objective=false)
+    achr(N::Int, model::StandardModel, optimizer;constraints=Dict{String, Tuple{Float64,Float64}}(), keepevery=_constants.sampling_keep_iters, samplesize=_constants.sampling_size, solver_attributes=Dict{Any, Any}(), random_objective=false)
 
 Perform artificially centered hit and run.
 Uses the same arguments as the `hit_and_run` sampler.
@@ -8,12 +8,12 @@ Needs work, for long iterations it becomes unstable (violates bounds).
 See also: [`hit_and_run`](@ref)
 """
 function achr(
-    N::Int64,
+    N::Int,
     model::StandardModel,
     optimizer;
     constraints = Dict{String,Tuple{Float64,Float64}}(),
-    keepevery = 100,
-    samplesize = 1000,
+    keepevery = _constants.sampling_keep_iters,
+    samplesize = _constants.sampling_size,
     solver_attributes = Dict{Any,Any}(),
     random_objective = false,
 )
@@ -44,7 +44,6 @@ function achr(
 
     shat = mean(wpoints, dims = 2)[:] # mean point
 
-    δdirtol = 1e-6 # too small directions get ignored ≈ 0 (solver precision issue)
     sample_num = 0
     samplelength = 0
     updatesamplesizelength = true
@@ -55,26 +54,26 @@ function achr(
             direction_point = (@view samples[:, rand(1:(samplelength))]) - (@view shat[:]) # after warmup phase, only find directions in sampled space
         end
 
-        λmax = 1e10
-        λmin = -1e10
+        λmax = Inf
+        λmin = -Inf
         for i in eachindex(lbs)
             δlower = lbs[i] - current_point[i]
             δupper = ubs[i] - current_point[i]
-            if direction_point[i] < -δdirtol
+            if direction_point[i] < _constants.tolerance
                 lower = δupper / direction_point[i]
                 upper = δlower / direction_point[i]
-            elseif direction_point[i] > δdirtol
+            elseif direction_point[i] > _constants.tolerance
                 lower = δlower / direction_point[i]
                 upper = δupper / direction_point[i]
             else
-                lower = -1e10
-                upper = 1e10
+                lower = -Inf
+                upper = Inf
             end
             lower > λmin && (λmin = lower) # max min step size that satisfies all bounds
             upper < λmax && (λmax = upper) # min max step size that satisfies all bounds
         end
 
-        if λmax <= λmin || λmin == -1e10 || λmax == 1e10 # this sometimes can happen
+        if λmax <= λmin || λmin == -Inf || λmax == Inf # this sometimes can happen
             @warn "Infeasible direction at iteration $(n)..."
             continue
         end
