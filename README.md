@@ -24,6 +24,18 @@
 
 This is package aims to provide constraint based reconstruction and analysis tools at the exa-scale in Julia.
 
+#### Acknowledgements
+
+`COBREXA.jl` was developed at the Luxembourg Centre for Systems Biomedicine of
+the University of Luxembourg ([uni.lu/lcsb](https://www.uni.lu/lcsb)),
+cooperating with Institute for Quantitateve and Theoretical Biology of Heinrich
+Heine University, Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
+
+The development was supported by European Union's Horizon 2020 Programme under
+PerMedCoE project ([permedcoe.eu](https://www.permedcoe.eu/)) agreement no.
+951773.
+
+<img src="docs/src/assets/unilu.svg" alt="Uni.lu logo" height="64px">   <img src="docs/src/assets/lcsb.svg" alt="LCSB logo" height="64px">   <img src="docs/src/assets/hhu.svg" alt="HHU logo" height="64px">   <img src="docs/src/assets/qtb.svg" alt="QTB logo" height="64px">   <img src="docs/src/assets/permedcoe.svg" alt="PerMedCoE logo" height="64px">
 
 ## Installation
 
