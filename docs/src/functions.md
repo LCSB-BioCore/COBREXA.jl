@@ -4,6 +4,7 @@
 
 ```@autodocs
 Modules = [COBREXA]
+Pages = map(file -> joinpath("types", "abstract", file), readdir("../src/types/abstract"))
 Pages = map(file -> joinpath("types", file), readdir("../src/types"))
 ```
 
