@@ -25,5 +25,7 @@
 
     samples = hit_and_run(100_000, opt_model, keepevery = 10, samplesize = 5000)
 
-    @test isapprox(mean(samples[64, :]), 8.9, atol = 0.1) # only tests if the sampler very approximately converged
+    # The sampling converges very randomly and extremely approximately, so only
+    # test a rough result
+    @test isapprox(mean(samples[64, :]), 8.9, atol = 0.1)
 end

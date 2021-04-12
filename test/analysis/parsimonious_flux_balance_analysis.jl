@@ -31,6 +31,8 @@
         qp_solver_attributes = change_solver_attribute("verbose", false),
     )
 
+    # The used optimizer doesn't really converge to the same answer everytime
+    # here, we therefore tolerate a wide range of results.
     @test isapprox(d["PGM"], -17.568590034769613, atol = 0.5)
     @test isapprox(v[8], -17.568590034769613, atol = 0.5)
 end
