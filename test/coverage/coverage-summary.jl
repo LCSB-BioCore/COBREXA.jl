@@ -7,3 +7,7 @@ cd(joinpath(@__DIR__, "..", "..")) do
     percentage = covered_lines / total_lines * 100
     println("($(percentage)%) covered")
 end
+
+# submit the report to codecov.io
+Codecov.submit(Codecov.process_folder())
+
