@@ -138,6 +138,8 @@ docker:v1.6:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
+  after_success:
+    - julia -e 'using Coverage; Codecov.submit(Codecov.process_folder())'
 
 # Deploy the documentation
 # --------------------------------------
