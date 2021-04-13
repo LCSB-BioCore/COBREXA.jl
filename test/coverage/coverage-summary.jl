@@ -10,4 +10,3 @@ end
 
 # submit the report to codecov.io
 Codecov.submit(Codecov.process_folder())
-
