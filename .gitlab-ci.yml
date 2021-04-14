@@ -1,9 +1,9 @@
 stages:
   - format-check
+  - test-containers
   - test-required
   - test-additional-v1.5
   - test-additional-v1.6
-  - test-containers
   - deploy-doc
 
 variables:
