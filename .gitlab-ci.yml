@@ -61,7 +61,7 @@ format:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
     - if: $CI_COMMIT_BRANCH == "master"
   script:
-    - julia --project=@. -e 'using JuliaFormatter; format(\".\", verbose=true);'
+    - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
     - if git diff-index --quiet HEAD --; then
         echo "Code is formatted correctly" && exit 0;
       else
