@@ -63,9 +63,10 @@ format:
     - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
     - git status
     - git remote set-url origin "https://$CI_USER_NAME:$GIT_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
-    - git config --local user.name $CI_USER_NAME
-    - git config --local user.email $CI_USER_EMAIL
-    - git checkout $CI_COMMIT_BRANCH
+    - git config user.name $CI_USER_NAME || true
+    - git config user.email $CI_USER_EMAIL || true
+    - cat .git/config
+    - git checkout $CI_COMMIT_BRANCH || true
     - git commit -am "automatic formatting changes" || true
     - git push origin $CI_COMMIT_BRANCH || true
 
