@@ -67,8 +67,8 @@ format:
           git remote set-url origin "https://$CI_USER_NAME:$GIT_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"; \
           git config --local user.name $CI_USER_NAME; \
           git config --local user.email $CI_USER_EMAIL; \
-          git add --all; \
-          git commit -m "automatic formatting changes"; \
+          git checkout $CI_COMMIT_BRANCH; \
+          git commit -am "automatic formatting changes"; \
           git push origin $CI_COMMIT_BRANCH
       else
           echo "Code is formatted correctly";
