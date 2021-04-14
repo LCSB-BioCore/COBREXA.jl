@@ -61,18 +61,15 @@ format:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
   script:
     - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
-    - >
-      if [[ $(git status --porcelain | wc -l) -gt 0 ]]; then
-          git status
-          git remote set-url origin "https://$CI_USER_NAME:$GIT_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
-          git config --local user.name $CI_USER_NAME
-          git config --local user.email $CI_USER_EMAIL
-          git checkout $CI_COMMIT_BRANCH
-          git commit -am "automatic formatting changes"
-          git push origin $CI_COMMIT_BRANCH
-      else
-          echo "Code is formatted correctly"
-      fi
+  after_script:
+    - git status
+    - git remote set-url origin "https://$CI_USER_NAME:$GIT_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
+    - git config --local user.name $CI_USER_NAME
+    - git config --local user.email $CI_USER_EMAIL
+    - git checkout $CI_COMMIT_BRANCH
+    - git commit -am "automatic formatting changes" || true
+    - git push origin $CI_COMMIT_BRANCH || true
+
 
 # Test Julia v1.5
 # --------------------------------------
