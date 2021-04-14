@@ -66,6 +66,7 @@ format:
         echo "Code is formatted correctly" && exit 0;
       else
           if $CI_COMMIT_BRANCH != "master"; then
+            git status \
             git remote set-url origin "https://$CI_USER_NAME:$GIT_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
             git config user.name $CI_USER_NAME \
             git config user.email $CI_USER_EMAIL \
