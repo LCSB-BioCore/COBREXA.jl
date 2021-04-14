@@ -9,4 +9,4 @@ cd(joinpath(@__DIR__, "..", "..")) do
 end
 
 # submit the report to codecov.io
-Codecov.submit(Codecov.process_folder())
+Codecov.submit_local(Codecov.process_folder())
