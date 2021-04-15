@@ -3,10 +3,10 @@ Convert LinearModel to the JuMP model, place objectives and the equality
 constraint.
 """
 function make_optimization_model(
-    model::LM,
+    model::MM,
     optimizer;
     sense = MOI.MAX_SENSE,
-) where {LM<:MetabolicModel}
+) where {MM<:MetabolicModel}
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
