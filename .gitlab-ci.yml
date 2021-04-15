@@ -1,5 +1,5 @@
 stages:
-  - format-check
+  - formatter
   - test-containers
   - test-required
   - test-additional-v1.5
@@ -12,6 +12,9 @@ variables:
 .global_settings: &global_settings
   rules:
    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+
+.global_settings: &global_settings_master
+  rules:
    - if: $CI_COMMIT_BRANCH == "master"
 
 .global_testing_v15: &global_testing_v15
@@ -55,10 +58,8 @@ variables:
 # --------------------------------------
 
 format:
-  stage: format-check
+  stage: formatter
   image: $CI_REGISTRY/r3/docker/julia-custom
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
   script:
     - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
     - git status
@@ -68,34 +69,46 @@ format:
     - git checkout $CI_COMMIT_BRANCH || true
     - git commit -am "automatic formatting changes" || true
     - git push origin $CI_COMMIT_BRANCH || true
+  <<: *global_settings
 
+# Test Docker run with Julia v1.6
+# --------------------------------------
+
+docker:v1.6:
+  stage: test-containers
+  image: $CI_REGISTRY/r3/docker/julia-custom
+  script:
+    - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+  after_script:
+    - julia --project=test/coverage test/coverage/coverage-summary.jl
+  <<: *global_settings
 
 # Test Julia v1.5
 # --------------------------------------
 
 linux:v1.5:
   stage: test-required
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_linux
 
 windows10:v1.5:
   stage: test-additional-v1.5
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_win10
   <<: *global_testing_win
 
 windows8:v1.5:
   stage: test-additional-v1.5
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_win8
   <<: *global_testing_win
 
 mac:v1.5:
   stage: test-additional-v1.5
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_mac
 
@@ -105,14 +118,14 @@ mac:v1.5:
 linux:v1.6:
   stage: test-additional-v1.6
   needs: ["linux:v1.5"]
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_linux
 
 windows10:v1.6:
   stage: test-additional-v1.6
   needs: ["windows10:v1.5"]
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_win10
   <<: *global_testing_win
@@ -120,7 +133,7 @@ windows10:v1.6:
 windows8:v1.6:
   stage: test-additional-v1.6
   needs: ["windows8:v1.5"]
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_win8
   <<: *global_testing_win
@@ -128,23 +141,9 @@ windows8:v1.6:
 mac:v1.6:
   stage: test-additional-v1.6
   needs: ["mac:v1.5"]
-  <<: *global_settings
+  <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_mac
-
-# Test Docker run with Julia v1.6
-# --------------------------------------
-
-docker:v1.6:
-  stage: test-containers
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-    - if: $CI_COMMIT_BRANCH == "master"
-  script:
-    - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
-  after_script:
-    - julia --project=test/coverage test/coverage/coverage-summary.jl
 
 # Deploy the documentation
 # --------------------------------------
@@ -158,5 +157,4 @@ pages:
   artifacts:
     paths:
       - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+  <<: *global_settings_master
