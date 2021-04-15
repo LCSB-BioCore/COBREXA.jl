@@ -4,7 +4,7 @@ stages:
   - test-required
   - test-additional-v1.5
   - test-additional-v1.6
-  - deploy-doc
+  - documentation
 
 variables:
     GIT_STRATEGY: clone
@@ -69,6 +69,16 @@ format:
     - git checkout $CI_COMMIT_BRANCH || true
     - git commit -am "automatic formatting changes" || true
     - git push origin $CI_COMMIT_BRANCH || true
+  <<: *global_settings
+
+# Documentation tests
+# --------------------------------------
+
+docTests:v1.6:
+  stage: documentation
+  script:
+    - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
+    - julia --project=@. --color=yes test/doctests.jl
   <<: *global_settings
 
 # Test Docker run with Julia v1.6
@@ -149,7 +159,7 @@ mac:v1.6:
 # --------------------------------------
 
 pages:
-  stage: deploy-doc
+  stage: documentation
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
