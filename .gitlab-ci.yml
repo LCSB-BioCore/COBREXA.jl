@@ -76,6 +76,7 @@ format:
 
 docTests:v1.6:
   stage: documentation
+  image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
