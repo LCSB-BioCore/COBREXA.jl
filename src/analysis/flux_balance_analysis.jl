@@ -2,8 +2,13 @@
     @flux_balance_analysis_vec
 
 # Example
-```
-vec = @flux_balance_analysis_vec model Tulip.Optimizer
+
+```jldoctest
+julia> vec = @flux_balance_analysis_vec model Tulip.Optimizer
+3-element Vector{Float64}:
+ 1.0
+ 1.0
+ 1.0
 ```
 """
 macro flux_balance_analysis_vec(model, optimizer)
