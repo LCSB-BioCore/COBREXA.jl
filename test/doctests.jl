@@ -7,7 +7,7 @@ ex = quote
 end
 
 # set module-level metadata
-DocMeta.setdocmeta!(COBREXA, :DocTestSetup, ex; recursive=true)
+DocMeta.setdocmeta!(COBREXA, :DocTestSetup, ex; recursive = true)
 
 @testset "Documentation tests" begin
     doctest(COBREXA; manual = true)
