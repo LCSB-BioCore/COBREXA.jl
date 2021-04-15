@@ -74,7 +74,7 @@ format:
 # Documentation tests
 # --------------------------------------
 
-docTests:v1.6:
+doc-tests:v1.6:
   stage: documentation
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
