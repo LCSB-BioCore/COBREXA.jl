@@ -1,10 +1,10 @@
 stages:
   - formatter
+  - documentation
   - test-containers
   - test-required
   - test-additional-v1.5
   - test-additional-v1.6
-  - documentation
 
 variables:
     GIT_STRATEGY: clone
