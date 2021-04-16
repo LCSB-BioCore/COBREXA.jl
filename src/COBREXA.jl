@@ -1,23 +1,23 @@
 module COBREXA
 
-using Logging
-using SparseArrays
-using DelimitedFiles
-using LinearAlgebra
-using JuMP
-using MAT
-using Distributed
-using DistributedData
-using Downloads
-using Requires
-using JSON
-using MacroTools
-using Measurements
-using Statistics
-using Random
-using Tulip # for LPs
-using OSQP # for QPs, but it kinda sucks
-using MacroTools # for DSL :)
+@time using Logging
+@time using SparseArrays
+@time using DelimitedFiles
+@time using LinearAlgebra
+@time using JuMP
+@time using MAT
+@time using Distributed
+@time using DistributedData
+@time using Downloads
+@time using Requires
+@time using JSON
+@time using MacroTools
+@time using Measurements
+@time using Statistics
+@time using Random
+@time using Tulip # for LPs
+@time using OSQP # for QPs, but it kinda sucks
+@time using MacroTools # for DSL :)
 
 import Base: findfirst, getindex, show
 import Pkg
