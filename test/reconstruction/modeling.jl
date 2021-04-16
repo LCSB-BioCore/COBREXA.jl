@@ -1,5 +1,5 @@
 @testset "Remove reactions" begin
-    lp = LinearModel(
+    lp = CoreModel(
         [1.0 1 1 0; 1 1 1 0; 1 1 1 0; 0 0 0 1],
         zeros(4),
         zeros(4),
@@ -19,7 +19,7 @@ end
     @test isempty(find_exchange_reactions(cp))
     @test isempty(find_exchange_metabolites(cp))
 
-    cp = LinearModel(
+    cp = CoreModel(
         [-1.0 -1 -2; 0 -1 0; 0 0 0],
         zeros(3),
         ones(3),
@@ -30,7 +30,7 @@ end
     )
     @test find_exchange_reactions(cp) == [1]
 
-    cp = LinearModel(
+    cp = CoreModel(
         [-1.0 0 0; 0 0 -1; 0 -1 0],
         zeros(3),
         ones(3),
@@ -44,7 +44,7 @@ end
     @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
     @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
 
-    cp = read_model(joinpath("data", "toyModel1.mat"), LinearModel)
+    cp = read_model(joinpath("data", "toyModel1.mat"), CoreModel)
     @test find_exchange_reactions(cp) == [4; 5; 6]
     @test find_exchange_metabolites(cp) == [4; 5; 6]
     @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5]

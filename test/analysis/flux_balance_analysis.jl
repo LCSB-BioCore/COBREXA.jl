@@ -1,4 +1,4 @@
-@testset "Flux balance analysis with LinearModel" begin
+@testset "Flux balance analysis with CoreModel" begin
     cp = test_simpleLP()
     lp = flux_balance_analysis(cp, GLPK.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
@@ -24,7 +24,7 @@
         model_path,
         "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
     )
-    cp = read_model(model_path, LinearModel)
+    cp = read_model(model_path, CoreModel)
     expected_optimum = 0.9219480950504393
 
     lp = flux_balance_analysis(cp, GLPK.Optimizer)

@@ -2,7 +2,7 @@
 Adds reactions to the model `m`
 """
 function add_reactions(
-    m::LinearModel,
+    m::CoreModel,
     s::V1,
     b::V2,
     c::AbstractFloat,
@@ -23,7 +23,7 @@ end
 
 
 function add_reactions(
-    m::LinearModel,
+    m::CoreModel,
     s::V1,
     b::V2,
     c::AbstractFloat,
@@ -47,7 +47,7 @@ function add_reactions(
 end
 
 function add_reactions(
-    m::LinearModel,
+    m::CoreModel,
     Sp::M,
     b::V,
     c::V,
@@ -71,7 +71,7 @@ function add_reactions(
 end
 
 
-function add_reactions(m1::LinearModel, m2::LinearModel; check_consistency = false)
+function add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
     return add_reactions(
         m1,
         m2.S,
@@ -87,7 +87,7 @@ end
 
 
 function add_reactions(
-    m::LinearModel,
+    m::CoreModel,
     Sp::M,
     b::V,
     c::V,
@@ -147,8 +147,8 @@ function add_reactions(
     newxl = vcat(m.xl, xl[new_reactions])
     newxu = vcat(m.xu, xu[new_reactions])
     new_rxns = vcat(m.rxns, rxns[new_reactions])
-    #new_lp = LinearModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
-    new_lp = LinearModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
+    #new_lp = CoreModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
+    new_lp = CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
 
     if check_consistency
         return (new_lp, new_reactions, new_metabolites)
@@ -161,7 +161,7 @@ end
 Verifies the consistency of a given model
 """
 function verify_consistency(
-    m::LinearModel,
+    m::CoreModel,
     Sp::M,
     b::V,
     c::V,
@@ -201,10 +201,10 @@ function verify_consistency(
 end
 
 """
-Removes a set of reactions from a LinearModel.
+Removes a set of reactions from a CoreModel.
 Also removes the metabolites not involved in any reaction.
 """
-function remove_reactions(m::LinearModel, rxns::Vector{Int})
+function remove_reactions(m::CoreModel, rxns::Vector{Int})
     rxns_to_keep = filter(e -> e ∉ rxns, 1:n_reactions(m))
     temp_s = m.S[:, rxns_to_keep]
 
@@ -220,22 +220,22 @@ function remove_reactions(m::LinearModel, rxns::Vector{Int})
     new_rxns = m.rxns[rxns_to_keep]
     new_mets = m.mets[mets_to_keep]
     new_model =
-    #LinearModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
-        LinearModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
+    #CoreModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
+        CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
     return new_model
 end
 
-function remove_reactions(m::LinearModel, rxn::Integer)
+function remove_reactions(m::CoreModel, rxn::Integer)
     return remove_reactions(m, [rxn])
 end
 
 
-function remove_reactions(m::LinearModel, rxn::String)
+function remove_reactions(m::CoreModel, rxn::String)
     return remove_reactions(m, [rxn])
 end
 
 
-function remove_reactions(m::LinearModel, rxns::Vector{String})
+function remove_reactions(m::CoreModel, rxns::Vector{String})
     rxn_indices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
     if isempty(rxn_indices)
         return m
@@ -250,7 +250,7 @@ Returns indices of exchange reactions.
 Exchange reactions are identified based on most commonly used prefixes.
 """
 function find_exchange_reactions(
-    model::LinearModel;
+    model::CoreModel;
     exclude_biomass = false,
     biomass_str::String = "biomass",
     exc_prefs = ["EX_"; "Exch_"; "Ex_"],
@@ -273,7 +273,7 @@ In practice returns the metabolites consumed by the reactions given by `find_exc
 and if called with the same arguments, the two outputs correspond.
 """
 function find_exchange_metabolites(
-    model::LinearModel;
+    model::CoreModel;
     exclude_biomass = false,
     biomass_str::String = "biomass",
     exc_prefs = ["EX_"; "Exch_"; "Ex_"],
@@ -293,7 +293,7 @@ end
 Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
 """
 function change_bounds!(
-    model::LinearModel,
+    model::CoreModel,
     rxns::Vector{Int};
     xl::V = Float64[],
     xu::V = Float64[],
@@ -316,7 +316,7 @@ end
 
 
 function change_bounds!(
-    model::LinearModel,
+    model::CoreModel,
     rxns::Vector{String};
     xl::V = Float64[],
     xu::V = Float64[],

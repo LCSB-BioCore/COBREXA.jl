@@ -1,4 +1,4 @@
-@testset "LinearModel type" begin
+@testset "CoreModel type" begin
     cp = test_LP()
-    @test cp isa LinearModel
+    @test cp isa CoreModel
 end

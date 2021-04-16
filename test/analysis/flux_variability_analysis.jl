@@ -15,7 +15,7 @@
     @test fluxes == Matrix{Float64}([2 2])
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
-    cp = LinearModel(
+    cp = CoreModel(
         [-1.0 -1.0 -1.0],
         [0.0],
         [1.0, 0.0, 0.0],

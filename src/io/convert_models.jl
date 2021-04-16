@@ -1,5 +1,5 @@
 """
-Convert a dictionary read from a MAT file to LinearModel
+Convert a dictionary read from a MAT file to CoreModel
 """
 function _convert_m_dict_to_linear_model(model::Dict)
     model_keys = ["S", "b", "c", "ub", "lb"]
@@ -18,14 +18,14 @@ function _convert_m_dict_to_linear_model(model::Dict)
     rxns = vec(string.(model["rxns"]))
     mets = vec(string.(model["mets"]))
 
-    return LinearModel(S, b, c, lb, ub, rxns, mets)
+    return CoreModel(S, b, c, lb, ub, rxns, mets)
 end
 
 """
-Convert a LinearModel to exportable format
+Convert a CoreModel to exportable format
 SparseVectors are not written and read properly, SparseMatrix is okay
 """
-function _convert_to_m_exportable_dict(model::LinearModel)
+function _convert_to_m_exportable_dict(model::CoreModel)
     xl, xu = bounds(model)
     return Dict(
         "S" => stoichiometry(model),
