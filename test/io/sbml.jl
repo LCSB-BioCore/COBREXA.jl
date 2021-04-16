@@ -20,6 +20,6 @@ download_data_file(
     @test metabolites(m)[1:3] == ["M_succoa_c", "M_ac_c", "M_fru_b"]
     @test reactions(m)[1:3] == ["R_EX_fum_e", "R_ACONTb", "R_GLNS"]
 
-    cm = convert(CoreCoupledModel, sbmlm)
+    cm = convert(CoreModelCoupled, sbmlm)
     @test n_coupling_constraints(cm) == 0
 end

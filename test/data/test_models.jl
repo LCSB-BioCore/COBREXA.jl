@@ -41,7 +41,7 @@ test_sparseLP() = CoreModel(
     ["m$x" for x = 1:4000],
 )
 
-test_coupledLP() = CoreCoupledModel(
+test_coupledLP() = CoreModelCoupled(
     CoreModel(
         sprand(4000, 3000, 0.5),
         sprand(4000, 0.5),

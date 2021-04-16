@@ -1,5 +1,5 @@
 @testset "Coupling constraints" begin
-    cp = convert(CoreCoupledModel, test_LP())
+    cp = convert(CoreModelCoupled, test_LP())
     @test size(cp.lm.S) == (4, 3)
     @test size(stoichiometry(convert(CoreModel, cp))) == (4, 3)
     new_cp = add_coupling_constraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)

@@ -10,10 +10,10 @@ Base.isequal(model1::CoreModel, model2::CoreModel) =
 Base.copy(model::CoreModel) =
     CoreModel(model.S, model.b, model.c, model.xl, model.xu, model.rxns, model.mets)
 
-Base.isequal(model1::CoreCoupledModel, model2::CoreCoupledModel) =
+Base.isequal(model1::CoreModelCoupled, model2::CoreModelCoupled) =
     isequal(model1.lm, model2.lm) &&
     isequal(model1.C, model2.C) &&
     isequal(model1.cl, model2.cl) &&
     isequal(model1.cu, model2.cu)
 
-Base.copy(model::CoreCoupledModel) = CoreCoupledModel(model.lm, model.C, model.cl, model.cu)
+Base.copy(model::CoreModelCoupled) = CoreModelCoupled(model.lm, model.C, model.cl, model.cu)

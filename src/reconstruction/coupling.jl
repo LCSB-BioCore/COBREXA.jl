@@ -1,9 +1,9 @@
 """
-Add constraints of the following form to a CoreCoupledModel and return a modified one.
+Add constraints of the following form to a CoreModelCoupled and return a modified one.
 
 The arguments are same as for in-place `add_coupling_constraints!`.
 """
-function add_coupling_constraints(m::CoreCoupledModel, args...)
+function add_coupling_constraints(m::CoreModelCoupled, args...)
     new_lp = deepcopy(m)
     add_coupling_constraints!(new_lp, args...)
     return new_lp
@@ -13,7 +13,7 @@ end
 Add constraints to a plain `CoreModel` (converts it to the coupled type)
 """
 add_coupling_constraints(m::CoreModel, args...) =
-    add_coupling_constraints(convert(CoreCoupledModel, m), args...)
+    add_coupling_constraints(convert(CoreModelCoupled, m), args...)
 
 """
 In-place add coupling constraints in form
@@ -22,7 +22,7 @@ In-place add coupling constraints in form
 ```
 """
 function add_coupling_constraints!(
-    m::CoreCoupledModel,
+    m::CoreModelCoupled,
     c::V,
     cl::AbstractFloat,
     cu::AbstractFloat,
@@ -37,7 +37,7 @@ end
 
 
 function add_coupling_constraints!(
-    m::CoreCoupledModel,
+    m::CoreModelCoupled,
     C::M,
     cl::V,
     cu::V,
@@ -59,7 +59,7 @@ Remove coupling constraints from the linear model and return the modified model.
 
 Arguments are the same as for in-place version `remove_coupling_constraints!`.
 """
-function remove_coupling_constraints(m::CoreCoupledModel, args...)
+function remove_coupling_constraints(m::CoreModelCoupled, args...)
     new_model = deepcopy(m)
     remove_coupling_constraints!(new_model, args...)
     return new_model
@@ -67,14 +67,14 @@ end
 
 
 """
-Removes a set of coupling constraints from a CoreCoupledModel in-place.
+Removes a set of coupling constraints from a CoreModelCoupled in-place.
 """
-function remove_coupling_constraints!(m::CoreCoupledModel, constraint::Int)
+function remove_coupling_constraints!(m::CoreModelCoupled, constraint::Int)
     remove_coupling_constraints!(m, [constraint])
 end
 
 
-function remove_coupling_constraints!(m::CoreCoupledModel, constraints::Vector{Int})
+function remove_coupling_constraints!(m::CoreModelCoupled, constraints::Vector{Int})
     to_be_kept = filter(e -> e ∉ constraints, 1:n_coupling_constraints(m))
     m.C = m.C[to_be_kept, :]
     m.cl = m.cl[to_be_kept]
@@ -86,7 +86,7 @@ end
 Change the lower and/or upper bounds ('cl' and 'cu') for given coupling constraints
 """
 function change_coupling_bounds!(
-    model::CoreCoupledModel,
+    model::CoreModelCoupled,
     constraints::Vector{Int};
     cl::V = Float64[],
     cu::V = Float64[],
