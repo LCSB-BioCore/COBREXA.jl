@@ -1,19 +1,23 @@
-using Test
-using Logging
-using SparseArrays
-using JuMP
-using GLPK
-using Clp
-using COBREXA
-using MAT
-using SHA
-using Distributed
-using JuMP
-using Tulip
-using OSQP
-using Statistics
-using JSON
-using Measurements
+println("loading tests")
+@time using Test
+@time using Logging
+@time using SparseArrays
+@time using JuMP
+@time using GLPK
+@time using Clp
+println("loading cobrexa")
+@time using COBREXA
+println("end cobrexa")
+@time using MAT
+@time using SHA
+@time using Distributed
+@time using JuMP
+@time using Tulip
+@time using OSQP
+@time using Statistics
+@time using JSON
+@time using Measurements
+println("end tests")
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
