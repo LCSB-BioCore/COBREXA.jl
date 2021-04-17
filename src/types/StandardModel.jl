@@ -26,15 +26,15 @@ genes :: Dict{String, Gene}
 """
 mutable struct StandardModel <: MetabolicModel
     id::String
-    reactions::OrderedDict{String, Reaction}
-    metabolites::OrderedDict{String, Metabolite}
-    genes::OrderedDict{String, Gene}
+    reactions::OrderedDict{String,Reaction}
+    metabolites::OrderedDict{String,Metabolite}
+    genes::OrderedDict{String,Gene}
 
     StandardModel(
         id = "",
-        reactions = OrderedDict{String, Reaction}(),
-        metabolites = OrderedDict{String, Metabolite}(),
-        genes = OrderedDict{String, Gene}(),
+        reactions = OrderedDict{String,Reaction}(),
+        metabolites = OrderedDict{String,Metabolite}(),
+        genes = OrderedDict{String,Gene}(),
     ) = new(id, reactions, metabolites, genes)
 end
 
@@ -42,7 +42,8 @@ end
 reactions(model::StandardModel)::Vector{String} = [r_id for r_id in keys(model.reactions)]
 n_reactions(model::StandardModel)::Int = length(model.reactions)
 
-metabolites(model::StandardModel)::Vector{String} = [m_id for m_id in keys(model.metabolites)]
+metabolites(model::StandardModel)::Vector{String} =
+    [m_id for m_id in keys(model.metabolites)]
 n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 genes(model::StandardModel)::Vector{String} = [g_id for g_id in keys(model.genes)]
