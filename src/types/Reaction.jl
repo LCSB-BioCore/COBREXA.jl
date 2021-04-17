@@ -1,11 +1,13 @@
 """
 Reaction struct.
 
+Note that the `metabolite` field maps metabolite `id`s to stoichiometric coefficients.
+
 # Fields
 ````
 id :: String
 name :: String
-metabolites :: Dict{Metabolite, Float64}
+metabolites :: Dict{String, Float64}
 lb :: Float64
 ub :: Float64
 grr :: Vector{Vector{Gene}}
@@ -18,7 +20,7 @@ objective_coefficient :: Float64
 mutable struct Reaction
     id::String
     name::String
-    metabolites::Dict{Metabolite,Float64}
+    metabolites::Dict{String,Float64} # reaction id => stoichiometric coefficient
     lb::Float64
     ub::Float64
     grr::Vector{Vector{Gene}}
@@ -30,7 +32,7 @@ mutable struct Reaction
     Reaction(
         id = "";
         name = "",
-        metabolites = Dict{Metabolite,Float64}(),
+        metabolites = Dict{String,Float64}(),
         lb = -_constants.default_reaction_bound,
         ub = _constants.default_reaction_bound,
         grr = Vector{Vector{Gene}}(),
@@ -53,7 +55,7 @@ mutable struct Reaction
 
     function Reaction(
         id::String,
-        metabolites::Dict{Metabolite,Float64},
+        metabolites::Dict{String,Float64},
         dir = :bidirectional;
         default_bound = _constants.default_reaction_bound,
     )
