@@ -1,38 +1,49 @@
-
 """
-    getindex(model::StandardModel, rxn::Reaction)
-
-Get the index of `rxn` in `model`, based on reaction `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[rxn]
+Tests if two `StandardModel`'s represent the same model core model internally.
 """
-function Base.getindex(model::StandardModel, rxn::Reaction)
-    return model.reactions[rxn]
-end
+function Base.isequal(model1::StandardModel, model2::StandardModel)
+    # test if blank model is given - automatic fail
+    (isempty(model1.reactions) || isempty(model2.reactions)) ? (return false) : nothing
 
-"""
-    getindex(model::StandardModel, met::Metabolite)
+    # test same rxn and met ids
+    rxns1 = reactions(model1)
+    rxns2 = reactions(model2)
+    mets1 = metabolites(model1)
+    mets2 = metabolites(model2)
+    rxns_same =
+        (isempty(setdiff(rxns1, rxns2)) && isempty(setdiff(rxns2, rxns1))) ? true : false
+    mets_same =
+        (isempty(setdiff(mets1, mets2)) && isempty(setdiff(mets2, mets1))) ? true : false
 
-Get the index of `met` in `model`, based on metabolite `id`.
-Return -1 if not found.
+    if !rxns_same || !mets_same # if the ids are different stop testing
+        return false
+    end
 
-Typical usage: ind = model[met]
-"""
-function Base.getindex(model::StandardModel, met::Metabolite)
-    return model.metabolites[met]
-end
+    for rxn_id in rxns1 # since IDs are the same only use the ids of the first model
+        # check stoichiometry
+        rmets1 = model1.reactions[rxn_id].metabolites
+        rmets2 = model2.reactions[rxn_id].metabolites
+        if length(rmets1) != length(rmets2)
+            return false
+        end
+        for (km, vm) in rmets1
+            if !(km in keys(rmets2))
+                return false
+            elseif rmets2[km] != vm
+                return false
+            end
+        end
 
-"""
-    getindex(model::StandardModel, gene::Gene)
+        # check bounds
+        if model1.reactions[rxn_id].lower_bound != model2.reactions[rxn_id].lower_bound
+            return false
+        end
+        if model1.reactions[rxn_id].upper_bound != model2.reactions[rxn_id].upper_bound
+            return false
+        end
+    end
 
-Get the index of `gene` in `model`, based on gene `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[gene]
-"""
-function Base.getindex(model::StandardModel, gene::Gene)
-    return model.genes[gene]
+    return true
 end
 
 """

@@ -10,7 +10,7 @@ name :: String
 metabolites :: Dict{String, Float64}
 lb :: Float64
 ub :: Float64
-grr :: Vector{Vector{Gene}}
+grr :: Vector{Vector{String}}
 subsystem :: String
 notes :: Dict{String, Vector{String}}
 annotation :: Dict{String, Union{Vector{String}, String}}
@@ -23,7 +23,7 @@ mutable struct Reaction
     metabolites::Dict{String,Float64} # reaction id => stoichiometric coefficient
     lb::Float64
     ub::Float64
-    grr::Vector{Vector{Gene}}
+    grr::Vector{Vector{String}} # [[rxn_id1, rxn_id2], [rxn_id3]]
     subsystem::String
     notes::Dict{String,Vector{String}}
     annotation::Dict{String,Union{Vector{String},String}} # everything is a String[] except sbo, which is a String
@@ -35,7 +35,7 @@ mutable struct Reaction
         metabolites = Dict{String,Float64}(),
         lb = -_constants.default_reaction_bound,
         ub = _constants.default_reaction_bound,
-        grr = Vector{Vector{Gene}}(),
+        grr = Vector{Vector{String}}(),
         subsystem = "",
         notes = Dict{String,Vector{String}}(),
         annotation = Dict{String,Union{Vector{String},String}}(),
