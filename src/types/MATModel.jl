@@ -9,3 +9,103 @@ struct MATModel <: MetabolicModel
     id::String
     m::Dict{String, Any}
 end
+
+# Generic interface
+# Unfortunately this model type does not have standardized field names, hence the need to look for valid fieldnames.
+
+function reactions(model::MATModel)::Union{Nothing, Vector{String}}
+    ks = ("rxns", "reactions", "RXNS", "REACTIONS", "Reactions", "Rxns")
+    for k in ks
+        if haskey(model.m, k)
+            return [string(r) for r in model.m[k][:]] # sometimes stored as a matrix, this ensure that it is a string vector
+        end
+    end
+    @warn "No reactions found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
+
+n_reactions(model::MATModel)::Int = length(reactions(model))
+
+function metabolites(model::MATModel)::Union{Nothing, Vector{String}}
+    ks = ("mets", "metabolites", "METS", "METABOLITES", "Metabolites", "Mets")
+    for k in ks
+        if haskey(model.m, k)
+            return [string(r) for r in model.m[k][:]] # sometimes stored as a matrix, this ensure that it is a string vector
+        end
+    end
+    @warn "No metabolites found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
+
+n_metabolites(model::MATModel)::Int = length(metabolites(model))
+
+function genes(model::MATModel)::Union{Nothing, Vector{String}}
+    ks = ("genes", "GENES", "Genes")
+    for k in ks
+        if haskey(model.m, k)
+            return [string(r) for r in model.m[k][:]] # sometimes stored as a matrix, this ensure that it is a string vector
+        end
+    end
+    @warn "No genes found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
+
+n_genes(model::MATModel)::Int = length(model.genes)
+
+function stoichiometry(model::MATModel)::Union{Nothing, SparseMat}
+    ks = ("S")
+    for k in ks
+        if haskey(model.m, k)
+            return sparse(model.m[k])
+        end
+    end
+    @warn "No stoichiometric matrix found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
+
+function lower_bounds(model::MATModel)
+    ks = ("lbs", "lb", "lowerbounds", "lower_bounds")
+    for k in ks
+        if haskey(model.m, k)
+            return [float(r) for r in model.m[k][:]]
+        end
+    end
+    @warn "No lower bounds found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
+
+function upper_bounds(model::MATModel)
+    ks = ("ubs", "ub", "upperbounds", "upper_bounds")
+    for k in ks
+        if haskey(model.m, k)
+            return [float(r) for r in model.m[k][:]]
+        end
+    end
+    @warn "No upper bounds found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
+
+function bounds(model::MATModel)
+    return lower_bounds(model), upper_bounds(model)
+end
+
+function balance(model::MATModel)
+    ks = ("b")
+    for k in ks
+        if haskey(model.m, k)
+            return sparse([float(x) for x in model.m[k][:]])
+        end
+    end
+    return spzeros(length(model.metabolites))
+end
+
+function objective(model::MATModel)
+    ks = ("c")
+    for k in ks
+        if haskey(model.m, k)
+            return sparse([float(x) for x in model.m[k][:]])
+        end
+    end
+    @warn "No objective vector found. Perhaps the an exotic field name is used by the model?"
+    return nothing
+end
