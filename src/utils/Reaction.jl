@@ -20,7 +20,7 @@ function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String, Reac
                 end
             end
             if reaction_checker
-                return true, rxns[rxn]
+                return true, k
             end
         end
     end
@@ -74,4 +74,15 @@ function is_mass_balanced(rxn::Reaction)
     end
 
     return all(sum(values(atom_balances)) == 0), atom_balances
+end
+
+"""
+    is_boundary(rxn::Reaction)
+
+Return true if reaction is a boundary reaction, otherwise return false.
+Checks if boundary by inspecting number of metabolites in reaction equation. 
+Boundary reactions have only one metabolite, e.g. an exchange reaction, or a sink/demand reaction. 
+"""
+function is_boundary(rxn::Reaction)::Bool
+    length(keys(rxn)) == 1 ? true : false
 end

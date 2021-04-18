@@ -54,9 +54,9 @@ Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
 """
 function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
     atom_flux = Dict{String,Float64}()
-    for (rxnid, flux) in flux_dict
-        if startswith(rxnid, "EX_") || startswith(rxnid, "DM_") # exchange, demand reaction
-            for (met, stoich) in findfirst(model.reactions, rxnid).metabolites
+    for (rxn_id, flux) in flux_dict
+        if is_boundary(model.reactions[rxn_id])
+            for (met, stoich) in model.reactions[rxn_id].metabolites
                 adict = get_atoms(met)
                 for (atom, stoich) in adict
                     atom_flux[atom] = get(atom_flux, atom, 0.0) + flux * stoich
@@ -68,60 +68,71 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
-    get_exchanges(rxndict::Dict{String, Float64}; top_n=8, ignorebound=_constants.default_reaction_bound, verbose=true)
+    get_exchanges(rxndict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
 
 Display the top_n producing and consuming exchange fluxes.
-Set top_n to a large number to get all the consuming/producing fluxes.
+If `top_n` is not specified (by an integer), then all are displayed.
 Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.
-Return these reactions in two dictionaries: `consuming`, `producing`
+Return these reactions (id => ) in two dictionaries: `consuming`, `producing`
 """
 function exchange_reactions(
-    rxndict::Dict{String,Float64};
-    top_n = 8,
+    flux_dict::Dict{String,Float64},
+    model::StandardModel;
+    top_n = Inf,
     ignorebound = _constants.default_reaction_bound,
     verbose = true,
 )
-    fluxes = Float64[]
-    rxns = String[]
-    for (k, v) in rxndict
-        if startswith(k, "EX_") && abs(v) < ignorebound
-            push!(rxns, k)
-            push!(fluxes, v)
-        end
-    end
-    inds_prod = sortperm(fluxes, rev = true)
-    inds_cons = sortperm(fluxes)
-
     consuming = Dict{String,Float64}()
     producing = Dict{String,Float64}()
-    verbose && println("Consuming fluxes:")
-    for i = 1:min(top_n, length(rxndict))
-        if rxndict[rxns[inds_cons[i]]] < -_constants.tolerance
-            verbose && println(
-                rxns[inds_cons[i]],
-                " = ",
-                round(rxndict[rxns[inds_cons[i]]], digits = 4),
-            )
-            consuming[rxns[inds_cons[i]]] = rxndict[rxns[inds_cons[i]]]
-        else
-            continue
+
+    for (k, v) in flux_dict
+        if is_boundary(model.reactions[k])
+            if v < 0 # consuming
+                consuming[k] = v    
+            elseif v > 0 # producing
+                producing[k] = v
+            else # no flux
+                continue
+            end
+        end
+    end
+    
+    if verbose
+        # Do consuming
+        ks = collect(keys(consuming))
+        vs = [consuming[k] for k in ks]
+        inds = sortperm(vs)
+        n_max = length(ks)
+        println("Consuming fluxes: ")
+        ii = 0 # counter
+        for i in inds 
+            if v[i] > -ignorebound
+                println(ks[i], " = ", round(v[i],digits=6))
+                ii += 1
+            end
+            if ii > top_n
+                break
+            end
+        end
+        # Do producing
+        ks = collect(keys(producing))
+        vs = [producing[k] for k in ks]
+        inds = sortperm(vs)
+        n_max = length(ks)
+        println("Producing fluxes: ")
+        ii = 0 # counter
+        for i in inds 
+            if v[i] < ignorebound
+                println(ks[i], " = ", round(v[i],digits=6))
+                ii += 1
+            end
+            if ii > top_n
+                break
+            end
         end
     end
 
-    verbose && println("Producing fluxes:")
-    for i = 1:min(top_n, length(rxndict))
-        if rxndict[rxns[inds_prod[i]]] > _constants.tolerance
-            verbose && println(
-                rxns[inds_prod[i]],
-                " = ",
-                round(rxndict[rxns[inds_prod[i]]], digits = 4),
-            )
-            producing[rxns[inds_prod[i]]] = rxndict[rxns[inds_prod[i]]]
-        else
-            continue
-        end
-    end
     return consuming, producing
 end
 
@@ -131,7 +142,7 @@ end
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or 
 produce them given the flux distribution supplied in `fluxdict`.
 """
-function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
+function metabolite_fluxes(flux_dict::Dict{String,Float64}, model::StandardModel)
     S = stoichiometry(model)
     met_flux = Dict{String,Float64}()
     rxnids = reactions(model)
@@ -141,7 +152,7 @@ function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
     consuming = Dict{String,Dict{String,Float64}}()
     for (row, metid) in enumerate(metids)
         for (col, rxnid) in enumerate(rxnids)
-            mf = fluxdict[rxnid] * S[row, col]
+            mf = flux_dict[rxnid] * S[row, col]
             # ignore zero flux
             if mf < -_constants.tolerance # consuming rxn
                 if haskey(consuming, metid)
