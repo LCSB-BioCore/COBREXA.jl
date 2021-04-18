@@ -53,8 +53,9 @@ objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
 
 genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
 
-function reaction_gene_association(a::SBMLModel)::Maybe{GeneAssociation}
-    #TODO
+function reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation}
+    grr = a.m.reactions[rid].grr
+    maybemap(_parse_grr, grr)
 end
 
 metabolite_chemistry(a::SBMLModel, mid::String) =

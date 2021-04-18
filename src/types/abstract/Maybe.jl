@@ -14,3 +14,7 @@ Fold the `Maybe{T}` down to `T` by defaulting.
 function default(d::T, x::Maybe{T})::T where {T}
     isnothing(x) ? d : x
 end
+
+function maybemap(f, x::Maybe)::Maybe
+    isnothing(x) ? nothing : f(x)
+end
