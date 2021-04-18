@@ -7,13 +7,13 @@ However, not all the fields are used by analysis functions.
 """
 struct MATModel <: MetabolicModel
     id::String
-    m::Dict{String, Any}
+    m::Dict{String,Any}
 end
 
 # Generic interface
 # Unfortunately this model type does not have standardized field names, hence the need to look for valid fieldnames.
 
-function reactions(model::MATModel)::Union{Nothing, Vector{String}}
+function reactions(model::MATModel)::Union{Nothing,Vector{String}}
     ks = ("rxns", "reactions", "RXNS", "REACTIONS", "Reactions", "Rxns")
     for k in ks
         if haskey(model.m, k)
@@ -26,7 +26,7 @@ end
 
 n_reactions(model::MATModel)::Int = length(reactions(model))
 
-function metabolites(model::MATModel)::Union{Nothing, Vector{String}}
+function metabolites(model::MATModel)::Union{Nothing,Vector{String}}
     ks = ("mets", "metabolites", "METS", "METABOLITES", "Metabolites", "Mets")
     for k in ks
         if haskey(model.m, k)
@@ -39,7 +39,7 @@ end
 
 n_metabolites(model::MATModel)::Int = length(metabolites(model))
 
-function genes(model::MATModel)::Union{Nothing, Vector{String}}
+function genes(model::MATModel)::Union{Nothing,Vector{String}}
     ks = ("genes", "GENES", "Genes")
     for k in ks
         if haskey(model.m, k)
@@ -52,7 +52,7 @@ end
 
 n_genes(model::MATModel)::Int = length(model.genes)
 
-function stoichiometry(model::MATModel)::Union{Nothing, SparseMat}
+function stoichiometry(model::MATModel)::Union{Nothing,SparseMat}
     ks = ("S")
     for k in ks
         if haskey(model.m, k)

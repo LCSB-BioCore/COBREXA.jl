@@ -89,7 +89,7 @@ function exchange_reactions(
     for (k, v) in flux_dict
         if is_boundary(model.reactions[k])
             if v < 0 # consuming
-                consuming[k] = v    
+                consuming[k] = v
             elseif v > 0 # producing
                 producing[k] = v
             else # no flux
@@ -97,7 +97,7 @@ function exchange_reactions(
             end
         end
     end
-    
+
     if verbose
         # Do consuming
         ks = collect(keys(consuming))
@@ -106,9 +106,9 @@ function exchange_reactions(
         n_max = length(ks)
         println("Consuming fluxes: ")
         ii = 0 # counter
-        for i in inds 
+        for i in inds
             if v[i] > -ignorebound
-                println(ks[i], " = ", round(v[i],digits=6))
+                println(ks[i], " = ", round(v[i], digits = 6))
                 ii += 1
             end
             if ii > top_n
@@ -122,9 +122,9 @@ function exchange_reactions(
         n_max = length(ks)
         println("Producing fluxes: ")
         ii = 0 # counter
-        for i in inds 
+        for i in inds
             if v[i] < ignorebound
-                println(ks[i], " = ", round(v[i],digits=6))
+                println(ks[i], " = ", round(v[i], digits = 6))
                 ii += 1
             end
             if ii > top_n
