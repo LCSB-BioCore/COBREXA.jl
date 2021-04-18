@@ -60,3 +60,7 @@ metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = ma
     (fs) -> (_formula_to_dict(fs), default(0, m.species[mid].charge)),
     m.species[mid].formula,
 )
+
+function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
+    #TODO
+end
