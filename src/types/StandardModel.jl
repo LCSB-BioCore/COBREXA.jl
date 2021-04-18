@@ -97,8 +97,10 @@ Note, this conversion process may lose information.
 Inspect the fields retained in [`StandardModel`](@ref) to see what you can expect to be retained.
 """
 function Base.convert(::Type{StandardModel}, model::JSONModel)
-    return StandardModel(model.m["id"], 
-                        _reaction_ordereddict(model),
-                        _metabolite_ordereddict(model),
-                        _gene_ordereddict(model))
+    return StandardModel(
+        model.m["id"],
+        _reaction_ordereddict(model),
+        _metabolite_ordereddict(model),
+        _gene_ordereddict(model),
+    )
 end
