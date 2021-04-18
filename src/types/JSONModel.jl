@@ -9,7 +9,7 @@ end
 # Also assume that `metabolites` is used to access the dict containing the reaction equation for a reaction.
 
 function reactions(model::JSONModel)::Union{Nothing, Vector{String}}
-    for k in possible_rxn_keys
+    for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
             return [string(r["id"]) for r in model.m[k][:]]
         end
@@ -21,7 +21,7 @@ end
 n_reactions(model::JSONModel)::Int = length(reactions(model))
 
 function metabolites(model::JSONModel)::Union{Nothing, Vector{String}}
-    for k in possible_met_keys
+    for k in _constants.possible_met_keys
         if haskey(model.m, k)
             return [string(m["id"]) for m in model.m[k][:]]
         end
@@ -33,7 +33,7 @@ end
 n_metabolites(model::JSONModel)::Int = length(metabolites(model))
 
 function genes(model::JSONModel)::Union{Nothing, Vector{String}}
-    for k in possible_gene_keys
+    for k in _constants.possible_gene_keys
         if haskey(model.m, k)
             return [string(g["id"]) for g in model.m[k][:]]
         end
@@ -44,17 +44,17 @@ end
 
 n_genes(model::JSONModel)::Int = length(genes(model))
 
-function stoichiometry(model::JSONModel)::Union{Nothing, SparseMat}
+function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
     rxn_key = _constants.possible_rxn_keys[[haskey(model.m, x) for x in _constants.possible_rxn_keys]][1] # get the rxn key used
     met_ids = metabolites(model)
-    S = SparseArrays.spzeros(length(mets), length(rxn))
-    for (i, rxn_id) in rxn_ids
+    S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
+    for (i, rxn_id) in enumerate(rxn_ids)
         rxn_dict = model.m[rxn_key][i]["metabolites"] # assume metabolites is the only possible key
         for (met_id, coeff) in rxn_dict # assume met_id => coeff dict
             j = findfirst(x -> x == met_id, met_ids) # row
             isnothing(j) ?
-            (@error "S matrix construction error: $(met_id) not defined."; continue) : (return nothing)
+            (@error "S matrix construction error: $(met_id) not defined."; return nothing) : nothing
             S[j, i] = coeff
         end
     end
