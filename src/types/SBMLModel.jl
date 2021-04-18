@@ -50,6 +50,3 @@ end
 
 balance(a::SBMLModel)::SparseVec = spzeros(n_metabolites(a))
 objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
-coupling(a::SBMLModel)::SparseMat = spzeros(0, n_reactions(a))
-n_coupling_constraints(a::SBMLModel)::Int = 0
-coupling_bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec} = (spzeros(0), spzeros(0))

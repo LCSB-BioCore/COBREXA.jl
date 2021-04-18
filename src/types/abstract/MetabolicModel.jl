@@ -91,10 +91,11 @@ end
 """
     coupling(a::LM)::SparseMat where {LM<:MetabolicModel}
 
-Get a matrix of coupling constraint definitions of a model.
+Get a matrix of coupling constraint definitions of a model. By default, there
+is no coupling in the models.
 """
 function coupling(a::LM)::SparseMat where {LM<:MetabolicModel}
-    _missing_impl_error(coupling, (a,))
+    return spzeros(0, n_reactions(a))
 end
 
 """
@@ -110,8 +111,8 @@ end
     coupling_bounds(a::LM)::Tuple{SparseVec,SparseVec} where {LM<:MetabolicModel}
 
 Get the lower and upper bounds for each coupling bound in a model, as specified
-by `coupling`.
+by `coupling`. By default, the model does not have any coupling bounds.
 """
 function coupling_bounds(a::LM)::Tuple{SparseVec,SparseVec} where {LM<:MetabolicModel}
-    _missing_impl_error(coupling_bounds, (a,))
+    return (spzeros(0), spzeros(0))
 end
