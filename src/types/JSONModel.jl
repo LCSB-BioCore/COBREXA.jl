@@ -124,3 +124,95 @@ function gene_reaction_rules(model::JSONModel)
         end
     end
 end
+
+# Accessor functions to construct StandardModel
+
+function _gene_ordereddict(model::JSONModel)
+    gd = OrderedDict{String, Gene}()
+    for k in _constants.possible_gene_keys
+        if haskey(model.m, k)
+            for g in model.m[k]
+                gg = Gene(g["id"]; 
+                          name = get(g, "name", ""), 
+                          notes = _notes(get(g, "notes", Dict{String,Vector{String}}())), 
+                          annotation = _annotation(get(g, "annotation", Dict{String,Union{Vector{String},String}}()))
+                          )
+                gd[g["id"]] = gg
+            end
+            break
+        end
+    end
+    return gd
+end
+
+function _reaction_ordereddict(model::JSONModel)
+    rd = OrderedDict{String, Reaction}()
+    for k in _constants.possible_rxn_keys
+        if haskey(model.m, k)
+            for r in model.m[k]
+                rr = Reaction(r["id"]; 
+                                name = get(r, "name", ""),
+                                metabolites = _reaction_formula(get(r, "metabolites", Dict{String, Any}())),
+                                lb = get(r, "lb", -_constants.default_reaction_bound),
+                                ub = get(r, "ub", _constants.default_reaction_bound),
+                                grr = _parse_grr(get(r, "gene_reaction_rule", "")),
+                                subsystem = get(r, "subsystem", ""),
+                                notes = _notes(get(r, "notes", Dict{String, Any}())), 
+                                annotation = _annotation(get(r, "annotation", Dict{String,Union{Vector{String},String}}())),
+                                objective_coefficient = get(r, "objective_coefficient", 0.0)                                      
+                                )
+                rd[r["id"]] = rr
+            end
+            break
+        end
+    end
+    return rd
+end
+
+function _metabolite_ordereddict(model::JSONModel)
+    md = OrderedDict{String, Metabolite}()
+    for k in _constants.possible_met_keys
+        if haskey(model.m, k)
+            for m in model.m[k]
+                mm = Metabolite(m["id"]; 
+                                name = get(m, "name", ""),
+                                formula = get(m, "formula", ""),
+                                charge = get(m, "charge", 0),
+                                compartment = get(m, "compartment", ""),
+                                notes = _notes(get(m, "notes", Dict{String,Vector{String}}())), 
+                                annotation = _annotation(get(m, "annotation", Dict{String,Union{Vector{String},String}}()))                                      
+                                )
+                md[m["id"]] = mm
+            end
+            break
+        end
+    end
+    return md
+end
+
+# convert d to Dict{String, Vector{String}}
+function _notes(d)
+    dd = Dict{String, Vector{String}}()
+    for (k, v) in d
+        dd[k] = string.(v)
+    end
+    return dd
+end
+
+# convert d to Dict{String, Union{String, Vector{String}}}
+function _annotation(d)
+    dd = Dict{String, Union{String, Vector{String}}}()
+    for (k, v) in d
+        dd[k] = string.(v)
+    end
+    return dd
+end
+
+# convert d to Dict{String, Float64}
+function _reaction_formula(d)
+    dd = Dict{String, Float64}()
+    for (k, v) in d
+        dd[k] = float(v)
+    end
+    return dd
+end

@@ -90,3 +90,15 @@ end
 function gene_reaction_rules(model::StandardModel)
     grrs = [_unparse_grr(x.grr) for x in values(model.reactions)]
 end
+
+"""
+Convert a `JSONModel` into a `StandardModel`.
+Note, this conversion process may lose information. 
+Inspect the fields retained in [`StandardModel`](@ref) to see what you can expect to be retained.
+"""
+function Base.convert(::Type{StandardModel}, model::JSONModel)
+    return StandardModel(model.m["id"], 
+                        _reaction_ordereddict(model),
+                        _metabolite_ordereddict(model),
+                        _gene_ordereddict(model))
+end
