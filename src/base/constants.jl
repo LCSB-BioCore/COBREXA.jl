@@ -16,4 +16,5 @@ const _constants = (
     possible_stoich_matrix_keys = ("S"),
     possible_balance_keys = ("b"),
     possible_objective_keys = ("c"),
+    possible_grr_keys = ("gene_reaction_rules", "grRules", "rules"),
 )

@@ -90,7 +90,7 @@ function balance(model::MATModel)
             return sparse([float(x) for x in model.m[k][:]])
         end
     end
-    return spzeros(length(model.metabolites))
+    return spzeros(n_metabolites(model))
 end
 
 function objective(model::MATModel)
@@ -100,9 +100,19 @@ function objective(model::MATModel)
         end
     end
     @warn "No objective vector found. Perhaps the an exotic field name is used by the model?"
-    return nothing
+    return spzeros(n_reactions(model))
 end
 
 function id(model::MATModel)
     return model.id
+end
+
+function gene_reaction_rules(model::MATModel)
+    for k in _constants.possible_grr_keys
+        if haskey(model.m, k)
+            return [string(x) for x in model.m[k][:]]
+        end
+    end 
+    @warn "No gene reaction rules found. Perhaps the an exotic field name is used by the model?"
+    return nothing
 end

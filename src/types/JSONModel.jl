@@ -50,8 +50,8 @@ function stoichiometry(model::JSONModel)::Union{Nothing, SparseMat}
     met_ids = metabolites(model)
     S = SparseArrays.spzeros(length(mets), length(rxn))
     for (i, rxn_id) in rxn_ids
-        rxn_dict = model.m[rxn_key][i]["metabolites"]
-        for (met_id, coeff) in rxn_dict
+        rxn_dict = model.m[rxn_key][i]["metabolites"] # assume metabolites is the only possible key
+        for (met_id, coeff) in rxn_dict # assume met_id => coeff dict
             j = findfirst(x -> x == met_id, met_ids) # row
             isnothing(j) ?
             (@error "S matrix construction error: $(met_id) not defined."; continue) : (return nothing)
@@ -62,10 +62,13 @@ function stoichiometry(model::JSONModel)::Union{Nothing, SparseMat}
 end
 
 function lower_bounds(model::JSONModel)
-    ks = ("lbs", "lb", "lowerbounds", "lower_bounds")
-    for k in ks
+    lbs = Float64[]
+    for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
-            return [float(r) for r in model.m[k][:]]
+            for rxn in model.m[k]
+                push!(lbs, rxn["lower_bound"]) # assume this is the only possible key
+            end
+            return lbs
         end
     end
     @warn "No lower bounds found. Perhaps the an exotic field name is used by the model?"
@@ -73,10 +76,13 @@ function lower_bounds(model::JSONModel)
 end
 
 function upper_bounds(model::JSONModel)
-    ks = ("ubs", "ub", "upperbounds", "upper_bounds")
-    for k in ks
+    ubs = Float64[]
+    for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
-            return [float(r) for r in model.m[k][:]]
+            for rxn in model.m[k]
+                push!(ubs, rxn["upper_bound"]) # assume this is the only possible key
+            end
+            return ubs
         end
     end
     @warn "No upper bounds found. Perhaps the an exotic field name is used by the model?"
@@ -88,22 +94,30 @@ function bounds(model::JSONModel)
 end
 
 function balance(model::JSONModel)
-    ks = ("b")
-    for k in ks
-        if haskey(model.m, k)
-            return sparse([float(x) for x in model.m[k][:]])
-        end
-    end
-    return spzeros(length(model.metabolites))
+    return spzeros(n_metabolites(model))
 end
 
 function objective(model::JSONModel)
-    ks = ("c")
-    for k in ks
+    c = spzeros(n_reactions(model))
+    for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
-            return sparse([float(x) for x in model.m[k][:]])
+            for (i, rxn) in enumerate(model.m[k])
+                if haskey(rxn, "objective_coefficient") # assume the only key?
+                    c[i] = rxn["objective_coefficient"]
+                end
+            end
         end
     end
-    @warn "No objective vector found. Perhaps the an exotic field name is used by the model?"
-    return nothing
+    return c
+end
+
+function gene_reaction_rules(model::JSONModel)
+    grrs = String[]
+    for k in _constants.possible_rxn_keys
+        if haskey(model.m, k)
+            for rxn in model.m[k]
+                push!(grrs, rxn["gene_reaction_rules"]) # assume only key
+            end
+        end
+    end 
 end
