@@ -116,3 +116,15 @@ function gene_reaction_rules(model::MATModel)
     @warn "No gene reaction rules found. Perhaps the an exotic field name is used by the model?"
     return nothing
 end
+
+function build_reactions(model::MATModel)
+
+end
+
+function build_genes(model::MATModel)
+
+end
+
+function build_metabolites(model::MATModel)
+
+end
