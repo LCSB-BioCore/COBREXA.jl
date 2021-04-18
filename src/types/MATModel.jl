@@ -33,11 +33,9 @@ bounds(m::MATModel) = (
     haskey(m.modeldict, "ub") ? m.modeldict["ub"] : fill(Inf, n_reactions(m)),
 )
 
-balance(m::MATModel) =
-    haskey(m.modeldict, "b") ? m.modeldict["b"] : zeros(n_metabolites(m))
+balance(m::MATModel) = haskey(m.modeldict, "b") ? m.modeldict["b"] : zeros(n_metabolites(m))
 
-objective(m::MATModel) =
-    haskey(m.modeldict, "c") ? m.modeldict["c"] : zeros(n_reactions(m))
+objective(m::MATModel) = haskey(m.modeldict, "c") ? m.modeldict["c"] : zeros(n_reactions(m))
 
 coupling(a::MATModel)::SparseMat = spzeros(0, n_reactions(a))
 n_coupling_constraints(a::MATModel)::Int = 0
