@@ -58,6 +58,7 @@ function reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssocia
     maybemap(_parse_grr, grr)
 end
 
-metabolite_chemistry(a::SBMLModel, mid::String) =
-    isnothing(m.species[mid].formula) ? nothing :
-    (_formula_to_dict(m.species[mid].formula), default(0, m.species[mid].charge))
+metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = mapmaybe(
+    m.species[mid].formula,
+    (fs) -> (_formula_to_dict(fs), default(0, m.species[mid].charge)),
+)
