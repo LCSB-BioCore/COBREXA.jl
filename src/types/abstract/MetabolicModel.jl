@@ -129,7 +129,7 @@ function genes(a::MetabolicModel)::Vector{String}
 end
 
 """
-    gene_reaction_rule(a::MetabolicModel, gene_id::String)::Maybe{Vector{Vector{String}}}
+    reaction_gene_product_association(a::MetabolicModel, gene_id::String)::Maybe{Vector{Vector{String}}}
 
 Returns the sets of genes that need to be present so that the reaction can work
 (technically, a DNF on gene availability, with positive atoms only).
@@ -137,9 +137,27 @@ Returns the sets of genes that need to be present so that the reaction can work
 For simplicity, `nothing` may be returned, meaning that the reaction always
 takes place. (in DNF, that would be equivalent to returning `[[]]`.)
 """
-function gene_product_associations(
+function reaction_gene_product_association(
     a::MetabolicModel,
     reaction_id::String,
 )::Maybe{Vector{Vector{String}}}
+    return nothing
+end
+
+"""
+    metabolite_chemistry(
+        a::MetabolicModel,
+        metabolite_id::String,
+    )::Maybe{Tuple{Dict{String,Int},Int}}
+
+Return chemistry-relevant information about metabolite, in particular the
+atomic formula (as a map of atom names to abundances) with charge.
+
+May return `nothing` in case the formula is not known or irrelevant.
+"""
+function metabolite_chemistry(
+    a::MetabolicModel,
+    metabolite_id::String,
+)::Maybe{Tuple{Dict{String,Int},Int}}
     return nothing
 end
