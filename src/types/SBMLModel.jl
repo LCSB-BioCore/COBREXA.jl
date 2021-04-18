@@ -53,7 +53,7 @@ objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
 
 genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
 
-function reaction_gene_associations(a::SBMLModel)::Maybe{Vector{Vector{String}}}
+function reaction_gene_association(a::SBMLModel)::Maybe{GeneAssociation}
     #TODO
 end
 
