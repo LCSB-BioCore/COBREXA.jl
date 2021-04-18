@@ -1,62 +1,52 @@
 struct JSONFile end
 struct SBMLFile end
-struct MFile end
-struct YAMLFile end
+struct MATFile end
 struct UNKNOWNFile end
 
 """
     _infer_file_type(file_name::String)
 
-Infer the file type.
+Infer the file type given its extension.
 """
 function _infer_file_type(file_name::String)
     if endswith(file_name, ".json")
         return JSONFile
     elseif endswith(file_name, ".xml")
         return SBMLFile
-    elseif endswith(file_name, ".mat")
-        return MFile
-    elseif endswith(file_name, ".yml")
-        return YAMLFile
+    elseif endswith(file_name, ".mat") 
+        return MATFile
     end
     return UNKNOWNFile
 end
 
 """
-    read_model(file_location::String, ::Type{StandardModel})
+    read_model(file_location::String)
 
-Reads a model at `file_location` and returns a constraint based `model::StandardModel`.
-Currently supported formats include SBML (.xml), Matlab (.mat) and JSON (.json) models.
-The model format is inferred from the `file_location` extension.
+Read a model from file at `file_location`. 
+This function infers the model type based on the file extension.
+Files ending with `.xml` are read as `SBMLModel`s, files ending with `.mat` are read as `MATModel`s, 
+and files ending with `.json` are read as `JSONModel`s.
 
-Note, some meta-information may be lost when importing a model. Importantly, only information regarding the
-reactions, metabolites and genes are imported. Currently reading JSON models captures the most meta-information
-regarding reactions, metabolites and genes (e.g. the notes and annotation fields).
-
-When importing Matlab models some annotation and notes may not be imported because of non-standard field names used by some models.
-Gene reaction rules are successfully imported only if they adhere to this format: `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`,
-where `or` can be interchanged with `OR, |, ||` and `and` can be interchanged with `AND, &, &&`.
-Other gene reaction rules formats are not supported yet, but file an issue if your format is standard and needs to be included.
-
-However, in all cases the basic information needed to perform constraint based analysis should be imported successfully,
-e.g. stoichiometrix matrix, constraints etc..
-Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
-Always inspect the imported model before running analysis (garbage in -> garbage out).
+Note, that all analysis functions work with these model types, although high performance computations
+should be performed by converting these models to either `StandardModel`, `CoreModel` or `CoreModelCoupled`. 
+Also note, no information loss occurs when importing models, but information loss may occur when converting
+between different model types (e.g. non-conventional meta-information).
 """
-function read_model(file_location::String, modelType)
+function read_model(file_location::String)
     inferred_type = _infer_file_type(file_location)
     if inferred_type == UNKNOWNFile
         @warn "File type not supported."
         return nothing
     else
-        return _read_model(file_location, inferred_type, modelType)
+        return _read_model(file_location, inferred_type)
     end
 end
 
 """
     write_model(model::StandardModel, file_location::String)
 
-Save model at `file_location`. Infers format from `file_location` extension.
+Save model at `file_location`. 
+Infers format from `file_location` extension.
 Supported formats include SBML (.xml), Matlab COBRA models (.mat) and JSON COBRA models (.json).
 
 Note, only the fields contained in model are saved. Make sure that information isn't

@@ -1,4 +1,4 @@
-function _write_model(model::StandardModel, ::Type{MFile}, file_location::String)
+function _write_model(model::StandardModel, ::Type{MATFile}, file_location::String)
     # Some information is lost here, e.g. notes and some annotations.
     S = stoichiometry(model)
     b = balance(model)
@@ -56,7 +56,7 @@ NB: Does NOT export general inequality constraints (eg coupling)
 
 See also: `MAT.jl`
 """
-function _write_model(model::CoreModel, ::Type{MFile}, file_path::String)
+function _write_model(model::CoreModel, ::Type{MATFile}, file_path::String)
     var_name = "model" # maybe make a field for this in the model?
     matwrite(file_path, Dict(var_name => _convert_to_m_exportable_dict(model)))
 end

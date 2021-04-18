@@ -1,7 +1,7 @@
 """
 Convert a dictionary read from a MAT file to CoreModel
 """
-function _convert_m_dict_to_linear_model(model::Dict)
+function Base.convert(::Type{CoreModel}, model::MATModel)
     model_keys = ["S", "b", "c", "ub", "lb"]
 
     for key in model_keys
@@ -25,7 +25,7 @@ end
 Convert a CoreModel to exportable format
 SparseVectors are not written and read properly, SparseMatrix is okay
 """
-function _convert_to_m_exportable_dict(model::CoreModel)
+function Base.convert(::AbstractDict, model::CoreModel)
     xl, xu = bounds(model)
     return Dict(
         "S" => stoichiometry(model),
