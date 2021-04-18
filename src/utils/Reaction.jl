@@ -9,7 +9,7 @@ Otherwise return false and "".
 
 See also: [`is_mass_balanced`](@ref)
 """
-function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String, Reaction})
+function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String,Reaction})
     for (k, rxn) in rxns
         if rxn.id != crxn.id # skip if same ID
             rxn_checker = true
@@ -34,7 +34,10 @@ Determine if a `rxn` is has overlapping annotations in `rxns`.
 The annotations checked are: ["bigg.reaction", "biocyc", "ec-code", "kegg.reaction", "metanetx.reaction", "rhea", "sabiork", "seed.reaction"].
 Return true and the `id` of the first hit, otherwise false and "".
 """
-function check_duplicate_annotations(crxn::Reaction, rxns::OrderedDict{String, Reaction})::Tuple{Bool, String}
+function check_duplicate_annotations(
+    crxn::Reaction,
+    rxns::OrderedDict{String,Reaction},
+)::Tuple{Bool,String}
     inspect_annotations = [
         "bigg.reaction",
         "biocyc",
@@ -47,7 +50,12 @@ function check_duplicate_annotations(crxn::Reaction, rxns::OrderedDict{String, R
     ]
     for (k, rxn) in rxns
         for anno in inspect_annotations
-            if length(intersect(get(crxn.annotation, anno, ["c1"]), get(rxn.annotation, anno, ["c2"]))) != 0
+            if length(
+                intersect(
+                    get(crxn.annotation, anno, ["c1"]),
+                    get(rxn.annotation, anno, ["c2"]),
+                ),
+            ) != 0
                 return true, k
             end
         end

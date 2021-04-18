@@ -8,7 +8,10 @@ Return true and the index of the first hit, otherwise false and -1.
 
 See also: [`check_same_formula`](@ref), [`get_atoms`](@ref)
 """
-function check_duplicate_annotations(cmet::Metabolite, mets::OrderedDict{String, Metabolite})::Tuple{Bool, String}
+function check_duplicate_annotations(
+    cmet::Metabolite,
+    mets::OrderedDict{String,Metabolite},
+)::Tuple{Bool,String}
     inspect_annotations = [
         "kegg.compound",
         "bigg.metabolite",
@@ -22,10 +25,15 @@ function check_duplicate_annotations(cmet::Metabolite, mets::OrderedDict{String,
         "biocyc",
     ]
     for (k, met) in mets
-        if  met.compartment == cmet.compartment # check if same compartment
+        if met.compartment == cmet.compartment # check if same compartment
             for anno in inspect_annotations
-                if length(set(get(met.annotation, anno, ["c1"]), get(cmet.annotation, anno, ["c2"]))) != 0
-                    return true, k    
+                if length(
+                    set(
+                        get(met.annotation, anno, ["c1"]),
+                        get(cmet.annotation, anno, ["c2"]),
+                    ),
+                ) != 0
+                    return true, k
                 end
             end
         end

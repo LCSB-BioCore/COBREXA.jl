@@ -7,7 +7,7 @@ However, not all the fields are used by analysis functions.
 """
 struct MATModel <: MetabolicModel
     id::String
-    m::Dict{String, Any}
+    m::Dict{String,Any}
 end
 
 # Generic interface

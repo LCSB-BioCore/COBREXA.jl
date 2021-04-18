@@ -13,7 +13,7 @@ function _infer_file_type(file_name::String)
         return JSONFile
     elseif endswith(file_name, ".xml")
         return SBMLFile
-    elseif endswith(file_name, ".mat") 
+    elseif endswith(file_name, ".mat")
         return MATFile
     end
     return UNKNOWNFile

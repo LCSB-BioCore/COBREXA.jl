@@ -1,5 +1,5 @@
 struct JSONModel <: MetabolicModel
-    m::Dict{String, Any}
+    m::Dict{String,Any}
 end
 
 # Generic interface
