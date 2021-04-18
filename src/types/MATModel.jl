@@ -14,7 +14,7 @@ end
 # Unfortunately this model type does not have standardized field names, hence the need to look for valid fieldnames.
 # The keys used to look for valid fieldnames is in `constants`.
 
-function reactions(model::MATModel)::Union{Nothing, Vector{String}}
+function reactions(model::MATModel)::Union{Nothing,Vector{String}}
     for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
             return [string(r) for r in model.m[k][:]] # sometimes stored as a matrix, this ensure that it is a string vector
@@ -26,7 +26,7 @@ end
 
 n_reactions(model::MATModel)::Int = length(reactions(model))
 
-function metabolites(model::MATModel)::Union{Nothing, Vector{String}}
+function metabolites(model::MATModel)::Union{Nothing,Vector{String}}
     for k in _constants.possible_met_keys
         if haskey(model.m, k)
             return [string(r) for r in model.m[k][:]] # sometimes stored as a matrix, this ensure that it is a string vector
@@ -38,7 +38,7 @@ end
 
 n_metabolites(model::MATModel)::Int = length(metabolites(model))
 
-function genes(model::MATModel)::Union{Nothing, Vector{String}}
+function genes(model::MATModel)::Union{Nothing,Vector{String}}
     for k in _constants.possible_gene_keys
         if haskey(model.m, k)
             return [string(r) for r in model.m[k][:]] # sometimes stored as a matrix, this ensure that it is a string vector
@@ -50,7 +50,7 @@ end
 
 n_genes(model::MATModel)::Int = length(genes(model))
 
-function stoichiometry(model::MATModel)::Union{Nothing, SparseMat}
+function stoichiometry(model::MATModel)::Union{Nothing,SparseMat}
     for k in _constants.possible_stoich_matrix_keys
         if haskey(model.m, k)
             return sparse(model.m[k])
@@ -112,7 +112,7 @@ function gene_reaction_rules(model::MATModel)
         if haskey(model.m, k)
             return [string(x) for x in model.m[k][:]]
         end
-    end 
+    end
     @warn "No gene reaction rules found. Perhaps the an exotic field name is used by the model?"
     return nothing
 end

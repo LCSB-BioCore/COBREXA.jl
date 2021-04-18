@@ -56,7 +56,8 @@ function stoichiometry(model::StandardModel)
         for (met_id, coeff) in model.reactions[rxn_id].metabolites
             j = findfirst(x -> x == met_id, met_ids) # row
             isnothing(j) ?
-            (@error "S matrix construction error: $(met_id) not defined."; return nothing) : nothing
+            (@error "S matrix construction error: $(met_id) not defined."; return nothing) :
+            nothing
             S[j, i] = coeff
         end
     end

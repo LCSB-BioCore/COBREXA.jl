@@ -8,7 +8,7 @@ end
 # However, assume that `id` is used to index reactions, metabolites and genes.
 # Also assume that `metabolites` is used to access the dict containing the reaction equation for a reaction.
 
-function reactions(model::JSONModel)::Union{Nothing, Vector{String}}
+function reactions(model::JSONModel)::Union{Nothing,Vector{String}}
     for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
             return [string(r["id"]) for r in model.m[k][:]]
@@ -20,7 +20,7 @@ end
 
 n_reactions(model::JSONModel)::Int = length(reactions(model))
 
-function metabolites(model::JSONModel)::Union{Nothing, Vector{String}}
+function metabolites(model::JSONModel)::Union{Nothing,Vector{String}}
     for k in _constants.possible_met_keys
         if haskey(model.m, k)
             return [string(m["id"]) for m in model.m[k][:]]
@@ -32,7 +32,7 @@ end
 
 n_metabolites(model::JSONModel)::Int = length(metabolites(model))
 
-function genes(model::JSONModel)::Union{Nothing, Vector{String}}
+function genes(model::JSONModel)::Union{Nothing,Vector{String}}
     for k in _constants.possible_gene_keys
         if haskey(model.m, k)
             return [string(g["id"]) for g in model.m[k][:]]
@@ -46,7 +46,9 @@ n_genes(model::JSONModel)::Int = length(genes(model))
 
 function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
-    rxn_key = _constants.possible_rxn_keys[[haskey(model.m, x) for x in _constants.possible_rxn_keys]][1] # get the rxn key used
+    rxn_key = _constants.possible_rxn_keys[[
+        haskey(model.m, x) for x in _constants.possible_rxn_keys
+    ]][1] # get the rxn key used
     met_ids = metabolites(model)
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
     for (i, rxn_id) in enumerate(rxn_ids)
@@ -54,7 +56,8 @@ function stoichiometry(model::JSONModel)
         for (met_id, coeff) in rxn_dict # assume met_id => coeff dict
             j = findfirst(x -> x == met_id, met_ids) # row
             isnothing(j) ?
-            (@error "S matrix construction error: $(met_id) not defined."; return nothing) : nothing
+            (@error "S matrix construction error: $(met_id) not defined."; return nothing) :
+            nothing
             S[j, i] = coeff
         end
     end
@@ -119,5 +122,5 @@ function gene_reaction_rules(model::JSONModel)
                 push!(grrs, rxn["gene_reaction_rules"]) # assume only key
             end
         end
-    end 
+    end
 end
