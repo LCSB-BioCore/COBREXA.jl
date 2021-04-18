@@ -28,15 +28,16 @@
     # test if same reactions and metabolites are read
     @test length(intersect(reactions(matlabmodel_ecoli), reactions(jsonmodel_ecoli))) == 0
     @test length(intersect(reactions(sbmlmodel_ecoli), reactions(jsonmodel_ecoli))) == 0
-    @test length(intersect(metabolites(matlabmodel_ecoli), metabolites(jsonmodel_ecoli))) == 0
+    @test length(intersect(metabolites(matlabmodel_ecoli), metabolites(jsonmodel_ecoli))) ==
+          0
     @test length(intersect(metabolites(sbmlmodel_ecoli), metabolites(jsonmodel_ecoli))) == 0
-    
+
     # test if stoichiometric matrices are the same
-    sbml_S = sum(stoichiometric(sbmlmodel_ecoli), dims=(1,2))[1]
-    json_S = sum(stoichiometric(sbmlmodel_ecoli), dims=(1,2))[1]
-    mat_S = sum(stoichiometric(sbmlmodel_ecoli), dims=(1,2))[1]
+    sbml_S = sum(stoichiometric(sbmlmodel_ecoli), dims = (1, 2))[1]
+    json_S = sum(stoichiometric(sbmlmodel_ecoli), dims = (1, 2))[1]
+    mat_S = sum(stoichiometric(sbmlmodel_ecoli), dims = (1, 2))[1]
     @test sbml_S == json_S
-    @test sbml_S == mat_S    
+    @test sbml_S == mat_S
 
     # test if bounds are the same
     sbml_bounds = Dict(zip(reactions(sbmlmodel_ecoli), bounds(sbmlmodel_ecoli)))
