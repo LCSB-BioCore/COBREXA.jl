@@ -43,7 +43,12 @@ function read_model(filename::String, type::Maybe{Type} = nothing)
         type = _infer_best_model_type(filename)
     end
     if isnothing(type) # still!
-        throw(DomainError(filename, "Could not infer a proper model type to load from file extension"))
+        throw(
+            DomainError(
+                filename,
+                "Could not infer a proper model type to load from file extension",
+            ),
+        )
     end
     return read_model(filename, type)
 end
@@ -62,7 +67,12 @@ function write_model(model::MetabolicModel, file_location::String)
         type = _infer_best_model_type
     end
     if isnothing(type) # still!
-        throw(DomainError(filename, "Could not infer a proper model type to write from file extension"))
+        throw(
+            DomainError(
+                filename,
+                "Could not infer a proper model type to write from file extension",
+            ),
+        )
     end
     if inferred_type == UNKNOWNFile
         @warn "File type not supported."
