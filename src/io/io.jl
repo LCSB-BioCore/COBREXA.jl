@@ -1,25 +1,20 @@
-struct JSONFile end
-struct SBMLFile end
-struct MFile end
-struct YAMLFile end
-struct UNKNOWNFile end
 
 """
-    _infer_file_type(file_name::String)
+    _infer_best_model_type(filename::String)::Maybe{Type}
 
-Infer the file type.
+Guess the type of the model that's best for representing stuff in a file named
+`file_name`.
 """
-function _infer_file_type(file_name::String)
+function _infer_best_model_type(filename::String)::Maybe{Type}
     if endswith(file_name, ".json")
-        return JSONFile
+        return StandardModel
     elseif endswith(file_name, ".xml")
-        return SBMLFile
+        return SBMLModel
     elseif endswith(file_name, ".mat")
-        return MFile
-    elseif endswith(file_name, ".yml")
-        return YAMLFile
+        return MATModel
+    else
+        return nothing
     end
-    return UNKNOWNFile
 end
 
 """
@@ -43,14 +38,14 @@ e.g. stoichiometrix matrix, constraints etc..
 Advanced tools that require, e.g. metabolite formulas, gene reaction rules, and KEGG or BIGG IDs, will not function if these are improperly imported.
 Always inspect the imported model before running analysis (garbage in -> garbage out).
 """
-function read_model(file_location::String, modelType)
-    inferred_type = _infer_file_type(file_location)
-    if inferred_type == UNKNOWNFile
-        @warn "File type not supported."
-        return nothing
-    else
-        return _read_model(file_location, inferred_type, modelType)
+function read_model(filename::String, type::Maybe{Type} = nothing)
+    if isnothing(type)
+        type = _infer_best_model_type(filename)
     end
+    if isnothing(type) # still!
+        throw(DomainError(filename, "Could not infer a proper model type to load from file extension"))
+    end
+    return read_model(filename, type)
 end
 
 """
@@ -63,7 +58,12 @@ Note, only the fields contained in model are saved. Make sure that information i
 lost between reading a model and writing a model (e.g. check gene reaction rules, notes and annotations).
 """
 function write_model(model::MetabolicModel, file_location::String)
-    inferred_type = _infer_file_type(file_location)
+    if isnothing(type)
+        type = _infer_best_model_type
+    end
+    if isnothing(type) # still!
+        throw(DomainError(filename, "Could not infer a proper model type to write from file extension"))
+    end
     if inferred_type == UNKNOWNFile
         @warn "File type not supported."
         return nothing
