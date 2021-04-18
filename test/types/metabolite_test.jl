@@ -22,26 +22,17 @@
 
     @test sprint(show, MIME("text/plain"), mets) == "Metabolite set of length: 3\n"
 
-    @test mets[m2] == 2
+    mets_d = OrderedDict(zip([m.id for m in mets], mets))
+    dup, ind = check_duplicate_annotations(m3, mets_d)
+    @test dup && ind == "met3"
 
-    mm = findfirst(mets, "met3")
-    @test mm.id == m3.id
-
-    dup, ind = check_duplicate_annotations(mets, m3)
-    @test dup && ind == 3
-
-    mms = check_same_formula([m3, m1], m2)
-    @test length(mms) == 1
-
-    ats = get_atoms(mms[1])
+    ats = get_atoms(mets[1])
     @test ats["C"] == 6 && ats["N"] == 1
-
-    @test isnothing(findfirst(mets, "nope"))
 
     m4 = Metabolite("met4")
     m4.formula = "X"
     m4.annotation = Dict("sboterm" => "sbo", "kegg.compound" => ["adxxx2s", "asdxxxs"])
 
-    dup, ind = check_duplicate_annotations(mets, m4)
-    @test !dup && ind == -1
+    dup, ind = check_duplicate_annotations(m4, mets_d)
+    @test !dup && ind == ""
 end

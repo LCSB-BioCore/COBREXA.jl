@@ -28,7 +28,7 @@ function check_duplicate_annotations(
         if met.compartment == cmet.compartment # check if same compartment
             for anno in inspect_annotations
                 if length(
-                    set(
+                    intersect(
                         get(met.annotation, anno, ["c1"]),
                         get(cmet.annotation, anno, ["c2"]),
                     ),
