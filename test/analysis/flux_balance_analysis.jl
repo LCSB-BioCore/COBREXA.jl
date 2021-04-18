@@ -24,7 +24,7 @@
         model_path,
         "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
     )
-    cp = read_model(model_path, CoreModel)
+    cp = read_model(model_path)
     expected_optimum = 0.9219480950504393
 
     lp = flux_balance_analysis(cp, GLPK.Optimizer)
@@ -48,7 +48,7 @@ end
         "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
     )
 
-    model = read_model(model_path, StandardModel)
+    model = read_model(model_path)
 
     biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
     glucose = findfirst(model.reactions, "EX_glc__D_e")
