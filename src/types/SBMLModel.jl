@@ -50,3 +50,13 @@ end
 
 balance(a::SBMLModel)::SparseVec = spzeros(n_metabolites(a))
 objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
+
+genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
+
+function reaction_gene_associations(a::SBMLModel)::Maybe{Vector{Vector{String}}}
+    #TODO
+end
+
+metabolite_chemistry(a::SBMLModel, mid::String) =
+    isnothing(m.species[mid].formula) ? nothing :
+    (_formula_to_dict(m.species[mid].formula), default(0, m.species[mid].charge))
