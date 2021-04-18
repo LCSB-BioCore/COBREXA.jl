@@ -117,3 +117,29 @@ by `coupling`. By default, the model does not have any coupling bounds.
 function coupling_bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
     return (spzeros(0), spzeros(0))
 end
+
+"""
+    genes(a::MetabolicModel)::Vector{String}
+
+Return identifiers of all genes contained in the model. By default, there are
+no genes.
+"""
+function genes(a::MetabolicModel)::Vector{String}
+    return []
+end
+
+"""
+    gene_reaction_rule(a::MetabolicModel, gene_id::String)::Maybe{Vector{Vector{String}}}
+
+Returns the sets of genes that need to be present so that the reaction can work
+(technically, a DNF on gene availability, with positive atoms only).
+
+For simplicity, `nothing` may be returned, meaning that the reaction always
+takes place. (in DNF, that would be equivalent to returning `[[]]`.)
+"""
+function gene_product_associations(
+    a::MetabolicModel,
+    reaction_id::String,
+)::Maybe{Vector{Vector{String}}}
+    return nothing
+end
