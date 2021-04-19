@@ -23,15 +23,6 @@ struct JSONModel <: MetabolicModel
 end
 
 
-function id(model::JSONModel)
-    for k in _constants.keynames.ids
-        if haskey(model.m, k)
-            @info "Used key: \"$k\" to access the model id."
-            return model.m[k]
-        end
-    end
-end
-
 """
     _guesskey(ks, possibilities)
 
