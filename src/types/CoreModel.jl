@@ -94,25 +94,6 @@ function objective(a::CoreModel)::SparseVec
 end
 
 """
-    coupling(a::CoreModel)::SparseMat
-
-Coupling constraint matrix for a `CoreModel`, actually empty.
-"""
-function coupling(a::CoreModel)::SparseMat
-    spzeros(0, n_reactions(a))
-end
-
-"""
-    coupling_bounds(a::CoreModel)::Tuple{SparseVec,SparseVec}
-
-Coupling bounds for a `CoreModel`, in fact always empty.
-"""
-function coupling_bounds(a::CoreModel)::Tuple{SparseVec,SparseVec}
-    (spzeros(0), spzeros(0))
-end
-
-
-"""
     Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
 
 Make a `CoreModel` out of any compatible model type.
