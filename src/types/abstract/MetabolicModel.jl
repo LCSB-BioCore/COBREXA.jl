@@ -132,6 +132,17 @@ function genes(a::MetabolicModel)::Vector{String}
 end
 
 """
+    n_genes(a::MetabolicModel)::Int
+
+Return the number of genes in the model (as returned by [`genes`](@ref)). If
+you just need the number of the genes, this may be much more efficient than
+calling [`genes`](@ref) and measuring the array.
+"""
+function n_genes(a::MetabolicModel)::Int
+    return length(genes(a))
+end
+
+"""
     reaction_gene_association(a::MetabolicModel, gene_id::String)::Maybe{Vector{Vector{String}}}
 
 Returns the sets of genes that need to be present so that the reaction can work
