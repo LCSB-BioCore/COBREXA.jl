@@ -22,17 +22,35 @@ struct JSONModel <: MetabolicModel
     m::Dict{String,Any}
 end
 
-### Generic interface
-
-# Unfortunately, this model type does not have standardized field names, hence the need to look for valid field names.
-# The keys used to look for valid field names are in `src/base/constants.jl`.
 
 """
-    _get_reactions(model::JSONModel)
+    _guesskey(ks, possibilities)
 
-Return a list of reaction dicts from `JSONModel`.
+Unfortunately, JSON models do not have standardized field names, so we need to
+try a few possibilities and guess the best one.  The keys used to look for
+valid field names are specified in `src/base/constants.jl`.
 """
+function _guesskey(avail, possibilities)
+    x = intersect(possibilities, avail)
+
+    if isempty(x)
+        @debug "could not find any of keys: $possibilities"
+        return nothing
+    end
+
+    if length(x)>1
+        @debug "Possible ambiguity between keys: $x"
+    end
+    return x[1]
+end
+
 function _get_reactions(model::JSONModel)
+    k = _guesskey(keys(model.m), _constants.keynames.rxns)
+    if isnothing(k)
+        throw(DomainError(keys(model.m), "JSON model has no reaction keys"))
+    end
+
+    return [string(r["id"]
     for k in _constants.keynames.rxns
         if haskey(model.m, k)
             @info "Used key: \"$k\" to access reactions."
@@ -41,6 +59,15 @@ function _get_reactions(model::JSONModel)
     end
     @warn "No reactions found. Perhaps the an exotic field name is used by the model?"
     return nothing
+end
+
+function reactions(model::JSONModel)
+    keys = 
+    rxns = _get_reactions(model)
+    if !isnothing(rxns)
+        @info "Assuming \"id\" is the key for reaction dicts..."
+        return [string(get(r, "id", "")) for r in rxns] # assume `id` is the dict key.
+    end
 end
 
 """
@@ -74,16 +101,6 @@ function _get_genes(model::JSONModel)
     @warn "No genes found. Perhaps the an exotic field name is used by the model?"
     return nothing
 end
-
-function reactions(model::JSONModel)
-    rxns = _get_reactions(model)
-    if !isnothing(rxns)
-        @info "Assuming \"id\" is the key for reaction dicts..."
-        return [string(get(r, "id", "")) for r in rxns] # assume `id` is the dict key.
-    end
-end
-
-n_reactions(model::JSONModel) = length(reactions(model))
 
 function metabolites(model::JSONModel)
     mets = _get_metabolites(model)
