@@ -35,7 +35,7 @@ Return a list of reaction dicts from `JSONModel`.
 function _get_reactions(model::JSONModel)
     for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
-            @info "Used key: $k to access reactions."
+            @info "Used key: \"$k\" to access reactions."
             return model.m[k][:]
         end
     end
@@ -51,7 +51,7 @@ Return a list of metabolite dicts from `JSONModel`.
 function _get_metabolites(model::JSONModel)
     for k in _constants.possible_met_keys
         if haskey(model.m, k)
-            @info "Used key: $k to access metabolites."
+            @info "Used key: \"$k\" to access metabolites."
             return model.m[k][:]
         end
     end
@@ -67,7 +67,7 @@ Return a list of gene dicts from `JSONModel`.
 function _get_genes(model::JSONModel)
     for k in _constants.possible_gene_keys
         if haskey(model.m, k)
-            @info "Used key: $k to access genes."
+            @info "Used key: \"$k\" to access genes."
             return model.m[k][:]
         end
     end
@@ -75,9 +75,10 @@ function _get_genes(model::JSONModel)
     return nothing
 end
 
-function reactions(model::JSONModel)    
+function reactions(model::JSONModel)
     rxns = _get_reactions(model)
     if !isnothing(rxns)
+        @info "Assuming \"id\" is the key for reaction dicts..."
         return [string(get(r, "id", "")) for r in rxns] # assume `id` is the dict key.
     end
 end
@@ -87,6 +88,7 @@ n_reactions(model::JSONModel) = length(reactions(model))
 function metabolites(model::JSONModel)
     mets = _get_metabolites(model)
     if !isnothing(mets)
+        @info "Assuming \"id\" is the key for metabolite dicts..."
         return [string(get(m, "id", "")) for m in mets] # assume `id` is the dict key.
     end
 end
@@ -96,6 +98,7 @@ n_metabolites(model::JSONModel) = length(metabolites(model))
 function genes(model::JSONModel)
     gs = _get_genes(model)
     if !isnothing(gs)
+        @info "Assuming \"id\" is the key for gene dicts..."
         return [string(get(g, "id", "")) for g in gs] # assume `id` is the dict key.
     end
 end
@@ -127,7 +130,7 @@ function lower_bounds(model::JSONModel)
     lbs = Float64[]
     rxns = _get_reactions(model)
     if !isnothing(rxns)
-        @warn "Assuming \"lower_bound\" is the key for reaction dicts... Otherwise default lower bound is used."
+        @info "Assuming \"lower_bound\" is the key for reaction dicts... Otherwise default lower bound is used."
         for rxn in rxns
             push!(lbs, get(rxn, "lower_bound", -_constants.default_reaction_bound)) # assume `lower_bound` is the dict key
         end
@@ -139,7 +142,7 @@ function upper_bounds(model::JSONModel)
     ubs = Float64[]
     rxns = _get_reactions(model)
     if !isnothing(rxns)
-        @warn "Assuming \"upper_bound\" is the key for reaction dicts... Otherwise default upper bound is used."
+        @info "Assuming \"upper_bound\" is the key for reaction dicts... Otherwise default upper bound is used."
         for rxn in rxns
             push!(ubs, get(rxn, "upper_bound", _constants.default_reaction_bound)) # assume `upper_bound` is the dict key
         end
@@ -152,7 +155,7 @@ function bounds(model::JSONModel)
 end
 
 function balance(model::JSONModel)
-    @warn "Assuming balance is identically zero..."
+    @info "Assuming balance is identically zero..."
     return spzeros(n_metabolites(model))
 end
 
@@ -160,8 +163,8 @@ function objective(model::JSONModel)
     c = spzeros(n_reactions(model))
     rxns = _get_reactions(model)
     if !isnothing(rxns)
-        @warn "Assuming \"objective_coefficient\" is the key used for objective reactions..."
-        for (i, rxn) in enumerate(model.m[k])
+        @info "Assuming \"objective_coefficient\" is the key used for objective reactions..."
+        for (i, rxn) in enumerate(rxns)
             if haskey(rxn, "objective_coefficient") # assume the only key?
                 c[i] = rxn["objective_coefficient"]
             end
@@ -175,9 +178,9 @@ function gene_associations(model::JSONModel)
     grrs = String[]
     rxns = _get_reactions(model)
     if !isnothing(rxns)
-        @warn "Assuming \"gene_reaction_rule\" is the key used for gene reaction rules in reactions..."
+        @info "Assuming \"gene_reaction_rule\" is the key used for gene reaction rules in reactions..."
         for rxn in rxns
-            push!(grrs, get(rxn, "gene_reaction_rules", "")) # assume only key
+            push!(grrs, get(rxn, "gene_reaction_rule", "")) # assume only key
         end
         length(grrs) == 0 && (@warn "No GRRs found.")
         return grrs
@@ -188,7 +191,7 @@ function formulas(model::JSONModel)
     formula_strings = String[]
     mets = _get_metabolites(model)
     if !isnothing(mets)
-        @warn "Assuming \"formula\" is the key used for formulas in metabolites..."
+        @info "Assuming \"formula\" is the key used for formulas in metabolites..."
         for met in mets
             push!(formula_strings, get(met, "formula", "")) # assume only key
         end
@@ -200,7 +203,7 @@ function charges(model::JSONModel)
     charges_arr = Int64[] # assume only integer charges :) 
     mets = _get_metabolites(model)
     if !isnothing(mets)
-        @warn "Assuming \"charge\" is the key used for charges in metabolites..."
+        @info "Assuming \"charge\" is the key used for charges in metabolites..."
         for met in mets
             push!(charges_arr, get(met, "charge", 0)) # assume only key
         end
@@ -214,11 +217,11 @@ function metabolite_chemistry(model::JSONModel)
     return fs, cs
 end
 
-function reaction_subsystem()
+function reaction_subsystems(model::JSONModel)
     rsub = String[]
     rxns = _get_reactions(model)
     if !isnothing(rxns)
-        @warn "Assuming \"subsystem\" is the key used for subsystems in reactions..."
+        @info "Assuming \"subsystem\" is the key used for subsystems in reactions..."
         for rxn in rxns
             push!(rsub, get(rxn, "subsystem", "")) # assume only key
         end
@@ -226,11 +229,11 @@ function reaction_subsystem()
     end
 end
 
-function metabolite_compartment(model::JSONModel)
+function metabolite_compartments(model::JSONModel)
     compartments = String[]
     mets = _get_metabolites(model)
     if !isnothing(mets)
-        @warn "Assuming \"compartment\" is the key used for compartment in metabolites..."
+        @info "Assuming \"compartment\" is the key used for compartment in metabolites..."
         for met in mets
             push!(compartments, get(met, "compartment", "")) # assume only key
         end
@@ -241,61 +244,73 @@ end
 function metabolite_notes(model::JSONModel)
     mets = _get_metabolites(model)
     if !isnothing(mets)
-        m_notes = Vector{Dict{String, Vector{String}}}()
+        m_notes = Vector{Any}() #Vector{Dict{String, Vector{String}}}()
         for m in mets
             push!(m_notes, _notes_from_jsonmodel(m))
         end
+        return m_notes
     end
+    return nothing
 end
 
 function metabolite_annotations(model::JSONModel)
     mets = _get_metabolites(model)
     if !isnothing(mets)
-        m_notes = Vector{Dict{String, Vector{String}}}()
+        m_annos = Vector{Dict{String,Vector{String}}}()
         for m in mets
-            push!(m_notes, _annotation_from_jsonmodel(m))
+            push!(m_annos, _annotation_from_jsonmodel(m))
         end
+        return m_annos
     end
+    return nothing
 end
 
 function gene_notes(model::JSONModel)
-    mets = _get_genes(model)
-    if !isnothing(mets)
-        m_notes = Vector{Dict{String, Vector{String}}}()
-        for m in mets
-            push!(m_notes, _notes_from_jsonmodel(m))
+    gs = _get_genes(model)
+    if !isnothing(gs)
+        g_notes = Vector{Dict{String,Vector{String}}}()
+        for g in gs
+            push!(g_notes, _notes_from_jsonmodel(g))
         end
+        return g_notes
     end
+    return nothing
 end
 
 function gene_annotations(model::JSONModel)
-    mets = _get_genes(model)
-    if !isnothing(mets)
-        m_notes = Vector{Dict{String, Vector{String}}}()
-        for m in mets
-            push!(m_notes, _annotation_from_jsonmodel(m))
+    gs = _get_genes(model)
+    if !isnothing(gs)
+        g_annos = Vector{Dict{String,Vector{String}}}()
+        for g in gs
+            push!(g_annos, _annotation_from_jsonmodel(g))
         end
+        return g_annos
     end
+    return nothing
 end
 
 function reaction_notes(model::JSONModel)
-    mets = _get_metabolites(model)
-    if !isnothing(mets)
-        m_notes = Vector{Dict{String, Vector{String}}}()
-        for m in mets
-            push!(m_notes, _notes_from_jsonmodel(m))
+    rxns = _get_metabolites(model)
+    if !isnothing(rxns)
+        r_notes = Vector{Dict{String,Vector{String}}}()
+        for r in rxns
+            push!(r_notes, _notes_from_jsonmodel(r))
         end
+        return r_notes
     end
+    return nothing
 end
 
 function reaction_annotations(model::JSONModel)
-    mets = _get_metabolites(model)
-    if !isnothing(mets)
-        m_notes = Vector{Dict{String, Vector{String}}}()
-        for m in mets
-            push!(m_notes, _annotation_from_jsonmodel(m))
+    rxns = _get_metabolites(model)
+    if !isnothing(rxns)
+        r_annos = Vector{Dict{String,Vector{String}}}()
+        for r in rxns
+            push!(r_annos, _annotation_from_jsonmodel(r))
         end
+        return r_annos
     end
+    return nothing
 end
 
 ### Accessor functions to construct StandardModel from a JSONModel efficiently (loop through model struct only once)
@@ -308,12 +323,8 @@ function _gene_ordereddict(model::JSONModel)
             gg = Gene(
                 g["id"];
                 name = get(g, "name", ""),
-                notes = _notes_from_jsonmodel(
-                    get(g, "notes", Dict{String,Vector{String}}()),
-                ),
-                annotation = _annotation_from_jsonmodel(
-                    get(g, "annotation", Dict{String,Union{Vector{String},String}}()),
-                ),
+                notes = _notes_from_jsonmodel(g),
+                annotation = _annotation_from_jsonmodel(g),
             )
             gd[g["id"]] = gg
         end
@@ -336,10 +347,8 @@ function _reaction_ordereddict(model::JSONModel)
                 ub = get(r, "ub", _constants.default_reaction_bound),
                 grr = _parse_grr(get(r, "gene_reaction_rule", "")),
                 subsystem = get(r, "subsystem", ""),
-                notes = _notes_from_jsonmodel(get(r, "notes", Dict{String,Any}())),
-                annotation = _annotation_from_jsonmodel(
-                    get(r, "annotation", Dict{String,Union{Vector{String},String}}()),
-                ),
+                notes = _notes_from_jsonmodel(r),
+                annotation = _annotation_from_jsonmodel(r),
                 objective_coefficient = get(r, "objective_coefficient", 0.0),
             )
             rd[r["id"]] = rr
@@ -359,21 +368,19 @@ function _metabolite_ordereddict(model::JSONModel)
                 formula = get(m, "formula", ""),
                 charge = get(m, "charge", 0),
                 compartment = get(m, "compartment", ""),
-                notes = _notes_from_jsonmodel(
-                    get(m, "notes", Dict{String,Vector{String}}()),
-                ),
-                annotation = _annotation_from_jsonmodel(
-                    get(m, "annotation", Dict{String,Union{Vector{String},String}}()),
-                ),
+                notes = _notes_from_jsonmodel(m),
+                annotation = _annotation_from_jsonmodel(m),
             )
             md[m["id"]] = mm
         end
-       return md
+        return md
     end
 end
 
-# convert d to Dict{String, Vector{String}}
-function _notes_from_jsonmodel(d)
+# convert to Dict{String, Vector{String}}
+function _notes_from_jsonmodel(x; verbose = false)
+    verbose && @info "Assuming \"notes\" is the key used for storing notes"
+    d = get(x, "notes", Dict{String,Vector{String}}())
     dd = Dict{String,Vector{String}}()
     for (k, v) in d
         dd[k] = string.(v)
@@ -381,9 +388,11 @@ function _notes_from_jsonmodel(d)
     return dd
 end
 
-# convert d to Dict{String, Vector{String}}
-function _annotation_from_jsonmodel(d)
-    dd = Dict{String, Vector{String}}()
+# convert to Dict{String, Vector{String}}
+function _annotation_from_jsonmodel(x; verbose = false)
+    verbose && @info "Assuming \"annotation\" is the key used for storing annotations"
+    d = get(x, "annotation", Dict{String,Union{Vector{String},String}}())
+    dd = Dict{String,Vector{String}}()
     for (k, v) in d
         if k == "sbo" || k == "SBO" # sbo terms are not assigned to arrays in JSON models
             dd[k] = [string(v)]
