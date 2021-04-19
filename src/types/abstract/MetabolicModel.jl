@@ -11,6 +11,8 @@ abstract type MetabolicModel end
 const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}
 
+const Annotations = Dict{String,Vector{String}}
+
 const MatType = AbstractMatrix{Float64}
 const VecType = AbstractVector{Float64}
 const StringVecType = AbstractVector{String}
@@ -174,4 +176,37 @@ function metabolite_chemistry(
     metabolite_id::String,
 )::Maybe{Tuple{Dict{String,Int},Int}}
     return nothing
+end
+
+"""
+    reaction_annotations(a::MetabolicModel, reaction_id::String)::Annotations
+
+Return standardized names that may help identifying the reaction. The
+dictionary assigns vectors of possible identifiers to identifier system names,
+e.g. `"Reactome" => ["reactomeID123"]`.
+"""
+function reaction_annotations(a::MetabolicModel, reaction_id::String)::Annotations
+    return Dict()
+end
+
+"""
+    metabolite_annotations(a::MetabolicModel, metabolite_id::String)::Annotations
+
+Return standardized names that may help to reliably identify the metabolite. The
+dictionary assigns vectors of possible identifiers to identifier system names,
+e.g. `"ChEMBL" => ["123"]` or `"PubChem" => ["CID123", "CID654645645"]`.
+"""
+function metabolite_annotations(a::MetabolicModel, metabolite_id::String)::Annotations
+    return Dict()
+end
+
+"""
+    gene_annotations(a::MetabolicModel, gene_id::String)::Annotations
+
+Return standardized names that identify the corresponding gene or product. The
+dictionary assigns vectors of possible identifiers to identifier system names,
+e.g. `"PDB" => ["PROT01"]`.
+"""
+function gene_annotations(a::MetabolicModel, gene_id::String)::Annotations
+    return Dict()
 end
