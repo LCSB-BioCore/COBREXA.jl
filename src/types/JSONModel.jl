@@ -150,7 +150,9 @@ function _gene_ordereddict(model::JSONModel)
                 gg = Gene(
                     g["id"];
                     name = get(g, "name", ""),
-                    notes = _notes_from_jsonmodel(get(g, "notes", Dict{String,Vector{String}}())),
+                    notes = _notes_from_jsonmodel(
+                        get(g, "notes", Dict{String,Vector{String}}()),
+                    ),
                     annotation = _annotation_from_jsonmodel(
                         get(g, "annotation", Dict{String,Union{Vector{String},String}}()),
                     ),
@@ -203,7 +205,9 @@ function _metabolite_ordereddict(model::JSONModel)
                     formula = get(m, "formula", ""),
                     charge = get(m, "charge", 0),
                     compartment = get(m, "compartment", ""),
-                    notes = _notes_from_jsonmodel(get(m, "notes", Dict{String,Vector{String}}())),
+                    notes = _notes_from_jsonmodel(
+                        get(m, "notes", Dict{String,Vector{String}}()),
+                    ),
                     annotation = _annotation_from_jsonmodel(
                         get(m, "annotation", Dict{String,Union{Vector{String},String}}()),
                     ),
@@ -246,7 +250,7 @@ end
 # Construct a JSONModel from any other model
 
 function Base.convert(::typeof(JSONModel), model::MetabolicModel)
-    jsonmodel = JSONModel(Dict{String, Any}()) # blank model
+    jsonmodel = JSONModel(Dict{String,Any}()) # blank model
     met_ids = metabolites(model)
     rxn_ids = reactions(model)
     gene_ids = genes(model)
