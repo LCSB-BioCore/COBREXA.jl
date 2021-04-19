@@ -2,13 +2,13 @@ struct JSONModel <: MetabolicModel
     m::Dict{String,Any}
 end
 
-# Generic interface
+### Generic interface
 # Unfortunately this model type does not have standardized field names, hence the need to look for valid fieldnames.
 # The keys used to look for valid fieldnames is in `constants`.
 # However, assume that `id` is used to index reactions, metabolites and genes.
 # Also assume that `metabolites` is used to access the dict containing the reaction equation for a reaction.
 
-function reactions(model::JSONModel)::Union{Nothing,Vector{String}}
+function reactions(model::JSONModel)
     for k in _constants.possible_rxn_keys
         if haskey(model.m, k)
             return [string(r["id"]) for r in model.m[k][:]]
@@ -18,9 +18,9 @@ function reactions(model::JSONModel)::Union{Nothing,Vector{String}}
     return nothing
 end
 
-n_reactions(model::JSONModel)::Int = length(reactions(model))
+n_reactions(model::JSONModel) = length(reactions(model))
 
-function metabolites(model::JSONModel)::Union{Nothing,Vector{String}}
+function metabolites(model::JSONModel)
     for k in _constants.possible_met_keys
         if haskey(model.m, k)
             return [string(m["id"]) for m in model.m[k][:]]
@@ -30,9 +30,9 @@ function metabolites(model::JSONModel)::Union{Nothing,Vector{String}}
     return nothing
 end
 
-n_metabolites(model::JSONModel)::Int = length(metabolites(model))
+n_metabolites(model::JSONModel) = length(metabolites(model))
 
-function genes(model::JSONModel)::Union{Nothing,Vector{String}}
+function genes(model::JSONModel)
     for k in _constants.possible_gene_keys
         if haskey(model.m, k)
             return [string(g["id"]) for g in model.m[k][:]]
@@ -42,7 +42,7 @@ function genes(model::JSONModel)::Union{Nothing,Vector{String}}
     return nothing
 end
 
-n_genes(model::JSONModel)::Int = length(genes(model))
+n_genes(model::JSONModel) = length(genes(model))
 
 function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
@@ -109,9 +109,10 @@ function objective(model::JSONModel)
                     c[i] = rxn["objective_coefficient"]
                 end
             end
+            return c
         end
     end
-    return c
+    return nothing
 end
 
 function gene_reaction_rules(model::JSONModel)
@@ -121,11 +122,25 @@ function gene_reaction_rules(model::JSONModel)
             for rxn in model.m[k]
                 push!(grrs, rxn["gene_reaction_rules"]) # assume only key
             end
+            return grrs
         end
     end
+    return nothing
 end
 
-# Accessor functions to construct StandardModel
+function formulas(model::JSONModel)
+    formula_strings = String[]
+    for k in _constants.possible_rxn_keys
+        if haskey(model.m, k)
+            for rxn in model.m[k]
+                push!(grrs, rxn["gene_reaction_rules"]) # assume only key
+            end
+        end
+    end
+    return formula_strings
+end
+
+### Accessor functions to construct StandardModel efficiently (loop through model struct only once)
 
 function _gene_ordereddict(model::JSONModel)
     gd = OrderedDict{String,Gene}()
@@ -135,8 +150,8 @@ function _gene_ordereddict(model::JSONModel)
                 gg = Gene(
                     g["id"];
                     name = get(g, "name", ""),
-                    notes = _notes(get(g, "notes", Dict{String,Vector{String}}())),
-                    annotation = _annotation(
+                    notes = _notes_from_jsonmodel(get(g, "notes", Dict{String,Vector{String}}())),
+                    annotation = _annotation_from_jsonmodel(
                         get(g, "annotation", Dict{String,Union{Vector{String},String}}()),
                     ),
                 )
@@ -156,15 +171,15 @@ function _reaction_ordereddict(model::JSONModel)
                 rr = Reaction(
                     r["id"];
                     name = get(r, "name", ""),
-                    metabolites = _reaction_formula(
+                    metabolites = _reaction_formula_from_jsonmodel(
                         get(r, "metabolites", Dict{String,Any}()),
                     ),
                     lb = get(r, "lb", -_constants.default_reaction_bound),
                     ub = get(r, "ub", _constants.default_reaction_bound),
                     grr = _parse_grr(get(r, "gene_reaction_rule", "")),
                     subsystem = get(r, "subsystem", ""),
-                    notes = _notes(get(r, "notes", Dict{String,Any}())),
-                    annotation = _annotation(
+                    notes = _notes_from_jsonmodel(get(r, "notes", Dict{String,Any}())),
+                    annotation = _annotation_from_jsonmodel(
                         get(r, "annotation", Dict{String,Union{Vector{String},String}}()),
                     ),
                     objective_coefficient = get(r, "objective_coefficient", 0.0),
@@ -188,8 +203,8 @@ function _metabolite_ordereddict(model::JSONModel)
                     formula = get(m, "formula", ""),
                     charge = get(m, "charge", 0),
                     compartment = get(m, "compartment", ""),
-                    notes = _notes(get(m, "notes", Dict{String,Vector{String}}())),
-                    annotation = _annotation(
+                    notes = _notes_from_jsonmodel(get(m, "notes", Dict{String,Vector{String}}())),
+                    annotation = _annotation_from_jsonmodel(
                         get(m, "annotation", Dict{String,Union{Vector{String},String}}()),
                     ),
                 )
@@ -202,7 +217,7 @@ function _metabolite_ordereddict(model::JSONModel)
 end
 
 # convert d to Dict{String, Vector{String}}
-function _notes(d)
+function _notes_from_jsonmodel(d)
     dd = Dict{String,Vector{String}}()
     for (k, v) in d
         dd[k] = string.(v)
@@ -211,7 +226,7 @@ function _notes(d)
 end
 
 # convert d to Dict{String, Union{String, Vector{String}}}
-function _annotation(d)
+function _annotation_from_jsonmodel(d)
     dd = Dict{String,Union{String,Vector{String}}}()
     for (k, v) in d
         dd[k] = string.(v)
@@ -220,10 +235,24 @@ function _annotation(d)
 end
 
 # convert d to Dict{String, Float64}
-function _reaction_formula(d)
+function _reaction_formula_from_jsonmodel(d)
     dd = Dict{String,Float64}()
     for (k, v) in d
         dd[k] = float(v)
     end
     return dd
+end
+
+# Construct a JSONModel from any other model
+
+function Base.convert(::typeof(JSONModel), model::MetabolicModel)
+    jsonmodel = JSONModel(Dict{String, Any}()) # blank model
+    met_ids = metabolites(model)
+    rxn_ids = reactions(model)
+    gene_ids = genes(model)
+    grrs = gene_reaction_rules(model)
+    S = stoichiometry(model)
+    lbs, ubs = bounds(model)
+    objs = objective(model)
+
 end
