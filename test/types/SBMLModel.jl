@@ -8,7 +8,7 @@ download_data_file(
 
 @testset "Conversion from and to SBML model" begin
     sbmlm = read_model(sbmlfile, SBMLModel)
-    cm = convert(CoreModel, sbmlm)
+    cm = convert(CoreModel, sbmlm) #TODO use a richer intermediate model
     sbmlm2 = convert(SBMLModel, cm)
 
     @test Set(reactions(sbmlm)) == Set(reactions(sbmlm2))
