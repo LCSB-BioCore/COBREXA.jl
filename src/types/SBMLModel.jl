@@ -63,7 +63,6 @@ metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = ma
 
 function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
     mets = metabolites(m)
-    met_id = Dict([mid => i for (i, mid) in enumerate(mets)])
     rxns = reactions(m)
     stoi = stoichiometry(m)
     (lbs, ubs) = bounds(m)
