@@ -61,6 +61,26 @@ metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = ma
     m.species[mid].formula,
 )
 
-function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
-    #TODO
+function Base.convert(::Type{SBMLModel}, m::MetabolicModel)::SBMLModel
+
+    return SBMLModel(
+        Dict(), # parameters
+        Dict("" => []), # units
+        Dict([
+            "" => SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing),
+        ]),
+        Dict(
+            [mid => SBML.Species(
+                nothing,
+                "",
+                nothing,
+                mapmaybe((x, _) -> _dict_to_formula(x), metabolite_chemistry(m, mid)),
+                mapmaybe((_, x) -> x, metabolite_chemistry(m, mid)),
+                nothing,
+                nothing,
+            ) for mid in metabolites(m)],
+        ),
+        Dict([rid => SBML.Reaction(nothing) for rid in reactions(m)]),
+        #TODO
+    )
 end
