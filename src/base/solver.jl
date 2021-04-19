@@ -1,5 +1,5 @@
 """
-Convert LinearModel to the JuMP model, place objectives and the equality
+Convert CoreModel to the JuMP model, place objectives and the equality
 constraint.
 """
 function make_optimization_model(
@@ -21,7 +21,7 @@ function make_optimization_model(
 end
 
 """
-Use JuMP to solve an instance of LinearModel
+Use JuMP to solve an instance of CoreModel
 """
 function optimize_model(
     model::LM,

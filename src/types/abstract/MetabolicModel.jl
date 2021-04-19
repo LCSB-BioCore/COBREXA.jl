@@ -10,6 +10,7 @@ abstract type MetabolicModel end
 
 const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}
+
 const MatType = AbstractMatrix{Float64}
 const VecType = AbstractVector{Float64}
 const StringVecType = AbstractVector{String}
@@ -17,101 +18,102 @@ const StringVecType = AbstractVector{String}
 _missing_impl_error = (m, a) -> throw(MethodError(m, a))
 
 """
-    reactions(a::LM)::Vector{String} where {LM<:MetabolicModel}
+    reactions(a::MetabolicModel)::Vector{String}
 
 Return a vector of reaction identifiers in a model.
 """
-function reactions(a::LM)::Vector{String} where {LM<:MetabolicModel}
+function reactions(a::MetabolicModel)::Vector{String}
     _missing_impl_error(reactions, (a,))
 end
 
 """
-    metabolites(a::LM)::Vector{String} where {LM<:MetabolicModel}
+    metabolites(a::MetabolicModel)::Vector{String}
 
 Return a vector of metabolite identifiers in a model.
 """
-function metabolites(a::LM)::Vector{String} where {LM<:MetabolicModel}
+function metabolites(a::MetabolicModel)::Vector{String}
     _missing_impl_error(metabolites, (a,))
 end
 
 """
-    n_reactions(a::LM)::Int where {LM<:MetabolicModel}
+    n_reactions(a::MetabolicModel)::Int
 
 Get the number of reactions in a model.
 """
-function n_reactions(a::LM)::Int where {LM<:MetabolicModel}
+function n_reactions(a::MetabolicModel)::Int
     length(reactions(a))
 end
 
 """
-    n_metabolites(a::LM)::Int where {LM<:MetabolicModel}
+    n_metabolites(a::MetabolicModel)::Int
 
 Get the number of metabolites in a model.
 """
-function n_metabolites(a::LM)::Int where {LM<:MetabolicModel}
+function n_metabolites(a::MetabolicModel)::Int
     length(metabolites(a))
 end
 
 """
-    stoichiometry(a::LM)::SparseMat where {LM<:MetabolicModel}
+    stoichiometry(a::MetabolicModel)::SparseMat
 
 Get the sparse stoichiometry matrix of a model.
 """
-function stoichiometry(a::LM)::SparseMat where {LM<:MetabolicModel}
+function stoichiometry(a::MetabolicModel)::SparseMat
     _missing_impl_error(stoichiometry, (a,))
 end
 
 """
-    bounds(a::LM)::Tuple{SparseVec,SparseVec} where {LM<:MetabolicModel}
+    bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
 
 Get the lower and upper flux bounds of a model.
 """
-function bounds(a::LM)::Tuple{SparseVec,SparseVec} where {LM<:MetabolicModel}
+function bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
     _missing_impl_error(bounds, (a,))
 end
 
 """
-    balance(a::LM)::SparseVec where {LM<:MetabolicModel}
+    balance(a::MetabolicModel)::SparseVec
 
 Get the sparse balance vector of a model (ie. the `b` from `S x = b`).
 """
-function balance(a::LM)::SparseVec where {LM<:MetabolicModel}
+function balance(a::MetabolicModel)::SparseVec
     _missing_impl_error(balance, (a,))
 end
 
 """
-    objective(a::LM)::SparseVec where {LM<:MetabolicModel}
+    objective(a::MetabolicModel)::SparseVec
 
 Get the objective vector of a model.
 """
-function objective(a::LM)::SparseVec where {LM<:MetabolicModel}
+function objective(a::MetabolicModel)::SparseVec
     _missing_impl_error(objective, (a,))
 end
 
 """
-    coupling(a::LM)::SparseMat where {LM<:MetabolicModel}
+    coupling(a::MetabolicModel)::SparseMat
 
-Get a matrix of coupling constraint definitions of a model.
+Get a matrix of coupling constraint definitions of a model. By default, there
+is no coupling in the models.
 """
-function coupling(a::LM)::SparseMat where {LM<:MetabolicModel}
-    _missing_impl_error(coupling, (a,))
+function coupling(a::MetabolicModel)::SparseMat
+    return spzeros(0, n_reactions(a))
 end
 
 """
-    n_coupling_constraints(a::LM)::Int where {LM<:MetabolicModel}
+    n_coupling_constraints(a::MetabolicModel)::Int
 
 Get the number of coupling constraints in a model.
 """
-function n_coupling_constraints(a::LM)::Int where {LM<:MetabolicModel}
+function n_coupling_constraints(a::MetabolicModel)::Int
     size(coupling(a), 1)
 end
 
 """
-    coupling_bounds(a::LM)::Tuple{SparseVec,SparseVec} where {LM<:MetabolicModel}
+    coupling_bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
 
 Get the lower and upper bounds for each coupling bound in a model, as specified
-by `coupling`.
+by `coupling`. By default, the model does not have any coupling bounds.
 """
-function coupling_bounds(a::LM)::Tuple{SparseVec,SparseVec} where {LM<:MetabolicModel}
-    _missing_impl_error(coupling_bounds, (a,))
+function coupling_bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
+    return (spzeros(0), spzeros(0))
 end

@@ -128,7 +128,7 @@ Note, this function only runs serially.
 Consider using a different model type for parallel implementations. 
 Returns two dictionaries (`fva_max` and `fva_min`) that map each reaction `id` to dictionaries of the resultant flux distributions when that `id` is optimized.
 
-See also: [`LinearModel`](@ref)
+See also: [`CoreModel`](@ref)
 
 # Example
 ```

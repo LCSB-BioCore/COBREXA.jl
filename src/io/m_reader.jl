@@ -140,7 +140,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
     return StandardModel(model_id, rxns, mets, genes)
 end
 
-function _read_model(file_location::String, ::Type{MFile}, ::Type{LinearModel})
+function _read_model(file_location::String, ::Type{MFile}, ::Type{CoreModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1] # assume only one model per m-file
     # of not then need to make this more resilient, maybe keyword args.. ?

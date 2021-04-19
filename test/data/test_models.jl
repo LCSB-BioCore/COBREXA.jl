@@ -1,4 +1,4 @@
-test_LP() = LinearModel(
+test_LP() = CoreModel(
     zeros(4, 3),
     zeros(4),
     ones(3),
@@ -8,7 +8,7 @@ test_LP() = LinearModel(
     ["m$x" for x = 1:4],
 )
 
-test_simpleLP() = LinearModel(
+test_simpleLP() = CoreModel(
     [
         1.0 1.0
         -1.0 1.0
@@ -21,7 +21,7 @@ test_simpleLP() = LinearModel(
     ["m$x" for x = 1:2],
 )
 
-test_simpleLP2() = LinearModel(
+test_simpleLP2() = CoreModel(
     zeros(2, 2),
     [0.0, 0.0],
     [-0.25, 1.0],
@@ -31,7 +31,7 @@ test_simpleLP2() = LinearModel(
     ["m$x" for x = 1:2],
 )
 
-test_sparseLP() = LinearModel(
+test_sparseLP() = CoreModel(
     sprand(4000, 3000, 0.5),
     sprand(4000, 0.5),
     sprand(3000, 0.5),
@@ -41,8 +41,8 @@ test_sparseLP() = LinearModel(
     ["m$x" for x = 1:4000],
 )
 
-test_coupledLP() = CoupledLinearModel(
-    LinearModel(
+test_coupledLP() = CoreModelCoupled(
+    CoreModel(
         sprand(4000, 3000, 0.5),
         sprand(4000, 0.5),
         sprand(3000, 0.5),
