@@ -117,3 +117,50 @@ by `coupling`. By default, the model does not have any coupling bounds.
 function coupling_bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
     return (spzeros(0), spzeros(0))
 end
+
+"""
+    genes(a::MetabolicModel)::Vector{String}
+
+Return identifiers of all genes contained in the model. By default, there are
+no genes.
+
+In SBML, these are usually called "gene products" but we write `genes` for
+simplicity.
+"""
+function genes(a::MetabolicModel)::Vector{String}
+    return []
+end
+
+"""
+    reaction_gene_association(a::MetabolicModel, gene_id::String)::Maybe{Vector{Vector{String}}}
+
+Returns the sets of genes that need to be present so that the reaction can work
+(technically, a DNF on gene availability, with positive atoms only).
+
+For simplicity, `nothing` may be returned, meaning that the reaction always
+takes place. (in DNF, that would be equivalent to returning `[[]]`.)
+"""
+function reaction_gene_association(
+    a::MetabolicModel,
+    reaction_id::String,
+)::Maybe{Vector{Vector{String}}}
+    return nothing
+end
+
+"""
+    metabolite_chemistry(
+        a::MetabolicModel,
+        metabolite_id::String,
+    )::Maybe{Tuple{Dict{String,Int},Int}}
+
+Return chemistry-relevant information about metabolite, in particular the
+atomic formula (as a map of atom names to abundances) with charge.
+
+May return `nothing` in case the formula is not known or irrelevant.
+"""
+function metabolite_chemistry(
+    a::MetabolicModel,
+    metabolite_id::String,
+)::Maybe{Tuple{Dict{String,Int},Int}}
+    return nothing
+end
