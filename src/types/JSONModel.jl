@@ -75,7 +75,7 @@ function _get_genes(model::JSONModel)
     return nothing
 end
 
-function reactions(model::JSONModel)    
+function reactions(model::JSONModel)
     rxns = _get_reactions(model)
     if !isnothing(rxns)
         @info "Assuming \"id\" is the key for reaction dicts..."
@@ -256,11 +256,11 @@ end
 function metabolite_annotations(model::JSONModel)
     mets = _get_metabolites(model)
     if !isnothing(mets)
-        m_annos = Vector{Dict{String, Vector{String}}}()
+        m_annos = Vector{Dict{String,Vector{String}}}()
         for m in mets
             push!(m_annos, _annotation_from_jsonmodel(m))
         end
-        return m_annos 
+        return m_annos
     end
     return nothing
 end
@@ -268,7 +268,7 @@ end
 function gene_notes(model::JSONModel)
     gs = _get_genes(model)
     if !isnothing(gs)
-        g_notes = Vector{Dict{String, Vector{String}}}()
+        g_notes = Vector{Dict{String,Vector{String}}}()
         for g in gs
             push!(g_notes, _notes_from_jsonmodel(g))
         end
@@ -280,7 +280,7 @@ end
 function gene_annotations(model::JSONModel)
     gs = _get_genes(model)
     if !isnothing(gs)
-        g_annos = Vector{Dict{String, Vector{String}}}()
+        g_annos = Vector{Dict{String,Vector{String}}}()
         for g in gs
             push!(g_annos, _annotation_from_jsonmodel(g))
         end
@@ -292,7 +292,7 @@ end
 function reaction_notes(model::JSONModel)
     rxns = _get_metabolites(model)
     if !isnothing(rxns)
-        r_notes = Vector{Dict{String, Vector{String}}}()
+        r_notes = Vector{Dict{String,Vector{String}}}()
         for r in rxns
             push!(r_notes, _notes_from_jsonmodel(r))
         end
@@ -304,7 +304,7 @@ end
 function reaction_annotations(model::JSONModel)
     rxns = _get_metabolites(model)
     if !isnothing(rxns)
-        r_annos = Vector{Dict{String, Vector{String}}}()
+        r_annos = Vector{Dict{String,Vector{String}}}()
         for r in rxns
             push!(r_annos, _annotation_from_jsonmodel(r))
         end
@@ -373,12 +373,12 @@ function _metabolite_ordereddict(model::JSONModel)
             )
             md[m["id"]] = mm
         end
-       return md
+        return md
     end
 end
 
 # convert to Dict{String, Vector{String}}
-function _notes_from_jsonmodel(x; verbose=false)
+function _notes_from_jsonmodel(x; verbose = false)
     verbose && @info "Assuming \"notes\" is the key used for storing notes"
     d = get(x, "notes", Dict{String,Vector{String}}())
     dd = Dict{String,Vector{String}}()
@@ -389,10 +389,10 @@ function _notes_from_jsonmodel(x; verbose=false)
 end
 
 # convert to Dict{String, Vector{String}}
-function _annotation_from_jsonmodel(x; verbose=false)
+function _annotation_from_jsonmodel(x; verbose = false)
     verbose && @info "Assuming \"annotation\" is the key used for storing annotations"
     d = get(x, "annotation", Dict{String,Union{Vector{String},String}}())
-    dd = Dict{String, Vector{String}}()
+    dd = Dict{String,Vector{String}}()
     for (k, v) in d
         if k == "sbo" || k == "SBO" # sbo terms are not assigned to arrays in JSON models
             dd[k] = [string(v)]
