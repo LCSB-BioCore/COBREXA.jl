@@ -33,7 +33,7 @@ end
 Return a list of reaction dicts from `JSONModel`.
 """
 function _get_reactions(model::JSONModel)
-    for k in _constants.possible_rxn_keys
+    for k in _constants.keynames.rxns
         if haskey(model.m, k)
             @info "Used key: \"$k\" to access reactions."
             return model.m[k][:]
@@ -49,7 +49,7 @@ end
 Return a list of metabolite dicts from `JSONModel`.
 """
 function _get_metabolites(model::JSONModel)
-    for k in _constants.possible_met_keys
+    for k in _constants.keynames.mets
         if haskey(model.m, k)
             @info "Used key: \"$k\" to access metabolites."
             return model.m[k][:]
@@ -65,7 +65,7 @@ end
 Return a list of gene dicts from `JSONModel`.
 """
 function _get_genes(model::JSONModel)
-    for k in _constants.possible_gene_keys
+    for k in _constants.keynames.genes
         if haskey(model.m, k)
             @info "Used key: \"$k\" to access genes."
             return model.m[k][:]
@@ -107,8 +107,8 @@ n_genes(model::JSONModel) = length(genes(model))
 
 function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
-    rxn_key = _constants.possible_rxn_keys[[
-        haskey(model.m, x) for x in _constants.possible_rxn_keys
+    rxn_key = _constants.keynames.rxns[[
+        haskey(model.m, x) for x in _constants.keynames.rxns
     ]][1] # get the rxn key used
     met_ids = metabolites(model)
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
