@@ -151,7 +151,7 @@ function upper_bounds(model::JSONModel)
 end
 
 function bounds(model::JSONModel)
-    return lower_bounds(model), upper_bounds(model)
+    return sparse(lower_bounds(model)), sparse(upper_bounds(model))
 end
 
 function balance(model::JSONModel)
