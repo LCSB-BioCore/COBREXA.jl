@@ -10,6 +10,8 @@ abstract type MetabolicModel end
 
 const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}
+const GeneAssociation = Vector{Vector{String}}
+const MetaboliteChemistry = Tuple{Dict{String,Int},Int}
 
 const Annotations = Dict{String,Vector{String}}
 
@@ -79,7 +81,7 @@ end
 Get the sparse balance vector of a model (ie. the `b` from `S x = b`).
 """
 function balance(a::MetabolicModel)::SparseVec
-    _missing_impl_error(balance, (a,))
+    return spzeros(0)
 end
 
 """
@@ -145,7 +147,7 @@ function n_genes(a::MetabolicModel)::Int
 end
 
 """
-    reaction_gene_association(a::MetabolicModel, gene_id::String)::Maybe{Vector{Vector{String}}}
+    reaction_gene_association(a::MetabolicModel, gene_id::String)::Maybe{GeneAssociation}
 
 Returns the sets of genes that need to be present so that the reaction can work
 (technically, a DNF on gene availability, with positive atoms only).
@@ -156,7 +158,7 @@ takes place. (in DNF, that would be equivalent to returning `[[]]`.)
 function reaction_gene_association(
     a::MetabolicModel,
     reaction_id::String,
-)::Maybe{Vector{Vector{String}}}
+)::Maybe{GeneAssociation}
     return nothing
 end
 
@@ -164,7 +166,7 @@ end
     metabolite_chemistry(
         a::MetabolicModel,
         metabolite_id::String,
-    )::Maybe{Tuple{Dict{String,Int},Int}}
+    )::Maybe{MetaboliteChemistry}
 
 Return chemistry-relevant information about metabolite, in particular the
 atomic formula (as a map of atom names to abundances) with charge.
@@ -174,7 +176,7 @@ May return `nothing` in case the formula is not known or irrelevant.
 function metabolite_chemistry(
     a::MetabolicModel,
     metabolite_id::String,
-)::Maybe{Tuple{Dict{String,Int},Int}}
+)::Maybe{MetaboliteChemistry}
     return nothing
 end
 

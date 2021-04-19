@@ -50,3 +50,62 @@ end
 
 balance(a::SBMLModel)::SparseVec = spzeros(n_metabolites(a))
 objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
+
+genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
+n_genes(a::SBMLModel)::Int = length(a.m.gene_products)
+
+reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
+    maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
+
+metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = maybemap(
+    (fs) -> (_formula_to_atoms(fs), default(0, a.m.species[mid].charge)),
+    a.m.species[mid].formula,
+)
+
+function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
+    mets = metabolites(m)
+    rxns = reactions(m)
+    stoi = stoichiometry(m)
+    (lbs, ubs) = bounds(m)
+    ocs = objective(m)
+
+    return SBMLModel(
+        SBML.Model(
+            Dict(), # parameters
+            Dict("" => []), # units
+            Dict([
+                "" =>
+                    SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing),
+            ]),
+            Dict(
+                [mid => SBML.Species(
+                    nothing, # name
+                    "", # compartment
+                    nothing, # no information about boundary conditions
+                    maybemap((x, _) -> _dict_to_formula(x), metabolite_chemistry(m, mid)),
+                    maybemap((_, x) -> x, metabolite_chemistry(m, mid)),
+                    nothing, # initial amount
+                    nothing, # only substance unit flags
+                ) for mid in metabolites(m)],
+            ),
+            Dict(
+                [rxns[ri] => SBML.Reaction(
+                    Dict(
+                        [mets[i] => stoi[i, ri] for
+                         i in SparseArrays.nonzeroinds(stoi[:, ri])],
+                    ),
+                    (lbs[ri], ""),
+                    (ubs[ri], ""),
+                    ocs[ri],
+                    maybemap(
+                        x -> _unparse_grr(SBML.GeneProductAssociation, x),
+                        reaction_gene_association(m, rxns[ri]),
+                    ),
+                    nothing,
+                ) for ri = 1:length(rxns)],
+            ),
+            Dict([gid => SBML.GeneProduct(nothing, nothing) for gid in genes(m)]),
+            Dict(), # function definitions
+        ),
+    )
+end
