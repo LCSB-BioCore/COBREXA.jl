@@ -471,83 +471,61 @@ function _reaction_formula_from_jsonmodel(d)
     return dd
 end
 
-function Base.convert(::typeof{JSONModel}, mm::MetabolicModel)
+function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     rxn_ids = reactions(mm)
-    met_ids =  metabolites(mm)
+    met_ids = metabolites(mm)
     gene_ids = genes(mm)
     S = stoichiometry(mm)
     lbs, ubs = bounds(mm)
-    grrs = gene_annotations(mm)
-    
-    r_annos = reaction_annotations(mm)
-    r_notes = reaction_notes(mm)
-    m_annos = metabolite_annotations(mm)
-    m_notes = metabolite_notes(mm)
-    g_annos = gene_annotations(mm)
-    g_notes = gene_notes(mm)
-    
-    fs, cs = metabolite_chemistry(mm) # formulas, charges
-    r_subs = reaction_subsystems(mm)
-    m_comps = metabolite_compartments(mm)
-
-    objs = objective(mm)
-
-    r_names = reaction_names(model)
-    g_names = gene_names(model)
-    m_names = metabolite_names(model)
+    ocs = objective(mm)
 
     json_model = JSONModel(Dict{String,Any}())
-    json_model.m["id"] = id(mm)
+    m = Dict{String,Any}()
+    m["id"] = "model" # default
 
-    # build genes
-    gs = Any[]
-    for i=1:n_genes(mm)
-        g = Dict{String, Any}()
-        g["id"] = gene_ids[i]
-        !isnothing(g_names) && (g["name"] = g_names[i])
-        !isnothing(g_notes) && (g["notes"] = g_notes[i])
-        !isnothing(g_annos) && (g["annotation"] = g_annos[i])
-        push!(gs, g)
-    end
-    json_model.m["genes"] = gs
+    #TODO: add notes, names and similar fun stuff when they are available
 
-    # build metabolites
-    ms = Any[]
-    for i=1:n_metabolites(mm)
-        m = Dict{String, Any}()
-        m["id"] = met_ids[i]
-        !isnothing(m_comps) && (m["compartment"] = m_comps[i])
-        !isnothing(fs) && (m["formula"] = fs[i])
-        !isnothing(cs) && (m["charge"] = cs[i])
-        !isnothing(m_notes) && (m["notes"] = m_notes[i])
-        !isnothing(m_annos) && (m["annotation"] = m_annos[i])
-        push!(ms, m)
-    end
-    json_model.m["metabolites"] = ms
+    m[first(_constants.keynames.genes)] = [Dict([
+        "id" => gid,
+        "annotation" => gene_annotations(mm, gid),
+    ]) for gid in gene_ids]
 
-    # build reactions
-    rs = Any[]
-    for i=1:n_reactions(mm)
-        r = Dict{String, Any}()
-        r["id"] = rxn_ids[i]
-        !isnothing(r_notes) && (r["notes"] = r_notes[i])
-        !isnothing(r_annos) && (r["annotation"] = r_annos[i])
-        !isnothing(r_subs) && (r["subsystem"] = r_subs[i])
-        !isnothing(grrs) && (r["gene_reaction_rule"] = grrs[i])
-        !isnothing(ubs) && (r["upper_bound"] = ubs[i])
-        !isnothing(lbs) && (r["lower_bound"] = lbs[i])
-        !isnothing(r_names) && (r["name"] = r_names[i])
-        
-        reqn = Dict{String, Float64}()
-        I, V = findnz(S[:, i])
-        for (ii, vv) in zip(I, V)
-            reqn[met_ids[ii]] = vv
-        end
-        r["metabolites"] = reqn
-        
-        push!(rs, r)
-    end
-    json_model.m["reactions"] = rs
+    m[first(_constants.keynames.mets)] = [
+        begin
+            res = Dict{String,Any}()
+            res["id"] = mid
+            ch = metabolite_chemistry(mm, mid)
+            if !isnothing(ch)
+                res["formula"] = _atoms_to_formula(ch[1])
+                res["charge"] = ch[2]
+            end
+            res["annotation"] = gene_annotations(mm, gid)
+            res
+        end for mid in met_ids
+    ]
 
-    return json_model
+    m[first(_constants.keynames.rxns)] = [
+        begin
+            res = Dict{String,Any}()
+            res["id"] = rid
+            a = reaction_annotations(mm, rid)
+            if !isempty(a)
+                res["annotation"] = a
+            end
+            grr = reaction_gene_associaton(mm, rid)
+            if !isnothing(grr)
+                res["gene_reaction_rule"] = _unparse_grr(grr)
+            end
+
+            res["lower_bound"] = lbs[ri]
+            res["upper_bound"] = ubs[ri]
+            res["objective_coefficient"] = ocs[ri]
+            I, V = findnz(S[:, i])
+            res["metabolites"] =
+                Dict{String,Float64}([met_ids[ii] => vv for (ii, vv) in zip(I, V)])
+            res
+        end for (ri, rid) in enumerate(rxn_ids)
+    ]
+
+    return JSONModel(m)
 end

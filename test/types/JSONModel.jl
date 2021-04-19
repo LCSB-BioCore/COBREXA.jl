@@ -7,7 +7,7 @@
 
     jm = read_model(json_model, JSONModel)
     cm = convert(CoreModel, jm) #TODO use a richer intermediate model
-    #jm2 = convert(JSONModel, cm) #TODO backconversion not done yet
+    jm2 = convert(JSONModel, cm)
 
     @test Set(reactions(jm)) == Set(reactions(cm))
 end
