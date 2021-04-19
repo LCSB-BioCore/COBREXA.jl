@@ -23,6 +23,15 @@ struct JSONModel <: MetabolicModel
 end
 
 
+function id(model::JSONModel)
+    for k in _constants.keynames.ids
+        if haskey(model.m, k)
+            @info "Used key: \"$k\" to access the model id."
+            return model.m[k]
+        end
+    end
+end
+
 """
     _guesskey(ks, possibilities)
 
@@ -301,7 +310,7 @@ function gene_annotations(model::JSONModel)
 end
 
 function reaction_notes(model::JSONModel)
-    rxns = _get_metabolites(model)
+    rxns = _get_reactions(model)
     if !isnothing(rxns)
         r_notes = Vector{Dict{String,Vector{String}}}()
         for r in rxns
@@ -313,13 +322,52 @@ function reaction_notes(model::JSONModel)
 end
 
 function reaction_annotations(model::JSONModel)
-    rxns = _get_metabolites(model)
+    rxns = _get_reactions(model)
     if !isnothing(rxns)
         r_annos = Vector{Dict{String,Vector{String}}}()
         for r in rxns
             push!(r_annos, _annotation_from_jsonmodel(r))
         end
         return r_annos
+    end
+    return nothing
+end
+
+function reaction_names(model::JSONModel)
+    rxns = _get_reactions(model)
+    if !isnothing(rxns)
+        r_names = String[]
+        @info "Assuming \"name\" is the key used to get the reaction names..."
+        for r in rxns
+            push!(r_names, get(r, "name", ""))
+        end
+        return r_names
+    end
+    return nothing
+end
+
+function metabolite_names(model::JSONModel)
+    mets = _get_metabolites(model)
+    if !isnothing(mets)
+        m_names = String[]
+        @info "Assuming \"name\" is the key used to get the metabolite names..."
+        for m in mets
+            push!(m_names, get(m, "name", ""))
+        end
+        return m_names
+    end
+    return nothing
+end
+
+function gene_names(model::JSONModel)
+    gs = _get_genes(model)
+    if !isnothing(gs)
+        g_names = String[]
+        @info "Assuming \"name\" is the key used to get the gene names..."
+        for g in gs
+            push!(g_names, get(g, "name", ""))
+        end
+        return g_names
     end
     return nothing
 end
@@ -421,4 +469,85 @@ function _reaction_formula_from_jsonmodel(d)
         dd[k] = float(v)
     end
     return dd
+end
+
+function Base.convert(::typeof{JSONModel}, mm::MetabolicModel)
+    rxn_ids = reactions(mm)
+    met_ids =  metabolites(mm)
+    gene_ids = genes(mm)
+    S = stoichiometry(mm)
+    lbs, ubs = bounds(mm)
+    grrs = gene_annotations(mm)
+    
+    r_annos = reaction_annotations(mm)
+    r_notes = reaction_notes(mm)
+    m_annos = metabolite_annotations(mm)
+    m_notes = metabolite_notes(mm)
+    g_annos = gene_annotations(mm)
+    g_notes = gene_notes(mm)
+    
+    fs, cs = metabolite_chemistry(mm) # formulas, charges
+    r_subs = reaction_subsystems(mm)
+    m_comps = metabolite_compartments(mm)
+
+    objs = objective(mm)
+
+    r_names = reaction_names(model)
+    g_names = gene_names(model)
+    m_names = metabolite_names(model)
+
+    json_model = JSONModel(Dict{String,Any}())
+    json_model.m["id"] = id(mm)
+
+    # build genes
+    gs = Any[]
+    for i=1:n_genes(mm)
+        g = Dict{String, Any}()
+        g["id"] = gene_ids[i]
+        !isnothing(g_names) && (g["name"] = g_names[i])
+        !isnothing(g_notes) && (g["notes"] = g_notes[i])
+        !isnothing(g_annos) && (g["annotation"] = g_annos[i])
+        push!(gs, g)
+    end
+    json_model.m["genes"] = gs
+
+    # build metabolites
+    ms = Any[]
+    for i=1:n_metabolites(mm)
+        m = Dict{String, Any}()
+        m["id"] = met_ids[i]
+        !isnothing(m_comps) && (m["compartment"] = m_comps[i])
+        !isnothing(fs) && (m["formula"] = fs[i])
+        !isnothing(cs) && (m["charge"] = cs[i])
+        !isnothing(m_notes) && (m["notes"] = m_notes[i])
+        !isnothing(m_annos) && (m["annotation"] = m_annos[i])
+        push!(ms, m)
+    end
+    json_model.m["metabolites"] = ms
+
+    # build reactions
+    rs = Any[]
+    for i=1:n_reactions(mm)
+        r = Dict{String, Any}()
+        r["id"] = rxn_ids[i]
+        !isnothing(r_notes) && (r["notes"] = r_notes[i])
+        !isnothing(r_annos) && (r["annotation"] = r_annos[i])
+        !isnothing(r_subs) && (r["subsystem"] = r_subs[i])
+        !isnothing(grrs) && (r["gene_reaction_rule"] = grrs[i])
+        !isnothing(ubs) && (r["upper_bound"] = ubs[i])
+        !isnothing(lbs) && (r["lower_bound"] = lbs[i])
+        !isnothing(r_names) && (r["name"] = r_names[i])
+        
+        reqn = Dict{String, Float64}()
+        I, V = findnz(S[:, i])
+        for (ii, vv) in zip(I, V)
+            reqn[met_ids[ii]] = vv
+        end
+        r["metabolites"] = reqn
+        
+        push!(rs, r)
+    end
+    json_model.m["reactions"] = rs
+
+    return json_model
 end

@@ -18,5 +18,6 @@ const _constants = (
         balance = ["b"],
         objective = ["c"],
         grrs = ["gene_reaction_rules", "grRules", "rules"],
+        ids = ["id", "description"],
     ),
 )
