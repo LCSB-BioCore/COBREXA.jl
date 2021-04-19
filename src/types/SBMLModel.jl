@@ -52,6 +52,7 @@ balance(a::SBMLModel)::SparseVec = spzeros(n_metabolites(a))
 objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
 
 genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
+n_genes(a::SBMLModel)::Int = length(a.m.gene_products)
 
 reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
     maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
