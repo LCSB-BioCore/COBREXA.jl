@@ -92,9 +92,16 @@ function gene_reaction_rules(model::StandardModel)
 end
 
 """
+    convert(::Type{StandardModel}, model::JSONModel)
+
 Convert a `JSONModel` into a `StandardModel`.
 Note, this conversion process may lose information. 
 Inspect the fields retained in [`StandardModel`](@ref) to see what you can expect to be retained.
+
+# Example
+```
+convert(StandardModel, jsonmodel)
+```
 """
 function Base.convert(::Type{StandardModel}, model::JSONModel)
     return StandardModel(
