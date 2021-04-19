@@ -164,7 +164,7 @@ function objective(model::JSONModel)
         return spzeros(n_reactions(model))
     end
 
-    return sparse([get(rxn, "objective_coefficient", 0) for rxn in model.m[r]])
+    return sparse([float(get(rxn, "objective_coefficient", 0.0)) for rxn in model.m[r]])
 end
 
 """
@@ -485,10 +485,8 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
 
     #TODO: add notes, names and similar fun stuff when they are available
 
-    m[first(_constants.keynames.genes)] = [Dict([
-        "id" => gid,
-        "annotation" => gene_annotations(mm, gid),
-    ]) for gid in gene_ids]
+    m[first(_constants.keynames.genes)] =
+        [Dict(["id" => gid, "annotation" => gene_annotations(mm, gid)]) for gid in gene_ids]
 
     m[first(_constants.keynames.mets)] = [
         begin
