@@ -172,7 +172,7 @@ end
 
 Parses the `.gene_reaction_rule` from reactions.
 """
-function reaction_gene_associaton(model::JSONModel, rid::String)
+function reaction_gene_association(model::JSONModel, rid::String)
     r = _guesskey(keys(model.m), _constants.keynames.rxns)
     if isnothing(r)
         return nothing
@@ -497,7 +497,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
                 res["formula"] = _atoms_to_formula(ch[1])
                 res["charge"] = ch[2]
             end
-            res["annotation"] = gene_annotations(mm, gid)
+            res["annotation"] = metabolite_annotations(mm, mid)
             res
         end for mid in met_ids
     ]
@@ -510,7 +510,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
             if !isempty(a)
                 res["annotation"] = a
             end
-            grr = reaction_gene_associaton(mm, rid)
+            grr = reaction_gene_association(mm, rid)
             if !isnothing(grr)
                 res["gene_reaction_rule"] = _unparse_grr(grr)
             end
@@ -518,7 +518,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
             res["lower_bound"] = lbs[ri]
             res["upper_bound"] = ubs[ri]
             res["objective_coefficient"] = ocs[ri]
-            I, V = findnz(S[:, i])
+            I, V = findnz(S[:, ri])
             res["metabolites"] =
                 Dict{String,Float64}([met_ids[ii] => vv for (ii, vv) in zip(I, V)])
             res
