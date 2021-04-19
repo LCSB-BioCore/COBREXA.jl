@@ -38,157 +38,175 @@ function _guesskey(avail, possibilities)
         return nothing
     end
 
-    if length(x)>1
+    if length(x) > 1
         @debug "Possible ambiguity between keys: $x"
     end
     return x[1]
 end
 
-function _get_reactions(model::JSONModel)
+"""
+    reactions(model::JSONModel)
+
+Extract reaction names (stored as `.id`) from JSON model.
+"""
+function reactions(model::JSONModel)
     k = _guesskey(keys(model.m), _constants.keynames.rxns)
     if isnothing(k)
         throw(DomainError(keys(model.m), "JSON model has no reaction keys"))
     end
 
-    return [string(r["id"]
-    for k in _constants.keynames.rxns
-        if haskey(model.m, k)
-            @info "Used key: \"$k\" to access reactions."
-            return model.m[k][:]
-        end
-    end
-    @warn "No reactions found. Perhaps the an exotic field name is used by the model?"
-    return nothing
-end
-
-function reactions(model::JSONModel)
-    keys = 
-    rxns = _get_reactions(model)
-    if !isnothing(rxns)
-        @info "Assuming \"id\" is the key for reaction dicts..."
-        return [string(get(r, "id", "")) for r in rxns] # assume `id` is the dict key.
-    end
+    return [string(get(model.m[k][i], "id", "rxn$i")) for i in eachindex(model.m[k])]
 end
 
 """
-    _get_metabolites(model::JSONModel)
+    metabolites(model::JSONModel)
 
-Return a list of metabolite dicts from `JSONModel`.
+Extract metabolite names (stored as `.id`) from JSON model.
 """
-function _get_metabolites(model::JSONModel)
-    for k in _constants.keynames.mets
-        if haskey(model.m, k)
-            @info "Used key: \"$k\" to access metabolites."
-            return model.m[k][:]
-        end
-    end
-    @warn "No metabolites found. Perhaps the an exotic field name is used by the model?"
-    return nothing
-end
-
-"""
-    _get_genes(model::JSONModel)
-
-Return a list of gene dicts from `JSONModel`.
-"""
-function _get_genes(model::JSONModel)
-    for k in _constants.keynames.genes
-        if haskey(model.m, k)
-            @info "Used key: \"$k\" to access genes."
-            return model.m[k][:]
-        end
-    end
-    @warn "No genes found. Perhaps the an exotic field name is used by the model?"
-    return nothing
-end
-
 function metabolites(model::JSONModel)
-    mets = _get_metabolites(model)
-    if !isnothing(mets)
-        @info "Assuming \"id\" is the key for metabolite dicts..."
-        return [string(get(m, "id", "")) for m in mets] # assume `id` is the dict key.
+    k = _guesskey(keys(model.m), _constants.keynames.mets)
+    if isnothing(k)
+        throw(DomainError(keys(model.m), "JSON model has no metabolite keys"))
     end
+
+    return [string(get(model.m[k][i], "id", "met$i")) for i in eachindex(model.m[k])]
 end
 
-n_metabolites(model::JSONModel) = length(metabolites(model))
+"""
+    genes(model::JSONModel)
 
+Extract gene names from a JSON model.
+"""
 function genes(model::JSONModel)
-    gs = _get_genes(model)
-    if !isnothing(gs)
-        @info "Assuming \"id\" is the key for gene dicts..."
-        return [string(get(g, "id", "")) for g in gs] # assume `id` is the dict key.
+    k = _guesskey(keys(model.m), _constants.keynames.genes)
+    if isnothing(k)
+        return [] #no genes
     end
+
+    return [string(get(model.m[k][i], "id", "gene$i")) for i in eachindex(model.m[k])]
 end
 
-n_genes(model::JSONModel) = length(genes(model))
+"""
+    stoichiometry(model::JSONModel)
 
+Get the stoichiometry. Assuming the information is stored in reaction object
+under key `.metabolites`.
+"""
 function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
-    rxn_key = _constants.keynames.rxns[[
-        haskey(model.m, x) for x in _constants.keynames.rxns
-    ]][1] # get the rxn key used
     met_ids = metabolites(model)
+
+    r = _guesskey(keys(model.m), _constants.keynames.rxns)
+    if isnothing(r)
+        throw(DomainError(keys(model.m), "JSON model has no reaction keys"))
+    end
+
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
-    @info "Reconstructing stoichiometric matrix..."
-    for (i, rxn_id) in enumerate(rxn_ids)
-        rxn_dict = model.m[rxn_key][i]["metabolites"] # assume metabolites is the only possible key
-        for (met_id, coeff) in rxn_dict # assume met_id => coeff dict
+    for i in eachindex(rxn_ids)
+        for (met_id, coeff) in model.m[r][i]["metabolites"]
             j = findfirst(x -> x == met_id, met_ids)
-            isnothing(j) ?
-            (@error "S matrix construction error: $(met_id) not defined."; return nothing) :
-            nothing
+            if isnothing(j)
+                throw(
+                    DomainError(
+                        met_id,
+                        "Unknown metabolite found in stoichiometry of $(rxn_ids[i])",
+                    ),
+                )
+            end
             S[j, i] = coeff
         end
     end
     return S
 end
 
-function lower_bounds(model::JSONModel)
-    lbs = Float64[]
-    rxns = _get_reactions(model)
-    if !isnothing(rxns)
-        @info "Assuming \"lower_bound\" is the key for reaction dicts... Otherwise default lower bound is used."
-        for rxn in rxns
-            push!(lbs, get(rxn, "lower_bound", -_constants.default_reaction_bound)) # assume `lower_bound` is the dict key
-        end
-        return lbs
-    end
-end
+"""
+    bounds(model::JSONModel)
 
-function upper_bounds(model::JSONModel)
-    ubs = Float64[]
-    rxns = _get_reactions(model)
-    if !isnothing(rxns)
-        @info "Assuming \"upper_bound\" is the key for reaction dicts... Otherwise default upper bound is used."
-        for rxn in rxns
-            push!(ubs, get(rxn, "upper_bound", _constants.default_reaction_bound)) # assume `upper_bound` is the dict key
-        end
-        return ubs
-    end
-end
-
+Get the bounds for reactions, assuming the information is stored in
+`.lower_bound` and `.upper_bound`.
+"""
 function bounds(model::JSONModel)
-    return sparse(lower_bounds(model)), sparse(upper_bounds(model))
-end
-
-function balance(model::JSONModel)
-    @info "Assuming balance is identically zero..."
-    return spzeros(n_metabolites(model))
-end
-
-function objective(model::JSONModel)
-    c = spzeros(n_reactions(model))
-    rxns = _get_reactions(model)
-    if !isnothing(rxns)
-        @info "Assuming \"objective_coefficient\" is the key used for objective reactions..."
-        for (i, rxn) in enumerate(rxns)
-            if haskey(rxn, "objective_coefficient") # assume the only key?
-                c[i] = rxn["objective_coefficient"]
-            end
-        end
-        nnz(c) == 0 && (@warn "No objective found.")
-        return c
+    r = _guesskey(keys(model.m), _constants.keynames.rxns)
+    if isnothing(r)
+        return (
+            sparse(fill(-_constants.default_reaction_bound, n_reactions(model))),
+            sparse(fill(_constants.default_reaction_bound, n_reactions(model))),
+        )
     end
+    return (
+        sparse([
+            get(rxn, "lower_bound", -_constants.default_reaction_bound) for
+            rxn in model.m[r]
+        ]),
+        sparse([
+            get(rxn, "upper_bound", _constants.default_reaction_bound) for rxn in model.m[r]
+        ]),
+    )
+end
+
+"""
+    objective(model::JSONModel)
+
+Collect `.objective_coefficient` keys from model reactions.
+"""
+function objective(model::JSONModel)
+    r = _guesskey(keys(model.m), _constants.keynames.rxns)
+    if isnothing(r)
+        return spzeros(n_reactions(model))
+    end
+
+    return sparse([get(rxn, "objective_coefficient", 0) for rxn in model.m[r]])
+end
+
+"""
+    reaction_gene_associaton(model::JSONModel, rid::String)
+
+Parses the `.gene_reaction_rule` from reactions.
+"""
+function reaction_gene_associaton(model::JSONModel, rid::String)
+    r = _guesskey(keys(model.m), _constants.keynames.rxns)
+    if isnothing(r)
+        return nothing
+    end
+
+    ri = first(indexin(rid, keys(model.m[r])))
+    return maybemap(_parse_grr, get(model.m[r][ri], "gene_reaction_rule", nothing))
+end
+
+"""
+    metabolite_chemistry(model::JSONModel, mid::String)
+
+Parse and return the metabolite `.formula` and `.charge`.
+"""
+function metabolite_chemistry(model::JSONModel, mid::String)
+    m = _guesskey(keys(model.m), _constants.keynames.mets)
+    if isnothing(m)
+        return nothing
+    end
+
+    mi = first(indexin(mid, keys(model.m[m])))
+    met = models.m[m][mi]
+    formula = maybemap(_formula_to_atoms, get(met, "formula", nothing))
+    return maybemap(f -> (f, get(met, "charge", 0)), formula)
+end
+
+#TODO annotation accessors
+
+#
+# Below lies the batch-processing getter API, arguably more efficient for
+# making StdModel from JSON directly.
+#
+
+function charges(model::JSONModel)
+    charges_arr = Int64[] # assume only integer charges :) 
+    mets = _get_metabolites(model)
+    if !isnothing(mets)
+        @info "Assuming \"charge\" is the key used for charges in metabolites..."
+        for met in mets
+            push!(charges_arr, get(met, "charge", 0)) # assume only key
+        end
+    end
+    return charges_arr
 end
 
 function gene_associations(model::JSONModel)
@@ -202,30 +220,6 @@ function gene_associations(model::JSONModel)
         length(grrs) == 0 && (@warn "No GRRs found.")
         return grrs
     end
-end
-
-function formulas(model::JSONModel)
-    formula_strings = String[]
-    mets = _get_metabolites(model)
-    if !isnothing(mets)
-        @info "Assuming \"formula\" is the key used for formulas in metabolites..."
-        for met in mets
-            push!(formula_strings, get(met, "formula", "")) # assume only key
-        end
-    end
-    return formula_strings
-end
-
-function charges(model::JSONModel)
-    charges_arr = Int64[] # assume only integer charges :) 
-    mets = _get_metabolites(model)
-    if !isnothing(mets)
-        @info "Assuming \"charge\" is the key used for charges in metabolites..."
-        for met in mets
-            push!(charges_arr, get(met, "charge", 0)) # assume only key
-        end
-    end
-    return charges_arr
 end
 
 function metabolite_chemistry(model::JSONModel)
