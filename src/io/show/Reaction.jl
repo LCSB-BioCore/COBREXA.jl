@@ -35,7 +35,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
         pp = products[1] * " + ... + " * products[end]
         req_str = join(substrates, " + ") * arrow * pp
     else
-        req_str = join(substrates, " + ") * arrow * join(products, " + ") 
+        req_str = join(substrates, " + ") * arrow * join(products, " + ")
     end
 
     grr_strings = String[]
@@ -44,7 +44,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     end
     grr_string = join(grr_strings, " or ")
     (isnothing(grr_string) || grr_string == "") && (grr_string = "")
-    
+
     _pretty_print(io, "Reaction ID: ", r.id)
     _pretty_print(io, "Name: ", r.name)
     _pretty_print(io, "Reaction equation: ", req_str)
@@ -62,5 +62,9 @@ Pretty printing of reactions::Vector{Reaction}.
 """
 function Base.show(io::IO, ::MIME"text/plain", rs::Vector{Reaction})
     _pretty_print(io, "Reaction vector of length: : ", string(length(rs)))
-    _pretty_print(io, "Each reaction has fields: ", join([string(x) for x in fieldnames(Reaction)],", "))
+    _pretty_print(
+        io,
+        "Each reaction has fields: ",
+        join([string(x) for x in fieldnames(Reaction)], ", "),
+    )
 end

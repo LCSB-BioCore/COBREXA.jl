@@ -5,15 +5,18 @@
     g.notes = Dict("notes" => ["blah", "blah"])
     g.annotation = Dict("sboterm" => "sbo", "ncbigene" => ["ads", "asds"])
 
-    @test sprint(show, MIME("text/plain"), g) == "\e[34mGene ID: \e[35mgene1\n\e[34mName: \e[35mgene_name\n\e[34mNotes: \n\e[35m\tnotes: blah, blah\n\e[34mAnnotation: \n\e[35m\tncbigene: ads, asds\n\e[35m\tsboterm: sbo\n\e[34mFields: \e[35mid, name, notes, annotation\n"
+    @test sprint(show, MIME("text/plain"), g) ==
+          "\e[34mGene ID: \e[35mgene1\n\e[34mName: \e[35mgene_name\n\e[34mNotes: \n\e[35m\tnotes: blah, blah\n\e[34mAnnotation: \n\e[35m\tncbigene: ads, asds\n\e[35m\tsboterm: sbo\n\e[34mFields: \e[35mid, name, notes, annotation\n"
 
     g2 = Gene("gene2")
 
     genes = [g, g2]
-    @test sprint(show, MIME("text/plain"), genes) == "\e[34mGene vector of length: \e[35m2\n\e[34mEach gene has fields: \e[35mid, name, notes, annotation\n"
+    @test sprint(show, MIME("text/plain"), genes) ==
+          "\e[34mGene vector of length: \e[35m2\n\e[34mEach gene has fields: \e[35mid, name, notes, annotation\n"
 
     gene_list = [[g], [g2]]
-    @test sprint(show, MIME("text/plain"), gene_list) == "\e[34mGene reaction rule: \e[35m(gene1) or (gene2)\n"
+    @test sprint(show, MIME("text/plain"), gene_list) ==
+          "\e[34mGene reaction rule: \e[35m(gene1) or (gene2)\n"
 
     @test genes[g] == 1
 
