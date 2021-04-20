@@ -15,8 +15,6 @@ using MacroTools
 using Measurements
 using Statistics
 using Random
-using Tulip # for LPs
-using OSQP # for QPs, but it kinda sucks
 using MacroTools # for DSL :)
 
 import Base: findfirst, getindex, show
