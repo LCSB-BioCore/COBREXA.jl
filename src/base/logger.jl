@@ -3,7 +3,7 @@
 
 Only print this message `str` if `env[\"log-level\"]` ≥`atlevel`.
 """
-function info_msg(str, atlevel=10)
+function info_msg(str, atlevel = 10)
     if COBREXA.env["log-level"] >= atlevel
         println(Crayon(foreground = :cyan), str)
     end
@@ -14,7 +14,7 @@ end
 
 Only print this message `str` if `env[\"log-level\"]` ≥`atlevel`.
 """
-function warn_msg(str, atlevel=10)
+function warn_msg(str, atlevel = 10)
     if COBREXA.env["log-level"] >= atlevel
         println(Crayon(foreground = :red), str)
     end
