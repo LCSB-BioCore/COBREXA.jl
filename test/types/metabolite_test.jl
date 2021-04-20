@@ -8,8 +8,7 @@
     m1.notes = Dict("notes" => ["blah", "blah"])
     m1.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ads", "asds"])
 
-    @test sprint(show, MIME("text/plain"), m1) == "\e[34mMetabolite ID: \e[35mmet1\n\e[34mName: \e[35mmetabolite 1\n\e[34mFormula: \e[35mC6H12O6N\n\e[34mCharge: \e[35m1\n\e[34mCompartment: \e[35mc\n\e[34mNotes: 
-    \n\e[35m\tnotes: blah, blah\n\e[34mAnnotation: \n\e[35m\tkegg.compound: ads, asds\n\e[35m\tsboterm: sbo\n\e[34mFields: \e[35mid, name, formula, charge, compartment, notes, annotation\n"
+    @test sprint(show, MIME("text/plain"), m1) == "\e[34mMetabolite ID: \e[35mmet1\n\e[34mName: \e[35mmetabolite 1\n\e[34mFormula: \e[35mC6H12O6N\n\e[34mCharge: \e[35m1\n\e[34mCompartment: \e[35mc\n\e[34mNotes: \n\e[35m\tnotes: blah, blah\n\e[34mAnnotation: \n\e[35m\tkegg.compound: ads, asds\n\e[35m\tsboterm: sbo\n\e[34mFields: \e[35mid, name, formula, charge, compartment, notes, annotation\n"
 
     m2 = Metabolite("met2")
     m2.formula = "C6H12O6N"

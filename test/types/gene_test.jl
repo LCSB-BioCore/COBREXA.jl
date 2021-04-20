@@ -13,7 +13,7 @@
     @test sprint(show, MIME("text/plain"), genes) == "\e[34mGene vector of length: \e[35m2\n\e[34mEach gene has fields: \e[35mid, name, notes, annotation\n"
 
     gene_list = [[g], [g2]]
-    @test sprint(show, MIME("text/plain"), gene_list) == "\e[34mGene reaction rule: \e[35m(gene1 and gene2) or (gene2)\n"
+    @test sprint(show, MIME("text/plain"), gene_list) == "\e[34mGene reaction rule: \e[35m(gene1) or (gene2)\n"
 
     @test genes[g] == 1
 
