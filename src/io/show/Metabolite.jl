@@ -19,5 +19,4 @@ Pretty printing of metabolites::Vector{Metabolite}.
 function Base.show(io::IO, ::MIME"text/plain", ms::Vector{Metabolite})
     _pretty_print(io, "Metabolite vector of length: : ", string(length(ms)))
     _pretty_print(io, "Each metabolite has fields: ", join([string(x) for x in fieldnames(Metabolite)],", "))
-    
 end
