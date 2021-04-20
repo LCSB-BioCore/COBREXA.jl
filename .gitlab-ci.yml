@@ -88,6 +88,8 @@ doc-tests:v1.6:
 docker:v1.6:
   stage: test-containers
   image: $CI_REGISTRY/r3/docker/julia-custom
+  tags:
+    - slave02
   script:
     - julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
