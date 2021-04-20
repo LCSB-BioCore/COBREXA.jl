@@ -16,6 +16,7 @@ using Measurements
 using Statistics
 using Random
 using MacroTools # for DSL :)
+using Crayons
 
 import Base: findfirst, getindex, show
 import Pkg
