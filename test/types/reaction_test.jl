@@ -30,7 +30,8 @@
     r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    @test sprint(show, MIME("text/plain"), r1) == "\e[34mReaction ID: \e[35mr1\n\e[34mName: \e[35mreaction 1\n\e[34mReaction equation: \e[35m1.0 m1 ⟷  1.0 m2\n\e[34mLower bound: \e[35m-100.0\n\e[34mUpper bound: \e[35m100.0\n\e[34mSubsystem: \e[35mglycolysis\n\e[34mGene reaction rule: \e[35m(g1 and g2) or (g3)\n\e[34mNotes: \n\e[35m\tnotes: blah, blah\n\e[34mAnnotation: \n\e[35m\tsboterm: sbo\n\e[35m\tbiocyc: ads, asds\n\e[34mFields: \e[35mid, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient\n"
+    @test sprint(show, MIME("text/plain"), r1) ==
+          "\e[34mReaction ID: \e[35mr1\n\e[34mName: \e[35mreaction 1\n\e[34mReaction equation: \e[35m1.0 m1 ⟷  1.0 m2\n\e[34mLower bound: \e[35m-100.0\n\e[34mUpper bound: \e[35m100.0\n\e[34mSubsystem: \e[35mglycolysis\n\e[34mGene reaction rule: \e[35m(g1 and g2) or (g3)\n\e[34mNotes: \n\e[35m\tnotes: blah, blah\n\e[34mAnnotation: \n\e[35m\tsboterm: sbo\n\e[35m\tbiocyc: ads, asds\n\e[34mFields: \e[35mid, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient\n"
 
     rlongfor = Reaction(
         "rlongfor",
@@ -80,7 +81,8 @@
 
     rxns = [r1, r2, r3]
 
-    @test sprint(show, MIME("text/plain"), rxns) == "\e[34mReaction vector of length: : \e[35m3\n\e[34mEach reaction has fields: \e[35mid, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient\n"
+    @test sprint(show, MIME("text/plain"), rxns) ==
+          "\e[34mReaction vector of length: : \e[35m3\n\e[34mEach reaction has fields: \e[35mid, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient\n"
 
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
     r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])

@@ -38,7 +38,7 @@
     model.genes = OrderedDict(g.id => g for g in genes)
 
     @test_broken sprint(show, MIME("text/plain"), model) ==
-          "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n" # will fix after #92 and PR #93
+                 "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n" # will fix after #92 and PR #93
 
     @test model[r2] == 2
 
