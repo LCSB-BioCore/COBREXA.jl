@@ -4,9 +4,9 @@ Pretty printing of reaction::Reaction.
 function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     if r.ub > 0.0 && r.lb < 0.0
         arrow = " ⟷  "
-    elseif r.ub == 0.0 && r.lb < 0.0
+    elseif r.ub <= 0.0 && r.lb < 0.0
         arrow = " ⟵  "
-    elseif r.ub > 0.0 && r.lb == 0.0
+    elseif r.ub > 0.0 && r.lb >= 0.0
         arrow = " ⟶  "
     else
         arrow = " →∣←  " # blocked reaction
@@ -22,25 +22,20 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     end
     isempty(substrates) && (substrates = "∅")
     isempty(products) && (products = "∅")
-
-    println(io, "Reaction ID: $(r.id)")
-    println(io, "Reaction name:  $(r.name)")
-    println(io, "Reaction subsystem: $(r.subsystem)")
+    req_str = ""
     if length(substrates) > 5 && length(products) > 5
         sp = substrates[1] * " + ... + " * substrates[end]
         pp = products[1] * " + ... + " * products[end]
-        println(io, sp * arrow * pp)
+        req_str = sp * arrow * pp
     elseif length(substrates) > 5
         sp = substrates[1] * " + ... + " * substrates[end]
-        println(io, sp * arrow * join(products, " + "))
+        req_str = sp * arrow * join(products, " + ")
     elseif length(products) > 5
         pp = products[1] * " + ... + " * products[end]
-        println(io, join(substrates, " + ") * arrow * pp)
+        req_str = join(substrates, " + ") * arrow * pp
     else
-        println(io, join(substrates, " + ") * arrow * join(products, " + "))
+        req_str = join(substrates, " + ") * arrow * join(products, " + ") 
     end
-    println(io, "Lower bound: $(r.lb)")
-    println(io, "Upper bound: $(r.ub)")
 
     grr_strings = String[]
     for gr in r.grr
@@ -48,13 +43,23 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     end
     grr_string = join(grr_strings, " or ")
     (isnothing(grr_string) || grr_string == "") && (grr_string = "")
-    println(io, "Genes: $grr_string")
-    println(io, "E.C. number: ", join(get(r.annotation, "ec-code", [""]), " or "))
+    
+    _pretty_print(io, "Reaction ID: ", r.id)
+    _pretty_print(io, "Name: ", r.name)
+    _pretty_print(io, "Reaction equation: ", req_str)
+    _pretty_print(io, "Lower bound: ", string(r.lb))
+    _pretty_print(io, "Upper bound: ", string(r.ub))
+    _pretty_print(io, "Subsystem: ", r.subsystem)
+    _pretty_print(io, "Gene reaction rule: ", grr_string)
+    _pretty_print(io, "Notes: ", r.notes)
+    _pretty_print(io, "Annotation: ", r.annotation)
+    _pretty_print(io, "Fields: ", join([string(x) for x in fieldnames(Reaction)], ", "))
 end
 
 """
 Pretty printing of reactions::Vector{Reaction}.
 """
 function Base.show(io::IO, ::MIME"text/plain", rs::Vector{Reaction})
-    println(io, "Reaction set of length: ", length(rs))
+    _pretty_print(io, "Reaction vector of length: : ", string(length(rs)))
+    _pretty_print(io, "Each reaction has fields: ", join([string(x) for x in fieldnames(Reaction)],", "))
 end
