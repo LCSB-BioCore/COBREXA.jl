@@ -16,7 +16,11 @@ using Measurements
 using Statistics
 using Random
 using MacroTools # for DSL :)
+<<<<<<< HEAD
 using OrderedCollections
+=======
+using Crayons
+>>>>>>> 8a2e108 (added pretty printing of MetabolicModel)
 
 import Base: findfirst, getindex, show
 import Pkg
