@@ -5,15 +5,18 @@
     g.notes = Dict("notes" => ["blah", "blah"])
     g.annotation = Dict("sboterm" => ["sbo"], "ncbigene" => ["ads", "asds"])
 
-    @test sprint(show, MIME("text/plain"), g) == "Gene ID: gene1\nName: gene_name\nNotes: \n\tnotes: blah, blah\nAnnotation: \n\tncbigene: ads, asds\n\tsboterm: sbo\nFields: id, name, notes, annotation\n"
-    
+    @test sprint(show, MIME("text/plain"), g) ==
+          "Gene ID: gene1\nName: gene_name\nNotes: \n\tnotes: blah, blah\nAnnotation: \n\tncbigene: ads, asds\n\tsboterm: sbo\nFields: id, name, notes, annotation\n"
+
     g2 = Gene("gene2")
 
     genes = [g, g2]
-    @test sprint(show, MIME("text/plain"), genes) == "Gene vector of length: 2\nEach gene has fields: id, name, notes, annotation\n"
+    @test sprint(show, MIME("text/plain"), genes) ==
+          "Gene vector of length: 2\nEach gene has fields: id, name, notes, annotation\n"
 
     gene_list = [[g], [g2]]
-    @test sprint(show, MIME("text/plain"), gene_list) == "Gene reaction rule: (gene1) or (gene2)\n"
+    @test sprint(show, MIME("text/plain"), gene_list) ==
+          "Gene reaction rule: (gene1) or (gene2)\n"
 
     @test genes[g] == 1
 
