@@ -50,8 +50,8 @@ end
 
     model = read_model(model_path, StandardModel)
 
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    glucose = findfirst(model.reactions, "EX_glc__D_e")
+    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"]
+    glucose = model.reactions["EX_glc__D_e"]
     sol = flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
@@ -68,7 +68,7 @@ end
         atol = TEST_TOLERANCE,
     )
 
-    pfl = findfirst(model.reactions, "PFL")
+    pfl = model.reactions["PFL"]
     pfl_frac = 0.8
     biomass_frac = 0.2
     sol_multi = flux_balance_analysis_dict(

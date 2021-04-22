@@ -45,7 +45,7 @@ end
     model = create_loopless_test_model()
     optimizer = Tulip.Optimizer
     # first test that fba in fact does not give the loopless solution
-    objective = findfirst(model.reactions, "v5")
+    objective = model.reactions["v5"]
     res_fba = flux_balance_analysis_dict(
         model,
         optimizer,

@@ -69,9 +69,9 @@ end
 
     model = read_model(model_path, StandardModel)
 
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    glucose = findfirst(model.reactions, "EX_glc__D_e")
-    oxygen = findfirst(model.reactions, "EX_o2_e")
+    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"]
+    glucose = model.reactions["EX_glc__D_e"]
+    oxygen = model.reactions["EX_o2_e"]
     fva_max, fva_min = flux_variability_analysis(
         model,
         Tulip.Optimizer;

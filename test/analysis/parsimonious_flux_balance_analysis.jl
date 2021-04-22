@@ -7,8 +7,8 @@
 
     model = read_model(model_path, StandardModel)
 
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    glucose = findfirst(model.reactions, "EX_glc__D_e")
+    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"]
+    glucose = model.reactions["EX_glc__D_e"]
 
     d = parsimonious_flux_balance_analysis_dict(
         model,

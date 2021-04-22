@@ -8,8 +8,8 @@
 
     model = read_model(model_path, StandardModel)
 
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    glucose = findfirst(model.reactions, "EX_glc__D_e")
+    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"
+    glucose = model.reactions["EX_glc__D_e"
     opt_model = flux_balance_analysis(
         model,
         Tulip.Optimizer;
@@ -19,7 +19,7 @@
             change_solver_attribute("IPM_IterationsLimit", 500),
         ],
     )
-    biomass_index = model[biomass]
+    biomass_index = index_of(biomass, model)
     λ = JuMP.value(opt_model[:x][biomass_index])
     change_constraint(biomass, 0.99 * λ, λ)(model, opt_model)
 
