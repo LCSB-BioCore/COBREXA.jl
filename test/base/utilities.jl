@@ -25,14 +25,14 @@ end
     model = read_model(model_path, StandardModel)
 
     # FBA
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"]
 
-    cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
+    glc = model.reactions["EX_glc__D_e"]
     optimizer = Tulip.Optimizer # quiet by default
     sol = flux_balance_analysis_dict(
         model,
         optimizer;
-        modifications = change_objective(biomass),
+        modifications = [change_objective(biomass), change_constraint(glc, -12, -12)],
     )
 
     # atom tracker

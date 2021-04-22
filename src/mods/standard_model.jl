@@ -5,7 +5,7 @@ Change the lower and upper bounds (`lb` and `ub` respectively) of `reaction`.
 """
 function change_constraint(reaction::Reaction, lb, ub)
     (model, opt_model) -> begin
-        ind = model.reactions[reaction]
+        ind = findfirst(x -> x .== reaction.id, reactions(model))
         set_bound(ind, opt_model, lb = lb, ub = ub)
     end
 end
@@ -27,9 +27,9 @@ function change_objective(
 
         # Construct objective_indices array
         if typeof(objective_functions) == Reaction
-            objective_indices = [model[objective_functions]]
+            objective_indices = [findfirst(x -> x .== objective_functions.id, reactions(model))]
         else
-            objective_indices = [model[rxn] for rxn in objective_functions]
+            objective_indices = [findfirst(x -> x .== rxn.id, reactions(model)) for rxn in objective_functions]
         end
 
         # Initialize weights

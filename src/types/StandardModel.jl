@@ -84,19 +84,12 @@ balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 
 function objective(model::StandardModel)::SparseVec
     obj_arr = SparseArrays.spzeros(length(model.reactions))
-    j = -1
-    for (i, r) in enumerate(reactions(model))
-        if model[rxn].objective_coefficient != 0.0
-            j = i
-            obj_arr[j] = 1.0 # could have multiple objective coefficients
-            break
+    for (i, r_id) in enumerate(reactions(model))
+        if model.reactions[r_id].objective_coefficient != 0.0
+            obj_arr[i] = 1.0 # could have multiple objective coefficients
         end
     end
-    if j != -1 # objective assigned, otherwise return array of 0s
-        obj_arr[j] = 1.0
-    else
-        nnz(c) == 0 && (@warn "No objective found.")
-    end
+    nnz(obj_arr) == 0 && (@warn "No objective found.")
     return obj_arr
 end
 
