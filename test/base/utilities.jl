@@ -52,7 +52,7 @@ end
     cbm = make_optimization_model(model, optimizer)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
-    glucose_index = index_of("EX_glc__D_e", reactions(model)) 
+    glucose_index = index_of("EX_glc__D_e", reactions(model))
     o2_index = index_of("EX_o2_e", reactions(model))
     atpm_index = index_of("ATPM", reactions(model))
     set_bound(glucose_index, cbm; ub = -1.0, lb = -1.0)

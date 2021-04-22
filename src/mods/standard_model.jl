@@ -29,8 +29,8 @@ function change_objective(
         if typeof(objective_functions) == Reaction
             objective_indices = [index_of(objective_functions.id, reactions(model))]
         else
-            objective_indices = [index_of(rxn.id, reactions(model)) for rxn in objective_functions
-            ]
+            objective_indices =
+                [index_of(rxn.id, reactions(model)) for rxn in objective_functions]
         end
 
         # Initialize weights
@@ -45,7 +45,7 @@ function change_objective(
                 wcounter += 1
             end
         end
-        
+
         v = opt_model[:x]
         @objective(opt_model, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
