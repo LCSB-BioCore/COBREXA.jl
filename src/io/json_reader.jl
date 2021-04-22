@@ -109,5 +109,5 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
         rxns[rxn.id] =  rxn
     end
 
-    return StandardModel(modelid; reactions=rxns, metabolites=mets, genes=genes)
+    return StandardModel(modelid; reactions = rxns, metabolites = mets, genes = genes)
 end

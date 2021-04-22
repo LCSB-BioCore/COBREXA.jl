@@ -36,7 +36,7 @@ mutable struct Reaction
         grr = Vector{Vector{String}}(),
         subsystem = "",
         notes = Dict{String,Vector{String}}(),
-        annotation = Dict{String, Vector{String}}(),
+        annotation = Dict{String,Vector{String}}(),
         objective_coefficient = 0.0,
     ) = new(
         id,
