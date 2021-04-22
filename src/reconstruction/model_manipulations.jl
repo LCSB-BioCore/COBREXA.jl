@@ -25,7 +25,7 @@ function add!(model::StandardModel, mets::Vector{Metabolite})
 end
 
 function add!(model::StandardModel, met::Metabolite)
-    model.metabolites[met.id] = met    
+    model.metabolites[met.id] = met
 end
 
 """
