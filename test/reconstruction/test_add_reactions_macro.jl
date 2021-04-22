@@ -13,15 +13,15 @@
         v3, ∅ ⟷ C, -500, 500
     end
 
-    rxn = mod.reactions[1]
+    rxn = mod.reactions["v1"]
     @test rxn.lb == -1000.0
     @test rxn.ub == 1000.0
 
-    rxn = mod.reactions[2]
+    rxn = mod.reactions["v2"]
     @test rxn.lb == -500
     @test rxn.ub == 1000.0
 
-    rxn = mod.reactions[3]
+    rxn = mod.reactions["v3"]
     @test rxn.lb == -500
     @test rxn.ub == 500
 end
