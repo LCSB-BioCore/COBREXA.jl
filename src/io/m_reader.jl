@@ -7,7 +7,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
     model_id = haskey(modeldict, "modelName") ? modeldict["modelName"] : model_name # more specific
 
-    mets = OrderedDict{String, Metabolite}()
+    mets = OrderedDict{String,Metabolite}()
     for i in eachindex(modeldict["mets"])
         met = Metabolite()
 
@@ -76,7 +76,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         push!(genes, gene)
     end
 
-    rxns = OrderedDict{String, Reaction}()
+    rxns = OrderedDict{String,Reaction}()
     for i in eachindex(modeldict["rxns"])
         rxn = Reaction()
         rxn.id = modeldict["rxns"][i]
@@ -133,7 +133,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         genes[gene.id] = gene
     end
 
-    return StandardModel(model_id; reactions=rxns, metabolites=mets, genes=genes)
+    return StandardModel(model_id; reactions = rxns, metabolites = mets, genes = genes)
 end
 
 function _read_model(file_location::String, ::Type{MFile}, ::Type{CoreModel})
