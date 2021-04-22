@@ -61,7 +61,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         mets[met.id] = met
     end
 
-    genes = Gene[]
+    genes = OrderedDict{String, Gene}()
     for i in eachindex(modeldict["genes"])
         gene = Gene()
         if haskey(modeldict, "genes")
@@ -73,7 +73,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         # name and other fields don't generally exist in the matlab models,
         # ignoring them for now
 
-        push!(genes, gene)
+        genes[gene.id] = gene
     end
 
     rxns = OrderedDict{String, Reaction}()
@@ -87,7 +87,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
 
         metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
         rxn.metabolites =
-            Dict{String,Float64}(mets[j].id => modeldict["S"][j, i] for j in metinds)
+            Dict{String,Float64}(mets[sj].id => modeldict["S"][j, i] for (sj, j) in zip(modeldict["mets"][metinds], metinds))
 
         if haskey(modeldict, "lb")
             rxn.lb = modeldict["lb"][i]
@@ -99,7 +99,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
 
         if haskey(modeldict, "grRules")
             grr_string = modeldict["grRules"][i]
-            rxn.grr = _parse_grr(grr_string, genes)
+            rxn.grr = _parse_grr(grr_string)
         end
 
         rxn.subsystem = join(modeldict["subSystems"][i], "; ")
@@ -130,7 +130,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
             rxn.notes["note"] = string.(split(string(modeldict["rxnNotes"][i]), "; "))
         end
 
-        genes[gene.id] = gene
+        rxns[rxn.id] = rxn
     end
 
     return StandardModel(model_id; reactions=rxns, metabolites=mets, genes=genes)
