@@ -61,7 +61,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         mets[met.id] = met
     end
 
-    genes = OrderedDict{String, Gene}()
+    genes = OrderedDict{String,Gene}()
     for i in eachindex(modeldict["genes"])
         gene = Gene()
         if haskey(modeldict, "genes")
@@ -86,8 +86,10 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         end
 
         metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
-        rxn.metabolites =
-            Dict{String,Float64}(mets[sj].id => modeldict["S"][j, i] for (sj, j) in zip(modeldict["mets"][metinds], metinds))
+        rxn.metabolites = Dict{String,Float64}(
+            mets[sj].id => modeldict["S"][j, i] for
+            (sj, j) in zip(modeldict["mets"][metinds], metinds)
+        )
 
         if haskey(modeldict, "lb")
             rxn.lb = modeldict["lb"][i]

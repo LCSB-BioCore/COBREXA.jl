@@ -72,7 +72,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 rxn.name = v
             elseif k == "metabolites"
                 for (kk, vv) in v
-                    rxn.metabolites[mets[kk].id] = vv    
+                    rxn.metabolites[mets[kk].id] = vv
                 end
             elseif k == "lower_bound"
                 rxn.lb = v
