@@ -8,8 +8,8 @@
 
     model = read_model(model_path, StandardModel)
 
-    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"
-    glucose = model.reactions["EX_glc__D_e"
+    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"]
+    glucose = model.reactions["EX_glc__D_e"]
     opt_model = flux_balance_analysis(
         model,
         Tulip.Optimizer;
