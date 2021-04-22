@@ -173,8 +173,7 @@ function flux_variability_analysis(
             COBREXA.JuMP.termination_status(opt_model) == MOI.LOCALLY_SOLVED
         )
         if status
-            fva_max[r_id] =
-                Dict(zip(reactions(model), value.(opt_model[:x])))
+            fva_max[r_id] = Dict(zip(reactions(model), value.(opt_model[:x])))
         else
             @warn "Error maximizing index: $i with error $(termination_status(opt_model))"
             fva_max[r_id] = nothing
@@ -187,8 +186,7 @@ function flux_variability_analysis(
             termination_status(opt_model) == MOI.LOCALLY_SOLVED
         )
         if status
-            fva_min[r_id] =
-                Dict(zip(reactions(model), value.(opt_model[:x])))
+            fva_min[r_id] = Dict(zip(reactions(model), value.(opt_model[:x])))
         else
             @warn "Error minimizing index: $i with error $(termination_status(opt_model))"
             fva_min[r_id] = nothing
