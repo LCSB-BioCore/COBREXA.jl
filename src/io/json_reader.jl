@@ -77,7 +77,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                         @warn "Metabolite $kk not found in reaction assignment."
                         continue
                     else
-                        rxn.metabolites[mets[ind]] = vv
+                        rxn.metabolites[mets[ind].id] = vv
                     end
                 end
             elseif k == "lower_bound"
@@ -85,7 +85,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "upper_bound"
                 rxn.ub = v
             elseif k == "gene_reaction_rule"
-                rxn.grr = _parse_grr(v, genes)
+                rxn.grr = _parse_grr(v)
             elseif k == "subsystem"
                 rxn.subsystem = v
             elseif k == "notes"
