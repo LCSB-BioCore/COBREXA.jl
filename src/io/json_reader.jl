@@ -72,13 +72,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 rxn.name = v
             elseif k == "metabolites"
                 for (kk, vv) in v
-                    ind = findfirst(x -> x.id == kk, mets)
-                    if isnothing(ind)
-                        @warn "Metabolite $kk not found in reaction assignment."
-                        continue
-                    else
-                        rxn.metabolites[mets[ind].id] = vv
-                    end
+                    rxn.metabolites[mets[kk].id] = vv    
                 end
             elseif k == "lower_bound"
                 rxn.lb = v

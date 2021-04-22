@@ -18,7 +18,7 @@ objective_coefficient :: Float64
 mutable struct Reaction
     id::String
     name::String
-    metabolites::Dict{Metabolite,Float64}
+    metabolites::Dict{String,Float64}
     lb::Float64
     ub::Float64
     grr::Vector{Vector{String}}
@@ -30,7 +30,7 @@ mutable struct Reaction
     Reaction(
         id = "";
         name = "",
-        metabolites = Dict{Metabolite,Float64}(),
+        metabolites = Dict{String,Float64}(),
         lb = -_constants.default_reaction_bound,
         ub = _constants.default_reaction_bound,
         grr = Vector{Vector{String}}(),
@@ -54,7 +54,7 @@ mutable struct Reaction
     # this constructor is only used internally
     function Reaction(
         id::String,
-        metabolites::Dict{Metabolite,Float64},
+        metabolites::Dict{String,Float64},
         dir = :bidirectional;
         default_bound = _constants.default_reaction_bound,
     )
