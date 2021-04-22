@@ -3,7 +3,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
 
     modelid = modeldict["id"]
 
-    mets = Metabolite[]
+    mets = OrderedDict{String, Metabolite}()
     for i in modeldict["metabolites"]
         met = Metabolite()
 
@@ -32,10 +32,10 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 @warn "Unrecognized metabolite field: $k"
             end
         end
-        push!(mets, met)
+        mets[met.id] = met
     end
 
-    genes = Gene[]
+    genes = OrderedDict{String, Gene}()
     for i in modeldict["genes"]
         gene = Gene()
         for (k, v) in i
@@ -59,10 +59,10 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 @warn "Unrecognized gene field: $k"
             end
         end
-        push!(genes, gene)
+        genes[gene.id] = gene
     end
 
-    rxns = Reaction[]
+    rxns = OrderedDict{String, Reaction}()
     for i in modeldict["reactions"]
         rxn = Reaction()
         for (k, v) in i
@@ -106,7 +106,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 @warn "Unrecognized reaction field: $k"
             end
         end
-        push!(rxns, rxn)
+        rxns[rxn.id] =  rxn
     end
 
     return StandardModel(modelid; reactions=rxns, metabolites=mets, genes=genes)
