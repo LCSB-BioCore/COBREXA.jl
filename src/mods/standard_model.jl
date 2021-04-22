@@ -27,9 +27,13 @@ function change_objective(
 
         # Construct objective_indices array
         if typeof(objective_functions) == Reaction
-            objective_indices = [findfirst(x -> x .== objective_functions.id, reactions(model))]
+            objective_indices =
+                [findfirst(x -> x .== objective_functions.id, reactions(model))]
         else
-            objective_indices = [findfirst(x -> x .== rxn.id, reactions(model)) for rxn in objective_functions]
+            objective_indices = [
+                findfirst(x -> x .== rxn.id, reactions(model)) for
+                rxn in objective_functions
+            ]
         end
 
         # Initialize weights

@@ -80,7 +80,7 @@
     @test r3.lb == 0.0 && r3.ub == 1000.0
 
     rxns = [r1, r2, r3]
-    rd = OrderedDict(r.id=>r for r in rxns)
+    rd = OrderedDict(r.id => r for r in rxns)
     @test sprint(show, MIME("text/plain"), rxns) == "Reaction set of length: 3\n"
 
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)

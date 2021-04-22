@@ -33,9 +33,9 @@
 
     model = StandardModel()
     model.id = "model"
-    model.reactions = OrderedDict(r.id=> r for r in rxns)
-    model.metabolites = OrderedDict(m.id=>m for m in mets)
-    model.genes = OrderedDict(g.id=>g for g in genes)
+    model.reactions = OrderedDict(r.id => r for r in rxns)
+    model.metabolites = OrderedDict(m.id => m for m in mets)
+    model.genes = OrderedDict(g.id => g for g in genes)
 
     @test sprint(show, MIME("text/plain"), model) ==
           "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n"
