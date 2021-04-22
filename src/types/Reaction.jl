@@ -24,7 +24,7 @@ mutable struct Reaction
     grr::Vector{Vector{Gene}}
     subsystem::String
     notes::Dict{String,Vector{String}}
-    annotation::Dict{String,Union{Vector{String},String}} # everything is a String[] except sbo, which is a String
+    annotation::Dict{String,Vector{String}} # everything is a String[] except sbo, which is a String
     objective_coefficient::Float64
 
     Reaction(
@@ -36,7 +36,7 @@ mutable struct Reaction
         grr = Vector{Vector{Gene}}(),
         subsystem = "",
         notes = Dict{String,Vector{String}}(),
-        annotation = Dict{String,Union{Vector{String},String}}(),
+        annotation = Dict{String, Vector{String}}(),
         objective_coefficient = 0.0,
     ) = new(
         id,
@@ -51,6 +51,7 @@ mutable struct Reaction
         objective_coefficient,
     )
 
+    # this constructor is only used internally
     function Reaction(
         id::String,
         metabolites::Dict{Metabolite,Float64},
@@ -69,5 +70,4 @@ mutable struct Reaction
         end
         Reaction(id; metabolites = metabolites, lb = lb, ub = ub)
     end
-
 end

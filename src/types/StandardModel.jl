@@ -33,7 +33,7 @@ mutable struct StandardModel <: MetabolicModel
     genes::OrderedDict{String,Gene}
 
     StandardModel(
-        id = "",
+        id = "";
         reactions = OrderedDict{String,Reaction}(),
         metabolites = OrderedDict{String,Metabolite}(),
         genes = OrderedDict{String,Gene}(),
@@ -124,26 +124,26 @@ function reaction_subsystems(model::StandardModel)
     [r.subsystem for r in model.reactions]
 end
 
-function metabolite_notes(model::JSONModel)
+function metabolite_notes(model::StandardModel)
     [m.notes for m in model.metabolites]
 end
 
-function metabolite_annotations(model::JSONModel)
+function metabolite_annotations(model::StandardModel)
     [m.annotation for m in model.metabolites]
 end
 
-function gene_notes(model::JSONModel)
+function gene_notes(model::StandardModel)
     [g.notes for g in model.genes]
 end
 
-function gene_annotations(model::JSONModel)
+function gene_annotations(model::StandardModel)
     [g.annotation for g in model.genes]
 end
 
-function reaction_notes(model::JSONModel)
+function reaction_notes(model::StandardModel)
     [r.notes for r in model.reactions]
 end
 
-function reaction_annotations(model::JSONModel)
+function reaction_annotations(model::StandardModel)
     [r.annotation for r in model.reactions]
 end

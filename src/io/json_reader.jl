@@ -23,7 +23,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "annotation"
                 for (kk, vv) in v
                     if typeof(vv) == String
-                        met.annotation[kk] = vv
+                        met.annotation[kk] = [vv]
                     else
                         met.annotation[kk] = convert(Vector{String}, vv)
                     end
@@ -50,7 +50,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "annotation"
                 for (kk, vv) in v
                     if typeof(vv) == String
-                        gene.annotation[kk] = vv
+                        gene.annotation[kk] = [vv]
                     else
                         gene.annotation[kk] = convert(Vector{String}, vv)
                     end
@@ -95,7 +95,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "annotation"
                 for (kk, vv) in v
                     if typeof(vv) == String
-                        rxn.annotation[kk] = vv
+                        rxn.annotation[kk] = [vv]
                     else
                         rxn.annotation[kk] = convert(Vector{String}, vv)
                     end

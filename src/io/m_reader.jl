@@ -51,7 +51,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         end
 
         if haskey(modeldict, "metSBOTerms")
-            met.annotation["sbo"] = string(modeldict["metSBOTerms"][i])
+            met.annotation["sbo"] = [string(modeldict["metSBOTerms"][i])]
         end
 
         if haskey(modeldict, "metNotes")
@@ -126,7 +126,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         end
 
         if haskey(modeldict, "rxnSBOTerms")
-            rxn.annotation["sbo"] = string(modeldict["rxnSBOTerms"][i])
+            rxn.annotation["sbo"] = [string(modeldict["rxnSBOTerms"][i])]
         end
 
         # look for some notes
