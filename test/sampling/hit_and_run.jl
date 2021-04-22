@@ -19,7 +19,7 @@
             change_solver_attribute("IPM_IterationsLimit", 500),
         ],
     )
-    biomass_index = index_of(biomass, reactions(model))
+    biomass_index = index_of(biomass.id, reactions(model))
     λ = JuMP.value(opt_model[:x][biomass_index])
     change_constraint(biomass, 0.99 * λ, λ)(model, opt_model)
 

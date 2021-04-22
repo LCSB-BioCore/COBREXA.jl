@@ -58,10 +58,10 @@ run_test_file("data", "test_models.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    run_test_dir("types", "Data structures")
-    run_test_dir("base", "Base functionality")
-    run_test_dir("io", "I/O functions")
-    run_test_dir("reconstruction")
-    run_test_dir("analysis")
+    # run_test_dir("types", "Data structures")
+    # run_test_dir("base", "Base functionality")
+    # run_test_dir("io", "I/O functions")
+    # run_test_dir("reconstruction")
+    # run_test_dir("analysis")
     run_test_dir("sampling")
 end
