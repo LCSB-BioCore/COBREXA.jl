@@ -54,12 +54,10 @@ n_genes(model::StandardModel)::Int = length(model.genes)
 function stoichiometry(model::StandardModel)
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
     met_ids = metabolites(model) # vector of metabolite ids
-    for (i, rxn_id) in enumerate(reactions(model)) # column, in order
+    rxn_ids = reactions(model)
+    for (i, rxn_id) in enumerate(rxn_ids) # column, in order
         for (met_id, coeff) in model.reactions[rxn_id].metabolites
             j = findfirst(x -> x == met_id, met_ids) # row
-            isnothing(j) ?
-            (@error "S matrix construction error: $(met_id) not defined."; return nothing) :
-            nothing
             S[j, i] = coeff
         end
     end

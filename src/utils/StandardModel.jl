@@ -248,3 +248,7 @@ function is_mass_balanced(rxn::Reaction, model::StandardModel)
 
     return all(sum(values(atom_balances)) == 0), atom_balances
 end
+
+function index_of(needle, haystack)
+    findfirst(x -> x == needle, haystack)
+end

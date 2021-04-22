@@ -32,7 +32,7 @@ end
     sol = flux_balance_analysis_dict(
         model,
         optimizer;
-        modifications = [change_objective(biomass), change_constraint(glc, -12, -12)],
+        modifications = [change_objective(biomass)],
     )
 
     # atom tracker
@@ -40,7 +40,7 @@ end
     @test isapprox(atom_fluxes["C"], -37.1902, atol = 1e-3)
 
     # exchange trackers
-    consuming, producing = exchange_reactions(sol; verbose = false)
+    consuming, producing = exchange_reactions(sol, model; verbose = false)
     @test isapprox(consuming["EX_nh4_e"], -4.76532, atol = 1e-3)
 
     # metabolite trackers
@@ -52,9 +52,9 @@ end
     cbm = make_optimization_model(model, optimizer)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
-    glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
-    o2_index = model[findfirst(model.reactions, "EX_o2_e")]
-    atpm_index = model[findfirst(model.reactions, "ATPM")]
+    glucose_index = index_of("EX_glc__D_e", reactions(model)) 
+    o2_index = index_of("EX_o2_e", reactions(model))
+    atpm_index = index_of("ATPM", reactions(model))
     set_bound(glucose_index, cbm; ub = -1.0, lb = -1.0)
     @test normalized_rhs(ubs[glucose_index]) == -1.0
     @test normalized_rhs(lbs[glucose_index]) == 1.0
