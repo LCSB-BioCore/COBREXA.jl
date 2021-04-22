@@ -5,7 +5,7 @@ Change the lower and upper bounds (`lb` and `ub` respectively) of `reaction`.
 """
 function change_constraint(reaction::Reaction, lb, ub)
     (model, opt_model) -> begin
-        ind = findfirst(x -> x .== reaction.id, reactions(model))
+        ind = findfirst(x -> x == reaction.id, reactions(model))
         set_bound(ind, opt_model, lb = lb, ub = ub)
     end
 end
