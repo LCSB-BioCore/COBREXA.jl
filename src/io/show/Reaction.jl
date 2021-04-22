@@ -16,9 +16,9 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     products = String[]
     for (k, v) in r.metabolites
         if v < 0.0
-            push!(substrates, string(abs(v)) * " " * k.id)
+            push!(substrates, string(abs(v)) * " " * k)
         else
-            push!(products, string(abs(v)) * " " * k.id)
+            push!(products, string(abs(v)) * " " * k)
         end
     end
     isempty(substrates) && (substrates = "∅")
@@ -45,7 +45,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
 
     grr_strings = String[]
     for gr in r.grr
-        push!(grr_strings, "(" * join([g.id for g in gr], " and ") * ")")
+        push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")
     end
     grr_string = join(grr_strings, " or ")
     (isnothing(grr_string) || grr_string == "") && (grr_string = "")
