@@ -5,7 +5,7 @@ A struct used to store bound vectors.
 
 This saves space and is useful in some analysis functions, e.g. sampling.
 """
-struct SparseBoundVector{Tv, Ti<:Integer} 
+struct SparseBoundVector{Tv,Ti<:Integer}
     n::Int # total size of the array
     boundval::Tv # the bound value that occurs the most except for 0
     nonbound_inds::Vector{Ti}
@@ -40,7 +40,7 @@ function sparse_bounds(arr, bound)
             push!(vs, a)
         end
     end
-    return SparseBoundVector{Float64, Int64}(n, bound, inds, vals, z_inds, b_inds)
+    return SparseBoundVector{Float64,Int64}(n, bound, inds, vals, z_inds, b_inds)
 end
 
 # Interface is very restricted since the data type is very unique
