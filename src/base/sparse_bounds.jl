@@ -40,7 +40,7 @@ function sparse_bounds(arr, bound)
             push!(vs, a)
         end
     end
-    return SparseBoundVector{Float64, Int64}(n, bound, inds, vals, z_inds, b_inds)
+    return SparseBoundVector{Float64, Int64}(n, bound, v_inds, vs, z_inds, b_inds)
 end
 
 # Interface is very restricted since the data type is very unique
