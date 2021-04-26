@@ -282,7 +282,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     for gid in gids
         g = Gene()
         g.id = gid
-        g.name = gene_name(gid, model) 
+        g.name = gene_name(gid, model)
         g.notes = gene_notes(gid, model)
         g.annotation = gene_annotations(gid, model)
     end
@@ -293,7 +293,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         m.name = metabolite_name(mid, model)
         f, c = metabolite_chemistry(mid, model)
         m.charge = c
-        m.formula = join([k*string(v) for (k, v) in f])
+        m.formula = join([k * string(v) for (k, v) in f])
         m.compartment = metabolite_compartment(mid, model)
         m.notes = metabolite_notes(mid, model)
         m.annotation = metabolite_annotations(mid, model)
@@ -310,13 +310,18 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         r.grr = _parse_grr(reaction_gene_association(rid, model)) # takes in a string and gives a vector of string vectors
         r.subsystem = reaction_subsystem(rid, model)
         r.notes = reaction_notes(rid, model)
-        r.annotation = reaction_annotations(rid, model) 
-        rmets = Dict{String, Int64}()
+        r.annotation = reaction_annotations(rid, model)
+        rmets = Dict{String,Int64}()
         for (j, stoich) in zip(findnz(S[:, i])...)
             rmets[metids[j]] = stoich
         end
         r.metabolites = rmets
     end
-    
-    return StandardModel(id; reactions=reactions, metabolites=metabolites, genes=genes)
+
+    return StandardModel(
+        id;
+        reactions = reactions,
+        metabolites = metabolites,
+        genes = genes,
+    )
 end
