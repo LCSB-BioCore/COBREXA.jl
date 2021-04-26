@@ -11,8 +11,13 @@ In case the `model` is not `MATModel`, it will be converted automatically.
 file; defaults to just "model".
 """
 function save_mat_model(model::MetabolicModel, file_path::String; model_name = "model")
-    m = (typeof(model) == MATModel ? model : convert(MATModel, model)).mat
-    matwrite(file_path, Dict(model_name => m))
+    m =
+        typeof(model) == MATModel ? model :
+        begin
+            @_io_log @warn "Automatically converting $(typeof(model)) to MATModel for saving, information may be lost."
+            convert(MATModel, model)
+        end
+    matwrite(file_path, Dict(model_name => m.mat))
 end
 
 #TODO this needs to get merged into convert function StdModel->MATModel
