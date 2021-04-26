@@ -81,7 +81,7 @@ end
 Get the sparse balance vector of a model (ie. the `b` from `S x = b`).
 """
 function balance(a::MetabolicModel)::SparseVec
-    return spzeros(0)
+    return spzeros(n_metabolites(a))
 end
 
 """
