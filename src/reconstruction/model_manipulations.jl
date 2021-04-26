@@ -100,46 +100,58 @@ macro add_reactions!(model::Symbol, ex::Expr)
 end
 
 """
-    rm!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
+    rm!(::typeof(Reaction), model::StandardModel, ids::Union{String, Vector{String}})
 
-Remove all `rxn(s)` from `model` if the `id`s match those in `rxns`.
+Remove all reactions with `ids` from `model`.
+
+# Example
+rm!(Reaction, model, ["EX_glc__D_e", "fba"])
+rm!(Reaction, model, "EX_glc__D_e")
 """
-function rm!(model::StandardModel, rxns::Vector{Reaction})
-    for rxn in rxns
-        rm!(model, rxn)
+function rm!(::typeof(Reaction), model::StandardModel, ids::Vector{String})
+    for id in ids
+        rm!(Reaction, model, id)
     end
 end
 
-function rm!(model::StandardModel, rxn::Reaction)
-    delete!(model.reactions, rxn.id)
+function rm!(::typeof(Reaction), model::StandardModel, id::String)
+    delete!(model.reactions, id)
 end
 
 """
-    rm!(model::StandardModel, mets::Union{Vector{Metabolite}, Metabolite})
+    rm!(::typeof(Metabolite), model::StandardModel, ids::Union{String, Vector{String}})
 
-Remove `met(s)` from `model` based on metabolite `id`.
+Remove all metabolites with `ids` from `model`.
+
+# Example
+rm!(Metabolite, model, ["atp_c", "adp_c"])
+rm!(Metabolite, model, "atp_c")
 """
-function rm!(model::StandardModel, mets::Vector{Metabolite})
-    for m in mets
-        rm!(model, m)
+function rm!(::typeof(Metabolite), model::StandardModel, ids::Vector{String})
+    for id in ids
+        rm!(Metabolite, model, id)
     end
 end
 
-function rm!(model::StandardModel, met::Metabolite)
-    delete!(model.metabolites, met.id)
+function rm!(::typeof(Metabolite), model::StandardModel, id::String)
+    delete!(model.metabolites, id)
 end
 
 """
-    rm!(model::StandardModel, genes::Union{Vector{Gene}, Gene})
+    rm!(::typeof(Gene), model::StandardModel, ids::Vector{String})
 
-Remove `gene(s)` from `model` based on gene `id`.
+Remove all genes with `ids` from `model`.
+
+# Example
+rm!(Gene, model, ["g1", "g2"])
+rm!(Gene, model, "g1")
 """
-function rm!(model::StandardModel, genes::Vector{Gene})
-    for gene in genes
-        rm!(model, gene)
+function rm!(::typeof(Gene), model::StandardModel, ids::Vector{String})
+    for id in ids
+        rm!(Gene, model, id)
     end
 end
 
-function rm!(model::StandardModel, gene::Gene)
-    delete!(model.genes, gene.id)
+function rm!(::typeof(Gene), model::StandardModel, id::String)
+    delete!(model.genes, id)
 end
