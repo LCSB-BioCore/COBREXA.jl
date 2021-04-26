@@ -184,7 +184,7 @@ end
 
 Return the charge associated with metabolite `id` in `model`.
 """
-function charges(id::String, model::StandardModel)
+function charge(id::String, model::StandardModel)
     model.metabolites[id].charge
 end
 
@@ -229,7 +229,7 @@ end
 
 Return the annotation associated with metabolite `id` in `model`.
 """
-function metabolite_annotation(id::String, model::StandardModel)
+function metabolite_annotations(id::String, model::StandardModel)
     model.metabolites[id].annotation
 end
 
@@ -239,7 +239,7 @@ end
 Return the notes associated with gene `id` in `model`.
 """
 function gene_notes(id::String, model::StandardModel)
-    [g.notes for g in model.genes]
+    model.genes[id].notes
 end
 
 """
@@ -248,7 +248,7 @@ end
 Return the annotation associated with gene `id` in `model`.
 """
 function gene_annotations(id::String, model::StandardModel)
-    [g.annotation for g in model.genes]
+    model.genes[id].annotation
 end
 
 """
@@ -257,7 +257,7 @@ end
 Return the notes associated with reaction `id` in `model`.
 """
 function reaction_notes(id::String, model::StandardModel)
-    [r.notes for r in model.reactions]
+    model.reactions[id].notes
 end
 
 """
@@ -266,5 +266,5 @@ end
 Return the annotation associated with reaction `id` in `model`.
 """
 function reaction_annotations(id::String, model::StandardModel)
-    [r.annotation for r in model.reactions]
+    model.reactions[id].annotation
 end
