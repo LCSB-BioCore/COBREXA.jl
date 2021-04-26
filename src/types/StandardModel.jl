@@ -43,16 +43,58 @@ mutable struct StandardModel <: MetabolicModel
 end
 
 # MetabolicModel interface follows
+"""
+reactions(model::StandardModel)
+
+Return a vector of reaction id strings contained in `model`.
+The order of reaction ids returned here matches the order used to construct the
+stoichiometric matrix.
+"""
 reactions(model::StandardModel)::Vector{String} = [r_id for r_id in keys(model.reactions)]
+
+"""
+    n_reactions(model::StandardModel)
+
+Return the number of reactions contained in `model`.
+"""
 n_reactions(model::StandardModel)::Int = length(model.reactions)
 
+"""
+    metabolites(model::StandardModel)
+
+Return a vector of metabolite id strings contained in `model`.
+The order of metabolite strings returned here matches the order used to construct
+the stoichiometric matrix.
+"""
 metabolites(model::StandardModel)::Vector{String} =
     [m_id for m_id in keys(model.metabolites)]
+
+"""
+n_metabolites(model::StandardModel)
+
+Return the number of metabolites in `model`.
+"""
 n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
+"""
+    genes(model::StandardModel)
+
+Return a vector of gene id strings in `model`.
+"""
 genes(model::StandardModel)::Vector{String} = [g_id for g_id in keys(model.genes)]
+
+"""
+    n_genes(model::StandardModel)
+
+Return the number of genes in `model`.
+"""
 n_genes(model::StandardModel)::Int = length(model.genes)
 
+"""
+    stoichiometry(model::StandardModel)
+
+Return the stoichiometric matrix associated with `model` in sparse format.
+"""
 function stoichiometry(model::StandardModel)
     S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
     met_ids = metabolites(model) # vector of metabolite ids
@@ -66,22 +108,48 @@ function stoichiometry(model::StandardModel)
     return S
 end
 
+"""
+    lower_bounds(model::StandardModel)
+
+Return the lower bounds for all reactions in `model` in sparse format.
+"""
 function lower_bounds(model::StandardModel)
-    [model.reactions[rxn].lb for rxn in reactions(model)]
+    sparse([model.reactions[rxn].lb for rxn in reactions(model)])
 end
 
+"""
+    upper_bounds(model::StandardModel)
+
+Return the upper bounds for all reactions in `model` in sparse format.
+"""
 function upper_bounds(model::StandardModel)
-    [model.reactions[rxn].ub for rxn in reactions(model)]
+    sparse([model.reactions[rxn].ub for rxn in reactions(model)])
 end
 
+"""
+    bounds(model::StandardModel)
+
+Return the lower and upper bounds, respectively, for reactions in `model`.
+"""
 function bounds(model::StandardModel)
     ubs = upper_bounds(model)
     lbs = lower_bounds(model)
     return lbs, ubs
 end
 
+"""
+    balance(model::StandardModel)
+
+Return the balance of the linear problem, i.e. b in Sv = 0 where S is the stoichiometric matrix
+and v is the flux vector.
+"""
 balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 
+"""
+    objective(model::StandardModel)
+
+Return sparse objective vector for `model`.
+"""
 function objective(model::StandardModel)::SparseVec
     obj_arr = SparseArrays.spzeros(length(model.reactions))
     for (i, r_id) in enumerate(reactions(model))
@@ -93,50 +161,110 @@ function objective(model::StandardModel)::SparseVec
     return obj_arr
 end
 
-function gene_associations(model::StandardModel)
-    grrs = [_unparse_grr(r.grr) for r in values(model.reactions)]
+"""
+    reaction_gene_association(id::String, model::StandardModel)
+
+Return the gene reaction rule for reaction with `id` in `model`.
+"""
+function reaction_gene_association(id::String, model::StandardModel)
+    maybemap(_unparse_grr, model.reactions[id].grr) # this needs to be mapped to a boolean but that isn't implemented yet
 end
 
-function formulas(model::StandardModel)
-    [_formula_to_atoms(m.formula) for m in model.metabolites]
+"""
+    formula(id::String, model::StandardModel)
+
+Return the formula of reaction `id` in `model`.
+"""
+function formula(id::String, model::StandardModel)
+    maybemap(get_atoms, model.metabolites[id].formula)
 end
 
-function charges(model::StandardModel)
-    [m.charge for m in model.metabolites]
+"""
+    charge(id::String, model::StandardModel)
+
+Return the charge associated with metabolite `id` in `model`.
+"""
+function charges(id::String, model::StandardModel)
+    model.metabolites[id].charge
 end
 
-function metabolite_chemistry(model::StandardModel)
-    (formulas(model), charges(model))
+"""
+    metabolite_chemistry(model::StandardModel)
+
+Return the formula and charge associated with metabolite `id` in `model`.
+"""
+function metabolite_chemistry(id::String, model::StandardModel)
+    (formula(id, model), charge(id, model))
 end
 
-function metabolite_compartments(model::StandardModel)
-    [m.compartment for m in model.metabolites]
+"""
+    metabolite_compartment(id::String, model::StandardModel)
+
+Return compartment associated with metabolite `id` in `model`.
+"""
+function metabolite_compartment(id::String, model::StandardModel)
+    model.metabolites[id].compartment
 end
 
-function reaction_subsystems(model::StandardModel)
-    [r.subsystem for r in model.reactions]
+"""
+    reaction_subsystem(id::String, model::StandardModel)
+
+Return the subsystem associated with reaction `id` in `model`.
+"""
+function reaction_subsystem(id::String, model::StandardModel)
+    model.reactions[id].subsystem
 end
 
-function metabolite_notes(model::StandardModel)
-    [m.notes for m in model.metabolites]
+"""
+    metabolite_notes(id::String, model::StandardModel)
+
+Return the notes associated with metabolite `id` in `model`.
+"""
+function metabolite_notes(id::String, model::StandardModel)
+    model.metabolites[id].notes
 end
 
-function metabolite_annotations(model::StandardModel)
-    [m.annotation for m in model.metabolites]
+"""
+    metabolite_annotation(id::String, model::StandardModel)
+
+Return the annotation associated with metabolite `id` in `model`.
+"""
+function metabolite_annotation(id::String, model::StandardModel)
+    model.metabolites[id].annotation
 end
 
-function gene_notes(model::StandardModel)
+"""
+    gene_notes(id::String, model::StandardModel)
+
+Return the notes associated with gene `id` in `model`.
+"""
+function gene_notes(id::String, model::StandardModel)
     [g.notes for g in model.genes]
 end
 
-function gene_annotations(model::StandardModel)
+"""
+    gene_annotations(id::String, model::StandardModel)
+
+Return the annotation associated with gene `id` in `model`.
+"""
+function gene_annotations(id::String, model::StandardModel)
     [g.annotation for g in model.genes]
 end
 
-function reaction_notes(model::StandardModel)
+"""
+    reaction_notes(id::String, model::StandardModel)
+
+Return the notes associated with reaction `id` in `model`.
+"""
+function reaction_notes(id::String, model::StandardModel)
     [r.notes for r in model.reactions]
 end
 
-function reaction_annotations(model::StandardModel)
+"""
+    reaction_annotations(id::String, model::StandardModel)
+
+Return the annotation associated with reaction `id` in `model`.
+"""
+function reaction_annotations(id::String, model::StandardModel)
     [r.annotation for r in model.reactions]
 end
