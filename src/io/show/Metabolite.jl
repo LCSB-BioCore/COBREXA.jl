@@ -3,22 +3,22 @@
 Pretty printing of metabolite::Metabolite.
 """
 function Base.show(io::IO, ::MIME"text/plain", m::Metabolite)
-    _pretty_print(io, "Metabolite ID: ", m.id)
-    _pretty_print(io, "Name: ", m.name)
-    _pretty_print(io, "Formula: ", m.formula)
-    _pretty_print(io, "Charge: ", string(m.charge))
-    _pretty_print(io, "Compartment: ", string(m.compartment))
-    _pretty_print(io, "Notes: ", m.notes)
-    _pretty_print(io, "Annotation: ", m.annotation)
-    _pretty_print(io, "Fields: ", join([string(x) for x in fieldnames(Metabolite)], ", "))
+    _print_color(io, "Metabolite ID: ", m.id)
+    _print_color(io, "Name: ", m.name)
+    _print_color(io, "Formula: ", m.formula)
+    _print_color(io, "Charge: ", string(m.charge))
+    _print_color(io, "Compartment: ", string(m.compartment))
+    _print_color(io, "Notes: ", m.notes)
+    _print_color(io, "Annotation: ", m.annotation)
+    _print_color(io, "Fields: ", join([string(x) for x in fieldnames(Metabolite)], ", "))
 end
 
 """
 Pretty printing of metabolites::Vector{Metabolite}.
 """
 function Base.show(io::IO, ::MIME"text/plain", ms::Vector{Metabolite})
-    _pretty_print(io, "Metabolite vector of length: : ", string(length(ms)))
-    _pretty_print(
+    _print_color(io, "Metabolite vector of length: : ", string(length(ms)))
+    _print_color(
         io,
         "Each metabolite has fields: ",
         join([string(x) for x in fieldnames(Metabolite)], ", "),

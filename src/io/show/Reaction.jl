@@ -45,24 +45,24 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     grr_string = join(grr_strings, " or ")
     (isnothing(grr_string) || grr_string == "") && (grr_string = "")
 
-    _pretty_print(io, "Reaction ID: ", r.id)
-    _pretty_print(io, "Name: ", r.name)
-    _pretty_print(io, "Reaction equation: ", req_str)
-    _pretty_print(io, "Lower bound: ", string(r.lb))
-    _pretty_print(io, "Upper bound: ", string(r.ub))
-    _pretty_print(io, "Subsystem: ", r.subsystem)
-    _pretty_print(io, "Gene reaction rule: ", grr_string)
-    _pretty_print(io, "Notes: ", r.notes)
-    _pretty_print(io, "Annotation: ", r.annotation)
-    _pretty_print(io, "Fields: ", join([string(x) for x in fieldnames(Reaction)], ", "))
+    _print_color(io, "Reaction ID: ", r.id)
+    _print_color(io, "Name: ", r.name)
+    _print_color(io, "Reaction equation: ", req_str)
+    _print_color(io, "Lower bound: ", string(r.lb))
+    _print_color(io, "Upper bound: ", string(r.ub))
+    _print_color(io, "Subsystem: ", r.subsystem)
+    _print_color(io, "Gene reaction rule: ", grr_string)
+    _print_color(io, "Notes: ", r.notes)
+    _print_color(io, "Annotation: ", r.annotation)
+    _print_color(io, "Fields: ", join([string(x) for x in fieldnames(Reaction)], ", "))
 end
 
 """
 Pretty printing of reactions::Vector{Reaction}.
 """
 function Base.show(io::IO, ::MIME"text/plain", rs::Vector{Reaction})
-    _pretty_print(io, "Reaction vector of length: : ", string(length(rs)))
-    _pretty_print(
+    _print_color(io, "Reaction vector of length: : ", string(length(rs)))
+    _print_color(
         io,
         "Each reaction has fields: ",
         join([string(x) for x in fieldnames(Reaction)], ", "),

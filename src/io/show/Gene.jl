@@ -2,19 +2,19 @@
 Pretty printing of `Gene`.
 """
 function Base.show(io::IO, ::MIME"text/plain", g::Gene)
-    _pretty_print(io, "Gene ID: ", g.id)
-    _pretty_print(io, "Name: ", g.name)
-    _pretty_print(io, "Notes: ", g.notes)
-    _pretty_print(io, "Annotation: ", g.annotation)
-    _pretty_print(io, "Fields: ", join([string(x) for x in fieldnames(Gene)], ", "))
+    _print_color(io, "Gene ID: ", g.id)
+    _print_color(io, "Name: ", g.name)
+    _print_color(io, "Notes: ", g.notes)
+    _print_color(io, "Annotation: ", g.annotation)
+    _print_color(io, "Fields: ", join([string(x) for x in fieldnames(Gene)], ", "))
 end
 
 """
 Pretty printing of `Vector{Gene}`.
 """
 function Base.show(io::IO, ::MIME"text/plain", gs::Vector{Gene})
-    _pretty_print(io, "Gene vector of length: ", string(length(gs)))
-    _pretty_print(
+    _print_color(io, "Gene vector of length: ", string(length(gs)))
+    _print_color(
         io,
         "Each gene has fields: ",
         join([string(x) for x in fieldnames(Gene)], ", "),
@@ -29,5 +29,5 @@ function Base.show(io::IO, ::MIME"text/plain", grr::Vector{Vector{Gene}})
     for gr in grr
         push!(grr_strings, "(" * join([g.id for g in gr], " and ") * ")")
     end
-    _pretty_print(io, "Gene reaction rule: ", join(grr_strings, " or "))
+    _print_color(io, "Gene reaction rule: ", join(grr_strings, " or "))
 end
