@@ -19,7 +19,7 @@ mutable struct Metabolite
     charge::Int
     compartment::String
     notes::Dict{String,Vector{String}}
-    annotation::Dict{String,Vector{String}} # everything is a String[] except sbo, which is a String
+    annotation::Dict{String,Vector{String}} # everything is a String[]
 
     Metabolite(
         id = "";
