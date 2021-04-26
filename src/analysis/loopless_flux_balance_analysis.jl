@@ -1,5 +1,5 @@
 function _get_boundary_reaction_ids(model::StandardModel)::Array{String,1}
-    return [i.id for i in model.reactions if length(i.metabolites) == 1]
+    return [r.id for r in values(model.reactions) if is_boundary(r)]
 end
 
 function add_cycle_free(fluxes::Dict{String,Float64})
@@ -8,7 +8,7 @@ function add_cycle_free(fluxes::Dict{String,Float64})
         old_objective = objective_function(opt_model)
         boundary_ids = _get_boundary_reaction_ids(model)
         min_objectives = zeros(Int64, 1, length(v))
-        for (i, reaction) in enumerate(model.reactions)
+        for (i, reaction) in enumerate(values(model.reactions))
             id = reaction.id
             if v[i] in old_objective.terms.keys
                 continue

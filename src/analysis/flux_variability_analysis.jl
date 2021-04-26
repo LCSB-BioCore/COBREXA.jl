@@ -165,7 +165,7 @@ function flux_variability_analysis(
         λmin <= COBREXA.JuMP.objective_function(opt_model) <= λmax # in case there is a negative bound
     )
 
-    for i = 1:length(v)
+    for (i, r_id) in enumerate(reactions(model))
         COBREXA.JuMP.@objective(opt_model, Max, v[i])
         COBREXA.JuMP.optimize!(opt_model)
         status = (
@@ -173,11 +173,10 @@ function flux_variability_analysis(
             COBREXA.JuMP.termination_status(opt_model) == MOI.LOCALLY_SOLVED
         )
         if status
-            fva_max[model.reactions[i].id] =
-                Dict(zip(reactions(model), value.(opt_model[:x])))
+            fva_max[r_id] = Dict(zip(reactions(model), value.(opt_model[:x])))
         else
             @warn "Error maximizing index: $i with error $(termination_status(opt_model))"
-            fva_max[model.reactions[i].id] = nothing
+            fva_max[r_id] = nothing
         end
 
         @objective(opt_model, Min, v[i])
@@ -187,11 +186,10 @@ function flux_variability_analysis(
             termination_status(opt_model) == MOI.LOCALLY_SOLVED
         )
         if status
-            fva_min[model.reactions[i].id] =
-                Dict(zip(reactions(model), value.(opt_model[:x])))
+            fva_min[r_id] = Dict(zip(reactions(model), value.(opt_model[:x])))
         else
             @warn "Error minimizing index: $i with error $(termination_status(opt_model))"
-            fva_min[model.reactions[i].id] = nothing
+            fva_min[r_id] = nothing
         end
     end
 

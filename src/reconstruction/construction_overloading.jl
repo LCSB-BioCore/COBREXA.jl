@@ -31,34 +31,34 @@ function Base.:+(
     return push!(m1, m2)
 end
 
-function mkrxn(substrates, products)
-    metdict = Dict{Metabolite,Float64}()
+function _mkrxn(substrates, products)
+    metdict = Dict{String,Float64}()
 
     if typeof(substrates) == Metabolite
-        substrates != ∅ && (metdict[substrates] = get(metdict, substrates, 0.0) - 1.0)
+        substrates != ∅ && (metdict[substrates.id] = get(metdict, substrates.id, 0.0) - 1.0)
     elseif typeof(substrates) == MetaboliteWithCoefficient
         substrates.metabolite != ∅ && (
-            metdict[substrates.metabolite] =
-                get(metdict, substrates.metabolite, 0.0) - 1.0 * abs(substrates.coeff)
+            metdict[substrates.metabolite.id] =
+                get(metdict, substrates.metabolite.id, 0.0) - 1.0 * abs(substrates.coeff)
         )
     else
         for mwc in substrates
-            metdict[mwc.metabolite] =
-                get(metdict, mwc.metabolite, 0.0) - 1.0 * abs(mwc.coeff)
+            metdict[mwc.metabolite.id] =
+                get(metdict, mwc.metabolite.id, 0.0) - 1.0 * abs(mwc.coeff)
         end
     end
 
     if typeof(products) == Metabolite
-        products != ∅ && (metdict[products] = get(metdict, products, 0.0) + 1.0)
+        products != ∅ && (metdict[products.id] = get(metdict, products.id, 0.0) + 1.0)
     elseif typeof(products) == MetaboliteWithCoefficient
         products.metabolite != ∅ && (
-            metdict[products.metabolite] =
-                get(metdict, products.metabolite, 0.0) + abs(products.coeff)
+            metdict[products.metabolite.id] =
+                get(metdict, products.metabolite.id, 0.0) + abs(products.coeff)
         )
     else
         for mwc in products
-            metdict[mwc.metabolite] =
-                get(metdict, mwc.metabolite, 0.0) + 1.0 * abs(mwc.coeff)
+            metdict[mwc.metabolite.id] =
+                get(metdict, mwc.metabolite.id, 0.0) + 1.0 * abs(mwc.coeff)
         end
     end
 
@@ -76,7 +76,7 @@ function ⟶(
     },
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
-    metdict = mkrxn(substrates, products)
+    metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :forward)
 end
 const → = ⟶
@@ -92,7 +92,7 @@ function ⟵(
     },
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
-    metdict = mkrxn(substrates, products)
+    metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :reverse)
 end
 const ← = ⟵
@@ -108,7 +108,7 @@ function ⟷(
     },
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
-    metdict = mkrxn(substrates, products)
+    metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :bidirectional)
 end
 const ↔ = ⟷

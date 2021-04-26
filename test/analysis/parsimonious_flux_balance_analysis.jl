@@ -6,15 +6,11 @@
     )
 
     model = read_model(model_path, StandardModel)
-
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    glucose = findfirst(model.reactions, "EX_glc__D_e")
-
     d = parsimonious_flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
         modifications = [
-            change_constraint(glucose, -12, -12),
+            change_constraint("EX_glc__D_e", -12, -12),
             change_solver_attribute("IPM_IterationsLimit", 500),
         ],
         qp_solver = change_solver(OSQP.Optimizer),
@@ -24,7 +20,7 @@
         model,
         Tulip.Optimizer;
         modifications = [
-            change_constraint(glucose, -12, -12),
+            change_constraint("EX_glc__D_e", -12, -12),
             change_solver_attribute("IPM_IterationsLimit", 500),
         ],
         qp_solver = change_solver(OSQP.Optimizer),

@@ -14,6 +14,7 @@ using OSQP
 using Statistics
 using JSON
 using Measurements
+using OrderedCollections
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)

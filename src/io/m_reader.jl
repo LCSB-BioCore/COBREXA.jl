@@ -14,7 +14,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name
     model_id = haskey(modeldict, "modelName") ? modeldict["modelName"] : model_name # more specific
 
-    mets = Metabolite[]
+    mets = OrderedDict{String,Metabolite}()
     for i in eachindex(modeldict["mets"])
         met = Metabolite()
 
@@ -58,17 +58,17 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         end
 
         if haskey(modeldict, "metSBOTerms")
-            met.annotation["sbo"] = string(modeldict["metSBOTerms"][i])
+            met.annotation["sbo"] = [string(modeldict["metSBOTerms"][i])]
         end
 
         if haskey(modeldict, "metNotes")
             met.notes["note"] = string.(split(string(modeldict["metNotes"][i]), "; "))
         end
 
-        push!(mets, met)
+        mets[met.id] = met
     end
 
-    genes = Gene[]
+    genes = OrderedDict{String,Gene}()
     for i in eachindex(modeldict["genes"])
         gene = Gene()
         if haskey(modeldict, "genes")
@@ -80,25 +80,23 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         # name and other fields don't generally exist in the matlab models,
         # ignoring them for now
 
-        push!(genes, gene)
+        genes[gene.id] = gene
     end
 
-    rxns = Reaction[]
+    rxns = OrderedDict{String,Reaction}()
     for i in eachindex(modeldict["rxns"])
         rxn = Reaction()
-        if haskey(modeldict, "rxns")
-            rxn.id = modeldict["rxns"][i]
-        else
-            continue
-        end
+        rxn.id = modeldict["rxns"][i]
 
         if haskey(modeldict, "rxnNames")
             rxn.name = modeldict["rxnNames"][i]
         end
 
         metinds = findall(x -> x .!= 0.0, modeldict["S"][:, i])
-        rxn.metabolites =
-            Dict{Metabolite,Float64}(mets[j] => modeldict["S"][j, i] for j in metinds)
+        rxn.metabolites = Dict{String,Float64}(
+            mets[sj].id => modeldict["S"][j, i] for
+            (sj, j) in zip(modeldict["mets"][metinds], metinds)
+        )
 
         if haskey(modeldict, "lb")
             rxn.lb = modeldict["lb"][i]
@@ -110,7 +108,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
 
         if haskey(modeldict, "grRules")
             grr_string = modeldict["grRules"][i]
-            rxn.grr = _parse_grr(grr_string, genes)
+            rxn.grr = _parse_grr(grr_string)
         end
 
         rxn.subsystem = join(modeldict["subSystems"][i], "; ")
@@ -133,7 +131,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
         end
 
         if haskey(modeldict, "rxnSBOTerms")
-            rxn.annotation["sbo"] = string(modeldict["rxnSBOTerms"][i])
+            rxn.annotation["sbo"] = [string(modeldict["rxnSBOTerms"][i])]
         end
 
         # look for some notes
@@ -141,10 +139,10 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
             rxn.notes["note"] = string.(split(string(modeldict["rxnNotes"][i]), "; "))
         end
 
-        push!(rxns, rxn)
+        rxns[rxn.id] = rxn
     end
 
-    return StandardModel(model_id, rxns, mets, genes)
+    return StandardModel(model_id; reactions = rxns, metabolites = mets, genes = genes)
 end
 
 function _read_model(file_location::String, ::Type{MFile}, ::Type{CoreModel})

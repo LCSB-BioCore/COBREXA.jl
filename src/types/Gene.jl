@@ -13,7 +13,7 @@ mutable struct Gene
     id::String
     name::String
     notes::Dict{String,Vector{String}}
-    annotation::Dict{String,Union{Vector{String},String}} # everything is a String[] except sbo, which is a String
+    annotation::Dict{String,Vector{String}} # everything is a String[]
 
     Gene(
         id::String = "";

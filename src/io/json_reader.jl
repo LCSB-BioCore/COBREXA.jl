@@ -8,7 +8,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
 
     modelid = modeldict["id"]
 
-    mets = Metabolite[]
+    mets = OrderedDict{String,Metabolite}()
     for i in modeldict["metabolites"]
         met = Metabolite()
 
@@ -28,7 +28,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "annotation"
                 for (kk, vv) in v
                     if typeof(vv) == String
-                        met.annotation[kk] = vv
+                        met.annotation[kk] = [vv]
                     else
                         met.annotation[kk] = convert(Vector{String}, vv)
                     end
@@ -37,10 +37,10 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 @warn "Unrecognized metabolite field: $k"
             end
         end
-        push!(mets, met)
+        mets[met.id] = met
     end
 
-    genes = Gene[]
+    genes = OrderedDict{String,Gene}()
     for i in modeldict["genes"]
         gene = Gene()
         for (k, v) in i
@@ -55,7 +55,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "annotation"
                 for (kk, vv) in v
                     if typeof(vv) == String
-                        gene.annotation[kk] = vv
+                        gene.annotation[kk] = [vv]
                     else
                         gene.annotation[kk] = convert(Vector{String}, vv)
                     end
@@ -64,10 +64,10 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 @warn "Unrecognized gene field: $k"
             end
         end
-        push!(genes, gene)
+        genes[gene.id] = gene
     end
 
-    rxns = Reaction[]
+    rxns = OrderedDict{String,Reaction}()
     for i in modeldict["reactions"]
         rxn = Reaction()
         for (k, v) in i
@@ -77,20 +77,14 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 rxn.name = v
             elseif k == "metabolites"
                 for (kk, vv) in v
-                    ind = findfirst(x -> x.id == kk, mets)
-                    if isnothing(ind)
-                        @warn "Metabolite $kk not found in reaction assignment."
-                        continue
-                    else
-                        rxn.metabolites[mets[ind]] = vv
-                    end
+                    rxn.metabolites[mets[kk].id] = vv
                 end
             elseif k == "lower_bound"
                 rxn.lb = v
             elseif k == "upper_bound"
                 rxn.ub = v
             elseif k == "gene_reaction_rule"
-                rxn.grr = _parse_grr(v, genes)
+                rxn.grr = _parse_grr(v)
             elseif k == "subsystem"
                 rxn.subsystem = v
             elseif k == "notes"
@@ -100,7 +94,7 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
             elseif k == "annotation"
                 for (kk, vv) in v
                     if typeof(vv) == String
-                        rxn.annotation[kk] = vv
+                        rxn.annotation[kk] = [vv]
                     else
                         rxn.annotation[kk] = convert(Vector{String}, vv)
                     end
@@ -111,8 +105,8 @@ function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardMod
                 @warn "Unrecognized reaction field: $k"
             end
         end
-        push!(rxns, rxn)
+        rxns[rxn.id] = rxn
     end
 
-    return StandardModel(modelid, rxns, mets, genes)
+    return StandardModel(modelid; reactions = rxns, metabolites = mets, genes = genes)
 end

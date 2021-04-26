@@ -68,18 +68,14 @@ end
     )
 
     model = read_model(model_path, StandardModel)
-
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-    glucose = findfirst(model.reactions, "EX_glc__D_e")
-    oxygen = findfirst(model.reactions, "EX_o2_e")
     fva_max, fva_min = flux_variability_analysis(
         model,
         Tulip.Optimizer;
         optimum_bound = 0.99,
         modifications = [
             change_solver_attribute("IPM_IterationsLimit", 500),
-            change_constraint(glucose, -10, -10),
-            change_constraint(oxygen, 0.0, 0.0),
+            change_constraint("EX_glc__D_e", -10, -10),
+            change_constraint("EX_o2_e", 0.0, 0.0),
         ],
     )
 

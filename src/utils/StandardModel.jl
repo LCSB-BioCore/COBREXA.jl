@@ -1,38 +1,49 @@
-
 """
-    getindex(model::StandardModel, rxn::Reaction)
-
-Get the index of `rxn` in `model`, based on reaction `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[rxn]
+Tests if two `StandardModel`'s represent the same model core model internally.
 """
-function Base.getindex(model::StandardModel, rxn::Reaction)
-    return model.reactions[rxn]
-end
+function Base.isequal(model1::StandardModel, model2::StandardModel)
+    # test if blank model is given - automatic fail
+    (isempty(model1.reactions) || isempty(model2.reactions)) ? (return false) : nothing
 
-"""
-    getindex(model::StandardModel, met::Metabolite)
+    # test same rxn and met ids
+    rxns1 = reactions(model1)
+    rxns2 = reactions(model2)
+    mets1 = metabolites(model1)
+    mets2 = metabolites(model2)
+    rxns_same =
+        (isempty(setdiff(rxns1, rxns2)) && isempty(setdiff(rxns2, rxns1))) ? true : false
+    mets_same =
+        (isempty(setdiff(mets1, mets2)) && isempty(setdiff(mets2, mets1))) ? true : false
 
-Get the index of `met` in `model`, based on metabolite `id`.
-Return -1 if not found.
+    if !rxns_same || !mets_same # if the ids are different stop testing
+        return false
+    end
 
-Typical usage: ind = model[met]
-"""
-function Base.getindex(model::StandardModel, met::Metabolite)
-    return model.metabolites[met]
-end
+    for rxn_id in rxns1 # since IDs are the same only use the ids of the first model
+        # check stoichiometry
+        rmets1 = model1.reactions[rxn_id].metabolites
+        rmets2 = model2.reactions[rxn_id].metabolites
+        if length(rmets1) != length(rmets2)
+            return false
+        end
+        for (km, vm) in rmets1
+            if !(km in keys(rmets2))
+                return false
+            elseif rmets2[km] != vm
+                return false
+            end
+        end
 
-"""
-    getindex(model::StandardModel, gene::Gene)
+        # check bounds
+        if model1.reactions[rxn_id].lower_bound != model2.reactions[rxn_id].lower_bound
+            return false
+        end
+        if model1.reactions[rxn_id].upper_bound != model2.reactions[rxn_id].upper_bound
+            return false
+        end
+    end
 
-Get the index of `gene` in `model`, based on gene `id`.
-Return -1 if not found.
-
-Typical usage: ind = model[gene]
-"""
-function Base.getindex(model::StandardModel, gene::Gene)
-    return model.genes[gene]
+    return true
 end
 
 """
@@ -43,10 +54,10 @@ Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
 """
 function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
     atom_flux = Dict{String,Float64}()
-    for (rxnid, flux) in flux_dict
-        if startswith(rxnid, "EX_") || startswith(rxnid, "DM_") # exchange, demand reaction
-            for (met, stoich) in findfirst(model.reactions, rxnid).metabolites
-                adict = get_atoms(met)
+    for (rxn_id, flux) in flux_dict
+        if is_boundary(model.reactions[rxn_id])
+            for (met, stoich) in model.reactions[rxn_id].metabolites
+                adict = get_atoms(model.metabolites[met])
                 for (atom, stoich) in adict
                     atom_flux[atom] = get(atom_flux, atom, 0.0) + flux * stoich
                 end
@@ -57,60 +68,71 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
-    get_exchanges(rxndict::Dict{String, Float64}; top_n=8, ignorebound=_constants.default_reaction_bound, verbose=true)
+    get_exchanges(rxndict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
 
 Display the top_n producing and consuming exchange fluxes.
-Set top_n to a large number to get all the consuming/producing fluxes.
+If `top_n` is not specified (by an integer), then all are displayed.
 Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.
-Return these reactions in two dictionaries: `consuming`, `producing`
+Return these reactions (id => ) in two dictionaries: `consuming`, `producing`
 """
 function exchange_reactions(
-    rxndict::Dict{String,Float64};
-    top_n = 8,
+    flux_dict::Dict{String,Float64},
+    model::StandardModel;
+    top_n = Inf,
     ignorebound = _constants.default_reaction_bound,
     verbose = true,
 )
-    fluxes = Float64[]
-    rxns = String[]
-    for (k, v) in rxndict
-        if startswith(k, "EX_") && abs(v) < ignorebound
-            push!(rxns, k)
-            push!(fluxes, v)
-        end
-    end
-    inds_prod = sortperm(fluxes, rev = true)
-    inds_cons = sortperm(fluxes)
-
     consuming = Dict{String,Float64}()
     producing = Dict{String,Float64}()
-    verbose && println("Consuming fluxes:")
-    for i = 1:min(top_n, length(rxndict))
-        if rxndict[rxns[inds_cons[i]]] < -_constants.tolerance
-            verbose && println(
-                rxns[inds_cons[i]],
-                " = ",
-                round(rxndict[rxns[inds_cons[i]]], digits = 4),
-            )
-            consuming[rxns[inds_cons[i]]] = rxndict[rxns[inds_cons[i]]]
-        else
-            continue
+
+    for (k, v) in flux_dict
+        if is_boundary(model.reactions[k])
+            if v < 0 # consuming
+                consuming[k] = v
+            elseif v > 0 # producing
+                producing[k] = v
+            else # no flux
+                continue
+            end
         end
     end
 
-    verbose && println("Producing fluxes:")
-    for i = 1:min(top_n, length(rxndict))
-        if rxndict[rxns[inds_prod[i]]] > _constants.tolerance
-            verbose && println(
-                rxns[inds_prod[i]],
-                " = ",
-                round(rxndict[rxns[inds_prod[i]]], digits = 4),
-            )
-            producing[rxns[inds_prod[i]]] = rxndict[rxns[inds_prod[i]]]
-        else
-            continue
+    if verbose
+        # Do consuming
+        ks = collect(keys(consuming))
+        vs = [consuming[k] for k in ks]
+        inds = sortperm(vs)
+        n_max = length(ks)
+        println("Consuming fluxes: ")
+        ii = 0 # counter
+        for i in inds
+            if v[i] > -ignorebound
+                println(ks[i], " = ", round(v[i], digits = 6))
+                ii += 1
+            end
+            if ii > top_n
+                break
+            end
+        end
+        # Do producing
+        ks = collect(keys(producing))
+        vs = [producing[k] for k in ks]
+        inds = sortperm(vs)
+        n_max = length(ks)
+        println("Producing fluxes: ")
+        ii = 0 # counter
+        for i in inds
+            if v[i] < ignorebound
+                println(ks[i], " = ", round(v[i], digits = 6))
+                ii += 1
+            end
+            if ii > top_n
+                break
+            end
         end
     end
+
     return consuming, producing
 end
 
@@ -120,7 +142,7 @@ end
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or 
 produce them given the flux distribution supplied in `fluxdict`.
 """
-function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
+function metabolite_fluxes(flux_dict::Dict{String,Float64}, model::StandardModel)
     S = stoichiometry(model)
     met_flux = Dict{String,Float64}()
     rxnids = reactions(model)
@@ -130,7 +152,7 @@ function metabolite_fluxes(fluxdict::Dict{String,Float64}, model::StandardModel)
     consuming = Dict{String,Dict{String,Float64}}()
     for (row, metid) in enumerate(metids)
         for (col, rxnid) in enumerate(rxnids)
-            mf = fluxdict[rxnid] * S[row, col]
+            mf = flux_dict[rxnid] * S[row, col]
             # ignore zero flux
             if mf < -_constants.tolerance # consuming rxn
                 if haskey(consuming, metid)
@@ -204,4 +226,25 @@ function get_bound_vectors(opt_model)
     ubs = [normalized_rhs(ubconref[i]) for i in eachindex(ubconref)]
 
     return lbs, ubs
+end
+
+"""
+    is_mass_balanced(rxn::Reaction, model::StandardModel)
+
+Checks if `rxn` is atom balanced. Returns a boolean for whether the reaction is balanced,
+and the associated balance of atoms for convenience (useful if not balanced).
+
+See also: [`get_atoms`](@ref), [`check_duplicate_reaction`](@ref)
+"""
+function is_mass_balanced(rxn::Reaction, model::StandardModel)
+    atom_balances = Dict{String,Float64}() # float here because stoichiometry is not Int
+    for (met, stoich) in rxn.metabolites
+        atoms = get_atoms(model.metabolites[met])
+        isempty(atoms) && continue # ignore blanks
+        for (k, v) in atoms
+            atom_balances[k] = get(atom_balances, k, 0) + v * stoich
+        end
+    end
+
+    return all(sum(values(atom_balances)) == 0), atom_balances
 end

@@ -25,14 +25,12 @@ end
     model = read_model(model_path, StandardModel)
 
     # FBA
-    biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-
-    cons = Dict("EX_glc__D_e" => (-12.0, -12.0))
+    glc = model.reactions["EX_glc__D_e"]
     optimizer = Tulip.Optimizer # quiet by default
     sol = flux_balance_analysis_dict(
         model,
         optimizer;
-        modifications = change_objective(biomass),
+        modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
     )
 
     # atom tracker
@@ -40,7 +38,7 @@ end
     @test isapprox(atom_fluxes["C"], -37.1902, atol = 1e-3)
 
     # exchange trackers
-    consuming, producing = exchange_reactions(sol; verbose = false)
+    consuming, producing = exchange_reactions(sol, model; verbose = false)
     @test isapprox(consuming["EX_nh4_e"], -4.76532, atol = 1e-3)
 
     # metabolite trackers
@@ -52,9 +50,9 @@ end
     cbm = make_optimization_model(model, optimizer)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
-    glucose_index = model[findfirst(model.reactions, "EX_glc__D_e")]
-    o2_index = model[findfirst(model.reactions, "EX_o2_e")]
-    atpm_index = model[findfirst(model.reactions, "ATPM")]
+    glucose_index = first(indexin(["EX_glc__D_e"], reactions(model)))
+    o2_index = first(indexin(["EX_o2_e"], reactions(model)))
+    atpm_index = first(indexin(["ATPM"], reactions(model)))
     set_bound(glucose_index, cbm; ub = -1.0, lb = -1.0)
     @test normalized_rhs(ubs[glucose_index]) == -1.0
     @test normalized_rhs(lbs[glucose_index]) == 1.0

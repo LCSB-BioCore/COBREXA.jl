@@ -19,7 +19,7 @@ mutable struct Metabolite
     charge::Int
     compartment::String
     notes::Dict{String,Vector{String}}
-    annotation::Dict{String,Union{Vector{String},String}} # everything is a String[] except sbo, which is a String
+    annotation::Dict{String,Vector{String}} # everything is a String[]
 
     Metabolite(
         id = "";
@@ -28,6 +28,6 @@ mutable struct Metabolite
         charge = 0,
         compartment = "",
         notes = Dict{String,Vector{String}}(),
-        annotation = Dict{String,Union{Vector{String},String}}(),
+        annotation = Dict{String,Vector{String}}(),
     ) = new(id, name, formula, charge, compartment, notes, annotation)
 end
