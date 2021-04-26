@@ -268,3 +268,55 @@ Return the annotation associated with reaction `id` in `model`.
 function reaction_annotations(id::String, model::StandardModel)
     [r.annotation for r in model.reactions]
 end
+
+function Base.convert(::Type{StandardModel}, model::MetabolicModel)
+    id = model_id(model)
+    reactions = OrderedDict{String,Reaction}()
+    metabolites = OrderedDict{String,Metabolite}()
+    genes = OrderedDict{String,Gene}()
+
+    gids = genes(model)
+    metids = metabolites(model)
+    rxnids = reactions(model)
+
+    for gid in gids
+        g = Gene()
+        g.id = gid
+        g.name = gene_name(gid, model) 
+        g.notes = gene_notes(gid, model)
+        g.annotation = gene_annotations(gid, model)
+    end
+
+    for mid in metids
+        m = Metabolite()
+        m.id = mid
+        m.name = metabolite_name(mid, model)
+        f, c = metabolite_chemistry(mid, model)
+        m.charge = c
+        m.formula = join([k*string(v) for (k, v) in f])
+        m.compartment = metabolite_compartment(mid, model)
+        m.notes = metabolite_notes(mid, model)
+        m.annotation = metabolite_annotations(mid, model)
+    end
+
+    S = stoichiometry(model)
+    lbs, ubs = bounds(model)
+    for (i, rid) in enumerate(rxnids)
+        r = Reaction()
+        r.id = rid
+        r.name = reaction_name(rid, model)
+        r.lb = lbs[i]
+        r.ub = ubs[i]
+        r.grr = _parse_grr(reaction_gene_association(rid, model)) # takes in a string and gives a vector of string vectors
+        r.subsystem = reaction_subsystem(rid, model)
+        r.notes = reaction_notes(rid, model)
+        r.annotation = reaction_annotations(rid, model) 
+        rmets = Dict{String, Int64}()
+        for (j, stoich) in zip(findnz(S[:, i])...)
+            rmets[metids[j]] = stoich
+        end
+        r.metabolites = rmets
+    end
+    
+    return StandardModel(id; reactions=reactions, metabolites=metabolites, genes=genes)
+end
