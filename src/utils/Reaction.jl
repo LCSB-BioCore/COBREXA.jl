@@ -46,7 +46,8 @@ function check_duplicate_annotations(
         "rhea",
         "sabiork",
         "seed.reaction",
-    ])::Union{Nothing,String}
+    ],
+)::Union{Nothing,String}
     for (k, rxn) in rxns
         for anno in inspect_annotations
             if length(

@@ -23,7 +23,8 @@ function check_duplicate_annotations(
         "metanetx.chemical",
         "reactome.compound",
         "biocyc",
-    ])::Union{Nothing,String}
+    ],
+)::Union{Nothing,String}
     for (k, met) in mets
         if met.compartment == cmet.compartment # check if same compartment
             for anno in inspect_annotations

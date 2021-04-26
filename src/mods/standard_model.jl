@@ -29,8 +29,9 @@ function change_objective(
         if typeof(objective_functions) == String
             objective_indices = [first(indexin([objective_functions], reactions(model)))]
         else
-            objective_indices =
-                [first(indexin([rxnid], reactions(model))) for rxnid in objective_functions]
+            objective_indices = [
+                first(indexin([rxnid], reactions(model))) for rxnid in objective_functions
+            ]
         end
 
         # Initialize weights

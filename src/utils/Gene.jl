@@ -10,7 +10,15 @@ If no annotation overlap is found, return `nothing`.
 function check_duplicate_annotations(
     check_gene::Gene,
     genes::OrderedDict{String,Gene};
-    inspect_annotations = ["ncbigene", "ncbigi", "refseq_locus_tag", "refseq_name", "refseq_synonym", "uniprot",])::Union{Nothing,String}
+    inspect_annotations = [
+        "ncbigene",
+        "ncbigi",
+        "refseq_locus_tag",
+        "refseq_name",
+        "refseq_synonym",
+        "uniprot",
+    ],
+)::Union{Nothing,String}
     for (k, gene) in genes
         for anno in inspect_annotations
             if length(

@@ -30,7 +30,8 @@
     r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    @test sprint(show, MIME("text/plain"), r1) == "Reaction ID: r1\nReaction name:  reaction 1\nReaction subsystem: glycolysis\n1.0 m1 ⟷  1.0 m2\nLower bound: -100.0\nUpper bound: 100.0\nGenes: (g1 and g2) or (g3)\nE.C. number: \n"
+    @test sprint(show, MIME("text/plain"), r1) ==
+          "Reaction ID: r1\nReaction name:  reaction 1\nReaction subsystem: glycolysis\n1.0 m1 ⟷  1.0 m2\nLower bound: -100.0\nUpper bound: 100.0\nGenes: (g1 and g2) or (g3)\nE.C. number: \n"
 
     rlongfor = Reaction(
         "rlongfor",
