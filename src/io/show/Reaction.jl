@@ -48,7 +48,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     end
     grr_string = join(grr_strings, " or ")
     (isnothing(grr_string) || grr_string == "") && (grr_string = "")
-    println(io, "Genes: ", grr_string)
+    println(io, "Genes: $grr_string")
     println(io, "E.C. number: ", join(get(r.annotation, "ec-code", [""]), " or "))
 end
 

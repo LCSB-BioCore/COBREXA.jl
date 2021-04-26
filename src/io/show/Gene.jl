@@ -2,8 +2,8 @@
 Pretty printing of `Gene`.
 """
 function Base.show(io::IO, ::MIME"text/plain", g::Gene)
-    println(io, "Gene ID: ", g.id)
-    println(io, "Gene name: ", g.name)
+    println(io, "Gene ID: $(g.id)")
+    println(io, "Gene name: $(g.name)")
 end
 
 """
