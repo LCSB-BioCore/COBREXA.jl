@@ -270,62 +270,39 @@ function reaction_annotations(id::String, model::StandardModel)
 end
 
 function Base.convert(::Type{StandardModel}, model::MetabolicModel)
-    # id = model_id(model)
-    id = ""
-    reactions = OrderedDict{String,Reaction}()
-    metabolites = OrderedDict{String,Metabolite}()
-    genes = OrderedDict{String,Gene}()
+    id = "" # model_id(model), add accessor
+    modelreactions = OrderedDict{String,Reaction}()
+    modelmetabolites = OrderedDict{String,Metabolite}()
+    modelgenes = OrderedDict{String,Gene}()
 
     gids = genes(model)
     metids = metabolites(model)
     rxnids = reactions(model)
 
     for gid in gids
-        g = Gene()
-        g.id = gid
-        g.name = gene_name(gid, model)
-        g.notes = gene_notes(gid, model)
-        g.annotation = gene_annotations(gid, model)
-        genes[gid] = g
+        modelgenes[gid] = Gene(gid;) # NB: add more accessors
     end
 
     for mid in metids
-        m = Metabolite()
-        m.id = mid
-        m.name = metabolite_name(mid, model)
-        f, c = metabolite_chemistry(mid, model)
-        m.charge = c
-        m.formula = join([k * string(v) for (k, v) in f])
-        m.compartment = metabolite_compartment(mid, model)
-        m.notes = metabolite_notes(mid, model)
-        m.annotation = metabolite_annotations(mid, model)
-        metabolites[mid] = m
+        f, c = metabolite_chemistry(model, mid)
+        fstr = join([k * string(v) for (k, v) in f])
+        modelmetabolites[mid] = Metabolite(mid; charge=c, formula=fstr)
     end
 
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
     for (i, rid) in enumerate(rxnids)
-        r = Reaction()
-        r.id = rid
-        r.name = reaction_name(rid, model)
-        r.lb = lbs[i]
-        r.ub = ubs[i]
-        r.grr = _parse_grr(reaction_gene_association(rid, model)) # takes in a string and gives a vector of string vectors
-        r.subsystem = reaction_subsystem(rid, model)
-        r.notes = reaction_notes(rid, model)
-        r.annotation = reaction_annotations(rid, model)
-        rmets = Dict{String,Int64}()
+        rmets = Dict{String,Float64}()
         for (j, stoich) in zip(findnz(S[:, i])...)
             rmets[metids[j]] = stoich
         end
-        r.metabolites = rmets
-        reactions[rid] = r
+        modelreactions[rid] = Reaction(rid; metabolites = rmets, lb=lbs[i], ub=ubs[i], grr=reaction_gene_association(model, rid)) # NB: add more accessors
     end
 
     return StandardModel(
         id;
-        reactions = reactions,
-        metabolites = metabolites,
-        genes = genes,
+        reactions = modelreactions,
+        metabolites = modelmetabolites,
+        genes = modelgenes,
     )
 end
