@@ -1,11 +1,11 @@
 """
     check_duplicate_reaction(rxn::Reaction, rxns::Dict{String, Reaction})
 
-Check if `rxn` already exists in `rxns` but has another id.
+Check if `rxn` already exists in `rxns` but has another `id`.
 Looks through all the reaction equations of `rxns` and compares metabolite `id`s 
 and their stoichiometric coefficients to those of `rxn`.
-If `rxn` has the same reaction equation as another reaction in `rxns`, the return true and id.
-Otherwise return false and "".
+If `rxn` has the same reaction equation as another reaction in `rxns`, the return the `id`.
+Otherwise return `nothing`.
 
 See also: [`is_mass_balanced`](@ref)
 """
@@ -20,11 +20,11 @@ function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String,React
                 end
             end
             if reaction_checker
-                return true, k
+                return k
             end
         end
     end
-    return false, ""
+    return nothing
 end
 
 """
@@ -36,8 +36,7 @@ Return true and the `id` of the first hit, otherwise false and "".
 """
 function check_duplicate_annotations(
     crxn::Reaction,
-    rxns::OrderedDict{String,Reaction},
-)::Tuple{Bool,String}
+    rxns::OrderedDict{String,Reaction};
     inspect_annotations = [
         "bigg.reaction",
         "biocyc",
@@ -47,7 +46,7 @@ function check_duplicate_annotations(
         "rhea",
         "sabiork",
         "seed.reaction",
-    ]
+    ])::Union{Nothing,String}
     for (k, rxn) in rxns
         for anno in inspect_annotations
             if length(
@@ -56,11 +55,11 @@ function check_duplicate_annotations(
                     get(rxn.annotation, anno, ["c2"]),
                 ),
             ) != 0
-                return true, k
+                return k
             end
         end
     end
-    return false, ""
+    return nothing
 end
 
 """
