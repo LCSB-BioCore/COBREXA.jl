@@ -18,13 +18,7 @@ function _print_color(
     end
 end
 
-function _print_color(
-    io,
-    def::String,
-    payload;
-    def_color = :blue,
-    payload_color = :magenta,
-)
+function _print_color(io, def::String, payload; def_color = :blue, payload_color = :magenta)
     print(io, Crayon(foreground = def_color), def)
     if isempty(payload)
         println(io, Crayon(foreground = payload_color), "---")
