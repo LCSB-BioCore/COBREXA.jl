@@ -17,7 +17,7 @@ function save_json_model(model::MetabolicModel, file_name::String)
 end
 
 #TODO this needs to be subsumed by the above function with auto-conversion
-function _write_model(model::StandardModel, ::Type{JSONFile}, file_location::String)
+function _write_json_model(model::StandardModel, file_location::String)
     modeldict = Dict{String,Any}()
     modeldict["id"] = model.id
 

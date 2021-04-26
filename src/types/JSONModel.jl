@@ -163,7 +163,7 @@ function metabolite_chemistry(model::JSONModel, mid::String)
     end
 
     mi = first(indexin(mid, keys(model.m[m])))
-    met = models.m[m][mi]
+    met = model.m[m][mi]
     formula = maybemap(_formula_to_atoms, get(met, "formula", nothing))
     return maybemap(f -> (f, get(met, "charge", 0)), formula)
 end

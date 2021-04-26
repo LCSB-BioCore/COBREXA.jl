@@ -5,7 +5,8 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{MATModel})
     return MATModel(model_pair.second)
 end
 
-function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel})
+#TODO: this needs to get merged into MAT->StdModel conversion
+function _read_mat_model(file_location::String, ::Type{StandardModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1]
     modeldict = matfile[model_name]

@@ -21,7 +21,7 @@ function save_mat_model(model::MetabolicModel, file_path::String; model_name = "
 end
 
 #TODO this needs to get merged into convert function StdModel->MATModel
-function _write_model(model::StandardModel, ::Type{MFile}, file_location::String)
+function _write_mat_model(model::StandardModel, file_location::String)
     # Some information is lost here, e.g. notes and some annotations.
     S = stoichiometry(model)
     b = balance(model)
