@@ -1,4 +1,3 @@
-
 """
 Pretty printing of reaction::Reaction.
 """
@@ -24,9 +23,9 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     isempty(substrates) && (substrates = "∅")
     isempty(products) && (products = "∅")
 
-    println(io, "Reaction ID: ", r.id)
-    println(io, "Reaction name: ", r.name)
-    println(io, "Reaction subsystem: ", r.subsystem)
+    println(io, "Reaction ID: $(r.id)")
+    println(io, "Reaction name:  $(r.name)")
+    println(io, "Reaction subsystem: $(r.subsystem)")
     if length(substrates) > 5 && length(products) > 5
         sp = substrates[1] * " + ... + " * substrates[end]
         pp = products[1] * " + ... + " * products[end]
@@ -40,8 +39,8 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     else
         println(io, join(substrates, " + ") * arrow * join(products, " + "))
     end
-    println(io, "Lower bound: ", r.lb)
-    println(io, "Upper bound: ", r.ub)
+    println(io, "Lower bound: $(r.lb)")
+    println(io, "Upper bound: $(r.ub)")
 
     grr_strings = String[]
     for gr in r.grr
