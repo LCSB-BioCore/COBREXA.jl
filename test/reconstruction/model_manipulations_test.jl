@@ -39,10 +39,10 @@
     add!(model, r5)
     @test length(model.reactions) == 5
 
-    rm!(model, [r5, r4])
+    rm!(Reaction, model, ["r5", "r4"])
     @test length(model.reactions) == 3
 
-    rm!(model, r1)
+    rm!(Reaction, model, "r1")
     @test length(model.reactions) == 2
 
     ### metabolites
@@ -52,10 +52,10 @@
     add!(model, m7)
     @test length(model.metabolites) == 7
 
-    rm!(model, [m5, m4])
+    rm!(Metabolite, model, ["m5", "m4"])
     @test length(model.metabolites) == 5
 
-    rm!(model, m1)
+    rm!(Metabolite, model, "m1")
     @test length(model.metabolites) == 4
 
     ### genes
@@ -65,10 +65,9 @@
     add!(model, g7)
     @test length(model.genes) == 7
 
-    rm!(model, [g5, g4])
+    rm!(Gene, model, ["g5", "g4"])
     @test length(model.genes) == 5
 
-    rm!(model, g1)
+    rm!(Gene, model, "g1")
     @test length(model.genes) == 4
-
 end

@@ -100,7 +100,7 @@ macro add_reactions!(model::Symbol, ex::Expr)
 end
 
 """
-    rm!(::typeof(Reaction), model::StandardModel, ids::Union{String, Vector{String}})
+    rm!(::Type{Reaction}, model::StandardModel, ids::Vector{String})
 
 Remove all reactions with `ids` from `model`.
 
@@ -108,18 +108,18 @@ Remove all reactions with `ids` from `model`.
 rm!(Reaction, model, ["EX_glc__D_e", "fba"])
 rm!(Reaction, model, "EX_glc__D_e")
 """
-function rm!(::typeof(Reaction), model::StandardModel, ids::Vector{String})
+function rm!(::Type{Reaction}, model::StandardModel, ids::Vector{String})
     for id in ids
         rm!(Reaction, model, id)
     end
 end
 
-function rm!(::typeof(Reaction), model::StandardModel, id::String)
+function rm!(::Type{Reaction}, model::StandardModel, id::String)
     delete!(model.reactions, id)
 end
 
 """
-    rm!(::typeof(Metabolite), model::StandardModel, ids::Union{String, Vector{String}})
+    rm!(::Type{Metabolite}, model::StandardModel, ids::Vector{String})
 
 Remove all metabolites with `ids` from `model`.
 
@@ -127,18 +127,18 @@ Remove all metabolites with `ids` from `model`.
 rm!(Metabolite, model, ["atp_c", "adp_c"])
 rm!(Metabolite, model, "atp_c")
 """
-function rm!(::typeof(Metabolite), model::StandardModel, ids::Vector{String})
+function rm!(::Type{Metabolite}, model::StandardModel, ids::Vector{String})
     for id in ids
         rm!(Metabolite, model, id)
     end
 end
 
-function rm!(::typeof(Metabolite), model::StandardModel, id::String)
+function rm!(::Type{Metabolite}, model::StandardModel, id::String)
     delete!(model.metabolites, id)
 end
 
 """
-    rm!(::typeof(Gene), model::StandardModel, ids::Vector{String})
+    rm!(::Type{Gene}, model::StandardModel, ids::Vector{String})
 
 Remove all genes with `ids` from `model`.
 
@@ -146,12 +146,12 @@ Remove all genes with `ids` from `model`.
 rm!(Gene, model, ["g1", "g2"])
 rm!(Gene, model, "g1")
 """
-function rm!(::typeof(Gene), model::StandardModel, ids::Vector{String})
+function rm!(::Type{Gene}, model::StandardModel, ids::Vector{String})
     for id in ids
         rm!(Gene, model, id)
     end
 end
 
-function rm!(::typeof(Gene), model::StandardModel, id::String)
+function rm!(::Type{Gene}, model::StandardModel, id::String)
     delete!(model.genes, id)
 end
