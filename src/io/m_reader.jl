@@ -1,6 +1,12 @@
 
-function _read_model(file_location::String, ::Type{MFile}, ::Type{MATModel})
-    model_pair = first(matread(file_location))
+"""
+    load_mat_model(file_name::String)
+
+Load and return a MATLAB file `file_name` that contains a COBRA-compatible
+model.
+"""
+function load_mat_model(file_name::String)
+    model_pair = first(matread(file_name))
     @_io_log @info "Loading MAT: taking a model with ID $(model_pair.first)"
     return MATModel(model_pair.second)
 end
@@ -146,7 +152,7 @@ function _read_mat_model(file_location::String, ::Type{StandardModel})
     return StandardModel(model_id; reactions = rxns, metabolites = mets, genes = genes)
 end
 
-function _read_model(file_location::String, ::Type{MFile}, ::Type{CoreModel})
+function _read_mat_model(file_location::String, ::Type{CoreModel})
     #TODO replace this by using convert()
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1] # assume only one model per m-file
