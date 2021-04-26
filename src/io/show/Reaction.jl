@@ -45,26 +45,15 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     grr_string = join(grr_strings, " or ")
     (isnothing(grr_string) || grr_string == "") && (grr_string = "")
 
-    _print_color(io, "Reaction ID: ", r.id)
-    _print_color(io, "Name: ", r.name)
-    _print_color(io, "Reaction equation: ", req_str)
-    _print_color(io, "Lower bound: ", string(r.lb))
-    _print_color(io, "Upper bound: ", string(r.ub))
-    _print_color(io, "Subsystem: ", r.subsystem)
-    _print_color(io, "Gene reaction rule: ", grr_string)
-    _print_color(io, "Notes: ", r.notes)
-    _print_color(io, "Annotation: ", r.annotation)
-    _print_color(io, "Fields: ", join([string(x) for x in fieldnames(Reaction)], ", "))
-end
-
-"""
-Pretty printing of reactions::Vector{Reaction}.
-"""
-function Base.show(io::IO, ::MIME"text/plain", rs::Vector{Reaction})
-    _print_color(io, "Reaction vector of length: : ", string(length(rs)))
-    _print_color(
-        io,
-        "Each reaction has fields: ",
-        join([string(x) for x in fieldnames(Reaction)], ", "),
-    )
+    for fname in fieldnames(Reaction)
+        if fname == :metabolites
+            _print_color(io, "Reaction.$(string(fname)): ", req_str)
+        elseif fname == :grr
+            _print_color(io, "Reaction.$(string(fname)): ", grr_string)
+        elseif fname in (:lb, :ub, :objective_coefficient)
+            _print_color(io, "Reaction.$(string(fname)): ", string(getfield(r, fname)))
+        else
+            _print_color(io, "Reaction.$(string(fname)): ", getfield(r, fname))
+        end
+    end
 end
