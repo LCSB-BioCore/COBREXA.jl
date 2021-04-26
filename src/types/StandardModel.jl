@@ -1,17 +1,19 @@
 """
+    mutable struct StandardModel
+
 `StandardModel` is used to store a constraint based metabolic model with meta-information.
 Meta-information is defined as annotation details, which include gene-reaction-rules, formulas, etc.
 
-This model type seeks to keep as much meta-information as possible.
-When merging models and keeping meta-information is important, use this as the output type. 
+This model type seeks to keep as much meta-information as possible, cf. `CoreModel` and `CoreModelCoupled`.
+When merging models and keeping meta-information is important, use this as the model type. 
 If meta-information is not important, use the more efficient core model types. 
 See [`CoreModel`](@ref) and [`CoreModelCoupled`](@ref) for comparison.
 
-In this model, reactions, metabolites, and genes are stored in dictionaries indexed by each structs `id` field.
-For example, `model.reactions["rxn1_id"]` returns a `Reaction` with index `rxn1_id`.
+In this model, reactions, metabolites, and genes are stored in dictionaries indexed by each struct's `id` field.
+For example, `model.reactions["rxn1_id"]` returns a `Reaction` that is indexed by the field `id` which equals `"rxn1_id"`.
 This makes adding and removing reactions efficient.   
 
-However, note that the stoichiometric matrix (or any other core data, e.g. flux bounds) is not stored directly. 
+However, note that the stoichiometric matrix (or any other core data, e.g. flux bounds) is not stored directly as in `CoreModel`. 
 When this model type is used in analysis functions, these core data structures are built from scratch.
 This can cause performance issues if you run many small analysis functions sequentially. 
 Consider using the core model types if performance is critical.
