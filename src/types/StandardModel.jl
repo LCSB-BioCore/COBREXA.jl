@@ -286,7 +286,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     for mid in metids
         f, c = metabolite_chemistry(model, mid)
         fstr = join([k * string(v) for (k, v) in f])
-        modelmetabolites[mid] = Metabolite(mid; charge=c, formula=fstr)
+        modelmetabolites[mid] = Metabolite(mid; charge = c, formula = fstr)
     end
 
     S = stoichiometry(model)
@@ -296,7 +296,13 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         for (j, stoich) in zip(findnz(S[:, i])...)
             rmets[metids[j]] = stoich
         end
-        modelreactions[rid] = Reaction(rid; metabolites = rmets, lb=lbs[i], ub=ubs[i], grr=reaction_gene_association(model, rid)) # NB: add more accessors
+        modelreactions[rid] = Reaction(
+            rid;
+            metabolites = rmets,
+            lb = lbs[i],
+            ub = ubs[i],
+            grr = reaction_gene_association(model, rid),
+        ) # NB: add more accessors
     end
 
     return StandardModel(
