@@ -85,12 +85,12 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
     return MATModel(
         Dict(
             "S" => stoichiometry(m),
-            "rxns" => reshape(reactions(m), (nr, 1)),
-            "mets" => reshape(metabolites(m), (nm, 1)),
-            "lb" => reshape(lb, (nr, 1)),
-            "ub" => reshape(ub, (nr, 1)),
-            "b" => reshape(balance(m), (nm, 1)),
-            "c" => reshape(objective(m), (nr, 1)),
+            "rxns" => reactions(m),
+            "mets" => metabolites(m),
+            "lb" => Vector(lb),
+            "ub" => Vector(ub),
+            "b" => Vector(balance(m)),
+            "c" => Vector(objective(m)),
         ),
     )
 end

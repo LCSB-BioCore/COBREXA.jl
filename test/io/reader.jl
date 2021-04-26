@@ -8,21 +8,18 @@
         "03362073aa917f0691a0c896948f6e8eebe47f02dcbe0c3f00275fa87396e220",
     )
 
-    cp = read_model(filepath, CoreModel)
+    cp = load_model(CoreModel, filepath)
     @test cp isa CoreModel
     @test size(cp.S) == (475, 496)
     # @test_throws ErrorException load_model(filepath, "badmodel") # this needs to be fixed
 
-    cp = read_model(joinpath("data", "toyModel1.mat"), CoreModel)
-    @test cp isa CoreModel
+    cp = load_model(CoreModel, joinpath("data", "toyModel1.mat"))
     @test size(cp.S) == (6, 7)
 
-    cp = read_model(joinpath("data", "toyModel2.mat"), CoreModel)
-    @test cp isa CoreModel
+    cp = load_model(CoreModel, joinpath("data", "toyModel2.mat"))
     @test size(cp.S) == (6, 7)
 
-    cp = read_model(joinpath("data", "toyModel3.mat"), CoreModel)
-    @test cp isa CoreModel
+    cp = load_model(CoreModel, joinpath("data", "toyModel3.mat"))
     @test size(cp.S) == (9, 12)
 
 end
