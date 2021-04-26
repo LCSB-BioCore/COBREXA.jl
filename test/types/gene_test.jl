@@ -16,11 +16,11 @@
     g3.annotation = Dict("ncbigene" => ["sbo"], "ncbigene" => ["ads", "asds"])
 
     gd = OrderedDict(g.id => g for g in genes)
-    dup, ind = check_duplicate_annotations(g3, gd)
-    @test dup && ind == "gene1"
+    id = check_duplicate_annotations(g3, gd)
+    @test id == "gene1"
 
     g4 = Gene("g4")
     g4.annotation = Dict("ncbigene" => ["sbo"], "ncbigene" => ["ads22", "asd22s"])
-    dup, ind = check_duplicate_annotations(g4, gd)
-    @test !dup && ind == ""
+    id = check_duplicate_annotations(g4, gd)
+    @test isnothing(id)
 end

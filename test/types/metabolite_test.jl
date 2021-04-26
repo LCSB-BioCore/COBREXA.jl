@@ -23,8 +23,8 @@
     @test sprint(show, MIME("text/plain"), mets) == "Metabolite set of length: 3\n"
 
     md = OrderedDict(m.id => m for m in mets)
-    dup, ind = check_duplicate_annotations(m3, md)
-    @test dup && ind == "met3"
+    id = check_duplicate_annotations(m3, md)
+    @test id == "met3"
 
     ats = get_atoms(m1)
     @test ats["C"] == 6 && ats["N"] == 1
@@ -33,6 +33,6 @@
     m4.formula = "X"
     m4.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
 
-    dup, ind = check_duplicate_annotations(m4, md)
-    @test !dup && ind == ""
+    id = check_duplicate_annotations(m4, md)
+    @test isnothing(id)
 end

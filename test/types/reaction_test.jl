@@ -30,8 +30,7 @@
     r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    @test sprint(show, MIME("text/plain"), r1) ==
-          "Reaction ID: r1\nReaction name: reaction 1\nReaction subsystem: glycolysis\n1.0 m1 ⟷  1.0 m2\nLower bound: -100.0\nUpper bound: 100.0\nGenes: (g1 and g2) or (g3)\nE.C. number: \n"
+    @test sprint(show, MIME("text/plain"), r1) == "Reaction ID: r1\nReaction name:  reaction 1\nReaction subsystem: glycolysis\n1.0 m1 ⟷  1.0 m2\nLower bound: -100.0\nUpper bound: 100.0\nGenes: (g1 and g2) or (g3)\nE.C. number: \n"
 
     rlongfor = Reaction(
         "rlongfor",
@@ -87,16 +86,16 @@
     r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
-    dup, ind = check_duplicate_annotations(r4, rd)
-    @test dup && ind == "r1"
+    id = check_duplicate_annotations(r4, rd)
+    @test id == "r1"
 
-    dup, ind = check_duplicate_reaction(r4, rd)
-    @test dup && ind == "r3"
+    id = check_duplicate_reaction(r4, rd)
+    @test id == "r3"
 
-    dup, ind = check_duplicate_annotations(r2, rd)
-    @test !dup && ind == ""
+    id = check_duplicate_annotations(r2, rd)
+    @test isnothing(id)
 
     r5 = Reaction("r5", Dict(m3.id => -11.0, m4.id => 1.0), :bidirectional)
-    dup, ind = check_duplicate_reaction(r5, rd)
-    @test !dup && ind == ""
+    id = check_duplicate_reaction(r5, rd)
+    @test isnothing(id)
 end
