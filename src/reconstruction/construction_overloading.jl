@@ -31,7 +31,7 @@ function Base.:+(
     return push!(m1, m2)
 end
 
-function mkrxn(substrates, products)
+function _mkrxn(substrates, products)
     metdict = Dict{String,Float64}()
 
     if typeof(substrates) == Metabolite
@@ -76,7 +76,7 @@ function ⟶(
     },
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
-    metdict = mkrxn(substrates, products)
+    metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :forward)
 end
 const → = ⟶
@@ -92,7 +92,7 @@ function ⟵(
     },
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
-    metdict = mkrxn(substrates, products)
+    metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :reverse)
 end
 const ← = ⟵
@@ -108,7 +108,7 @@ function ⟷(
     },
     products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
 )
-    metdict = mkrxn(substrates, products)
+    metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :bidirectional)
 end
 const ↔ = ⟷
