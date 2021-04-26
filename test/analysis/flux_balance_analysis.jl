@@ -50,14 +50,12 @@ end
 
     model = read_model(model_path, StandardModel)
 
-    biomass = model.reactions["BIOMASS_Ecoli_core_w_GAM"]
-    glucose = model.reactions["EX_glc__D_e"]
     sol = flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
         modifications = [
-            change_objective(biomass),
-            change_constraint(glucose, -12, -12),
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
             change_sense(MOI.MAX_SENSE),
             change_solver_attribute("IPM_IterationsLimit", 110),
         ],
@@ -68,14 +66,13 @@ end
         atol = TEST_TOLERANCE,
     )
 
-    pfl = model.reactions["PFL"]
     pfl_frac = 0.8
     biomass_frac = 0.2
     sol_multi = flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
         modifications = change_objective(
-            [biomass, pfl];
+            ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
             weights = [biomass_frac, pfl_frac],
         ),
     )
