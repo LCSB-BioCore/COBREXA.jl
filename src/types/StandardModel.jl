@@ -229,7 +229,7 @@ end
 
 Return the annotation associated with metabolite `id` in `model`.
 """
-function metabolite_annotation(id::String, model::StandardModel)
+function metabolite_annotations(id::String, model::StandardModel)
     model.metabolites[id].annotation
 end
 
