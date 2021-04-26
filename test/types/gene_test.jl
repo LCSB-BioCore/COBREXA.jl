@@ -5,14 +5,16 @@
     g.notes = Dict("notes" => ["blah", "blah"])
     g.annotation = Dict("sboterm" => ["sbo"], "ncbigene" => ["ads", "asds"])
 
-    @test sprint(show, MIME("text/plain"), g) == "Gene.id: gene1\nGene.name: gene_name\nGene.notes: \n\tnotes: blah, blah\nGene.annotation: \n\tncbigene: ads, asds\n\tsboterm: sbo\n"
-    
+    @test sprint(show, MIME("text/plain"), g) ==
+          "Gene.id: gene1\nGene.name: gene_name\nGene.notes: \n\tnotes: blah, blah\nGene.annotation: \n\tncbigene: ads, asds\n\tsboterm: sbo\n"
+
     g2 = Gene("gene2")
 
     genes = [g, g2]
 
     gene_list = [[g], [g2]]
-    @test sprint(show, MIME("text/plain"), gene_list) == "Gene reaction rule: (gene1) or (gene2)\n"
+    @test sprint(show, MIME("text/plain"), gene_list) ==
+          "Gene reaction rule: (gene1) or (gene2)\n"
 
     @test genes[g] == 1
 
