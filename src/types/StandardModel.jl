@@ -270,7 +270,8 @@ function reaction_annotations(id::String, model::StandardModel)
 end
 
 function Base.convert(::Type{StandardModel}, model::MetabolicModel)
-    id = model_id(model)
+    # id = model_id(model)
+    id = ""
     reactions = OrderedDict{String,Reaction}()
     metabolites = OrderedDict{String,Metabolite}()
     genes = OrderedDict{String,Gene}()
