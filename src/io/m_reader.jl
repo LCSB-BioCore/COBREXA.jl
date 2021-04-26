@@ -1,3 +1,10 @@
+
+function _read_model(file_location::String, ::Type{MFile}, ::Type{MATModel})
+    model_pair = first(matread(file_location))
+    @_io_log @info "Loading MAT: taking a model with ID $(model_pair.first)"
+    return MATModel(model_pair.second)
+end
+
 function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel})
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1]
@@ -141,6 +148,7 @@ function _read_model(file_location::String, ::Type{MFile}, ::Type{StandardModel}
 end
 
 function _read_model(file_location::String, ::Type{MFile}, ::Type{CoreModel})
+    #TODO replace this by using convert()
     matfile = matread(file_location)
     model_name = collect(keys(matfile))[1] # assume only one model per m-file
     # of not then need to make this more resilient, maybe keyword args.. ?
