@@ -3,7 +3,7 @@
 
 Function to faciliate pretty printing of COBREXA structs.
 """
-function _pretty_print(
+function _print_color(
     io,
     def::String,
     payload::String;
@@ -18,7 +18,7 @@ function _pretty_print(
     end
 end
 
-function _pretty_print(
+function _print_color(
     io,
     def::String,
     payload;
