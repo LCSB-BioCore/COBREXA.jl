@@ -147,8 +147,8 @@ function reaction_gene_association(model::JSONModel, rid::String)
         return nothing
     end
 
-    ri = first(indexin(rid, keys(model.m[r])))
-    return maybemap(_parse_grr, get(model.m[r][ri], "gene_reaction_rule", nothing))
+    rxn = _firstmatch(rxn -> rxn["id"] == rid, model.m[r])
+    return maybemap(_parse_grr, get(rxn, "gene_reaction_rule", nothing))
 end
 
 """
@@ -162,8 +162,7 @@ function metabolite_chemistry(model::JSONModel, mid::String)
         return nothing
     end
 
-    mi = first(indexin(mid, keys(model.m[m])))
-    met = model.m[m][mi]
+    met = _firstmatch(met -> met["id"] == mid, model.m[m])
     formula = maybemap(_formula_to_atoms, get(met, "formula", nothing))
     return maybemap(f -> (f, get(met, "charge", 0)), formula)
 end
@@ -171,6 +170,10 @@ end
 #TODO annotation accessors
 
 function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
+    if typeof(mm) == JSONModel
+        return mm
+    end
+
     rxn_ids = reactions(mm)
     met_ids = metabolites(mm)
     gene_ids = genes(mm)

@@ -63,6 +63,10 @@ metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = ma
 )
 
 function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
+    if typeof(m) == SBMLModel
+        return m
+    end
+
     mets = metabolites(m)
     rxns = reactions(m)
     stoi = stoichiometry(m)

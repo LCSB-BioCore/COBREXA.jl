@@ -69,6 +69,10 @@ end
 Make a `CoreModelCoupled` out of any compatible model type.
 """
 function Base.convert(::Type{CoreModelCoupled}, m::M) where {M<:MetabolicModel}
+    if typeof(m) == CoreModelCoupled
+        return m
+    end
+
     (cl, cu) = coupling_bounds(m)
     CoreModelCoupled(convert(CoreModel, m), coupling(m), cl, cu)
 end

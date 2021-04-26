@@ -99,6 +99,10 @@ end
 Make a `CoreModel` out of any compatible model type.
 """
 function Base.convert(::Type{CoreModel}, m::M) where {M<:MetabolicModel}
+    if typeof(m) == CoreModel
+        return m
+    end
+
     (xl, xu) = bounds(m)
     CoreModel(
         stoichiometry(m),
