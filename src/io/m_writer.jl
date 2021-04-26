@@ -1,3 +1,21 @@
+
+"""
+    save_mat_model(model::MetabolicModel, file_name::String; model_name::String="model")
+
+Save a [`MATModel`](@ref) in `model` to a MATLAB file `file_name` in a format
+compatible with other MATLAB-based COBRA software.
+
+In case the `model` is not `MATModel`, it will be converted automatically.
+
+`model_name` is the identifier name for the whole model written to the MATLAB
+file; defaults to just "model".
+"""
+function save_mat_model(model::MetabolicModel, file_path::String; model_name = "model")
+    m = (typeof(model) == MATModel ? model : convert(MATModel, model)).mat
+    matwrite(file_path, Dict(model_name => m))
+end
+
+#TODO this needs to get merged into convert function StdModel->MATModel
 function _write_model(model::StandardModel, ::Type{MFile}, file_location::String)
     # Some information is lost here, e.g. notes and some annotations.
     S = stoichiometry(model)

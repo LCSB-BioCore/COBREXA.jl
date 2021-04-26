@@ -15,7 +15,7 @@ Return a solved pFBA model.
 ```
 optimizer = Gurobi.Optimizer
 atts = Dict("OutputFlag" => 0)
-model = CobraTools.read_model("iJO1366.json")
+model = load_model(StandardModel, "iJO1366.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 sol = pfba(model, biomass, optimizer; solver_attributes=atts)
 ```

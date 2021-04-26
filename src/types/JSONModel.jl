@@ -14,8 +14,8 @@ See also: [`CoreModel`](@ref), [`CoreModelCoupled`](@ref), [`StandardModel`](@re
 
 # Example
 ````
-model = read_model("some_model.json")
-model.m # the actual underlying model
+model = load_json_model("some_model.json")
+model.m # the actual underlying JSON
 ````
 """
 struct JSONModel <: MetabolicModel
