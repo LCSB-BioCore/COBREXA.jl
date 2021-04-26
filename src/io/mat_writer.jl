@@ -71,15 +71,3 @@ function _write_mat_model(model::StandardModel, file_location::String)
 
     matwrite(file_location, Dict("model" => mdict))
 end
-
-"""
-Write a model into a MAT (Matlab) format
-
-NB: Does NOT export general inequality constraints (eg coupling)
-
-See also: `MAT.jl`
-"""
-function _write_mat_model(model::CoreModel, file_path::String)
-    var_name = "model" # maybe make a field for this in the model?
-    matwrite(file_path, Dict(var_name => _convert_to_m_exportable_dict(model)))
-end
