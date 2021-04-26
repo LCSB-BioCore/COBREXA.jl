@@ -28,6 +28,8 @@
     @test jsonmodel isa JSONModel
     @test n_reactions(jsonmodel) == 2583
 
-    @test Set(lowercase.(reactions(sbmlmodel)))==Set("r_".*lowercase.(reactions(matlabmodel)))
-    @test Set(lowercase.(reactions(sbmlmodel)))==Set("r_".*lowercase.(reactions(jsonmodel)))
+    @test Set(lowercase.(reactions(sbmlmodel))) ==
+          Set("r_" .* lowercase.(reactions(matlabmodel)))
+    @test Set(lowercase.(reactions(sbmlmodel))) ==
+          Set("r_" .* lowercase.(reactions(jsonmodel)))
 end
