@@ -285,6 +285,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         g.name = gene_name(gid, model)
         g.notes = gene_notes(gid, model)
         g.annotation = gene_annotations(gid, model)
+        genes[gid] = g
     end
 
     for mid in metids
@@ -297,6 +298,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         m.compartment = metabolite_compartment(mid, model)
         m.notes = metabolite_notes(mid, model)
         m.annotation = metabolite_annotations(mid, model)
+        metabolites[mid] = m
     end
 
     S = stoichiometry(model)
@@ -316,6 +318,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             rmets[metids[j]] = stoich
         end
         r.metabolites = rmets
+        reactions[rid] = r
     end
 
     return StandardModel(
