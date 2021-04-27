@@ -81,13 +81,6 @@
 
     rxns = [r1, r2, r3]
 
-<<<<<<< HEAD
-    @test sprint(show, MIME("text/plain"), rxns) ==
-          "Reaction vector of length: : 3\nEach reaction has fields: id, name, metabolites, lb, ub, grr, subsystem, notes, annotation, objective_coefficient\n"
-
-    r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
-    r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
-=======
     @test rxns[r3] == 3
 
     rr = findfirst(rxns, "r2")
@@ -95,7 +88,6 @@
 
     r4 = Reaction("r4", Dict(m3 => -1.0, m4 => 1.0), :bidirectional)
     r4.annotation = Dict("sboterm" => "sbo", "biocyc" => ["ads", "asds"])
->>>>>>> 210a5b5 (fixed tests)
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
     id = check_duplicate_annotations(r4, rd)

@@ -1,3 +1,14 @@
+
+function _pretty_substances(ss::Vector{String})::String
+    if isempty(ss)
+        "∅"
+    elseif length(ss) > 5
+        join([ss[1], ss[2], "…", ss[end-1], ss[end]], " + ")
+    else
+        join(ss, " + ")
+    end
+end
+
 """
 Pretty printing of reaction::Reaction.
 """
@@ -11,31 +22,14 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     else
         arrow = " →∣←  " # blocked reaction
     end
-    substrates = String[]
-    products = String[]
-    for (k, v) in r.metabolites
-        if v < 0.0
-            push!(substrates, string(abs(v)) * " " * k)
-        else
-            push!(products, string(abs(v)) * " " * k)
-        end
-    end
-    isempty(substrates) && (substrates = "∅")
-    isempty(products) && (products = "∅")
-    req_str = ""
-    if length(substrates) > 5 && length(products) > 5
-        sp = substrates[1] * " + ... + " * substrates[end]
-        pp = products[1] * " + ... + " * products[end]
-        req_str = sp * arrow * pp
-    elseif length(substrates) > 5
-        sp = substrates[1] * " + ... + " * substrates[end]
-        req_str = sp * arrow * join(products, " + ")
-    elseif length(products) > 5
-        pp = products[1] * " + ... + " * products[end]
-        req_str = join(substrates, " + ") * arrow * pp
-    else
-        req_str = join(substrates, " + ") * arrow * join(products, " + ")
-    end
+    substrates = [
+        "$(-v) $(k.id)" for
+        (k, v) in Iterators.filter(((_, v)::Pair -> v < 0), r.metabolites)
+    ]
+    products = [
+        "$v $(k.id)" for
+        (k, v) in Iterators.filter(((_, v)::Pair -> v >= 0), r.metabolites)
+    ]
 
     grr_strings = String[]
     for gr in r.grr
@@ -46,7 +40,11 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
 
     for fname in fieldnames(Reaction)
         if fname == :metabolites
-            _print_color(io, "Reaction.$(string(fname)): ", req_str)
+            _print_color(
+                io,
+                "Reaction.$(string(fname)): ",
+                _format_substances(substrates) * arrow * _format_substances(products),
+            )
         elseif fname == :grr
             _print_color(io, "Reaction.$(string(fname)): ", grr_string)
         elseif fname in (:lb, :ub, :objective_coefficient)

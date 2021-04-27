@@ -21,16 +21,7 @@
 
     mets = [m1, m2, m3]
 
-<<<<<<< HEAD
-    @test sprint(show, MIME("text/plain"), mets) ==
-          "Metabolite vector of length: : 3\nEach metabolite has fields: id, name, formula, charge, compartment, notes, annotation\n"
-
-    md = OrderedDict(m.id => m for m in mets)
-    id = check_duplicate_annotations(m3, md)
-    @test id == "met3"
-=======
     @test mets[m2] == 2
->>>>>>> 210a5b5 (fixed tests)
 
     ats = get_atoms(m1)
     @test ats["C"] == 6 && ats["N"] == 1
