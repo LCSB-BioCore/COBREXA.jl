@@ -22,14 +22,10 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     else
         arrow = " →∣←  " # blocked reaction
     end
-    substrates = [
-        "$(-v) $k" for
-        (k, v) in Iterators.filter(((_, v)::Pair -> v < 0), r.metabolites)
-    ]
-    products = [
-        "$v $k" for
-        (k, v) in Iterators.filter(((_, v)::Pair -> v >= 0), r.metabolites)
-    ]
+    substrates =
+        ["$(-v) $k" for (k, v) in Iterators.filter(((_, v)::Pair -> v < 0), r.metabolites)]
+    products =
+        ["$v $k" for (k, v) in Iterators.filter(((_, v)::Pair -> v >= 0), r.metabolites)]
 
     for fname in fieldnames(Reaction)
         if fname == :metabolites
@@ -41,7 +37,11 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
         elseif fname == :grr
             _print_with_colors(io, "Reaction.$(string(fname)): ", _unparse_grr(r.grr))
         elseif fname in (:lb, :ub, :objective_coefficient)
-            _print_with_colors(io, "Reaction.$(string(fname)): ", string(getfield(r, fname)))
+            _print_with_colors(
+                io,
+                "Reaction.$(string(fname)): ",
+                string(getfield(r, fname)),
+            )
         else
             _print_with_colors(io, "Reaction.$(string(fname)): ", getfield(r, fname))
         end

@@ -35,9 +35,26 @@ function _print_with_colors(
         println(io, "")
         for (k, v) in payload
             if length(v) > 2 && length(v[1]) < 20
-                println(io, Crayon(foreground = payload_color), "\t", k, ": ", v[1], ", ..., ", v[end])
+                println(
+                    io,
+                    Crayon(foreground = payload_color),
+                    "\t",
+                    k,
+                    ": ",
+                    v[1],
+                    ", ..., ",
+                    v[end],
+                )
             elseif length(v[1]) > 20 # basically for envipath annotations... or long notes
-                println(io, Crayon(foreground = payload_color), "\t", k, ": ", v[1][1:20], "...")
+                println(
+                    io,
+                    Crayon(foreground = payload_color),
+                    "\t",
+                    k,
+                    ": ",
+                    v[1][1:20],
+                    "...",
+                )
             else
                 println(io, Crayon(foreground = payload_color), "\t", k, ": ", v)
             end
