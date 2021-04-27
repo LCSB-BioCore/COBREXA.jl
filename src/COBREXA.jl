@@ -34,16 +34,15 @@ _inc_all.(
     joinpath.(
         @__DIR__,
         [
-            joinpath("types", "abstract"),
-            "types",
+            joinpath("base", "types", "abstract"),
+            joinpath("base", "types"),
             "base",
             "io",
             joinpath("io", "show"),
-            "sampling",
             "reconstruction",
             "analysis",
-            "mods",
-            "utils",
+            joinpath("analysis", "sampling"),
+            joinpath("base", "utils"),
         ],
     ),
 )
