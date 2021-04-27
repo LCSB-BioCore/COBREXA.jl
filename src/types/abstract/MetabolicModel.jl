@@ -5,6 +5,13 @@
 A helper supertype that wraps everything usable as a linear-like model for
 COBREXA functions. If you want to use your own type, make it a subtype (so that
 the functions typecheck) and add instances for the data accessor methods below.
+
+Required accessor functions are:
+1. `reactions`
+2. `metabolites`
+3. `stoichiometry`
+4. `bounds`
+5. `objective`
 """
 abstract type MetabolicModel end
 
@@ -14,6 +21,7 @@ const GeneAssociation = Vector{Vector{String}}
 const MetaboliteChemistry = Tuple{Dict{String,Int},Int}
 
 const Annotations = Dict{String,Vector{String}}
+const Notes = Dict{String,Vector{String}}
 
 const MatType = AbstractMatrix{Float64}
 const VecType = AbstractVector{Float64}
@@ -211,4 +219,51 @@ e.g. `"PDB" => ["PROT01"]`.
 """
 function gene_annotations(a::MetabolicModel, gene_id::String)::Annotations
     return Dict()
+end
+
+"""
+    reaction_notes(model::MetabolicModel, reaction_id::String)::Notes
+
+Return the notes associated with reaction `reaction_id` in `model`.
+"""
+function reaction_notes(model::MetabolicModel, reaction_id::String)::Notes
+    return Dict()
+end
+
+"""
+    metabolite_notes(model::MetabolicModel, metabolite_id::String)::Notes
+
+Return the notes associated with metabolite `reaction_id` in `model`.
+"""
+function metabolite_notes(model::MetabolicModel, metabolite_id::String)::Notes
+    return Dict()
+end
+
+"""
+    gene_notes(model::MetabolicModel, gene_id::String)::Notes
+
+Return the notes associated with the gene `gene_id` in `model`.
+"""
+function gene_notes(model::MetabolicModel, gene_id::String)::Notes
+    return Dict()
+end
+
+"""
+    metabolite_compartment(model::MetabolicModel, metabolite_id::String)::Maybe{String}
+
+Return the compartment of metabolite `metabolite_id` in `model` if it is assigned. If not, 
+return `nothing`. 
+"""
+function metabolite_compartment(model::MetabolicModel, metabolite_id::String)::Maybe{String}
+    return nothing
+end
+
+"""
+    reaction_subsystem(model::MetabolicModel, reaction_id::String)::Maybe{String}
+
+Return the subsystem of reaction `reaction_id` in `model` if it is assigned. If not,
+return `nothing`.
+"""
+function reaction_subsystem(model::MetabolicModel, reaction_id::String)::Maybe{String}
+    return nothing
 end
