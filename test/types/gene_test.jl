@@ -5,7 +5,8 @@
     g.notes = Dict("notes" => ["blah", "blah"])
     g.annotation = Dict("sboterm" => ["sbo"], "ncbigene" => ["ads", "asds"])
 
-    @test sprint(show, MIME("text/plain"), g) == "Gene.id: gene1\nGene.name: gene_name\nGene.notes: \n\tnotes: [\"blah\", \"blah\"]\nGene.annotation: \n\tncbigene: [\"ads\", \"asds\"]\n\tsboterm: [\"sbo\"]\n"
+    @test sprint(show, MIME("text/plain"), g) ==
+          "Gene.id: gene1\nGene.name: gene_name\nGene.notes: \n\tnotes: [\"blah\", \"blah\"]\nGene.annotation: \n\tncbigene: [\"ads\", \"asds\"]\n\tsboterm: [\"sbo\"]\n"
 
     g2 = Gene("gene2")
 

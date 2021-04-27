@@ -30,7 +30,8 @@
     r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    @test sprint(show, MIME("text/plain"), r1) == "Reaction.id: r1\nReaction.name: reaction 1\nReaction.metabolites: 1.0 m1 ⟷  1.0 m2\nReaction.lb: -100.0\nReaction.ub: 100.0\nReaction.grr: (g1 and g2) or (g3)\nReaction.subsystem: glycolysis\nReaction.notes: \n\tnotes: [\"blah\", \"blah\"]\nReaction.annotation: \n\tsboterm: [\"sbo\"]\n\tbiocyc: [\"ads\", \"asds\"]\nReaction.objective_coefficient: 1.0\n"
+    @test sprint(show, MIME("text/plain"), r1) ==
+          "Reaction.id: r1\nReaction.name: reaction 1\nReaction.metabolites: 1.0 m1 ⟷  1.0 m2\nReaction.lb: -100.0\nReaction.ub: 100.0\nReaction.grr: (g1 and g2) or (g3)\nReaction.subsystem: glycolysis\nReaction.notes: \n\tnotes: [\"blah\", \"blah\"]\nReaction.annotation: \n\tsboterm: [\"sbo\"]\n\tbiocyc: [\"ads\", \"asds\"]\nReaction.objective_coefficient: 1.0\n"
 
     rlongfor = Reaction(
         "rlongfor",
@@ -84,7 +85,7 @@
     r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
-    rd= OrderedDict(r.id => r for r in rxns)
+    rd = OrderedDict(r.id => r for r in rxns)
     id = check_duplicate_annotations(r4, rd)
     @test id == "r1"
 
