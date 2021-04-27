@@ -1,4 +1,27 @@
-function _write_model(model::StandardModel, ::Type{MFile}, file_location::String)
+
+"""
+    save_mat_model(model::MetabolicModel, file_name::String; model_name::String="model")
+
+Save a [`MATModel`](@ref) in `model` to a MATLAB file `file_name` in a format
+compatible with other MATLAB-based COBRA software.
+
+In case the `model` is not `MATModel`, it will be converted automatically.
+
+`model_name` is the identifier name for the whole model written to the MATLAB
+file; defaults to just "model".
+"""
+function save_mat_model(model::MetabolicModel, file_path::String; model_name = "model")
+    m =
+        typeof(model) == MATModel ? model :
+        begin
+            @_io_log @warn "Automatically converting $(typeof(model)) to MATModel for saving, information may be lost."
+            convert(MATModel, model)
+        end
+    matwrite(file_path, Dict(model_name => m.mat))
+end
+
+#TODO this needs to get merged into convert function StdModel->MATModel
+function _write_mat_model(model::StandardModel, file_location::String)
     # Some information is lost here, e.g. notes and some annotations.
     S = stoichiometry(model)
     b = balance(model)
@@ -47,16 +70,4 @@ function _write_model(model::StandardModel, ::Type{MFile}, file_location::String
     )
 
     matwrite(file_location, Dict("model" => mdict))
-end
-
-"""
-Write a model into a MAT (Matlab) format
-
-NB: Does NOT export general inequality constraints (eg coupling)
-
-See also: `MAT.jl`
-"""
-function _write_model(model::CoreModel, ::Type{MFile}, file_path::String)
-    var_name = "model" # maybe make a field for this in the model?
-    matwrite(file_path, Dict(var_name => _convert_to_m_exportable_dict(model)))
 end

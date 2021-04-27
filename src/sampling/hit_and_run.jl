@@ -18,7 +18,7 @@ using COBREXA
 using JuMP
 using Tulip
 
-model = read_model("e_coli_core.json")
+model = load_model(StandardModel, "e_coli_core.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 glucose = findfirst(model.reactions, "EX_glc__D_e")
 

@@ -133,7 +133,7 @@ See also: [`CoreModel`](@ref)
 # Example
 ```
 optimizer = Gurobi.Optimizer
-model = Cobraread_model("iJO1366.json")
+model = load_model(StandardModel, "iJO1366.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
 fva_max, fva_min = fva(model, biomass, optimizer; solver_attributes=atts)
 ```

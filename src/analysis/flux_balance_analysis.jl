@@ -137,7 +137,7 @@ Returns a solved JuMP model from [`optimize_model`](@ref).
 # Example
 ```
 optimizer = GLPK.Optimizer
-model = CobraTools.read_model("e_coli_core.json")
+model = load_model(StandardModel, "e_coli_core.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 solved_model = fba(model, optimizer; modifications=[modify_objective(biomass)])
 ```

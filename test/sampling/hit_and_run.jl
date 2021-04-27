@@ -6,7 +6,7 @@
         "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
     )
 
-    model = read_model(model_path, StandardModel)
+    model = load_model(StandardModel, model_path)
     opt_model = flux_balance_analysis(
         model,
         Tulip.Optimizer;

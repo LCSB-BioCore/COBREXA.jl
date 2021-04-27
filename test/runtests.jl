@@ -51,8 +51,6 @@ function download_data_file(url, path, hash)
     return path
 end
 
-include("testing_functions.jl") # load misc. testing functions
-
 # load the test models
 run_test_file("data", "test_models.jl")
 

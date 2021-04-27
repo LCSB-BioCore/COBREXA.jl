@@ -7,7 +7,7 @@ download_data_file(
 )
 
 @testset "Conversion from and to SBML model" begin
-    sbmlm = read_model(sbmlfile, SBMLModel)
+    sbmlm = load_sbml_model(sbmlfile)
     cm = convert(CoreModel, sbmlm) #TODO use a richer intermediate model
     sbmlm2 = convert(SBMLModel, cm)
 

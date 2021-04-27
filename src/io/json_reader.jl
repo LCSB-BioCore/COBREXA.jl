@@ -1,10 +1,16 @@
-function _read_model(filename::String, ::Type{JSONFile}, ::Type{JSONModel})
+
+"""
+    load_json_model(filename::String)::JSONModel
+
+Load and return a JSON-formatted model that is stored in `file_name`.
+"""
+function load_json_model(filename::String)::JSONModel
     return JSONModel(JSON.parsefile(filename))
 end
 
-function _read_model(file_location::String, ::Type{JSONFile}, ::Type{StandardModel})
-    #TODO this should be subsumed by the above loader + abstract model + StdModel converter
-    modeldict = JSON.parsefile(file_location)
+#TODO this needs to get subsumed by the abstract interface
+function Base.convert(::Type{StandardModel}, jm::JSONModel)
+    modeldict = jm.m
 
     modelid = modeldict["id"]
 
