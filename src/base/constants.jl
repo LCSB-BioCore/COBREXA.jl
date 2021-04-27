@@ -8,4 +8,5 @@ const _constants = (
     tolerance = 1e-6,
     sampling_keep_iters = 100,
     sampling_size = 1000,
+    colors = (empty = :dark_gray, payload = :default, key = :cyan),
 )
