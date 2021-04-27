@@ -37,5 +37,6 @@
     model.metabolites = OrderedDict(m.id => m for m in mets)
     model.genes = OrderedDict(g.id => g for g in genes)
 
-    @test sprint(show, MIME("text/plain"), model) == "Metabolic model of type StandardModel\n\n -1.0  -2.0    ⋅     ⋅ \n  1.0    ⋅     ⋅     ⋅ \n   ⋅     ⋅   -1.0  -1.0\n   ⋅    1.0   1.0   1.0\nNumber of reactions: 4\nNumber of metabolites: 4\n"
+    @test sprint(show, MIME("text/plain"), model) ==
+          "Metabolic model of type StandardModel\n\n -1.0  -2.0    ⋅     ⋅ \n  1.0    ⋅     ⋅     ⋅ \n   ⋅     ⋅   -1.0  -1.0\n   ⋅    1.0   1.0   1.0\nNumber of reactions: 4\nNumber of metabolites: 4\n"
 end
