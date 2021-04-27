@@ -14,10 +14,10 @@ annotation :: Dict{String, Union{Vector{String}, String}}
 """
 mutable struct Metabolite
     id::String
-    name::Union{String, Nothing}
-    formula::Union{String, Nothing}
-    charge::Union{Int, Nothing}
-    compartment::Union{String, Nothing}
+    name::Union{String,Nothing}
+    formula::Union{String,Nothing}
+    charge::Union{Int,Nothing}
+    compartment::Union{String,Nothing}
     notes::Dict{String,Vector{String}}
     annotation::Dict{String,Vector{String}} # everything is a String[]
 

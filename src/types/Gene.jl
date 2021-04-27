@@ -11,7 +11,7 @@ annotation :: Dict{String, Union{Vector{String}, String}}
 """
 mutable struct Gene
     id::String
-    name::Union{String, Nothing}
+    name::Union{String,Nothing}
     notes::Dict{String,Vector{String}}
     annotation::Dict{String,Vector{String}} # everything is a String[]
 
