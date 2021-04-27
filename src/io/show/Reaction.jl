@@ -23,34 +23,27 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
         arrow = " →∣←  " # blocked reaction
     end
     substrates = [
-        "$(-v) $(k.id)" for
+        "$(-v) $k" for
         (k, v) in Iterators.filter(((_, v)::Pair -> v < 0), r.metabolites)
     ]
     products = [
-        "$v $(k.id)" for
+        "$v $k" for
         (k, v) in Iterators.filter(((_, v)::Pair -> v >= 0), r.metabolites)
     ]
 
-    grr_strings = String[]
-    for gr in r.grr
-        push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")
-    end
-    grr_string = join(grr_strings, " or ")
-    (isnothing(grr_string) || grr_string == "") && (grr_string = "")
-
     for fname in fieldnames(Reaction)
         if fname == :metabolites
-            _print_color(
+            _print_with_colors(
                 io,
                 "Reaction.$(string(fname)): ",
-                _format_substances(substrates) * arrow * _format_substances(products),
+                _pretty_substances(substrates) * arrow * _pretty_substances(products),
             )
         elseif fname == :grr
-            _print_color(io, "Reaction.$(string(fname)): ", grr_string)
+            _print_with_colors(io, "Reaction.$(string(fname)): ", _unparse_grr(r.grr))
         elseif fname in (:lb, :ub, :objective_coefficient)
-            _print_color(io, "Reaction.$(string(fname)): ", string(getfield(r, fname)))
+            _print_with_colors(io, "Reaction.$(string(fname)): ", string(getfield(r, fname)))
         else
-            _print_color(io, "Reaction.$(string(fname)): ", getfield(r, fname))
+            _print_with_colors(io, "Reaction.$(string(fname)): ", getfield(r, fname))
         end
     end
 end

@@ -20,5 +20,5 @@ const _constants = (
         grrs = ["gene_reaction_rules", "grRules", "rules"],
         ids = ["id", "description"],
     ),
-    colors = (empty = :dark_gray, payload = :default, key = :cyan),
+    colors = (empty = :dark_gray, payload = :light_magenta, key = :cyan),
 )
