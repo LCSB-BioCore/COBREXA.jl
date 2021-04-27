@@ -5,7 +5,7 @@
         "9376a93f62ad430719f23e612154dd94c67e0d7c9545ed9d17a4d0c347672313",
     )
 
-    model = COBREXA._read_json_model(model_path, StandardModel)
+    model = load_model(StandardModel, model_path)
 
     rxn_original = model.reactions["NADH16pp"]
     nadh = model.metabolites["nadh_c"]

@@ -12,10 +12,8 @@ function load_mat_model(file_name::String)::MATModel
 end
 
 #TODO: this needs to get merged into MAT->StdModel conversion
-function _read_mat_model(file_location::String, ::Type{StandardModel})
-    matfile = matread(file_location)
-    model_name = collect(keys(matfile))[1]
-    modeldict = matfile[model_name]
+function Base.convert(::Type{StandardModel}, mm::MATModel)
+    modeldict = mm.mat
 
     # the model_id can be written in many places, try varying levels of specificity
     model_id = haskey(modeldict, "description") ? modeldict["description"] : model_name

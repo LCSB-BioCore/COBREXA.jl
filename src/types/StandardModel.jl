@@ -270,6 +270,10 @@ function reaction_annotations(id::String, model::StandardModel)
 end
 
 function Base.convert(::Type{StandardModel}, model::MetabolicModel)
+    if typeof(model) == StandardModel
+        return model
+    end
+
     id = "" # model_id(model), add accessor
     modelreactions = OrderedDict{String,Reaction}()
     modelmetabolites = OrderedDict{String,Metabolite}()
