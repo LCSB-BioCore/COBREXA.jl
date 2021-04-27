@@ -268,3 +268,47 @@ Return the annotation associated with reaction `id` in `model`.
 function reaction_annotations(id::String, model::StandardModel)
     [r.annotation for r in model.reactions]
 end
+
+function Base.convert(::Type{StandardModel}, model::MetabolicModel)
+    id = "" # model_id(model), add accessor
+    modelreactions = OrderedDict{String,Reaction}()
+    modelmetabolites = OrderedDict{String,Metabolite}()
+    modelgenes = OrderedDict{String,Gene}()
+
+    gids = genes(model)
+    metids = metabolites(model)
+    rxnids = reactions(model)
+
+    for gid in gids
+        modelgenes[gid] = Gene(gid;) # NB: add more accessors
+    end
+
+    for mid in metids
+        f, c = metabolite_chemistry(model, mid)
+        fstr = join([k * string(v) for (k, v) in f])
+        modelmetabolites[mid] = Metabolite(mid; charge = c, formula = fstr)
+    end
+
+    S = stoichiometry(model)
+    lbs, ubs = bounds(model)
+    for (i, rid) in enumerate(rxnids)
+        rmets = Dict{String,Float64}()
+        for (j, stoich) in zip(findnz(S[:, i])...)
+            rmets[metids[j]] = stoich
+        end
+        modelreactions[rid] = Reaction(
+            rid;
+            metabolites = rmets,
+            lb = lbs[i],
+            ub = ubs[i],
+            grr = reaction_gene_association(model, rid),
+        ) # NB: add more accessors
+    end
+
+    return StandardModel(
+        id;
+        reactions = modelreactions,
+        metabolites = modelmetabolites,
+        genes = modelgenes,
+    )
+end
