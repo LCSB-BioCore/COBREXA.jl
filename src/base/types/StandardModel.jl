@@ -143,7 +143,7 @@ end
 Return the lower and upper bounds, respectively, for reactions in `model`.
 Order matches that of the reaction ids returned in `reactions()`.
 """
-function bounds(model::StandardModel)::Tuple{SparseVec, SparseVec}
+function bounds(model::StandardModel)::Tuple{SparseVec,SparseVec}
     ubs = upper_bounds(model)
     lbs = lower_bounds(model)
     return lbs, ubs
