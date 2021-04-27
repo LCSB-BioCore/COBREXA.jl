@@ -18,11 +18,9 @@ abstract type MetabolicModel end
 const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}
 const GeneAssociation = Vector{Vector{String}}
-const MetaboliteChemistry = Tuple{Dict{String,Int},Int}
-
+const MetaboliteFormula = Dict{String,Int}
 const Annotations = Dict{String,Vector{String}}
 const Notes = Dict{String,Vector{String}}
-
 const MatType = AbstractMatrix{Float64}
 const VecType = AbstractVector{Float64}
 const StringVecType = AbstractVector{String}
@@ -171,20 +169,31 @@ function reaction_gene_association(
 end
 
 """
-    metabolite_chemistry(
+    metabolite_formula(
         a::MetabolicModel,
         metabolite_id::String,
-    )::Maybe{MetaboliteChemistry}
+    )::Maybe{MetaboliteFormula}
 
-Return chemistry-relevant information about metabolite, in particular the
-atomic formula (as a map of atom names to abundances) with charge.
-
-May return `nothing` in case the formula is not known or irrelevant.
+Return the formula of metabolite `metabolite_id` in `model`. 
+Return `nothing` in case the formula is not known or irrelevant.
 """
-function metabolite_chemistry(
-    a::MetabolicModel,
+function metabolite_formula(
+    model::MetabolicModel,
     metabolite_id::String,
-)::Maybe{MetaboliteChemistry}
+)::Maybe{MetaboliteFormula}
+    return nothing
+end
+
+"""
+metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
+
+Return the charge associated with metabolite `metabolite_id` in `model`. 
+Returns `nothing` if charge not present.
+"""
+function metabolite_charge(
+    model::MetabolicModel,
+    metabolite_id::String,
+)::Maybe{Int}
     return nothing
 end
 
