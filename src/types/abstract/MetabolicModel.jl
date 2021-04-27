@@ -190,10 +190,7 @@ metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
 Return the charge associated with metabolite `metabolite_id` in `model`. 
 Returns `nothing` if charge not present.
 """
-function metabolite_charge(
-    model::MetabolicModel,
-    metabolite_id::String,
-)::Maybe{Int}
+function metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
     return nothing
 end
 
