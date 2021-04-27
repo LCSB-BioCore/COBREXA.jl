@@ -10,24 +10,33 @@ When merging models and keeping meta-information is important, use this as the m
 If meta-information is not important, use the more efficient core model types. 
 See [`CoreModel`](@ref) and [`CoreModelCoupled`](@ref) for comparison.
 
-In this model, reactions, metabolites, and genes are stored in dictionaries indexed by each struct's `id` field.
-For example, `model.reactions["rxn1_id"]` returns a `Reaction` that is indexed by the field `id` which equals `"rxn1_id"`.
+In this model, reactions, metabolites, and genes are stored in ordered dictionaries indexed by each struct's `id` field.
+For example, `model.reactions["rxn1_id"]` returns a `Reaction` where the field `id` equals `"rxn1_id"`.
 This makes adding and removing reactions efficient.   
 
-However, note that the stoichiometric matrix (or any other core data, e.g. flux bounds) is not stored directly as in `CoreModel`. 
-When this model type is used in analysis functions, these core data structures are built from scratch.
+Note that the stoichiometric matrix (or any other core data, e.g. flux bounds) is not stored directly as in `CoreModel`. 
+When this model type is used in analysis functions, these core data structures are built from scratch each time an analysis function is called.
 This can cause performance issues if you run many small analysis functions sequentially. 
 Consider using the core model types if performance is critical.
 
 See also: [`Reaction`](@ref), [`Metabolite`](@ref), [`Gene`](@ref)
 
 # Fields
-````
+```
 id :: String
 reactions :: OrderedDict{String, Reaction}
 metabolites :: OrderedDict{String, Metabolite}
 genes :: OrderedDict{String, Gene}
-````
+```
+
+# Example
+```jldoctest
+julia> model = StandardModel("model_id")
+Constraint based model: model_id
+Number of reactions: 0
+Number of metabolites: 0
+Number of genes: 0
+```
 """
 mutable struct StandardModel <: MetabolicModel
     id::String
@@ -45,13 +54,13 @@ end
 
 # MetabolicModel interface follows
 """
-reactions(model::StandardModel)
+    reactions(model::StandardModel)
 
 Return a vector of reaction id strings contained in `model`.
 The order of reaction ids returned here matches the order used to construct the
 stoichiometric matrix.
 """
-reactions(model::StandardModel)::Vector{String} = [r_id for r_id in keys(model.reactions)]
+reactions(model::StandardModel)::StringVecType = [r_id for r_id in keys(model.reactions)]
 
 """
     n_reactions(model::StandardModel)
@@ -67,7 +76,7 @@ Return a vector of metabolite id strings contained in `model`.
 The order of metabolite strings returned here matches the order used to construct
 the stoichiometric matrix.
 """
-metabolites(model::StandardModel)::Vector{String} =
+metabolites(model::StandardModel)::StringVecType =
     [m_id for m_id in keys(model.metabolites)]
 
 """
@@ -82,7 +91,7 @@ n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 Return a vector of gene id strings in `model`.
 """
-genes(model::StandardModel)::Vector{String} = [g_id for g_id in keys(model.genes)]
+genes(model::StandardModel)::StringVecType = [g_id for g_id in keys(model.genes)]
 
 """
     n_genes(model::StandardModel)
@@ -96,8 +105,8 @@ n_genes(model::StandardModel)::Int = length(model.genes)
 
 Return the stoichiometric matrix associated with `model` in sparse format.
 """
-function stoichiometry(model::StandardModel)
-    S = SparseArrays.spzeros(n_metabolites(model), n_reactions(model))
+function stoichiometry(model::StandardModel)::SparseMat
+    S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
     met_ids = metabolites(model) # vector of metabolite ids
     rxn_ids = reactions(model)
     for (i, rxn_id) in enumerate(rxn_ids) # column, in order
@@ -114,7 +123,7 @@ end
 
 Return the lower bounds for all reactions in `model` in sparse format.
 """
-function lower_bounds(model::StandardModel)
+function lower_bounds(model::StandardModel)::SparseVec
     sparse([model.reactions[rxn].lb for rxn in reactions(model)])
 end
 
@@ -122,8 +131,9 @@ end
     upper_bounds(model::StandardModel)
 
 Return the upper bounds for all reactions in `model` in sparse format.
+Order matches that of the reaction ids returned in `reactions()`.
 """
-function upper_bounds(model::StandardModel)
+function upper_bounds(model::StandardModel)::SparseVec
     sparse([model.reactions[rxn].ub for rxn in reactions(model)])
 end
 
@@ -131,8 +141,9 @@ end
     bounds(model::StandardModel)
 
 Return the lower and upper bounds, respectively, for reactions in `model`.
+Order matches that of the reaction ids returned in `reactions()`.
 """
-function bounds(model::StandardModel)::Tuple{SparseVec,SparseVec}
+function bounds(model::StandardModel)::Tuple{SparseVec, SparseVec}
     ubs = upper_bounds(model)
     lbs = lower_bounds(model)
     return lbs, ubs
@@ -163,8 +174,8 @@ end
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-function reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation}
-    model.reactions[id].grr
+function reaction_gene_association(model::StandardModel, id::String)
+    maybemap(_unparse_grr, model.reactions[id].grr) # this needs to be mapped to a boolean but that isn't implemented yet
 end
 
 """
