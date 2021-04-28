@@ -24,4 +24,5 @@ jobs:
           password: ${{ secrets.docker_pwd }}
           registry: ${{ secrets.docker_registry }}
           image: ${{ secrets.docker_img }}
-          run: julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+          options: -v ${{ github.workspace }}:/pkg
+          run: julia --check-bounds=yes --inline=yes --project=/pkg -e "import Pkg; Pkg.test(; coverage = true)"
