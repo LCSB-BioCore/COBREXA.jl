@@ -23,8 +23,8 @@ mutable struct Reaction
     ub::Float64
     grr::Maybe{GeneAssociation}
     subsystem::Maybe{String}
-    notes::Maybe{Notes}
-    annotation::Maybe{Annotations} # everything is a String[]
+    notes::Notes
+    annotation::Annotations # everything is a String[]
     objective_coefficient::Float64 # defaults to 0.0
 
     Reaction(
@@ -35,8 +35,8 @@ mutable struct Reaction
         ub = _constants.default_reaction_bound,
         grr = nothing,
         subsystem = nothing,
-        notes = nothing,
-        annotations = nothing,
+        notes = Dict{String,Vector{String}}(),
+        annotations = Dict{String,Vector{String}}(),
         objective_coefficient = 0.0,
     ) = new(
         id,
