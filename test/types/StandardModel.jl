@@ -115,5 +115,10 @@
     @test isempty(reaction_annotations(model, "r2"))
 
     # To do: test convert
-    
+    same_model = convert(StandardModel, model)
+    @test same_model == model
+
+    jsonmodel = convert(JSONModel, model)
+    stdmodel = convert(StandardModel, jsonmodel)
+
 end

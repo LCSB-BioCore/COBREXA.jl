@@ -28,6 +28,11 @@ reactions :: OrderedDict{String, Reaction}
 metabolites :: OrderedDict{String, Metabolite}
 genes :: OrderedDict{String, Gene}
 ```
+
+# Example
+```
+model = load_model(StandardModel, "model_location")
+```
 """
 mutable struct StandardModel <: MetabolicModel
     id::String
