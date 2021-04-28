@@ -273,6 +273,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
             "id" => mid,
             "formula" => maybemap(_atoms_to_formula, metabolite_formula(mm, mid)),
             "charge" => metabolite_charge(mm, mid),
+            "compartment" => metabolite_compartment(mm, mid),
             "annotation" => metabolite_annotations(mm, mid),
             "notes" => metabolite_notes(mm, mid),
         ]) for mid in met_ids
@@ -282,6 +283,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         begin
             res = Dict{String,Any}()
             res["id"] = rid
+            res["subsystem"] = reaction_subsystem(mm, rid)
             res["annotation"] = reaction_annotations(mm, rid)
             res["notes"] = reaction_notes(mm, rid)
 
