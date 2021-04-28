@@ -1,0 +1,20 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+    tags: '*'
+jobs:
+  test:
+    name: julia-custom
+    image: {{ secrets.docker_img }}
+    credentials:
+      username: cylon-x
+      password: ${{ secrets.docker_pwd }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
