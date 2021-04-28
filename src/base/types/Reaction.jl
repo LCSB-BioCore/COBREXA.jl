@@ -17,15 +17,15 @@ objective_coefficient :: Float64
 """
 mutable struct Reaction
     id::String
-    name::Union{String,Nothing}
+    name::Maybe{String}
     metabolites::Dict{String,Float64}
     lb::Float64
     ub::Float64
     grr::Maybe{GeneAssociation}
-    subsystem::Union{String,Nothing}
+    subsystem::Maybe{String}
     notes::Notes
-    annotation::Annotations
-    objective_coefficient::Float64
+    annotation::Annotations# everything is a String[]
+    objective_coefficient::Float64 # defaults to 0.0
 
     Reaction(
         id = "";
@@ -36,7 +36,7 @@ mutable struct Reaction
         grr = nothing,
         subsystem = nothing,
         notes = Dict{String,Vector{String}}(),
-        annotation = Dict{String,Vector{String}}(),
+        annotations = Dict{String,Vector{String}}(),
         objective_coefficient = 0.0,
     ) = new(
         id,
@@ -47,7 +47,7 @@ mutable struct Reaction
         grr,
         subsystem,
         notes,
-        annotation,
+        annotations,
         objective_coefficient,
     )
 
