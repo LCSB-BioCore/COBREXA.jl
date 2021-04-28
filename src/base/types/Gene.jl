@@ -15,10 +15,6 @@ mutable struct Gene
     notes::Notes
     annotations::Annotations # everything is a String[]
 
-    Gene(
-        id::String = "";
-        name = nothing,
-        notes = Notes(),
-        annotations = Annotations(),
-    ) = new(id, name, notes, annotations)
+    Gene(id::String = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
+        new(id, name, notes, annotations)
 end
