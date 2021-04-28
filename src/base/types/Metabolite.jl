@@ -27,7 +27,7 @@ mutable struct Metabolite
         formula = nothing,
         charge = nothing,
         compartment = nothing,
-        notes = Dict{String,Vector{String}}(),
-        annotations = Dict{String,Vector{String}}(),
+        notes = Notes(),
+        annotations = Annotations(),
     ) = new(id, name, formula, charge, compartment, notes, annotations)
 end

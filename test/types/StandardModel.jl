@@ -11,7 +11,6 @@
     m4.notes = Dict("confidence" => ["iffy"])
     m4.annotations = Dict("sbo" => ["blah"])
 
-
     g1 = Gene("g1")
     g2 = Gene("g2")
     g2.notes = Dict("confidence" => ["iffy"])
@@ -116,4 +115,5 @@
     @test isempty(reaction_annotations(model, "r2"))
 
     # To do: test convert
+    
 end

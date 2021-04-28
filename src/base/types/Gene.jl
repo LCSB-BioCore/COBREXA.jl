@@ -18,7 +18,7 @@ mutable struct Gene
     Gene(
         id::String = "";
         name = nothing,
-        notes = Dict{String,Vector{String}}(),
-        annotations = Dict{String,Union{Vector{String},String}}(),
+        notes = Notes(),
+        annotations = Annotations(),
     ) = new(id, name, notes, annotations)
 end

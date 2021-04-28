@@ -35,8 +35,8 @@ mutable struct Reaction
         ub = _constants.default_reaction_bound,
         grr = nothing,
         subsystem = nothing,
-        notes = Dict{String,Vector{String}}(),
-        annotations = Dict{String,Vector{String}}(),
+        notes = Notes(),
+        annotations = Annotations(),
         objective_coefficient = 0.0,
     ) = new(
         id,
