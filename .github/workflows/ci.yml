@@ -21,6 +21,7 @@ jobs:
       - uses: addnab/docker-run-action@v3
         with:
           image: ${{ secrets.docker_img }}
+          registry: ${{ secrets.docker_registry }}
           username: cylon-x
           password: ${{ secrets.docker_pwd }}
           run: julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
