@@ -296,7 +296,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         modelmetabolites[mid] = Metabolite(
             mid;
             charge = metabolite_charge(model, mid),
-            formula = _atoms_to_formula(metabolite_formula(model, mid)),
+            formula = maybemap(_atoms_to_formula, metabolite_formula(model, mid)),
         )
     end
 

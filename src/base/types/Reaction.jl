@@ -21,10 +21,10 @@ mutable struct Reaction
     metabolites::Dict{String,Float64}
     lb::Float64
     ub::Float64
-    grr::Vector{Vector{String}}
+    grr::Maybe{GeneAssociation}
     subsystem::Union{String,Nothing}
-    notes::Dict{String,Vector{String}}
-    annotation::Dict{String,Vector{String}} # everything is a String[]
+    notes::Notes
+    annotation::Annotations
     objective_coefficient::Float64
 
     Reaction(
@@ -33,7 +33,7 @@ mutable struct Reaction
         metabolites = Dict{String,Float64}(),
         lb = -_constants.default_reaction_bound,
         ub = _constants.default_reaction_bound,
-        grr = Vector{Vector{String}}(),
+        grr = nothing,
         subsystem = nothing,
         notes = Dict{String,Vector{String}}(),
         annotation = Dict{String,Vector{String}}(),
