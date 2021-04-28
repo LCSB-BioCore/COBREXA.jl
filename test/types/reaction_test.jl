@@ -30,8 +30,12 @@
     r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
-    @test sprint(show, MIME("text/plain"), r1) ==
-          "Reaction.id: r1\nReaction.name: reaction 1\nReaction.metabolites: 1.0 m1 ⟷  1.0 m2\nReaction.lb: -100.0\nReaction.ub: 100.0\nReaction.grr: (g1 and g2) or (g3)\nReaction.subsystem: glycolysis\nReaction.notes: \n\tnotes: [\"blah\", \"blah\"]\nReaction.annotation: \n\tsboterm: [\"sbo\"]\n\tbiocyc: [\"ads\", \"asds\"]\nReaction.objective_coefficient: 1.0\n"
+    @test all(
+        contains.(
+            sprint(show, MIME("text/plain"), r1),
+            ["r1", "reaction 1", "100.0", "g1 and g2", "glycolysis", "blah", "biocyc"],
+        ),
+    )
 
     rlongfor = Reaction(
         "rlongfor",
@@ -51,7 +55,7 @@
         ),
         :forward,
     )
-    @test occursin("...", sprint(show, MIME("text/plain"), rlongfor)) # from dictionaries so order is not consistent.
+    @test contains(sprint(show, MIME("text/plain"), rlongfor), "...")
 
     rlongrev = Reaction(
         "rlongrev",
