@@ -14,6 +14,8 @@
 
     g1 = Gene("g1")
     g2 = Gene("g2")
+    g2.notes = Dict("confidence"=>["iffy"])
+    g2.annotations = Dict("sbo"=>["blah"])
     g3 = Gene("g3")
 
     r1 = Reaction()
@@ -25,13 +27,13 @@
     r1.grr = [["g1", "g2"], ["g3"]]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
-    r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
+    r1.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
     r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
     r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
-    r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
+    r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
 
     mets = [m1, m2, m3, m4]
     gs = [g1, g2, g3] # DO NOT name variables the names of accessor functions!
@@ -100,15 +102,18 @@
 
     @test metabolite_notes(model, "m4")["confidence"] == ["iffy"]
     @test metabolite_annotations(model, "m4")["sbo"] == ["blah"]
-    @test isnothing(metabolite_notes(model, "m3"))    
-    @test isnothing(metabolite_annotations(model, "m3"))
+    @test isempty(metabolite_notes(model, "m3"))    
+    @test isempty(metabolite_annotations(model, "m3"))
 
-    @test gene_notes(model, "m4")["confidence"] == ["iffy"]
-    @test isnothing(gene_annotations(model, "m3"))
+    @test gene_notes(model, "g2")["confidence"] == ["iffy"]
+    @test gene_annotations(model, "g2")["sbo"] == ["blah"]
+    @test isempty(gene_notes(model, "g1"))    
+    @test isempty(gene_annotations(model, "g1"))
 
-    @test reaction_notes(model, "m4")["confidence"] == ["iffy"]
-    @test isnothing(reaction_annotations(model, "m3"))
+    @test reaction_notes(model, "r1")["notes"] == ["blah", "blah"]
+    @test reaction_annotations(model, "r1")["biocyc"] == ["ads", "asds"]
+    @test isempty(reaction_notes(model, "r2"))    
+    @test isempty(reaction_annotations(model, "r2"))
 
-
-
+    # To do: test convert
 end

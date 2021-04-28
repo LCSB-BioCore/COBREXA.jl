@@ -24,7 +24,7 @@ mutable struct Reaction
     grr::Maybe{GeneAssociation}
     subsystem::Maybe{String}
     notes::Notes
-    annotation::Annotations # everything is a String[]
+    annotations::Annotations # everything is a String[]
     objective_coefficient::Float64 # defaults to 0.0
 
     Reaction(
