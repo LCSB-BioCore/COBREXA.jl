@@ -129,12 +129,12 @@
     @test issetequal(jubs, subs)
     jS = stoichiometry(jsonmodel)
     sS = stoichiometry(stdmodel)
-    j_r1_index = findfirst(x->x=="r1", reactions(jsonmodel))
-    s_r1_index = findfirst(x->x=="r1", reactions(stdmodel))
-    j_m1_index = findfirst(x->x=="m1", metabolites(jsonmodel))
-    j_m2_index = findfirst(x->x=="m2", metabolites(jsonmodel))
-    s_m1_index = findfirst(x->x=="m1", metabolites(stdmodel))
-    s_m2_index = findfirst(x->x=="m2", metabolites(stdmodel))
+    j_r1_index = findfirst(x -> x == "r1", reactions(jsonmodel))
+    s_r1_index = findfirst(x -> x == "r1", reactions(stdmodel))
+    j_m1_index = findfirst(x -> x == "m1", metabolites(jsonmodel))
+    j_m2_index = findfirst(x -> x == "m2", metabolites(jsonmodel))
+    s_m1_index = findfirst(x -> x == "m1", metabolites(stdmodel))
+    s_m2_index = findfirst(x -> x == "m2", metabolites(stdmodel))
     @test jS[j_m1_index, j_r1_index] == sS[s_m1_index, s_r1_index]
     @test jS[j_m2_index, j_r1_index] == sS[s_m2_index, s_r1_index]
 end

@@ -295,7 +295,11 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     rxnids = reactions(model)
 
     for gid in gids
-        modelgenes[gid] = Gene(gid;notes=gene_notes(model, gid), annotations=gene_annotations(model, gid)) # TODO: add name accessor
+        modelgenes[gid] = Gene(
+            gid;
+            notes = gene_notes(model, gid),
+            annotations = gene_annotations(model, gid),
+        ) # TODO: add name accessor
     end
 
     for mid in metids
