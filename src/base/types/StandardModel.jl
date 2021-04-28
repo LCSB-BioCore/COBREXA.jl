@@ -90,7 +90,7 @@ n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 Return a vector of gene id strings in `model`.
 """
-genes(model::StandardModel)::StringVecType = collect(g_id in keys(model.genes))
+genes(model::StandardModel)::StringVecType = collect(keys(model.genes))
 
 """
     n_genes(model::StandardModel)
