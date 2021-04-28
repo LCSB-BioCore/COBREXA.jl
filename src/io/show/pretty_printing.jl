@@ -61,3 +61,7 @@ function _print_with_colors(
         end
     end
 end
+
+# the generic case
+_print_with_colors(io, def::String, payload; kwargs...) =
+    _print_with_colors(io, def, isnothing(payload) ? "---" : string(payload); kwargs...)
