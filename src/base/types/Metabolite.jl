@@ -18,8 +18,8 @@ mutable struct Metabolite
     formula::Maybe{String}
     charge::Maybe{Int}
     compartment::Maybe{String}
-    notes::Notes
-    annotations::Annotations# everything is a String[]
+    notes::Maybe{Notes}
+    annotations::Maybe{Annotations} # everything is a String[]
 
     Metabolite(
         id = "";
@@ -27,7 +27,7 @@ mutable struct Metabolite
         formula = nothing,
         charge = nothing,
         compartment = nothing,
-        notes = Dict{String,Vector{String}}(),
-        annotations = Dict{String,Vector{String}}(),
+        notes = nothing,
+        annotations = nothing,
     ) = new(id, name, formula, charge, compartment, notes, annotations)
 end

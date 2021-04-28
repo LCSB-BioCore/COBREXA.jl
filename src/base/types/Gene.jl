@@ -12,8 +12,8 @@ annotation :: Dict{String, Union{Vector{String}, String}}
 mutable struct Gene
     id::String
     name::Maybe{String}
-    notes::Notes
-    annotations::Annotations # everything is a String[]
+    notes::Maybe{Notes}
+    annotations::Maybe{Annotations} # everything is a String[]
 
     Gene(
         id::String = "";

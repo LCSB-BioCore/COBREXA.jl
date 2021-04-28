@@ -184,7 +184,7 @@ Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
 """
 function metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula}
-    maybemap(get_atoms, model.metabolites[id].formula)
+    maybemap(get_atoms, model.metabolites[id])
 end
 
 """
@@ -223,7 +223,7 @@ end
 Return the notes associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
 """
-function metabolite_notes(model::StandardModel, id::String)::Notes
+function metabolite_notes(model::StandardModel, id::String)::Maybe{Notes}
     model.metabolites[id].notes
 end
 
@@ -233,8 +233,8 @@ end
 Return the annotation associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
 """
-function metabolite_annotations(model::StandardModel, id::String)::Annotations
-    model.metabolites[id].annotation
+function metabolite_annotations(model::StandardModel, id::String)::Maybe{Annotations}
+    model.metabolites[id].annotations
 end
 
 """
@@ -243,7 +243,7 @@ end
 Return the notes associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-function gene_notes(model::StandardModel, id::String)::Notes
+function gene_notes(model::StandardModel, id::String)::Maybe{Notes}
     model.genes[id].notes
 end
 
@@ -253,8 +253,8 @@ end
 Return the annotation associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-function gene_annotations(model::StandardModel, id::String)::Annotations
-    model.genes[id].annotation
+function gene_annotations(model::StandardModel, id::String)::Maybe{Annotations}
+    model.genes[id].annotations
 end
 
 """
@@ -263,7 +263,7 @@ end
 Return the notes associated with reaction `id` in `model`.
 Return an empty Dict if not present.
 """
-function reaction_notes(model::StandardModel, id::String)::Notes
+function reaction_notes(model::StandardModel, id::String)::Maybe{Notes}
     model.reactions[id].notes
 end
 
@@ -273,8 +273,8 @@ end
 Return the annotation associated with reaction `id` in `model`.
 Return an empty Dict if not present.
 """
-function reaction_annotations(model::StandardModel, id::String)::Annotations
-    model.reactions[id].annotation
+function reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations}
+    model.reactions[id].annotations
 end
 
 """

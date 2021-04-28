@@ -2,10 +2,15 @@
     # create a small model
     m1 = Metabolite("m1")
     m1.formula = "C2H3"
+    m1.compartment = "cytosol"
     m2 = Metabolite("m2")
     m2.formula = "H3C2"
     m3 = Metabolite("m3")
+    m3.charge = -1
     m4 = Metabolite("m4")
+    m4.notes = Dict("confidence"=>["iffy"])
+    m4.annotations = Dict("sbo"=>["blah"])
+    
 
     g1 = Gene("g1")
     g2 = Gene("g2")
@@ -80,4 +85,30 @@
     
     @test [["g1", "g2"],["g3"]] == reaction_gene_association(model, "r1")
     @test isnothing(reaction_gene_association(model, "r2"))
+
+    @test metabolite_formula(model, "m2")["C"] == 2
+    @test isnothing(metabolite_formula(model, "m3"))
+
+    @test metabolite_charge(model, "m3") == -1
+    @test isnothing(metabolite_charge(model, "m2"))
+
+    @test metabolite_compartment(model, "m1") == "cytosol"
+    @test isnothing(metabolite_compartment(model, "m2"))
+
+    @test reaction_subsystem(model, "r1") == "glycolysis"
+    @test isnothing(reaction_subsystem(model, "r2"))
+
+    @test metabolite_notes(model, "m4")["confidence"] == ["iffy"]
+    @test metabolite_annotations(model, "m4")["sbo"] == ["blah"]
+    @test isnothing(metabolite_notes(model, "m3"))    
+    @test isnothing(metabolite_annotations(model, "m3"))
+
+    @test gene_notes(model, "m4")["confidence"] == ["iffy"]
+    @test isnothing(gene_annotations(model, "m3"))
+
+    @test reaction_notes(model, "m4")["confidence"] == ["iffy"]
+    @test isnothing(reaction_annotations(model, "m3"))
+
+
+
 end

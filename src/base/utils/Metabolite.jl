@@ -51,7 +51,7 @@ See also: [`check_duplicate_annotations`](@ref), [`check_same_formula`](@ref)
 """
 function get_atoms(met::Metabolite)
     atoms = Dict{String,Int}()
-    length(met.formula) == 0 && return atoms
+    isnothing(met.formula) && return nothing
     for m in eachmatch(r"([A-Z]{1})([a-z]?)(\d*)", met.formula)
         element = match(r"([A-Z]{1})([a-z]?)", m.match)
         number = match(r"\d\d*", m.match)
