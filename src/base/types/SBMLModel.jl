@@ -60,8 +60,20 @@ reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
 metabolite_formula(a::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
     maybemap(_formula_to_atoms, a.m.species[mid].formula)
 
-metabolite_charge(a::SBMLModel, mid::String)::Maybe{Int} =
-    a.m.species[mid].charge
+metabolite_charge(a::SBMLModel, mid::String)::Maybe{Int} = a.m.species[mid].charge
+
+function _sbml_export_annotation(annotation)::Maybe{String}
+    if isnothing(annotation) || isempty(annotation)
+        nothing
+    elseif length(annotation) != 1 || first(annotation).first != ""
+        @_io_log @warn "Possible data loss: annotation cannot be exported to SBML" annotation
+        join(["$k: $v" for (k, v) in annotation], "\n")
+    else
+        first(annotation).second
+    end
+end
+
+_sbml_export_notes = _sbml_export_annotation
 
 function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
     if typeof(m) == SBMLModel
@@ -73,28 +85,33 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
     stoi = stoichiometry(m)
     (lbs, ubs) = bounds(m)
     ocs = objective(m)
+    comps = default.("", metabolite_compartment.(Ref(m), mets))
+    compss = Set(comps)
 
     return SBMLModel(
         SBML.Model(
             Dict(), # parameters
             Dict("" => []), # units
-            Dict([
-                "" =>
-                    SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing),
-            ]),
+            Dict(
+                [comp =>
+                    SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing) for
+                 comp in compss],
+            ),
             Dict(
                 [mid => SBML.Species(
                     nothing, # name
-                    "", # compartment
+                    default("", comps[mi]), # compartment
                     nothing, # no information about boundary conditions
                     metabolite_formula(m, mid),
                     metabolite_charge(m, mid),
                     nothing, # initial amount
                     nothing, # only substance unit flags
-                ) for mid in metabolites(m)],
+                    _sbml_export_notes(metabolite_notes(m, mid)),
+                    _sbml_export_annotation(metabolite_annotations(m, mid)),
+                ) for (mi, mid) in enumerate(mets)],
             ),
             Dict(
-                [rxns[ri] => SBML.Reaction(
+                [rid => SBML.Reaction(
                     Dict(
                         [mets[i] => stoi[i, ri] for
                          i in SparseArrays.nonzeroinds(stoi[:, ri])],
@@ -104,12 +121,21 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
                     ocs[ri],
                     maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
-                        reaction_gene_association(m, rxns[ri]),
+                        reaction_gene_association(m, rid),
                     ),
                     nothing,
-                ) for ri = 1:length(rxns)],
+                    _sbml_export_notes(reaction_notes(m, rid)),
+                    _sbml_export_annotation(reaction_annotations(m, rid)),
+                ) for (ri, rid) in enumerate(rxns)],
             ),
-            Dict([gid => SBML.GeneProduct(nothing, nothing) for gid in genes(m)]),
+            Dict(
+                [gid => SBML.GeneProduct(
+                    nothing,
+                    nothing,
+                    _sbml_export_notes(gene_notes(m, gid)),
+                    _sbml_export_annotation(gene_annotations(m, gid)),
+                ) for gid in genes(m)],
+            ),
             Dict(), # function definitions
         ),
     )
