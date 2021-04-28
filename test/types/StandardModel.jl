@@ -8,14 +8,14 @@
     m3 = Metabolite("m3")
     m3.charge = -1
     m4 = Metabolite("m4")
-    m4.notes = Dict("confidence"=>["iffy"])
-    m4.annotations = Dict("sbo"=>["blah"])
-    
+    m4.notes = Dict("confidence" => ["iffy"])
+    m4.annotations = Dict("sbo" => ["blah"])
+
 
     g1 = Gene("g1")
     g2 = Gene("g2")
-    g2.notes = Dict("confidence"=>["iffy"])
-    g2.annotations = Dict("sbo"=>["blah"])
+    g2.notes = Dict("confidence" => ["iffy"])
+    g2.annotations = Dict("sbo" => ["blah"])
     g3 = Gene("g3")
 
     r1 = Reaction()
@@ -54,16 +54,16 @@
     @test n_metabolites(model) == 4
     @test n_genes(model) == 3
 
-    S_test = spzeros(4,4)
-    S_test[1,1] = -1.0
-    S_test[2,1] = 1.0
-    S_test[1,2] = -2.0
-    S_test[4,2] = 1.0
-    S_test[3,3] = -1.0
-    S_test[4,3] = 1.0
-    S_test[3,4] = -1.0
-    S_test[4,4] = 1.0
-    @test S_test == stoichiometry(model) 
+    S_test = spzeros(4, 4)
+    S_test[1, 1] = -1.0
+    S_test[2, 1] = 1.0
+    S_test[1, 2] = -2.0
+    S_test[4, 2] = 1.0
+    S_test[3, 3] = -1.0
+    S_test[4, 3] = 1.0
+    S_test[3, 4] = -1.0
+    S_test[4, 4] = 1.0
+    @test S_test == stoichiometry(model)
 
     lb_test = spzeros(4)
     lb_test[1] = -100.0
@@ -84,8 +84,8 @@
     obj_test = spzeros(4)
     obj_test[1] = 1.0
     @test objective(model) == obj_test
-    
-    @test [["g1", "g2"],["g3"]] == reaction_gene_association(model, "r1")
+
+    @test [["g1", "g2"], ["g3"]] == reaction_gene_association(model, "r1")
     @test isnothing(reaction_gene_association(model, "r2"))
 
     @test metabolite_formula(model, "m2")["C"] == 2
@@ -102,17 +102,17 @@
 
     @test metabolite_notes(model, "m4")["confidence"] == ["iffy"]
     @test metabolite_annotations(model, "m4")["sbo"] == ["blah"]
-    @test isempty(metabolite_notes(model, "m3"))    
+    @test isempty(metabolite_notes(model, "m3"))
     @test isempty(metabolite_annotations(model, "m3"))
 
     @test gene_notes(model, "g2")["confidence"] == ["iffy"]
     @test gene_annotations(model, "g2")["sbo"] == ["blah"]
-    @test isempty(gene_notes(model, "g1"))    
+    @test isempty(gene_notes(model, "g1"))
     @test isempty(gene_annotations(model, "g1"))
 
     @test reaction_notes(model, "r1")["notes"] == ["blah", "blah"]
     @test reaction_annotations(model, "r1")["biocyc"] == ["ads", "asds"]
-    @test isempty(reaction_notes(model, "r2"))    
+    @test isempty(reaction_notes(model, "r2"))
     @test isempty(reaction_annotations(model, "r2"))
 
     # To do: test convert
