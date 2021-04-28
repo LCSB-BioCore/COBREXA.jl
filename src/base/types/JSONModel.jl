@@ -22,18 +22,59 @@ struct JSONModel <: MetabolicModel
     m::Dict{String,Any}
 end
 
+
+# helper access macros, see examples below for usage
+macro _json_sectionkey(namesConstant::Symbol, error)
+    esc(:(
+        begin
+            _key = _guesskey(keys(model.m), _constants.keynames.$namesConstant)
+            if isnothing(_key)
+                $error
+            end
+            _key
+        end
+    ))
+end
+
+macro _json_section(namesConstant::Symbol, error)
+    esc(:(
+        begin
+            _key = @_json_sectionkey $namesConstant ($error)
+            model.m[_key]
+        end
+    ))
+end
+
+macro _json_section_firstid(namesConstant::Symbol, id::Symbol, error)
+    return esc(:(
+        begin
+            _s = @_json_section $namesConstant ($error)
+            _firstmatch(x -> x["id"] == $id, _s)
+        end
+    ))
+end
+
+function _parse_annotations(x)::Annotations
+    Annotations([k => if typeof(v) == String
+        [vv]
+    else
+        convert(Vector{String}, v)
+    end for (k, v) in x])
+end
+
+_parse_notes(x)::Notes = _parse_annotations(x)
+
 """
     reactions(model::JSONModel)
 
 Extract reaction names (stored as `.id`) from JSON model.
 """
 function reactions(model::JSONModel)
-    k = _guesskey(keys(model.m), _constants.keynames.rxns)
-    if isnothing(k)
-        throw(DomainError(keys(model.m), "JSON model has no reaction keys"))
-    end
+    rs = @_json_section rxns throw(
+        DomainError(keys(model.m), "JSON model has no reaction keys"),
+    )
 
-    return [string(get(model.m[k][i], "id", "rxn$i")) for i in eachindex(model.m[k])]
+    return [string(get(rs[i], "id", "rxn$i")) for i in eachindex(rs)]
 end
 
 """
@@ -42,12 +83,11 @@ end
 Extract metabolite names (stored as `.id`) from JSON model.
 """
 function metabolites(model::JSONModel)
-    k = _guesskey(keys(model.m), _constants.keynames.mets)
-    if isnothing(k)
-        throw(DomainError(keys(model.m), "JSON model has no metabolite keys"))
-    end
+    ms = @_json_section mets throw(
+        DomainError(keys(model.m), "JSON model has no metabolite keys"),
+    )
 
-    return [string(get(model.m[k][i], "id", "met$i")) for i in eachindex(model.m[k])]
+    return [string(get(ms[i], "id", "met$i")) for i in eachindex(ms)]
 end
 
 """
@@ -56,12 +96,9 @@ end
 Extract gene names from a JSON model.
 """
 function genes(model::JSONModel)
-    k = _guesskey(keys(model.m), _constants.keynames.genes)
-    if isnothing(k)
-        return [] #no genes
-    end
+    gs = @_json_section genes return []
 
-    return [string(get(model.m[k][i], "id", "gene$i")) for i in eachindex(model.m[k])]
+    return [string(get(gs[i], "id", "gene$i")) for i in eachindex(gs)]
 end
 
 """
@@ -74,15 +111,15 @@ function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
     met_ids = metabolites(model)
 
-    r = _guesskey(keys(model.m), _constants.keynames.rxns)
-    if isnothing(r)
-        throw(DomainError(keys(model.m), "JSON model has no reaction keys"))
-    end
+    rs = @_json_section rxns throw(
+        DomainError(keys(model.m), "JSON model has no reaction keys"),
+    )
 
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
-    for i in eachindex(rxn_ids)
-        for (met_id, coeff) in model.m[r][i]["metabolites"]
-            j = findfirst(x -> x == met_id, met_ids)
+    for (i, rid) in enumerate(rxn_ids)
+        r = _firstmatch(x -> x["id"] == rid, rs)
+        for (met_id, coeff) in r["metabolites"]
+            j = findfirst(==(met_id), met_ids)
             if isnothing(j)
                 throw(
                     DomainError(
@@ -104,21 +141,13 @@ Get the bounds for reactions, assuming the information is stored in
 `.lower_bound` and `.upper_bound`.
 """
 function bounds(model::JSONModel)
-    r = _guesskey(keys(model.m), _constants.keynames.rxns)
-    if isnothing(r)
-        return (
-            sparse(fill(-_constants.default_reaction_bound, n_reactions(model))),
-            sparse(fill(_constants.default_reaction_bound, n_reactions(model))),
-        )
-    end
+    rs = @_json_section rxns return (
+        sparse(fill(-_constants.default_reaction_bound, n_reactions(model))),
+        sparse(fill(_constants.default_reaction_bound, n_reactions(model))),
+    )
     return (
-        sparse([
-            get(rxn, "lower_bound", -_constants.default_reaction_bound) for
-            rxn in model.m[r]
-        ]),
-        sparse([
-            get(rxn, "upper_bound", _constants.default_reaction_bound) for rxn in model.m[r]
-        ]),
+        sparse([get(rxn, "lower_bound", -_constants.default_reaction_bound) for rxn in rs]),
+        sparse([get(rxn, "upper_bound", _constants.default_reaction_bound) for rxn in rs]),
     )
 end
 
@@ -128,12 +157,9 @@ end
 Collect `.objective_coefficient` keys from model reactions.
 """
 function objective(model::JSONModel)
-    r = _guesskey(keys(model.m), _constants.keynames.rxns)
-    if isnothing(r)
-        return spzeros(n_reactions(model))
-    end
+    rs = @_json_section rxns return spzeros(n_reactions(model))
 
-    return sparse([float(get(rxn, "objective_coefficient", 0.0)) for rxn in model.m[r]])
+    return sparse([float(get(rxn, "objective_coefficient", 0.0)) for rxn in rs])
 end
 
 """
@@ -142,32 +168,80 @@ end
 Parses the `.gene_reaction_rule` from reactions.
 """
 function reaction_gene_association(model::JSONModel, rid::String)
-    r = _guesskey(keys(model.m), _constants.keynames.rxns)
-    if isnothing(r)
-        return nothing
-    end
-
-    rxn = _firstmatch(rxn -> rxn["id"] == rid, model.m[r])
+    rxn = @_json_section_firstid rxns rid return nothing
     return maybemap(_parse_grr, get(rxn, "gene_reaction_rule", nothing))
 end
 
 """
-    metabolite_chemistry(model::JSONModel, mid::String)
+    reaction_subsystem(model::JSONModel, rid::String)
 
-Parse and return the metabolite `.formula` and `.charge`.
+Parses the `.subsystem` out from reactions.
 """
-function metabolite_chemistry(model::JSONModel, mid::String)
-    m = _guesskey(keys(model.m), _constants.keynames.mets)
-    if isnothing(m)
-        return nothing
-    end
-
-    met = _firstmatch(met -> met["id"] == mid, model.m[m])
-    formula = maybemap(_formula_to_atoms, get(met, "formula", nothing))
-    return maybemap(f -> (f, get(met, "charge", 0)), formula)
+function reaction_subsystem(model::JSONModel, rid::String)
+    rxn = @_json_section_firstid rxns rid return nothing
+    return get(rxn, "subsystem", nothing)
 end
 
-#TODO annotation accessors
+"""
+    metabolite_formula(model::JSONModel, mid::String)
+
+Parse and return the metabolite `.formula`
+"""
+function metabolite_formula(model::JSONModel, mid::String)
+    met = @_json_section_firstid mets mid return nothing
+    return maybemap(_formula_to_atoms, get(met, "formula", nothing))
+end
+
+"""
+    metabolite_charge(model::JSONModel, mid::String)
+
+Return the metabolite `.charge`
+"""
+function metabolite_charge(model::JSONModel, mid::String)
+    met = @_json_section_firstid mets mid return nothing
+    return get(met, "charge", 0)
+end
+
+"""
+    metabolite_compartment(model::JSONModel, mid::String)
+
+Return the metabolite `.compartment`
+"""
+function metabolite_compartment(model::JSONModel, mid::String)
+    met = @_json_section_firstid mets mid return nothing
+    return get(met, "compartment", nothing)
+end
+
+function gene_annotations(model::JSONModel, gid::String)::Annotations
+    gene = @_json_section_firstid genes gid return Dict()
+    maybemap(_parse_annotations, get(gene, "annotation", nothing))
+end
+
+function gene_notes(model::JSONModel, gid::String)::Notes
+    gene = @_json_section_firstid genes gid return Dict()
+    maybemap(_parse_notes, get(gene, "notes", nothing))
+end
+
+function reaction_annotations(model::JSONModel, rid::String)::Annotations
+    rxn = @_json_section_firstid rxns rid return Dict()
+    maybemap(_parse_annotations, get(rxn, "annotation", nothing))
+end
+
+function reaction_notes(model::JSONModel, rid::String)::Notes
+    rxn = @_json_section_firstid rxns rid return Dict()
+    maybemap(_parse_notes, get(rxn, "notes", nothing))
+end
+
+function metabolite_annotations(model::JSONModel, mid::String)::Annotations
+    met = @_json_section_firstid mets mid return Dict()
+    maybemap(_parse_annotations, get(met, "annotation", nothing))
+end
+
+function metabolite_notes(model::JSONModel, mid::String)::Notes
+    met = @_json_section_firstid mets mid return Dict()
+    maybemap(_parse_notes, get(met, "notes", nothing))
+end
+
 
 function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     if typeof(mm) == JSONModel
@@ -187,31 +261,33 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
 
     #TODO: add notes, names and similar fun stuff when they are available
 
-    m[first(_constants.keynames.genes)] =
-        [Dict(["id" => gid, "annotation" => gene_annotations(mm, gid)]) for gid in gene_ids]
+    m[first(_constants.keynames.genes)] = [
+        Dict([
+            "id" => gid,
+            "annotation" => gene_annotations(mm, gid),
+            "notes" => gene_notes(mm, gid),
+        ],) for gid in gene_ids
+    ]
 
     m[first(_constants.keynames.mets)] = [
-        begin
-            res = Dict{String,Any}()
-            res["id"] = mid
-            ch = metabolite_chemistry(mm, mid)
-            if !isnothing(ch)
-                res["formula"] = _atoms_to_formula(ch[1])
-                res["charge"] = ch[2]
-            end
-            res["annotation"] = metabolite_annotations(mm, mid)
-            res
-        end for mid in met_ids
+        Dict([
+            "id" => mid,
+            "formula" => maybemap(_atoms_to_formula, metabolite_formula(mm, mid)),
+            "charge" => metabolite_charge(mm, mid),
+            "compartment" => metabolite_compartment(mm, mid),
+            "annotation" => metabolite_annotations(mm, mid),
+            "notes" => metabolite_notes(mm, mid),
+        ]) for mid in met_ids
     ]
 
     m[first(_constants.keynames.rxns)] = [
         begin
             res = Dict{String,Any}()
             res["id"] = rid
-            a = reaction_annotations(mm, rid)
-            if !isempty(a)
-                res["annotation"] = a
-            end
+            res["subsystem"] = reaction_subsystem(mm, rid)
+            res["annotation"] = reaction_annotations(mm, rid)
+            res["notes"] = reaction_notes(mm, rid)
+
             grr = reaction_gene_association(mm, rid)
             if !isnothing(grr)
                 res["gene_reaction_rule"] = _unparse_grr(grr)

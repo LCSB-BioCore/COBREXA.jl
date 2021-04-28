@@ -57,10 +57,11 @@ n_genes(a::SBMLModel)::Int = length(a.m.gene_products)
 reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
     maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
 
-metabolite_chemistry(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} = maybemap(
-    (fs) -> (_formula_to_atoms(fs), default(0, a.m.species[mid].charge)),
-    a.m.species[mid].formula,
-)
+metabolite_formula(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} =
+    maybemap(_formula_to_atoms, a.m.species[mid].formula)
+
+metabolite_charge(a::SBMLModel, mid::String)::Maybe{MetaboliteChemistry} =
+    a.m.species[mid].charge
 
 function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
     if typeof(m) == SBMLModel
@@ -86,8 +87,8 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
                     nothing, # name
                     "", # compartment
                     nothing, # no information about boundary conditions
-                    maybemap((x, _) -> _dict_to_formula(x), metabolite_chemistry(m, mid)),
-                    maybemap((_, x) -> x, metabolite_chemistry(m, mid)),
+                    metabolite_formula(m, mid),
+                    metabolite_charge(m, mid),
                     nothing, # initial amount
                     nothing, # only substance unit flags
                 ) for mid in metabolites(m)],
