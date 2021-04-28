@@ -56,7 +56,7 @@ end
 
 function _parse_annotations(x)::Annotations
     Annotations([k => if typeof(v) == String
-        [vv]
+        [v]
     else
         convert(Vector{String}, v)
     end for (k, v) in x])
