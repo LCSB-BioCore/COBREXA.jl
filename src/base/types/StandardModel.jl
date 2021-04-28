@@ -97,12 +97,12 @@ n_genes(model::StandardModel)::Int = length(model.genes)
 Return the stoichiometric matrix associated with `model` in sparse format.
 """
 function stoichiometry(model::StandardModel)
-    S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
+    S = SparseArrays.spzeros(n_metabolites(model), n_reactions(model))
     met_ids = metabolites(model) # vector of metabolite ids
     rxn_ids = reactions(model)
     for (i, rxn_id) in enumerate(rxn_ids) # column, in order
         for (met_id, coeff) in model.reactions[rxn_id].metabolites
-            j = findfirst(x -> x == met_id, met_ids) # row
+            j = findfirst(==(met_id), met_ids) # row
             S[j, i] = coeff
         end
     end
@@ -152,14 +152,9 @@ balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 Return sparse objective vector for `model`.
 """
 function objective(model::StandardModel)::SparseVec
-    obj_arr = SparseArrays.spzeros(length(model.reactions))
-    for (i, r_id) in enumerate(reactions(model))
-        if model.reactions[r_id].objective_coefficient != 0.0
-            obj_arr[i] = 1.0 # could have multiple objective coefficients
-        end
-    end
-    nnz(obj_arr) == 0 && (@warn "No objective found.")
-    return obj_arr
+    return sparse([
+        model.reactions[rid].objective_coefficient for rid in keys(model.reactions)
+    ])
 end
 
 """
@@ -307,6 +302,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
 
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
+    ocs = objective(model)
     for (i, rid) in enumerate(rxnids)
         rmets = Dict{String,Float64}()
         for (j, stoich) in zip(findnz(S[:, i])...)
@@ -318,7 +314,8 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             lb = lbs[i],
             ub = ubs[i],
             grr = reaction_gene_association(model, rid),
-        ) # NB: add more accessors
+            objective_coefficient = ocs[i],
+        ) # TODO: finish the accessor list
     end
 
     return StandardModel(

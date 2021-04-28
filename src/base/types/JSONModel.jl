@@ -116,9 +116,10 @@ function stoichiometry(model::JSONModel)
     )
 
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
-    for i in eachindex(rxn_ids)
-        for (met_id, coeff) in rs[i]["metabolites"]
-            j = findfirst(x -> x == met_id, met_ids)
+    for (i, rid) in enumerate(rxn_ids)
+        r = _firstmatch(x -> x["id"] == rid, rs)
+        for (met_id, coeff) in r["metabolites"]
+            j = findfirst(==(met_id), met_ids)
             if isnothing(j)
                 throw(
                     DomainError(
