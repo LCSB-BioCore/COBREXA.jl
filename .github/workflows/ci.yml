@@ -10,7 +10,7 @@ jobs:
     name: julia-custom
     runs-on: ubuntu-latest
     container:
-      image: "${{ secrets.DOCKER_IMG }}"
+      image: $DOCKER_IMG
       credentials:
         username: cylon-x
         password: "${{ secrets.DOCKER_PWD }}"
