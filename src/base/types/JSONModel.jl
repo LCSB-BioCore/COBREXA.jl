@@ -260,28 +260,31 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
 
     #TODO: add notes, names and similar fun stuff when they are available
 
-    m[first(_constants.keynames.genes)] =
-        [Dict(["id" => gid, "annotation" => gene_annotations(mm, gid)]) for gid in gene_ids]
+    m[first(_constants.keynames.genes)] = [
+        Dict([
+            "id" => gid,
+            "annotation" => gene_annotations(mm, gid),
+            "notes" => gene_notes(mm, gid),
+        ],) for gid in gene_ids
+    ]
 
     m[first(_constants.keynames.mets)] = [
-        begin
-            res = Dict{String,Any}()
-            res["id"] = mid
-            res["formula"] = maybemap(_atoms_to_formula, metabolite_formula(mm, mid))
-            res["charge"] = metabolite_charge(mm, mid)
-            res["annotation"] = metabolite_annotations(mm, mid)
-            res
-        end for mid in met_ids
+        Dict([
+            "id" => mid,
+            "formula" => maybemap(_atoms_to_formula, metabolite_formula(mm, mid)),
+            "charge" => metabolite_charge(mm, mid),
+            "annotation" => metabolite_annotations(mm, mid),
+            "notes" => metabolite_notes(mm, mid),
+        ]) for mid in met_ids
     ]
 
     m[first(_constants.keynames.rxns)] = [
         begin
             res = Dict{String,Any}()
             res["id"] = rid
-            a = reaction_annotations(mm, rid)
-            if !isempty(a)
-                res["annotation"] = a
-            end
+            res["annotation"] = reaction_annotations(mm, rid)
+            res["notes"] = reaction_notes(mm, rid)
+
             grr = reaction_gene_association(mm, rid)
             if !isnothing(grr)
                 res["gene_reaction_rule"] = _unparse_grr(grr)
