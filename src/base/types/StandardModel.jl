@@ -298,9 +298,11 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     end
 
     for mid in metids
-        f, c = metabolite_chemistry(model, mid)
-        fstr = join([k * string(v) for (k, v) in f])
-        modelmetabolites[mid] = Metabolite(mid; charge = c, formula = fstr)
+        modelmetabolites[mid] = Metabolite(
+            mid;
+            charge = metabolite_charge(model, mid),
+            formula = _atoms_to_formula(metabolite_formula(model, mid)),
+        )
     end
 
     S = stoichiometry(model)
