@@ -2,12 +2,11 @@ name: CI
 on:
   push:
     branches:
-      - lh-add-gh-actions
       - master
     tags: '*'
 jobs:
   test:
-    name: julia-custom
+    name: docker
     runs-on: ubuntu-latest
     steps:
       -
@@ -18,5 +17,4 @@ jobs:
           username: cylon-x
           password: ${{ secrets.docker_pwd }}
       - uses: actions/checkout@v2
-        #- uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
