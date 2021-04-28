@@ -20,6 +20,7 @@ end
 
 
 """
-function _atoms_to_formula(f::MetaboliteFormula)::String
+function _atoms_to_formula(f::Maybe{MetaboliteFormula})::Maybe{String}
+    isnothing(f) && return nothing
     return join(["$elem$n" for (elem, n) in f])
 end

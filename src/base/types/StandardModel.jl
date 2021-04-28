@@ -285,7 +285,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         return model
     end
 
-    id = "" # model_id(model), add accessor
+    id = "" # TODO: add accessor to get model ID
     modelreactions = OrderedDict{String,Reaction}()
     modelmetabolites = OrderedDict{String,Metabolite}()
     modelgenes = OrderedDict{String,Gene}()
@@ -295,14 +295,17 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     rxnids = reactions(model)
 
     for gid in gids
-        modelgenes[gid] = Gene(gid;) # NB: add more accessors
+        modelgenes[gid] = Gene(gid;notes=gene_notes(model, gid), annotations=gene_annotations(model, gid)) # TODO: add name accessor
     end
 
     for mid in metids
         modelmetabolites[mid] = Metabolite(
             mid;
             charge = metabolite_charge(model, mid),
-            formula = maybemap(_atoms_to_formula, metabolite_formula(model, mid)),
+            formula = _atoms_to_formula(metabolite_formula(model, mid)),
+            compartment = metabolite_compartment(model, mid),
+            notes = metabolite_notes(model, mid),
+            annotations = metabolite_annotations(model, mid),
         )
     end
 
@@ -321,7 +324,10 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             ub = ubs[i],
             grr = reaction_gene_association(model, rid),
             objective_coefficient = ocs[i],
-        ) # TODO: finish the accessor list
+            notes = reaction_notes(model, rid),
+            annotations = reaction_annotations(model, rid),
+            subsystem = reaction_subsystem(model, rid),
+        ) # TODO: add name accessor
     end
 
     return StandardModel(
