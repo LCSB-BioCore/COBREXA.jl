@@ -179,7 +179,7 @@ Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
 """
 function metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula}
-    maybemap(get_atoms, model.metabolites[id].formula)
+    maybemap(_formula_to_atoms, model.metabolites[id].formula)
 end
 
 """
