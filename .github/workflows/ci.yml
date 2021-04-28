@@ -9,14 +9,6 @@ jobs:
   test:
     name: julia-custom
     runs-on: ubuntu-latest
-    # container:
-    #  image: $DOCKER_IMG
-    #  credentials:
-    #    username: cylon-x
-    #    password: $DOCKER_PWD
-    env:
-      DOCKER_IMG: ${{ secrets.DOCKER_IMG }}
-      DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
     steps:
       -
         name: Login to LCSB R3 Gitlab Container Registry
@@ -25,8 +17,6 @@ jobs:
           registry: ${{ secrets.docker_registry }}
           username: cylon-x
           password: ${{ secrets.docker_pwd }}
-      #- run: docker login -u cylon-x -p $DOCKER_PWD ${{ secrets.docker_registry }}
-        #- run: docker run $DOCKER_IMG julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
       - uses: actions/checkout@v2
-        #- uses: julia-actions/julia-buildpkg@v1
-        #- uses: julia-actions/julia-runtest@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
