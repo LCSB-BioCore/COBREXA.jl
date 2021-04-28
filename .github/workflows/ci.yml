@@ -2,6 +2,7 @@ name: CI
 on:
   push:
     branches:
+      - lh-add-gh-actions
       - master
     tags: '*'
 jobs:
@@ -17,7 +18,9 @@ jobs:
           username: cylon-x
           password: ${{ secrets.docker_pwd }}
       - uses: actions/checkout@v2
-      - uses: julia-actions/julia-runtest@v1
+      - uses: addnab/docker-run-action@v3
         with:
-          force_latest_compatible_version: false
-          coverage: false
+          image: ${{ secrets.docker_img }}
+          username: cylon-x
+          password: ${{ secrets.docker_pwd }}
+          run: julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
