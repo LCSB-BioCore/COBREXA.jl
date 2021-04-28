@@ -8,11 +8,10 @@ on:
 jobs:
   test:
     name: julia-custom
-    image: {{ secrets.docker_img }}
-    credentials:
-      username: cylon-x
-      password: ${{ secrets.docker_pwd }}
+    image: docker
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
+      - run: docker login -u cylon-x -p ${{ secrets.docker_pwd }} ${{ secrets.docker_registry }}
+      - run: docker run ${{ secrets.docker_img }} julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+        #- uses: actions/checkout@v2
+        #- uses: julia-actions/julia-buildpkg@v1
+        #- uses: julia-actions/julia-runtest@v1
