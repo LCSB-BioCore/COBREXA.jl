@@ -12,7 +12,7 @@ jobs:
     container:
       image: ${{ secrets.docker_img }}
       credentials:
-        user: cylon-x
+        username: cylon-x
         password: ${{ secrets.docker_pwd }}
     steps:
       #- run: docker login -u cylon-x -p ${{ secrets.docker_pwd }} ${{ secrets.docker_registry }}
