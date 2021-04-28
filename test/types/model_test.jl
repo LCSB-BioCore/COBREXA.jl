@@ -38,5 +38,5 @@
     model.genes = OrderedDict(g.id => g for g in genes)
 
     @test sprint(show, MIME("text/plain"), model) ==
-          "Constraint based model: model\nNumber of reactions: 4\nNumber of metabolites: 4\nNumber of genes: 3\n"
+          "Metabolic model of type StandardModel\n\n -1.0  -2.0    ⋅     ⋅ \n  1.0    ⋅     ⋅     ⋅ \n   ⋅     ⋅   -1.0  -1.0\n   ⋅    1.0   1.0   1.0\nNumber of reactions: 4\nNumber of metabolites: 4\n"
 end

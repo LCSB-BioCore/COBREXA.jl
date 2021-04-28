@@ -31,7 +31,7 @@
     r1.objective_coefficient = 1.0
 
     @test sprint(show, MIME("text/plain"), r1) ==
-          "Reaction ID: r1\nReaction name:  reaction 1\nReaction subsystem: glycolysis\n1.0 m1 ⟷  1.0 m2\nLower bound: -100.0\nUpper bound: 100.0\nGenes: (g1 and g2) or (g3)\nE.C. number: \n"
+          "Reaction.id: r1\nReaction.name: reaction 1\nReaction.metabolites: 1.0 m1 ⟷  1.0 m2\nReaction.lb: -100.0\nReaction.ub: 100.0\nReaction.grr: (g1 and g2) or (g3)\nReaction.subsystem: glycolysis\nReaction.notes: \n\tnotes: [\"blah\", \"blah\"]\nReaction.annotation: \n\tsboterm: [\"sbo\"]\n\tbiocyc: [\"ads\", \"asds\"]\nReaction.objective_coefficient: 1.0\n"
 
     rlongfor = Reaction(
         "rlongfor",
@@ -80,13 +80,12 @@
     @test r3.lb == 0.0 && r3.ub == 1000.0
 
     rxns = [r1, r2, r3]
-    rd = OrderedDict(r.id => r for r in rxns)
-    @test sprint(show, MIME("text/plain"), rxns) == "Reaction set of length: 3\n"
 
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
     r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
+    rd = OrderedDict(r.id => r for r in rxns)
     id = check_duplicate_annotations(r4, rd)
     @test id == "r1"
 

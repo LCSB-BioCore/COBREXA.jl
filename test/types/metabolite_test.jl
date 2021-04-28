@@ -9,9 +9,10 @@
     m1.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ads", "asds"])
 
     @test sprint(show, MIME("text/plain"), m1) ==
-          "Metabolite ID: met1\nMetabolite name: metabolite 1\nFormula: C6H12O6N\nCharge: 1\n"
+          "Metabolite.id: met1\nMetabolite.name: metabolite 1\nMetabolite.formula: C6H12O6N\nMetabolite.charge: 1\nMetabolite.compartment: c\nMetabolite.notes: \n\tnotes: [\"blah\", \"blah\"]\nMetabolite.annotation: \n\tkegg.compound: [\"ads\", \"asds\"]\n\tsboterm: [\"sbo\"]\n"
 
     m2 = Metabolite("met2")
+
     m2.formula = "C6H12O6N"
 
     m3 = Metabolite("met3")
@@ -20,12 +21,6 @@
 
     mets = [m1, m2, m3]
 
-    @test sprint(show, MIME("text/plain"), mets) == "Metabolite set of length: 3\n"
-
-    md = OrderedDict(m.id => m for m in mets)
-    id = check_duplicate_annotations(m3, md)
-    @test id == "met3"
-
     ats = get_atoms(m1)
     @test ats["C"] == 6 && ats["N"] == 1
 
@@ -33,6 +28,7 @@
     m4.formula = "X"
     m4.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
 
+    md = OrderedDict(m.id => m for m in mets)
     id = check_duplicate_annotations(m4, md)
     @test isnothing(id)
 end
