@@ -1,10 +1,8 @@
 name: CI
 on:
-  pull_request:
-    branches:
-      - lh-add-gh-actions
   push:
     branches:
+      - lh-add-gh-actions
       - master
     tags: '*'
 jobs:
