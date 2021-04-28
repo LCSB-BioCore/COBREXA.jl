@@ -6,8 +6,9 @@
     )
 
     jm = load_json_model(json_model)
-    cm = convert(CoreModel, jm) #TODO use a richer intermediate model
-    jm2 = convert(JSONModel, cm)
+    sm = convert(StandardModel, jm)
+    jm2 = convert(JSONModel, sm)
 
-    @test Set(reactions(jm)) == Set(reactions(cm))
+    @test Set(reactions(jm)) == Set(reactions(sm))
+    @test Set(reactions(jm)) == Set(reactions(jm2))
 end
