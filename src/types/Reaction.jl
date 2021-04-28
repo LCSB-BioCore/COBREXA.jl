@@ -17,24 +17,24 @@ objective_coefficient :: Float64
 """
 mutable struct Reaction
     id::String
-    name::String
+    name::Union{String,Nothing}
     metabolites::Dict{String,Float64}
     lb::Float64
     ub::Float64
     grr::Vector{Vector{String}}
-    subsystem::String
+    subsystem::Union{String,Nothing}
     notes::Dict{String,Vector{String}}
     annotation::Dict{String,Vector{String}} # everything is a String[]
     objective_coefficient::Float64
 
     Reaction(
         id = "";
-        name = "",
+        name = nothing,
         metabolites = Dict{String,Float64}(),
         lb = -_constants.default_reaction_bound,
         ub = _constants.default_reaction_bound,
         grr = Vector{Vector{String}}(),
-        subsystem = "",
+        subsystem = nothing,
         notes = Dict{String,Vector{String}}(),
         annotation = Dict{String,Vector{String}}(),
         objective_coefficient = 0.0,
