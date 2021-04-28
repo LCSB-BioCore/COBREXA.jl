@@ -1,4 +1,13 @@
 """
+    load_json_model(filename::String)::JSONModel
+
+Load and return a JSON-formatted model that is stored in `file_name`.
+"""
+function load_json_model(filename::String)::JSONModel
+    return JSONModel(JSON.parsefile(filename))
+end
+
+"""
     save_json_model(model::MetabolicModel, file_name::String)
 
 Save a [`JSONModel`](@ref) in `model` to a JSON file `file_name`.

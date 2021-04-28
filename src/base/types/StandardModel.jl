@@ -4,7 +4,8 @@
 `StandardModel` is used to store a constraint based metabolic model with meta-information.
 Meta-information is defined as annotation details, which include gene-reaction-rules, formulas, etc.
 
-This model type seeks to keep as much meta-information as possible, cf. `CoreModel` and `CoreModelCoupled`.
+This model type seeks to keep as much meta-information as possible, as opposed to `CoreModel` and `CoreModelCoupled`,
+which keep the bare neccessities only.
 When merging models and keeping meta-information is important, use this as the model type. 
 If meta-information is not important, use the more efficient core model types. 
 See [`CoreModel`](@ref) and [`CoreModelCoupled`](@ref) for comparison.
@@ -131,7 +132,7 @@ end
 
 Return the lower and upper bounds, respectively, for reactions in `model`.
 """
-function bounds(model::StandardModel)
+function bounds(model::StandardModel)::Tuple{SparseVec,SparseVec}
     ubs = upper_bounds(model)
     lbs = lower_bounds(model)
     return lbs, ubs
@@ -162,47 +163,42 @@ function objective(model::StandardModel)::SparseVec
 end
 
 """
-    reaction_gene_association(id::String, model::StandardModel)
+    reaction_gene_association(model::StandardModel, id::String)
 
-Return the gene reaction rule for reaction with `id` in `model`.
+Return the gene reaction rule in string format for reaction with `id` in `model`.
+Return `nothing` if not available.
 """
-function reaction_gene_association(id::String, model::StandardModel)
-    maybemap(_unparse_grr, model.reactions[id].grr) # this needs to be mapped to a boolean but that isn't implemented yet
+function reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation}
+    maybemap(_unparse_grr, model.reactions[id].grr)
 end
 
 """
-    formula(id::String, model::StandardModel)
+    metabolite_formula(model::StandardModel, id::String)
 
 Return the formula of reaction `id` in `model`.
+Return `nothing` if not present.
 """
-function formula(id::String, model::StandardModel)
+function metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula}
     maybemap(get_atoms, model.metabolites[id].formula)
 end
 
 """
-    charge(id::String, model::StandardModel)
+    metabolite_charge(model::StandardModel, id::String)
 
 Return the charge associated with metabolite `id` in `model`.
+Return nothing if not present.
 """
-function charge(id::String, model::StandardModel)
+function metabolite_charge(model::StandardModel, id::String)::Maybe{Int}
     model.metabolites[id].charge
 end
 
 """
-    metabolite_chemistry(model::StandardModel)
-
-Return the formula and charge associated with metabolite `id` in `model`.
-"""
-function metabolite_chemistry(id::String, model::StandardModel)
-    (formula(id, model), charge(id, model))
-end
-
-"""
-    metabolite_compartment(id::String, model::StandardModel)
+    metabolite_compartment(model::StandardModel, id::String)
 
 Return compartment associated with metabolite `id` in `model`.
+Return `nothing` if not present.
 """
-function metabolite_compartment(id::String, model::StandardModel)
+function metabolite_compartment(model::StandardModel, id::String)::Maybe{String}
     model.metabolites[id].compartment
 end
 
@@ -210,65 +206,79 @@ end
     reaction_subsystem(id::String, model::StandardModel)
 
 Return the subsystem associated with reaction `id` in `model`.
+Return `nothing` if not present.
 """
-function reaction_subsystem(id::String, model::StandardModel)
+function reaction_subsystem(model::StandardModel, id::String)::Maybe{String}
     model.reactions[id].subsystem
 end
 
 """
-    metabolite_notes(id::String, model::StandardModel)
+    metabolite_notes(model::StandardModel, id::String)::Notes
 
 Return the notes associated with metabolite `id` in `model`.
+Return an empty Dict if not present.
 """
-function metabolite_notes(id::String, model::StandardModel)
+function metabolite_notes(model::StandardModel, id::String)::Notes
     model.metabolites[id].notes
 end
 
 """
-    metabolite_annotation(id::String, model::StandardModel)
+    metabolite_annotations(model::StandardModel, id::String)::Annotations
 
 Return the annotation associated with metabolite `id` in `model`.
+Return an empty Dict if not present.
 """
-function metabolite_annotations(id::String, model::StandardModel)
+function metabolite_annotations(model::StandardModel, id::String)::Annotations
     model.metabolites[id].annotation
 end
 
 """
-    gene_notes(id::String, model::StandardModel)
+    gene_notes(model::StandardModel, id::String)::Notes
 
 Return the notes associated with gene `id` in `model`.
+Return an empty Dict if not present.
 """
-function gene_notes(id::String, model::StandardModel)
+function gene_notes(model::StandardModel, id::String)::Notes
     model.genes[id].notes
 end
 
 """
-    gene_annotations(id::String, model::StandardModel)
+    gene_annotations(model::StandardModel, id::String)::Annotations
 
 Return the annotation associated with gene `id` in `model`.
+Return an empty Dict if not present.
 """
-function gene_annotations(id::String, model::StandardModel)
+function gene_annotations(model::StandardModel, id::String)::Annotations
     model.genes[id].annotation
 end
 
 """
-    reaction_notes(id::String, model::StandardModel)
+    reaction_notes(model::StandardModel, id::String)::Notes
 
 Return the notes associated with reaction `id` in `model`.
+Return an empty Dict if not present.
 """
-function reaction_notes(id::String, model::StandardModel)
+function reaction_notes(model::StandardModel, id::String)::Notes
     model.reactions[id].notes
 end
 
 """
-    reaction_annotations(id::String, model::StandardModel)
+    reaction_annotations(model::StandardModel, id::String)::Annotations
 
 Return the annotation associated with reaction `id` in `model`.
+Return an empty Dict if not present.
 """
-function reaction_annotations(id::String, model::StandardModel)
+function reaction_annotations(model::StandardModel, id::String)::Annotations
     model.reactions[id].annotation
 end
 
+"""
+Base.convert(::Type{StandardModel}, model::MetabolicModel)
+
+Convert any `MetabolicModel` into a `StandardModel`.
+Note, some data loss may occur since only the generic interface is used during
+the conversion process.
+"""
 function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     if typeof(model) == StandardModel
         return model
