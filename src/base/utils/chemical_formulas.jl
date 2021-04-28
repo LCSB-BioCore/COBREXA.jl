@@ -4,7 +4,7 @@
 
 
 """
-function _formula_to_atoms(f::String)::Dict{String,Int}
+function _formula_to_atoms(f::String)::MetaboliteFormula
     res = Dict{String,Int}()
     pattern = @r_str "([A-Z][a-z]*)([1-9][0-9]*)?"
 
@@ -20,6 +20,6 @@ end
 
 
 """
-function _atoms_to_formula(f::Dict{String,Int})::String
+function _atoms_to_formula(f::MetaboliteFormula)::String
     return join(["$elem$n" for (elem, n) in f])
 end

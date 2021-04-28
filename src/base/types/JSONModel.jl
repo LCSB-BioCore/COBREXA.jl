@@ -152,19 +152,33 @@ function reaction_gene_association(model::JSONModel, rid::String)
 end
 
 """
-    metabolite_chemistry(model::JSONModel, mid::String)
+    metabolite_formula(model::JSONModel, mid::String)
 
-Parse and return the metabolite `.formula` and `.charge`.
+Parse and return the metabolite `.formula`
 """
-function metabolite_chemistry(model::JSONModel, mid::String)
+function metabolite_formula(model::JSONModel, mid::String)
     m = _guesskey(keys(model.m), _constants.keynames.mets)
     if isnothing(m)
         return nothing
     end
 
     met = _firstmatch(met -> met["id"] == mid, model.m[m])
-    formula = maybemap(_formula_to_atoms, get(met, "formula", nothing))
-    return maybemap(f -> (f, get(met, "charge", 0)), formula)
+    return maybemap(_formula_to_atoms, get(met, "formula", nothing))
+end
+
+"""
+    metabolite_chemistry(model::JSONModel, mid::String)
+
+Return the metabolite `.charge`
+"""
+function metabolite_charge(model::JSONModel, mid::String)
+    m = _guesskey(keys(model.m), _constants.keynames.mets)
+    if isnothing(m)
+        return nothing
+    end
+
+    met = _firstmatch(met -> met["id"] == mid, model.m[m])
+    return get(met, "charge", 0)
 end
 
 #TODO annotation accessors
