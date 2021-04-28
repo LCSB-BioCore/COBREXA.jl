@@ -15,8 +15,8 @@ jobs:
     #    username: cylon-x
     #    password: $DOCKER_PWD
     steps:
-      - run: docker login -u cylon-x -p ${{ secrets.docker_pwd }} ${{ secrets.docker_registry }}
-      - run: docker run ${{ secrets.docker_img }} julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+      - run: docker login -u cylon-x -p ${{ secrets.docker_pwd }} ${{ secrets.docker_registry }} --password-stdin
+      - run: docker run $DOCKER_IMG  julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
         #- uses: actions/checkout@v2
         #- uses: julia-actions/julia-buildpkg@v1
         #- uses: julia-actions/julia-runtest@v1
