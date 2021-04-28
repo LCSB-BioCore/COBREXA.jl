@@ -28,15 +28,6 @@ reactions :: OrderedDict{String, Reaction}
 metabolites :: OrderedDict{String, Metabolite}
 genes :: OrderedDict{String, Gene}
 ```
-
-# Example
-```jldoctest
-julia> model = StandardModel("model_id")
-Constraint based model: model_id
-Number of reactions: 0
-Number of metabolites: 0
-Number of genes: 0
-```
 """
 mutable struct StandardModel <: MetabolicModel
     id::String
