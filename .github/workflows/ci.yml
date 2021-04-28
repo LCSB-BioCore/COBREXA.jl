@@ -13,7 +13,7 @@ jobs:
       image: $DOCKER_IMG
       credentials:
         username: cylon-x
-        password: "${{ secrets.DOCKER_PWD }}"
+        password: $DOCKER_PWD
     steps:
       #- run: docker login -u cylon-x -p ${{ secrets.docker_pwd }} ${{ secrets.docker_registry }}
       #- run: docker run ${{ secrets.docker_img }} julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
