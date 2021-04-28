@@ -1,0 +1,83 @@
+@testset "StandardModel tests" begin
+    # create a small model
+    m1 = Metabolite("m1")
+    m1.formula = "C2H3"
+    m2 = Metabolite("m2")
+    m2.formula = "H3C2"
+    m3 = Metabolite("m3")
+    m4 = Metabolite("m4")
+
+    g1 = Gene("g1")
+    g2 = Gene("g2")
+    g3 = Gene("g3")
+
+    r1 = Reaction()
+    r1.id = "r1"
+    r1.name = "reaction 1"
+    r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
+    r1.lb = -100.0
+    r1.ub = 100.0
+    r1.grr = [["g1", "g2"], ["g3"]]
+    r1.subsystem = "glycolysis"
+    r1.notes = Dict("notes" => ["blah", "blah"])
+    r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
+    r1.objective_coefficient = 1.0
+
+    r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
+    r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
+    r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
+    r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
+
+    mets = [m1, m2, m3, m4]
+    gs = [g1, g2, g3] # DO NOT name variables the names of accessor functions!
+    rxns = [r1, r2, r3, r4]
+
+    model = StandardModel()
+    model.id = "model"
+    model.reactions = OrderedDict(r.id => r for r in rxns)
+    model.metabolites = OrderedDict(m.id => m for m in mets)
+    model.genes = OrderedDict(g.id => g for g in gs)
+
+    @test contains(sprint(show, MIME("text/plain"), model), "StandardModel")
+
+    @test "r1" in reactions(model)
+    @test "m4" in metabolites(model)
+    @test "g2" in genes(model)
+    @test n_reactions(model) == 4
+    @test n_metabolites(model) == 4
+    @test n_genes(model) == 3
+
+    S_test = spzeros(4,4)
+    S_test[1,1] = -1.0
+    S_test[2,1] = 1.0
+    S_test[1,2] = -2.0
+    S_test[4,2] = 1.0
+    S_test[3,3] = -1.0
+    S_test[4,3] = 1.0
+    S_test[3,4] = -1.0
+    S_test[4,4] = 1.0
+    @test S_test == stoichiometry(model) 
+
+    lb_test = spzeros(4)
+    lb_test[1] = -100.0
+    lb_test[2] = -1000.0
+    lb_test[3] = 0.0
+    lb_test[4] = -1000.0
+    ub_test = spzeros(4)
+    ub_test[1] = 100.0
+    ub_test[2] = 0.0
+    ub_test[3] = 1000.0
+    ub_test[4] = 1000.0
+    lbs, ubs = bounds(model)
+    @test lb_test == lbs
+    @test ub_test == ubs
+
+    @test balance(model) == spzeros(n_metabolites(model))
+
+    obj_test = spzeros(4)
+    obj_test[1] = 1.0
+    @test objective(model) == obj_test
+    
+    @test [["g1", "g2"],["g3"]] == reaction_gene_association(model, "r1")
+    @test isnothing(reaction_gene_association(model, "r2"))
+end

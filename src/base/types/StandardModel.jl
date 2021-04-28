@@ -60,7 +60,7 @@ Return a vector of reaction id strings contained in `model`.
 The order of reaction ids returned here matches the order used to construct the
 stoichiometric matrix.
 """
-reactions(model::StandardModel)::StringVecType = [r_id for r_id in keys(model.reactions)]
+reactions(model::StandardModel)::StringVecType = collect(keys(model.reactions))
 
 """
     n_reactions(model::StandardModel)
@@ -76,8 +76,7 @@ Return a vector of metabolite id strings contained in `model`.
 The order of metabolite strings returned here matches the order used to construct
 the stoichiometric matrix.
 """
-metabolites(model::StandardModel)::StringVecType =
-    [m_id for m_id in keys(model.metabolites)]
+metabolites(model::StandardModel)::StringVecType = collect(keys(model.metabolites))
 
 """
 n_metabolites(model::StandardModel)
@@ -91,7 +90,7 @@ n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 Return a vector of gene id strings in `model`.
 """
-genes(model::StandardModel)::StringVecType = [g_id for g_id in keys(model.genes)]
+genes(model::StandardModel)::StringVecType = collect(g_id in keys(model.genes))
 
 """
     n_genes(model::StandardModel)
@@ -175,7 +174,7 @@ Return the gene reaction rule in string format for reaction with `id` in `model`
 Return `nothing` if not available.
 """
 function reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation}
-    maybemap(_unparse_grr, model.reactions[id].grr)
+    maybemap(x->x, model.reactions[id].grr)
 end
 
 """
