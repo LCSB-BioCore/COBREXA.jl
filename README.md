@@ -13,7 +13,7 @@
 [cov-img]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=H3WSWOBD7L
 [cov-url]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl
 
-[contrib-img]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
+[contrib-img]: https://img.shields.io/badge/contributions-start%20here-blueviolet
 [contrib-url]: https://github.com/LCSB-BioCore/COBREXA.jl/blob/lh-polish-readme-1/.github/CONTRIBUTING.md
 
 | **Documentation** | **Tests** | **Coverage** | **How to contribute?** |
