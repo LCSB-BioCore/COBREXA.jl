@@ -6,27 +6,32 @@
 <br>
 ```
 
-# Constraint-Based Reconstruction and EXascale Analysis
+# COnstraint-Based Reconstruction and EXascale Analysis
 
-COBREXA provides the base toolkit for working with big models and running
-tremendous amount of analyses in parallel. Its main purpose is to make the
-COBRA approach easy to use on problems that require the use of huge computer
-clusters and HPC environment, allowing it to approach the realistic
-pre-exascale capacities.
+__CO__nstraint-__B__ased __R__econstruction and __EX__ascale __A__nalysis (COBREXA) provides the
+necessary tools for working with exa-scale constraint-based metabolic models. Modern constraint-based 
+metabolic models of complex organisms or communities typically involve the construction and analysis of systems 
+comprised of billions of coupled reactions and metabolites. Current constraint-based reconstruction and analysis 
+(COBRA) tools, e.g. Cobrapy and the CobraToolbox, were not designed for these large-scale systems. The purpose of COBREXA 
+is to bridge this gap. COBREXA is designed to efficiently store exa-scale models and can import models from all the
+commonly used model types (`.mat`, `.xml`, `.json`). Furthermore, analysis functions are exa-scale ready, and can easily 
+be run on huge computer clusters and in HPC environments. This allows for the parallization of analysis functions, reducing the
+time between model construction and predictions.
 
-In the package, you will find the usual COBRA-like functions that inteface to
-the underlying linear programming solvers. We use
-[`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) as the unified interface for
-many solvers; you can plug in whatever compatible solver you want, such as
-`Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`.
+In this package, you will find the usual COBRA-like functions that interface with user chosen linear programming solvers. 
+We use [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) as the unified interface for many solvers; meaning you can plug in 
+whatever compatible solver you want, such as `Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`, and things will `just work`.
 
 ## Quick start guide
 
-You can install COBREXA from Julia repositories as usual, by pressing `]` to
+You can install COBREXA using the Julia package manager as usual, by pressing `]` to
 switch to Packaging environment, and typing:
 ```
 add COBREXA
 ```
+Note, you will need to have at least a linear programming solver installed as well
+to use the analysis functions. For a pure Julia solution we recommend `Tulip.jl`,
+but any solver supported by `JuMP` will also work, e.g. `Gurobi.jl`.
 
 With the package installed, let's perform a simple flux balance analysis on a
 constraint based model:
@@ -54,13 +59,10 @@ model as above.
 
 ```@contents
 Pages = [
-    "model_structure.md",
-    "io.md",
-    "model_construction.md",
-    "basic_analysis.md",
-    "sampling_tools.md",
-    "external_tools.md",
-    "thermodynamics.md"
+    "background.md",
+    "tutorials.md",
+    "functions.md",
+    "howToContribute.md",
 ]
 Depth = 2
 ```
