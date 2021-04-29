@@ -1,5 +1,12 @@
 @testset "Gene, gene printing, and gene utils" begin
     g = Gene()
+
+    # test defaults
+    @test isnothing(g.name)
+    @test isempty(g.notes)
+    @test isempty(g.annotations)
+    
+    # Now assign
     g.id = "gene1"
     g.name = "gene_name"
     g.notes = Dict("notes" => ["blah", "blah"])
