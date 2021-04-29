@@ -38,7 +38,7 @@ function _write_mat_model(model::StandardModel, file_location::String)
         "rxnNames" => [r.name for r in model.reactions],
         "description" => model.id,
         "genes" => [g.id for g in model.genes],
-        "grRules" => [_unparse_grr(r.grr) for r in model.reactions],
+        "grRules" => [maybemap(_unparse_grr, r.grr) for r in model.reactions],
         "S" => Matrix(S),
         "metNames" => [m.name for m in model.metabolites],
         "lb" => Vector(lbs),

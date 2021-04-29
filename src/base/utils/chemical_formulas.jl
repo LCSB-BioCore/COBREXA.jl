@@ -19,7 +19,3 @@ end
 function _atoms_to_formula(f::MetaboliteFormula)::String
     return join(["$elem$n" for (elem, n) in f])
 end
-
-function _atoms_to_formula(_::Nothing)::Nothing
-    return nothing
-end

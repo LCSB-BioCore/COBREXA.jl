@@ -36,10 +36,6 @@ function _parse_grr(s::String)::GeneAssociation
     return gene_reaction_rules
 end
 
-function _parse_grr(_::Nothing)::Nothing
-    return nothing
-end
-
 """
     unparse_grr(grr::Vector{Vector{Gene}}
 
@@ -53,8 +49,4 @@ function _unparse_grr(grr::GeneAssociation)::String
     end
     grr_string = join(grr_strings, " or ")
     return grr_string
-end
-
-function _unparse_grr(_::Nothing)::Nothing
-    return nothing
 end
