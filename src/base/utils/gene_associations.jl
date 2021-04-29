@@ -46,7 +46,7 @@ end
 Converts a nested string gene reaction array  back into a gene reaction rule string.
 So `[[YIL010W, YLR043C], [YIL010W, YGR209C]]`` becomes `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"``.
 """
-function _unparse_grr(grr::Maybe{GeneAssociation})::Maybe{String}
+function _unparse_grr(grr::GeneAssociation)::String
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")
