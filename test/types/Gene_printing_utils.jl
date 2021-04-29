@@ -1,4 +1,4 @@
-@testset "Gene, gene printing, and gene utils" begin
+@testset "Gene: construction, printing, utils" begin
     g = Gene()
 
     # test defaults
