@@ -45,7 +45,7 @@ installation-related difficulties.
 Using the Julia package manager to install `COBREXA` is straightforward -- after starting Julia, type:
 
 ```julia
-import Pkg; Pkg.add("GigaSOM");
+] add COBREXA
 ```
 
 > All these commands should be run from Julia at the `julia>` prompt.
@@ -63,14 +63,13 @@ The first loading of the `COBREXA` package may take several minutes to complete 
 If you run a non-standard platform (e.g. a customized operating systems), or if you added any modifications to the `COBREXA` source code, you may want to run the test suite to ensure that everything works as expected:
 
 ```julia
-import Pkg; Pkg.test("COBREXA")
+] test COBREXA
 ```
-
-
 
 ## Example
 
 Let's use `COBREXA.jl` to perform classic flux balance analysis on an *E. coli* community.
+
 ```julia
 using COBREXA
 
@@ -85,6 +84,7 @@ model_3 = read_model(model_file)
 # Build an exascale model
 exascale_model = join(model_1, model_2, model_3,...)
 ```
+
 More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
 ## Citations
 
