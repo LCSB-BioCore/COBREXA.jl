@@ -56,7 +56,7 @@ Then you can load the `COBREXA` package and start using it through:
 using COBREXA
 ```
 
-When loading `COBREXA` for the first time it may take several minutes to complete, due to precompilation of the source and dependencies, especially on a fresh Julia installation.
+When using `COBREXA` for the first time it may take several minutes to load, due to precompilation of the source and dependencies, especially on a fresh Julia installation.
 
 ### Test the installation
 
