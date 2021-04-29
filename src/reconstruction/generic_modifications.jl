@@ -105,3 +105,38 @@ function change_objective(
         @objective(opt_model, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
 end
+
+"""
+    knockout(gene_ids::Array{String,1})
+
+Callback function to set bounds of all reactions to zero which are affected by knocking out their respective genes
+"""
+function knockout(gene_ids::Array{String,1})
+    return (model, opt_model) -> begin
+        rxn_ids = reaction_ids(model)
+        s1 = Set(gene_ids)
+        for gene_id in gene_ids
+            for reaction_id in model.genes[gene_id].reactions
+                reaction = model.reactions[reaction_id]
+                blocked_genes = 0
+                for gene_array in reaction.grr
+                    if length(intersect(s1, Set(gene_array))) > 0
+                        blocked_genes += 1
+                    end
+                    if length(reaction.grr) == blocked_genes
+                        set_bound(rxn_ids[reaction_id], opt_model, ub = 0, lb = 0)
+                    end
+                end
+            end
+        end
+    end
+end
+
+"""
+    knockout(gene_id::String)
+
+Callback function to set bounds of a reaction to zero which are affected by knocking out their respective genes
+"""
+function knockout(gene_id::String)
+    return knockout([gene_id])
+end

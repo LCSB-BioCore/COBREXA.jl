@@ -1,3 +1,13 @@
+function _map_reaction_to_genes!(model::StandardModel, rxn::Reaction)
+    if rxn.grr != nothing 
+        for gene_array in rxn.grr
+            for gene in gene_array
+                push!(model.genes[gene].reactions, rxn.id)
+            end
+        end
+    end
+end
+
 """
     add!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
 
@@ -11,6 +21,7 @@ end
 
 function add!(model::StandardModel, rxn::Reaction)
     model.reactions[rxn.id] = rxn
+    _map_reaction_to_genes!(model, rxn)
 end
 
 """
@@ -115,7 +126,14 @@ function rm!(::Type{Reaction}, model::StandardModel, ids::Vector{String})
 end
 
 function rm!(::Type{Reaction}, model::StandardModel, id::String)
-    delete!(model.reactions, id)
+    rxn = pop!(model.reactions, id)
+    if rxn.grr != nothing
+        for gene_array in rxn.grr
+            for gene_id in gene_array
+                delete!(model.genes[gene_id].reactions, id)
+            end
+        end
+    end
 end
 
 """
