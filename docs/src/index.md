@@ -38,20 +38,26 @@ constraint based model:
 
 ```@example intro
 using COBREXA
-using JuMP
 using Tulip
 
 if !isfile("e_coli_core.json")
   download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 end
 
-model = read_model("e_coli_core.json")
+model = load_model(StandardModel, modelpath)
 
-biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-optimizer = Tulip.Optimizer
-sol = fba(model, biomass, optimizer)
+sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_solver_attribute("IPM_IterationsLimit", 110),
+        ],
+    )
+
+sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
 ```
-
 ## Tutorials
 
 **Note:** All tutorials assume that you have downloaded the `e_coli_core.json`
