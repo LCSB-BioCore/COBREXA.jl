@@ -170,7 +170,7 @@ Return the gene reaction rule in string format for reaction with `id` in `model`
 Return `nothing` if not available.
 """
 function reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation}
-    maybemap(x -> x, model.reactions[id].grr)
+    maybemap(identity, model.reactions[id].grr)
 end
 
 """
@@ -180,7 +180,7 @@ Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
 """
 function metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula}
-    maybemap(get_atoms, model.metabolites[id])
+    maybemap(_formula_to_atoms, model.metabolites[id].formula)
 end
 
 """
