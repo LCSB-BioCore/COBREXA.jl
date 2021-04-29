@@ -67,13 +67,6 @@ n_reactions(model::StandardModel)::Int = length(model.reactions)
 
 
 """
-    reaction_ids(model::StandardModel)
-
-Return a mapping of the StandardModel reactions and their respective ids in the stoichiometric matrix
-"""
-reaction_ids(model::StandardModel)::Dict{String, Int} = Dict((v, k) for (k, v) in enumerate(keys(model.reactions)))
-
-"""
     metabolites(model::StandardModel)
 
 Return a vector of metabolite id strings contained in `model`.

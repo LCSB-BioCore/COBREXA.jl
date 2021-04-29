@@ -113,7 +113,7 @@ Callback function to set bounds of all reactions to zero which are affected by k
 """
 function knockout(gene_ids::Array{String,1})
     return (model, opt_model) -> begin
-        rxn_ids = reaction_ids(model)
+        all_reactions = reactions(model)
         s1 = Set(gene_ids)
         for gene_id in gene_ids
             for reaction_id in model.genes[gene_id].reactions
@@ -125,6 +125,12 @@ function knockout(gene_ids::Array{String,1})
                     end
                     if length(reaction.grr) == blocked_genes
                         set_bound(rxn_ids[reaction_id], opt_model, ub = 0, lb = 0)
+                        set_bound(
+                            first(indexin([reaction_id], all_reactions)),
+                            opt_model,
+                            ub = 0,
+                            lb = 0,
+                        )
                     end
                 end
             end
