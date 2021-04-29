@@ -13,13 +13,12 @@
 [cov-img]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG
 [cov-url]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl
 
-[contrib]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
+[contrib-img]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
+[contrib-url]: https://github.com/LCSB-BioCore/COBREXA.jl/blob/lh-polish-readme-1/.github/CONTRIBUTING.md
 
-[![contributions welcome][contrib]](https://github.com/LCSB-BioCore/COBREXA.jl/issues)
-
-| **Documentation** | **Tests** | **Coverage** |
-|:--------------:|:-------:|:---------:|
-| [![docs-img]][docs-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] |
+| **Documentation** | **Tests** | **Coverage** | **How to contribute?** |
+|:--------------:|:-------:|:---------:|:---------:|
+| [![docs-img]][docs-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] |
 
 This is package aims to provide constraint based reconstruction and analysis tools at the exa-scale in Julia.
 
