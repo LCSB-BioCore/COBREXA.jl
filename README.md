@@ -76,22 +76,15 @@ using COBREXA
 model_file = COBREXA.Downloads.download("http://bigg.ucsd.edu/static/models/iJO1366.json", "iJO1366.json")
 
 # Import E. coli models (models have pretty printing)
-model_1 = read_model(model_file)
-model_2 = read_model(model_file)
-model_3 = read_model(model_file)
+model_1 = load_model(model_file)
+model_2 = load_model(model_file)
+model_3 = load_model(model_file)
 
 # Build an exascale model
 exascale_model = join(model_1, model_2, model_3,...)
 ```
 
 More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
-## Citations
-
-1) Ebrahim, A., Lerman, J.A., Palsson, B.O. & Hyduke, D. R. (2013). COBRApy: COnstraints-Based Reconstruction and Analysis for Python. BMC Systems Biology, 7(74). https://doi.org/10.1186/1752-0509-7-74
-2) Heirendt, L., Arreckx, S., Pfau, T. et al. (2019). Creation and analysis of biochemical constraint-based models using the COBRA Toolbox v.3.0. Nat Protoc 14, 639–702. https://doi.org/10.1038/s41596-018-0098-2
-3) Noor, E., Bar-Even, A., Flamholz, A., Lubling, Y., Davidi, D., & Milo, R. (2012). An integrated open framework for thermodynamics of reactions that combines accuracy and coverage. Bioinformatics, 28(15), 2037–2044. https://doi.org/10.1093/bioinformatics/bts317
-4) Chang, A., Jeske, L., Ulbrich, S., Hofmann, J., Koblitz, J., Schomburg, I., Neumann-Schaal, M., Jahn, D., Schomburg, D.. (2021). BRENDA, the ELIXIR core data resource in 2021: new developments and updates. Nucleic Acids Research, 49(D1). https://doi.org/10.1093/nar/gkaa1025
-
 ## Acknowledgements
 
 `COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
