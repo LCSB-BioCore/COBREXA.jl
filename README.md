@@ -10,7 +10,7 @@
 [ci-img]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master
 [ci-url]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml
 
-[cov-img]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=3AE3ZDCJJG
+[cov-img]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=H3WSWOBD7L
 [cov-url]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl
 
 [contrib-img]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
