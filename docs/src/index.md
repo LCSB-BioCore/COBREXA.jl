@@ -20,18 +20,18 @@ time between model construction and predictions.
 
 In this package, you will find the usual COBRA-like functions that interface with user chosen linear programming solvers. 
 We use [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) as the unified interface for many solvers; meaning you can plug in 
-whatever compatible solver you want, such as `Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`, and things will `just work`.
+whatever compatible solver you want, such as [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl), [`GLPK.jl`](https://github.com/jump-dev/GLPK.jl), [`OSQP.jl`](https://github.com/oxfordcontrol/OSQP.jl), and [`Gurobi.jl`](https://github.com/jump-dev/Gurobi.jl), and things will `just work`.
 
 ## Quick start guide
 
-You can install COBREXA using the Julia package manager as usual, by pressing `]` to
-switch to Packaging environment, and typing:
+You can install COBREXA using the Julia package manager: at the REPL, press `]` to
+switch to the packaging environment, and type:
 ```
 add COBREXA
 ```
-Note, you will need to have at least a linear programming solver installed as well
-to use the analysis functions. For a pure Julia solution we recommend `Tulip.jl`,
-but any solver supported by `JuMP` will also work, e.g. `Gurobi.jl`.
+Note, you will need to have at least one linear programming solver installed
+to use the analysis functions. For a pure Julia solution we recommend [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl),
+but any solver supported by [`JuMP.jl`](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers) will also work, e.g. [`Gurobi.jl`](https://github.com/jump-dev/Gurobi.jl).
 
 With the package installed, let's perform a simple flux balance analysis on a
 constraint based model:
@@ -59,10 +59,7 @@ model as above.
 
 ```@contents
 Pages = [
-    "background.md",
     "tutorials.md",
-    "functions.md",
-    "howToContribute.md",
 ]
 Depth = 2
 ```
