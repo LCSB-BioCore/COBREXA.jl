@@ -9,7 +9,7 @@ If no annotation overlap is found, return `nothing`.
 """
 function check_duplicate_annotations(
     check_gene::Gene,
-    genes::OrderedDict{String,Gene};
+    gs::OrderedDict{String,Gene};
     inspect_annotations = [
         "ncbigene",
         "ncbigi",
@@ -19,12 +19,12 @@ function check_duplicate_annotations(
         "uniprot",
     ],
 )::Union{Nothing,String}
-    for (k, gene) in genes
+    for (k, gene) in gs
         for anno in inspect_annotations
             if length(
                 intersect(
-                    get(gene.annotation, anno, ["c1"]),
-                    get(check_gene.annotation, anno, "c2"),
+                    get(gene.annotations, anno, ["c1"]),
+                    get(check_gene.annotations, anno, "c2"),
                 ),
             ) != 0
                 return k

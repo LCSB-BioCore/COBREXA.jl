@@ -1,8 +1,6 @@
 
 """
     _formula_to_atoms(f::String)::Dict{String,Int}
-
-
 """
 function _formula_to_atoms(f::String)::MetaboliteFormula
     res = Dict{String,Int}()
@@ -17,8 +15,6 @@ end
 
 """
     _atoms_to_formula(f::String)::Dict{String,Int}
-
-
 """
 function _atoms_to_formula(f::MetaboliteFormula)::String
     return join(["$elem$n" for (elem, n) in f])

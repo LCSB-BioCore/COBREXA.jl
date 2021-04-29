@@ -27,7 +27,7 @@
     r1.grr = [["g1", "g2"], ["g3"]]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
-    r1.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
+    r1.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     r1.objective_coefficient = 1.0
 
     @test all(
@@ -86,7 +86,7 @@
     rxns = [r1, r2, r3]
 
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
-    r4.annotation = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
+    r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
     rd = OrderedDict(r.id => r for r in rxns)

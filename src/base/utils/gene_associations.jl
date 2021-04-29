@@ -25,10 +25,7 @@ Parse a gene reaction rule string `string_rule` into a nested string gene reacti
 Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
 So `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`` becomes `[[YIL010W, YLR043C], [YIL010W, YGR209C]]`` as a nested string array.
 """
-function _parse_grr(s::String)
-    if s == "" || isnothing(s)
-        return Vector{Vector{String}}()
-    end
+function _parse_grr(s::String)::GeneAssociation
     # first get the gene id list in string format
     gene_reaction_rules = Vector{Vector{String}}()
     or_genes = split(s, r"\s?(or|OR|(\|\|)|\|)\s?") # separate or terms
@@ -45,7 +42,7 @@ end
 Converts a nested string gene reaction array  back into a gene reaction rule string.
 So `[[YIL010W, YLR043C], [YIL010W, YGR209C]]`` becomes `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"``.
 """
-function _unparse_grr(grr::Vector{Vector{String}})
+function _unparse_grr(grr::GeneAssociation)::String
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")

@@ -30,8 +30,8 @@ function check_duplicate_annotations(
             for anno in inspect_annotations
                 if length(
                     intersect(
-                        get(met.annotation, anno, ["c1"]),
-                        get(cmet.annotation, anno, ["c2"]),
+                        get(met.annotations, anno, ["c1"]),
+                        get(cmet.annotations, anno, ["c2"]),
                     ),
                 ) != 0
                     return k
@@ -51,7 +51,7 @@ See also: [`check_duplicate_annotations`](@ref), [`check_same_formula`](@ref)
 """
 function get_atoms(met::Metabolite)
     atoms = Dict{String,Int}()
-    length(met.formula) == 0 && return atoms
+    isnothing(met.formula) && return nothing
     for m in eachmatch(r"([A-Z]{1})([a-z]?)(\d*)", met.formula)
         element = match(r"([A-Z]{1})([a-z]?)", m.match)
         number = match(r"\d\d*", m.match)

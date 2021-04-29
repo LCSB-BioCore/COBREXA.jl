@@ -52,8 +52,8 @@ function check_duplicate_annotations(
         for anno in inspect_annotations
             if length(
                 intersect(
-                    get(crxn.annotation, anno, ["c1"]),
-                    get(rxn.annotation, anno, ["c2"]),
+                    get(crxn.annotations, anno, ["c1"]),
+                    get(rxn.annotations, anno, ["c2"]),
                 ),
             ) != 0
                 return k

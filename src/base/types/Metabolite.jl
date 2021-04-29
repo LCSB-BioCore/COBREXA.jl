@@ -14,12 +14,12 @@ annotation :: Dict{String, Union{Vector{String}, String}}
 """
 mutable struct Metabolite
     id::String
-    name::Union{String,Nothing}
-    formula::Union{String,Nothing}
-    charge::Union{Int,Nothing}
-    compartment::Union{String,Nothing}
-    notes::Dict{String,Vector{String}}
-    annotation::Dict{String,Vector{String}} # everything is a String[]
+    name::Maybe{String}
+    formula::Maybe{String}
+    charge::Maybe{Int}
+    compartment::Maybe{String}
+    notes::Notes
+    annotations::Annotations # everything is a String[]
 
     Metabolite(
         id = "";
@@ -27,7 +27,7 @@ mutable struct Metabolite
         formula = nothing,
         charge = nothing,
         compartment = nothing,
-        notes = Dict{String,Vector{String}}(),
-        annotation = Dict{String,Vector{String}}(),
-    ) = new(id, name, formula, charge, compartment, notes, annotation)
+        notes = Notes(),
+        annotations = Annotations(),
+    ) = new(id, name, formula, charge, compartment, notes, annotations)
 end

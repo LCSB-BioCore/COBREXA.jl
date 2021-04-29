@@ -6,7 +6,7 @@
     m1.charge = 1
     m1.compartment = "c"
     m1.notes = Dict("notes" => ["blah", "blah"])
-    m1.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ads", "asds"])
+    m1.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ads", "asds"])
 
     @test all(
         contains.(
@@ -21,18 +21,16 @@
 
     m3 = Metabolite("met3")
     m3.formula = "X"
-    m3.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ad2s", "asds"])
-
-    mets = [m1, m2, m3]
+    m3.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ad2s", "asds"])
 
     ats = get_atoms(m1)
     @test ats["C"] == 6 && ats["N"] == 1
 
     m4 = Metabolite("met4")
     m4.formula = "X"
-    m4.annotation = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
+    m4.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
 
-    md = OrderedDict(m.id => m for m in mets)
+    md = OrderedDict(m.id => m for m in [m1, m2, m3])
     id = check_duplicate_annotations(m4, md)
     @test isnothing(id)
 end
