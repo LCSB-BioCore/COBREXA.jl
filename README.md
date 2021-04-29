@@ -73,45 +73,18 @@ With the package installed and tested, let's perform simple flux balance analysi
 using COBREXA
 using Tulip
 
-if !isfile("e_coli_core.json")
-  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+if !isfile("e_coli_core.xml")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 end
 
-model = load_model(StandardModel, modelpath)
+model = load_model("e_coli_core.xml")
 
-sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 110),
-        ],
-    )
+sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
 
-sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
+sol["BIOMASS_Ecoli_core_w_GAM"] # 0.87
 ```
 
-While this is pleasing, `COBREXA` was designed for exa-scale analysis. Let's construct a community model
-and unleash some of the power contained in `COBREXA`.
-
-```julia
-community_model = join(repeat(model, 1000)) # TODO: make this work
-
-sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 110),
-        ],
-    )
-
-sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
-```
-
-More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
+More functionality is described in the documentation, e.g. model construction and exa-scale analysis in pure Julia.
 
 ## Acknowledgements
 
