@@ -248,3 +248,39 @@ function is_mass_balanced(rxn::Reaction, model::StandardModel)
 
     return all(sum(values(atom_balances)) == 0), atom_balances
 end
+
+"""
+    knockout!(model::StandardModel, gene_id::String)
+
+Knockout a gene in the model, which will remove all affected reactions
+"""
+function knockout!(model::StandardModel, gene_id::String)
+    for reaction_id in pop!(model.genes, gene_id).reactions
+        reaction = model.reactions[reaction_id]
+        for (i, gene_array) in enumerate(reaction.grr)
+            for gene in gene_array
+                # AND inside the gene_array, so destroy as soon as one is missing
+                if gene == gene_id
+                    deleteat!(reaction.grr, i)
+                    break
+                end
+            end
+
+            # OR outside, so all have to be deleted for the reaction to be deleted
+            if length(reaction.grr) == 0
+                rm!(Reaction, model, reaction.id)
+            end
+        end
+    end
+    return nothing
+end
+"""
+    knockout!(model::StandardModel, gene_ids::Vector{String})
+
+Knockout genes in the model, which will remove all affected reactions
+"""
+function knockout!(model::StandardModel, gene_ids::Vector{String})
+    for gene_id in gene_ids
+        knockout!(model, gene_id)
+    end
+end

@@ -14,7 +14,13 @@ mutable struct Gene
     name::Maybe{String}
     notes::Notes
     annotations::Annotations # everything is a String[]
+    reactions::Set{String}
 
-    Gene(id::String = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
-        new(id, name, notes, annotations)
+    Gene(
+        id::String = ""; 
+        name = nothing, 
+        notes = Notes(), 
+        annotations = Annotations(), 
+        reactions = Set{String}()
+        ) = new(id, name, notes, annotations, reactions)
 end
