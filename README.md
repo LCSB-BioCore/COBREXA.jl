@@ -2,7 +2,7 @@
     <img src="docs/src/assets/header.svg?maxAge=0" width="80%">
 </div>
 
-# Constraint-Based Reconstruction and EXascale Analysis
+# COnstraint-Based Reconstruction and EXascale Analysis
 
 [docs-img]:https://img.shields.io/badge/docs-latest-blue.svg
 [docs-url]: http://lcsb-biocore.github.io/COBREXA.jl
@@ -20,23 +20,24 @@
 |:--------------:|:-------:|:---------:|:---------:|
 | [![docs-img]][docs-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] |
 
-This is package aims to provide constraint based reconstruction and analysis tools at the exa-scale in Julia.
+This is package provides constraint-based reconstruction and analysis tools for exa-scale metabolic models in Julia.
 
 ## How to get started
 
 ### Prerequisites and requirements
 
 - **Operating system**: Use Linux (Debian, Ubuntu or centOS), MacOS, or Windows 10 as your operating system. `COBREXA` has been tested on these systems.
-- **Julia language**: In order to use `COBREXA`, you need to install Julia 1.0 or higher. Download and installation instructions for Julia are [here](https://julialang.org/downloads/).
-- **Hardware requirements**: `COBREXA` runs on any hardware that can run Julia, and can easily use resources from multiple computers interconnected by network. For processing large datasets, you require to ensure that the total amount of available RAM on all involved computers is larger than the data size.
+- **Julia language**: In order to use `COBREXA`, you need to install Julia 1.0 or higher. Download and follow the installation instructions for Julia [here](https://julialang.org/downloads/).
+- **Hardware requirements**: `COBREXA` runs on any hardware that can run Julia, and can easily use resources from multiple computers interconnected on a network. For processing large datasets, you are required to ensure that the total amount of available RAM on all involved computers is larger than the data size.
+- **Optimization solvers**: `COBREXA` uses [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) to formulate optimization problems and is compatible with all [`JuMP` supported solvers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers). However, to perform analysis at least one of thes solvers need to be installed on your machine. For a pure Julia we recommend [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl), but any other solver would also work. 
 
 :bulb: If you are new to Julia, it is adviseable to [familiarize youself with
 the environment
-first](https://docs.julialang.org/en/v1/manual/getting-started/).  Use the full
-Julia [documentation](https://docs.julialang.org) to solve various possible
+first](https://docs.julialang.org/en/v1/manual/getting-started/).  Use the Julia [documentation](https://docs.julialang.org) to solve various
 language-related issues, and the [Julia package manager
 docs](https://julialang.github.io/Pkg.jl/v1/getting-started/) to solve
-installation-related difficulties.
+installation-related difficulties. Of course, [the Julia channel](https://discourse.julialang.org/) is another fast and easy way to find
+answers to Julia specific questions.
 
 
 ### Installation
@@ -49,13 +50,13 @@ Using the Julia package manager to install `COBREXA` is straightforward -- after
 
 > All these commands should be run from Julia at the `julia>` prompt.
 
-Then you can load the `COBREXA` package and start using it:
+Then you can load the `COBREXA` package and start using it through:
 
 ```julia
 using COBREXA
 ```
 
-The first loading of the `COBREXA` package may take several minutes to complete due to precompilation of the sources, especially on a fresh Julia installation.
+When loading `COBREXA` for the first time it may take several minutes to complete, due to precompilation of the source and dependencies, especially on a fresh Julia installation.
 
 ### Test the installation
 
@@ -65,26 +66,53 @@ If you run a non-standard platform (e.g. a customized operating systems), or if 
 ] test COBREXA
 ```
 
-## Example
-
-Let's use `COBREXA.jl` to perform classic flux balance analysis on an *E. coli* community.
+## Quick start guide
+With the package installed and tested, let's perform simple flux balance analysis on a constraint based model! 
 
 ```julia
 using COBREXA
+using Tulip
 
-# download the model
-model_file = COBREXA.Downloads.download("http://bigg.ucsd.edu/static/models/iJO1366.json", "iJO1366.json")
+if !isfile("e_coli_core.json")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+end
 
-# Import E. coli models (models have pretty printing)
-model_1 = load_model(model_file)
-model_2 = load_model(model_file)
-model_3 = load_model(model_file)
+model = load_model(StandardModel, modelpath)
 
-# Build an exascale model
-exascale_model = join(model_1, model_2, model_3,...)
+sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_solver_attribute("IPM_IterationsLimit", 110),
+        ],
+    )
+
+sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
+```
+
+While this is pleasing, `COBREXA` was designed for exa-scale analysis. Let's construct a community model
+and unleash some of the power contained in `COBREXA`.
+
+```julia
+community_model = join(repeat(model, 1000)) # TODO: make this work
+
+sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_solver_attribute("IPM_IterationsLimit", 110),
+        ],
+    )
+
+sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
 ```
 
 More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
+
 ## Acknowledgements
 
 `COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
