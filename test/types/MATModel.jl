@@ -7,8 +7,9 @@
     )
 
     mm = load_mat_model(filename)
-    cm = convert(CoreModel, mm)
-    mm2 = convert(MATModel, cm)
+    sm = convert(StandardModel, mm)
+    mm2 = convert(MATModel, sm)
 
+    @test Set(reactions(mm)) == Set(reactions(sm))
     @test Set(reactions(mm)) == Set(reactions(mm2))
 end
