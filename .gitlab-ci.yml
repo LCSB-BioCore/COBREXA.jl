@@ -89,6 +89,7 @@ doc-gource:
   stage: documentation
   image: $CI_REGISTRY/r3/docker/gource
   script: [ "true" ]
+  variables: { RUN_LOCAL: "true", DEFAULT_WORKSPACE: $CI_BUILDS_DIR }
   <<: *global_settings
 
 # Test Docker run with Julia v1.6
