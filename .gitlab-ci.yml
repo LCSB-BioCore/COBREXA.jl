@@ -82,6 +82,15 @@ doc-tests:v1.6:
     - julia --project=@. --color=yes test/doctests.jl
   <<: *global_settings
 
+# Documentation history
+# --------------------------------------
+
+doc-gource:
+  stage: documentation
+  image: $CI_REGISTRY/r3/docker/gource
+  script: [ "true" ]
+  <<: *global_settings
+
 # Test Docker run with Julia v1.6
 # --------------------------------------
 
