@@ -31,7 +31,7 @@ This is package provides constraint-based reconstruction and analysis tools for 
 - **Hardware requirements**: `COBREXA` runs on any hardware that can run Julia, and can easily use resources from multiple computers interconnected on a network. For processing large datasets, you are required to ensure that the total amount of available RAM on all involved computers is larger than the data size.
 - **Optimization solvers**: `COBREXA` uses [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) to formulate optimization problems and is compatible with all [`JuMP` supported solvers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers). However, to perform analysis at least one of these solvers needs to be installed on your machine. For a pure Julia implementation, we recommend [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl), but any other solver would also work. 
 
-:bulb: If you are new to Julia, it is adviseable to [familiarize youself with
+:bulb: If you are new to Julia, it is advisable to [familiarize yourself with
 the environment
 first](https://docs.julialang.org/en/v1/manual/getting-started/).  Use the Julia [documentation](https://docs.julialang.org) to solve various
 language-related issues, and the [Julia package manager
@@ -56,7 +56,7 @@ Then you can load the `COBREXA` package and start using it through:
 using COBREXA
 ```
 
-When using `COBREXA` for the first time it may take several minutes to load, due to precompilation of the source and dependencies, especially on a fresh Julia installation.
+When using `COBREXA` for the first time it may take several minutes to load, due to pre-compilation of the source code and dependencies, especially on a fresh Julia installation.
 
 ### Test the installation
 
@@ -90,8 +90,8 @@ More functionality is described in the documentation, e.g. model construction an
 
 `COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
 the University of Luxembourg ([uni.lu/lcsb](https://www.uni.lu/lcsb)),
-cooperating with Institute for Quantitateve and Theoretical Biology of Heinrich
-Heine University, Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
+cooperating with the Institute for Quantitative and Theoretical Biology at the Heinrich
+Heine University in Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
 
 The development was supported by European Union's Horizon 2020 Programme under
 PerMedCoE project ([permedcoe.eu](https://www.permedcoe.eu/)) agreement no.
