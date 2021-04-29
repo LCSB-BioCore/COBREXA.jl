@@ -14,12 +14,9 @@ makedocs(
     linkcheck = !("skiplinks" in ARGS),
     pages = [
         "Home" => "index.md",
+        "Background" => "background.md",
+        "Tutorials" => "tutorials.md",
         "Functions" => "functions.md",
         "How to contribute" => "howToContribute.md",
-        "Model Structure" => "model_structure.md",
-        "Model IO" => "io.md",
-        "Model Construction" => "model_construction.md",
-        "Optimization Based Analysis Tools" => "basic_analysis.md",
-        "Sampling Tools" => "sampling_tools.md",
     ],
 )
