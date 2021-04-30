@@ -98,7 +98,7 @@ generator:gource:
 # Converter for tutorials
 # --------------------------------------
 
-generator:tutorials:
+generator:notebooks:
   stage: generator
   image: docker:19.03.13
   tags:
@@ -139,6 +139,7 @@ pages:
   stage: documentation
   dependencies:
     - generator:gource
+    - generator:notebooks
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
