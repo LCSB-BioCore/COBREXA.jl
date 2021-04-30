@@ -1,5 +1,6 @@
 stages:
   - formatter
+  - generator
   - documentation
   - test-containers
   - test-required
@@ -73,22 +74,11 @@ format:
     - git push origin $CI_COMMIT_BRANCH || true
   <<: *global_settings
 
-# Documentation tests
-# --------------------------------------
-
-doc-tests:v1.6:
-  stage: documentation
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  script:
-    - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
-    - julia --project=@. --color=yes test/doctests.jl
-  <<: *global_settings
-
 # Documentation history
 # --------------------------------------
 
-doc-gource:
-  stage: documentation
+generator:gource:
+  stage: generator
   image: docker:19.03.13
   tags:
     - privileged
@@ -104,6 +94,35 @@ doc-gource:
     paths: ['output.gif']
     expire_in: 1 week
   <<: *global_settings
+
+
+# Documentation tests
+# --------------------------------------
+
+doc-tests:v1.6:
+  stage: documentation
+  image: $CI_REGISTRY/r3/docker/julia-custom
+  script:
+    - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
+    - julia --project=@. --color=yes test/doctests.jl
+  <<: *global_settings
+
+# Deploy the documentation
+# --------------------------------------
+
+pages:
+  stage: documentation
+  dependencies:
+    - generator:gource
+  image: $CI_REGISTRY/r3/docker/julia-custom
+  script:
+    - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+    - julia --project=docs --color=yes docs/make.jl
+    - mv docs/build public # move to the directory picked up by Gitlab pages
+  artifacts:
+    paths:
+      - public
+  <<: *global_settings_master
 
 # Test Docker run with Julia v1.6
 # --------------------------------------
@@ -179,19 +198,3 @@ mac:v1.6:
   <<: *global_testing_v16
   <<: *global_testing_mac
 
-# Deploy the documentation
-# --------------------------------------
-
-pages:
-  stage: documentation
-  dependencies:
-    - doc-gource
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  script:
-    - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
-    - julia --project=docs --color=yes docs/make.jl
-    - mv docs/build public # move to the directory picked up by Gitlab pages
-  artifacts:
-    paths:
-      - public
-  <<: *global_settings_master
