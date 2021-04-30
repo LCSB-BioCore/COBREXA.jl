@@ -113,6 +113,11 @@ end
 Callback function to set bounds of all reactions to zero which are affected by knocking out their respective genes
 """
 function knockout(gene_ids::Array{String,1})
+    # Dev note: the three nested for loops are inefficiency. However:
+    # - gene_ids (user input) will be probably only very few items
+    # - model.genes[gene_id].reactions are just a few reactions (most genes don't code for a lot of reactions)
+    # - reaction.grr also should only hold few items (reactions aren't coded by many different combinations of genes)
+    # Let's avoid premature optimization for now and see if anyone ever has problems with this
     return (model, opt_model) -> begin
         all_reactions = reactions(model)
         s1 = Set(gene_ids)
