@@ -2,7 +2,7 @@ function _map_reaction_to_genes!(model::StandardModel, rxn::Reaction)
     if rxn.grr != nothing
         for gene_array in rxn.grr
             for gene in gene_array
-                push!(model.genes[gene].reactions, rxn.id)
+                push!(model.genes[gene].associated_reactions, rxn.id)
             end
         end
     end
@@ -130,7 +130,7 @@ function rm!(::Type{Reaction}, model::StandardModel, id::String)
     if rxn.grr != nothing
         for gene_array in rxn.grr
             for gene_id in gene_array
-                delete!(model.genes[gene_id].reactions, id)
+                delete!(model.genes[gene_id].associated_reactions, id)
             end
         end
     end
@@ -170,6 +170,7 @@ function rm!(::Type{Gene}, model::StandardModel, ids::Vector{String})
     end
 end
 
+# function rm!(::Type{Gene}, model::StandardModel, id::String, associated_reactions::Bool)
 function rm!(::Type{Gene}, model::StandardModel, id::String)
     delete!(model.genes, id)
 end

@@ -255,6 +255,15 @@ function gene_annotations(model::StandardModel, id::String)::Maybe{Annotations}
 end
 
 """
+    gene_associated_reactions(model::StandardModel, id::String)::Set{String}
+
+Return the reactions associated with gene `id` in `model`.
+"""
+function gene_associated_reactions(model::StandardModel, id::String)::Set{String}
+    model.genes[id].associated_reactions
+end
+
+"""
     reaction_notes(model::StandardModel, id::String)::Notes
 
 Return the notes associated with reaction `id` in `model`.
