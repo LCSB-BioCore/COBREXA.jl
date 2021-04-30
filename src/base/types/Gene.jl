@@ -17,10 +17,10 @@ mutable struct Gene
     reactions::Set{String}
 
     Gene(
-        id::String = ""; 
-        name = nothing, 
-        notes = Notes(), 
-        annotations = Annotations(), 
-        reactions = Set{String}()
-        ) = new(id, name, notes, annotations, reactions)
+        id::String = "";
+        name = nothing,
+        notes = Notes(),
+        annotations = Annotations(),
+        reactions = Set{String}(),
+    ) = new(id, name, notes, annotations, reactions)
 end
