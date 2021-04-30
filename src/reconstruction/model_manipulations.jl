@@ -1,5 +1,5 @@
 function _map_reaction_to_genes!(model::StandardModel, rxn::Reaction)
-    if rxn.grr != nothing 
+    if rxn.grr != nothing
         for gene_array in rxn.grr
             for gene in gene_array
                 push!(model.genes[gene].reactions, rxn.id)
