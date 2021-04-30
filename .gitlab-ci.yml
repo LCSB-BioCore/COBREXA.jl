@@ -87,7 +87,9 @@ doc-tests:v1.6:
 
 doc-gource:
   stage: documentation
-  image: docker:latest
+  image: docker:19.03.13
+  tags:
+    - privileged
   services:
     - name: docker:19.03.13-dind
       command: ["--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
