@@ -109,7 +109,10 @@ generator:tutorials:
   before_script:
     - mkdir rendered-notebooks
   script:
-    - docker run --rm -v `pwd`:/source jgoldfar/pandoc-nbconvert-docker nbconvert --to html docs/notebooks/*.ipynb
+    -
+      if [ $(ls docs/notebooks/*.ipynb | wc -l) -ge  0 ]; then
+        docker run --rm -v `pwd`:/source jgoldfar/pandoc-nbconvert-docker nbconvert --to html docs/notebooks/*.ipynb
+      fi
   after_script:
     - mv docs/notebooks/*.html rendered-notebooks
   artifacts:
