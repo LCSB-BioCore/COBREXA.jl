@@ -122,7 +122,7 @@ function knockout(gene_ids::Array{String,1})
         all_reactions = reactions(model)
         s1 = Set(gene_ids)
         for gene_id in gene_ids
-            for reaction_id in model.genes[gene_id].reactions
+            for reaction_id in gene_associated_reactions(model, gene_id)
                 reaction = model.reactions[reaction_id]
                 blocked_genes = 0
                 for gene_array in reaction.grr

@@ -7,6 +7,7 @@ id :: String
 name :: Union{String, Nothing}
 notes :: Dict{String, Vector{String}}
 annotation :: Dict{String, Union{Vector{String}, String}}
+associated_reactions :: Set{String}
 ````
 """
 mutable struct Gene

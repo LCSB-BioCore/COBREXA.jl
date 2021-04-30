@@ -260,7 +260,7 @@ function knockout!(model::StandardModel, gene_id::String)
     # - model.genes[gene_id].reactions are just a few reactions (most genes don't code for a lot of reactions)
     # - reaction.grr also should only hold few items (reactions aren't coded by many different combinations of genes)
     # Let's avoid premature optimization for now and see if anyone ever has problems with this
-    for reaction_id in pop!(model.genes, gene_id).reactions
+    for reaction_id in gene_associated_reactions(model, gene_id)
         reaction = model.reactions[reaction_id]
         for (i, gene_array) in enumerate(reaction.grr)
             for gene in gene_array
