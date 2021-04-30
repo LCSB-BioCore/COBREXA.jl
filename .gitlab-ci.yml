@@ -99,6 +99,10 @@ doc-gource:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
+  artifacts:
+    expose_as: 'animatedHistory'
+    paths: ['output.gif']
+    expire_in: 1 week
   <<: *global_settings
 
 # Test Docker run with Julia v1.6
@@ -180,6 +184,8 @@ mac:v1.6:
 
 pages:
   stage: documentation
+  dependencies:
+    - doc-gource
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
