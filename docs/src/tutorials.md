@@ -6,7 +6,7 @@ TODO
 ## Tutorial 1 - Loading models
 See the notebook.
 
-## Tutorial 2: Joining and reconstructing models
+## Tutorial 2: Using the generic interface
 TODO
 
 ## Tutorial 3: Flux balance analysis
