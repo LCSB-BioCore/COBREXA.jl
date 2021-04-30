@@ -1,5 +1,6 @@
 stages:
   - formatter
+  - generator
   - documentation
   - test-containers
   - test-required
@@ -8,6 +9,8 @@ stages:
 
 variables:
     GIT_STRATEGY: clone
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
 
 .global_settings: &global_settings
   rules:
@@ -63,13 +66,35 @@ format:
   script:
     - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
     - git status
-    - git remote set-url origin "https://$CI_USER_NAME:$GIT_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
+    - git remote set-url origin "https://$CI_USER_NAME:$GITHUB_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
     - git config --global user.name $CI_USER_NAME
     - git config --global user.email $CI_USER_EMAIL
     - git checkout $CI_COMMIT_BRANCH || true
     - git commit -am "automatic formatting changes" || true
     - git push origin $CI_COMMIT_BRANCH || true
   <<: *global_settings
+
+# Documentation history
+# --------------------------------------
+
+generator:gource:
+  stage: generator
+  image: docker:19.03.13
+  tags:
+    - privileged
+  services:
+    - name: docker:19.03.13-dind
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+  before_script:
+    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
+  script:
+    - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
+  artifacts:
+    expose_as: 'animatedHistory'
+    paths: ['output.gif']
+    expire_in: 1 week
+  <<: *global_settings
+
 
 # Documentation tests
 # --------------------------------------
@@ -81,6 +106,23 @@ doc-tests:v1.6:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
   <<: *global_settings
+
+# Deploy the documentation
+# --------------------------------------
+
+pages:
+  stage: documentation
+  dependencies:
+    - generator:gource
+  image: $CI_REGISTRY/r3/docker/julia-custom
+  script:
+    - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+    - julia --project=docs --color=yes docs/make.jl
+    - mv docs/build public # move to the directory picked up by Gitlab pages
+  artifacts:
+    paths:
+      - public
+  <<: *global_settings_master
 
 # Test Docker run with Julia v1.6
 # --------------------------------------
@@ -156,17 +198,3 @@ mac:v1.6:
   <<: *global_testing_v16
   <<: *global_testing_mac
 
-# Deploy the documentation
-# --------------------------------------
-
-pages:
-  stage: documentation
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  script:
-    - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
-    - julia --project=docs --color=yes docs/make.jl
-    - mv docs/build public # move to the directory picked up by Gitlab pages
-  artifacts:
-    paths:
-      - public
-  <<: *global_settings_master
