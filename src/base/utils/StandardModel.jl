@@ -255,6 +255,11 @@ end
 Knockout a gene in the model, which will remove all affected reactions
 """
 function knockout!(model::StandardModel, gene_id::String)
+    # Dev note: the three nested for loops are inefficiency. However:
+    # - gene_ids (user input) will be probably only very few items
+    # - model.genes[gene_id].reactions are just a few reactions (most genes don't code for a lot of reactions)
+    # - reaction.grr also should only hold few items (reactions aren't coded by many different combinations of genes)
+    # Let's avoid premature optimization for now and see if anyone ever has problems with this
     for reaction_id in pop!(model.genes, gene_id).reactions
         reaction = model.reactions[reaction_id]
         for (i, gene_array) in enumerate(reaction.grr)
