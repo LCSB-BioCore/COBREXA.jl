@@ -112,7 +112,7 @@ end
 
 Callback function to set bounds of all reactions to zero which are affected by knocking out their respective genes
 """
-function knockout(gene_ids::Array{String,1})
+function knockout(gene_ids::Vector{String})
     # Dev note: the three nested for loops are inefficiency. However:
     # - gene_ids (user input) will be probably only very few items
     # - model.genes[gene_id].reactions are just a few reactions (most genes don't code for a lot of reactions)
@@ -120,24 +120,20 @@ function knockout(gene_ids::Array{String,1})
     # Let's avoid premature optimization for now and see if anyone ever has problems with this
     return (model, opt_model) -> begin
         all_reactions = reactions(model)
-        s1 = Set(gene_ids)
         for gene_id in gene_ids
             for reaction_id in gene_associated_reactions(model, gene_id)
-                reaction = model.reactions[reaction_id]
-                blocked_genes = 0
-                for gene_array in reaction.grr
-                    if length(intersect(s1, Set(gene_array))) > 0
-                        blocked_genes += 1
-                    end
-                    if length(reaction.grr) == blocked_genes
-                        set_bound(rxn_ids[reaction_id], opt_model, ub = 0, lb = 0)
-                        set_bound(
-                            first(indexin([reaction_id], all_reactions)),
-                            opt_model,
-                            ub = 0,
-                            lb = 0,
-                        )
-                    end
+                if all(
+                    any(occursin.(gene_ids, gene_array)) > 0 for
+                    gene_array in reaction_gene_association(model, reaction_id)
+                )
+                    set_bound(
+                        first(indexin([reaction_id], all_reactions)),
+                        opt_model,
+                        ub = 0,
+                        lb = 0,
+                    )
+                    # Also set bounds for model object
+                    set_bound(model, reaction_id, ub = 0, lb = 0)
                 end
             end
         end
