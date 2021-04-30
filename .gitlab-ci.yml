@@ -96,7 +96,7 @@ doc-gource:
     - name: docker:19.03.13-dind
       command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   script:
-    - docker run -v $(pwd):/visualization gource $CI_REGISTRY/r3/docker/gource
+    - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
   <<: *global_settings
 
 # Test Docker run with Julia v1.6
