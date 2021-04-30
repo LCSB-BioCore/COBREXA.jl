@@ -88,6 +88,9 @@ doc-tests:v1.6:
 doc-gource:
   stage: documentation
   image: docker:19.03.13
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   tags:
     - privileged
   services:
