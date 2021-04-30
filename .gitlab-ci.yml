@@ -87,9 +87,12 @@ doc-tests:v1.6:
 
 doc-gource:
   stage: documentation
-  image: $CI_REGISTRY/r3/docker/gource
-  script: [ "true" ]
-  variables: { RUN_LOCAL: "true", DEFAULT_WORKSPACE: $CI_BUILDS_DIR }
+  image: docker:latest
+  services:
+    - name: docker:19.03.13-dind
+      command: ["--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+  script:
+    - docker run -v $(pwd):/visualization gource $CI_REGISTRY/r3/docker/gource
   <<: *global_settings
 
 # Test Docker run with Julia v1.6
