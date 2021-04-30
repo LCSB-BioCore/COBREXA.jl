@@ -31,7 +31,7 @@ This is package provides constraint-based reconstruction and analysis tools for 
 - **Hardware requirements**: `COBREXA` runs on any hardware that can run Julia, and can easily use resources from multiple computers interconnected on a network. For processing large datasets, you are required to ensure that the total amount of available RAM on all involved computers is larger than the data size.
 - **Optimization solvers**: `COBREXA` uses [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) to formulate optimization problems and is compatible with all [`JuMP` supported solvers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers). However, to perform analysis at least one of these solvers needs to be installed on your machine. For a pure Julia implementation, we recommend [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl), but any other solver would also work. 
 
-:bulb: If you are new to Julia, it is adviseable to [familiarize youself with
+:bulb: If you are new to Julia, it is advisable to [familiarize yourself with
 the environment
 first](https://docs.julialang.org/en/v1/manual/getting-started/).  Use the Julia [documentation](https://docs.julialang.org) to solve various
 language-related issues, and the [Julia package manager
@@ -56,7 +56,7 @@ Then you can load the `COBREXA` package and start using it through:
 using COBREXA
 ```
 
-When using `COBREXA` for the first time it may take several minutes to load, due to precompilation of the source and dependencies, especially on a fresh Julia installation.
+When using `COBREXA` for the first time it may take several minutes to load, due to pre-compilation of the source code and dependencies, especially on a fresh Julia installation.
 
 ### Test the installation
 
@@ -73,52 +73,25 @@ With the package installed and tested, let's perform simple flux balance analysi
 using COBREXA
 using Tulip
 
-if !isfile("e_coli_core.json")
-  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+if !isfile("e_coli_core.xml")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 end
 
-model = load_model(StandardModel, modelpath)
+model = load_model("e_coli_core.xml")
 
-sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 110),
-        ],
-    )
+sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
 
-sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
+sol["BIOMASS_Ecoli_core_w_GAM"] # 0.87
 ```
 
-While this is pleasing, `COBREXA` was designed for exa-scale analysis. Let's construct a community model
-and unleash some of the power contained in `COBREXA`.
-
-```julia
-community_model = join(repeat(model, 1000)) # TODO: make this work
-
-sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 110),
-        ],
-    )
-
-sol["BIOMASS_Ecoli_core_w_GAM"] # 1.057
-```
-
-More funcionality is described in the documention, e.g. model construction and analysis in pure Julia.
+More functionality is described in the documentation, e.g. model construction and exa-scale analysis in pure Julia.
 
 ## Acknowledgements
 
 `COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
 the University of Luxembourg ([uni.lu/lcsb](https://www.uni.lu/lcsb)),
-cooperating with Institute for Quantitateve and Theoretical Biology of Heinrich
-Heine University, Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
+cooperating with the Institute for Quantitative and Theoretical Biology at the Heinrich
+Heine University in Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
 
 The development was supported by European Union's Horizon 2020 Programme under
 PerMedCoE project ([permedcoe.eu](https://www.permedcoe.eu/)) agreement no.
