@@ -110,7 +110,7 @@ generator:notebooks:
     - mkdir rendered-notebooks
   script:
     - |-
-         if [[ $(ls docs/notebooks/*.ipynb | wc -l) -ge  0 ]]; then
+         if [ $(find docs/notebooks -type f -name "*.ipynb" | wc -l) -ge  0 ]; then
            docker run --rm -v `pwd`:/source jgoldfar/pandoc-nbconvert-docker nbconvert --to html docs/notebooks/*.ipynb
            mv docs/notebooks/*.html rendered-notebooks
          fi
