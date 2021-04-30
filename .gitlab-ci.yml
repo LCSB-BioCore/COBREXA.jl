@@ -8,6 +8,8 @@ stages:
 
 variables:
     GIT_STRATEGY: clone
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
 
 .global_settings: &global_settings
   rules:
@@ -88,14 +90,11 @@ doc-tests:v1.6:
 doc-gource:
   stage: documentation
   image: docker:19.03.13
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
   tags:
     - privileged
   services:
     - name: docker:19.03.13-dind
-      command: ["--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   script:
     - docker run -v $(pwd):/visualization gource $CI_REGISTRY/r3/docker/gource
   <<: *global_settings
