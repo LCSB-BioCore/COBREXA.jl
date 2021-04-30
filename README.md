@@ -13,8 +13,8 @@
 [cov-img]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=H3WSWOBD7L
 [cov-url]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl
 
-[contrib-img]: https://img.shields.io/badge/contributions-start%20here-yellow
-[contrib-url]: https://github.com/LCSB-BioCore/COBREXA.jl/blob/lh-polish-readme-1/.github/CONTRIBUTING.md
+[contrib-img]: https://img.shields.io/badge/contributions-start%20here-green
+[contrib-url]: https://github.com/LCSB-BioCore/COBREXA.jl/blob/master/.github/CONTRIBUTING.md
 
 | **Documentation** | **Tests** | **Coverage** | **How to contribute?** |
 |:--------------:|:-------:|:---------:|:---------:|
@@ -29,7 +29,7 @@ This is package provides constraint-based reconstruction and analysis tools for 
 - **Operating system**: Use Linux (Debian, Ubuntu or centOS), MacOS, or Windows 10 as your operating system. `COBREXA` has been tested on these systems.
 - **Julia language**: In order to use `COBREXA`, you need to install Julia 1.0 or higher. Download and follow the installation instructions for Julia [here](https://julialang.org/downloads/).
 - **Hardware requirements**: `COBREXA` runs on any hardware that can run Julia, and can easily use resources from multiple computers interconnected on a network. For processing large datasets, you are required to ensure that the total amount of available RAM on all involved computers is larger than the data size.
-- **Optimization solvers**: `COBREXA` uses [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) to formulate optimization problems and is compatible with all [`JuMP` supported solvers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers). However, to perform analysis at least one of these solvers needs to be installed on your machine. For a pure Julia implementation, we recommend [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl), but any other solver would also work. 
+- **Optimization solvers**: `COBREXA` uses [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) to formulate optimization problems and is compatible with all [`JuMP` supported solvers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers). However, to perform analysis at least one of these solvers needs to be installed on your machine. For a pure Julia implementation, we recommend [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl), but any other solver would also work.
 
 :bulb: If you are new to Julia, it is advisable to [familiarize yourself with
 the environment
@@ -67,7 +67,7 @@ If you run a non-standard platform (e.g. a customized operating systems), or if 
 ```
 
 ## Quick start guide
-With the package installed and tested, let's perform simple flux balance analysis on a constraint based model! 
+With the package installed and tested, let's perform simple flux balance analysis on a constraint based model!
 
 ```julia
 using COBREXA
