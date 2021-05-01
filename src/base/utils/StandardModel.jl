@@ -107,8 +107,8 @@ function exchange_reactions(
         println("Consuming fluxes: ")
         ii = 0 # counter
         for i in inds
-            if v[i] > -ignorebound
-                println(ks[i], " = ", round(v[i], digits = 6))
+            if vs[i] > -ignorebound
+                println(ks[i], " = ", round(vs[i], digits = 6))
                 ii += 1
             end
             if ii > top_n
@@ -118,13 +118,13 @@ function exchange_reactions(
         # Do producing
         ks = collect(keys(producing))
         vs = [producing[k] for k in ks]
-        inds = sortperm(vs)
+        inds = sortperm(vs, rev=true)
         n_max = length(ks)
         println("Producing fluxes: ")
         ii = 0 # counter
         for i in inds
-            if v[i] < ignorebound
-                println(ks[i], " = ", round(v[i], digits = 6))
+            if vs[i] < ignorebound
+                println(ks[i], " = ", round(vs[i], digits = 6))
                 ii += 1
             end
             if ii > top_n
