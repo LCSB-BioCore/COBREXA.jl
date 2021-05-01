@@ -20,7 +20,7 @@ const _constants = (
         grrs = ["gene_reaction_rules", "grRules", "rules"],
         ids = ["id", "description"],
     ),
-    gene_annotation_checks = (        
+    gene_annotation_checks = (
         "ncbigene",
         "ncbigi",
         "refseq_locus_tag",
