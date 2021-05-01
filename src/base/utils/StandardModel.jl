@@ -118,7 +118,7 @@ function exchange_reactions(
         # Do producing
         ks = collect(keys(producing))
         vs = [producing[k] for k in ks]
-        inds = sortperm(vs, rev=true)
+        inds = sortperm(vs, rev = true)
         n_max = length(ks)
         println("Producing fluxes: ")
         ii = 0 # counter
