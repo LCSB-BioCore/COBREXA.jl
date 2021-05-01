@@ -49,8 +49,8 @@ end
 """
     atom_exchange(flux_dict::Dict{String, Float64}, model::StandardModel)
 
-Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`.
-Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
+Return a dictionary mapping the flux of atoms across the boundary of the model 
+given `flux_dict` (the solution of a constraint based analysis) of reactions in `model`.
 """
 function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
     atom_flux = Dict{String,Float64}()
@@ -68,9 +68,9 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
-    get_exchanges(rxndict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
+    get_exchanges(flux_dict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
 
-Display the top_n producing and consuming exchange fluxes.
+Display the `top_n` producing and consuming exchange fluxes.
 If `top_n` is not specified (by an integer), then all are displayed.
 Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.
@@ -137,7 +137,7 @@ function exchange_reactions(
 end
 
 """
-    metabolite_fluxes(fluxdict::Dict{String, Float64}, model::StandardModel)
+    metabolite_fluxes(flux_dict::Dict{String, Float64}, model::StandardModel)
 
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or 
 produce them given the flux distribution supplied in `fluxdict`.
