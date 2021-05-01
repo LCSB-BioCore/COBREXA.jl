@@ -24,13 +24,23 @@ function reactions(m::MATModel)::Vector{String}
 end
 
 """
+    _mat_has_squashed_coupling(mat)
+
+Guesses whether C in the MAT file is stored in A=[S;C].
+"""
+_mat_has_squashed_coupling(mat) =
+    haskey(mat, "A") && haskey(mat, "b") && length(mat["b"]) == size(mat["A"], 1)
+
+
+"""
     metabolites(m::MATModel)::Vector{String}
 
 Extracts metabolite names from `mets` key in the MAT file.
 """
 function metabolites(m::MATModel)::Vector{String}
+    nm = n_metabolites(m)
     if haskey(m.mat, "mets")
-        reshape(m.mat["mets"], n_metabolites(m))
+        reshape(m.mat["mets"], length(m.mat["mets"]))[begin:nm]
     else
         "met" .* string.(1:n_metabolites(m))
     end
@@ -58,8 +68,13 @@ bounds(m::MATModel) = (
 
 Extracts balance from the MAT model, defaulting to zeroes if not present.
 """
-balance(m::MATModel) =
-    sparse(reshape(get(m.mat, "b", zeros(n_metabolites(m), 1)), n_metabolites(m)))
+function balance(m::MATModel)
+    b = get(m.mat, "b", spzeros(n_metabolites(m), 1))
+    if _mat_has_squashed_coupling(m.mat)
+        b = b[1:n_metabolites(m), :]
+    end
+    sparse(reshape(b, n_metabolites(m)))
+end
 
 """
     objective(m::MATModel)
@@ -74,7 +89,9 @@ objective(m::MATModel) =
 
 Extract coupling matrix stored, in `C` key.
 """
-coupling(m::MATModel) = sparse(get(m.mat, "C", zeros(0, n_reactions(m))))
+coupling(m::MATModel) =
+    _mat_has_squashed_coupling(m.mat) ? sparse(m.mat["A"][n_reactions(m)+1:end, :]) :
+    sparse(get(m.mat, "C", zeros(0, n_reactions(m))))
 
 """
     coupling_bounds(m::MATModel)
@@ -83,10 +100,17 @@ Extracts the coupling constraints. Currently, there are several accepted ways to
 """
 function coupling_bounds(m::MATModel)
     nc = n_coupling_constraints(m)
-    (
-        sparse(reshape(get(m.mat, "cl", fill(-Inf, n_reactions(m), 1)), nc)),
-        sparse(reshape(get(m.mat, "cu", fill(Inf, n_reactions(m), 1)), nc)),
-    )
+    if _mat_has_squashed_coupling(m.mat)
+        (
+            sparse(fill(-Inf, nc)),
+            sparse(reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end]),
+        )
+    else
+        (
+            sparse(reshape(get(m.mat, "cl", fill(-Inf, nc, 1)), nc)),
+            sparse(reshape(get(m.mat, "cu", fill(Inf, nc, 1)), nc)),
+        )
+    end
 end
 
 """
@@ -106,7 +130,8 @@ Extracts the associations from `grRules` key, if present.
 """
 function reaction_gene_association(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
-        _parse_grr(m.mat["grRules"][findfirst(==(rid), reactions(m))])
+        grr = m.mat["grRules"][findfirst(==(rid), reactions(m))]
+        typeof(grr) == String ? _parse_grr(grr) : nothing
     else
         nothing
     end
