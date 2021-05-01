@@ -28,25 +28,16 @@ function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String,React
 end
 
 """
-    check_duplicate_annotations(rxn::Reaction, rxns::Dict{String, Reaction})
+    check_duplicate_annotations(rxn::Reaction, rxns::OrderedDict{String, Reaction}; inspect_annotations=_constants.reaction_annotation_checks)
 
-Determine if a `rxn` is has overlapping annotations in `rxns`.
-The annotations checked are: ["bigg.reaction", "biocyc", "ec-code", "kegg.reaction", "metanetx.reaction", "rhea", "sabiork", "seed.reaction"].
-Return true and the `id` of the first hit, otherwise false and "".
+Determine if a `rxn` has overlapping annotations in `rxns`.
+The annotations checked are listed in `COBREXA._constants.reaction_annotation_checks`.
+Return the `id` of the first hit, otherwise `nothing`.
 """
 function check_duplicate_annotations(
     crxn::Reaction,
     rxns::OrderedDict{String,Reaction};
-    inspect_annotations = [
-        "bigg.reaction",
-        "biocyc",
-        "ec-code",
-        "kegg.reaction",
-        "metanetx.reaction",
-        "rhea",
-        "sabiork",
-        "seed.reaction",
-    ],
+    inspect_annotations = _constants.reaction_annotation_checks,
 )::Union{Nothing,String}
     for (k, rxn) in rxns
         for anno in inspect_annotations
