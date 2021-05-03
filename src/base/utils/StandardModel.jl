@@ -49,8 +49,8 @@ end
 """
     atom_exchange(flux_dict::Dict{String, Float64}, model::StandardModel)
 
-Return a dictionary mapping the flux of atoms across the boundary of the model given `flux_dict` of reactions in `model`.
-Here `flux_dict` is a mapping of reaction `id`s to fluxes, e.g. from FBA.
+Return a dictionary mapping the flux of atoms across the boundary of the model 
+given `flux_dict` (the solution of a constraint based analysis) of reactions in `model`.
 """
 function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
     atom_flux = Dict{String,Float64}()
@@ -68,9 +68,9 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
-    get_exchanges(rxndict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
+    get_exchanges(flux_dict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
 
-Display the top_n producing and consuming exchange fluxes.
+Display the `top_n` producing and consuming exchange fluxes.
 If `top_n` is not specified (by an integer), then all are displayed.
 Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
 When `verbose` is false, the output is not printed out.
@@ -107,8 +107,8 @@ function exchange_reactions(
         println("Consuming fluxes: ")
         ii = 0 # counter
         for i in inds
-            if v[i] > -ignorebound
-                println(ks[i], " = ", round(v[i], digits = 6))
+            if vs[i] > -ignorebound
+                println(ks[i], " = ", round(vs[i], digits = 6))
                 ii += 1
             end
             if ii > top_n
@@ -118,13 +118,13 @@ function exchange_reactions(
         # Do producing
         ks = collect(keys(producing))
         vs = [producing[k] for k in ks]
-        inds = sortperm(vs)
+        inds = sortperm(vs, rev = true)
         n_max = length(ks)
         println("Producing fluxes: ")
         ii = 0 # counter
         for i in inds
-            if v[i] < ignorebound
-                println(ks[i], " = ", round(v[i], digits = 6))
+            if vs[i] < ignorebound
+                println(ks[i], " = ", round(vs[i], digits = 6))
                 ii += 1
             end
             if ii > top_n
@@ -137,7 +137,7 @@ function exchange_reactions(
 end
 
 """
-    metabolite_fluxes(fluxdict::Dict{String, Float64}, model::StandardModel)
+    metabolite_fluxes(flux_dict::Dict{String, Float64}, model::StandardModel)
 
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or 
 produce them given the flux distribution supplied in `fluxdict`.
@@ -226,25 +226,4 @@ function get_bound_vectors(opt_model)
     ubs = [normalized_rhs(ubconref[i]) for i in eachindex(ubconref)]
 
     return lbs, ubs
-end
-
-"""
-    is_mass_balanced(rxn::Reaction, model::StandardModel)
-
-Checks if `rxn` is atom balanced. Returns a boolean for whether the reaction is balanced,
-and the associated balance of atoms for convenience (useful if not balanced).
-
-See also: [`get_atoms`](@ref), [`check_duplicate_reaction`](@ref)
-"""
-function is_mass_balanced(rxn::Reaction, model::StandardModel)
-    atom_balances = Dict{String,Float64}() # float here because stoichiometry is not Int
-    for (met, stoich) in rxn.metabolites
-        atoms = get_atoms(model.metabolites[met])
-        isempty(atoms) && continue # ignore blanks
-        for (k, v) in atoms
-            atom_balances[k] = get(atom_balances, k, 0) + v * stoich
-        end
-    end
-
-    return all(sum(values(atom_balances)) == 0), atom_balances
 end
