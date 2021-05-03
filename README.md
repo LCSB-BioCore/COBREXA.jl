@@ -67,7 +67,14 @@ If you run a non-standard platform (e.g. a customized operating systems), or if 
 ```
 
 ## Quick start guide
-With the package installed and tested, let's perform simple flux balance analysis on a constraint based model!
+
+In addition to `COBREXA`, you also need to include a Julia package which provides an appropriate solver. One such solver is `Tulip`, which is provided by the [Tulip.jl](https://github.com/ds4dm/Tulip.jl) package.
+
+```julia
+] add Tulip
+```
+
+With the package installed and tested, let's perform simple flux balance analysis on a constraint based model.
 
 ```julia
 using COBREXA
