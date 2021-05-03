@@ -33,7 +33,7 @@ is available, but inside a group all of the genes need to be available
         ),
     )
 
-    knockout!(m, "g1")
+    rm!(Gene, m, "g1", knockout = true)
 
     @test length(m.reactions) == 2
     @test !haskey(m.reactions, "v1")
@@ -63,7 +63,7 @@ end
             grr = [["g1"], ["g2"], ["g3"]],
         ),
     )
-    knockout!(m, ["g1", "g3"])
+    rm!(Gene, m, ["g1", "g3"], knockout = true)
 
     rxn = m.reactions["v1"]
     @test length(rxn.grr) == 1
