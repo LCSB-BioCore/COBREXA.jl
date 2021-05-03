@@ -1,29 +1,16 @@
 """
-    check_duplicate_annotations(met::Metabolite, mets::Vector{Metabolite}; inspect_annotations=...)
+    check_duplicate_annotations(met::Metabolite, mets::OrderedDict{String, Metabolite}; inspect_annotations=_constants.metabolite_annotation_checks)
 
 Check if a metabolite `met` has overlapping annotations with metabolites in `mets`.
-If the annotations overlap, then check if they share a compartment to determine if it a a true duplicate.
-The annotations checked are: ["kegg.compound", "bigg.metabolite", "chebi", "inchi_key", "sabiork", "hmdb", 
-"seed.compound", "metanetx.chemical", "reactome.compound", "biocyc"].
-Return index of the first hit, otherwise `nothing`.
+The annotations checked are listed in `COBREXA._constants.metabolite_annotation_checks`.
+Return id of the first hit, otherwise `nothing`.
 
 See also: [`check_same_formula`](@ref), [`get_atoms`](@ref)
 """
 function check_duplicate_annotations(
     cmet::Metabolite,
     mets::OrderedDict{String,Metabolite};
-    inspect_annotations = [
-        "kegg.compound",
-        "bigg.metabolite",
-        "chebi",
-        "inchi_key",
-        "sabiork",
-        "hmdb",
-        "seed.compound",
-        "metanetx.chemical",
-        "reactome.compound",
-        "biocyc",
-    ],
+    inspect_annotations = _constants.reaction_annotation_checks,
 )::Union{Nothing,String}
     for (k, met) in mets
         if met.compartment == cmet.compartment # check if same compartment
