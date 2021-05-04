@@ -1,4 +1,4 @@
-@testset "add_reactions_macro" begin
+@testset "@add_reactions! helper" begin
     mod = StandardModel()
     A = Metabolite("A")
     B = Metabolite("B")

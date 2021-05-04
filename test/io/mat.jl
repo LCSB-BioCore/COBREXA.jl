@@ -1,5 +1,5 @@
 
-@testset "Import MAT" begin
+@testset "Import MAT model" begin
     filepath = joinpath("data", "agora-model.mat")
 
     download_data_file(
@@ -11,7 +11,6 @@
     cp = load_model(CoreModel, filepath)
     @test cp isa CoreModel
     @test size(cp.S) == (475, 496)
-    # @test_throws ErrorException load_model(filepath, "badmodel") # this needs to be fixed
 
     cp = load_model(CoreModel, joinpath("data", "toyModel1.mat"))
     @test size(cp.S) == (6, 7)
@@ -21,5 +20,13 @@
 
     cp = load_model(CoreModel, joinpath("data", "toyModel3.mat"))
     @test size(cp.S) == (9, 12)
+end
 
+@testset "Save MAT model" begin
+    filepath = joinpath("data", "toyModel1.mat")
+    loaded = load_model(CoreModel, filepath)
+    save_model(loaded, "test_model.mat")
+    wrote = load_model(CoreModel, "test_model.mat")
+    @test wrote isa CoreModel
+    @test isequal(wrote, loaded)
 end
