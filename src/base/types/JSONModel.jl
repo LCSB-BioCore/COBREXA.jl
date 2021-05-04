@@ -49,7 +49,7 @@ macro _json_section_firstid(namesConstant::Symbol, id::Symbol, error)
     return esc(:(
         begin
             _s = @_json_section $namesConstant ($error)
-            _firstmatch(x -> x["id"] == $id, _s)
+            _s[findfirst(x -> x["id"] == $id, _s)]
         end
     ))
 end
@@ -117,7 +117,7 @@ function stoichiometry(model::JSONModel)
 
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
     for (i, rid) in enumerate(rxn_ids)
-        r = _firstmatch(x -> x["id"] == rid, rs)
+        r = rs[findfirst(x -> x["id"] == rid, rs)]
         for (met_id, coeff) in r["metabolites"]
             j = findfirst(==(met_id), met_ids)
             if isnothing(j)
