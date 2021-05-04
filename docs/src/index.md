@@ -75,8 +75,6 @@ Pages = [
     "model_construction.md",
     "basic_analysis.md",
     "sampling_tools.md",
-    "external_tools.md",
-    "thermodynamics.md"
 ]
 Depth = 2
 ```
