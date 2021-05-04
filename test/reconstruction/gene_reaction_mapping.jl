@@ -1,4 +1,4 @@
-@testset "single gene - single reaction" begin
+@testset "mapping 1 gene:1 reaction" begin
     m = StandardModel()
     add!(m, Gene("g1"))
     add!(m, Reaction("v1", metabolites = Dict{String,Int}(), grr = [["g1"]]))
@@ -8,7 +8,7 @@
     @test m.genes["g1"].associated_reactions == Set{String}()
 end
 
-@testset "single gene - multiple reactions" begin
+@testset "mapping 1 gene:N reactions" begin
     m = StandardModel()
     add!(m, Gene("g1"))
     add!(m, Gene("g2"))
@@ -20,7 +20,7 @@ end
     @test m.genes["g1"].associated_reactions == Set(("v2",))
 end
 
-@testset "multiple genes - single reactions" begin
+@testset "mapping 1 genes:1 reaction" begin
     m = StandardModel()
     add!(m, Gene("g1"))
     add!(m, Gene("g2"))
@@ -33,7 +33,7 @@ end
     @test m.genes["g1"].associated_reactions == Set{String}()
 end
 
-@testset "multiple genes - multiple reactions" begin
+@testset "mapping N genes:N reactions" begin
     m = StandardModel()
     add!(m, Gene("g1"))
     add!(m, Gene("g2"))
