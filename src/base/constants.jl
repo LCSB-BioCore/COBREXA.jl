@@ -50,5 +50,5 @@ const _constants = (
         "reactome.compound",
         "biocyc",
     ),
-    colors = (empty = :dark_gray, payload = :light_magenta, key = :cyan),
+    colors = (empty = :dark_gray, payload = :default, key = :cyan),
 )
