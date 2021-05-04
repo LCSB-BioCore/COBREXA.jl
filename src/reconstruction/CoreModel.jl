@@ -218,8 +218,7 @@ function remove_reactions(m::CoreModel, rxns::Vector{Int})
     newxu = m.xu[rxns_to_keep]
     new_rxns = m.rxns[rxns_to_keep]
     new_mets = m.mets[mets_to_keep]
-    new_model =
-        CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
+    new_model = CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
     return new_model
 end
 
