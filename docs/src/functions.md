@@ -49,6 +49,13 @@ Modules = [COBREXA]
 Pages = map(file -> joinpath("analysis", file), readdir("../src/analysis"))
 ```
 
+### Analysis modifications
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("reconstruction", "modifications", file), readdir("../src/reconstruction/modifications"))
+```
+
 ### Flux sampling
 
 ```@autodocs
