@@ -6,17 +6,9 @@ they are represented internally in `COBREXA.jl`.
 Each model is a struct of the type `StandardModel`, which is composed of a model
 `id`, and arrays of `Reaction`s, `Metabolite`s and `Gene`s.
 
-```@docs
-StandardModel
-```
-
 The fields of `Reaction`, `Metabolite`, `Gene` types are shown below.  When
 reading, writing, building or analysing models, these fields are what is used
 by `COBREXA.jl`.
-
-```@docs
-Reaction
-```
 
 Note, the format of `grr` (gene reaction rule) in `Reaction` should be a nested
 array, like `[[g1, g2], [g3, g4], ...]`.
@@ -41,11 +33,3 @@ reaction.annotation = Dict(
 )
 ```
 ...is correct, but any other format will cause issues.
-
-```@docs
-Metabolite
-```
-
-```@docs
-Gene
-```

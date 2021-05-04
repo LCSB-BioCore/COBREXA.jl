@@ -11,12 +11,7 @@ Sampling methods have been developed to uniformly sample from this feasible
 solution space.  `COBREXA.jl` implements both `hit_and_run` and `achr` to
 sample from ``\mathcal{P}``.
 
-```@docs
-hit_and_run
-achr
 ```
-
-```@example sample
 using COBREXA
 using JuMP
 using Tulip
