@@ -169,7 +169,7 @@ Parses the `.gene_reaction_rule` from reactions.
 """
 function reaction_gene_association(model::JSONModel, rid::String)
     rxn = @_json_section_firstid rxns rid return nothing
-    return maybemap(_parse_grr, get(rxn, "gene_reaction_rule", nothing))
+    return _maybemap(_parse_grr, get(rxn, "gene_reaction_rule", nothing))
 end
 
 """
@@ -189,7 +189,7 @@ Parse and return the metabolite `.formula`
 """
 function metabolite_formula(model::JSONModel, mid::String)
     met = @_json_section_firstid mets mid return nothing
-    return maybemap(_formula_to_atoms, get(met, "formula", nothing))
+    return _maybemap(_formula_to_atoms, get(met, "formula", nothing))
 end
 
 """
@@ -214,32 +214,32 @@ end
 
 function gene_annotations(model::JSONModel, gid::String)::Annotations
     gene = @_json_section_firstid genes gid return Dict()
-    maybemap(_parse_annotations, get(gene, "annotation", nothing))
+    _maybemap(_parse_annotations, get(gene, "annotation", nothing))
 end
 
 function gene_notes(model::JSONModel, gid::String)::Notes
     gene = @_json_section_firstid genes gid return Dict()
-    maybemap(_parse_notes, get(gene, "notes", nothing))
+    _maybemap(_parse_notes, get(gene, "notes", nothing))
 end
 
 function reaction_annotations(model::JSONModel, rid::String)::Annotations
     rxn = @_json_section_firstid rxns rid return Dict()
-    maybemap(_parse_annotations, get(rxn, "annotation", nothing))
+    _maybemap(_parse_annotations, get(rxn, "annotation", nothing))
 end
 
 function reaction_notes(model::JSONModel, rid::String)::Notes
     rxn = @_json_section_firstid rxns rid return Dict()
-    maybemap(_parse_notes, get(rxn, "notes", nothing))
+    _maybemap(_parse_notes, get(rxn, "notes", nothing))
 end
 
 function metabolite_annotations(model::JSONModel, mid::String)::Annotations
     met = @_json_section_firstid mets mid return Dict()
-    maybemap(_parse_annotations, get(met, "annotation", nothing))
+    _maybemap(_parse_annotations, get(met, "annotation", nothing))
 end
 
 function metabolite_notes(model::JSONModel, mid::String)::Notes
     met = @_json_section_firstid mets mid return Dict()
-    maybemap(_parse_notes, get(met, "notes", nothing))
+    _maybemap(_parse_notes, get(met, "notes", nothing))
 end
 
 
@@ -272,7 +272,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     m[first(_constants.keynames.mets)] = [
         Dict([
             "id" => mid,
-            "formula" => maybemap(_atoms_to_formula, metabolite_formula(mm, mid)),
+            "formula" => _maybemap(_atoms_to_formula, metabolite_formula(mm, mid)),
             "charge" => metabolite_charge(mm, mid),
             "compartment" => metabolite_compartment(mm, mid),
             "annotation" => metabolite_annotations(mm, mid),
