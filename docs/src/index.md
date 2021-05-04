@@ -8,49 +8,65 @@
 
 # Constraint-Based Reconstruction and EXascale Analysis
 
-COBREXA provides the base toolkit for working with big models and running
-tremendous amount of analyses in parallel. Its main purpose is to make the
-COBRA approach easy to use on problems that require the use of huge computer
-clusters and HPC environment, allowing it to approach the realistic
-pre-exascale capacities.
+COBREXA is a toolkit for working with large constraint-based metabolic models,
+and running very large number of analysis tasks on these models in parallel.
+Its main purpose is to make the COBRA scale to problem sizes that require the
+use of huge computer clusters and HPC environment, which allows to
+realistically approach the pre-exascale-sized models and problems.
 
 In the package, you will find the usual COBRA-like functions that inteface to
 the underlying linear programming solvers. We use
 [`JuMP.jl`](https://github.com/jump-dev/JuMP.jl) as the unified interface for
-many solvers; you can plug in whatever compatible solver you want, such as
-`Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`.
+many solvers; you can plug in whatever compatible solver you want, including
+the popular `Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`.
 
 ## Quick start guide
 
-You can install COBREXA from Julia repositories as usual, by pressing `]` to
-switch to Packaging environment, and typing:
+You can install COBREXA from Julia repositories. Start `julia`, **press `]`** to
+switch to the Packaging environment, and type:
 ```
 add COBREXA
 ```
 
-With the package installed, let's perform a simple flux balance analysis on a
-constraint based model:
+You may also need to install your favorite solver, typing e.g.:
+```
+add GLPK
+```
 
-```@example intro
-using COBREXA
-using JuMP
-using Tulip
+When the packages are installed, switch back to the "normal" julia shell by
+pressing Backspace (the prompt should change color back to green). After that,
+you can download [a SBML model from the
+internet](http://bigg.ucsd.edu/models/e_coli_core) and perform a
+flux balance analysis as follows:
 
-if !isfile("e_coli_core.json")
-  download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
-end
+```julia
+using COBREXA   # loads the package
+using GLPK      # loads your favorite solver
 
-model = read_model("e_coli_core.json")
+download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
-biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-optimizer = Tulip.Optimizer
-sol = fba(model, biomass, optimizer)
+model = load_model("e_coli_core.xml")
+
+fluxes = flux_balance_analysis_dict(model, GLPK.Optimizer)
+```
+
+The variable `fluxes` will now contain a dictionary that assigns an optimal flux to each reaction in the model:
+```
+Dict{String,Float64} with 95 entries:
+  "R_EX_fum_e"    => 0.0
+  "R_ACONTb"      => 6.00725
+  "R_TPI"         => 7.47738
+  "R_SUCOAS"      => -5.06438
+  "R_GLNS"        => 0.223462
+  "R_EX_pi_e"     => -3.2149
+  "R_PPC"         => 2.50431
+  "R_O2t"         => 21.7995
+  "R_G6PDH2r"     => 4.95998
+  "R_TALA"        => 1.49698
+  ⋮               => ⋮
 ```
 
 ## Tutorials
-
-**Note:** All tutorials assume that you have downloaded the `e_coli_core.json`
-model as above.
 
 ```@contents
 Pages = [
