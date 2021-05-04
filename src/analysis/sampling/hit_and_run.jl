@@ -33,8 +33,6 @@ modify_constraint(biomass, 0.99*λ, λ)(model, opt_model)
 
 samples = hit_and_run(100_000, opt_model; keepevery=10, samplesize=5000)
 ```
-
-See also: [`achr`](@ref)
 """
 function hit_and_run(
     N::Int,

@@ -8,7 +8,7 @@ Let the feasible space be defined by
 ``\mathcal{P} = \left\{ v : Sv = 0 \cap v_{\text{min}} \leq v \leq v_{\text{max}} \right\}``.
 
 Sampling methods have been developed to uniformly sample from this feasible
-solution space.  `COBREXA.jl` implements both `hit_and_run` and `achr` to
+solution space.  `COBREXA.jl` implements `hit_and_run` to
 sample from ``\mathcal{P}``.
 
 ```
