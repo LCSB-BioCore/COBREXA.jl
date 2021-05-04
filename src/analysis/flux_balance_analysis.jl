@@ -3,8 +3,8 @@
 
 # Example
 
-```jldoctest
-julia> vec = @flux_balance_analysis_vec model Tulip.Optimizer
+```
+julia> flux_balance_analysis_vec(model, GLPK.Optimizer)
 3-element Vector{Float64}:
  1.0
  1.0
@@ -23,7 +23,7 @@ end
 # Example
 ```
 @flux_balance_analysis_vec model Tulip.Optimizer begin
-    modify_objective(biomass)
+    change_objective(biomass)
     modify_constraint(glucose, -8.0, -8.0)
 end
 ```
@@ -60,7 +60,7 @@ end
 # Example
 ```
 @flux_balance_analysis_dict model Tulip.Optimizer begin
-    modify_objective(biomass)
+    change_objective(biomass)
     modify_constraint(glucose, -8.0, -8.0)
 end
 ```
@@ -125,10 +125,9 @@ s.t. S x = b
      xₗ ≤ x ≤ xᵤ
 ```
 
-Optionally, you may specify one or more `modifications` to be applied to the models.
-See [`modify_constraint`](@ref),
-[`modify_solver_attribute`](@ref),[`modify_objective`](@ref), or
-[`modify_sense`](@ref) for examples of modifications.
+Optionally, you may specify one or more "modifications" to be applied to the models.
+[`change_solver_attribute`](@ref),[`change_objective`](@ref), or
+[`change_sense`](@ref) for examples of modifications.
 
 The `optimizer` must be set to perform the analysis, any JuMP solver will work.
 
@@ -139,7 +138,7 @@ Returns a solved JuMP model from [`optimize_model`](@ref).
 optimizer = GLPK.Optimizer
 model = load_model(StandardModel, "e_coli_core.json")
 biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-solved_model = fba(model, optimizer; modifications=[modify_objective(biomass)])
+solved_model = fba(model, optimizer; modifications=[change_objective(biomass)])
 ```
 
 """
