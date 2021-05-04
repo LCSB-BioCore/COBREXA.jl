@@ -205,7 +205,7 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
                 _default.(
                     "",
                     _maybemap.(
-                        x->_unparse_grr(String, x),
+                        x -> _unparse_grr(String, x),
                         reaction_gene_association.(Ref(m), reactions(m)),
                     ),
                 ),
