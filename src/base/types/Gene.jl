@@ -7,6 +7,7 @@ id :: String
 name :: Union{String, Nothing}
 notes :: Dict{String, Vector{String}}
 annotation :: Dict{String, Union{Vector{String}, String}}
+associated_reactions :: Set{String}
 ````
 """
 mutable struct Gene
@@ -14,7 +15,13 @@ mutable struct Gene
     name::Maybe{String}
     notes::Notes
     annotations::Annotations # everything is a String[]
+    associated_reactions::Set{String}
 
-    Gene(id::String = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
-        new(id, name, notes, annotations)
+    Gene(
+        id::String = "";
+        name = nothing,
+        notes = Notes(),
+        annotations = Annotations(),
+        associated_reactions = Set{String}(),
+    ) = new(id, name, notes, annotations, associated_reactions)
 end

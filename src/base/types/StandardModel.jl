@@ -65,6 +65,7 @@ Return the number of reactions contained in `model`.
 """
 n_reactions(model::StandardModel)::Int = length(model.reactions)
 
+
 """
     metabolites(model::StandardModel)
 
@@ -251,6 +252,15 @@ Return an empty Dict if not present.
 """
 function gene_annotations(model::StandardModel, id::String)::Maybe{Annotations}
     model.genes[id].annotations
+end
+
+"""
+    gene_associated_reactions(model::StandardModel, id::String)::Set{String}
+
+Return the reactions associated with gene `id` in `model`.
+"""
+function gene_associated_reactions(model::StandardModel, id::String)::Set{String}
+    model.genes[id].associated_reactions
 end
 
 """

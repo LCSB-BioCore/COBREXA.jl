@@ -105,3 +105,46 @@ function change_objective(
         @objective(opt_model, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
 end
+
+
+"""
+    knockout(gene_ids::Array{String,1})
+
+Callback function to set bounds of all reactions to zero which are affected by knocking out their respective genes
+"""
+function knockout(gene_ids::Vector{String})
+    # Dev note: the three nested for loops are inefficiency. However:
+    # - gene_ids (user input) will be probably only very few items
+    # - model.genes[gene_id].reactions are just a few reactions (most genes don't code for a lot of reactions)
+    # - reaction.grr also should only hold few items (reactions aren't coded by many different combinations of genes)
+    # Let's avoid premature optimization for now and see if anyone ever has problems with this
+    return (model, opt_model) -> begin
+        all_reactions = reactions(model)
+        for gene_id in gene_ids
+            for reaction_id in gene_associated_reactions(model, gene_id)
+                if all(
+                    any(occursin.(gene_ids, gene_array)) > 0 for
+                    gene_array in reaction_gene_association(model, reaction_id)
+                )
+                    set_bound(
+                        first(indexin([reaction_id], all_reactions)),
+                        opt_model,
+                        ub = 0,
+                        lb = 0,
+                    )
+                    # Also set bounds for model object
+                    set_bound(model, reaction_id, ub = 0, lb = 0)
+                end
+            end
+        end
+    end
+end
+
+"""
+    knockout(gene_id::String)
+
+Callback function to set bounds of a reaction to zero which are affected by knocking out their respective genes
+"""
+function knockout(gene_id::String)
+    return knockout([gene_id])
+end
