@@ -55,10 +55,10 @@ genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
 n_genes(a::SBMLModel)::Int = length(a.m.gene_products)
 
 reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
-    maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
+    _maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
 
 metabolite_formula(a::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
-    maybemap(_formula_to_atoms, a.m.species[mid].formula)
+    _maybemap(_formula_to_atoms, a.m.species[mid].formula)
 
 metabolite_charge(a::SBMLModel, mid::String)::Maybe{Int} = a.m.species[mid].charge
 
@@ -85,7 +85,7 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
     stoi = stoichiometry(m)
     (lbs, ubs) = bounds(m)
     ocs = objective(m)
-    comps = default.("", metabolite_compartment.(Ref(m), mets))
+    comps = _default.("", metabolite_compartment.(Ref(m), mets))
     compss = Set(comps)
 
     return SBMLModel(
@@ -100,7 +100,7 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
             Dict(
                 [mid => SBML.Species(
                     nothing, # name
-                    default("", comps[mi]), # compartment
+                    _default("", comps[mi]), # compartment
                     nothing, # no information about boundary conditions
                     metabolite_formula(m, mid),
                     metabolite_charge(m, mid),
@@ -119,7 +119,7 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
                     (lbs[ri], ""),
                     (ubs[ri], ""),
                     ocs[ri],
-                    maybemap(
+                    _maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
                         reaction_gene_association(m, rid),
                     ),
