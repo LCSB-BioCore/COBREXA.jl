@@ -3,11 +3,7 @@
 ## Reading constraint based models
 Currently, JSON and Matlab formatted models can be imported.
 
-```@docs
-read_model(file_location::String)
 ```
-
-```@example ioexample
 using COBREXA
 
 if !isfile("e_coli_core.json")
@@ -21,11 +17,7 @@ model # pretty print the model
 ## Writing constraint based models
 Currently, JSON and Matlab models can be exported.
 
-```@docs
-save_model(model::StandardModel, file_location::String)
 ```
-
-```@example ioexample
 save_model(model, "e_coli_core2.json")
 ```
 
