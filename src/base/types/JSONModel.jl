@@ -290,7 +290,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
 
             grr = reaction_gene_association(mm, rid)
             if !isnothing(grr)
-                res["gene_reaction_rule"] = _unparse_grr(grr)
+                res["gene_reaction_rule"] = _unparse_grr(String, grr)
             end
 
             res["lower_bound"] = lbs[ri]
