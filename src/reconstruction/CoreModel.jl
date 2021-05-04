@@ -213,14 +213,12 @@ function remove_reactions(m::CoreModel, rxns::Vector{Int})
     unique!(mets_to_keep)
     new_s = m.S[mets_to_keep, rxns_to_keep]
     newb = m.b[mets_to_keep]
-    #new_c = m.C[:, rxns_to_keep]
     newc = m.c[rxns_to_keep]
     newxl = m.xl[rxns_to_keep]
     newxu = m.xu[rxns_to_keep]
     new_rxns = m.rxns[rxns_to_keep]
     new_mets = m.mets[mets_to_keep]
     new_model =
-    #CoreModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
         CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
     return new_model
 end
