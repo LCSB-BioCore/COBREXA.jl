@@ -69,14 +69,8 @@ Dict{String,Float64} with 95 entries:
 ## Tutorials
 
 ```@contents
-Pages = [
-    "model_structure.md",
-    "io.md",
-    "model_construction.md",
-    "basic_analysis.md",
-    "sampling_tools.md",
-]
-Depth = 2
+Pages = readdir("tutorials")
+Depth = 1
 ```
 
 ## Functions reference
