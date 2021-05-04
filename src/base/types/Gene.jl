@@ -14,7 +14,7 @@ mutable struct Gene
     id::String
     name::Maybe{String}
     notes::Notes
-    annotations::Annotations # everything is a String[]
+    annotations::Annotations
     associated_reactions::Set{String}
 
     Gene(
