@@ -205,11 +205,11 @@ end
 """
     get_bound_vectors(opt_model)
 
-Returns vectors of the lower and upper bounds of `opt_model` constraints, where 
-`opt_model` is a JuMP model constructed by e.g. `make_optimization_problem` or
-`flux_balance_analysis`.
+Returns vectors of the lower and upper bounds of `opt_model` constraints, where
+`opt_model` is a JuMP model constructed by e.g.
+[`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
 
-See also: [`make_optimization_problem`](@ref), [`flux_balance_analysis`](`ref`)
+
 """
 function get_bound_vectors(opt_model)
     lbconref = opt_model[:lbs]

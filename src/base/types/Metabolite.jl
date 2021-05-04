@@ -1,5 +1,5 @@
 """
-Metabolite struct.
+Metabolite structure.
 
 # Fields
 ````
@@ -19,7 +19,7 @@ mutable struct Metabolite
     charge::Maybe{Int}
     compartment::Maybe{String}
     notes::Notes
-    annotations::Annotations # everything is a String[]
+    annotations::Annotations
 
     Metabolite(
         id = "";

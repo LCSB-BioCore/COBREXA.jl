@@ -23,9 +23,9 @@ biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 glucose = findfirst(model.reactions, "EX_glc__D_e")
 
 opt_model = flux_balance_analysis(model, Tulip.Optimizer; 
-    modifications=[modify_objective(biomass), 
+    modifications=[change_objective(biomass), 
     modify_constraint(glucose, -12, -12), 
-    modify_solver_attribute("IPM_IterationsLimit", 500)])
+    change_solver_attribute("IPM_IterationsLimit", 500)])
 
 biomass_index = model[biomass]
 λ = JuMP.value(opt_model[:x][biomass_index])
