@@ -5,12 +5,7 @@ Genes are represented by the `Gene` type in `COBREXA.jl`, see [Model
 Structure](@ref) for details.  `Gene`s can be constructed using either an empty
 constructor, or a constructor taking only the string `id` of the gene.
 
-```@docs
-Gene()
-Gene(::String)
 ```
-
-```@example
 using COBREXA
 
 gene = Gene("gene1")
@@ -21,11 +16,6 @@ gene # pretty printing
 Helper functions from Base have also been overwritten to make accessing arrays
 of genes easy.
 
-```@docs
-findfirst(::Vector{Gene}, ::String)
-getindex(::Vector{Gene}, ::Gene)
-```
-
 ## Defining metabolites
 
 Metabolites are represented by the `Metabolite` type in `COBREXA.jl`, see
@@ -35,14 +25,9 @@ metabolite is by using the empty constructor `Metabolite()`.
 Alternatively, `Metabolite(id::String)` can be used to assign only the `id`
 field of the `Metabolite`.
 
-```@docs
-Metabolite()
-Metabolite(::String)
-```
-
 The other fields can be modified as usual, if desired.
 
-```@example
+```
 using COBREXA # hide
 atp = Metabolite("atp")
 atp.name = "Adenosine triphosphate"
@@ -57,11 +42,7 @@ metabolite can be inspected by calling `get_atoms(met::Metabolite)`.  This
 function is useful for checking atom balances across reactions, or the entire
 model.
 
-```@docs
-get_atoms(met::Metabolite)
 ```
-
-```@example
 using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
@@ -72,11 +53,6 @@ get_atoms(atp)
 Helper functions from Base have also been overwritten to make accessing arrays
 of metabolites easy.
 
-```@docs
-findfirst(mets::Vector{Metabolite}, metid::String)
-getindex(mets::Vector{Metabolite}, met::Metabolite)
-```
-
 ## Defining reactions
 
 Reactions are represented by the `Reaction` type in `COBREXA.jl`, see [Model
@@ -84,21 +60,13 @@ Structure](@ref) for details.  The simplest way to define a new reaction is by
 using the empty constructor `Reaction()`.  All the other fields still need to
 be assigned.
 
-```@docs
-Reaction()
-```
-
 Another option is to use
 `Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir=:bidirectional)`,
 which assigns the reaction `id`, the reaction stoichiometry (through the
 metabolite dictionary argument), and the directionality of the reaction.  The
 remaining fields still need to be assigned, if desired.
 
-```@docs
-Reaction(id::String, metabolites::Dict{Metabolite, Float64}, dir=:bidirectional)
 ```
-
-```@example
 using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
@@ -124,7 +92,7 @@ Yet another way of defining a reaction is through overloading of the operators:
 thing, i.e. `⟶` is the same as `→`, etc.  The other fields of the reaction
 still need to be set directly.
 
-```@example
+```
 using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
@@ -141,7 +109,7 @@ another_rxn
 When building exchange, demand, or sinks reactions the `∅` empty metabolite
 should be used to indicate that a metabolite is being created or destroyed.
 
-```@example
+```
 using COBREXA # hide
 adp = Metabolite("adp") # hide
 adp.formula = "C10H12N5O10P2" # hide
@@ -153,11 +121,7 @@ It is also possible to check if a reaction is mass balanced by using
 `is_mass_balanced(rxn::Reaction)`.  Note, this function requires that all the
 metabolites in the reaction have formulas assigned to them to work properly.
 
-```@docs
-is_mass_balanced
 ```
-
-```@example
 using COBREXA # hide
 atp = Metabolite("atp") # hide
 atp.name = "Adenosine triphosphate" # hide
@@ -173,23 +137,14 @@ is_mass_balanced(unbal_rxn)
 Helper functions from Base have also been overwritten to make accessing arrays
 of reactions easy.
 
-```@docs
-findfirst(rxns::Vector{Reaction}, rxnid::String)
-getindex(rxns::Vector{Reaction}, rxn::Reaction)
-```
-
 ## Building models
 
 Once you have defined some metabolites, genes, and reactions, you can construct
 a model! This is most simply done by using the empty model constructor:
 
-```@docs
-StandardModel()
-```
-
 The fields of `StandardModel` can then be assigned as usual.
 
-```@example
+```
 using COBREXA
 
 atp = Metabolite("atp")
@@ -230,26 +185,12 @@ model # pretty printing
 Here the `add` functions were used to add the reactions, metabolites and genes
 to the model.
 
-```@docs
-add!(model::StandardModel, rxns::Vector{Reaction})
-add!(model::StandardModel, mets::Vector{Metabolite})
-add!(model::StandardModel, genes::Vector{Gene})
-```
-
 Checking for duplicates of genes, metabolites or reactions can also be done.
 Note that duplicate checking is NOT performed when models are imported.  If you
 suspect the model quality you should check each reaction, metabolite and gene
 yourself.
 
-```@docs
-check_duplicate_annotations(genes::Vector{Gene}, gene::Gene)
-check_duplicate_annotations(mets::Vector{Metabolite}, cmet::Metabolite)
-check_duplicate_annotations(rxns::Vector{Reaction}, crxn::Reaction)
-check_same_formula(mets::Vector{Metabolite}, met::Metabolite)
-check_duplicate_reaction(rxns::Vector{Reaction}, crxn::Reaction)
 ```
-
-```@example duplex
 using COBREXA
 
 met1 = Metabolite()
@@ -273,20 +214,14 @@ mets = [met1, met2, met3]
 dup, ind = check_duplicate_annotations(mets, met3)
 ```
 
-```@example duplex
+```
 mms = check_same_formula([met3, met1], met2)
 ```
 
 Similar functionality exists for genes and reactions. Duplicate reactions,
 metabolites or genes can be removed using `rm!`.
 
-```@docs
-rm!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
-rm!(model::StandardModel, mets::Union{Vector{Metabolite}, Metabolite})
-rm!(model::StandardModel, genes::Union{Vector{Gene}, Gene})
 ```
-
-```@example
 using COBREXA # hide
 atp = Metabolite("atp")
 atp2 = Metabolite("atp2")
@@ -303,11 +238,7 @@ A model can also be checked to ensure that no metabolites or genes are missing
 relative to the reactions.  `fix_model` also ensures that no extra metabolites
 are present.
 
-```@docs
-fix_model!(model::StandardModel)
 ```
-
-```@example
 using COBREXA # hide
 atp = Metabolite("atp")
 adp = Metabolite("adp")
@@ -330,9 +261,3 @@ model # now has 2 metabolites
 
 Helper functions from Base have also been overwritten to make accessing
 reactions, metabolites and genes easy from a model.
-
-```@docs
-getindex(model::StandardModel, rxn::Reaction)
-getindex(model::StandardModel, rxn::Metabolite)
-getindex(model::StandardModel, rxn::Gene)
-```
