@@ -38,7 +38,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
             _print_with_colors(
                 io,
                 "Reaction.$(string(fname)): ",
-                _maybemap(_unparse_grr, r.grr),
+                _maybemap(x->_unparse_grr(String, x), r.grr),
             )
         elseif fname in (:lb, :ub, :objective_coefficient)
             _print_with_colors(
