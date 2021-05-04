@@ -1,11 +1,11 @@
 """
-    pfba(model::StandardModel, optimizer; modifications, qp_solver, qp_solver_attributes)
+    pfba(model::MetabolicModel, optimizer; modifications, qp_solver, qp_solver_attributes)
 
 Run parsimonious flux balance analysis (pFBA) on the `model`.
 Note, the `optimizer` must be set to perform the analysis, any JuMP solver will work.
 Optionally, specify problem `modifications` as in [`flux_balance_analysis`](@ref).
 Also, `qp_solver` can be set to be different from `optimizer`, where the latter is then the LP optimizer only.
-Also note that `qp_solver_attributes` is meant to set the attributes for the `qp_solver` and NOT `modifications`.
+Also note that `qp_solver_attributes` is meant to set the attributes for the `qp_solver`.
 Any solver attributes changed in `modifications` will only affect he LP solver.
 This function automatically relaxes the constraint that the FBA solution objective matches the pFBA solution. 
 This is iteratively relaxed like 1.0, 0.999999, 0.9999, etc. of the bound until 0.99 when the function fails and returns nothing.
@@ -69,14 +69,14 @@ function parsimonious_flux_balance_analysis(
 end
 
 """
-    parsimonious_flux_balance_analysis_dict(model::StandardModel, optimizer; modifications, qp_solver, qp_solver_attributes)
+    parsimonious_flux_balance_analysis_dict(model::MetabolicModel, optimizer; modifications, qp_solver, qp_solver_attributes)
 
 Perform parsimonious flux balance analysis on `model` using `optimizer`. 
 Returns a vector of fluxes in the same order as the reactions in `model`. 
-Calls [`parsimonious_flux_balance_analysis_dict`](@ref) internally.
+Calls [`parsimonious_flux_balance_analysis`](@ref) internally.
 """
 function parsimonious_flux_balance_analysis_vec(
-    model::StandardModel,
+    model::MetabolicModel,
     optimizer;
     modifications = [(model, opt_model) -> nothing],
     qp_solver = (model, opt_model) -> nothing,
@@ -96,14 +96,14 @@ function parsimonious_flux_balance_analysis_vec(
 end
 
 """
-    parsimonious_flux_balance_analysis_dict(model::StandardModel, optimizer; modifications, qp_solver, qp_solver_attributes)
+    parsimonious_flux_balance_analysis_dict(model::MetabolicModel, optimizer; modifications, qp_solver, qp_solver_attributes)
 
 Perform parsimonious flux balance analysis on `model` using `optimizer`. 
 Returns a dictionary mapping reaction `id`s to fluxes. 
-Calls [`parsimonious_flux_balance_analysis_dict`](@ref) internally.
+Calls [`parsimonious_flux_balance_analysis`](@ref) internally.
 """
 function parsimonious_flux_balance_analysis_dict(
-    model::StandardModel,
+    model::MetabolicModel,
     optimizer;
     modifications = [(model, opt_model) -> nothing],
     qp_solver = (model, opt_model) -> nothing,
