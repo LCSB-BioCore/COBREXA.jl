@@ -44,8 +44,8 @@ function flux_variability_analysis(
     # store a JuMP optimization model at all workers
     save_model = :(
         begin
-            optmodel = COBREXA.make_optimization_model($model, $optimizer)
-            COBREXA._FVA_add_constraint(
+            optmodel = $COBREXA.make_optimization_model($model, $optimizer)
+            $COBREXA._FVA_add_constraint(
                 optmodel,
                 $(objective(model)),
                 optmodel[:x],
@@ -60,7 +60,7 @@ function flux_variability_analysis(
 
     # schedule FVA parts parallely using pmap
     fluxes = dpmap(
-        rid -> :(COBREXA._FVA_optimize_reaction(cobrexa_parfva_model, $rid)),
+        rid -> :($COBREXA._FVA_optimize_reaction(cobrexa_parfva_model, $rid)),
         CachingPool(workers),
         [-reactions reactions],
     )
@@ -97,7 +97,7 @@ Internal helper function for adding constraints to a model. Exists mainly
 because for avoiding namespace problems on remote workers.
 """
 function _FVA_add_constraint(model, c, x, Z0, gamma)
-    COBREXA.JuMP.@constraint(model, c' * x ≥ gamma * Z0)
+    @constraint(model, c' * x ≥ gamma * Z0)
 end
 
 """
@@ -108,11 +108,11 @@ namespace problems.
 """
 function _FVA_optimize_reaction(model, rid)
     sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
-    var = COBREXA.JuMP.all_variables(model)[abs(rid)]
+    var = all_variables(model)[abs(rid)]
 
-    COBREXA.JuMP.@objective(model, sense, var)
-    COBREXA.JuMP.optimize!(model)
-    return COBREXA.JuMP.objective_value(model)
+    @objective(model, sense, var)
+    optimize!(model)
+    return objective_value(model)
 end
 
 """
