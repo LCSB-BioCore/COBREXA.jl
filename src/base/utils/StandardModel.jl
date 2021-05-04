@@ -146,11 +146,7 @@ function set_bound(
     ub = _constants.default_reaction_rate,
     lb = -_constants.default_reaction_rate,
 )
-    if lb <= 0
-        set_normalized_rhs(opt_model[:lbs][vind], abs(lb))
-    else
-        set_normalized_rhs(opt_model[:lbs][vind], -abs(lb))
-    end
+    set_normalized_rhs(opt_model[:lbs][vind], -lb)
     set_normalized_rhs(opt_model[:ubs][vind], ub)
 end
 
@@ -168,12 +164,7 @@ function get_bound_vectors(opt_model)
     ubconref = opt_model[:ubs]
     lbs = zeros(length(lbconref))
     for i in eachindex(lbs)
-        lbval = normalized_rhs(lbconref[i])
-        if lbval > 0
-            lbs[i] = -abs(lbval)
-        else
-            lbs[i] = abs(lbval)
-        end
+        lbs[i] = -normalized_rhs(lbconref[i])
     end
     ubs = [normalized_rhs(ubconref[i]) for i in eachindex(ubconref)]
 
