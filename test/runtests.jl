@@ -15,6 +15,7 @@ using Statistics
 using JSON
 using Measurements
 using OrderedCollections
+using LinearAlgebra
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
