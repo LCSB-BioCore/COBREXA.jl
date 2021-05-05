@@ -1,0 +1,21 @@
+name: Publish Docker image
+
+on:
+  release:
+    types: [published, created]
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Push to GitHub Registry
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: cobrexa.jl
+          tags: latest
+          registry: ghcr.io
+          username: cylon-x
+          password: ${{ secrets.docker_pwd }}
