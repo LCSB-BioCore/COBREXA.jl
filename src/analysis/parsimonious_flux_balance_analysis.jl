@@ -63,10 +63,11 @@ function parsimonious_flux_balance_analysis(
         @constraint(opt_model, pfba_constraint, lb <= original_objective <= ub)
 
         optimize!(opt_model)
-        COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
+        COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] &&
             break
 
         COBREXA.JuMP.delete(opt_model, pfba_constraint)
+        COBREXA.JuMP.unregister(opt_model, :pfba_constraint)
     end
 
     COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
