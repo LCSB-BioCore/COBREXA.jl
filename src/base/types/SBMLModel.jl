@@ -58,7 +58,7 @@ reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
     _maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
 
 metabolite_formula(a::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
-    _maybemap(_formula_to_atoms, a.m.species[mid].formula)
+    _maybemap(_parse_formula, a.m.species[mid].formula)
 
 metabolite_charge(a::SBMLModel, mid::String)::Maybe{Int} = a.m.species[mid].charge
 
