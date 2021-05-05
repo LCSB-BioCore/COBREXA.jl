@@ -40,14 +40,16 @@ function check_duplicate_annotations(
     inspect_annotations = _constants.reaction_annotation_checks,
 )::Union{Nothing,String}
     for (k, rxn) in rxns
-        for anno in inspect_annotations
-            if length(
-                intersect(
-                    get(crxn.annotations, anno, ["c1"]),
-                    get(rxn.annotations, anno, ["c2"]),
-                ),
-            ) != 0
-                return k
+        if k != crxn.id
+            for anno in inspect_annotations
+                if length(
+                    intersect(
+                        get(crxn.annotations, anno, ["c1"]),
+                        get(rxn.annotations, anno, ["c2"]),
+                    ),
+                ) != 0
+                    return k
+                end
             end
         end
     end

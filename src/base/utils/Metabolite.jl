@@ -11,7 +11,7 @@ function check_duplicate_annotations(
     inspect_annotations = _constants.metabolite_annotation_checks,
 )::Union{Nothing,String}
     for (k, met) in mets
-        if met.compartment == cmet.compartment # check if same compartment
+        if met.compartment == cmet.compartment && k != cmet.id
             for anno in inspect_annotations
                 if length(
                     intersect(
