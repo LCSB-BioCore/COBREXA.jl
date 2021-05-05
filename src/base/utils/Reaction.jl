@@ -9,7 +9,11 @@ Otherwise return `nothing`.
 
 See also: [`is_mass_balanced`](@ref)
 """
-function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String,Reaction}; only_metabolites=true)
+function check_duplicate_reaction(
+    crxn::Reaction,
+    rxns::OrderedDict{String,Reaction};
+    only_metabolites = true,
+)
     for (k, rxn) in rxns
         if rxn.id != crxn.id # skip if same ID
             if only_metabolites # only check if metabolites are the same
