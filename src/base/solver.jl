@@ -9,11 +9,7 @@ function make_optimization_model(
 Convert CoreModel to the JuMP model, place objectives and the equality
 constraint.
 """
-function make_optimization_model(
-    model::MetabolicModel,
-    optimizer;
-    sense = MOI.MAX_SENSE,
-)
+function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.MAX_SENSE)
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
@@ -36,11 +32,7 @@ end
 
 Use JuMP to solve an instance of CoreModel
 """
-function optimize_model(
-    model::MetabolicModel,
-    optimizer;
-    sense = MOI.MIN_SENSE,
-)
+function optimize_model(model::MetabolicModel, optimizer; sense = MOI.MIN_SENSE)
     optimization_model = make_optimization_model(model, optimizer; sense = sense)
     COBREXA.JuMP.optimize!(optimization_model)
     return optimization_model
