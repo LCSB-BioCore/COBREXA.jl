@@ -17,7 +17,7 @@ function check_duplicate_reaction(
     for (k, rxn) in rxns
         if rxn.id != crxn.id # skip if same ID
             if only_metabolites # only check if metabolites are the same
-                if issetequal(collect(keys(crxn.metabolites)), collect(keys(rxn)))
+                if issetequal(collect(keys(crxn.metabolites)), collect(keys(rxn.metabolites)))
                     return k
                 end
             else # also check the stoichiometric coefficients
