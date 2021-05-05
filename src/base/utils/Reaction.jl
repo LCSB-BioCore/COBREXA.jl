@@ -17,10 +17,7 @@ function check_duplicate_reaction(
     for (k, rxn) in rxns
         if rxn.id != crxn.id # skip if same ID
             if only_metabolites # only check if metabolites are the same
-                if issetequal(
-                    keys(crxn.metabolites),
-                    keys(rxn.metabolites),
-                )
+                if issetequal(keys(crxn.metabolites), keys(rxn.metabolites))
                     return k
                 end
             else # also check the stoichiometric coefficients
@@ -31,10 +28,8 @@ function check_duplicate_reaction(
                         break
                     end
                 end
-                if reaction_checker && issetequal(
-                    keys(crxn.metabolites),
-                    keys(rxn.metabolites),
-                )
+                if reaction_checker &&
+                   issetequal(keys(crxn.metabolites), keys(rxn.metabolites))
                     return k
                 end
             end
