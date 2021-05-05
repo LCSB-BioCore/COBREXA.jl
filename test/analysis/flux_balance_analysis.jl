@@ -71,10 +71,10 @@ end
     sol_multi = flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
-        modifications = change_objective(
+        modifications = [change_objective(
             ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
             weights = [biomass_frac, pfl_frac],
-        ),
+        )],
     )
     @test isapprox(
         biomass_frac * sol_multi["BIOMASS_Ecoli_core_w_GAM"] + pfl_frac * sol_multi["PFL"],
