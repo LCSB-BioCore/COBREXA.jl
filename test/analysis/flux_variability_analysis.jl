@@ -30,13 +30,13 @@
         0.0 0.0
         -1.0 -1.0
     ]
-    fluxes = flux_variability_analysis(cp, optimizer; gamma = 0.5)
+    fluxes = flux_variability_analysis(cp, optimizer; bounds = gamma_bounds(0.5))
     @test fluxes ≈ [
         0.5 1.0
         0.0 0.5
         -1.0 -0.5
     ]
-    fluxes = flux_variability_analysis(cp, optimizer; gamma = 0.0)
+    fluxes = flux_variability_analysis(cp, optimizer; bounds = _ -> (0, Inf))
     @test fluxes ≈ [
         0.0 1.0
         0.0 1.0
@@ -52,7 +52,7 @@ end
     cp = test_simpleLP()
     pids = addprocs(2, topology = :master_worker)
     @everywhere using COBREXA, GLPK
-    fluxes = flux_variability_analysis(cp, [1, 2], GLPK.Optimizer, pids)
+    fluxes = flux_variability_analysis(cp, [1, 2], GLPK.Optimizer; workers=pids)
     @test fluxes ≈ [
         1.0 1.0
         2.0 2.0
@@ -68,10 +68,10 @@ end
     )
 
     model = load_model(StandardModel, model_path)
-    fva_max, fva_min = flux_variability_analysis(
+    mins, maxs = flux_variability_analysis_dict(
         model,
         Tulip.Optimizer;
-        optimum_bound = 0.99,
+        bounds=objective_bounds(0.99),
         modifications = [
             change_solver_attribute("IPM_IterationsLimit", 500),
             change_constraint("EX_glc__D_e", -10, -10),
@@ -79,6 +79,6 @@ end
         ],
     )
 
-    @test isapprox(fva_max["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = TEST_TOLERANCE)
-    @test isapprox(fva_min["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = TEST_TOLERANCE)
+    @test isapprox(maxs["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = TEST_TOLERANCE)
+    @test isapprox(mins["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = TEST_TOLERANCE)
 end
