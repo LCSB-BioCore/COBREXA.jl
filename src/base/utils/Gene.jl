@@ -13,12 +13,12 @@ function check_duplicate_annotations(
     for (k, gene) in gs
         if k != check_gene.id
             for anno in inspect_annotations
-                if length(
-                    intersect(
+                if any(
+                    occursin.(
                         get(gene.annotations, anno, ["c1"]),
                         get(check_gene.annotations, anno, "c2"),
                     ),
-                ) != 0
+                )
                     return k
                 end
             end

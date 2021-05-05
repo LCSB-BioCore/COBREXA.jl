@@ -18,8 +18,8 @@ function check_duplicate_reaction(
         if rxn.id != crxn.id # skip if same ID
             if only_metabolites # only check if metabolites are the same
                 if issetequal(
-                    collect(keys(crxn.metabolites)),
-                    collect(keys(rxn.metabolites)),
+                    keys(crxn.metabolites),
+                    keys(rxn.metabolites),
                 )
                     return k
                 end
@@ -31,7 +31,10 @@ function check_duplicate_reaction(
                         break
                     end
                 end
-                if reaction_checker # was a match found
+                if reaction_checker && issetequal(
+                    keys(crxn.metabolites),
+                    keys(rxn.metabolites),
+                )
                     return k
                 end
             end
@@ -55,12 +58,12 @@ function check_duplicate_annotations(
     for (k, rxn) in rxns
         if k != crxn.id
             for anno in inspect_annotations
-                if length(
-                    intersect(
+                if any(
+                    occursin.(
                         get(crxn.annotations, anno, ["c1"]),
                         get(rxn.annotations, anno, ["c2"]),
                     ),
-                ) != 0
+                )
                     return k
                 end
             end
