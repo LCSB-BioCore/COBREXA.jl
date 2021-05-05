@@ -13,12 +13,7 @@ function check_duplicate_annotations(
     for (k, met) in mets
         if met.compartment == cmet.compartment && k != cmet.id
             for anno in inspect_annotations
-                if !isempty(
-                    intersect(
-                        get(met.annotations, anno, ["c1"]),
-                        get(cmet.annotations, anno, ["c2"]),
-                    ),
-                )
+                if any(in.(get(met.annotations, anno, ["c1"]), Ref(get(cmet.annotations, anno, ["c2"]))))
                     return k
                 end
             end
