@@ -143,7 +143,7 @@ end
 Extract metabolite formula from key `metFormula` or `metFormulas`.
 """
 metabolite_formula(m::MATModel, mid::String) = _maybemap(
-    x -> _formula_to_atoms(x[findfirst(==(mid), metabolites(m))]),
+    x -> _parse_formula(x[findfirst(==(mid), metabolites(m))]),
     get(m.mat, "metFormula", get(m.mat, "metFormulas", nothing)),
 )
 
@@ -213,7 +213,7 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
                 _default.(
                     "",
                     _maybemap.(
-                        _atoms_to_formula,
+                        _unparse_formula,
                         metabolite_formula.(Ref(m), metabolites(m)),
                     ),
                 ),

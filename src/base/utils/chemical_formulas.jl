@@ -1,8 +1,11 @@
 
 """
-    _formula_to_atoms(f::String)::Dict{String,Int}
+    _parse_formula(f::String)::MetaboliteFormula
+
+Parse a formula in format `C2H6O` into a [`MetaboliteFormula`](@ref), which is
+basically a dictionary of atom counts in the molecule.
 """
-function _formula_to_atoms(f::String)::MetaboliteFormula
+function _parse_formula(f::String)::MetaboliteFormula
     res = Dict{String,Int}()
     pattern = @r_str "([A-Z][a-z]*)([1-9][0-9]*)?"
 
@@ -14,8 +17,10 @@ function _formula_to_atoms(f::String)::MetaboliteFormula
 end
 
 """
-    _atoms_to_formula(f::String)::Dict{String,Int}
+    _unparse_formula(f::MetaboliteFormula)::String
+
+Format [`MetaboliteFormula`](@ref) to `String`.
 """
-function _atoms_to_formula(f::MetaboliteFormula)::String
+function _unparse_formula(f::MetaboliteFormula)::String
     return join(["$elem$n" for (elem, n) in f])
 end

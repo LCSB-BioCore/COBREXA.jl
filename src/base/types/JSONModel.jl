@@ -189,7 +189,7 @@ Parse and return the metabolite `.formula`
 """
 function metabolite_formula(model::JSONModel, mid::String)
     met = @_json_section_firstid mets mid return nothing
-    return _maybemap(_formula_to_atoms, get(met, "formula", nothing))
+    return _maybemap(_parse_formula, get(met, "formula", nothing))
 end
 
 """
@@ -272,7 +272,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     m[first(_constants.keynames.mets)] = [
         Dict([
             "id" => mid,
-            "formula" => _maybemap(_atoms_to_formula, metabolite_formula(mm, mid)),
+            "formula" => _maybemap(_unparse_formula, metabolite_formula(mm, mid)),
             "charge" => metabolite_charge(mm, mid),
             "compartment" => metabolite_compartment(mm, mid),
             "annotation" => metabolite_annotations(mm, mid),
