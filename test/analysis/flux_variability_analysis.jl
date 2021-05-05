@@ -79,6 +79,6 @@ end
         ],
     )
 
-    @test isapprox(maxs["EX_ac_e"]["EX_ac_e"], 8.518549434876208, atol = TEST_TOLERANCE)
-    @test isapprox(mins["EX_ac_e"]["EX_ac_e"], 7.448388738973361, atol = TEST_TOLERANCE)
+    @test isapprox(maxs["EX_ac_e"]["EX_ac_e"], 16.81521027177164, atol = TEST_TOLERANCE)
+    @test isapprox(mins["EX_ac_e"]["EX_ac_e"], 1.553675043862341e-10, atol = TEST_TOLERANCE)
 end
