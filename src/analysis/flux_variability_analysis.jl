@@ -113,13 +113,13 @@ function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs
         model,
         optimizer;
         kwargs...,
-        ret = m -> (objective_value(m), JuMP.value.(m[:x])),
+        ret = m -> JuMP.value.(m[:x]),
     )
     rxns = reactions(model)
 
     return (
-        Dict(zip(rxns, [Dict(zip(rxns, fluxes)) for (_, fluxes) in vs[:, 1]])),
-        Dict(zip(rxns, [Dict(zip(rxns, fluxes)) for (_, fluxes) in vs[:, 2]])),
+        Dict(zip(rxns, [Dict(zip(rxns, fluxes)) for fluxes in vs[:, 1]])),
+        Dict(zip(rxns, [Dict(zip(rxns, fluxes)) for fluxes in vs[:, 2]])),
     )
 end
 
