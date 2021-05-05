@@ -1,5 +1,5 @@
 """
-    function parsimonious_flux_balance_analysis(
+    parsimonious_flux_balance_analysis(
         model::MetabolicModel,
         optimizer;
         modifications = [],
