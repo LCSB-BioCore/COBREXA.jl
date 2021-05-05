@@ -24,8 +24,8 @@ FBA problem (see [`flux_balance_analysis`](@ref)).
 The `bounds` is a user-supplied function that specifies the objective bounds
 for the variability optimizations, by default it restricts the flux objective
 value to the precise optimum reached in FBA. It can return `-Inf` and `Inf` in
-first and second pair to remove the limit. Use [`gamma_bound`](@ref) and
-[`optimum_bound`](@ref) for simple bounds.
+first and second pair to remove the limit. Use [`gamma_bounds`](@ref) and
+[`objective_bounds`](@ref) for simple bounds.
 
 `optimizer` must be set to a `JuMP`-compatible optimizer. The computation of
 the individual optimization problems is transparently distributed to `workers`
