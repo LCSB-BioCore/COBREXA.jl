@@ -28,18 +28,8 @@ function check_duplicate_annotations(
 end
 
 """
-    get_atoms(met::Metabolite)
+    get_atoms(met::Metabolite)::MetaboliteFormula
 
-Return a dictionary mapping the elements in a metabolite `met` to their stoichiometric coefficients.
+Simple wrapper for getting the atom dictionary count out of a `Metabolite`.
 """
-function get_atoms(met::Metabolite)
-    atoms = Dict{String,Int}()
-    isnothing(met.formula) && return nothing
-    for m in eachmatch(r"([A-Z]{1})([a-z]?)(\d*)", met.formula)
-        element = match(r"([A-Z]{1})([a-z]?)", m.match)
-        number = match(r"\d\d*", m.match)
-        atoms[string(element.match)] =
-            isnothing(number) ? 1 : parse(Int, string(number.match))
-    end
-    return atoms
-end
+get_atoms(met::Metabolite)::MetaboliteFormula = _maybemap(_parse_formula, met.formula)
