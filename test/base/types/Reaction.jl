@@ -104,10 +104,10 @@
     @test id == "r3"
 
     r5 = Reaction("r5", Dict(m3.id => -11.0, m4.id => 1.0), :bidirectional)
-    id = check_duplicate_reaction(r5, rd; only_metabolites=false)
+    id = check_duplicate_reaction(r5, rd; only_metabolites = false)
     @test isnothing(id)
 
     r5 = Reaction("r5", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
-    id = check_duplicate_reaction(r5, rd; only_metabolites=false)
+    id = check_duplicate_reaction(r5, rd; only_metabolites = false)
     @test id == "r3"
 end
