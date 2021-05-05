@@ -8,17 +8,17 @@ Return id of the first hit, otherwise `nothing`.
 function check_duplicate_annotations(
     cmet::Metabolite,
     mets::OrderedDict{String,Metabolite};
-    inspect_annotations = _constants.reaction_annotation_checks,
+    inspect_annotations = _constants.metabolite_annotation_checks,
 )::Union{Nothing,String}
     for (k, met) in mets
-        if met.compartment == cmet.compartment # check if same compartment
+        if met.compartment == cmet.compartment && k != cmet.id
             for anno in inspect_annotations
-                if length(
-                    intersect(
+                if any(
+                    in.(
                         get(met.annotations, anno, ["c1"]),
-                        get(cmet.annotations, anno, ["c2"]),
+                        Ref(get(cmet.annotations, anno, ["c2"])),
                     ),
-                ) != 0
+                )
                     return k
                 end
             end
