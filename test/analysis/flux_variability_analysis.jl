@@ -52,7 +52,7 @@ end
     cp = test_simpleLP()
     pids = addprocs(2, topology = :master_worker)
     @everywhere using COBREXA, GLPK
-    fluxes = flux_variability_analysis(cp, [1, 2], GLPK.Optimizer; workers=pids)
+    fluxes = flux_variability_analysis(cp, [1, 2], GLPK.Optimizer; workers = pids)
     @test fluxes ≈ [
         1.0 1.0
         2.0 2.0
@@ -71,7 +71,7 @@ end
     mins, maxs = flux_variability_analysis_dict(
         model,
         Tulip.Optimizer;
-        bounds=objective_bounds(0.99),
+        bounds = objective_bounds(0.99),
         modifications = [
             change_solver_attribute("IPM_IterationsLimit", 500),
             change_constraint("EX_glc__D_e", -10, -10),
