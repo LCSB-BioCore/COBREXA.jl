@@ -54,10 +54,10 @@ function check_duplicate_annotations(
     for (k, rxn) in rxns
         if k != crxn.id
             for anno in inspect_annotations
-                if !isempty(
-                    intersect(
+                if any(
+                    in.(
                         get(crxn.annotations, anno, ["c1"]),
-                        get(rxn.annotations, anno, ["c2"]),
+                        Ref(get(rxn.annotations, anno, ["c2"])),
                     ),
                 )
                     return k
