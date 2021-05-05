@@ -35,9 +35,9 @@ function make_optimization_model(model::CoreModelCoupled, optimizer; sense = MOI
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
     @constraint(optimization_model, lbs, xl .<= x) # lower bounds
     @constraint(optimization_model, ubs, x .<= xu) # upper bounds
-    @constraint(optimization_model, c_lbs, cl.<= coupling(model)*x) # coupling lower bounds
-    @constraint(optimization_model, c_ubs, coupling(model)*x .<= cu) # coupling upper bounds
-    
+    @constraint(optimization_model, c_lbs, cl .<= coupling(model) * x) # coupling lower bounds
+    @constraint(optimization_model, c_ubs, coupling(model) * x .<= cu) # coupling upper bounds
+
     return optimization_model
 end
 

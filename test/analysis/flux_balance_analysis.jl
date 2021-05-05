@@ -110,11 +110,11 @@ end
     Cb = sparse(1.0I, nr, nr)
     Cb[:, biomass_index] .= γ
 
-    C = [Cf;Cb]
+    C = [Cf; Cb]
 
-    clb = spzeros(2*nr)
+    clb = spzeros(2 * nr)
     clb[1:nr] .= -1000.0
-    cub = spzeros(2*nr)
+    cub = spzeros(2 * nr)
     cub[nr+1:end] .= 1000
 
     cmodel = CoreModelCoupled(model, C, clb, cub) # construct
