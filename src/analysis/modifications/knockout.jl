@@ -33,13 +33,10 @@ function knockout(gene_ids::Vector{String})
             end
         else # fallback knockout
             for (rxn_num, rxn_id) in enumerate(reactions(model))
-                cond = all([
+                if all([
                     any(in.(gene_and, Ref(gene_ids))) for
                     gene_and in reaction_gene_association(model, rxn_id)
                 ])
-                println(rxn_id, ": ", cond)
-                if cond
-                    println(rxn_id)
                     set_bound(rxn_num, opt_model, ub = 0, lb = 0)
                 end
             end
