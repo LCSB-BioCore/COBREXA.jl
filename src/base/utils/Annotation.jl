@@ -25,7 +25,7 @@ function annotation_index(
     res = Dict{String,Dict{String,Set{String}}}()
     for (n, ax) in xs
         a = annotations(ax)
-        for (k,anns) in a
+        for (k, anns) in a
             if !haskey(res, k)
                 res[k] = Dict{String,Set{String}}()
             end

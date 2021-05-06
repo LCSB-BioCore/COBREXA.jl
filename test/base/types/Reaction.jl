@@ -87,7 +87,7 @@
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
-    rd = OrderedDict(r.id => r for r in [r1,r2,r3,r4])
+    rd = OrderedDict(r.id => r for r in [r1, r2, r3, r4])
     @test issetequal(["r1", "r4"], ambiguously_identified_items(annotation_index(rd)))
 
     id = check_duplicate_reaction(r4, rd)
