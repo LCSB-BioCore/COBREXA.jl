@@ -1,7 +1,3 @@
-
-"""
-Pretty printing of metabolite::Metabolite.
-"""
 function Base.show(io::IO, ::MIME"text/plain", m::Metabolite)
     for fname in fieldnames(Metabolite)
         if fname == :charge
