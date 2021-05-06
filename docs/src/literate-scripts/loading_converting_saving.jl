@@ -10,9 +10,12 @@
 # ### Loading models
 
 ## Download the model files if they don't already exist
-!isfile("e_coli_core.mat") && download("http://bigg.ucsd.edu/static/models/e_coli_core.mat", "e_coli_core.mat")
-!isfile("e_coli_core.json") && download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
-!isfile("e_coli_core.xml") &&  download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
+!isfile("e_coli_core.mat") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.mat", "e_coli_core.mat")
+!isfile("e_coli_core.json") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+!isfile("e_coli_core.xml") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
 using COBREXA
 
@@ -49,8 +52,13 @@ json_model.m # try to not use this functionality
 
 # Here is a list of all the currently supported accessor functions.
 using InteractiveUtils #hide 
-for (i, method) in enumerate(filter(x -> endswith(string(x.file), "MetabolicModel.jl"), InteractiveUtils.methodswith(MetabolicModel, COBREXA)))
-    println(i,") ", method.name)
+for (i, method) in enumerate(
+    filter(
+        x -> endswith(string(x.file), "MetabolicModel.jl"),
+        InteractiveUtils.methodswith(MetabolicModel, COBREXA),
+    ),
+)
+    println(i, ") ", method.name)
 end
 
 # By using this interface you can access internal details about models using the
