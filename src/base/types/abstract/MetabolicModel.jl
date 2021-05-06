@@ -53,7 +53,8 @@ const Annotations = Dict{String,Vector{String}}
 """
     Notes
 
-Free-form notes about something (e.g. a Gene), categorized by "topic".
+Free-form notes about something (e.g. a [`Gene`](@ref)), categorized by
+"topic".
 """
 const Notes = Dict{String,Vector{String}}
 
