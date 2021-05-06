@@ -1,19 +1,17 @@
 """
-    _get_warmup_points(cbm; random_objective=false, numstop=1e10)
+    _get_warmup_points(cbm; random_objective=false, numstop=Inf)
 
-Generate warmup points for all the reactions in the model that
-are not fixed. Assumes you feed in a JuMP model that is already
-constrained i.e. the constraints are already applied to `cbm`.
+Generate warmup points for all reactions in the model that are not fixed.
+Assumes that the input JuMP model in `cbm` is already constrained.
 
-If you do not want to generate all possible warmup points 
-(2*n where n is the number of non-fixed variables), then reduce `numstop`
-to the desired number of warmup points. This number of warmup points will
-be randomly drawn from the non-fixed fluxes.
+The warmup points are sampled randomly from all possibilities until `numstop`
+is reached; by default all points are generated.
 
-By default each flux will be minimized and maximized, however, random objectives
-can be used by setting `random_objective` true.
+By default, the warmup points are generated as in FVA by minimizing and
+maximizing all reactions; `random_objective` switches this to completely random
+objectives.
 """
-function _get_warmup_points(cbm; random_objective = false, numstop = 1e10)
+function _get_warmup_points(cbm; random_objective = false, numstop = Inf)
     v = cbm[:x]
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
