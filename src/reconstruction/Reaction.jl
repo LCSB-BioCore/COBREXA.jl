@@ -66,7 +66,16 @@ function _mkrxn(substrates, products)
 end
 
 """
-Forward reaction.
+    ⟶(
+        substrates::Union{
+            Metabolite,
+            MetaboliteWithCoefficient,
+            Vector{MetaboliteWithCoefficient},
+        },
+        products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+    )
+
+Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
 """
 function ⟶(
     substrates::Union{
@@ -82,7 +91,16 @@ end
 const → = ⟶
 
 """
-Reverse only reaction.
+    ⟵(
+        substrates::Union{
+            Metabolite,
+            MetaboliteWithCoefficient,
+            Vector{MetaboliteWithCoefficient},
+        },
+        products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+    )
+
+Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
 """
 function ⟵(
     substrates::Union{
@@ -98,7 +116,16 @@ end
 const ← = ⟵
 
 """
-Bidirectional (reversible) reaction.
+    ⟷(
+        substrates::Union{
+            Metabolite,
+            MetaboliteWithCoefficient,
+            Vector{MetaboliteWithCoefficient},
+        },
+        products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+    )
+
+Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and `products`.
 """
 function ⟷(
     substrates::Union{
