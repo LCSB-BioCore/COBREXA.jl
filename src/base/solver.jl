@@ -42,3 +42,15 @@ function optimize_model(model::MetabolicModel, optimizer; sense = MOI.MIN_SENSE)
     COBREXA.JuMP.optimize!(optimization_model)
     return optimization_model
 end
+
+
+"""
+    is_solved(optmodel)
+
+Return `true` if `optmodel` solved successfully (solution is optimal or locally optimal).
+Return `false` if any other termination status is reached. Termination status is defined
+in the documentation of `JuMP`.
+"""
+function is_solved(optmodel)
+    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true : false
+end
