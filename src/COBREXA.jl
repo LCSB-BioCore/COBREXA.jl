@@ -41,7 +41,7 @@ _inc_all.(
             "io",
             joinpath("io", "show"),
             "reconstruction",
-            joinpath("reconstruction", "modifications"),
+            joinpath("analysis", "modifications"),
             "analysis",
             joinpath("analysis", "sampling"),
             joinpath("base", "utils"),

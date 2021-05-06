@@ -41,8 +41,7 @@ function parsimonious_flux_balance_analysis(
 )
     # Run FBA
     opt_model = flux_balance_analysis(model, optimizer; modifications = modifications)
-    COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
-        return nothing # FBA failed
+    is_solved(opt_model) || return nothing # FBA failed
 
     # get the objective
     Z = objective_value(opt_model)
@@ -63,15 +62,13 @@ function parsimonious_flux_balance_analysis(
         @constraint(opt_model, pfba_constraint, lb <= original_objective <= ub)
 
         optimize!(opt_model)
-        COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] &&
-            break
+        is_solved(opt_model) && break
 
         COBREXA.JuMP.delete(opt_model, pfba_constraint)
         COBREXA.JuMP.unregister(opt_model, :pfba_constraint)
     end
 
-    COBREXA.JuMP.termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
-        return nothing # pFBA failed
+    is_solved(opt_model) || return nothing # pFBA failed
 
     return opt_model
 end

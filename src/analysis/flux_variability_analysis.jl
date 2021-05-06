@@ -141,13 +141,13 @@ Internal helper for creating the optimized model on a remote worker, for
 avoiding namespace problems.
 """
 function _FVA_optimize_reaction(model, rid, ret)
-    sense = rid > 0 ? MOI.MAX_SENSE : MOI.MIN_SENSE
+    sense = rid > 0 ? MAX_SENSE : MIN_SENSE
     var = all_variables(model)[abs(rid)]
 
     @objective(model, sense, var)
     optimize!(model)
 
-    if termination_status(model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+    if is_solved(model)
         return ret(model)
     else
         return nothing

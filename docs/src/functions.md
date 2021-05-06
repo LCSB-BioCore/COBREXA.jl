@@ -53,7 +53,7 @@ Pages = map(file -> joinpath("analysis", file), readdir("../src/analysis"))
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("reconstruction", "modifications", file), readdir("../src/reconstruction/modifications"))
+Pages = map(file -> joinpath("analysis", "modifications", file), readdir("../src/analysis/modifications"))
 ```
 
 ### Flux sampling

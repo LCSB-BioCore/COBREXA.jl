@@ -8,9 +8,7 @@ Arguments are passed to [`flux_balance_analysis`](@ref).
 """
 function flux_balance_analysis_vec(args...; kwargs...)::Union{Vector{Float64},Nothing}
     optmodel = flux_balance_analysis(args...; kwargs...)
-
-    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ||
-        return nothing
+    is_solved(optmodel) || return nothing
     value.(optmodel[:x])
 end
 
