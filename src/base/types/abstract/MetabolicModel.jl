@@ -20,7 +20,7 @@ const VecType = AbstractVector{Float64}
 const StringVecType = AbstractVector{String}
 
 """
-    GeneAssociation
+    GeneAssociation = Vector{Vector{String}}
 
 An association to genes, represented as a logical formula in a positive
 disjunctive normal form (DNF). (The 2nd-level vectors of strings are connected
@@ -30,14 +30,14 @@ are connected by "or" to form the DNF.)
 const GeneAssociation = Vector{Vector{String}}
 
 """
-    MetaboliteFormula
+    MetaboliteFormula = Dict{String,Int}
 
 Dictionary of atoms and their abundances in a molecule.
 """
 const MetaboliteFormula = Dict{String,Int}
 
 """
-    Annotations
+    Annotations = Dict{String,Vector{String}}
 
 Dictionary used to store (possible multiple) standardized annotations of
 something, such as a [`Metabolite`](@ref) and a [`Reaction`](@ref).
@@ -50,7 +50,7 @@ Annotations("PubChem" => ["CID12345", "CID54321"])
 const Annotations = Dict{String,Vector{String}}
 
 """
-    Notes
+    Notes = Dict{String,Vector{String}}
 
 Free-form notes about something (e.g. a [`Gene`](@ref)), categorized by
 "topic".
