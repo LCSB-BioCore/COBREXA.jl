@@ -309,8 +309,11 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             gid;
             notes = gene_notes(model, gid),
             annotations = gene_annotations(model, gid),
-            associated_reactions = Set([rxn_id for rxn_id in rxnids if any(in.(gid, reaction_gene_association(model, rxn_id)))]),
-            ) # TODO: add name accessor
+            associated_reactions = Set([
+                rxn_id for rxn_id in rxnids if
+                any(in.(gid, reaction_gene_association(model, rxn_id)))
+            ]),
+        ) # TODO: add name accessor
     end
 
     for mid in metids
