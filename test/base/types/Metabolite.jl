@@ -31,6 +31,5 @@
     m4.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
 
     md = OrderedDict(m.id => m for m in [m1, m2, m3])
-    id = check_duplicate_annotations(m4, md)
-    @test isnothing(id)
+    @test issetequal(["met1","met3"], ambiguously_identified_items(annotation_index(md)))
 end

@@ -39,36 +39,6 @@ function check_duplicate_reaction(
 end
 
 """
-    check_duplicate_annotations(rxn::Reaction, rxns::OrderedDict{String, Reaction}; inspect_annotations=_constants.reaction_annotation_checks)
-
-Determine if a `rxn` has overlapping annotations in `rxns`.
-Only performs check if `id`s do not match.
-The annotations checked are listed in `COBREXA._constants.reaction_annotation_checks`.
-Return the `id` of the first hit, otherwise `nothing`.
-"""
-function check_duplicate_annotations(
-    crxn::Reaction,
-    rxns::OrderedDict{String,Reaction};
-    inspect_annotations = _constants.reaction_annotation_checks,
-)::Union{Nothing,String}
-    for (k, rxn) in rxns
-        if k != crxn.id
-            for anno in inspect_annotations
-                if any(
-                    in.(
-                        get(crxn.annotations, anno, ["c1"]),
-                        Ref(get(rxn.annotations, anno, ["c2"])),
-                    ),
-                )
-                    return k
-                end
-            end
-        end
-    end
-    return nothing
-end
-
-"""
     is_boundary(rxn::Reaction)
 
 Return true if reaction is a boundary reaction, otherwise return false.

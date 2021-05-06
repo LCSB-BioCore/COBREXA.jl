@@ -83,21 +83,15 @@
     r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
     @test r3.lb == 0.0 && r3.ub == 1000.0
 
-    rxns = [r1, r2, r3]
-
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lb == -1000.0 && r4.ub == 1000.0
 
-    rd = OrderedDict(r.id => r for r in rxns)
-    id = check_duplicate_annotations(r4, rd)
-    @test id == "r1"
+    rd = OrderedDict(r.id => r for r in [r1,r2,r3,r4])
+    @test issetequal(["r1", "r4"], ambiguously_identified_items(annotation_index(rd)))
 
     id = check_duplicate_reaction(r4, rd)
     @test id == "r3"
-
-    id = check_duplicate_annotations(r2, rd)
-    @test isnothing(id)
 
     r5 = Reaction("r5", Dict(m3.id => -11.0, m4.id => 1.0), :bidirectional)
     id = check_duplicate_reaction(r5, rd)

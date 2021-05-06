@@ -27,11 +27,13 @@
     g3.annotations = Dict("sboterm" => ["sbo3"], "ncbigene" => ["ads"])
     g4 = Gene("g4")
     g4.annotations = Dict("sboterm" => ["sbo4"], "ncbigene" => ["ads22", "asd22s"])
-    gdict = OrderedDict(g.id => g for g in [g, g2]) # this is how genes are stored in StandardModel
+    gdict = OrderedDict(g.id => g for g in [g, g2, g3, g4]) # this is how genes are stored in StandardModel
 
-    id = check_duplicate_annotations(g3, gdict)
-    @test id == "gene1"
+    idx = annotation_index(gdict)
+    @test length(idx["ncbigene"]["ads"]) > 1
+    @test "gene1" in idx["ncbigene"]["ads"]
 
-    id = check_duplicate_annotations(g4, gdict)
-    @test isnothing(id)
+    ambiguous = ambiguously_identified_items(idx)
+    @test "g3" in ambiguous
+    @test !("g4" in ambiguous)
 end
