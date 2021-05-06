@@ -3,8 +3,7 @@
     abstract type MetabolicModel end
 
 A helper supertype that wraps everything usable as a linear-like model for
-COBREXA functions. If you want to use your own type, make it a subtype (so that
-the functions typecheck) and add instances for the data accessor methods below.
+COBREXA functions.
 
 If you want your model type to work with COBREXA, add the `MetabolicModel` as
 its supertype, and implement the accessor functions. Accessors
