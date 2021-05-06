@@ -48,8 +48,8 @@ json_model.m # try to not use this functionality
 # `SBMLModel`s, etc.
 
 # Here is a list of all the currently supported accessor functions.
-
-for (i, method) in enumerate(filter(x -> endswith(string(x.file), "MetabolicModel.jl"), methodswith(MetabolicModel, COBREXA)))
+using InteractiveUtils #hide 
+for (i, method) in enumerate(filter(x -> endswith(string(x.file), "MetabolicModel.jl"), InteractiveUtils.methodswith(MetabolicModel, COBREXA)))
     println(i,") ", method.name)
 end
 
