@@ -32,7 +32,7 @@ Change a JuMP optimizer attribute. The attributes are optimizer-specific, refer
 to the JuMP documentation and the documentation of the specific optimizer for
 usable keys and values.
 """
-function change_optimizer_attribute(option_key, option_val)
+function change_optimizer_attribute(attribute_key, value)
     (model, opt_model) ->
         COBREXA.JuMP.set_optimizer_attribute(opt_model, attribute_key, value)
 end
