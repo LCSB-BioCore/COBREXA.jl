@@ -32,7 +32,7 @@ mat_model = load_model("e_coli_core.mat")
 #
 json_model = load_model("e_coli_core.json")
 #
-sbml_model = load_model("e_coli_core.xml") 
+sbml_model = load_model("e_coli_core.xml")
 #
 
 #md # !!! note "Note: Model type is inferred from the file type"
