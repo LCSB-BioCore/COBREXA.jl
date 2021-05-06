@@ -18,10 +18,10 @@ function knockout(gene_ids::Vector{String})
             all_reactions = reactions(model)
             for gene_id in gene_ids
                 for reaction_id in gene_associated_reactions(model, gene_id)
-                    if all(
-                        any(occursin.(gene_ids, gene_array)) > 0 for
+                    if all([
+                        any(in.(gene_ids, Ref(gene_array))) for
                         gene_array in reaction_gene_association(model, reaction_id)
-                    )
+                    ])
                         set_bound(
                             first(indexin([reaction_id], all_reactions)),
                             opt_model,
