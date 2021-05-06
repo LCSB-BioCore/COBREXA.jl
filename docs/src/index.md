@@ -10,9 +10,10 @@
 
 COBREXA is a toolkit for working with large constraint-based metabolic models,
 and running very large number of analysis tasks on these models in parallel.
-Its main purpose is to make the COBRA scale to problem sizes that require the
-use of huge computer clusters and HPC environment, which allows to
-realistically approach the pre-exascale-sized models and problems.
+Its main purpose is to make the methods of Constraint-based Reconstruction and
+Analysis (COBRA) scale to problem sizes that require the use of huge computer
+clusters and HPC environment, which allows to realistically approach the
+pre-exascale-sized models.
 
 In the package, you will find the usual COBRA-like functions that inteface to
 the underlying linear programming solvers. We use
@@ -50,7 +51,8 @@ model = load_model("e_coli_core.xml")
 fluxes = flux_balance_analysis_dict(model, GLPK.Optimizer)
 ```
 
-The variable `fluxes` will now contain a dictionary that assigns an optimal flux to each reaction in the model:
+The variable `fluxes` will now contain a dictionary of the computed optimal
+flux of each reaction in the model:
 ```
 Dict{String,Float64} with 95 entries:
   "R_EX_fum_e"    => 0.0
