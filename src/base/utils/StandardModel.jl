@@ -1,52 +1,4 @@
 """
-Tests if two `StandardModel`'s represent the same model core model internally.
-"""
-function Base.isequal(model1::StandardModel, model2::StandardModel)
-    # test if blank model is given - automatic fail
-    (isempty(model1.reactions) || isempty(model2.reactions)) ? (return false) : nothing
-
-    # test same rxn and met ids
-    rxns1 = reactions(model1)
-    rxns2 = reactions(model2)
-    mets1 = metabolites(model1)
-    mets2 = metabolites(model2)
-    rxns_same =
-        (isempty(setdiff(rxns1, rxns2)) && isempty(setdiff(rxns2, rxns1))) ? true : false
-    mets_same =
-        (isempty(setdiff(mets1, mets2)) && isempty(setdiff(mets2, mets1))) ? true : false
-
-    if !rxns_same || !mets_same # if the ids are different stop testing
-        return false
-    end
-
-    for rxn_id in rxns1 # since IDs are the same only use the ids of the first model
-        # check stoichiometry
-        rmets1 = model1.reactions[rxn_id].metabolites
-        rmets2 = model2.reactions[rxn_id].metabolites
-        if length(rmets1) != length(rmets2)
-            return false
-        end
-        for (km, vm) in rmets1
-            if !(km in keys(rmets2))
-                return false
-            elseif rmets2[km] != vm
-                return false
-            end
-        end
-
-        # check bounds
-        if model1.reactions[rxn_id].lower_bound != model2.reactions[rxn_id].lower_bound
-            return false
-        end
-        if model1.reactions[rxn_id].upper_bound != model2.reactions[rxn_id].upper_bound
-            return false
-        end
-    end
-
-    return true
-end
-
-"""
     atom_exchange(flux_dict::Dict{String, Float64}, model::StandardModel)
 
 Return a dictionary mapping the flux of atoms across the boundary of the model 
@@ -194,34 +146,25 @@ function set_bound(
     ub = _constants.default_reaction_rate,
     lb = -_constants.default_reaction_rate,
 )
-    if lb <= 0
-        set_normalized_rhs(opt_model[:lbs][vind], abs(lb))
-    else
-        set_normalized_rhs(opt_model[:lbs][vind], -abs(lb))
-    end
+    set_normalized_rhs(opt_model[:lbs][vind], -lb)
     set_normalized_rhs(opt_model[:ubs][vind], ub)
 end
 
 """
     get_bound_vectors(opt_model)
 
-Returns vectors of the lower and upper bounds of `opt_model` constraints, where 
-`opt_model` is a JuMP model constructed by e.g. `make_optimization_problem` or
-`flux_balance_analysis`.
+Returns vectors of the lower and upper bounds of `opt_model` constraints, where
+`opt_model` is a JuMP model constructed by e.g.
+[`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
 
-See also: [`make_optimization_problem`](@ref), [`flux_balance_analysis`](`ref`)
+
 """
 function get_bound_vectors(opt_model)
     lbconref = opt_model[:lbs]
     ubconref = opt_model[:ubs]
     lbs = zeros(length(lbconref))
     for i in eachindex(lbs)
-        lbval = normalized_rhs(lbconref[i])
-        if lbval > 0
-            lbs[i] = -abs(lbval)
-        else
-            lbs[i] = abs(lbval)
-        end
+        lbs[i] = -normalized_rhs(lbconref[i])
     end
     ubs = [normalized_rhs(ubconref[i]) for i in eachindex(ubconref)]
 

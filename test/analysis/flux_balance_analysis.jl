@@ -57,7 +57,7 @@ end
             change_objective("BIOMASS_Ecoli_core_w_GAM"),
             change_constraint("EX_glc__D_e", -12, -12),
             change_sense(MOI.MAX_SENSE),
-            change_solver_attribute("IPM_IterationsLimit", 110),
+            change_optimizer_attribute("IPM_IterationsLimit", 110),
         ],
     )
     @test isapprox(
@@ -71,14 +71,54 @@ end
     sol_multi = flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
-        modifications = change_objective(
-            ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
-            weights = [biomass_frac, pfl_frac],
-        ),
+        modifications = [
+            change_objective(
+                ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
+                weights = [biomass_frac, pfl_frac],
+            ),
+        ],
     )
     @test isapprox(
         biomass_frac * sol_multi["BIOMASS_Ecoli_core_w_GAM"] + pfl_frac * sol_multi["PFL"],
         31.999999998962604,
         atol = TEST_TOLERANCE,
     )
+end
+
+@testset "Flux balance analysis with CoreModelCoupled" begin
+
+    model_path = download_data_file(
+        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+        joinpath("data", "e_coli_core.json"),
+        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
+    )
+    model = load_model(CoreModel, model_path)
+
+    # assume coupling constraints of the form:
+    # -γ ≤ vᵢ/μ  ≤ γ
+    # I.e., enforces that the ratio between any reaction flux
+    # and the growth rate is bounded by γ.
+    γ = 40
+
+    # construct coupling bounds
+    nr = n_reactions(model)
+    biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model)))
+
+    Cf = sparse(1.0I, nr, nr)
+    Cf[:, biomass_index] .= -γ
+
+    Cb = sparse(1.0I, nr, nr)
+    Cb[:, biomass_index] .= γ
+
+    C = [Cf; Cb]
+
+    clb = spzeros(2 * nr)
+    clb[1:nr] .= -1000.0
+    cub = spzeros(2 * nr)
+    cub[nr+1:end] .= 1000
+
+    cmodel = CoreModelCoupled(model, C, clb, cub) # construct
+
+    dc = flux_balance_analysis_dict(cmodel, Tulip.Optimizer)
+    @test isapprox(dc["BIOMASS_Ecoli_core_w_GAM"], 0.665585699298256, atol = TEST_TOLERANCE)
 end

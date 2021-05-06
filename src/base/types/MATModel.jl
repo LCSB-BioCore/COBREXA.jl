@@ -142,8 +142,8 @@ end
 
 Extract metabolite formula from key `metFormula` or `metFormulas`.
 """
-metabolite_formula(m::MATModel, mid::String) = maybemap(
-    x -> _formula_to_atoms(x[findfirst(==(mid), metabolites(m))]),
+metabolite_formula(m::MATModel, mid::String) = _maybemap(
+    x -> _parse_formula(x[findfirst(==(mid), metabolites(m))]),
     get(m.mat, "metFormula", get(m.mat, "metFormulas", nothing)),
 )
 
@@ -152,7 +152,7 @@ metabolite_formula(m::MATModel, mid::String) = maybemap(
 
 Extract metabolite charge from `metCharge` or `metCharges`.
 """
-metabolite_charge(m::MATModel, mid::String) = maybemap(
+metabolite_charge(m::MATModel, mid::String) = _maybemap(
     x -> x[findfirst(==(mid), metabolites(m))],
     get(m.mat, "metCharge", get(m.mat, "metCharges", nothing)),
 )
@@ -162,7 +162,7 @@ metabolite_charge(m::MATModel, mid::String) = maybemap(
 
 Extract metabolite compartment from `metCompartment` or `metCompartments`.
 """
-metabolite_compartment(m::MATModel, mid::String) = maybemap(
+metabolite_compartment(m::MATModel, mid::String) = _maybemap(
     x -> x[findfirst(==(mid), metabolites(m))],
     get(m.mat, "metCompartment", get(m.mat, "metCompartments", nothing)),
 )
@@ -202,24 +202,24 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
             "cu" => Vector(cu),
             "genes" => genes(m),
             "grRules" =>
-                default.(
+                _default.(
                     "",
-                    maybemap.(
-                        _unparse_grr,
+                    _maybemap.(
+                        x -> _unparse_grr(String, x),
                         reaction_gene_association.(Ref(m), reactions(m)),
                     ),
                 ),
             "metFormulas" =>
-                default.(
+                _default.(
                     "",
-                    maybemap.(
-                        _atoms_to_formula,
+                    _maybemap.(
+                        _unparse_formula,
                         metabolite_formula.(Ref(m), metabolites(m)),
                     ),
                 ),
-            "metCharges" => default.(0, metabolite_charge.(Ref(m), metabolites(m))),
+            "metCharges" => _default.(0, metabolite_charge.(Ref(m), metabolites(m))),
             "metCompartments" =>
-                default.("", metabolite_compartment.(Ref(m), metabolites(m))),
+                _default.("", metabolite_compartment.(Ref(m), metabolites(m))),
         ),
     )
 end

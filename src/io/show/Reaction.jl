@@ -1,4 +1,9 @@
 
+"""
+    _pretty_substances(ss::Vector{String})::String
+
+Nicely format a substance list.
+"""
 function _pretty_substances(ss::Vector{String})::String
     if isempty(ss)
         "∅"
@@ -9,9 +14,6 @@ function _pretty_substances(ss::Vector{String})::String
     end
 end
 
-"""
-Pretty printing of reaction::Reaction.
-"""
 function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     if r.ub > 0.0 && r.lb < 0.0
         arrow = " ⟷  "
@@ -38,7 +40,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
             _print_with_colors(
                 io,
                 "Reaction.$(string(fname)): ",
-                maybemap(_unparse_grr, r.grr),
+                _maybemap(x -> _unparse_grr(String, x), r.grr),
             )
         elseif fname in (:lb, :ub, :objective_coefficient)
             _print_with_colors(

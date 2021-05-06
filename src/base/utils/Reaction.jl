@@ -1,53 +1,37 @@
 """
-    check_duplicate_reaction(rxn::Reaction, rxns::Dict{String, Reaction})
+    check_duplicate_reaction(rxn::Reaction, rxns::Dict{String, Reaction}; only_metabolites=true)
 
 Check if `rxn` already exists in `rxns` but has another `id`.
-Looks through all the reaction equations of `rxns` and compares metabolite `id`s 
-and their stoichiometric coefficients to those of `rxn`.
+If `only_metabolites` is `true` then only the metabolite `id`s are checked.
+Otherwise, compares metabolite `id`s and the absolute value of their stoichiometric coefficients to those of `rxn`.
 If `rxn` has the same reaction equation as another reaction in `rxns`, the return the `id`.
 Otherwise return `nothing`.
 
 See also: [`is_mass_balanced`](@ref)
 """
-function check_duplicate_reaction(crxn::Reaction, rxns::OrderedDict{String,Reaction})
-    for (k, rxn) in rxns
-        if rxn.id != crxn.id # skip if same ID
-            reaction_checker = true
-            for (kk, vv) in rxn.metabolites # get reaction stoich
-                if get(crxn.metabolites, kk, 0) != vv # if at least one stoich doesn't match
-                    reaction_checker = false
-                    break
-                end
-            end
-            if reaction_checker
-                return k
-            end
-        end
-    end
-    return nothing
-end
-
-"""
-    check_duplicate_annotations(rxn::Reaction, rxns::OrderedDict{String, Reaction}; inspect_annotations=_constants.reaction_annotation_checks)
-
-Determine if a `rxn` has overlapping annotations in `rxns`.
-The annotations checked are listed in `COBREXA._constants.reaction_annotation_checks`.
-Return the `id` of the first hit, otherwise `nothing`.
-"""
-function check_duplicate_annotations(
+function check_duplicate_reaction(
     crxn::Reaction,
     rxns::OrderedDict{String,Reaction};
-    inspect_annotations = _constants.reaction_annotation_checks,
-)::Union{Nothing,String}
+    only_metabolites = true,
+)
     for (k, rxn) in rxns
-        for anno in inspect_annotations
-            if length(
-                intersect(
-                    get(crxn.annotations, anno, ["c1"]),
-                    get(rxn.annotations, anno, ["c2"]),
-                ),
-            ) != 0
-                return k
+        if rxn.id != crxn.id # skip if same ID
+            if only_metabolites # only check if metabolites are the same
+                if issetequal(keys(crxn.metabolites), keys(rxn.metabolites))
+                    return k
+                end
+            else # also check the stoichiometric coefficients
+                reaction_checker = true
+                for (kk, vv) in rxn.metabolites # get reaction stoich
+                    if abs(get(crxn.metabolites, kk, 0)) != abs(vv) # if at least one stoich doesn't match
+                        reaction_checker = false
+                        break
+                    end
+                end
+                if reaction_checker &&
+                   issetequal(keys(crxn.metabolites), keys(rxn.metabolites))
+                    return k
+                end
             end
         end
     end

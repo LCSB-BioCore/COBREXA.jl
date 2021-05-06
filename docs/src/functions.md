@@ -1,11 +1,17 @@
 # Functions
 
-## Types
+## Base Types
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("types", "abstract", file), readdir("../src/types/abstract"))
-Pages = map(file -> joinpath("types", file), readdir("../src/types"))
+Pages = map(file -> joinpath("base", "types", "abstract", file), readdir("../src/base/types/abstract"))
+```
+
+## Model types and contents
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("base", "types", file), readdir("../src/base/types"))
 ```
 
 ## Base functions
@@ -43,16 +49,30 @@ Modules = [COBREXA]
 Pages = map(file -> joinpath("analysis", file), readdir("../src/analysis"))
 ```
 
-### Model modifiers
+### Analysis modifications
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("mods", file), readdir("../src/mods"))
+Pages = map(file -> joinpath("reconstruction", "modifications", file), readdir("../src/reconstruction/modifications"))
+```
+
+### Flux sampling
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("analysis", "sampling", file), readdir("../src/analysis/sampling"))
 ```
 
 ## Miscellaneous utilities
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("utils", file), readdir("../src/utils"))
+Pages = map(file -> joinpath("base", "utils", file), readdir("../src/base/utils"))
+```
+
+### Logging and debugging helpers
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("base", "logging", file), readdir("../src/base/logging"))
 ```

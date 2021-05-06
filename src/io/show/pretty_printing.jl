@@ -1,7 +1,22 @@
 """
-_print_with_colors(io, def::String, payload::String; kwargs...)
+    _print_with_colors(io, def::String, payload; kwargs...)
 
-Function to faciliate pretty printing of COBREXA structs.
+Prints nicely colorized keys and values.
+"""
+_print_with_colors(io, def::String, payload; kwargs...) =
+    _print_with_colors(io, def, isnothing(payload) ? "---" : string(payload); kwargs...)
+
+"""
+    _print_with_colors(
+        io,
+        def::String,
+        payload::String;
+        def_color = _constants.colors.key,
+        empty_color = _constants.colors.empty,
+        payload_color = _constants.colors.payload,
+    )
+
+Specialization of `_print_with_colors` for plain strings.
 """
 function _print_with_colors(
     io,
@@ -19,6 +34,18 @@ function _print_with_colors(
     end
 end
 
+"""
+    _print_with_colors(
+        io,
+        def::String,
+        payload::Dict;
+        def_color = _constants.colors.key,
+        empty_color = _constants.colors.empty,
+        payload_color = _constants.colors.payload,
+    )
+
+Specialization of `_print_with_colors` for dictionaries.
+"""
 function _print_with_colors(
     io,
     def::String,
@@ -61,7 +88,3 @@ function _print_with_colors(
         end
     end
 end
-
-# the generic case
-_print_with_colors(io, def::String, payload; kwargs...) =
-    _print_with_colors(io, def, isnothing(payload) ? "---" : string(payload); kwargs...)

@@ -1,12 +1,7 @@
-
 """
-Pretty printing of model using generic interface.
+Pretty printing of everything metabolic-modelish.
 """
-function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    m::Union{StandardModel,CoreModel,CoreModelCoupled,JSONModel,MATModel,SBMLModel},
-)
+function Base.show(io::IO, ::MIME"text/plain", m::MetabolicModel)
     _print_with_colors(io, "", "Metabolic model of type $(typeof(m))")
     if prod(size(stoichiometry(m))) < 5_000_000
         println(io, Crayon(foreground = _constants.colors.payload), stoichiometry(m))

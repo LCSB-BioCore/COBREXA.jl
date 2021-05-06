@@ -1,6 +1,10 @@
 
-#TODO: convert the string-GeneAssociation formatting to this too
+"""
+    _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
 
+Parse `SBML.GeneProductAssociation` structure to the simpler GeneAssociation.
+The input must be (implicitly) in a positive DNF.
+"""
 function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
     parse_ref(x) = typeof(x) == SBML.GPARef ? x.gene_product : nothing
     parse_ands(x) =
@@ -10,6 +14,14 @@ function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
     return parse_or(gpa)
 end
 
+"""
+    _unparse_grr(
+        ::Type{SBML.GeneProductAssociation},
+        x::GeneAssociation,
+    )::SBML.GeneAssociation
+
+Convert a GeneAssociation to the corresponding `SBML.jl` structure.
+"""
 function _unparse_grr(
     ::Type{SBML.GeneProductAssociation},
     x::GeneAssociation,
@@ -18,12 +30,19 @@ function _unparse_grr(
 end
 
 """
-    parsegrr(string_rule)
+    _parse_grr(s::String)::GeneAssociation
 
-Parse a gene reaction rule string `string_rule` into a nested string gene reaction rule array `Vector{Vector{String}}`.
+Parse a DNF gene association rule in format `(YIL010W and YLR043C) or (YIL010W
+and YGR209C)` to `GeneAssociation. Also accepts `OR`, `|`, `||`, `AND`, `&`,
+and `&&`.
 
-Format: (YIL010W and YLR043C) or (YIL010W and YGR209C) where `or` can also be `OR, |, ||` and where `and` can also be `AND, &, &&`.
-So `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"`` becomes `[[YIL010W, YLR043C], [YIL010W, YGR209C]]`` as a nested string array.
+# Example
+```
+julia> _parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
+2-element Array{Array{String,1},1}:
+ ["YIL010W", "YLR043C"]
+ ["YIL010W", "YGR209C"]
+```
 """
 function _parse_grr(s::String)::GeneAssociation
     # first get the gene id list in string format
@@ -39,10 +58,16 @@ end
 """
     unparse_grr(grr::Vector{Vector{Gene}}
 
-Converts a nested string gene reaction array  back into a gene reaction rule string.
-So `[[YIL010W, YLR043C], [YIL010W, YGR209C]]`` becomes `"(YIL010W and YLR043C) or (YIL010W and YGR209C)"``.
+Converts a nested string gene reaction array  back into a gene reaction rule
+string.
+
+# Example
+```
+julia> _unparse_grr(String, [["YIL010W", "YLR043C"], ["YIL010W", "YGR209C"]])
+"(YIL010W and YLR043C) or (YIL010W and YGR209C)"
+```
 """
-function _unparse_grr(grr::GeneAssociation)::String
+function _unparse_grr(::Type{String}, grr::GeneAssociation)::String
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")
