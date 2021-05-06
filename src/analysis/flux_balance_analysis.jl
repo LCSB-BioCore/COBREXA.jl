@@ -50,7 +50,7 @@ The `optimizer` must be set to a `JuMP`-compatible optimizer, such as
 
 Optionally, you may specify one or more modifications to be applied to the
 model before the analysis, such as
-[`change_solver_attribute`](@ref),[`change_objective`](@ref), and
+[`change_optimizer_attribute`](@ref),[`change_objective`](@ref), and
 [`change_sense`](@ref).
 
 Returns an optimized `JuMP` model.

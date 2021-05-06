@@ -13,7 +13,7 @@
         modifications = [
             change_objective("BIOMASS_Ecoli_core_w_GAM"),
             change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 500),
+            change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
     )
     biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model)))

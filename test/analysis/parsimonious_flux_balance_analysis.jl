@@ -11,11 +11,11 @@
         Tulip.Optimizer;
         modifications = [
             change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 500),
+            change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
         qp_modifications = [
-            change_solver(OSQP.Optimizer),
-            change_solver_attribute("verbose", false),
+            change_optimizer(OSQP.Optimizer),
+            change_optimizer_attribute("verbose", false),
         ],
     )
     v = parsimonious_flux_balance_analysis_vec(
@@ -23,11 +23,11 @@
         Tulip.Optimizer;
         modifications = [
             change_constraint("EX_glc__D_e", -12, -12),
-            change_solver_attribute("IPM_IterationsLimit", 500),
+            change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
         qp_modifications = [
-            change_solver(OSQP.Optimizer),
-            change_solver_attribute("verbose", false),
+            change_optimizer(OSQP.Optimizer),
+            change_optimizer_attribute("verbose", false),
         ],
     )
 

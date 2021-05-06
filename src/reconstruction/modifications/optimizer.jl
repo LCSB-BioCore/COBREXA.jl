@@ -14,28 +14,29 @@ function change_sense(objective_sense)
 end
 
 """
-    change_solver(optimizer)
+    change_optimizer(optimizer)
 
-Change the JuMP solver used to run the optimization.
+Change the JuMP optimizer used to run the optimization.
 
 This may be used to try different approaches for reaching the optimum, and in
-problems that may require different solvers for different parts, such as the
+problems that may require different optimizers for different parts, such as the
 [`parsimonious_flux_balance_analysis`](@ref).
 """
-function change_solver(optimizer)
+function change_optimizer(optimizer)
     (model, opt_model) ->
         COBREXA.JuMP.set_optimizer(opt_model, optimizer)
 end
 
 """
-    change_solver_attribute(option_key, option_val)
+    change_optimizer_attribute(attribute_key, value)
 
-Change a JuMP solver attribute. These attributes are solver specific,
-refer the either JuMP or the solver you are using's documentation.
+Change a JuMP optimizer attribute. The attributes are optimizer-specific, refer
+to the JuMP documentation and the documentation of the specific optimizer for
+usable keys and values.
 """
-function change_solver_attribute(option_key, option_val)
+function change_optimizer_attribute(option_key, option_val)
     (model, opt_model) ->
-        COBREXA.JuMP.set_optimizer_attribute(opt_model, option_key, option_val)
+        COBREXA.JuMP.set_optimizer_attribute(opt_model, attribute_key, value)
 end
 
 """

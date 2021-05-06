@@ -57,7 +57,7 @@ end
             change_objective("BIOMASS_Ecoli_core_w_GAM"),
             change_constraint("EX_glc__D_e", -12, -12),
             change_sense(MOI.MAX_SENSE),
-            change_solver_attribute("IPM_IterationsLimit", 110),
+            change_optimizer_attribute("IPM_IterationsLimit", 110),
         ],
     )
     @test isapprox(
