@@ -14,23 +14,39 @@ function knockout(gene_ids::Vector{String})
     # Let's avoid premature optimization for now and see if anyone ever has
     # problems with this.
     return (model, opt_model) -> begin
-        all_reactions = reactions(model)
-        for gene_id in gene_ids
-            for reaction_id in gene_associated_reactions(model, gene_id)
-                if all(
-                    any(occursin.(gene_ids, gene_array)) > 0 for
-                    gene_array in reaction_gene_association(model, reaction_id)
-                )
+        if typeof(model) == StandardModel
+            all_reactions = reactions(model)
+            for gene_id in gene_ids
+                for reaction_id in gene_associated_reactions(model, gene_id)
+                    if all(
+                        any(occursin.(gene_ids, gene_array)) > 0 for
+                        gene_array in reaction_gene_association(model, reaction_id)
+                    )
+                        set_bound(
+                            first(indexin([reaction_id], all_reactions)),
+                            opt_model,
+                            ub = 0,
+                            lb = 0,
+                        )
+                        # Also set bounds for model object
+                        set_bound(model, reaction_id, ub = 0, lb = 0)
+                    end
+                end
+            end
+        else # fallback knockout
+            for (rxn_num, rxn_id) in enumerate(reactions(model))
+                cond = all([any(in.(gene_and, Ref(gene_ids))) for gene_and in reaction_gene_association(model, rxn_id)])
+                println(rxn_id, ": ", cond)
+                if cond
+                    println(rxn_id)
                     set_bound(
-                        first(indexin([reaction_id], all_reactions)),
+                        rxn_num,    
                         opt_model,
                         ub = 0,
                         lb = 0,
                     )
-                    # Also set bounds for model object
-                    set_bound(model, reaction_id, ub = 0, lb = 0)
                 end
-            end
+            end    
         end
     end
 end
