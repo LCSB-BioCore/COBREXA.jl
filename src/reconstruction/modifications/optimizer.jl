@@ -9,8 +9,7 @@ If you want to change the objective and sense at the same time, use
 [`change_objective`](@ref) instead to do both at once.
 """
 function change_sense(objective_sense)
-    (model, opt_model) ->
-        COBREXA.JuMP.set_objective_sense(opt_model, objective_sense)
+    (model, opt_model) -> COBREXA.JuMP.set_objective_sense(opt_model, objective_sense)
 end
 
 """
@@ -23,8 +22,7 @@ problems that may require different optimizers for different parts, such as the
 [`parsimonious_flux_balance_analysis`](@ref).
 """
 function change_optimizer(optimizer)
-    (model, opt_model) ->
-        COBREXA.JuMP.set_optimizer(opt_model, optimizer)
+    (model, opt_model) -> COBREXA.JuMP.set_optimizer(opt_model, optimizer)
 end
 
 """
@@ -86,9 +84,8 @@ function change_objective(
         if typeof(new_objective) == String
             objective_indices = [first(indexin([new_objective], reactions(model)))]
         else
-            objective_indices = [
-                first(indexin([rxnid], reactions(model))) for rxnid in new_objective
-            ]
+            objective_indices =
+                [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
         end
 
         # Initialize weights
