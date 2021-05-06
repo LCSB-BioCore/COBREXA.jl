@@ -52,5 +52,6 @@ Return `false` if any other termination status is reached. Termination status is
 in the documentation of `JuMP`.
 """
 function is_solved(optmodel)
-    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true : false
+    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true :
+    false
 end
