@@ -7,9 +7,10 @@ COBREXA functions. If you want to use your own type, make it a subtype (so that
 the functions typecheck) and add instances for the data accessor methods below.
 
 If you want your model type to work with COBREXA, add the `MetabolicModel` as
-its supertype, and implement the accessor functions. Accessors `reactions`,
-`metabolites`, `stoichiometry`, `bounds` and `objective` must be implemented;
-others are not mandatory and default to safe "empty" values.
+its supertype, and implement the accessor functions. Accessors
+[`reactions`](@ref), [`metabolites`](@ref), [`stoichiometry`](@ref),
+[`bounds`](@ref) and [`objective`](@ref) must be implemented; others are not
+mandatory and default to safe "empty" values.
 """
 abstract type MetabolicModel end
 
