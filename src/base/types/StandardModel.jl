@@ -318,7 +318,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
     ocs = objective(model)
-    gene_reaction = Dict{String, Vector{String}}()
+    gene_reaction = Dict{String,Vector{String}}()
     for (i, rid) in enumerate(rxnids)
         rmets = Dict{String,Float64}()
         for (j, stoich) in zip(findnz(S[:, i])...)
@@ -327,7 +327,8 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         gss = reaction_gene_association(model, rid)
         for gs in gss
             for g in gs
-                haskey(gene_reaction, g) || (gene_reaction[g] = push!(get(gene_reaction, g, []), rid))
+                haskey(gene_reaction, g) ||
+                    (gene_reaction[g] = push!(get(gene_reaction, g, []), rid))
             end
         end
         modelreactions[rid] = Reaction(
@@ -348,7 +349,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             gid;
             notes = gene_notes(model, gid),
             annotations = gene_annotations(model, gid),
-            associated_reactions = Set(get(gene_reaction, gid, String[]))
+            associated_reactions = Set(get(gene_reaction, gid, String[])),
         ) # TODO: add name accessor
     end
 
