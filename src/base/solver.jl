@@ -1,10 +1,10 @@
 
 """
-function make_optimization_model(
-    model::MetabolicModel,
-    optimizer;
-    sense = MOI.MAX_SENSE,
-)
+    make_optimization_model(
+        model::MetabolicModel,
+        optimizer;
+        sense = MOI.MAX_SENSE,
+    )
 
 Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
 constraint.
