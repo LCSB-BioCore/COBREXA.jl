@@ -44,7 +44,7 @@ function hit_and_run(
 
     lbs, ubs = get_bound_vectors(opt_model) # get actual ub and lb constraints, can't use model function because the user may have changed them in the function arguments
 
-    wpoints = get_warmup_points(opt_model; random_objective = random_objective)
+    wpoints = _get_warmup_points(opt_model; random_objective = random_objective)
 
     nwpts = size(wpoints, 2) # number of warmup points generated
     samples = zeros(size(wpoints, 1), samplesize) # sample storage

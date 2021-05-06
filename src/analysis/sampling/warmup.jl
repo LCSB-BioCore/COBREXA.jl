@@ -1,5 +1,5 @@
 """
-    get_warmup_points(cbm; random_objective=false, numstop=1e10)
+    _get_warmup_points(cbm; random_objective=false, numstop=1e10)
 
 Generate warmup points for all the reactions in the model that
 are not fixed. Assumes you feed in a JuMP model that is already
@@ -13,7 +13,7 @@ be randomly drawn from the non-fixed fluxes.
 By default each flux will be minimized and maximized, however, random objectives
 can be used by setting `random_objective` true.
 """
-function get_warmup_points(cbm; random_objective = false, numstop = 1e10)
+function _get_warmup_points(cbm; random_objective = false, numstop = 1e10)
     v = cbm[:x]
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
