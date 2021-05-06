@@ -28,8 +28,6 @@ function knockout(gene_ids::Vector{String})
                             ub = 0,
                             lb = 0,
                         )
-                        # Also set bounds for model object
-                        set_bound(model, reaction_id, ub = 0, lb = 0)
                     end
                 end
             end
