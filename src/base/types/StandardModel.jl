@@ -325,10 +325,12 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             rmets[metids[j]] = stoich
         end
         gss = reaction_gene_association(model, rid)
-        for gs in gss
-            for g in gs
-                haskey(gene_reaction, g) ||
-                    (gene_reaction[g] = push!(get(gene_reaction, g, []), rid))
+        if !isnothing(gss)
+            for gs in gss
+                for g in gs
+                    haskey(gene_reaction, g) ||
+                        (gene_reaction[g] = push!(get(gene_reaction, g, []), rid))
+                end
             end
         end
         modelreactions[rid] = Reaction(
