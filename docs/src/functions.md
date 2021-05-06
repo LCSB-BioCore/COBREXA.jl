@@ -4,14 +4,14 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base","types", "abstract", file), readdir("../src/base/types/abstract"))
+Pages = map(file -> joinpath("base", "types", "abstract", file), readdir("../src/base/types/abstract"))
 ```
 
 ## Model types and contents
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base","types", file), readdir("../src/base/types"))
+Pages = map(file -> joinpath("base", "types", file), readdir("../src/base/types"))
 ```
 
 ## Base functions
@@ -68,4 +68,11 @@ Pages = map(file -> joinpath("analysis", "sampling", file), readdir("../src/anal
 ```@autodocs
 Modules = [COBREXA]
 Pages = map(file -> joinpath("base", "utils", file), readdir("../src/base/utils"))
+```
+
+### Logging and debugging helpers
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("base", "logging", file), readdir("../src/base/logging"))
 ```

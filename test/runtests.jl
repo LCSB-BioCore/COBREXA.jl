@@ -59,6 +59,7 @@ run_test_file("data", "test_models.jl")
 @testset "COBREXA test suite" begin
     run_test_dir(joinpath("base", "types", "abstract"), "Abstract types")
     run_test_dir(joinpath("base", "types"), "Base model types")
+    run_test_dir("base", "logging", "Logging")
     run_test_dir("base", "Base functionality")
     run_test_dir("io", "I/O functions")
     run_test_dir("reconstruction")
