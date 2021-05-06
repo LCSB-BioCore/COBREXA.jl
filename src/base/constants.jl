@@ -53,5 +53,5 @@ const _constants = (
     colors = (empty = :dark_gray, payload = :default, key = :cyan),
 )
 
-const MAX = COBREXA.MOI.MAX_SENSE
-const MIN = COBREXA.MOI.MIN_SENSE
+const MAX_SENSE = COBREXA.MOI.MAX_SENSE
+const MIN_SENSE = COBREXA.MOI.MIN_SENSE

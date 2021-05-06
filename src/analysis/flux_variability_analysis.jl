@@ -141,7 +141,7 @@ Internal helper for creating the optimized model on a remote worker, for
 avoiding namespace problems.
 """
 function _FVA_optimize_reaction(model, rid, ret)
-    sense = rid > 0 ? MAX : MIN
+    sense = rid > 0 ? MAX_SENSE : MIN_SENSE
     var = all_variables(model)[abs(rid)]
 
     @objective(model, sense, var)
