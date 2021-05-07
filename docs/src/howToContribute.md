@@ -122,7 +122,7 @@ Now, the environment is activated (you can see it with the prompt change
 `(COBREXA) pkg>`). Now, you can use the dependency. For instance:
 
 ```julia
-julia> using DataFrames
+julia> using JuMP
 ```
 
 !!! warning "Warning"
