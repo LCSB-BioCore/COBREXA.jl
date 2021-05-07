@@ -3,7 +3,8 @@
 # In this tutorial we will introduce `COBREXA`'s `CoreModel` and
 # `CoreModelCoupled`. We will use *E. coli*'s toy model to start with.
 
-!isfile("e_coli_core.xml") && download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
+!isfile("e_coli_core.xml") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
 # ## Loading a `CoreModel`
 
@@ -30,7 +31,7 @@ dict_sol = flux_balance_analysis_dict(
         change_objective("R_BIOMASS_Ecoli_core_w_GAM"),
         change_constraint("R_EX_glc__D_e", -12, -12),
         change_constraint("R_EX_o2_e", 0, 0),
-        ],
+    ],
 )
 
 # ## Structure of `CoreModel`
@@ -63,11 +64,11 @@ Cf = sparse(1.0I, nr, nr)
 Cf[:, biomass_index] .= -γ
 Cb = sparse(1.0I, nr, nr)
 Cb[:, biomass_index] .= γ
-C = [Cf;Cb] # coupling constraint matrix
+C = [Cf; Cb] # coupling constraint matrix
 
-clb = spzeros(2*nr)
+clb = spzeros(2 * nr)
 clb[1:nr] .= -1000.0
-cub = spzeros(2*nr)
+cub = spzeros(2 * nr)
 cub[nr+1:end] .= 1000
 
 cmodel = CoreModelCoupled(model, C, clb, cub)
