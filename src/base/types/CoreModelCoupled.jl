@@ -29,11 +29,52 @@ mutable struct CoreModelCoupled <: MetabolicModel
     end
 end
 
+"""
+    reactions(a::CoreModelCoupled)
+
+Extract reactions from [`CoreModelCoupled`](@ref) (uses the internal
+[`CoreModel`](@ref)).
+"""
 reactions(a::CoreModelCoupled) = reactions(a.lm)
+
+"""
+    metabolites(a::CoreModelCoupled)
+
+Extract metabolites from [`CoreModelCoupled`](@ref) (uses the internal
+[`CoreModel`](@ref)).
+"""
 metabolites(a::CoreModelCoupled) = metabolites(a.lm)
+
+"""
+    stoichiometry(a::CoreModelCoupled)
+
+Extract stoichiometry from [`CoreModelCoupled`](@ref) (uses the internal
+[`CoreModel`](@ref)).
+"""
 stoichiometry(a::CoreModelCoupled) = stoichiometry(a.lm)
+
+"""
+    bounds(a::CoreModelCoupled)
+
+Extract bounds from [`CoreModelCoupled`](@ref) (uses the internal
+[`CoreModel`](@ref)).
+"""
 bounds(a::CoreModelCoupled) = bounds(a.lm)
+
+"""
+    balance(a::CoreModelCoupled)
+
+Extract balance from [`CoreModelCoupled`](@ref) (uses the internal
+[`CoreModel`](@ref)).
+"""
 balance(a::CoreModelCoupled) = balance(a.lm)
+
+"""
+    objective(a::CoreModelCoupled)
+
+Extract objective from [`CoreModelCoupled`](@ref) (uses the internal
+[`CoreModel`](@ref)).
+"""
 objective(a::CoreModelCoupled) = objective(a.lm)
 
 """
@@ -64,15 +105,15 @@ function coupling_bounds(a::CoreModelCoupled)::Tuple{SparseVec,SparseVec}
 end
 
 """
-    Base.convert(::Type{CoreModelCoupled}, m::M) where {M <: MetabolicModel}
+    Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
 
 Make a `CoreModelCoupled` out of any compatible model type.
 """
-function Base.convert(::Type{CoreModelCoupled}, m::M) where {M<:MetabolicModel}
-    if typeof(m) == CoreModelCoupled
-        return m
+function Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
+    if typeof(mm) == CoreModelCoupled
+        return mm
     end
 
-    (cl, cu) = coupling_bounds(m)
-    CoreModelCoupled(convert(CoreModel, m), coupling(m), cl, cu)
+    (cl, cu) = coupling_bounds(mm)
+    CoreModelCoupled(convert(CoreModel, mm), coupling(mm), cl, cu)
 end
