@@ -73,7 +73,7 @@ Dict{String,Float64} with 95 entries:
 Detailed tutorial contents is [available here](tutorials.md).
 
 ```@contents
-Pages = joinpath.("tutorials", readdir("tutorials"))
+Pages = joinpath.("tutorials", filter(x -> endswith(x, ".md"), readdir("tutorials")))
 Depth = 1
 ```
 
@@ -82,7 +82,7 @@ Depth = 1
 Detailed notebook content is [available here](notebooks.md).
 
 ```@contents
-Pages = joinpath.("notebooks", readdir("notebooks"))
+Pages = joinpath.("notebooks", filter(x -> endswith(x, ".md"), readdir("notebooks")))
 Depth = 1
 ```
 

@@ -5,7 +5,8 @@ ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
 
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks-src")
-notebooks = joinpath.(notebooks_path, readdir(notebooks_path))
+notebooks =
+    joinpath.(notebooks_path, filter(x -> endswith(x, ".jl"), readdir(notebooks_path)))
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
 
 folder = "stable"

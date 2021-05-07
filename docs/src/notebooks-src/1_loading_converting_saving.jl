@@ -58,7 +58,7 @@ sbml_model = load_model("e_coli_core.xml")
 # generic interface functions, which are applicable to __all__ model types,
 # are provided by `COBREXA`.
 
-json_model.m # try to not use this functionality
+json_model.json # try to not use this functionality
 
 # ## Using the generic interface to access model details
 
