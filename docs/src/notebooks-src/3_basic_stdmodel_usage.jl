@@ -1,5 +1,8 @@
 # Basic usage of `StandardModel`
 
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+
 # In this tutorial we will use `COBREXA`'s `StandardModel` and functions that
 # specifically operate on it. As usual we will use the toy model of *E. coli*
 # for demonstration.
@@ -105,7 +108,7 @@ model.genes # the keys of this dictionary are the same as genes(model)
 
 fieldnames(Gene)
 
-#md # !!! tip "Use <tab> complete to explore the structure of types"
+#md # !!! tip "Tip: Use <tab> complete to explore the structure of types"
 #md #       Use <tab> to quickly explore the fields of a struct. For example,
 #md #       Gene.<tab> will list all the fields shown above.
 
@@ -137,7 +140,7 @@ model.reactions[random_reaction_id]
 # This ensures that the internals of all `StandardModel`s are the same -
 # allowing easy systematic evaluation.
 
-#md # !!! warning "Combining models with different namespaces is tricky"
+#md # !!! warning "Warning: Combining models with different namespaces is tricky"
 #md #       Combining models that use different namespaces requires care.
 #md #       For example, in some models the water exchange reaction is called
 #md #       `EX_h2o_e`, while in others it is called `R_EX_h2o_s`. This needs to

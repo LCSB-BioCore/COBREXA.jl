@@ -68,7 +68,7 @@ If you run a non-standard platform (e.g. a customized operating systems), or if 
 
 ## Quick start guide
 
-In addition to `COBREXA`, you also need to include a Julia package which provides an appropriate solver. One such solver is `Tulip`, which is provided by the [Tulip.jl](https://github.com/ds4dm/Tulip.jl) package.
+In addition to `COBREXA`, you also need to include a Julia package that provides an appropriate optimizer. One such optimizer for linear programs is `Tulip`, which is provided by the [Tulip.jl](https://github.com/ds4dm/Tulip.jl) package.
 
 ```julia
 ] add Tulip

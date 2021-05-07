@@ -1,5 +1,8 @@
 # # Loading, converting, and saving models
-#
+
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats (with
 # the latter denoting SBML formatted models). 
 
@@ -91,7 +94,7 @@ issetequal(reactions(json_model), reactions(mat_model)) # same reactions returne
 # `convert` function, which is overloaded from Julia's `Base` module and functions
 # in the same way. 
 
-#md # !!! danger "Data loss may occur when converting between models"
+#md # !!! danger "Danger: Data loss may occur when converting between models"
 #md #       The generic interface is used to convert between model types, so only
 #md #       data accessible through the generic accessors will be converted.
 

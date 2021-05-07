@@ -1,5 +1,8 @@
 # # Constraint-based analysis of single cell models
 
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+
 # In this tutorial we will use `COBREXA`'s `flux_balance_analysis`,
 # `flux_variability_analysis`, and `parsimonious_flux_balance_analysis`
 # functions to analyze a toy model of *E. coli*.
@@ -112,7 +115,7 @@ fva_maxs["R_EX_ac_e"]["R_EX_ac_e"] # acetate exchange maximized, acetate exchang
 # `flux_balance_analysis`, two variants exist where the suffix determines the
 # function output.
 
-#md # !!! note  "A quadratic programming optimizer is required" 
+#md # !!! note  "Note: A quadratic programming optimizer is required" 
 #md #           If you are using an optimizer that supports quadratic programming, like
 #md #           `Gurobi.jl`, then you only need to specify one optimizer e.g. 
 #md #           `parsimonious_flux_balance_analysis_dict(model, Gurobi.Optimizer)`.
