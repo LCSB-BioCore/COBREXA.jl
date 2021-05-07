@@ -15,11 +15,11 @@ See also: [`CoreModel`](@ref), [`CoreModelCoupled`](@ref), [`StandardModel`](@re
 # Example
 ````
 model = load_json_model("some_model.json")
-model.m # the actual underlying JSON
+model.json # the actual underlying JSON
 ````
 """
 struct JSONModel <: MetabolicModel
-    m::Dict{String,Any}
+    json::Dict{String,Any}
 end
 
 
@@ -27,7 +27,7 @@ end
 macro _json_sectionkey(namesConstant::Symbol, error)
     esc(:(
         begin
-            _key = _guesskey(keys(model.m), _constants.keynames.$namesConstant)
+            _key = _guesskey(keys(model.json), _constants.keynames.$namesConstant)
             if isnothing(_key)
                 $error
             end
@@ -40,7 +40,7 @@ macro _json_section(namesConstant::Symbol, error)
     esc(:(
         begin
             _key = @_json_sectionkey $namesConstant ($error)
-            model.m[_key]
+            model.json[_key]
         end
     ))
 end
@@ -71,7 +71,7 @@ Extract reaction names (stored as `.id`) from JSON model.
 """
 function reactions(model::JSONModel)
     rs = @_json_section rxns throw(
-        DomainError(keys(model.m), "JSON model has no reaction keys"),
+        DomainError(keys(model.json), "JSON model has no reaction keys"),
     )
 
     return [string(get(rs[i], "id", "rxn$i")) for i in eachindex(rs)]
@@ -84,7 +84,7 @@ Extract metabolite names (stored as `.id`) from JSON model.
 """
 function metabolites(model::JSONModel)
     ms = @_json_section mets throw(
-        DomainError(keys(model.m), "JSON model has no metabolite keys"),
+        DomainError(keys(model.json), "JSON model has no metabolite keys"),
     )
 
     return [string(get(ms[i], "id", "met$i")) for i in eachindex(ms)]
@@ -112,7 +112,7 @@ function stoichiometry(model::JSONModel)
     met_ids = metabolites(model)
 
     rs = @_json_section rxns throw(
-        DomainError(keys(model.m), "JSON model has no reaction keys"),
+        DomainError(keys(model.json), "JSON model has no reaction keys"),
     )
 
     S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
@@ -256,12 +256,12 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     ocs = objective(mm)
 
     json_model = JSONModel(Dict{String,Any}())
-    m = Dict{String,Any}()
-    m["id"] = "model" # default
+    json = Dict{String,Any}()
+    json["id"] = "model" # default
 
     #TODO: add notes, names and similar fun stuff when they are available
 
-    m[first(_constants.keynames.genes)] = [
+    json[first(_constants.keynames.genes)] = [
         Dict([
             "id" => gid,
             "annotation" => gene_annotations(mm, gid),
@@ -269,7 +269,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         ],) for gid in gene_ids
     ]
 
-    m[first(_constants.keynames.mets)] = [
+    json[first(_constants.keynames.mets)] = [
         Dict([
             "id" => mid,
             "formula" => _maybemap(_unparse_formula, metabolite_formula(mm, mid)),
@@ -280,7 +280,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         ]) for mid in met_ids
     ]
 
-    m[first(_constants.keynames.rxns)] = [
+    json[first(_constants.keynames.rxns)] = [
         begin
             res = Dict{String,Any}()
             res["id"] = rid
@@ -303,5 +303,5 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         end for (ri, rid) in enumerate(rxn_ids)
     ]
 
-    return JSONModel(m)
+    return JSONModel(json)
 end
