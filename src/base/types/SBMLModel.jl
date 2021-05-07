@@ -5,33 +5,33 @@ Thin wrapper around the model from SBML.jl library. Allows easy conversion from
 SBML to any other model format.
 """
 struct SBMLModel <: MetabolicModel
-    m::SBML.Model
+    sbml::SBML.Model
 end
 
-reactions(a::SBMLModel)::Vector{String} = [k for k in keys(a.m.reactions)]
-metabolites(a::SBMLModel)::Vector{String} = [k for k in keys(a.m.species)]
-n_reactions(a::SBMLModel)::Int = length(a.m.reactions)
-n_metabolites(a::SBMLModel)::Int = length(a.m.species)
+reactions(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.reactions)]
+metabolites(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.species)]
+n_reactions(model::SBMLModel)::Int = length(model.sbml.reactions)
+n_metabolites(model::SBMLModel)::Int = length(model.sbml.species)
 
 """
-    stoichiometry(a::SBMLModel)::SparseMat
+    stoichiometry(model::SBMLModel)::SparseMat
 
 Recreate the stoichiometry matrix from the SBML model.
 """
-function stoichiometry(a::SBMLModel)::SparseMat
-    _, _, S = SBML.getS(a.m)
+function stoichiometry(model::SBMLModel)::SparseMat
+    _, _, S = SBML.getS(model.sbml)
     return S
 end
 
 """
-    bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec}
+    bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
 
-Get the lower and upper flux bounds of a `SBMLModel`. Throws `DomainError` in
+Get the lower and upper flux bounds of model `SBMLModel`. Throws `DomainError` in
 case if the SBML contains mismatching units.
 """
-function bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec}
-    lbu = SBML.getLBs(a.m)
-    ubu = SBML.getUBs(a.m)
+function bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
+    lbu = SBML.getLBs(model.sbml)
+    ubu = SBML.getUBs(model.sbml)
 
     unit = lbu[1][2]
     getvalue = (val, _)::Tuple -> val
@@ -48,19 +48,20 @@ function bounds(a::SBMLModel)::Tuple{SparseVec,SparseVec}
     return sparse.((getvalue.(lbu), getvalue.(ubu)))
 end
 
-balance(a::SBMLModel)::SparseVec = spzeros(n_metabolites(a))
-objective(a::SBMLModel)::SparseVec = SBML.getOCs(a.m)
+balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
+objective(model::SBMLModel)::SparseVec = SBML.getOCs(model.sbml)
 
-genes(a::SBMLModel)::Vector{String} = [k for k in a.m.gene_products]
-n_genes(a::SBMLModel)::Int = length(a.m.gene_products)
+genes(model::SBMLModel)::Vector{String} = [k for k in model.sbml.gene_products]
+n_genes(model::SBMLModel)::Int = length(model.sbml.gene_products)
 
-reaction_gene_association(a::SBMLModel, rid::String)::Maybe{GeneAssociation} =
-    _maybemap(_parse_grr, a.m.reactions[rid].gene_product_association)
+reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation} =
+    _maybemap(_parse_grr, model.sbml.reactions[rid].gene_product_association)
 
-metabolite_formula(a::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
-    _maybemap(_parse_formula, a.m.species[mid].formula)
+metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
+    _maybemap(_parse_formula, model.sbml.species[mid].formula)
 
-metabolite_charge(a::SBMLModel, mid::String)::Maybe{Int} = a.m.species[mid].charge
+metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int} =
+    model.sbml.species[mid].charge
 
 function _sbml_export_annotation(annotation)::Maybe{String}
     if isnothing(annotation) || isempty(annotation)
@@ -75,17 +76,17 @@ end
 
 _sbml_export_notes = _sbml_export_annotation
 
-function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
-    if typeof(m) == SBMLModel
-        return m
+function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
+    if typeof(mm) == SBMLModel
+        return mm
     end
 
-    mets = metabolites(m)
-    rxns = reactions(m)
-    stoi = stoichiometry(m)
-    (lbs, ubs) = bounds(m)
-    ocs = objective(m)
-    comps = _default.("", metabolite_compartment.(Ref(m), mets))
+    mets = metabolites(mm)
+    rxns = reactions(mm)
+    stoi = stoichiometry(mm)
+    (lbs, ubs) = bounds(mm)
+    ocs = objective(mm)
+    comps = _default.("", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 
     return SBMLModel(
@@ -102,12 +103,12 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
                     nothing, # name
                     _default("", comps[mi]), # compartment
                     nothing, # no information about boundary conditions
-                    metabolite_formula(m, mid),
-                    metabolite_charge(m, mid),
+                    metabolite_formula(mm, mid),
+                    metabolite_charge(mm, mid),
                     nothing, # initial amount
                     nothing, # only substance unit flags
-                    _sbml_export_notes(metabolite_notes(m, mid)),
-                    _sbml_export_annotation(metabolite_annotations(m, mid)),
+                    _sbml_export_notes(metabolite_notes(mm, mid)),
+                    _sbml_export_annotation(metabolite_annotations(mm, mid)),
                 ) for (mi, mid) in enumerate(mets)],
             ),
             Dict(
@@ -121,20 +122,20 @@ function Base.convert(::Type{SBMLModel}, m::MetabolicModel)
                     ocs[ri],
                     _maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
-                        reaction_gene_association(m, rid),
+                        reaction_gene_association(mm, rid),
                     ),
                     nothing,
-                    _sbml_export_notes(reaction_notes(m, rid)),
-                    _sbml_export_annotation(reaction_annotations(m, rid)),
+                    _sbml_export_notes(reaction_notes(mm, rid)),
+                    _sbml_export_annotation(reaction_annotations(mm, rid)),
                 ) for (ri, rid) in enumerate(rxns)],
             ),
             Dict(
                 [gid => SBML.GeneProduct(
                     nothing,
                     nothing,
-                    _sbml_export_notes(gene_notes(m, gid)),
-                    _sbml_export_annotation(gene_annotations(m, gid)),
-                ) for gid in genes(m)],
+                    _sbml_export_notes(gene_notes(mm, gid)),
+                    _sbml_export_annotation(gene_annotations(mm, gid)),
+                ) for gid in genes(mm)],
             ),
             Dict(), # function definitions
         ),
