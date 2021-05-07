@@ -6,7 +6,8 @@
 
 # If it is not already present, load the model.
 
-!isfile("e_coli_core.xml") && download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
+!isfile("e_coli_core.xml") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 #
 using COBREXA
 
@@ -80,7 +81,7 @@ dict_soln = flux_balance_analysis_dict(
         change_optimizer(lp_optimizer), # swap back to using Tulip
         change_optimizer_attribute("IPM_IterationsLimit", 110), # this is a Tulip specific attribute, other solvers have other attributes
         change_sense(MAX_SENSE), # another valid option is MIN_SENSE
-        ],
+    ],
 )
 
 # ## Flux variability analysis
@@ -142,7 +143,7 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     qp_modifications = [
         change_solver(qp_optimizer), # only necessary if the first solver cannot handle QPs
         change_solver_attribute("verbose", false),
-        ],
+    ],
 )
 #
 vec_soln = parsimonious_flux_balance_analysis_vec(
@@ -155,5 +156,5 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     qp_modifications = [
         change_solver(qp_optimizer), # only necessary if the first solver cannot handle QPs
         change_solver_attribute("verbose", false),
-        ],
+    ],
 )
