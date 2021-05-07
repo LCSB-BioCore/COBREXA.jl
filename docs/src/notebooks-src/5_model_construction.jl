@@ -2,7 +2,7 @@
 
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats; and convert
 # these into `StandardModel`s. However, it is also possible to construct models
-# from scratch, join models together, and modify exising models. This will be demonstrated
+# from scratch, and modify existing models. This will be demonstrated
 # here.
 
 # ## Model construction 
@@ -88,9 +88,3 @@ model
 
 rm!(Gene, model, ["g1", "g2"]; knockout_reactions=false)
 model
-
-# ## Joining models together
-
-# When building community models, it is often desirable to join multiple models together.
-
-# ## Mod
