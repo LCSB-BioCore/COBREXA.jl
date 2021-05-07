@@ -5,25 +5,21 @@ so for a reaction to be available it is sufficient that one group
 is available, but inside a group all of the genes need to be available
 """
 
-@testset "knockout_single_reaction" begin
+@testset "knockout_single_gene" begin
     m = StandardModel()
     add!(m, Metabolite("A"))
     add!(m, Metabolite("B"))
     add!(m, Gene("g1"))
     add!(m, Gene("g2"))
-    # Knockout should remove v1
     add!(m, Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]))
-    # Knockout should remove [g1, g2] (AND) and thus remove reaction v2
     add!(
         m,
         Reaction("v2", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1", "g2"]]),
     )
-    # Knockout should remove [g1], but keep reaction v3 (OR)
     add!(
         m,
         Reaction("v3", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"], ["g2"]]),
     )
-    # Knockout should remove [g1, g2] (AND), but keep reaction v4 (OR)
     add!(
         m,
         Reaction(
@@ -33,22 +29,14 @@ is available, but inside a group all of the genes need to be available
         ),
     )
 
-    rm!(Gene, m, "g1", knockout = true)
+    rm!(Gene, m, "g1", knockout_reactions = true)
 
     @test length(m.reactions) == 2
     @test !haskey(m.reactions, "v1")
     @test !haskey(m.reactions, "v2")
-
-    rxn = m.reactions["v3"]
-    @test length(rxn.grr) == 1
-    @test rxn.grr[1][1] == "g2"
-
-    rxn = m.reactions["v4"]
-    @test length(rxn.grr) == 1
-    @test rxn.grr[1][1] == "g2"
 end
 
-@testset "knockout_multiple_reactions" begin
+@testset "knockout_multiple_genes" begin
     m = StandardModel()
     add!(m, Metabolite("A"))
     add!(m, Metabolite("B"))
@@ -63,9 +51,12 @@ end
             grr = [["g1"], ["g2"], ["g3"]],
         ),
     )
-    rm!(Gene, m, ["g1", "g3"], knockout = true)
+    add!(
+        m,
+        Reaction("v2", metabolites = Dict("A" => 1.0, "B" => -1.0), grr = [["g1"], ["g3"]]),
+    )
+    rm!(Gene, m, ["g1", "g3"], knockout_reactions = true)
 
-    rxn = m.reactions["v1"]
-    @test length(rxn.grr) == 1
-    @test rxn.grr[1][1] == "g2"
+    @test haskey(m.reactions, "v1")
+    @test !haskey(m.reactions, "v2")
 end

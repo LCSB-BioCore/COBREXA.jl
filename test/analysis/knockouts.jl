@@ -91,3 +91,77 @@ end
     @test normalized_rhs(opt_model[:lbs][3]) == 1000
     @test normalized_rhs(opt_model[:ubs][3]) == 1000
 end
+
+@testset "Knockouts on realistic models" begin
+    model_path = download_data_file(
+        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+        joinpath("data", "e_coli_core.json"),
+        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
+    )
+
+    model = load_model(StandardModel, model_path)
+
+    sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_sense(MAX_SENSE),
+            change_optimizer_attribute("IPM_IterationsLimit", 110),
+            knockout(["b0978", "b0734"]), # knockouts out cytbd
+        ],
+    )
+    @test isapprox(
+        sol["BIOMASS_Ecoli_core_w_GAM"],
+        0.2725811189335953,
+        atol = TEST_TOLERANCE,
+    )
+
+    sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_sense(MAX_SENSE),
+            change_optimizer_attribute("IPM_IterationsLimit", 110),
+            knockout("b2779"), # knockouts out enolase 
+        ],
+    )
+    @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)
+
+    # now test on generic model
+    model = load_model(model_path)
+
+    sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_sense(MAX_SENSE),
+            change_optimizer_attribute("IPM_IterationsLimit", 110),
+            knockout(["b0978", "b0734"]), # knockouts out cytbd
+        ],
+    )
+    @test isapprox(
+        sol["BIOMASS_Ecoli_core_w_GAM"],
+        0.2725811189335953,
+        atol = TEST_TOLERANCE,
+    )
+
+    sol = flux_balance_analysis_dict(
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_objective("BIOMASS_Ecoli_core_w_GAM"),
+            change_constraint("EX_glc__D_e", -12, -12),
+            change_sense(MAX_SENSE),
+            change_optimizer_attribute("IPM_IterationsLimit", 110),
+            knockout("b2779"), # knockouts out enolase 
+        ],
+    )
+    @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)
+
+end
