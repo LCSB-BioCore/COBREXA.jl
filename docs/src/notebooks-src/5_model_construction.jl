@@ -60,6 +60,7 @@ end
 model.reactions["r4"].grr = [["g5"], ["g6"], ["g7"]]
 
 r5 = m4 ⟶ m2 # arrow approach
+r5.id = "r5" # give ID
 r5.grr = [["g8"]]
 add!(model, r5) # still need to add this reaction
 
@@ -77,5 +78,19 @@ add!(model, r5) # still need to add this reaction
 #md #       5. ↔ is \leftrightarrow<tab>
 #md #       6. ⟷ is \longleftrightarrow<tab>
 
-# The model can now be inspected.
+# The constructed model can now be inspected.
 model
+
+# ## Modifying existing models
+
+# It is also possible to modify a model by deleting certain genes.
+# This is simply achieved by calling `rm!`.
+
+rm!(Gene, model, ["g1", "g2"]; knockout_reactions=false)
+model
+
+# ## Joining models together
+
+# When building community models, it is often desirable to join multiple models together.
+
+# ## Mod
