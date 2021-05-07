@@ -71,7 +71,7 @@ format:
     - git config --global user.name $CI_USER_NAME
     - git config --global user.email $CI_USER_EMAIL
     - git checkout $CI_COMMIT_BRANCH || true
-    - git commit -am "automatic formatting changes" || true
+    - git commit -am "[skip ci] automatic formatting changes" || true
     - git push origin $CI_COMMIT_BRANCH || true
   <<: *global_settings
 
