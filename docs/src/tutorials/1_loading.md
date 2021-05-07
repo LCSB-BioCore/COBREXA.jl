@@ -1,34 +1,35 @@
 
 # Loading and converting model data
 
-COBREXA.jl supports several constrained model formats that can be loaded with
-built-in functions. You can load the SBML models that are compatible with
+COBREXA.jl supports several constraint-based model formats that can be loaded
+with built-in functions. You can load SBML models that are compatible with
 [libsbml](http://sbml.org/Software/libSBML), JSON models (such as the ones from
 [CobraPy](https://github.com/opencobra/cobrapy)), and MATLAB-style models (such
-as those from [COBRA Toolbox](https://github.com/opencobra/cobratoolbox).
+as those from [COBRA Toolbox](https://github.com/opencobra/cobratoolbox)).
 
 These formats are commonly available from many model repositories, such as from
-BIGG, as seen e.g. on [*E. Coli*
-entry](http://bigg.ucsd.edu/models/e_coli_core).  we show how to load the basic
-formats and work with such models.
+BIGG, as seen e.g. on the BIGG entry for the core [*E. Coli*
+entry](http://bigg.ucsd.edu/models/e_coli_core). Here, we show how to load the
+basic formats and work with such models.
 
 !!! tip "Notebook available!"
     Example code for this tutorial is [available
-    here](../notebooks/1_loading_converting_saving.md)
+    here](../notebooks/1_loading_converting_saving.md).
 
 ## Loading models from files
 
 For most purposes, you should be able to open and load any model with
-[`load_model`](@ref), which detects the file type from extension (`.xml`,
-`.json` and `.mat`) and calls the specific loading function. After loading
-COBREXA library with `using COBREXA` and downloading the model, you may load
-its data as follows:
+[`load_model`](@ref), which detects the file type from the extension (`.xml`,
+`.json` and `.mat`), and calls the appropriate loading function. After loading
+the `COBREXA.jl` library with `using COBREXA` and you may load the downloaded
+model data into Julia as follows:
 
 ```
 my_model = load_model("e_coli_core.xml")
 ```
 
-You should get an information about the loaded model, possibly looking like this:
+You should see some information about the loaded model, possibly looking like
+this:
 ```
 Metabolic model of type JSONModel
 
@@ -41,7 +42,7 @@ Number of reactions: 95
 Number of metabolites: 72
 ```
 
-If the file type can not be guessed from the file extension, use either of the
+If the file type can not be guessed from the file extension, use any of the
 specific loader functions:
 
 - [`load_sbml_model`](@ref) for SBML
@@ -81,25 +82,27 @@ MATLAB and SBML data and build on them without any restrictions.
 
 ## Converting to other model types
 
-Despite JSON and SBML are great for storing the model, the data representation
-is not very suitable for analyzing the model and processing it mathematically.
+Despite JSON and SBML are great for storing and exchanging the models, the data
+representation is not very suitable for analyzing the model and processing it
+mathematically.
 
-COBREXA.jl contains several model types that are much more viable for
+COBREXA.jl contains several model types that are much better suited  for
 supporting the analysis tasks. You can use the following:
 
 - [`CoreModel`](@ref), which represents the "core" of the optimization problem
-  and the corresponding linear programming task -- a sparse matrix, bounds
-  vectors, etc.
+  and the corresponding linear programming problem -- a sparse representation
+  of the stoichiometric matrix, flux bounds vectors, objective vector, etc.
 - [`StandardModel`](@ref) (a "standard" for COBREXA.jl), which represents a
-  highly flexible, object-like, dictionary-based representation of a model,
-  which contains individual [`Reaction`](@ref)s, [`Metabolite`](@ref)s,
+  highly flexible, object-like, dictionary-based representation of a model that
+  contains individual [`Reaction`](@ref)s, [`Metabolite`](@ref)s,
   [`Gene`](@ref)s, and other things.
 
-!!! note Conversion limitations and data loss
-    Because of the imposed structure, the converted models may not contain all
-    information from the source files. You may need to check if any complicated
-    and less-standard annotations are still present if you require them, and
-    either use a more complicated model, or collect them manually.
+!!! note "Conversion limitations and possible data loss"
+    Because of the specifics of the format of each model structure, the
+    conversion is not always able to preserve all information from the source
+    data. You may need to check if any complicated and less-standard
+    annotations are still present. If you require them, and either use a more
+    complicated model, or collect them manually.
 
 A loaded model can be converted to any other model type using the standard
 Julia conversion:
@@ -108,21 +111,21 @@ Julia conversion:
 cm = convert(CoreModel, jm)
 ```
 
-You can also use a shortcut in [`load_model`](@ref):
+You can also use a shortcut in [`load_model`](@ref) to convert the model to the
+desired format in one command:
 
 ```
 cm = load_model(CoreModel, "e_coli_core.xml")
 ```
 
 With [`CoreModel`](@ref), the information is easily accessible in matrix form.
-For example, `cm.S` now contains the sparse stoichiometry matrix, which you can
-convert to a dense matrix and work with it in Julia in the usual way, as with
-any other matrix data:
+For example, `cm.S` now contains the sparse stoichiometric matrix, which you
+can convert to a dense matrix and manipulate it in Julia as any other matrix:
 
 ```
 Matrix(cm.S)
 ```
-...should give you the (relatively empty) stoichiometry of the model.
+...should show you the (relatively empty) stoichiometry of the model.
 
 [`StandardModel`](@ref) is more suitable for fine-grained access to individual
 items of the model, perhaps closer to the SBML-style models. For example, you
