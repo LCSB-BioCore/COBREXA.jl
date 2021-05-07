@@ -4,7 +4,8 @@
 A modification that zeroes the bounds of all reactions that would be knocked
 out by the specified genes (effectively disables the reactions).
 """
-knockout(gene_ids::Vector{String}) = (model, optmodel) -> _do_knockout(model, optmodel)
+knockout(gene_ids::Vector{String}) =
+    (model, optmodel) -> _do_knockout(model, optmodel, gene_ids)
 
 """
     knockout(gene_id::String)
@@ -20,7 +21,7 @@ Internal helper for knockouts on generic MetabolicModels. This can be
 overloaded so that the knockouts may work differently (more efficiently) with
 other models.
 """
-function _do_knockout(model::MetabolicModel, opt_model)
+function _do_knockout(model::MetabolicModel, opt_model, gene_ids::Vector{String})
     for (rxn_num, rxn_id) in enumerate(reactions(model))
         if all([
             any(in.(gene_ids, Ref(conjunction))) for

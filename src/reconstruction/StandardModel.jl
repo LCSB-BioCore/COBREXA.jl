@@ -11,7 +11,6 @@ end
 
 function add!(model::StandardModel, rxn::Reaction)
     model.reactions[rxn.id] = rxn
-    _map_reaction_to_genes!(model, rxn)
 end
 
 """
@@ -147,34 +146,26 @@ Remove all genes with `ids` from `model`.
 rm!(Gene, model, ["g1", "g2"])
 rm!(Gene, model, "g1")
 """
-function rm!(
-    ::Type{Gene},
-    model::StandardModel,
-    ids::Vector{String};
-    knockout::Bool = false,
-)
-    for id in ids
-        rm!(Gene, model, id, knockout = knockout)
-    end
-end
+rm!(::Type{Gene}, model::StandardModel, gid::String; knockout_reactions::Bool = false) =
+    rm!(Gene, model, [gid]; knockout_reactions = knockout_reactions)
 
 function rm!(
     ::Type{Gene},
     model::StandardModel,
-    gid::String;
+    gids::Vector{String};
     knockout_reactions::Bool = false,
 )
     if knockout_reactions
         rm_reactions = String[]
         for (rid, r) in model.reactions
-            if !isnothing(reactions.grr) &&
-               all([any(in.(gid, conjunction)) for conjunction in r.grr])
+            if !isnothing(r.grr) &&
+               all([any(in.(gids, Ref(conjunction))) for conjunction in r.grr])
                 push!(rm_reactions, rid)
             end
         end
         delete!.(Ref(model.reactions), rm_reactions)
     end
-    delete!(model.genes, gid)
+    delete!.(Ref(model.genes), gids)
 end
 
 function set_bound(model::StandardModel, reaction_id::String; ub, lb)
