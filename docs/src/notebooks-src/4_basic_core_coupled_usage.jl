@@ -9,9 +9,9 @@
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
-# ## Loading a `CoreModel`
-
 using COBREXA
+
+# ## Loading a `CoreModel`
 
 model = load_model(CoreModel, "e_coli_core.xml") # we specifically want to load a CoreModel from the model file
 

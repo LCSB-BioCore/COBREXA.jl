@@ -11,7 +11,7 @@
 
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
-#
+
 using COBREXA
 
 #md # !!! tip "Tip: use `?` when unsure about a function" 
@@ -116,15 +116,15 @@ fva_maxs["R_EX_ac_e"]["R_EX_ac_e"] # acetate exchange maximized, acetate exchang
 # function output.
 
 #md # !!! note  "Note: A quadratic programming optimizer is required" 
-#md #           If you are using an optimizer that supports quadratic programming, like
-#md #           `Gurobi.jl`, then you only need to specify one optimizer e.g. 
-#md #           `parsimonious_flux_balance_analysis_dict(model, Gurobi.Optimizer)`.
-#md #           All problem and/or optimizer modifications should be passed to the 
-#md #           `modifications` keyword argument. The `qp_modifications` keyword
-#md #           argument should be ignored in this case. If you are using two optimizers,
-#md #           then the optimizer passed first is used as the linear
-#md #           programming optimizer, and the second as the quadratic
-#md #           programming optimizer. This is demonstrated below.
+#md #       If you are using an optimizer that supports quadratic programming, like
+#md #       `Gurobi.jl`, then you only need to specify one optimizer e.g. 
+#md #       `parsimonious_flux_balance_analysis_dict(model, Gurobi.Optimizer)`.
+#md #       All problem and/or optimizer modifications should be passed to the 
+#md #       `modifications` keyword argument. The `qp_modifications` keyword
+#md #       argument should be ignored in this case. If you are using two optimizers,
+#md #       then the optimizer passed first is used as the linear
+#md #       programming optimizer, and the second as the quadratic
+#md #       programming optimizer. This is demonstrated below.
 
 #nb # If you are using an optimizer that supports quadratic programming, like
 #nb # `Gurobi.jl`, then you only need to specify one optimizer e.g. 
