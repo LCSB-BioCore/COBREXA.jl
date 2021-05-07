@@ -2,6 +2,7 @@
 # COBREXA Tutorials
 
 ```@contents
-Pages = readdir("tutorials")
+Pages = joinpath.("tutorials", readdir("tutorials"))
 Depth = 2
 ```
+

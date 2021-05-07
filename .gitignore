@@ -29,3 +29,6 @@ temp.*
 # Ignore jupyter notebook stuff
 .ipynb_checkpoints
 
+# add generated tutorial specifics
+docs/src/notebooks/*.md
+docs/src/notebooks/*.ipynb

@@ -93,7 +93,7 @@ generator:gource:
     expose_as: 'animatedHistory'
     paths: ['output.gif']
     expire_in: 1 week
-  <<: *global_settings
+  <<: *global_settings_master
 
 # Converter for tutorials
 # --------------------------------------
@@ -110,14 +110,14 @@ generator:notebooks:
     - mkdir rendered-notebooks
   script:
     - |-
-         if [ $(find docs/notebooks -type f -name "*.ipynb" | wc -l) -gt  0 ]; then
-           docker run --rm -v `pwd`:/source jgoldfar/pandoc-nbconvert-docker nbconvert --to html docs/notebooks/*.ipynb
+         if [ $(find docs/src/notebooks -type f -name "*.ipynb" | wc -l) -gt  0 ]; then
+           docker run --rm -v `pwd`:/source jgoldfar/pandoc-nbconvert-docker nbconvert --to html docs/src/notebooks/*.ipynb
            mv docs/notebooks/*.html rendered-notebooks
          fi
   artifacts:
     paths: ["rendered-notebooks"]
     expire_in: 1 week
-  <<: *global_settings
+  <<: *global_settings_master
 
 
 # Documentation tests
