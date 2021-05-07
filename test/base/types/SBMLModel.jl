@@ -15,7 +15,7 @@ download_data_file(
     @test Set(reactions(sbmlm)) == Set(reactions(sm))
     @test Set(metabolites(sbmlm)) == Set(metabolites(sbmlm2))
     @test all([
-        sbmlm.m.reactions[i].stoichiometry == sbmlm2.m.reactions[i].stoichiometry for
+        sbmlm.sbml.reactions[i].stoichiometry == sbmlm2.sbml.reactions[i].stoichiometry for
         i in reactions(sbmlm2)
     ])
 end

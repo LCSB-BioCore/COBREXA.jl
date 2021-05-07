@@ -22,5 +22,5 @@ function save_json_model(model::MetabolicModel, file_name::String)
             convert(JSONModel, model)
         end
 
-    JSON.print(open(file_name, "w"), m.m)
+    JSON.print(open(file_name, "w"), m.json)
 end
