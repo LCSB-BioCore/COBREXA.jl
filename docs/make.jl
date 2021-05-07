@@ -12,9 +12,12 @@ folder = "stable"
 ## only temporary - will be removed once public
 branch = "gh-pages"
 
-Literate.markdown(EXAMPLE, OUTPUT; repo_root_url = "https://github.com/$(ENV["TRAVIS_REPO_SLUG"])/blob/master",
-nbviewer_root_url = "https://nbviewer.jupyter.org/github/$(ENV["TRAVIS_REPO_SLUG"])/blob/gh-pages/$(folder)",
-binder_root_url = "https://mybinder.org/v2/gh/$(ENV["TRAVIS_REPO_SLUG"])/$(branch)?filepath=$(folder)"
+Literate.markdown(
+    EXAMPLE,
+    OUTPUT;
+    repo_root_url = "https://github.com/$(ENV["TRAVIS_REPO_SLUG"])/blob/master",
+    nbviewer_root_url = "https://nbviewer.jupyter.org/github/$(ENV["TRAVIS_REPO_SLUG"])/blob/gh-pages/$(folder)",
+    binder_root_url = "https://mybinder.org/v2/gh/$(ENV["TRAVIS_REPO_SLUG"])/$(branch)?filepath=$(folder)",
 )
 Literate.notebook(EXAMPLE, OUTPUT)
 
