@@ -45,7 +45,7 @@ flux balance analysis as follows:
 using COBREXA   # loads the package
 using GLPK      # loads your favorite solver
 
-isfile("e_coli_core.xml") || download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
+download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
 model = load_model("e_coli_core.xml")
 
@@ -53,7 +53,7 @@ fluxes = flux_balance_analysis_dict(model, GLPK.Optimizer)
 ```
 
 The variable `fluxes` will now contain a dictionary of the computed
-flux distribution maximizing the biomass objective function of each reaction in the model:
+flux distribution that maximizes the default objective function of the model:
 ```
 Dict{String,Float64} with 95 entries:
   "R_EX_fum_e"    => 0.0
