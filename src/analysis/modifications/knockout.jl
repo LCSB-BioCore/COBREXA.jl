@@ -16,7 +16,9 @@ knockout(gene_id::String) = knockout([gene_id])
 """
     _do_knockout(model::MetabolicModel, opt_model)
 
-Internal helper for knockouts on generic MetabolicModels.
+Internal helper for knockouts on generic MetabolicModels. This can be
+overloaded so that the knockouts may work differently (more efficiently) with
+other models.
 """
 function _do_knockout(model::MetabolicModel, opt_model)
     for (rxn_num, rxn_id) in enumerate(reactions(model))
@@ -25,30 +27,6 @@ function _do_knockout(model::MetabolicModel, opt_model)
             conjunction in reaction_gene_association(model, rxn_id)
         ])
             set_bound(rxn_num, opt_model, ub = 0, lb = 0)
-        end
-    end
-end
-
-"""
-    _do_knockout(model::StandardModel, opt_model)
-
-Internal helper for knockouts specialized to StandardModel (uses a prepared index).
-"""
-function _do_knockout(model::StandardModel, opt_model)
-    all_reactions = reactions(model)
-    for gene_id in gene_ids
-        for reaction_id in model.genes[gene_id].associated_reactions
-            if all([
-                any(in.(gene_ids, Ref(conjunction))) for
-                conjunction in reaction_gene_association(model, reaction_id)
-            ])
-                set_bound(
-                    first(indexin([reaction_id], all_reactions)),
-                    opt_model,
-                    ub = 0,
-                    lb = 0,
-                )
-            end
         end
     end
 end

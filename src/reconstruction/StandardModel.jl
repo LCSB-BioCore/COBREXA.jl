@@ -1,13 +1,3 @@
-function _map_reaction_to_genes!(model::StandardModel, rxn::Reaction)
-    if !isnothing(rxn.grr)
-        for gene_array in rxn.grr
-            for gene in gene_array
-                push!(model.genes[gene].associated_reactions, rxn.id)
-            end
-        end
-    end
-end
-
 """
     add!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
 
@@ -127,13 +117,6 @@ end
 
 function rm!(::Type{Reaction}, model::StandardModel, id::String)
     rxn = pop!(model.reactions, id)
-    if !isnothing(rxn.grr)
-        for gene_array in rxn.grr
-            for gene_id in gene_array
-                delete!(model.genes[gene_id].associated_reactions, id)
-            end
-        end
-    end
 end
 
 """
@@ -175,28 +158,23 @@ function rm!(
     end
 end
 
-function rm!(::Type{Gene}, model::StandardModel, id::String; knockout::Bool = false)
-    if knockout
-        # Dev note: the three nested for loops are inefficiency. However:
-        # - gene_ids (user input) will be probably only very few items
-        # - model.genes[gene_id].reactions are just a few reactions (most genes don't code for a lot of reactions)
-        # - reaction.grr also should only hold few items (reactions aren't coded by many different combinations of genes)
-        # Let's avoid premature optimization for now and see if anyone ever has problems with this
-        for reaction_id in gene_associated_reactions(model, id)
-            reaction = get(model.reactions, reaction_id, nothing)
-            if isnothing(reaction)
-                return nothing
-            end
-            # AND inside the gene_array, so destroy as soon as one is missing
-            reaction.grr = filter(x -> !any(occursin.(id, x)), reaction.grr)
-
-            # OR outside, so all have to be deleted for the reaction to be deleted
-            if length(reaction.grr) == 0
-                rm!(Reaction, model, reaction.id)
+function rm!(
+    ::Type{Gene},
+    model::StandardModel,
+    gid::String;
+    knockout_reactions::Bool = false,
+)
+    if knockout_reactions
+        rm_reactions = String[]
+        for (rid, r) in model.reactions
+            if !isnothing(reactions.grr) &&
+               all([any(in.(gid, conjunction)) for conjunction in r.grr])
+                push!(rm_reactions, rid)
             end
         end
+        delete!.(Ref(model.reactions), rm_reactions)
     end
-    delete!(model.genes, id)
+    delete!(model.genes, gid)
 end
 
 function set_bound(model::StandardModel, reaction_id::String; ub, lb)
