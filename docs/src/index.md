@@ -9,7 +9,7 @@
 # COnstraint-Based Reconstruction and EXascale Analysis
 
 COBREXA is a toolkit for working with large constraint-based metabolic models,
-and running very a large number of analysis tasks on these models in parallel.
+and running a very large number of analysis tasks on these models in parallel.
 Its main purpose is to make the methods of Constraint-based Reconstruction and
 Analysis (COBRA) scale to problem sizes that require the use of huge computer
 clusters and HPC environments. This allows these analysis techniques to
