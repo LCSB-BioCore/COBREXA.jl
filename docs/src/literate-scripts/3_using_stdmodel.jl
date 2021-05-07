@@ -131,56 +131,51 @@ model.reactions[random_reaction_id]
 
 # `StandardModel` can be used to build your own metabolic model or modify an
 # existing one. One of the main use cases for `StandardModel` is that it can be
-# used to merge multiple models together. Since the internals are uniform inside
-# each `StandardModel`, attributes of other model types are squashed into the
-# required format (using the generic accessors). This ensures that the internals
-# of all `StandardModel`s are the same - allowing easy systematic evaluation.
+# used to merge multiple models or parts of multiple models together. Since the
+# internals are uniform inside each `StandardModel`, attributes of other model
+# types are squashed into the required format (using the generic accessors).
+# This ensures that the internals of all `StandardModel`s are the same -
+# allowing easy systematic evaluation.
 
-# ## Checking the internals of `StandardModel`s: `check_duplicate_annotations`
+#md # !!! warning "Combining models with different namespaces is tricky"
+#md #       Combining models that use different namespaces requires care.
+#md #       For example, in some models the water exchange reaction is called
+#md #       `EX_h2o_e`, while in others it is called `R_EX_h2o_s`. This needs to
+#md #       manually addressed (for now) to prevent duplicate, e.g. reactions, 
+#md #       from being added.
 
-# For example, often when models are automatically reconstructed duplicate
-# genes, reactions or metabolites end up in a model. `COBREXA` exports
-# `check_duplicate_annotations` to check for cases where the id may be different
-# but the annotations the same (possibly suggesting a duplication).
+# ## Checking the internals of `StandardModel`s: `annotation_index`
 
-# For example, suppose we want to check if a metabolite already exists in the
-# model (but has another id). Checking for unique formulas is not a good way to
-# do this since many metabolites share the same formulas (the bonds may be
-# different though). However, checking annotation details, e.g. inchi_keys,
-# etc., is a more robust way for indentifying overlapping metabolites.
+# Often when models are automatically reconstructed duplicate genes, reactions
+# or metabolites end up in a model. `COBREXA` exports `annotation_index` to
+# check for cases where the id of a struct may be different, but the annotations
+# the same (possibly suggesting a duplication). `annotation_index` builds a
+# dictionary mapping annotation features to the ids of whatever struct you are
+# inspecting. This makes it easy to find structs that share certain annotation features.
 
-# Here we will check if a dummy created metabolite already exists in the model
-# by only checking if any annotation details overlap. 
-
-new_metabolite = Metabolite() # construct a dummy metabolite
-new_metabolite.id = "nh4_c_dummy"
-new_metabolite.compartment = "c" # note, the compartment MUST be the same to prevent false positives of metabolites in different compartments
-new_metabolite.annotations["inchi_key"] = ["QGZKDVFQNNGYKY-UHFFFAOYSA-O"]
-new_metabolite.annotations["hmdb"] = ["1234"]
-new_metabolite
+rxn_annotations = annotation_index(model.reactions)
 #
-overlap_id = check_duplicate_annotations(new_metabolite, model.metabolites) # overlap detected!
+rxn_annotations["ec-code"]
 
-# The `check_duplicate_annotations` function can also be used on `Reaction`s and
+# The `annotation_index` function can also be used on `Reaction`s and
 # `Gene`s in the same way.
 
 # ## Checking the internals of `StandardModel`s: `check_duplicate_reaction`
 
 # Another useful function is `check_duplicate_reaction`, which checks for
-# reactions that have duplicate reaction equations.
+# reactions that have duplicate (or similar) reaction equations.
 
 pgm_duplicate = Reaction()
 pgm_duplicate.id = "pgm2" # Phosphoglycerate mutase
 pgm_duplicate.metabolites = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1)
 pgm_duplicate
 #
-check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = false) # can also just check if the metabolites are the same
-
+check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites=false) # can also just check if only the metabolites are the same but different stoichiometry is used
 
 # ## Checking the internals of `StandardModel`s: `is_mass_balanced`
 
 # Finally, `is_mass_balanced` can be used to check if a reaction is mass
 # balanced based on the formulas of the reaction equations.
 
-pgm_duplicate.metabolites = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c" => 1) # not mass balanced now
-is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model)
+pgm_duplicate.metabolites = Dict{String, Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c"=>1) # not mass balanced now
+is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model) # extra_atoms shows which atoms are in excess/deficit
