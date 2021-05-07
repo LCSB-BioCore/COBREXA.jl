@@ -86,7 +86,7 @@ $ git fetch origin
 where `yourUsername` is your Github username.
 
 !!! warning "Warning" 
-    Make sure that your fork exists under `github.com/yourUsername/COBREXA.jl`.
+    Make sure that your fork is located at `github.com/yourUsername/COBREXA.jl`.
 
 Then, checkout a branch `yourNewBranch`:
 
