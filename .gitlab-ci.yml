@@ -4,6 +4,7 @@ stages:
   - documentation
   - test-containers
   - test-required
+  - trigger-external
   - test-additional-v1.5
   - test-additional-v1.6
 
@@ -197,3 +198,12 @@ mac:v1.6:
   <<: *global_testing_v16
   <<: *global_testing_mac
 
+# Trigger test pipelines in external repo
+# --------------------------------------
+
+trigger:
+  stage: trigger-external
+  trigger:
+    project: $EXTERNAL_REPO
+    branch: $EXTERNAL_REPO_BRANCH
+  <<: *global_settings_master
