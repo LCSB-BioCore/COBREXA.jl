@@ -23,10 +23,9 @@ other models.
 """
 function _do_knockout(model::MetabolicModel, opt_model, gene_ids::Vector{String})
     for (rxn_num, rxn_id) in enumerate(reactions(model))
-        if all([
-            any(in.(gene_ids, Ref(conjunction))) for
-            conjunction in reaction_gene_association(model, rxn_id)
-        ])
+        rga = reaction_gene_association(model, rxn_id)
+        if !isnothing(rga) &&
+           all([any(in.(gene_ids, Ref(conjunction))) for conjunction in rga])
             set_bound(rxn_num, opt_model, ub = 0, lb = 0)
         end
     end
