@@ -6,11 +6,16 @@ Parse `SBML.GeneProductAssociation` structure to the simpler GeneAssociation.
 The input must be (implicitly) in a positive DNF.
 """
 function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
-    parse_ref(x) = typeof(x) == SBML.GPARef ? x.gene_product : nothing
-    parse_ands(x) =
-        typeof(x) == SBML.GPAAnd ? [parse_ref(i) for i in x.terms] : parse_ref(x)
-    parse_or(x) = typeof(x) == SBML.GPAOr ? [parse_and(i) for i in x.terms] : parse_and(x)
-
+    parse_ref(x) =
+        typeof(x) == SBML.GPARef ? [x.gene_product] :
+        begin
+            @_models_log @warn "Could not parse a part of gene association, ignoring: $x"
+            String[]
+        end
+    parse_and(x) =
+        typeof(x) == SBML.GPAAnd ? vcat([parse_and(i) for i in x.terms]...) : parse_ref(x)
+    parse_or(x) =
+        typeof(x) == SBML.GPAOr ? vcat([parse_or(i) for i in x.terms]...) : [parse_and(x)]
     return parse_or(gpa)
 end
 
