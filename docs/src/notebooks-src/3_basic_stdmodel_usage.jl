@@ -1,5 +1,8 @@
 # Basic usage of `StandardModel`
 
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+
 # In this tutorial we will use `COBREXA`'s `StandardModel` and functions that
 # specifically operate on it. As usual we will use the toy model of *E. coli*
 # for demonstration.
