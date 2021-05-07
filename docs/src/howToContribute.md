@@ -7,7 +7,7 @@ repository by following [these instructions](https://docs.github.com/en/github/g
 
 There are two ways that you can retrieve a local copy of the package: one is to
 manually clone the forked repository, and the second one is to use the
-intergrated Julia package manager.
+integrated Julia package manager.
 
 ### Option 1: Manually clone your fork
 
@@ -126,6 +126,6 @@ julia> using JuMP
 ```
 
 !!! warning "Warning"
-  If you do not  `activate` the environment before using any of the
-  dependencies, you will see a red error messages prompting you to install the
-  dependency explicity.
+    If you do not  `activate` the environment before using any of the
+    dependencies, you will see a red error messages prompting you to install the
+    dependency explicitly.
