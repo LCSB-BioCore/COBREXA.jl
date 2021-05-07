@@ -86,5 +86,5 @@ model
 # It is also possible to modify a model by deleting certain genes.
 # This is simply achieved by calling `rm!`.
 
-rm!(Gene, model, ["g1", "g2"]; knockout_reactions=false)
+rm!(Gene, model, ["g1", "g2"]; knockout_reactions = false)
 model
