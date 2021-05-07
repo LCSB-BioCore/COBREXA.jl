@@ -4,7 +4,8 @@
 # specifically operate on it. As usual we will use the toy model of *E. coli*
 # for demonstration.
 
-!isfile("e_coli_core.json") && download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+!isfile("e_coli_core.json") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 
 # ## Loading a model
 
@@ -44,7 +45,7 @@ dict_sol = flux_balance_analysis_dict(
         change_objective("BIOMASS_Ecoli_core_w_GAM"),
         change_constraint("EX_glc__D_e", -12, -12),
         change_constraint("EX_o2_e", 0, 0),
-        ],
+    ],
 )
 
 # This is not very exciting yet, since every other model type can also do this.
@@ -164,16 +165,16 @@ overlap_id = check_duplicate_annotations(new_metabolite, model.metabolites) # ov
 # `Gene`s in the same way.
 
 # ## Checking the internals of `StandardModel`s: `check_duplicate_reaction`
-    
+
 # Another useful function is `check_duplicate_reaction`, which checks for
 # reactions that have duplicate reaction equations.
 
 pgm_duplicate = Reaction()
 pgm_duplicate.id = "pgm2" # Phosphoglycerate mutase
-pgm_duplicate.metabolites = Dict{String, Float64}("3pg_c" => 1, "2pg_c" => -1)
+pgm_duplicate.metabolites = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1)
 pgm_duplicate
 #
-check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites=false) # can also just check if the metabolites are the same
+check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = false) # can also just check if the metabolites are the same
 
 
 # ## Checking the internals of `StandardModel`s: `is_mass_balanced`
@@ -181,5 +182,5 @@ check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites=false)
 # Finally, `is_mass_balanced` can be used to check if a reaction is mass
 # balanced based on the formulas of the reaction equations.
 
-pgm_duplicate.metabolites = Dict{String, Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c"=>1) # not mass balanced now
+pgm_duplicate.metabolites = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c" => 1) # not mass balanced now
 is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model)
