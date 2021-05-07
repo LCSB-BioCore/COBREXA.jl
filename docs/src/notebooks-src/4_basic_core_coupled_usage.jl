@@ -52,18 +52,20 @@ fieldnames(CoreModelCoupled)
 # In short, coupling constraints can be used to ensure that fluxes scale with
 # the growth rate (μ) of a model. This reduces the impact of biologically
 # infeasible cycles from occurring. Here we will model coupling constraints by
-# assuming that they have the form: `-γ ≤ vᵢ/μ  ≤ γ`, where `γ` is the ratio between
-# each individual flux (vᵢ) in the model and the growth rate. 
+# assuming that they have the form: `-γ ≤ vᵢ/μ  ≤ γ`, where `γ` is the ratio
+# between each individual flux (vᵢ) in the model and the growth rate.
 
-γ = 40 # arbitrary
+gamma = 40 # arbitrary
 
 nr = n_reactions(model) # number of reactions
-biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model)))
+biomass_index = first(indexin(["R_BIOMASS_Ecoli_core_w_GAM"], reactions(model)))
+
+using LinearAlgebra, SparseArrays
 
 Cf = sparse(1.0I, nr, nr)
-Cf[:, biomass_index] .= -γ
+Cf[:, biomass_index] .= -gamma
 Cb = sparse(1.0I, nr, nr)
-Cb[:, biomass_index] .= γ
+Cb[:, biomass_index] .= gamma
 C = [Cf; Cb] # coupling constraint matrix
 
 clb = spzeros(2 * nr)
@@ -74,7 +76,7 @@ cub[nr+1:end] .= 1000
 cmodel = CoreModelCoupled(model, C, clb, cub)
 #
 d = flux_balance_analysis_dict(model, Tulip.Optimizer)
-d["BIOMASS_Ecoli_core_w_GAM"]
+d["R_BIOMASS_Ecoli_core_w_GAM"]
 #
 dc = flux_balance_analysis_dict(cmodel, Tulip.Optimizer)
-dc["BIOMASS_Ecoli_core_w_GAM"]
+dc["R_BIOMASS_Ecoli_core_w_GAM"]

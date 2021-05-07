@@ -56,7 +56,7 @@ dict_soln = flux_balance_analysis_dict(model, lp_optimizer)
 
 # Often it is desirable to modify the problem before performing analysis.
 # Problem modifications include things like changing the: objective sense,
-# optimizer, solver attributes, flux constraints, and optimization objective. It
+# optimizer, optimizer attributes, flux constraints, and optimization objective. It
 # is also possible to knock out genes. For completeness we demonstrate all of
 # the mentioned problem modifications below.
 
@@ -79,7 +79,7 @@ dict_soln = flux_balance_analysis_dict(
         change_constraint("R_EX_glc__D_e", -12, -12),
         knockout(["b0978", "b0734"]), # knocks out cytochrome oxidase (CYTBD) 
         change_optimizer(lp_optimizer), # swap back to using Tulip
-        change_optimizer_attribute("IPM_IterationsLimit", 110), # this is a Tulip specific attribute, other solvers have other attributes
+        change_optimizer_attribute("IPM_IterationsLimit", 110), # this is a Tulip specific attribute, other optimizers have other attributes
         change_sense(MAX_SENSE), # another valid option is MIN_SENSE
     ],
 )
@@ -95,7 +95,7 @@ fva_mins, fva_maxs = flux_variability_analysis_dict(
     Tulip.Optimizer;
     bounds = objective_bounds(0.99), # the objective function is allowed to vary by ~1% from the FBA optimum
     modifications = [
-        change_solver_attribute("IPM_IterationsLimit", 500),
+        change_optimizer_attribute("IPM_IterationsLimit", 500),
         change_constraint("R_EX_glc__D_e", -10, -10),
         change_constraint("R_EX_o2_e", 0.0, 0.0),
     ],
@@ -138,11 +138,11 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     lp_optimizer;
     modifications = [
         change_constraint("R_EX_glc__D_e", -12, -12),
-        change_solver_attribute("IPM_IterationsLimit", 500), # modifies the required optimizer input (lp_optimizer in this case)
+        change_optimizer_attribute("IPM_IterationsLimit", 500), # modifies the required optimizer input (lp_optimizer in this case)
     ],
     qp_modifications = [
-        change_solver(qp_optimizer), # only necessary if the first solver cannot handle QPs
-        change_solver_attribute("verbose", false),
+        change_optimizer(qp_optimizer), # only necessary if the first optimizer cannot handle QPs
+        change_optimizer_attribute("verbose", false),
     ],
 )
 #
@@ -151,10 +151,10 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     lp_optimizer;
     modifications = [
         change_constraint("R_EX_glc__D_e", -12, -12),
-        change_solver_attribute("IPM_IterationsLimit", 500), # modifies the required optimizer input
+        change_optimizer_attribute("IPM_IterationsLimit", 500), # modifies the required optimizer input
     ],
     qp_modifications = [
-        change_solver(qp_optimizer), # only necessary if the first solver cannot handle QPs
-        change_solver_attribute("verbose", false),
+        change_optimizer(qp_optimizer), # only necessary if the first optimizer cannot handle QPs
+        change_optimizer_attribute("verbose", false),
     ],
 )
