@@ -4,6 +4,7 @@ stages:
   - documentation
   - test-containers
   - test-required
+  - trigger-external
   - test-additional-v1.5
   - test-additional-v1.6
 
@@ -166,9 +167,6 @@ docker:v1.6:
 
 linux:v1.5:
   stage: test-required
-  trigger:
-    project: $EXTERNAL_REPO
-    branch: $EXTERNAL_REPO_BRANCH
   <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_linux
@@ -226,3 +224,12 @@ mac:v1.6:
   <<: *global_testing_v16
   <<: *global_testing_mac
 
+# Trigger test pipelines in external repo
+# --------------------------------------
+
+trigger:
+  stage: trigger-external
+  trigger:
+    project: $EXTERNAL_REPO
+    branch: $EXTERNAL_REPO_BRANCH
+  <<: *global_settings_master
