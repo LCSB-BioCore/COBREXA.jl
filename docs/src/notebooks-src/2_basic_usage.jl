@@ -115,7 +115,7 @@ fva_maxs["R_EX_ac_e"]["R_EX_ac_e"] # acetate exchange maximized, acetate exchang
 # `flux_balance_analysis`, two variants exist where the suffix determines the
 # function output.
 
-#md # !!! note  "A quadratic programming optimizer is required" 
+#md # !!! note  "Note: A quadratic programming optimizer is required" 
 #md #           If you are using an optimizer that supports quadratic programming, like
 #md #           `Gurobi.jl`, then you only need to specify one optimizer e.g. 
 #md #           `parsimonious_flux_balance_analysis_dict(model, Gurobi.Optimizer)`.

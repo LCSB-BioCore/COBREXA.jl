@@ -94,7 +94,7 @@ issetequal(reactions(json_model), reactions(mat_model)) # same reactions returne
 # `convert` function, which is overloaded from Julia's `Base` module and functions
 # in the same way. 
 
-#md # !!! danger "Data loss may occur when converting between models"
+#md # !!! danger "Danger: Data loss may occur when converting between models"
 #md #       The generic interface is used to convert between model types, so only
 #md #       data accessible through the generic accessors will be converted.
 
