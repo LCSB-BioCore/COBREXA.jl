@@ -166,6 +166,9 @@ docker:v1.6:
 
 linux:v1.5:
   stage: test-required
+  trigger:
+    project: $EXTERNAL_REPO
+    branch: $EXTERNAL_REPO_BRANCH
   <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_linux
