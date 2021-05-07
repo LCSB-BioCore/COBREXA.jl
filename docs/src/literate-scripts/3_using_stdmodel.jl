@@ -175,7 +175,7 @@ check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites=false)
 # ## Checking the internals of `StandardModel`s: `is_mass_balanced`
 
 # Finally, `is_mass_balanced` can be used to check if a reaction is mass
-# balanced based on the formulas of the reaction equations.
+# balanced based on the formulas of the reaction equation.
 
 pgm_duplicate.metabolites = Dict{String, Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c"=>1) # not mass balanced now
 is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model) # extra_atoms shows which atoms are in excess/deficit
