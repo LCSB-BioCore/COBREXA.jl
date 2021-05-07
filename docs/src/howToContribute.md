@@ -129,3 +129,9 @@ julia> using JuMP
     If you do not  `activate` the environment before using any of the
     dependencies, you will see a red error messages prompting you to install the
     dependency explicitly.
+
+## Step 3: Contribute!
+
+!!! tip "Tip"
+    Adding `[skip ci]` in your commit message will skip CI from automatically
+    testing that commit. 
