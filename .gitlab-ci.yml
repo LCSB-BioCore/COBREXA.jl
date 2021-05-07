@@ -14,9 +14,7 @@ variables:
 
 .global_settings: &global_settings
   rules:
-   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-   - if: $CI_COMMIT_MESSAGE =~ /\[docs\]/
-     when: never
+   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" && $CI_COMMIT_MESSAGE =~ /\[docs\]/
 
 .global_settings: &global_settings_master
   rules:
