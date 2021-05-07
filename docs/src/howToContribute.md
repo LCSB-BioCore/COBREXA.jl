@@ -11,7 +11,8 @@ intergrated Julia package manager.
 
 ### Option 1: Manually clone your fork
 
-:warning: Please make sure you have _forked_ the repository, as described above.
+!!! warning "Warning" 
+    Please make sure you have _forked_ the repository, as described above.
 
 You can do this as follows from the command line:
 
@@ -84,7 +85,8 @@ $ git fetch origin
 
 where `yourUsername` is your Github username.
 
-:warning: Make sure that your fork exists under `github.com/yourUsername/COBREXA.jl`.
+!!! warning "Warning" 
+    Make sure that your fork exists under `github.com/yourUsername/COBREXA.jl`.
 
 Then, checkout a branch `yourNewBranch`:
 
@@ -107,8 +109,9 @@ After making changes, precompile the package:
 
 ## Step 2: Activate COBREXA
 
-:warning: Please note that you cannot use the dependencies of COBREXA directly,
-unless they are installed separately or the environment has been activated:
+!!! warning "Warning" 
+    Please note that you cannot use the dependencies of COBREXA directly,
+    unless they are installed separately or the environment has been activated:
 
 ```julia
 (v1.1) pkg> activate .
@@ -122,4 +125,7 @@ Now, the environment is activated (you can see it with the prompt change
 julia> using DataFrames
 ```
 
-:warning: If you do not  `activate` the environment before using any of the dependencies, you will see a red error messages prompting you to install the dependency explicity.
+!!! warning "Warning"
+  If you do not  `activate` the environment before using any of the
+  dependencies, you will see a red error messages prompting you to install the
+  dependency explicity.
