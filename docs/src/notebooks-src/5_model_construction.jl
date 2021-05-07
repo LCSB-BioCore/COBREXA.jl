@@ -40,7 +40,7 @@ add!(model, metabolite_list)
 
 r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> ∅ (nothing)
 r1 = Reaction("r1", Dict("m1" => -1.0, "m2" => 1.0), :forward)
-r5.grr = [["g1", "g2"], ["g3"]] # add some gene reaction rules
+r1.grr = [["g1", "g2"], ["g3"]] # add some gene reaction rules
 r2 = Reaction("r2", Dict("m2" => -1.0, "m1" => 1.0), :backward)
 r3 = Reaction("r3", Dict("m2" => -1.0, "m3" => 1.0), :bidirectional)
 
