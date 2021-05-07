@@ -1,21 +1,25 @@
 """
-    struct JSONModel
+    struct JSONModel <: MetabolicModel
+        json::Dict{String,Any}
+    end
 
-A struct used to store the contents of a JSON model, i.e. a model read from a file ending with `.json`. 
-These model files typically store all the model parameters in arrays of dictionaries. 
+A struct used to store the contents of a JSON model, i.e. a model read from a
+file ending with `.json`. These model files typically store all the model
+parameters in arrays of JSON objects (i.e. Julia dictionaries).
 
-When importing to this model type, no information gets lost between the file and the object in memory.
-However, not all of the fields can be used in analysis functions, and not all fields are captured when converting to `StandardModel`
+Usually, not all of the fields of the input JSON can be easily represented when
+converting to other models, care should be taken to avoid losing information.
 
-Note, this model type is not very efficient, especially when calling many generic interface functions sequentially.
-Instead use one of the COBREXA model types: `StandardModel`, `CoreModel` or `CoreModelCoupled` if speed is important.
-
-See also: [`CoreModel`](@ref), [`CoreModelCoupled`](@ref), [`StandardModel`](@ref)
+Direct work on this precise model type is not very efficient, as the accessor
+functions need to repeatedly find the information in the JSON tree. This gets
+very slow especially if calling many accessor functions sequentially. To avoid
+that, convert to e.g. [`StandardModel`](@ref) as soon as possible.
 
 # Example
 ````
 model = load_json_model("some_model.json")
-model.json # the actual underlying JSON
+model.json # see the actual underlying JSON
+reactions(model) # see the list of reactions
 ````
 """
 struct JSONModel <: MetabolicModel
