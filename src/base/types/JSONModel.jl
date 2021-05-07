@@ -216,37 +216,72 @@ function metabolite_compartment(model::JSONModel, mid::String)
     return get(met, "compartment", nothing)
 end
 
+"""
+    gene_annotations(model::JSONModel, gid::String)::Annotations
+
+Gene annotations from the [`JSONModel`](@ref).
+"""
 function gene_annotations(model::JSONModel, gid::String)::Annotations
     gene = @_json_section_firstid genes gid return Dict()
     _maybemap(_parse_annotations, get(gene, "annotation", nothing))
 end
 
+"""
+    gene_notes(model::JSONModel, gid::String)::Notes
+
+Gene notes from the [`JSONModel`](@ref).
+"""
 function gene_notes(model::JSONModel, gid::String)::Notes
     gene = @_json_section_firstid genes gid return Dict()
     _maybemap(_parse_notes, get(gene, "notes", nothing))
 end
 
+"""
+    reaction_annotations(model::JSONModel, rid::String)::Annotations
+
+Reaction annotations from the [`JSONModel`](@ref).
+"""
 function reaction_annotations(model::JSONModel, rid::String)::Annotations
     rxn = @_json_section_firstid rxns rid return Dict()
     _maybemap(_parse_annotations, get(rxn, "annotation", nothing))
 end
 
+"""
+    reaction_notes(model::JSONModel, rid::String)::Notes
+
+Reaction notes from the [`JSONModel`](@ref).
+"""
 function reaction_notes(model::JSONModel, rid::String)::Notes
     rxn = @_json_section_firstid rxns rid return Dict()
     _maybemap(_parse_notes, get(rxn, "notes", nothing))
 end
 
+"""
+    metabolite_annotations(model::JSONModel, mid::String)::Annotations
+
+Metabolite annotations from the [`JSONModel`](@ref).
+"""
 function metabolite_annotations(model::JSONModel, mid::String)::Annotations
     met = @_json_section_firstid mets mid return Dict()
     _maybemap(_parse_annotations, get(met, "annotation", nothing))
 end
 
+"""
+    metabolite_notes(model::JSONModel, mid::String)::Notes
+
+Metabolite notes from the [`JSONModel`](@ref).
+"""
 function metabolite_notes(model::JSONModel, mid::String)::Notes
     met = @_json_section_firstid mets mid return Dict()
     _maybemap(_parse_notes, get(met, "notes", nothing))
 end
 
 
+"""
+    Base.convert(::Type{JSONModel}, mm::MetabolicModel)
+
+Convert any [`MetabolicModel`](@ref) to [`JSONModel`](@ref).
+"""
 function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     if typeof(mm) == JSONModel
         return mm

@@ -8,15 +8,38 @@ struct SBMLModel <: MetabolicModel
     sbml::SBML.Model
 end
 
+"""
+    reactions(model::SBMLModel)::Vector{String}
+
+Get reactions from a [`SBMLModel`](@ref).
+"""
 reactions(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.reactions)]
+
+"""
+    metabolites(model::SBMLModel)::Vector{String}
+
+Get metabolites from a [`SBMLModel`](@ref).
+"""
 metabolites(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.species)]
+
+"""
+    n_reactions(model::SBMLModel)::Int
+
+Efficient counting of reactions in [`SBMLModel`](@ref).
+"""
 n_reactions(model::SBMLModel)::Int = length(model.sbml.reactions)
+
+"""
+    n_metabolites(model::SBMLModel)::Int
+
+Efficient counting of metabolites in [`SBMLModel`](@ref).
+"""
 n_metabolites(model::SBMLModel)::Int = length(model.sbml.species)
 
 """
     stoichiometry(model::SBMLModel)::SparseMat
 
-Recreate the stoichiometry matrix from the SBML model.
+Recreate the stoichiometry matrix from the [`SBMLModel`](@ref).
 """
 function stoichiometry(model::SBMLModel)::SparseMat
     _, _, S = SBML.getS(model.sbml)
@@ -26,7 +49,7 @@ end
 """
     bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
 
-Get the lower and upper flux bounds of model `SBMLModel`. Throws `DomainError` in
+Get the lower and upper flux bounds of model [`SBMLModel`](@ref). Throws `DomainError` in
 case if the SBML contains mismatching units.
 """
 function bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
@@ -48,18 +71,55 @@ function bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
     return sparse.((getvalue.(lbu), getvalue.(ubu)))
 end
 
+"""
+    balance(model::SBMLModel)::SparseVec
+
+Balance vector of a [`SBMLModel`](@ref). This is always zero.
+"""
 balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
+
+"""
+    objective(model::SBMLModel)::SparseVec
+
+Objective of the [`SBMLModel`](@ref). 
+"""
 objective(model::SBMLModel)::SparseVec = SBML.getOCs(model.sbml)
 
+"""
+    genes(model::SBMLModel)::Vector{String}
+
+Get genes of a [`SBMLModel`](@ref).
+"""
 genes(model::SBMLModel)::Vector{String} = [k for k in model.sbml.gene_products]
+
+"""
+    n_genes(model::SBMLModel)::Int
+
+Get number of genes in [`SBMLModel`](@ref).
+"""
 n_genes(model::SBMLModel)::Int = length(model.sbml.gene_products)
 
+"""
+    reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`SBMLModel`](@ref).
+"""
 reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation} =
     _maybemap(_parse_grr, model.sbml.reactions[rid].gene_product_association)
 
+"""
+    metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula}
+
+Get [`MetaboliteFormula`](@ref) from a chosen metabolite from [`SBMLModel`](@ref).
+"""
 metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
     _maybemap(_parse_formula, model.sbml.species[mid].formula)
 
+"""
+    metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int}
+
+Get charge of a chosen metabolite from [`SBMLModel`](@ref).
+"""
 metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int} =
     model.sbml.species[mid].charge
 
@@ -76,6 +136,11 @@ end
 
 _sbml_export_notes = _sbml_export_annotation
 
+"""
+    Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
+
+Convert any metabolic model to [`SBMLModel`](@ref).
+"""
 function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
     if typeof(mm) == SBMLModel
         return mm
