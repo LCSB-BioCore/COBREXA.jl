@@ -17,7 +17,7 @@ model = StandardModel("FirstModel") # assign model id = "FirstModel"
 # Next, genes, metabolites and reactions need to be added to the model.
 
 # ### Add genes to the model
-gene_list = [Gene(string("g",num)) for num = 1:8]
+gene_list = [Gene(string("g", num)) for num = 1:8]
 
 #md # !!! warning "Warning: Don't accidentally overwrite the generic accessors"
 #md #       It may be tempting to call a variable `genes`, `metabolites`, or 
@@ -40,7 +40,7 @@ add!(model, metabolite_list)
 
 r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> ∅ (nothing)
 r1 = Reaction("r1", Dict("m1" => -1.0, "m2" => 1.0), :forward)
-r5.grr = [["g1", "g2"],["g3"]] # add some gene reaction rules
+r5.grr = [["g1", "g2"], ["g3"]] # add some gene reaction rules
 r2 = Reaction("r2", Dict("m2" => -1.0, "m1" => 1.0), :backward)
 r3 = Reaction("r3", Dict("m2" => -1.0, "m3" => 1.0), :bidirectional)
 
@@ -57,7 +57,7 @@ m4 = metabolite_list[4]
     r_m4, m4 ⟶ ∅
 end
 
-model.reactions["r4"].grr = [["g5"],["g6"],["g7"]]
+model.reactions["r4"].grr = [["g5"], ["g6"], ["g7"]]
 
 r5 = m4 ⟶ m2 # arrow approach
 r5.grr = [["g8"]]
