@@ -70,8 +70,19 @@ Dict{String,Float64} with 95 entries:
 
 ## Tutorials
 
+Detailed tutorial contents is [available here](tutorials.md).
+
 ```@contents
-Pages = readdir("tutorials")
+Pages = joinpath.("tutorials", readdir("tutorials"))
+Depth = 1
+```
+
+## Example notebooks and workflows
+
+Detailed notebook content is [available here](notebooks.md).
+
+```@contents
+Pages = joinpath.("notebooks", readdir("notebooks"))
 Depth = 1
 ```
 
@@ -83,8 +94,4 @@ Pages = ["functions.md"]
 
 ## Contribution guide
 
-If you want to contribute, please read these guidelines first:
-
-```@contents
-Pages = ["howToContribute.md"]
-```
+If you want to contribute, please read [the contribution guidelines and hints](howToContribute.md).
