@@ -255,15 +255,6 @@ function gene_annotations(model::StandardModel, id::String)::Maybe{Annotations}
 end
 
 """
-    gene_associated_reactions(model::StandardModel, id::String)::Set{String}
-
-Return the reactions associated with gene `id` in `model`.
-"""
-function gene_associated_reactions(model::StandardModel, id::String)::Set{String}
-    model.genes[id].associated_reactions
-end
-
-"""
     reaction_notes(model::StandardModel, id::String)::Notes
 
 Return the notes associated with reaction `id` in `model`.
@@ -304,6 +295,14 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     metids = metabolites(model)
     rxnids = reactions(model)
 
+    for gid in gids
+        modelgenes[gid] = Gene(
+            gid;
+            notes = gene_notes(model, gid),
+            annotations = gene_annotations(model, gid),
+        ) # TODO: add name accessor
+    end
+
     for mid in metids
         modelmetabolites[mid] = Metabolite(
             mid;
@@ -318,40 +317,21 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
     ocs = objective(model)
-    gene_reaction = Dict{String,Vector{String}}()
     for (i, rid) in enumerate(rxnids)
         rmets = Dict{String,Float64}()
         for (j, stoich) in zip(findnz(S[:, i])...)
             rmets[metids[j]] = stoich
-        end
-        gss = reaction_gene_association(model, rid)
-        if !isnothing(gss)
-            for gs in gss
-                for g in gs
-                    haskey(gene_reaction, g) ||
-                        (gene_reaction[g] = push!(get(gene_reaction, g, []), rid))
-                end
-            end
         end
         modelreactions[rid] = Reaction(
             rid;
             metabolites = rmets,
             lb = lbs[i],
             ub = ubs[i],
-            grr = gss,
+            grr = reaction_gene_association(model, rid),
             objective_coefficient = ocs[i],
             notes = reaction_notes(model, rid),
             annotations = reaction_annotations(model, rid),
             subsystem = reaction_subsystem(model, rid),
-        ) # TODO: add name accessor
-    end
-
-    for gid in gids
-        modelgenes[gid] = Gene(
-            gid;
-            notes = gene_notes(model, gid),
-            annotations = gene_annotations(model, gid),
-            associated_reactions = Set(get(gene_reaction, gid, String[])),
         ) # TODO: add name accessor
     end
 
