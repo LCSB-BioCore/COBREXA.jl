@@ -1,7 +1,7 @@
-function process_readme()    
-    quick_start_section = "" 
+function process_readme()
+    quick_start_section = ""
     add_lines = false
-    open(joinpath(@__DIR__, "..","..", "README.md")) do io
+    open(joinpath(@__DIR__, "..", "..", "README.md")) do io
         for ln in eachline(io)
             if !add_lines && startswith(ln, "<!--start-->") # switch on
                 add_lines = true
@@ -9,7 +9,7 @@ function process_readme()
             end
             startswith(ln, "<!--end-->") && break
             if add_lines
-                quick_start_section *= "# "*ln*"\n"
+                quick_start_section *= "# " * ln * "\n"
             end
         end
     end

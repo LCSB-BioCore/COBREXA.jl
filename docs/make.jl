@@ -27,7 +27,12 @@ end
 
 # generate index by cutting example from readme
 include(joinpath(@__DIR__, "src", "process_readme.jl"))
-Literate.markdown(joinpath(@__DIR__, "src", "index.jl"), joinpath(@__DIR__,"src"); preprocess=from_readme, documenter=false)
+Literate.markdown(
+    joinpath(@__DIR__, "src", "index.jl"),
+    joinpath(@__DIR__, "src");
+    preprocess = from_readme,
+    documenter = false,
+)
 
 makedocs(
     modules = [COBREXA],
