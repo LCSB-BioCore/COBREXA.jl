@@ -42,8 +42,8 @@ variants = [
     "arab__L_e", # arabinose - sugar
     "ac_e", # acetate - a waste product, not a sugar
     "etoh_e", # ethanol - a waste product, not a sugar
-    "lac__D_e" # lactate - a waste product, not a sugar
-    ]
+    "lac__D_e", # lactate - a waste product, not a sugar
+]
 
 n_models = length(variants) # number of different models to construct and merge
 
