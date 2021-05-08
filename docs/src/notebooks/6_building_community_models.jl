@@ -30,10 +30,8 @@ variants = ["EX_glc__D_e", "EX_xyl__D_e"]
 
 n_models = length(variants)
 
-models = [load_model(CoreModel, "iML1515.mat") for i = 1:n_models];
+models = [load_model(CoreModel, "iML1515.json") for i = 1:n_models];
 
-# since each model is identical, all the exchange reactions will be 
-# in the same indices
 ex_rxn_inds = find_exchange_reactions(models[1]; exclude_biomass = true)
 ex_met_inds = find_exchange_metabolites(models[1]; exclude_biomass = true)
 n_env_vars = length(ex_rxn_inds) # number of exchange metabolites/reactions are equal
@@ -43,12 +41,12 @@ n_rows, n_cols = size(stoichiometry(models[1]))
 community_S = spzeros(n_models * n_rows + n_env_vars, n_models * n_cols + n_env_vars)
 
 # place along diagonals
-for i = 1:n_models
-    row_start = (i - 1) * n_rows + 1
-    row_end = n_rows + (i - 1) * n_rows
-    col_start = (i - 1) * (n_cols) + 1
-    col_end = n_cols + (i - 1) * (n_cols)
-    community_S[row_start:row_end, col_start:col_end] .= stoichiometry(models[i])
+for n = 1:n_models
+    row_start = (n - 1) * n_rows + 1
+    row_end = n_rows + (n - 1) * n_rows
+    col_start = (n - 1) * (n_cols) + 1
+    col_end = n_cols + (n - 1) * (n_cols)
+    community_S[row_start:row_end, col_start:col_end] .= stoichiometry(models[n])
 end
 
 # add environmental exchanges
@@ -65,34 +63,50 @@ for n = 1:n_models
 end
 community_S
 
-single_lbs, single_ubs = bounds(models[1])
-lbs = sparse([])
-ubs = spzeros(n_cols(n_models))
-
-# constrain each individual model
+# build flux bound vectors
+lbs = spzeros(n_models*n_cols+n_env_vars)
+ubs = spzeros(n_models*n_cols+n_env_vars)
+single_lbs, single_ubs = bounds(models[1]) # same bounds for each organism
 for i = 1:n_models
-    # allow only variant sugar as carbon source
-    ind = first(indexin([variants[i]], reactions(models[i])))
-    models[i].xl[ind] = -1000.0
-    models[i].xu[ind] = 0.0
+    col_start = (i - 1) * (n_cols) + 1
+    col_end = n_cols + (i - 1) * (n_cols)
+    lbs[col_start:col_end] .= single_lbs
+    ubs[col_start:col_end] .= single_ubs
+end
 
-    if i != 1 # ensure glucose can't be used as a carbon source for the other bugs
-        ind = first(indexin([variants[1]], reactions(models[i])))
-        models[i].xl[ind] = 0.0
-        models[i].xu[ind] = 0.0
+# match exchange bounds
+lbs[n_models*n_cols+1:end] .= single_lbs[ex_rxn_inds]
+ubs[n_models*n_cols+1:end] .= single_ubs[ex_rxn_inds]
+
+env_mets = metabolites(models[1])[ex_met_inds]
+# name reactions
+rxn_ids = [vcat([reactions(models[i]).*"_org$i" for i=1:n_models]...); "EX_".*env_mets.*"_ENV"]
+# name metabolites
+met_ids = [vcat([reactions(models[i]).*"_org$i" for i=1:n_models]...); env_mets.*"_ENV"]
+
+# adjust for variants
+for n in 1:n_models
+
+    ind = first(indexin(["$(variants[n])_org$n"], rxn_ids))
+    lbs[ind] = -1000.0 # can only import this metabolite
+    ubs[ind] = 0.0    
+
+    ind = first(indexin(["$(variants[n])_ENV"], rxn_ids))
+    lbs[ind] = -10.0
+    ubs[ind] = 0.0    
+    
+    if n != 1 # remove ability to metabolize glucose
+        ind = first(indexin(["EX_glc__D_e_org$n"], rxn_ids))
+        lbs[ind] = 0.0
+        ubs[ind] = 0.0
     end
 end
 
-# create environmental metabolites
+# biomass objective function
+c = spzeros(length(lbs))
+obj_func_inds
+c[obj_func_inds] = 1.0 
 
-first(indexin([variants[i]], reactions(models[i])))
-i = 1
-d = flux_balance_analysis_dict(models[i], Tulip.Optimizer)
-d["R_BIOMASS_Ec_iML1515_core_75p37M"]
-d[variants[i]]
-d[variants[1]]
-
-# m = load_model("iML1515.xml") 
-m = load_model(joinpath("..", "models", "e_coli_core.xml"))
-d = flux_balance_analysis_dict(m, Tulip.Optimizer)
-bounds(m)
+dropzeros!(lbs)
+dropzeros!(ubs)
+dropzeros!(community_S)
