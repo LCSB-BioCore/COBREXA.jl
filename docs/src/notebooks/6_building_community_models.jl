@@ -21,25 +21,27 @@ using SparseArrays
 using LinearAlgebra
 using Tulip
 
-model = load_model(CoreModel, "iML1515.json") 
+model = load_model(CoreModel, "iML1515.json")
 
 # ## Describe the variants
 # Each variant is described by the substrate it consumes for energy/carbon
 
-variants = ["glc__D_e", 
-            "xyl__D_e",
-            "fru_e",
-            "man_e",
-            "gal_e",
-            "tre_e",
-            "malt_e",
-            "lcts_e",
-            "fuc__L_e",
-            "arab__L_e",
-            "ac_e",
-            "etoh_e",
-            "lac__D_e"
-            ]
+## Each variant is specified by the substrate it consumes for energy/carbon
+variants = [
+    "glc__D_e",
+    "xyl__D_e",
+    "fru_e",
+    "man_e",
+    "gal_e",
+    "tre_e",
+    "malt_e",
+    "lcts_e",
+    "fuc__L_e",
+    "arab__L_e",
+    "ac_e",
+    "etoh_e",
+    "lac__D_e",
+]
 
 n_models = length(variants) # number of different models to construct and merge
 
@@ -54,7 +56,7 @@ n_env_vars = length(ex_rxn_inds) # number of exchange metabolites/reactions are 
 n_rows, n_cols = size(stoichiometry(model))
 
 S = spzeros(n_models * n_rows + n_env_vars, n_models * n_cols + n_env_vars)
- 
+
 ## put individual model stoichiometric matrices along diagonals
 for n = 1:n_models
     row_start = (n - 1) * n_rows + 1
@@ -65,8 +67,7 @@ for n = 1:n_models
 end
 
 ## add environmental exchanges
-S[n_models*n_rows+1:end, n_models*n_cols+1:end] .=
-    -sparse(I, n_env_vars, n_env_vars) # ENV met -> ∅
+S[n_models*n_rows+1:end, n_models*n_cols+1:end] .= -sparse(I, n_env_vars, n_env_vars) # ENV met -> ∅
 
 ## modify individual exchange reactions
 for n = 1:n_models
@@ -107,15 +108,17 @@ rxn_ids = [
 ]
 #
 ## name metabolites
-met_ids =
-    [vcat([metabolites(model) .* "_org_$(variants[i])" for i = 1:n_models]...); env_mets .* "_ENV"]
+met_ids = [
+    vcat([metabolites(model) .* "_org_$(variants[i])" for i = 1:n_models]...)
+    env_mets .* "_ENV"
+]
 
 # ##  Adjust variants 
 # Each variant can only consume the substrate associated with it for
 # carbon/energy. Adjust the constraints to reflect this.
 
 for n = 1:n_models
-    
+
     ## can import only the variant specific substrate
     ind = first(indexin(["EX_$(variants[n])_org_$(variants[n])"], rxn_ids))
     lbs[ind] = -1000.0
@@ -129,7 +132,7 @@ for n = 1:n_models
     else # set import bound for non-sugar substrates
         ind = first(indexin(["EX_$(variants[n])_org_$(variants[n])"], rxn_ids))
         lbs[ind] = -50.0
-        ubs[ind] = 0.0    
+        ubs[ind] = 0.0
     end
 
     if n != 1 # remove ability to metabolize glucose, the default condition of the model
@@ -147,16 +150,16 @@ end
 # reaction (weighted), each microbe must grow at the same rate.
 
 ## create biomass metabolites
-S = vcat(S, [spzeros(size(S, 2))' for n=1:n_models]...)
-met_ids = [met_ids; ["biomass_org_$(variants[n])" for n=1:n_models]]
-for n=1:n_models
+S = vcat(S, [spzeros(size(S, 2))' for n = 1:n_models]...)
+met_ids = [met_ids; ["biomass_org_$(variants[n])" for n = 1:n_models]]
+for n = 1:n_models
     row_num = first(indexin(["biomass_org_$(variants[n])"], met_ids))
     col_num = first(indexin(["BIOMASS_Ec_iML1515_core_75p37M_org_$(variants[n])"], rxn_ids))
     S[row_num, col_num] = 1.0 # creates 1 biomass
 end
 ## create community biomass objective function
 obj_rxn = spzeros(size(S, 1))
-biomass_mets = findall(x-> occursin("biomass_org", x), met_ids) # a WT bof also exists
+biomass_mets = findall(x -> occursin("biomass_org", x), met_ids) # a WT bof also exists
 obj_rxn[biomass_mets] .= -1.0
 S = [S obj_rxn]
 rxn_ids = [rxn_ids; "community_biomass"]
@@ -178,21 +181,19 @@ dropzeros!(S)
 community_model = CoreModel(S, b, c, lbs, ubs, rxn_ids, met_ids)
 
 # ## Analyze community model
-# Conventional flux balance analysis is performed, and the individual growth
-# rates are inspected, as well as the environmental exchanges of the variant
-# metabolites. 
+d = flux_balance_analysis_dict(
+    community_model,
+    Tulip.Optimizer;
+    modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+)
 
-d = flux_balance_analysis_dict(community_model, Tulip.Optimizer; modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)])
-
-bof_rxn_inds = findall(x-> occursin("BIOMASS_Ec_iML1515_core", x), rxn_ids)
-## print the growth rate of each variant, should be the same
+bof_rxn_inds = findall(x -> occursin("BIOMASS_Ec_iML1515_core", x), rxn_ids)
 for obj_id in rxn_ids[bof_rxn_inds]
-   println(obj_id, ": ", d[obj_id]) 
+    println(obj_id, ": ", d[obj_id])
 end
 
 # 
-## Print the substrate uptake associated with each variant
-for n in 1:n_models
-    env_ex = "EX_"*variants[n]*"_org_$(variants[n])"
+for n = 1:n_models
+    env_ex = "EX_" * variants[n] * "_org_$(variants[n])"
     println(env_ex, ": ", d[env_ex])
 end
