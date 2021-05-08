@@ -67,7 +67,7 @@ If you run a non-standard platform (e.g. a customized operating systems), or if 
 ```
 
 ## Quick start guide
-
+<!--start-->
 In addition to `COBREXA`, you also need to include a Julia package that provides an appropriate optimizer. One such optimizer for linear programs is `Tulip`, which is provided by the [Tulip.jl](https://github.com/ds4dm/Tulip.jl) package.
 
 ```julia
@@ -90,7 +90,7 @@ sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
 
 sol["BIOMASS_Ecoli_core_w_GAM"] # 0.87
 ```
-
+<!--stop-->
 More functionality is described in the documentation, e.g. model construction and exa-scale analysis in pure Julia.
 
 ## Acknowledgements
