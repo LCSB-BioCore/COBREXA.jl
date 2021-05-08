@@ -9,8 +9,8 @@
 
 # If it is not already present, load a large scale *E. coli* model.
 
-!isfile("iML1515.xml") &&
-    download("http://bigg.ucsd.edu/static/models/iML1515.xml", "iML1515.xml")
+!isfile("iML1515.json") &&
+    download("http://bigg.ucsd.edu/static/models/iML1515.xml", "iML1515.json")
 #
 using COBREXA
 using SparseArrays
@@ -38,7 +38,7 @@ n_env_vars = length(ex_rxn_inds) # number of exchange metabolites/reactions are 
 n_rows, n_cols = size(stoichiometry(models[1]))
 
 # create the community stoichiometric matrix
-community_S = spzeros(n_models * n_rows + n_env_vars, n_models * n_cols + n_env_vars)
+S = spzeros(n_models * n_rows + n_env_vars, n_models * n_cols + n_env_vars)
 
 # place along diagonals
 for n = 1:n_models
@@ -46,11 +46,11 @@ for n = 1:n_models
     row_end = n_rows + (n - 1) * n_rows
     col_start = (n - 1) * (n_cols) + 1
     col_end = n_cols + (n - 1) * (n_cols)
-    community_S[row_start:row_end, col_start:col_end] .= stoichiometry(models[n])
+    S[row_start:row_end, col_start:col_end] .= stoichiometry(models[n])
 end
 
 # add environmental exchanges
-community_S[n_models*n_rows+1:end, n_models*n_cols+1:end] .=
+S[n_models*n_rows+1:end, n_models*n_cols+1:end] .=
     -sparse(I, n_env_vars, n_env_vars) # ENV met -> ∅
 
 # modify individual exchange reactions
@@ -58,10 +58,9 @@ for n = 1:n_models
     rows = collect(1:n_env_vars) .+ n_models * n_rows
     cols = (n - 1) * n_cols .+ ex_rxn_inds
     for (i, j) in zip(rows, cols)
-        community_S[i, j] = 1.0 # then EXT met -> ENV met
+        S[i, j] = 1.0 # then EXT met -> ENV met
     end
 end
-community_S
 
 # build flux bound vectors
 lbs = spzeros(n_models * n_cols + n_env_vars)
@@ -108,9 +107,13 @@ end
 
 # biomass objective function
 c = spzeros(length(lbs))
-obj_func_inds
-c[obj_func_inds] = 1.0
+obj_func_inds = findall(x-> occursin("BIOMASS_Ec_iML1515_core", x), rxn_ids) # a WT also exists :/
+c[obj_func_inds] .= 1.0 
 
 dropzeros!(lbs)
 dropzeros!(ubs)
-dropzeros!(community_S)
+dropzeros!(S)
+
+b = spzeros(size(S, 1))
+
+community_model = CoreModel(S, b, c, lbs, ubs, rxn_ids, met_ids)
