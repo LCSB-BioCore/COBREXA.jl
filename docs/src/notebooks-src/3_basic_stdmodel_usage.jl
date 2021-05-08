@@ -1,4 +1,4 @@
-# Basic usage of `StandardModel`
+# # Basic usage of `StandardModel`
 
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
@@ -10,9 +10,9 @@
 !isfile("e_coli_core.json") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 
-# ## Loading a model
-
 using COBREXA
+
+# ## Loading a model
 
 model = load_model(StandardModel, "e_coli_core.json") # we specifically want to load a StandardModel from the model file
 
