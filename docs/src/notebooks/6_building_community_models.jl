@@ -64,8 +64,8 @@ end
 community_S
 
 # build flux bound vectors
-lbs = spzeros(n_models*n_cols+n_env_vars)
-ubs = spzeros(n_models*n_cols+n_env_vars)
+lbs = spzeros(n_models * n_cols + n_env_vars)
+ubs = spzeros(n_models * n_cols + n_env_vars)
 single_lbs, single_ubs = bounds(models[1]) # same bounds for each organism
 for i = 1:n_models
     col_start = (i - 1) * (n_cols) + 1
@@ -80,21 +80,25 @@ ubs[n_models*n_cols+1:end] .= single_ubs[ex_rxn_inds]
 
 env_mets = metabolites(models[1])[ex_met_inds]
 # name reactions
-rxn_ids = [vcat([reactions(models[i]).*"_org$i" for i=1:n_models]...); "EX_".*env_mets.*"_ENV"]
+rxn_ids = [
+    vcat([reactions(models[i]) .* "_org$i" for i = 1:n_models]...)
+    "EX_" .* env_mets .* "_ENV"
+]
 # name metabolites
-met_ids = [vcat([reactions(models[i]).*"_org$i" for i=1:n_models]...); env_mets.*"_ENV"]
+met_ids =
+    [vcat([reactions(models[i]) .* "_org$i" for i = 1:n_models]...); env_mets .* "_ENV"]
 
 # adjust for variants
-for n in 1:n_models
+for n = 1:n_models
 
     ind = first(indexin(["$(variants[n])_org$n"], rxn_ids))
     lbs[ind] = -1000.0 # can only import this metabolite
-    ubs[ind] = 0.0    
+    ubs[ind] = 0.0
 
     ind = first(indexin(["$(variants[n])_ENV"], rxn_ids))
     lbs[ind] = -10.0
-    ubs[ind] = 0.0    
-    
+    ubs[ind] = 0.0
+
     if n != 1 # remove ability to metabolize glucose
         ind = first(indexin(["EX_glc__D_e_org$n"], rxn_ids))
         lbs[ind] = 0.0
@@ -105,7 +109,7 @@ end
 # biomass objective function
 c = spzeros(length(lbs))
 obj_func_inds
-c[obj_func_inds] = 1.0 
+c[obj_func_inds] = 1.0
 
 dropzeros!(lbs)
 dropzeros!(ubs)
