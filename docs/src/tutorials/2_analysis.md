@@ -29,7 +29,7 @@ custom analysis methods:
 
 !!! tip "Notebook available!"
     Examples of running the balance functions are [available
-    here](../notebooks/2_basic_usage.md).
+    here](../notebooks/2_finding_balance.md).
 
 ## Optimization problem solvers
 
@@ -134,20 +134,20 @@ You may additionally restrict the analysis to the list of reactions (passing
 them as the second argument), and request a dictionary of the resulting fluxes,
 with [`flux_variability_analysis_dict`](@ref).
 
-## Parsimonous flux balance analysis
+## Parsimonious flux balance analysis
 
 pFBA requires a solver that can handle quadratic problems. You may use `OSQP`
 or `Gurobi`.
 
 Otherwise, the function behaves as `flux_balance_analysis`:
 
-- `parsimonous_flux_balance_analysis(m, OSQP.Optimizer)` will get you a
-  `JuMP.jl` model optimized to a slightly more realistic (parsimonous) optimum
+- `parsimonious_flux_balance_analysis(m, OSQP.Optimizer)` will get you a
+  `JuMP.jl` model optimized to a slightly more realistic (parsimonious) optimum
   than plain FBA,
-- [`parsimonous_flux_balance_analysis_vec`](@ref) will return the fluxes in a
+- [`parsimonious_flux_balance_analysis_vec`](@ref) will return the fluxes in a
   vector,
-- [`parsimonous_flux_balance_analysis_dict`](@ref) will return a reaction-keyed
-  dictionary.
+- [`parsimonious_flux_balance_analysis_dict`](@ref) will return a
+  reaction-keyed dictionary.
 
 ## Flux sampling
 
