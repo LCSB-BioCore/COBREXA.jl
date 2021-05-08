@@ -202,11 +202,7 @@ mac:v1.6:
 # --------------------------------------
 
 trigger:
-  variables:
-    EXTERNAL_REPO: $EXTERNAL_REPO
-    EXTERNAL_REPO_BRANCH: $EXTERNAL_REPO_BRANCH
   stage: trigger-external
-  trigger:
-    project: $EXTERNAL_REPO
-    branch: $EXTERNAL_REPO_BRANCH
+  script:
+    - "curl -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO"
   <<: *global_settings_master
