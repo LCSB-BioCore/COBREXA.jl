@@ -1,59 +1,73 @@
-# # Building and analysing a community model
+# # Building and analysing a small community model
 
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 
-# In this tutorial we will use `COBREXA` to build and analyze a community model  
-# consisting of multiple variants of *E. coli* knockouts using the `CoreModel`.
-# Here each knockout will only be able to metabolize one sugar. 
+# Here we will use `COBREXA` to build and analyze a small community model  
+# consisting of multiple variants of *E. coli* using the `CoreModel`. Each
+# variant will only be able to metabolize one substrate as its energy/carbon
+# source. The environment will supply only sugars, meaning that some of the
+# variants will only be able to feed off of the waste products of the sugar
+# metabolizing microbes. We will use an objective function that enforces equal
+# growth rates.
 
 # If it is not already present, load a large scale *E. coli* model.
 
 !isfile("iML1515.json") &&
-    download("http://bigg.ucsd.edu/static/models/iML1515.xml", "iML1515.json")
-#
+    download("http://bigg.ucsd.edu/static/models/iML1515.json", "iML1515.json")
+
+# ## Load the base model
+
 using COBREXA
 using SparseArrays
 using LinearAlgebra
 using Tulip
 
-variants = ["EX_glc__D_e", "EX_xyl__D_e"]
-# "EX_fru_e", 
-# "EX_sucr_e",
-# "EX_man_e",
-# "EX_gal_e",
-# "EX_tre_e",
-# "EX_malt_e",
-# "EX_lcts_e",
-# "EX_fuc__L_e",
-# "EX_arab__L_e"] # each variant can only metabolize the sugar it is associated with
+model = load_model(CoreModel, "iML1515.json") 
 
-n_models = length(variants)
+# ## Describe the variants
 
-models = [load_model(CoreModel, "iML1515.json") for i = 1:n_models];
+## Each variant is specified by the substrate it consumes for energy/carbon
+variants = ["glc__D_e", 
+            "xyl__D_e",
+            "fru_e",
+            "man_e",
+            "gal_e",
+            "tre_e",
+            "malt_e",
+            "lcts_e",
+            "fuc__L_e",
+            "arab__L_e",
+            "ac_e",
+            "etoh_e",
+            "lac__D_e"
+            ]
 
-ex_rxn_inds = find_exchange_reactions(models[1]; exclude_biomass = true)
-ex_met_inds = find_exchange_metabolites(models[1]; exclude_biomass = true)
+n_models = length(variants) # number of different models to construct and merge
+
+ex_rxn_inds = find_exchange_reactions(model; exclude_biomass = true)
+ex_met_inds = find_exchange_metabolites(model; exclude_biomass = true)
 n_env_vars = length(ex_rxn_inds) # number of exchange metabolites/reactions are equal
-n_rows, n_cols = size(stoichiometry(models[1]))
+n_rows, n_cols = size(stoichiometry(model))
 
-# create the community stoichiometric matrix
+# ## Build the community stoichiometric matrix
+
 S = spzeros(n_models * n_rows + n_env_vars, n_models * n_cols + n_env_vars)
-
-# place along diagonals
+ 
+## put individual model stoichiometric matrices along diagonals
 for n = 1:n_models
     row_start = (n - 1) * n_rows + 1
     row_end = n_rows + (n - 1) * n_rows
     col_start = (n - 1) * (n_cols) + 1
     col_end = n_cols + (n - 1) * (n_cols)
-    S[row_start:row_end, col_start:col_end] .= stoichiometry(models[n])
+    S[row_start:row_end, col_start:col_end] .= stoichiometry(model)
 end
 
-# add environmental exchanges
+## add environmental exchanges
 S[n_models*n_rows+1:end, n_models*n_cols+1:end] .=
     -sparse(I, n_env_vars, n_env_vars) # ENV met -> ∅
 
-# modify individual exchange reactions
+## modify individual exchange reactions
 for n = 1:n_models
     rows = collect(1:n_env_vars) .+ n_models * n_rows
     cols = (n - 1) * n_cols .+ ex_rxn_inds
@@ -62,10 +76,11 @@ for n = 1:n_models
     end
 end
 
-# build flux bound vectors
+# ## Build flux bound vectors
+
 lbs = spzeros(n_models * n_cols + n_env_vars)
 ubs = spzeros(n_models * n_cols + n_env_vars)
-single_lbs, single_ubs = bounds(models[1]) # same bounds for each organism
+single_lbs, single_ubs = bounds(model) # same bounds for each organism
 for i = 1:n_models
     col_start = (i - 1) * (n_cols) + 1
     col_end = n_cols + (i - 1) * (n_cols)
@@ -73,47 +88,85 @@ for i = 1:n_models
     ubs[col_start:col_end] .= single_ubs
 end
 
-# match exchange bounds
+## match exchange bounds to environmental fluxes for simplicity
 lbs[n_models*n_cols+1:end] .= single_lbs[ex_rxn_inds]
 ubs[n_models*n_cols+1:end] .= single_ubs[ex_rxn_inds]
 
-env_mets = metabolites(models[1])[ex_met_inds]
-# name reactions
+# ## Create new names for the model's reactions and metabolites
+env_mets = metabolites(model)[ex_met_inds]
+## name reactions
 rxn_ids = [
-    vcat([reactions(models[i]) .* "_org$i" for i = 1:n_models]...)
+    vcat([reactions(model) .* "_org_$(variants[i])" for i = 1:n_models]...)
     "EX_" .* env_mets .* "_ENV"
 ]
-# name metabolites
+## name metabolites
 met_ids =
-    [vcat([reactions(models[i]) .* "_org$i" for i = 1:n_models]...); env_mets .* "_ENV"]
+    [vcat([metabolites(model) .* "_org_$(variants[i])" for i = 1:n_models]...); env_mets .* "_ENV"]
 
-# adjust for variants
+# ##  Adjust variants 
 for n = 1:n_models
-
-    ind = first(indexin(["$(variants[n])_org$n"], rxn_ids))
-    lbs[ind] = -1000.0 # can only import this metabolite
+    
+    ## can import only the variant specific substrate
+    ind = first(indexin(["EX_$(variants[n])_org_$(variants[n])"], rxn_ids))
+    lbs[ind] = -1000.0
     ubs[ind] = 0.0
 
-    ind = first(indexin(["$(variants[n])_ENV"], rxn_ids))
-    lbs[ind] = -10.0
-    ubs[ind] = 0.0
+    ## set environmental availability of sugar (by default these fluxes are export only)
+    if !(variants[n] in ["ac_e", "etoh_e", "lac__D_e"])
+        ind = first(indexin(["EX_$(variants[n])_ENV"], rxn_ids))
+        lbs[ind] = -10.0
+        ubs[ind] = 0.0
+    else # set import bound for non-sugar substrates
+        ind = first(indexin(["EX_$(variants[n])_org_$(variants[n])"], rxn_ids))
+        lbs[ind] = -50.0
+        ubs[ind] = 0.0    
+    end
 
-    if n != 1 # remove ability to metabolize glucose
-        ind = first(indexin(["EX_glc__D_e_org$n"], rxn_ids))
+    if n != 1 # remove ability to metabolize glucose, the default condition of the model
+        ind = first(indexin(["EX_$(variants[1])_org_$(variants[n])"], rxn_ids))
         lbs[ind] = 0.0
         ubs[ind] = 0.0
     end
 end
 
-# biomass objective function
-c = spzeros(length(lbs))
-obj_func_inds = findall(x-> occursin("BIOMASS_Ec_iML1515_core", x), rxn_ids) # a WT also exists :/
-c[obj_func_inds] .= 1.0 
+# ## Add biomass objective function
+## create biomass metabolites
+S = vcat(S, [spzeros(size(S, 2))' for n=1:n_models]...)
+met_ids = [met_ids; ["biomass_org_$(variants[n])" for n=1:n_models]]
+for n=1:n_models
+    row_num = first(indexin(["biomass_org_$(variants[n])"], met_ids))
+    col_num = first(indexin(["BIOMASS_Ec_iML1515_core_75p37M_org_$(variants[n])"], rxn_ids))
+    S[row_num, col_num] = 1.0 # creates 1 biomass
+end
+## create community biomass objective function
+obj_rxn = spzeros(size(S, 1))
+biomass_mets = findall(x-> occursin("biomass_org", x), met_ids) # a WT bof also exists
+obj_rxn[biomass_mets] .= -1.0
+S = [S obj_rxn]
+rxn_ids = [rxn_ids; "community_biomass"]
 
+# ## Create community model
+lbs = [lbs; 0.0]
+ubs = [ubs; 1000.0]
+c = spzeros(length(lbs))
+c[end] = 1.0
+b = spzeros(size(S, 1))
 dropzeros!(lbs)
 dropzeros!(ubs)
 dropzeros!(S)
 
-b = spzeros(size(S, 1))
-
 community_model = CoreModel(S, b, c, lbs, ubs, rxn_ids, met_ids)
+
+# ## Analyze community model
+d = flux_balance_analysis_dict(community_model, Tulip.Optimizer; modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)])
+
+bof_rxn_inds = findall(x-> occursin("BIOMASS_Ec_iML1515_core", x), rxn_ids)
+for obj_id in rxn_ids[bof_rxn_inds]
+   println(obj_id, ": ", d[obj_id]) 
+end
+
+# 
+for n in 1:n_models
+    env_ex = "EX_"*variants[n]*"_org_$(variants[n])"
+    println(env_ex, ": ", d[env_ex])
+end
