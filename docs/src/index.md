@@ -68,6 +68,44 @@ Dict{String,Float64} with 95 entries:
   ⋮               => ⋮
 ```
 
+In addition to `COBREXA`, you also need to include a Julia package that provides an appropriate optimizer. One such optimizer for linear programs is `Tulip`, which is provided by the [Tulip.jl](https://github.com/ds4dm/Tulip.jl) package.
+
+```julia
+] add Tulip
+```
+
+With the package installed and tested, let's perform simple flux balance analysis on a constraint based model.
+
+```julia
+using COBREXA
+using Tulip
+
+if !isfile("e_coli_core.xml")
+  download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
+end
+
+model = load_model("e_coli_core.xml")
+
+sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
+
+sol["BIOMASS_Ecoli_core_w_GAM"] # 0.87
+```
+<!--stop-->
+More functionality is described in the documentation, e.g. model construction and exa-scale analysis in pure Julia.
+
+## Acknowledgements
+
+`COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
+the University of Luxembourg ([uni.lu/lcsb](https://www.uni.lu/lcsb)),
+cooperating with the Institute for Quantitative and Theoretical Biology at the Heinrich
+Heine University in Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
+
+The development was supported by European Union's Horizon 2020 Programme under
+PerMedCoE project ([permedcoe.eu](https://www.permedcoe.eu/)) agreement no.
+951773.
+
+<img src="docs/src/assets/unilu.svg" alt="Uni.lu logo" height="64px">   <img src="docs/src/assets/lcsb.svg" alt="LCSB logo" height="64px">   <img src="docs/src/assets/hhu.svg" alt="HHU logo" height="64px">   <img src="docs/src/assets/qtb.svg" alt="QTB logo" height="64px">   <img src="docs/src/assets/permedcoe.svg" alt="PerMedCoE logo" height="64px">
+
 ## Tutorials
 
 Detailed tutorial contents is [available here](tutorials.md).
@@ -95,3 +133,8 @@ Pages = ["functions.md"]
 ## Contribution guide
 
 If you want to contribute, please read [the contribution guidelines and hints](howToContribute.md).
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+
