@@ -7,11 +7,12 @@ repository by following [these instructions](https://docs.github.com/en/github/g
 
 There are two ways that you can retrieve a local copy of the package: one is to
 manually clone the forked repository, and the second one is to use the
-intergrated Julia package manager.
+integrated Julia package manager.
 
 ### Option 1: Manually clone your fork
 
-:warning: Please make sure you have _forked_ the repository, as described above.
+!!! warning "Warning" 
+    Please make sure you have _forked_ the repository, as described above.
 
 You can do this as follows from the command line:
 
@@ -84,7 +85,8 @@ $ git fetch origin
 
 where `yourUsername` is your Github username.
 
-:warning: Make sure that your fork exists under `github.com/yourUsername/COBREXA.jl`.
+!!! warning "Warning" 
+    Make sure that your fork is located at `github.com/yourUsername/COBREXA.jl`.
 
 Then, checkout a branch `yourNewBranch`:
 
@@ -107,8 +109,9 @@ After making changes, precompile the package:
 
 ## Step 2: Activate COBREXA
 
-:warning: Please note that you cannot use the dependencies of COBREXA directly,
-unless they are installed separately or the environment has been activated:
+!!! warning "Warning" 
+    Please note that you cannot use the dependencies of COBREXA directly,
+    unless they are installed separately or the environment has been activated:
 
 ```julia
 (v1.1) pkg> activate .
@@ -119,7 +122,16 @@ Now, the environment is activated (you can see it with the prompt change
 `(COBREXA) pkg>`). Now, you can use the dependency. For instance:
 
 ```julia
-julia> using DataFrames
+julia> using JuMP
 ```
 
-:warning: If you do not  `activate` the environment before using any of the dependencies, you will see a red error messages prompting you to install the dependency explicity.
+!!! warning "Warning"
+    If you do not  `activate` the environment before using any of the
+    dependencies, you will see a red error messages prompting you to install the
+    dependency explicitly.
+
+## Step 3: Contribute!
+
+!!! tip "Tip"
+    Adding `[skip ci]` in your commit message will skip CI from automatically
+    testing that commit. 
