@@ -24,23 +24,26 @@ using Tulip
 model = load_model(CoreModel, "iML1515.json")
 
 # ## Describe the variants
-# Each variant is described by the substrate it consumes for energy/carbon
+# Each variant is described by the substrate it consumes for energy/carbon.
+# The sugars will be supplied by the environment, but the waste products will not be,
+# This means that the microbes that can only consume the waste substrates will be 
+# dependent on the other microbes.
 
 variants = [
-    "glc__D_e",
-    "xyl__D_e",
-    "fru_e",
-    "man_e",
-    "gal_e",
-    "tre_e",
-    "malt_e",
-    "lcts_e",
-    "fuc__L_e",
-    "arab__L_e",
-    "ac_e",
-    "etoh_e",
-    "lac__D_e",
-]
+    "glc__D_e", # glucose - sugar
+    "xyl__D_e", # xylose - sugar
+    "fru_e", # fructose - sugar
+    "man_e", # mannose - sugar
+    "gal_e", # galactose - sugar
+    "tre_e", # trehalose - sugar
+    "malt_e", # maltose - sugar
+    "lcts_e", # lactose - sugar
+    "fuc__L_e", # fucose - sugar
+    "arab__L_e", # arabinose - sugar
+    "ac_e", # acetate - a waste product, not a sugar
+    "etoh_e", # ethanol - a waste product, not a sugar
+    "lac__D_e" # lactate - a waste product, not a sugar
+    ]
 
 n_models = length(variants) # number of different models to construct and merge
 
@@ -141,7 +144,7 @@ for n = 1:n_models
     end
 end
 
-# ## Add biomass objective function
+# ## Add a community biomass objective function
 # A biomass reaction is added that ensures that each microbe will grow at the
 # same rate. In short, this is achieved by creating new metabolites, which are
 # just the biomass of each model. These biomass metabolites are then combined to
