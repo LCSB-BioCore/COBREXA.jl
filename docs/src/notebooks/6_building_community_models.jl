@@ -26,7 +26,6 @@ model = load_model(CoreModel, "iML1515.json")
 # ## Describe the variants
 # Each variant is described by the substrate it consumes for energy/carbon
 
-## Each variant is specified by the substrate it consumes for energy/carbon
 variants = [
     "glc__D_e",
     "xyl__D_e",
@@ -181,6 +180,10 @@ dropzeros!(S)
 community_model = CoreModel(S, b, c, lbs, ubs, rxn_ids, met_ids)
 
 # ## Analyze community model
+# Conventional flux balance analysis is performed, and the individual growth
+# rates are inspected, as well as the environmental exchanges of the variant
+# metabolites. 
+
 d = flux_balance_analysis_dict(
     community_model,
     Tulip.Optimizer;
@@ -188,11 +191,13 @@ d = flux_balance_analysis_dict(
 )
 
 bof_rxn_inds = findall(x -> occursin("BIOMASS_Ec_iML1515_core", x), rxn_ids)
+## print the growth rate of each variant, should be the same
 for obj_id in rxn_ids[bof_rxn_inds]
     println(obj_id, ": ", d[obj_id])
 end
 
 # 
+## Print the substrate uptake associated with each variant
 for n = 1:n_models
     env_ex = "EX_" * variants[n] * "_org_$(variants[n])"
     println(env_ex, ": ", d[env_ex])
