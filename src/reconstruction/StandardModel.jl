@@ -69,9 +69,9 @@ Examples
 --------
 ```
 @add_reactions! model begin
-    v1, ∅ ⟶ A, 0, 500
-    v2, A ⟷ B, -500
-    v3, B ⟶ ∅
+    "v1", nothing ⟶ A, 0, 500
+    "v2", A ⟷ B + C, -500
+    "v3", B + C ⟶ nothing
 end
 ```
 """
@@ -81,20 +81,19 @@ macro add_reactions!(model::Symbol, ex::Expr)
     for line in MacroTools.striplines(ex).args
         args = line.args
         id = esc(args[1])
-        name = String(args[1])
         reaction = esc(args[2])
-        push!(all_reactions.args, :($id = $reaction))
-        push!(all_reactions.args, :($id.id = $name))
+        push!(all_reactions.args, :(r = $reaction))
+        push!(all_reactions.args, :(r.id = $id))
         if length(args) == 3
             lb = args[3]
-            push!(all_reactions.args, :($id.lb = $lb))
+            push!(all_reactions.args, :(r.lb = $lb))
         elseif length(args) == 4
             lb = args[3]
             ub = args[4]
-            push!(all_reactions.args, :($id.lb = $lb))
-            push!(all_reactions.args, :($id.ub = $ub))
+            push!(all_reactions.args, :(r.lb = $lb))
+            push!(all_reactions.args, :(r.ub = $ub))
         end
-        push!(all_reactions.args, :(add!($model, $id)))
+        push!(all_reactions.args, :(add!($model, r)))
     end
     return all_reactions
 end

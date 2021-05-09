@@ -8,9 +8,9 @@
     add!(mod, C)
 
     @add_reactions! mod begin
-        v1, nothing ⟷ A
-        v2, nothing ⟷ B, -500
-        v3, nothing ⟷ C, -500, 500
+        "v1", nothing ⟷ A
+        "v2", nothing ⟷ B, -500
+        "v3", nothing ⟷ C, -500, 500
     end
 
     rxn = mod.reactions["v1"]
