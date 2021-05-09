@@ -121,6 +121,8 @@ end
     rm!(::Type{Metabolite}, model::StandardModel, ids::Vector{String})
 
 Remove all metabolites with `ids` from `model`.
+Warning, this could leave the model inconsistent, e.g. a reaction might
+require the deleted metabolite.
 
 # Example
 rm!(Metabolite, model, ["atp_c", "adp_c"])
