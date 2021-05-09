@@ -55,10 +55,10 @@ function parsimonious_flux_balance_analysis(
     # add the minimization constraint for total flux
     v = opt_model[:x] # fluxes
 
-    if solver_name(opt_model) in ["Gurobi", ]
+    if solver_name(opt_model) in ["Gurobi"]
         set_start_value.(all_variables(opt_model), value.(all_variables(opt_model))) # warm start
     end
-    
+
     @objective(opt_model, Min, sum(dot(v, v)))
 
     for rb in relax_bounds

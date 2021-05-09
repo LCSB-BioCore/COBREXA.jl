@@ -145,7 +145,8 @@ function _FVA_optimize_reaction(model, rid, ret)
     var = all_variables(model)[abs(rid)]
 
     @objective(model, sense, var)
-    if termination_status(model) != MOI.OPTIMIZE_NOT_CALLED && solver_name(model) in ["Gurobi", ]
+    if termination_status(model) != MOI.OPTIMIZE_NOT_CALLED &&
+       solver_name(model) in ["Gurobi"]
         set_start_value.(all_variables(model), value.(all_variables(model))) # warm start
     end
     optimize!(model)
