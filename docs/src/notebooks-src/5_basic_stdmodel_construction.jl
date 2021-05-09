@@ -38,10 +38,10 @@ add!(model, metabolite_list)
 
 # ### Add reactions to the model
 
-# There are three ways to create and add reactions to a model. 
-# These are using functions, a macro, and arrows.
+# There are two ways to create and add reactions to a model. 
+# These are using functions, or macros.
 
-r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> ∅ (nothing)
+r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> 
 r1 = Reaction("r1", Dict("m1" => -1.0, "m2" => 1.0), :forward)
 r1.grr = [["g1", "g2"], ["g3"]] # add some gene reaction rules
 r2 = Reaction("r2", Dict("m2" => -1.0, "m1" => 1.0), :backward)
@@ -56,16 +56,12 @@ m4 = metabolite_list[4]
 
 @add_reactions! model begin # macro approach
     r4, m2 ⟶ m4, 0, 1000
-    r_m3, m3 ⟷ ∅, -1000, 1000
-    r_m4, m4 ⟶ ∅
+    r_m3, m3 ⟷ , -1000, 1000
+    r_m4, m4 ⟶ 
+    r5, m4 ⟶ m2
 end
 
-model.reactions["r4"].grr = [["g5"], ["g6"], ["g7"]]
-
-r5 = m4 ⟶ m2 # arrow approach
-r5.id = "r5" # give ID
-r5.grr = [["g8"]]
-add!(model, r5) # still need to add this reaction
+model.reactions["r4"].grr = [["g5"], ["g6", "g7"], ["g8"]]
 
 #md # !!! note "Note: Using reaction arrows"
 #md #       `COBREXA` exports arrows that can be used to construct reactions.
