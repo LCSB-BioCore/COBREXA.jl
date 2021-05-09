@@ -7,7 +7,28 @@
         relax_bounds=[1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
     )
 
-Run parsimonious flux balance analysis (pFBA) on the `model`.
+Run parsimonious flux balance analysis (pFBA) on the `model`. In short, pFBA
+runs two consecutive optimization problems. The first is traditional FBA:
+```
+max cᵀx = μ
+s.t. S x = b
+     xₗ ≤ x ≤ xᵤ
+```
+And the second is a quadratic optimization problem:
+```
+min Σᵢ xᵢ²
+s.t. S x = b
+     xₗ ≤ x ≤ xᵤ
+     μ = μ⁰
+```
+Where the optimal solution of the FBA problem, μ⁰, has been added as an
+additional constraint. See "Lewis, Nathan E, Hixson, Kim K, Conrad, Tom M,
+Lerman, Joshua A, Charusanti, Pep, Polpitiya, Ashoka D, Adkins, Joshua N,
+Schramm, Gunnar, Purvine, Samuel O, Lopez‐Ferrer, Daniel, Weitz, Karl K, Eils,
+Roland, König, Rainer, Smith, Richard D, Palsson, Bernhard Ø, (2010) Omic data
+from evolved E. coli are consistent with computed optimal growth from
+genome‐scale models. Molecular Systems Biology, 6. 390. doi:
+accession:10.1038/msb.2010.47" for more details.
 
 pFBA gets the model optimum by standard FBA (using
 [`flux_balance_analysis`](@ref) with `optimizer` and `modifications`), then

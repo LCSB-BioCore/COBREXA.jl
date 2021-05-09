@@ -8,7 +8,10 @@
     )
 
 Perform a basic hit and run sampling for `N` iterations on a constrained JuMP
-model in `opt_model`.
+model in `opt_model`. See "Robert L. Smith Efficient Monte Carlo Procedures for
+Generating Points Uniformly Distributed over Bounded Regions. Operations
+Research 32 (6) 1296-1308 https://doi.org/10.1287/opre.32.6.1296" for more
+details.
 
 The process generates `samplesize` samples, and logs the sample state each
 `keepevery` iterations.

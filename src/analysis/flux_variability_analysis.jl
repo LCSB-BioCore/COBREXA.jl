@@ -19,7 +19,9 @@ s.t. S x = b
      cᵀx ≤ bounds(Z₀)[2]
 ```
 where Z₀:= cᵀx₀ is the objective value of an optimal solution of the associated
-FBA problem (see [`flux_balance_analysis`](@ref)).
+FBA problem (see [`flux_balance_analysis`](@ref)). See "Gudmundsson, S., Thiele,
+I. Computationally efficient flux variability analysis. BMC Bioinformatics 11,
+489 (2010). https://doi.org/10.1186/1471-2105-11-489" for more information.
 
 The `bounds` is a user-supplied function that specifies the objective bounds
 for the variability optimizations, by default it restricts the flux objective
