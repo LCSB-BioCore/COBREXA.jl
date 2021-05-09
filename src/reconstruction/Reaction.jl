@@ -88,10 +88,10 @@ function ⟶(
         Vector{MetaboliteWithCoefficient},
     },
     products::Union{
-        Nothing, 
+        Nothing,
         Metabolite,
         MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient}
+        Vector{MetaboliteWithCoefficient},
     },
 )
     metdict = _mkrxn(substrates, products)
@@ -129,7 +129,7 @@ function ⟵(
         Nothing,
         Metabolite,
         MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient}
+        Vector{MetaboliteWithCoefficient},
     },
 )
     metdict = _mkrxn(substrates, products)
@@ -167,7 +167,7 @@ function ⟷(
         Nothing,
         Metabolite,
         MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient}
+        Vector{MetaboliteWithCoefficient},
     },
 )
     metdict = _mkrxn(substrates, products)
