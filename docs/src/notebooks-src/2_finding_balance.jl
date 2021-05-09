@@ -37,10 +37,11 @@ using OSQP
 # ## Flux balance analysis (FBA)
 #
 # Most analysis functions come in several variants that produce different types
-# of output. All of them usually require a model and the `JuMP.jl`-compatible
+# of output. All of them usually require a model and `JuMP.jl`-compatible
 # optimizer to work in the model.
 #
-# In the case of FBA, you may choose from these:
+# In the case of FBA, you may choose from these variants (here using the
+# `Tulip` optimizer):
 
 vec_soln = flux_balance_analysis_vec(model, Tulip.Optimizer)
 #
@@ -63,16 +64,16 @@ dict_soln = flux_balance_analysis_dict(
         ## this changes the objective to maximize the biomass production
         change_objective("R_BIOMASS_Ecoli_core_w_GAM"),
 
-        ## this fixes an exchange reaction to a negative rate
+        ## this fixes a specific rate of the glucose exchange
         change_constraint("R_EX_glc__D_e", -12, -12),
 
-        ## this knocks out two genes, i.e. constraints their associated reactions to zero.
+        ## this knocks out two genes, i.e. constrains their associated reactions to zero.
         knockout(["b0978", "b0734"]), ## the gene IDs are cytochrome oxidase (CYTBD)
 
-        ## actually change the original optimizer to Tulip
+        ## ignore the optimizer specified above and change it to Tulip
         change_optimizer(Tulip.Optimizer),
 
-        ## specify an custom attribute of the Tulip optimizer (see Tulip docs for more)
+        ## set a custom attribute of the Tulip optimizer (see Tulip docs for more possibilities)
         change_optimizer_attribute("IPM_IterationsLimit", 110),
 
         ## explicitly tell the optimizer to maximize the new objective
@@ -104,11 +105,13 @@ fva_maxs["R_EX_ac_e"]["R_EX_ac_e"] # get the maximal acetate exchange flux
 # ## Parsimonious flux balance analysis (pFBA)
 
 # Parsimonious flux balance analysis (here in
-# [`parsimonious_flux_balance_analysis_dict`](@ref) and
-# [`parsimonious_flux_balance_analysis_vec`](@ref)) finds a unique flux
-# solution that minimizes the squared sum of fluxes of the system subject,
-# while maintaining the same objective value as the flux balance analysis
-# solution. For that reason, we need a quadratic optimizer.
+# [`parsimonious_flux_balance_analysis`](@ref) finds a unique flux solution
+# that minimizes the squared sum of fluxes of the system subject, while
+# maintaining the same objective value as the flux balance analysis solution.
+# Since we are optimizing a quadratic objective, we also need to switch to a
+# quadratic optimizer. In this case, OSQP will work. We demonstrate it on the
+# dictionary-returning variant of pFBA,
+# [`parsimonious_flux_balance_analysis_dict`](@ref):
 
 dict_soln = parsimonious_flux_balance_analysis_dict(
     model,
@@ -119,10 +122,11 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     ],
 )
 
-# The function has the expectable second variant that returns a vector of
-# solutions. We use it to show how to use a different optimizer for finding the
-# optimum and for solving the quadratic problem (which may be preferable if the
-# optimizer qualities differ for the differing tasks). pFBA allows you to
+# The function also has the expectable second variant that returns a vector of
+# solutions, in [`parsimonious_flux_balance_analysis_vec`](@ref). Here, we
+# utilize it to show how to use different optimizers for finding the optimum
+# and for solving the quadratic problem. That may be preferable if the
+# optimizer qualities differ for the differing tasks. pFBA allows you to
 # specify `qp_modifications` that are applied after the original optimum is
 # found, and before the quadratic part of the problem solving begins.
 vec_soln = parsimonious_flux_balance_analysis_vec(

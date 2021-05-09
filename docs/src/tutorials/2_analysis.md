@@ -15,27 +15,25 @@ Other analysis methods are either in development and testing, or may be
 specified or customized by the user. Implementing new analyses is generally
 feasible; you may want to watch [the `COBREXA.jl`
 repository](https://github.com/LCSB-BioCore/COBREXA.jl) for newly incoming
-code, or send a feature request.
+analysis methods.
 
-`COBREXA.jl` exports several helper functions that may help you in running
-custom analysis methods:
+`COBREXA.jl` additionally exports several helper functions that may help you in
+running custom analysis methods:
 
-- there is functionality to convert all types of [`MetabolicModel`](@ref)s to
-  `JuMP.jl` models, mainly the function [`make_optimization_model`](@ref),
-  which you may explore and analyze independently of `COBREXA.jl` using the
-  tools provided by `JuMP.jl`
-- there is a system of analysis modifications that allows you to easily specify
-  various adjustment to the existing analysis methods
+- you can convert all types of [`MetabolicModel`](@ref)s to `JuMP.jl` models
+  using [`make_optimization_model`](@ref), then you may explore and analyze the
+  models independently of `COBREXA.jl` using the tools provided by `JuMP.jl`
+- there is a system of analysis *modifications* that allows you to easily
+  specify various adjustments to the existing analysis methods
 
 !!! tip "Notebook available!"
-    Examples of running the balance functions are [available
+    Examples of running the analysis functions are [available
     here](../notebooks/2_finding_balance.md).
 
 ## Optimization problem solvers
 
-For most solving most analysis tasks, you need an optimization problem solver
-that is compatible with `JuMP.jl`. You may refer to the [official list of
-supported
+For solving most analysis tasks, you need an optimization problem solver that
+is compatible with `JuMP.jl`. You may refer to the [official list of supported
 solvers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers), but
 we generally recommend to use either of these:
 
@@ -47,12 +45,12 @@ we generally recommend to use either of these:
 
 All solvers can be installed using the Julia package manger.
 
-## Running a single Flux balance analysis
+## Flux balance analysis
 
 The above methods generally accept 2 arguments: the model, and the optimizer.
 
-In particular, having installed e.g. GLPK from the above solvers, you can run
-the FBA on [your favorite *E. Coli* core
+In particular, having installed e.g. GLPK from the above optimizers, you can
+run FBA on [your favorite *E. Coli* core
 model](http://bigg.ucsd.edu/models/e_coli_core) as follows:
 
 ```
@@ -64,8 +62,8 @@ opt_model = flux_balance_analysis(m, GLPK.Optimizer)
 ```
 
 After a short while (the solver machinery usually needs to get precompiled
-before the first use), you should get the `opt_model`, which is now the
-optimized `JuMP.jl` model. It may print an information like this one:
+before the first use), you should get `opt_model`, which is now an optimized
+`JuMP.jl` model. It may print out information like this:
 
 ```
 A JuMP Model
@@ -98,7 +96,7 @@ getting them out of the optimized models:
 ## Flux variability analysis
 
 FVA is implemented in [`flux_variability_analysis`](@ref), which returns the
-usual matrix of minimal and maximal feasible flux for each reaction in the
+usual matrix of minimal and maximal feasible fluxes for each reaction in the
 model.
 
 The result of calling `flux_variability_analysis(m, GLPK.Optimizer)` may look
@@ -118,8 +116,8 @@ objective bound, getting a wider range of reaction fluxes, e.g. using
 [`gamma_bounds`](@ref) (for COBRA-like γ-bound) and [`objective_bounds`](@ref)
 (for a multiplicative bound around the original optimal objective).
 
-As a result, `flux_variability_analysis(m, GLPK.Optimizer; bounds=gamma_bounds(0.8))`
-will return much less constrained system:
+As a result, `flux_variability_analysis(m, GLPK.Optimizer;
+bounds=gamma_bounds(0.8))` will return a much less constrained system:
 
 ```
 95×2 Array{Float64,2}:
@@ -130,20 +128,21 @@ will return much less constrained system:
    2.57192        3.2149
 ```
 
-You may additionally restrict the analysis to the list of reactions (passing
-them as the second argument), and request a dictionary of the resulting fluxes,
-with [`flux_variability_analysis_dict`](@ref).
+You may additionally restrict the analysis to a list of reactions (passing the
+list as the second argument, see documentation of
+[`flux_variability_analysis`](@ref)), or retrieve a dictionary of the resulting
+fluxes with [`flux_variability_analysis_dict`](@ref).
 
 ## Parsimonious flux balance analysis
 
-pFBA requires a solver that can handle quadratic problems. You may use `OSQP`
-or `Gurobi`.
+Parsimonious flux balance analysis (pFBA) requires a solver that can handle
+quadratic problems. You may use e.g. `OSQP` or `Gurobi`.
 
-Otherwise, the function behaves as `flux_balance_analysis`:
+Otherwise, the function behaves just like [`flux_balance_analysis`](@ref):
 
-- `parsimonious_flux_balance_analysis(m, OSQP.Optimizer)` will get you a
-  `JuMP.jl` model optimized to a slightly more realistic (parsimonious) optimum
-  than plain FBA,
+- [`parsimonious_flux_balance_analysis`](@ref)`(m, OSQP.Optimizer)` will return
+  a `JuMP.jl` model optimized to a slightly more realistic (parsimonious)
+  optimum than plain FBA,
 - [`parsimonious_flux_balance_analysis_vec`](@ref) will return the fluxes in a
   vector,
 - [`parsimonious_flux_balance_analysis_dict`](@ref) will return a
@@ -157,7 +156,7 @@ or created by [`make_optimization_model`](@ref). You may need to carefully
 choose the number of iterations and sample sizes to match your model; see the
 documentation of [`hit_and_run`](@ref) for details.
 
-Other than that, you can run the sampling for 100 thousand iterations as such:
+As an example, you can run the sampling for 100 thousand iterations with:
 ```
 hit_and_run(100_000, make_optimization_model(m, GLPK.Optimizer))
 ```
