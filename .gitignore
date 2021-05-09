@@ -30,5 +30,5 @@ temp.*
 .ipynb_checkpoints
 
 # add generated tutorial specifics
-docs/src/notebooks/*.md
-docs/src/notebooks/*.ipynb
+!docs/src/notebooks/.git-keep
+docs/src/notebooks/
