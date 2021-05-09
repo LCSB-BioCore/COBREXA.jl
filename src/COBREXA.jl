@@ -57,7 +57,4 @@ for sym in names(@__MODULE__, all = true)
     @eval export $sym
 end
 
-∅ = Metabolite("∅") # for exchange reactions
-export ∅
-
 end # module
