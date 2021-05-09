@@ -25,15 +25,18 @@ for notebook in notebooks
     Literate.notebook(notebook, notebooks_outdir)
 end
 
-# generate index by cutting example from readme
-include(joinpath(@__DIR__, "src", "process_readme.jl"))
-Literate.markdown(
-    joinpath(@__DIR__, "src", "index.jl"),
-    joinpath(@__DIR__, "src");
-    preprocess = from_readme,
-    documenter = false,
+# generate index.md from .template and the quickstart in README.md
+quickstart = match(
+    r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->",
+    open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md")),
+).captures[1]
+index_md = replace(
+    open(f -> read(f, String), joinpath(@__DIR__, "src", "index.md.template")),
+    "<!--insert_quickstart-->\n" => quickstart,
 )
+open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
+# build the docs
 makedocs(
     modules = [COBREXA],
     clean = false,

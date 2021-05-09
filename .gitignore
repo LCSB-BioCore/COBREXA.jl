@@ -32,3 +32,5 @@ temp.*
 # add generated tutorial specifics
 !docs/src/notebooks/.git-keep
 docs/src/notebooks/
+# add generated docs and tutorial specifics
+docs/src/index.md
