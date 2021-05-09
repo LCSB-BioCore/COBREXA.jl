@@ -108,6 +108,14 @@ function stoichiometry(model::StandardModel)::SparseMat
     for (i, rxn_id) in enumerate(rxn_ids) # column, in order
         for (met_id, coeff) in model.reactions[rxn_id].metabolites
             j = findfirst(==(met_id), met_ids) # row
+            if isnothing(j)
+                throw(
+                    DomainError(
+                        met_id,
+                        "Metabolite not found in model but occurs in stoichiometry of $(rxn_id). Perhaps it was deleted?",
+                    ),
+                )
+            end
             S[j, i] = coeff
         end
     end

@@ -30,7 +30,7 @@ mutable struct CoreModel <: MetabolicModel
     ) where {V<:VecType,M<:MatType,K<:StringVecType}
 
         all([length(b), length(mets)] .== size(S, 1)) ||
-            throw(DimensionMismatch("inconsistent number of reactions"))
+            throw(DimensionMismatch("inconsistent number of metabolites"))
 
         all([length(c), length(xl), length(xu), length(rxns)] .== size(S, 2)) ||
             throw(DimensionMismatch("inconsistent number of reactions"))
