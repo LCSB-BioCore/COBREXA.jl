@@ -55,10 +55,10 @@ m3 = metabolite_list[3]
 m4 = metabolite_list[4]
 
 @add_reactions! model begin # macro approach
-    r4, m2 ⟶ m4, 0, 1000
-    r_m3, m3 ⟷ nothing, -1000, 1000
-    r_m4, m4 ⟶ nothing
-    r5, m4 ⟶ m2
+    "r4", m2 ⟶ m4, 0, 1000
+    "r_m3", m3 ⟷ nothing, -1000, 1000
+    "r_m4", m4 ⟶ nothing
+    "r5", m4 ⟶ m2
 end
 
 model.reactions["r4"].grr = [["g5"], ["g6", "g7"], ["g8"]]
