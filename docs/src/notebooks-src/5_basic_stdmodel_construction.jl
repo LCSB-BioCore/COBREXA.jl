@@ -56,8 +56,8 @@ m4 = metabolite_list[4]
 
 @add_reactions! model begin # macro approach
     r4, m2 ⟶ m4, 0, 1000
-    r_m3, m3 ⟷ , -1000, 1000
-    r_m4, m4 ⟶ 
+    r_m3, m3 ⟷ nothing, -1000, 1000
+    r_m4, m4 ⟶ nothing
     r5, m4 ⟶ m2
 end
 
