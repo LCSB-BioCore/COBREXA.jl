@@ -1,7 +1,8 @@
 ```@raw html
 <br>
 <div align="center">
-    <img src="assets/header.svg?maxAge=0" width="80%">
+    <img class="docs-light-only" src="assets/header.svg?maxAge=0" width="80%">
+    <img class="docs-dark-only" src="assets/header-dark.svg?maxAge=0" width="80%">
 </div>
 <br>
 ```
