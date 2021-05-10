@@ -31,7 +31,7 @@ quickstart = match(
     open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md")),
 ).captures[1]
 index_md = replace(
-    open(f -> read(f, String), joinpath(@__DIR__, "src", "index.md.template")),
+    open(f -> read(f, String), joinpath(@__DIR__, "src", "index-template.md")),
     "<!--insert_quickstart-->\n" => quickstart,
 )
 open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
