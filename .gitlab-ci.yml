@@ -91,9 +91,7 @@ generator:gource:
     - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
     - mv output.gif docs/src/assets/output.gif
   artifacts:
-    expose_as: 'animatedHistory'
-    paths: ['docs/assets/output.gif']
-    expire_in: 1 week
+    paths: ['docs/src/assets/output.gif']
   <<: *global_settings_master
 
 # Documentation tests
