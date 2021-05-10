@@ -1,10 +1,9 @@
 stages:
   - formatter
   - generator
-  - documentation
   - test-containers
   - test-required
-  - trigger-external
+  - documentation
   - test-additional-v1.5
   - test-additional-v1.6
 
@@ -202,7 +201,13 @@ mac:v1.6:
 # --------------------------------------
 
 trigger:
-  stage: trigger-external
+  stage: test-required
+  image: docker:19.03.13
+  tags:
+    - privileged
+  services:
+    - name: docker:19.03.13-dind
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   script:
-    - "curl -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO"
+    - docker run curlimages/curl -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
   <<: *global_settings_master
