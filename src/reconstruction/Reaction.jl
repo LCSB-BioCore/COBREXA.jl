@@ -35,13 +35,11 @@ function _mkrxn(substrates, products)
     metdict = Dict{String,Float64}()
 
     if typeof(substrates) == Metabolite
-        substrates != ∅ && (metdict[substrates.id] = get(metdict, substrates.id, 0.0) - 1.0)
+        metdict[substrates.id] = get(metdict, substrates.id, 0.0) - 1.0
     elseif typeof(substrates) == MetaboliteWithCoefficient
-        substrates.metabolite != ∅ && (
-            metdict[substrates.metabolite.id] =
-                get(metdict, substrates.metabolite.id, 0.0) - 1.0 * abs(substrates.coeff)
-        )
-    else
+        metdict[substrates.metabolite.id] =
+            get(metdict, substrates.metabolite.id, 0.0) - 1.0 * abs(substrates.coeff)
+    elseif typeof(products) == Vector{MetaboliteWithCoefficient}
         for mwc in substrates
             metdict[mwc.metabolite.id] =
                 get(metdict, mwc.metabolite.id, 0.0) - 1.0 * abs(mwc.coeff)
@@ -49,13 +47,11 @@ function _mkrxn(substrates, products)
     end
 
     if typeof(products) == Metabolite
-        products != ∅ && (metdict[products.id] = get(metdict, products.id, 0.0) + 1.0)
+        metdict[products.id] = get(metdict, products.id, 0.0) + 1.0
     elseif typeof(products) == MetaboliteWithCoefficient
-        products.metabolite != ∅ && (
-            metdict[products.metabolite.id] =
-                get(metdict, products.metabolite.id, 0.0) + abs(products.coeff)
-        )
-    else
+        metdict[products.metabolite.id] =
+            get(metdict, products.metabolite.id, 0.0) + abs(products.coeff)
+    elseif typeof(products) == Vector{MetaboliteWithCoefficient}
         for mwc in products
             metdict[mwc.metabolite.id] =
                 get(metdict, mwc.metabolite.id, 0.0) + 1.0 * abs(mwc.coeff)
@@ -68,22 +64,35 @@ end
 """
     ⟶(
         substrates::Union{
+            Nothing,
             Metabolite,
             MetaboliteWithCoefficient,
             Vector{MetaboliteWithCoefficient},
         },
-        products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+        products::Union{
+            Nothing, 
+            Metabolite,
+            MetaboliteWithCoefficient,
+            Vector{MetaboliteWithCoefficient}
+        },
     )
 
 Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
+An equivalent alternative is `→`.
 """
 function ⟶(
     substrates::Union{
+        Nothing,
         Metabolite,
         MetaboliteWithCoefficient,
         Vector{MetaboliteWithCoefficient},
     },
-    products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+    products::Union{
+        Nothing,
+        Metabolite,
+        MetaboliteWithCoefficient,
+        Vector{MetaboliteWithCoefficient},
+    },
 )
     metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :forward)
@@ -93,22 +102,35 @@ const → = ⟶
 """
     ⟵(
         substrates::Union{
+            Nothing,
             Metabolite,
             MetaboliteWithCoefficient,
             Vector{MetaboliteWithCoefficient},
         },
-        products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+        products::Union{
+            Nothing,
+            Metabolite,
+            MetaboliteWithCoefficient,
+            Vector{MetaboliteWithCoefficient}
+        },
     )
 
 Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
+An equivalent alternative is `←`.
 """
 function ⟵(
     substrates::Union{
+        Nothing,
         Metabolite,
         MetaboliteWithCoefficient,
         Vector{MetaboliteWithCoefficient},
     },
-    products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+    products::Union{
+        Nothing,
+        Metabolite,
+        MetaboliteWithCoefficient,
+        Vector{MetaboliteWithCoefficient},
+    },
 )
     metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :reverse)
@@ -118,22 +140,35 @@ const ← = ⟵
 """
     ⟷(
         substrates::Union{
+            Nothing,
             Metabolite,
             MetaboliteWithCoefficient,
             Vector{MetaboliteWithCoefficient},
         },
-        products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+        products::Union{
+            Nothing,
+            Metabolite,
+            MetaboliteWithCoefficient,
+            Vector{MetaboliteWithCoefficient}
+        },
     )
 
 Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and `products`.
+An equivalent alternative is `↔`.
 """
 function ⟷(
     substrates::Union{
+        Nothing,
         Metabolite,
         MetaboliteWithCoefficient,
         Vector{MetaboliteWithCoefficient},
     },
-    products::Union{Metabolite,MetaboliteWithCoefficient,Vector{MetaboliteWithCoefficient}},
+    products::Union{
+        Nothing,
+        Metabolite,
+        MetaboliteWithCoefficient,
+        Vector{MetaboliteWithCoefficient},
+    },
 )
     metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :bidirectional)

@@ -24,13 +24,13 @@
     rxn = 1.0 * nadh + 4.0 * h_c + 1.0 * q8 ↔ q8h2 + nad + 3.0 * h_p
     @test rxn.lb < 0.0 && rxn.ub > 0.0
 
-    rxn = 1.0 * nadh → ∅
+    rxn = 1.0 * nadh → nothing
     @test length(rxn.metabolites) == 1
 
-    rxn = ∅ → nadh
+    rxn = nothing → nadh
     @test length(rxn.metabolites) == 1
 
-    rxn = ∅ → 1.0nadh
+    rxn = nothing → 1.0nadh
     @test length(rxn.metabolites) == 1
 
     rxn = 1.0 * nadh + 4.0 * h_c + 1.0 * q8 ⟶ 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
