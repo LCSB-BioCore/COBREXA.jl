@@ -34,3 +34,4 @@ temp.*
 docs/src/notebooks/
 # add generated docs and tutorial specifics
 docs/src/index.md
+docs/src/assets/output.gif
