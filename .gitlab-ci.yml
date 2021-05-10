@@ -89,6 +89,7 @@ generator:gource:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
+    - mv output.gif docs/assets/output.gif
   artifacts:
     expose_as: 'animatedHistory'
     paths: ['docs/assets/output.gif']
