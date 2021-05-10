@@ -61,6 +61,6 @@ makedocs(
 
 deploydocs(
     repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"])",
-    push_preview=true,
+    push_preview = true,
     deploy_config = deployconfig,
 )
