@@ -1,6 +1,4 @@
-<div align="center">
-    <img src="docs/src/assets/header.svg?maxAge=0" width="80%">
-</div>
+<img src="docs/src/assets/header.svg?maxAge=0" width="66%">
 
 # COnstraint-Based Reconstruction and EXascale Analysis
 
