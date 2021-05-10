@@ -90,7 +90,7 @@ objective(model::SBMLModel)::SparseVec = SBML.getOCs(model.sbml)
 
 Get genes of a [`SBMLModel`](@ref).
 """
-genes(model::SBMLModel)::Vector{String} = [k for k in model.sbml.gene_products]
+genes(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.gene_products)]
 
 """
     n_genes(model::SBMLModel)::Int
