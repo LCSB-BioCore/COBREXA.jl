@@ -21,52 +21,16 @@ the underlying linear programming solvers. We use
 many solvers; you can plug in whatever compatible solver you want, including
 the popular `Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`.
 
+```@raw html
+<div align="center">
+<img style="width:300px;margin:10px;border-offset:15px;border: 1px solid #eee;border-radius: 50%;padding: 10px;-webkit-border-radius: 50%;-moz-border-radius: 50%;" src="assets/output.gif" alt="history"><br>
+Development history of COBREXA.jl.
+</div>
+```
+
 ## Quick start guide
 
-You can install COBREXA from Julia repositories. Start `julia`, **press `]`** to
-switch to the Packaging environment, and type:
-```
-add COBREXA
-```
-
-You may also need to install your favorite solver, typing e.g.:
-```
-add GLPK
-```
-
-When the packages are installed, switch back to the "normal" julia shell by
-pressing Backspace (the prompt should change color back to green). After that,
-you can download [a SBML model from the
-internet](http://bigg.ucsd.edu/models/e_coli_core) and perform a
-flux balance analysis as follows:
-
-```julia
-using COBREXA   # loads the package
-using GLPK      # loads your favorite solver
-
-download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
-
-model = load_model("e_coli_core.xml")
-
-fluxes = flux_balance_analysis_dict(model, GLPK.Optimizer)
-```
-
-The variable `fluxes` will now contain a dictionary of the computed optimal
-flux of each reaction in the model:
-```
-Dict{String,Float64} with 95 entries:
-  "R_EX_fum_e"    => 0.0
-  "R_ACONTb"      => 6.00725
-  "R_TPI"         => 7.47738
-  "R_SUCOAS"      => -5.06438
-  "R_GLNS"        => 0.223462
-  "R_EX_pi_e"     => -3.2149
-  "R_PPC"         => 2.50431
-  "R_O2t"         => 21.7995
-  "R_G6PDH2r"     => 4.95998
-  "R_TALA"        => 1.49698
-  ⋮               => ⋮
-```
+<!--insert_quickstart-->
 
 ## Tutorials
 
@@ -94,4 +58,6 @@ Pages = ["functions.md"]
 
 ## Contribution guide
 
-If you want to contribute, please read [the contribution guidelines and hints](howToContribute.md).
+If you aim to contribute code, patches or improvements to `COBREXA.jl` read the
+basic guidelines at a separate page with [contribution guidelines and
+hints](howToContribute.md).

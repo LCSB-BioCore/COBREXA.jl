@@ -25,7 +25,18 @@ for notebook in notebooks
     Literate.notebook(notebook, notebooks_outdir)
 end
 
+# generate index.md from .template and the quickstart in README.md
+quickstart = match(
+    r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->",
+    open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md")),
+).captures[1]
+index_md = replace(
+    open(f -> read(f, String), joinpath(@__DIR__, "src", "index-template.md")),
+    "<!--insert_quickstart-->\n" => quickstart,
+)
+open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
+# build the docs
 makedocs(
     modules = [COBREXA],
     clean = false,
