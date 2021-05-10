@@ -10,18 +10,16 @@ function _print_banner()
     n = c[:normal]
     y = c[:bold] * c[:cyan]
 
-    println(
-        "       
-             $(y)//   $(n) |
-  \\\\\\\\\\  // $(y)//    $(n) |
-   \\\\ \\\\// $(y)//     $(n) |    
-    \\\\ \\/ $(y)//      $(n) | COnstraint-Based Reconstruction
-     \\\\  $(y)//       $(n) | and EXascale Analysis in Julia
-     //  $(y)\\\\       $(n) | Version: v$(COBREXA_VERSION)
-    // $(y)/\\ \\\\      $(n) | 
-   // $(y)//\\\\ \\\\      $(n)|
-  // $(y)//  \\\\\\\\\\     $(n)|
- //                $(n)|
-        "
-    )
+    println("       
+                 $(y)//   $(n) |
+      \\\\\\\\\\  // $(y)//    $(n) |
+       \\\\ \\\\// $(y)//     $(n) |    
+        \\\\ \\/ $(y)//      $(n) | COnstraint-Based Reconstruction
+         \\\\  $(y)//       $(n) | and EXascale Analysis in Julia
+         //  $(y)\\\\       $(n) | Version: v$(COBREXA_VERSION)
+        // $(y)/\\ \\\\      $(n) | 
+       // $(y)//\\\\ \\\\      $(n)|
+      // $(y)//  \\\\\\\\\\     $(n)|
+     //                $(n)|
+            ")
 end
