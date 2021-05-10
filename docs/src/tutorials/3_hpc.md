@@ -15,9 +15,9 @@ and utilize the resources for `COBREXA.jl` analyses.
 ## Starting the distributed workers
 
 `COBREXA.jl` follows the structure imposed by the `Distributed` package: You
-are operating a main (usually called "master") computation node, connect to
-multiple other computers and start worker Julia processes there, and distribute
-the workload across this community.
+operate a main (usually called "master") computation node, connect to multiple
+other computers and start worker Julia processes there, and distribute the
+workload across this cluster.
 
 To start, you need to load the package and add a few processes. This starts 5
 processes locally:
@@ -26,6 +26,10 @@ processes locally:
 using Distributed
 addprocs(5)
 ```
+
+!!! note "`Distributed.jl` installation"
+    `Distributed.jl` usually comes pre-installed with Julia distribution, but
+    you may still need to "enable" it by typing `] add Distributed`.
 
 You may check that the workers are really there, using `workers()`. In this
 case, it should give you a vector of _worker IDs_, very likely equal to
@@ -47,9 +51,16 @@ user@server> julia
 julia> _
 ```
 
+!!! top "Running shell commands from Julia"
+    If you don't want to quit your Julia session to try out the `ssh`
+    connection from the shell, press `;` in the Julia prompt on the beginning
+    of the line. The interpreter will execute your next line as a shell
+    command.
+
 If this works for you, you can add some workers that run on the `server` from
-your Julia shell running on your `pc`. For example, this starts 20 workers on
-the `server` and 10 workers on your friend's computer:
+your Julia shell running on your `pc`. For example, the following starts 20
+workers on the remote `server` and 10 workers on your friend's computer called
+`joe_pc`:
 
 ```
 addprocs([('server', 20), ('joe_pc', 10)])
@@ -66,10 +77,10 @@ to process any data in a distributed fashion.
 
 While not all COBREXA functions may be parallelized naturally, these that do
 will accept a special `workers` argument that specifies a list of worker IDs
-where the computation should be distributed. For the value, you can use simply
-`workers()`.
+where the computation should be distributed. For the value, you can specify
+your desired worker IDs manually (e.g. `[2,3,4]`), or simply use `workers()`.
 
-For example, [`flux_variability_analysis`](@ref) can naturally paralellize the
+For example, [`flux_variability_analysis`](@ref) can naturally parallelize the
 computation of all reactions's minima and maxima to finish the computation
 faster. To enable the parallelization, you first need to make sure that all
 workers have loaded both the COBREXA package and the optimizer:
@@ -91,7 +102,7 @@ result = flux_variability_analysis(model, GLPK.Optimizer; workers=workers())
 With the extra computing capacity from `N` workers available, the FVA should be
 computed roughly `N`-times faster.
 
-!!! note "Distributed and parallel overhead"
+!!! note "Distribution and parallelization overhead"
     Communication of the workers with your Julia shell is not free. If the task
     that you are parallelizing is small and the model structure is very large,
     the distributed computation will actually spend most computation time just
@@ -100,21 +111,24 @@ computed roughly `N`-times faster.
     improve by adding additional resources. You may want to check that the
     computation task is sufficiently large before investing the extra resources
     into the distributed execution.
+    [Amdahl's](https://en.wikipedia.org/wiki/Amdahl's_law) and
+    [Gustafson's](https://en.wikipedia.org/wiki/Gustafson%27s_law) laws can
+    give you a better overview of the consequences of this overhead.
 
 ## Interacting with HPC schedulers
 
 Many researchers have access to institutional HPC facilities that allow
 time-sharing of the capacity of a large computer cluster between many
 researchers. Julia and `COBREXA.jl` work well within this environment; but your
-programs require small additional customization to be able to find and utilize
+programs require some additional customization to be able to find and utilize
 the resources available from the HPC.
 
 In our case, this reduces to a relatively complex task: You need to find out
 how many resources were allocated for your task, and you need to add the remote
 workers precisely at places that were allocated for your. Fortunately, the
 package
-[`ClusterManagers`](https://github.com/JuliaParallel/ClusterManagers.jl) can do
-precisely that for us.
+[`ClusterManagers.jl`](https://github.com/JuliaParallel/ClusterManagers.jl) can do
+precisely that.
 
 For simplicily, we will assume that your HPC is scheduled by
 [Slurm](https://slurm.schedmd.com/).
@@ -147,7 +161,9 @@ using normal `addprocs`, and (for example) run the
 !!! tip "What about the other HPC schedulers?"
     `ClusterManagers.jl` supports many other common HPC scheduling systems,
     including LFS, Sun Grid, SGE, PBS, and Scyld, in a way almost identical to
-    Slurm. See the package documentation for details.
+    Slurm. See the
+    [package documentation](https://github.com/JuliaParallel/ClusterManagers.jl/blob/master/README.md)
+    for details.
 
 ## Wrapping your script in a Slurm job
 
