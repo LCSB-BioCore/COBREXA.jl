@@ -31,6 +31,10 @@ model = load_model("e_coli_core.xml")
 # [`OSQP.jl`](https://osqp.org/docs/get_started/julia.html) to optimize quadratic
 # programs.
 
+import Pkg
+Pkg.add("Tulip")
+Pkg.add("OSQP")
+
 using Tulip
 using OSQP
 
