@@ -209,5 +209,5 @@ trigger:
     - name: docker:19.03.13-dind
       command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   script:
-    - docker run curlimages/curl -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
+    - docker run curlimages/curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
   <<: *global_settings_master
