@@ -23,6 +23,10 @@ using Tulip
 
 model = load_model(CoreModel, "iML1515.json")
 
+#md # !!! tip "Tip: Install packages using Julia's package mananger shortcut"
+#md #       Install `SparseArrays` and `LinearAlgebra` by entering `] add SparseArrays, LinearAlgebra`
+#md #       at the terminal.
+
 # ## Describe the variants
 # Each variant is described by the substrate it consumes for energy/carbon.
 # The sugars will be supplied by the environment, but the waste products will not be,
