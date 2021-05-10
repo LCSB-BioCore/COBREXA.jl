@@ -21,6 +21,13 @@ the underlying linear programming solvers. We use
 many solvers; you can plug in whatever compatible solver you want, including
 the popular `Tulip.jl`, `GLPK.jl`, `OSQP.jl`, and `Gurobi`.
 
+```@raw html
+<div align="center">
+<img style="width:300px;margin:10px;border-offset:15px;border: 1px solid #eee;border-radius: 50%;padding: 10px;-webkit-border-radius: 50%;-moz-border-radius: 50%;" src="assets/output.gif" alt="history"><br>
+Development history of COBREXA.jl.
+</div>
+```
+
 ## Quick start guide
 
 <!--insert_quickstart-->
