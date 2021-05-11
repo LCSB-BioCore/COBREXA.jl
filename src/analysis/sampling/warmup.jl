@@ -21,7 +21,7 @@ function warmup(
     for mod in modifications
         mod(model, optmodel)
     end
-    
+
     map(fetch, save_at.(workers, :warmup_model, Ref(:($optmodel))))
 
     ret = m -> value.(m[:x]) # get all the fluxes
@@ -34,6 +34,6 @@ function warmup(
     # free the data on workers
     map(fetch, remove_from.(workers, :warmup_model))
     lbs, ubs = get_bound_vectors(optmodel)
-    
+
     return fluxes, lbs, ubs
 end

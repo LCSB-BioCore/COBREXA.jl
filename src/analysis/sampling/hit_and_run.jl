@@ -53,14 +53,19 @@ function hit_and_run(
     N = 1000,
     keepevery = _constants.sampling_keep_iters,
     samplesize = _constants.sampling_size,
-    num_warmup_points = length(reactions(model))
+    num_warmup_points = length(reactions(model)),
 )
 
-    ws, lbs, ubs = warmup(model, optimizer; modifications=modifications, warmup_points=collect(1:num_warmup_points))
-    
+    ws, lbs, ubs = warmup(
+        model,
+        optimizer;
+        modifications = modifications,
+        warmup_points = collect(1:num_warmup_points),
+    )
+
     samples = zeros(length(lbs), samplesize) # sample storage
     current_point = zeros(length(lbs))
-    current_point .= ws[1,1] # just use the first warmup point, randomness is introduced later
+    current_point .= ws[1, 1] # just use the first warmup point, randomness is introduced later
     direction = zeros(length(lbs))
 
     sample_num = 0
