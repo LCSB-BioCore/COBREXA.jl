@@ -1,21 +1,18 @@
-using Test
-using Logging
-using SparseArrays
-using JuMP
-using GLPK
+using COBREXA, Test
+
 using Clp
-using COBREXA
-using MAT
-using SHA
 using Distributed
-using JuMP
-using Tulip
-using OSQP
-using Statistics
+using GLPK
 using JSON
-using Measurements
-using OrderedCollections
+using JuMP
 using LinearAlgebra
+using MAT
+using OrderedCollections
+using OSQP
+using SHA
+using SparseArrays
+using Statistics
+using Tulip
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)

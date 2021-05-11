@@ -1,23 +1,17 @@
 module COBREXA
 
-using Logging
-using SparseArrays
-using DelimitedFiles
-using LinearAlgebra
-using JuMP
-using MAT
+using Dates
 using Distributed
 using DistributedData
-using Downloads
-using Requires
 using JSON
+using JuMP
+using LinearAlgebra
+using MAT
 using MacroTools
-using Measurements
-using Statistics
-using Random
-using MacroTools # for DSL :)
 using OrderedCollections
-using Dates
+using Random
+using SparseArrays
+using Statistics
 
 import Base: findfirst, getindex, show
 import Pkg

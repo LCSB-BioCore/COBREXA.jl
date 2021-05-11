@@ -4,32 +4,18 @@ authors = ["The developers of COBREXA.jl"]
 version = "0.1.0"
 
 [deps]
-Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 DistributedData = "f6a0035f-c5ac-4ad0-b410-ad102ced35df"
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
-HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
-JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MAT = "23992714-dd62-5051-b70f-ba57cb901cac"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
-OSQP = "ab2f91bb-94b4-55e3-9ba0-7f65df51de79"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Requires = "ae029012-a4dd-5104-9daa-d747884805df"
-Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 SBML = "e5567a89-2604-4b09-9718-f5f78e97c3bb"
-SBML_jll = "bb12108a-f4ef-5f88-8ef3-0b33ff7017f1"
-SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
@@ -39,8 +25,13 @@ SBML = ">=0.4"
 julia = "1"
 
 [extras]
+Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+OSQP = "ab2f91bb-94b4-55e3-9ba0-7f65df51de79"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [targets]
-test = ["Test", "Tulip"]
+test = ["Clp", "Downloads", "GLPK", "OSQP", "SHA", "Test", "Tulip"]
