@@ -1,21 +1,19 @@
-using Test
-using Logging
-using SparseArrays
-using JuMP
-using GLPK
+using COBREXA, Test
+
 using Clp
-using COBREXA
-using MAT
-using SHA
 using Distributed
-using JuMP
-using Tulip
-using OSQP
-using Statistics
+using Downloads
+using GLPK
 using JSON
-using Measurements
-using OrderedCollections
+using JuMP
 using LinearAlgebra
+using MAT
+using OrderedCollections
+using OSQP
+using SHA
+using SparseArrays
+using Statistics
+using Tulip
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
@@ -47,7 +45,7 @@ function download_data_file(url, path, hash)
         return path
     end
 
-    COBREXA.Downloads.download(url, path)
+    Downloads.download(url, path)
     check_data_file_hash(path, hash)
     return path
 end
