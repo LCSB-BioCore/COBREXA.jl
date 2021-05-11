@@ -6,8 +6,8 @@ ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
 ENV["TRAVIS_BRANCH"] = "master"
 
 # set the merge/pull request ID
-if "CI_MERGE_REQUEST_ID" in keys(ENV)
-    ENV["TRAVIS_PULL_REQUEST"] = ENV["CI_MERGE_REQUEST_ID"]
+if "CI_EXTERNAL_PULL_REQUEST_IID" in keys(ENV)
+    ENV["TRAVIS_PULL_REQUEST"] = ENV["CI_EXTERNAL_PULL_REQUEST_IID"]
 else
     ENV["TRAVIS_PULL_REQUEST"] = "false"
 end
@@ -72,4 +72,6 @@ deploydocs(
     target = "build",
     branch = "gh-pages",
     push_preview = true,
+    devurl = "dev",
+    versions = ["stable" => "v^", "v#.#", devurl => devurl],
 )
