@@ -2,6 +2,7 @@ using COBREXA, Test
 
 using Clp
 using Distributed
+using Downloads
 using GLPK
 using JSON
 using JuMP
@@ -44,7 +45,7 @@ function download_data_file(url, path, hash)
         return path
     end
 
-    COBREXA.Downloads.download(url, path)
+    Downloads.download(url, path)
     check_data_file_hash(path, hash)
     return path
 end
