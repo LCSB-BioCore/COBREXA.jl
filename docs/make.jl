@@ -18,20 +18,20 @@ notebooks =
     joinpath.(notebooks_path, filter(x -> endswith(x, ".jl"), readdir(notebooks_path)))
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
 
-# set the appropriate folder
-folder = Base.CoreLogging.with_logger(Base.CoreLogging.NullLogger()) do
-    Documenter.deploy_folder(
-        nothing;
-        repo = "github.com/$(ENV["TRAVIS_PULL_REQUEST"]).git",
-        devbranch = "master",
-        push_preview = true,
-        devurl = "dev",
-    )
-end
-
-## only temporary - will be removed once properly released
-branch = "gh-pages"
+# only temporary - will be removed once properly tagged and released
 folder = "dev"
+branch = "gh-pages"
+
+for notebook in notebooks
+    Literate.markdown(
+        notebook,
+        notebooks_outdir;
+        repo_root_url = "https://github.com/$(ENV["TRAVIS_REPO_SLUG"])/blob/master",
+        nbviewer_root_url = "https://nbviewer.jupyter.org/github/$(ENV["TRAVIS_REPO_SLUG"])/blob/gh-pages/$(folder)",
+        binder_root_url = "https://mybinder.org/v2/gh/$(ENV["TRAVIS_REPO_SLUG"])/$(branch)?filepath=$(folder)",
+    )
+    Literate.notebook(notebook, notebooks_outdir)
+end
 
 # generate index.md from .template and the quickstart in README.md
 quickstart = match(
