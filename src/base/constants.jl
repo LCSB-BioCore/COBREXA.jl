@@ -50,7 +50,6 @@ const _constants = (
         "reactome.compound",
         "biocyc",
     ),
-    colors = (empty = :dark_gray, payload = :default, key = :cyan),
 )
 
 const MAX_SENSE = COBREXA.MOI.MAX_SENSE

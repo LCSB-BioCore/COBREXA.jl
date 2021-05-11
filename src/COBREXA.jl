@@ -17,7 +17,6 @@ using Statistics
 using Random
 using MacroTools # for DSL :)
 using OrderedCollections
-using Crayons
 using Dates
 
 import Base: findfirst, getindex, show

@@ -31,25 +31,25 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
 
     for fname in fieldnames(Reaction)
         if fname == :metabolites
-            _print_with_colors(
+            _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",
                 _pretty_substances(substrates) * arrow * _pretty_substances(products),
             )
         elseif fname == :grr
-            _print_with_colors(
+            _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",
                 _maybemap(x -> _unparse_grr(String, x), r.grr),
             )
         elseif fname in (:lb, :ub, :objective_coefficient)
-            _print_with_colors(
+            _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",
                 string(getfield(r, fname)),
             )
         else
-            _print_with_colors(io, "Reaction.$(string(fname)): ", getfield(r, fname))
+            _pretty_print_keyvals(io, "Reaction.$(string(fname)): ", getfield(r, fname))
         end
     end
 end
