@@ -18,10 +18,12 @@ using Random
 using MacroTools # for DSL :)
 using OrderedCollections
 using Crayons
+using Dates
 
 import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
+
 
 include("banner.jl")
 _print_banner()
