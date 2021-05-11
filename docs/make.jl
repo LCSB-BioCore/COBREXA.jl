@@ -29,19 +29,9 @@ folder = Base.CoreLogging.with_logger(Base.CoreLogging.NullLogger()) do
     )
 end
 
-## only temporary - will be removed once public
+## only temporary - will be removed once properly released
 branch = "gh-pages"
-
-for notebook in notebooks
-    Literate.markdown(
-        notebook,
-        notebooks_outdir;
-        repo_root_url = "https://github.com/$(ENV["TRAVIS_REPO_SLUG"])/blob/master",
-        nbviewer_root_url = "https://nbviewer.jupyter.org/github/$(ENV["TRAVIS_REPO_SLUG"])/blob/gh-pages/$(folder)",
-        binder_root_url = "https://mybinder.org/v2/gh/$(ENV["TRAVIS_REPO_SLUG"])/$(branch)?filepath=$(folder)",
-    )
-    Literate.notebook(notebook, notebooks_outdir)
-end
+folder = "dev"
 
 # generate index.md from .template and the quickstart in README.md
 quickstart = match(
