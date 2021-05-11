@@ -3,6 +3,13 @@ using Literate
 
 ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
 
+# set the merge/pull request ID
+if ENV["CI_MERGE_REQUEST_ID"] != ""
+    ENV["TRAVIS_PULL_REQUEST"] = ENV["CI_MERGE_REQUEST_ID"]
+else
+    ENV["TRAVIS_PULL_REQUEST"] = "false"
+end
+
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks-src")
 notebooks =
