@@ -18,7 +18,16 @@ notebooks =
     joinpath.(notebooks_path, filter(x -> endswith(x, ".jl"), readdir(notebooks_path)))
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
 
-folder = "stable"
+# set the appropriate folder
+folder = Base.CoreLogging.with_logger(Base.CoreLogging.NullLogger()) do
+    Documenter.deploy_folder(
+        nothing;
+        repo = "github.com/$(ENV["TRAVIS_PULL_REQUEST"]).git",
+        devbranch = "master",
+        push_preview = true,
+        devurl = "dev",
+    )
+end
 
 ## only temporary - will be removed once public
 branch = "gh-pages"
