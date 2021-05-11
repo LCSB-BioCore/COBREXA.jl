@@ -4,7 +4,7 @@ using Literate
 ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
 
 # set the merge/pull request ID
-if ENV["CI_MERGE_REQUEST_ID"] != ""
+if "CI_MERGE_REQUEST_ID" in keys(ENV)
     ENV["TRAVIS_PULL_REQUEST"] = ENV["CI_MERGE_REQUEST_ID"]
 else
     ENV["TRAVIS_PULL_REQUEST"] = "false"
