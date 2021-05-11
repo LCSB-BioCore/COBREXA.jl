@@ -33,6 +33,7 @@ function warmup(
 
     # free the data on workers
     map(fetch, remove_from.(workers, :warmup_model))
-
-    return fluxes
+    lbs, ubs = get_bound_vectors(optmodel)
+    
+    return fluxes, lbs, ubs
 end

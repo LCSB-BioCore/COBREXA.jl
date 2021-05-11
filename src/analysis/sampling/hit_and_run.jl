@@ -56,31 +56,23 @@ function hit_and_run(
     num_warmup_points = length(reactions(model))
 )
 
-    # generate warmup points
-    ws = flux_variability_analysis(
-        model,
-        collect(1:10),
-        Tulip.Optimizer;
-        bounds = objective_bounds(0.90),
-        ret = m -> COBREXA.JuMP.value.(m[:x])
-    )
-
+    ws, lbs, ubs = warmup(model, optimizer; modifications=modifications, warmup_points=collect(1:num_warmup_points))
     
-    nwpts = size(wpoints, 2) # number of warmup points generated
-    samples = zeros(size(wpoints, 1), samplesize) # sample storage
-    current_point = zeros(size(wpoints, 1))
-    current_point .= wpoints[:, rand(1:nwpts)] # pick random initial point
+    samples = zeros(length(lbs), samplesize) # sample storage
+    current_point = zeros(length(lbs))
+    current_point .= ws[1,1] # just use the first warmup point, randomness is introduced later
+    direction = zeros(length(lbs))
 
     sample_num = 0
     samplelength = 0
-    updatesamplesizelength = true
+    use_warmup_points = true
     for n = 1:N
 
         # direction = random point - current point
         if updatesamplesizelength
-            direction_point = (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
+            direction .= (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
         else
-            direction_point =
+            direction .=
                 (@view samples[:, rand(1:(samplelength))]) - (@view current_point[:]) # after warmup phase, only find directions in sampled space
         end
 
