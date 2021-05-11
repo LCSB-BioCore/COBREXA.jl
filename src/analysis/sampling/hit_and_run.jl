@@ -47,17 +47,25 @@ samples = hit_and_run(100_000, opt_model; keepevery=10, samplesize=5000)
 ```
 """
 function hit_and_run(
-    N::Int,
-    opt_model;
+    model,
+    optimizer;
+    modifications = [],
+    N = 1000,
     keepevery = _constants.sampling_keep_iters,
     samplesize = _constants.sampling_size,
-    random_objective = false,
+    num_warmup_points = length(reactions(model))
 )
 
-    lbs, ubs = get_bound_vectors(opt_model) # get actual ub and lb constraints, can't use model function because the user may have changed them in the function arguments
+    # generate warmup points
+    ws = flux_variability_analysis(
+        model,
+        collect(1:10),
+        Tulip.Optimizer;
+        bounds = objective_bounds(0.90),
+        ret = m -> COBREXA.JuMP.value.(m[:x])
+    )
 
-    wpoints = _get_warmup_points(opt_model; random_objective = random_objective)
-
+    
     nwpts = size(wpoints, 2) # number of warmup points generated
     samples = zeros(size(wpoints, 1), samplesize) # sample storage
     current_point = zeros(size(wpoints, 1))
