@@ -1,7 +1,9 @@
 using Documenter, COBREXA
 using Literate
 
+# Note: required to deploy the doc from Gitlab CI instead of Travis
 ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
+ENV["TRAVIS_BRANCH"] = "master"
 
 # set the merge/pull request ID
 if "CI_MERGE_REQUEST_ID" in keys(ENV)
