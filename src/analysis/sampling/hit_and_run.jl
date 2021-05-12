@@ -134,7 +134,7 @@ function _serial_hit_and_run(ws, lbs, ubs, samplesize, keepevery, N)
         end
 
         if λmax <= λmin || λmin == -Inf || λmax == Inf # this sometimes can happen
-        #     @warn "Infeasible direction at iteration $(n)..." # noisy
+            #     @warn "Infeasible direction at iteration $(n)..." # noisy
             continue
         end
 

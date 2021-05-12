@@ -22,12 +22,18 @@ function warmup(
         mod(model, optmodel)
     end
 
-    map(fetch, save_at.(workers, :cobrexa_hit_and_run_warmup_model, Ref(:($optmodel))))
+    save_model = :($optmodel)
+
+    map(fetch, save_at.(workers, :cobrexa_hit_and_run_warmup_model, Ref(save_model)))
 
     ret = m -> value.(m[:x]) # get all the fluxes
     # error occurs here :/
     fluxes = dpmap(
-        rid -> :($COBREXA._FVA_optimize_reaction(cobrexa_hit_and_run_warmup_model, $rid, $ret)),
+        rid -> :($COBREXA._FVA_optimize_reaction(
+            cobrexa_hit_and_run_warmup_model,
+            $rid,
+            $ret,
+        )),
         CachingPool(workers),
         [-warmup_points warmup_points],
     )
