@@ -63,14 +63,11 @@ function hit_and_run(
         model,
         optimizer;
         modifications = modifications,
-        warmup_points = warmup_indices,
         workers = workers, # parallel
     )
 
     # load warmup points to workers
-    map(fetch, save_at.(workers, :ws, Ref(:($ws))))
-    map(fetch, save_at.(workers, :lbs, Ref(:($lbs))))
-    map(fetch, save_at.(workers, :ubs, Ref(:($ubs))))
+    save_at.(workers, :_cobrexa_hit_and_run_warmup, Ref(:($ws, $lbs, $ubs)))
 
     # do in parallel! 
     samples = dpmap(
@@ -134,7 +131,7 @@ function _serial_hit_and_run(ws, lbs, ubs, samplesize, keepevery, N)
         end
 
         if λmax <= λmin || λmin == -Inf || λmax == Inf # this sometimes can happen
-            @warn "Infeasible direction at iteration $(n)..."
+        #     @warn "Infeasible direction at iteration $(n)..." # noisy
             continue
         end
 
