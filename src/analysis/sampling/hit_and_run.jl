@@ -71,11 +71,12 @@ function hit_and_run(
     map(fetch, save_at.(workers, :ws, Ref(:($ws))))
     map(fetch, save_at.(workers, :lbs, Ref(:($lbs))))
     map(fetch, save_at.(workers, :ubs, Ref(:($ubs))))
-   
+
     # do in parallel! 
     chains = dpmap(
         x -> :($COBREXA._serial_hit_and_run(ws, lbs, ubs, $samplesize, $keepevery, $N)),
-        CachingPool(workers), 1:nchains,
+        CachingPool(workers),
+        1:nchains,
     )
 
     # remove warmup points from workers
@@ -129,7 +130,7 @@ function _serial_hit_and_run(ws, lbs, ubs, samplesize, keepevery, N)
             @warn "Infeasible direction at iteration $(n)..."
             continue
         end
- 
+
         λ = rand() * (λmax - λmin) + λmin # random step size
         current_point .= current_point .+ λ .* direction # will be feasible
 
