@@ -17,17 +17,19 @@ function warmup(
     workers = [myid()],
 )
     # create optimization problem, apply constraints, load on all workers
-    optmodel = make_optimization_model(model, optimizer)
-    for mod in modifications
-        mod(model, optmodel)
-    end
-
-    save_model = :($optmodel)
+    save_model = :(
+        begin
+            optmodel = $COBREXA.make_optimization_model($model, $optimizer)
+            for mod in $modifications
+                mod($model, optmodel)
+            end
+            optmodel
+        end
+    )
 
     map(fetch, save_at.(workers, :cobrexa_hit_and_run_warmup_model, Ref(save_model)))
 
     ret = m -> value.(m[:x]) # get all the fluxes
-    # error occurs here :/
     fluxes = dpmap(
         rid -> :($COBREXA._FVA_optimize_reaction(
             cobrexa_hit_and_run_warmup_model,
@@ -38,9 +40,11 @@ function warmup(
         [-warmup_points warmup_points],
     )
 
+    # get constraints from one of the workers
+    lbs, ubs = get_val_from(workers[1], :(COBREXA.get_bound_vectors(cobrexa_hit_and_run_warmup_model)))
+
     # free the data on workers
     map(fetch, remove_from.(workers, :cobrexa_hit_and_run_warmup_model))
-    lbs, ubs = get_bound_vectors(optmodel)
 
     return fluxes, lbs, ubs
 end
