@@ -53,14 +53,14 @@ function hit_and_run(
     N = 1000,
     keepevery = _constants.sampling_keep_iters,
     samplesize = _constants.sampling_size,
-    num_warmup_points = length(reactions(model)),
+    warmup_indices = collect(1:n_reactions(model)),
 )
 
     ws, lbs, ubs = warmup(
         model,
         optimizer;
         modifications = modifications,
-        warmup_points = collect(1:num_warmup_points),
+        warmup_points = warmup_indices,
     )
 
     samples = zeros(length(lbs), samplesize) # sample storage
@@ -73,12 +73,12 @@ function hit_and_run(
     use_warmup_points = true
     for n = 1:N
 
-        # direction = random point - current point
-        if updatesamplesizelength
-            direction .= (@view wpoints[:, rand(1:nwpts)]) - (@view current_point[:]) # use warmup points to find direction in warmup phase
+        if use_warmup_points
+            i = rand(1:size(ws, 1))
+            j = rand(1:size(ws, 2))
+            direction .= ws[i, j] - current_point # use warmup points to find direction in warmup phase
         else
-            direction .=
-                (@view samples[:, rand(1:(samplelength))]) - (@view current_point[:]) # after warmup phase, only find directions in sampled space
+            direction .= samples[:, rand(1:(samplelength))] - current_point # after warmup phase, only find directions in sampled space
         end
 
         λmax = Inf
@@ -87,12 +87,12 @@ function hit_and_run(
             δlower = lbs[i] - current_point[i]
             δupper = ubs[i] - current_point[i]
             # only consider the step size bound if the direction of travel is non-negligible
-            if direction_point[i] < -_constants.tolerance
-                lower = δupper / direction_point[i]
-                upper = δlower / direction_point[i]
-            elseif direction_point[i] > _constants.tolerance
-                lower = δlower / direction_point[i]
-                upper = δupper / direction_point[i]
+            if direction[i] < -_constants.tolerance
+                lower = δupper / direction[i]
+                upper = δlower / direction[i]
+            elseif direction[i] > _constants.tolerance
+                lower = δlower / direction[i]
+                upper = δupper / direction[i]
             else
                 lower = -Inf
                 upper = Inf
@@ -105,18 +105,18 @@ function hit_and_run(
             @warn "Infeasible direction at iteration $(n)..."
             continue
         end
-
+ 
         λ = rand() * (λmax - λmin) + λmin # random step size
-        current_point .= current_point .+ λ .* direction_point # will be feasible
+        current_point .= current_point .+ λ .* direction # will be feasible
 
         if n % keepevery == 0
             sample_num += 1
             samples[:, sample_num] .= current_point
             if sample_num >= samplesize
-                updatesamplesizelength = false # once the entire memory vector filled, stop using warm up points
+                use_warmup_points = false # once the entire memory vector filled, stop using warm up points
                 sample_num = 0 # reset, start replacing the older samples
             end
-            updatesamplesizelength && (samplelength += 1) # lags sample_num because the latter is a flag as well
+            use_warmup_points && (samplelength += 1) # lags sample_num because the latter is a flag as well
         end
 
     end
