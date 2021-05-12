@@ -73,7 +73,7 @@ function hit_and_run(
     map(fetch, save_at.(workers, :ubs, Ref(:($ubs))))
 
     # do in parallel! 
-    chains = dpmap(
+    samples = dpmap(
         x -> :($COBREXA._serial_hit_and_run(ws, lbs, ubs, $samplesize, $keepevery, $N)),
         CachingPool(workers),
         1:nchains,
@@ -83,6 +83,13 @@ function hit_and_run(
     map(fetch, remove_from.(workers, :ws))
     map(fetch, remove_from.(workers, :lbs))
     map(fetch, remove_from.(workers, :ubs))
+
+    # not sure how to do this better
+    vals = zeros(samplesize, length(lbs), nchains)
+    for c in 1:nchains
+        vals[:, :, c] = samples[c]'
+    end
+    chains = Chains(vals, reactions(model))
 
     return chains
 end
