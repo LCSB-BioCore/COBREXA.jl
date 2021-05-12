@@ -83,7 +83,7 @@ function hit_and_run(
 
     # not sure how to do this better
     vals = zeros(samplesize, length(lbs), nchains)
-    for c in 1:nchains
+    for c = 1:nchains
         vals[:, :, c] = samples[c]'
     end
     chains = Chains(vals, reactions(model))
