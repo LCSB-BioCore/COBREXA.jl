@@ -64,24 +64,27 @@ function hit_and_run(
         optimizer;
         modifications = modifications,
         workers = workers, # parallel
+        warmup_points = warmup_indices
     )
 
     # load warmup points to workers
-    save_at.(workers, :_cobrexa_hit_and_run_warmup, Ref(:($ws, $lbs, $ubs)))
+    save_at.(workers, :cobrexa_ws, Ref(:($ws)))
+    save_at.(workers, :cobrexa_lbs, Ref(:($lbs)))
+    save_at.(workers, :cobrexa_ubs, Ref(:($ubs)))
 
     # do in parallel! 
     samples = dpmap(
-        x -> :($COBREXA._serial_hit_and_run(ws, lbs, ubs, $samplesize, $keepevery, $N)),
+        x -> :($COBREXA._serial_hit_and_run(cobrexa_ws, cobrexa_lbs, cobrexa_ubs, $samplesize, $keepevery, $N)),
         CachingPool(workers),
         1:nchains,
     )
 
     # remove warmup points from workers
-    map(fetch, remove_from.(workers, :ws))
-    map(fetch, remove_from.(workers, :lbs))
-    map(fetch, remove_from.(workers, :ubs))
+    map(fetch, remove_from.(workers, :cobrexa_ws))
+    map(fetch, remove_from.(workers, :cobrexa_lbs))
+    map(fetch, remove_from.(workers, :cobrexa_ubs))
 
-    # not sure how to do this better
+    # not sure how to do this better - cat/vcat doesn't work, oh well 
     vals = zeros(samplesize, length(lbs), nchains)
     for c = 1:nchains
         vals[:, :, c] = samples[c]'
