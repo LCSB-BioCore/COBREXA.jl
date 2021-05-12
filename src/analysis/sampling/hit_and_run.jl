@@ -54,15 +54,39 @@ function hit_and_run(
     keepevery = _constants.sampling_keep_iters,
     samplesize = _constants.sampling_size,
     warmup_indices = collect(1:n_reactions(model)),
+    workers = [myid()],
+    nchains = 1,
 )
 
+    # get warmup points in parallel, similar to FVA
     ws, lbs, ubs = warmup(
         model,
         optimizer;
         modifications = modifications,
         warmup_points = warmup_indices,
+        workers = workers, # parallel
     )
 
+    # load warmup points to workers
+    map(fetch, save_at.(workers, :ws, Ref(:($ws))))
+    map(fetch, save_at.(workers, :lbs, Ref(:($lbs))))
+    map(fetch, save_at.(workers, :ubs, Ref(:($ubs))))
+   
+    # do in parallel! 
+    chains = dpmap(
+        x -> :($COBREXA._serial_hit_and_run(ws, lbs, ubs, $samplesize, $keepevery, $N)),
+        CachingPool(workers), 1:nchains,
+    )
+
+    # remove warmup points from workers
+    map(fetch, remove_from.(workers, :ws))
+    map(fetch, remove_from.(workers, :lbs))
+    map(fetch, remove_from.(workers, :ubs))
+
+    return chains
+end
+
+function _serial_hit_and_run(ws, lbs, ubs, samplesize, keepevery, N)
     samples = zeros(length(lbs), samplesize) # sample storage
     current_point = zeros(length(lbs))
     current_point .= ws[1, 1] # just use the first warmup point, randomness is introduced later
