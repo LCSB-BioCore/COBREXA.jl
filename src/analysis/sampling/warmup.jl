@@ -41,7 +41,10 @@ function warmup(
     )
 
     # get constraints from one of the workers
-    lbs, ubs = get_val_from(workers[1], :(COBREXA.get_bound_vectors(cobrexa_hit_and_run_warmup_model)))
+    lbs, ubs = get_val_from(
+        workers[1],
+        :(COBREXA.get_bound_vectors(cobrexa_hit_and_run_warmup_model)),
+    )
 
     # free the data on workers
     map(fetch, remove_from.(workers, :cobrexa_hit_and_run_warmup_model))

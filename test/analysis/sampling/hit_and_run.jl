@@ -13,9 +13,11 @@
         N = 5000_000,
         nchains = 3,
         samplesize = 10_000,
-        modifications = [change_constraint("EX_glc__D_e",-10, -10), 
-                        change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8)]
-        )
+        modifications = [
+            change_constraint("EX_glc__D_e", -10, -10),
+            change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
+        ],
+    )
 
     # # The sampling converges very slowly, so can't really do an accurate test 
     # with so few samples
