@@ -22,11 +22,7 @@ function warmup(
         mod(model, optmodel)
     end
 
-    save_model = :(
-        $optmodel
-    )
-
-    map(fetch, save_at.(workers, :cobrexa_hit_and_run_warmup_model, Ref(save_model)))
+    map(fetch, save_at.(workers, :cobrexa_hit_and_run_warmup_model, Ref(:($optmodel))))
 
     ret = m -> value.(m[:x]) # get all the fluxes
     # error occurs here :/
