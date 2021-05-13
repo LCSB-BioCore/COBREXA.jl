@@ -1,10 +1,23 @@
-Bootstrap: docker
-From: julia:latest
+Bootstrap: library
+From: crown421/default/juliabase:latest
 
-%environment
-  export JULIA_DEPOT_PATH=/tmp/.julia
+%setup
+    dir=`pwd`
+    git clone \
+    "file://$dir" \
+    ${SINGULARITY_ROOTFS}/Project
+
+%post
+    export JULIA_DEPOT_PATH=/user/.julia
+    export PATH=/opt/julia/bin:$PATH
+
+    cd Project
+
+    julia --project -e 'import Pkg; Pkg.add("SBML")'
+#    julia --project -e 'using Pkg; Pkg.instantiate()'
+#julia --project -e 'using Pkg; Pkg.precompile()'
+
+    chmod -R a+rX $JULIA_DEPOT_PATH
 
 %runscript
-  mkdir -p ${JULIA_DEPOT_PATH}
-  julia -e "import Pkg; Pkg.add(url=\"https://github.com/LCSB-BioCore/COBREXA.jl.git\")"
-  julia
+    julia --project=/Project -e 'using Pkg;  Pkg.status()'
