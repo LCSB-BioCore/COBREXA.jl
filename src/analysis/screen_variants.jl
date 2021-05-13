@@ -62,7 +62,7 @@ function screen_model_variants(
 
     map(fetch, save_at.(workers, :cobrexa_screen_model, Ref(model)))
     map(fetch, save_at.(workers, :cobrexa_screen_analysis_fn, Ref(analysis)))
-    map(fetch, get_from.(workers, :(precache!(cobrexa_screen_model))))
+    map(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_model)))))
 
     res = dpmap(
         mods -> :($COBREXA.screen_one_variant(
