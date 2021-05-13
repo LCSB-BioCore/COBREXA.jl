@@ -305,3 +305,21 @@ return `nothing`.
 function reaction_subsystem(model::MetabolicModel, reaction_id::String)::Maybe{String}
     return nothing
 end
+
+"""
+    precache!(a::MetabolicModel)::Nothing
+
+Do whatever is feasible to get the model into a state that can be read from
+as-quickly-as-possible. This may include e.g. generating helper index
+structures and loading delayed parts of the model from disk. The model should
+be modified "transparently" in-place. Analysis functions call this right before
+applying modifications or converting the model to the optimization model using
+[`make_optimization_model`](@ref); usually on the same machine where the
+optimizers (and, generally, the core analysis algorithms) will run. The calls
+are done in a good hope that the performance will be improved.
+
+By default, it should be safe to do nothing.
+"""
+function precache!(a::MetabolicModel)::Nothing
+    nothing
+end
