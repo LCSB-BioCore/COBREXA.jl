@@ -1,0 +1,10 @@
+Bootstrap: docker
+From: julia:latest
+
+%environment
+  export JULIA_DEPOT_PATH=/tmp/.julia
+
+%runscript
+  mkdir -p ${JULIA_DEPOT_PATH}
+  julia -e "import Pkg; Pkg.add(url=\"https://github.com/LCSB-BioCore/COBREXA.jl.git\")"
+  julia
