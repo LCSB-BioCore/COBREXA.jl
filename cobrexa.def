@@ -5,19 +5,18 @@ From: crown421/default/juliabase:latest
     dir=`pwd`
     git clone \
     "file://$dir" \
-    ${SINGULARITY_ROOTFS}/Project
+    ${SINGULARITY_ROOTFS}/project
 
 %post
     export JULIA_DEPOT_PATH=/user/.julia
     export PATH=/opt/julia/bin:$PATH
 
-    cd Project
+    cd project
+    julia --project -e 'import Pkg; Pkg.instantiate(); Pkg.build(); Pkg.precompile();'
 
-    julia --project -e 'import Pkg; Pkg.add("SBML")'
-#    julia --project -e 'using Pkg; Pkg.instantiate()'
-#julia --project -e 'using Pkg; Pkg.precompile()'
+    echo 'using COBREXA; COBREXA._print_banner();' > /project/.startup.jl
 
     chmod -R a+rX $JULIA_DEPOT_PATH
 
 %runscript
-    julia --project=/Project -e 'using Pkg;  Pkg.status()'
+  julia --banner=no --project=/project --compile=min -i /project/.startup.jl
