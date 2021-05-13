@@ -10,6 +10,9 @@ Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
 constraint.
 """
 function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.MAX_SENSE)
+
+    precache!(model)
+
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
