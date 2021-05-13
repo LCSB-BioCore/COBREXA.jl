@@ -158,13 +158,13 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
         SBML.Model(
             Dict(), # parameters
             Dict("" => []), # units
-            Dict([
-                comp =>
-                    SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing)
-                for comp in compss
-            ],),
-            Dict([
-                mid => SBML.Species(
+            Dict(
+                [comp =>
+                    SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing) for
+                 comp in compss],
+            ),
+            Dict(
+                [mid => SBML.Species(
                     nothing, # name
                     _default("", comps[mi]), # compartment
                     nothing, # no information about boundary conditions
@@ -174,14 +174,14 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     nothing, # only substance unit flags
                     _sbml_export_notes(metabolite_notes(mm, mid)),
                     _sbml_export_annotation(metabolite_annotations(mm, mid)),
-                ) for (mi, mid) in enumerate(mets)
-            ],),
-            Dict([
-                rid => SBML.Reaction(
-                    Dict([
-                        mets[i] => stoi[i, ri] for
-                        i in SparseArrays.nonzeroinds(stoi[:, ri])
-                    ],),
+                ) for (mi, mid) in enumerate(mets)],
+            ),
+            Dict(
+                [rid => SBML.Reaction(
+                    Dict(
+                        [mets[i] => stoi[i, ri] for
+                         i in SparseArrays.nonzeroinds(stoi[:, ri])],
+                    ),
                     (lbs[ri], ""),
                     (ubs[ri], ""),
                     ocs[ri],
@@ -192,16 +192,16 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     nothing,
                     _sbml_export_notes(reaction_notes(mm, rid)),
                     _sbml_export_annotation(reaction_annotations(mm, rid)),
-                ) for (ri, rid) in enumerate(rxns)
-            ],),
-            Dict([
-                gid => SBML.GeneProduct(
+                ) for (ri, rid) in enumerate(rxns)],
+            ),
+            Dict(
+                [gid => SBML.GeneProduct(
                     nothing,
                     nothing,
                     _sbml_export_notes(gene_notes(mm, gid)),
                     _sbml_export_annotation(gene_annotations(mm, gid)),
-                ) for gid in genes(mm)
-            ],),
+                ) for gid in genes(mm)],
+            ),
             Dict(), # function definitions
         ),
     )

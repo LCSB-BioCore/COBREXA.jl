@@ -70,5 +70,5 @@ deploydocs(
     repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"]).git",
     target = "build",
     branch = "gh-pages",
-    push_preview = true
+    push_preview = true,
 )
