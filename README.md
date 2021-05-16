@@ -60,10 +60,10 @@ answers to Julia specific questions.
 ### Quick start guide
 
 <!--quickstart_begin-->
-You can install COBREXA directly from the GitHub repository. Start `julia`,
-**press `]`** to switch to the Packaging environment, and type:
+You can install COBREXA from Julia repositories. Start `julia`, **press `]`** to
+switch to the Packaging environment, and type:
 ```
-add https://github.com/LCSB-BioCore/COBREXA.jl
+add COBREXA
 ```
 
 You also need to install your favorite solver supported by `JuMP.jl`, typing
