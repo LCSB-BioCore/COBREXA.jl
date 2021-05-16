@@ -130,25 +130,25 @@ using OSQP</code></pre><pre class="documenter-example-output">   Resolving packa
         change_constraint(&quot;R_EX_glc__D_e&quot;, -12, -12),
     ],
 )</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
-  &quot;R_EX_fum_e&quot;    =&gt; -0.0054306
-  &quot;R_ACONTb&quot;      =&gt; 6.51108
-  &quot;R_TPI&quot;         =&gt; 8.90211
-  &quot;R_SUCOAS&quot;      =&gt; -5.41568
-  &quot;R_GLNS&quot;        =&gt; 0.250914
-  &quot;R_EX_pi_e&quot;     =&gt; -3.85013
-  &quot;R_PPC&quot;         =&gt; 2.94799
-  &quot;R_O2t&quot;         =&gt; 25.1823
-  &quot;R_G6PDH2r&quot;     =&gt; 6.27109
-  &quot;R_TALA&quot;        =&gt; 1.90314
-  &quot;R_PPCK&quot;        =&gt; -0.00186526
-  &quot;R_EX_lac__D_e&quot; =&gt; -0.00399055
-  &quot;R_PGL&quot;         =&gt; 6.27111
-  &quot;R_H2Ot&quot;        =&gt; -33.9472
-  &quot;R_GLNabc&quot;      =&gt; 0.0126618
-  &quot;R_EX_co2_e&quot;    =&gt; 26.4219
-  &quot;R_EX_gln__L_e&quot; =&gt; -0.0126492
-  &quot;R_EX_nh4_e&quot;    =&gt; -5.67116
-  &quot;R_MALt2_2&quot;     =&gt; 0.00493596
+  &quot;R_EX_fum_e&quot;    =&gt; -0.00740519
+  &quot;R_ACONTb&quot;      =&gt; 6.50489
+  &quot;R_TPI&quot;         =&gt; 8.90216
+  &quot;R_SUCOAS&quot;      =&gt; -5.40139
+  &quot;R_GLNS&quot;        =&gt; 0.246959
+  &quot;R_EX_pi_e&quot;     =&gt; -3.85014
+  &quot;R_PPC&quot;         =&gt; 2.9436
+  &quot;R_O2t&quot;         =&gt; 25.1755
+  &quot;R_G6PDH2r&quot;     =&gt; 6.27635
+  &quot;R_TALA&quot;        =&gt; 1.90489
+  &quot;R_PPCK&quot;        =&gt; -0.00258038
+  &quot;R_EX_lac__D_e&quot; =&gt; -0.00523843
+  &quot;R_PGL&quot;         =&gt; 6.27637
+  &quot;R_H2Ot&quot;        =&gt; -33.9456
+  &quot;R_GLNabc&quot;      =&gt; 0.011269
+  &quot;R_EX_co2_e&quot;    =&gt; 26.4102
+  &quot;R_EX_gln__L_e&quot; =&gt; -0.0112578
+  &quot;R_EX_nh4_e&quot;    =&gt; -5.67679
+  &quot;R_MALt2_2&quot;     =&gt; 0.00661143
   ⋮               =&gt; ⋮</pre><p>The function also has the expectable second variant that returns a vector of solutions, in <a href="../../functions/#COBREXA.parsimonious_flux_balance_analysis_vec-Tuple"><code>parsimonious_flux_balance_analysis_vec</code></a>. Here, we utilize it to show how to use different optimizers for finding the optimum and for solving the quadratic problem. That may be preferable if the optimizer qualities differ for the differing tasks. pFBA allows you to specify <code>qp_modifications</code> that are applied after the original optimum is found, and before the quadratic part of the problem solving begins.</p><pre><code class="language-julia">vec_soln = parsimonious_flux_balance_analysis_vec(
     model,
     Tulip.Optimizer; # start with Tulip
@@ -180,4 +180,4 @@ using OSQP</code></pre><pre class="documenter-example-output">   Resolving packa
  -25.642083259145206
    0.0161569956400718
    0.004729690379188246
-   3.8887743479784547</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 12 May 2021 07:15">Wednesday 12 May 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+   3.8887743479784547</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 16 May 2021 09:33">Sunday 16 May 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
