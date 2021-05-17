@@ -34,12 +34,16 @@ for notebook in notebooks
 end
 
 # generate index.md from .template and the quickstart in README.md
-readme=open(f -> read(f, String), joinpath(@__DIR__, ".." ,"README.md"))
-quickstart = match(r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->", readme).captures[1]
-acks = match(r"<!--acknowledgements_begin-->\n([^\0]*)<!--acknowledgements_end-->", readme).captures[1]
-ack_logos = match(r"<!--ack_logos_begin-->\n([^\0]*)<!--ack_logos_end-->", readme).captures[1]
-index_md = open(f -> read(f, String),
-    joinpath(@__DIR__, "src", "index.md.template"))
+readme = open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md"))
+quickstart =
+    match(r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->", readme).captures[1]
+acks = match(
+    r"<!--acknowledgements_begin-->\n([^\0]*)<!--acknowledgements_end-->",
+    readme,
+).captures[1]
+ack_logos =
+    match(r"<!--ack_logos_begin-->\n([^\0]*)<!--ack_logos_end-->", readme).captures[1]
+index_md = open(f -> read(f, String), joinpath(@__DIR__, "src", "index.md.template"))
 index_md = replace(index_md, "<!--insert_quickstart-->\n" => quickstart)
 index_md = replace(index_md, "<!--insert_acknowledgements-->\n" => acks)
 index_md = replace(index_md, "<!--insert_ack_logos-->\n" => ack_logos)
