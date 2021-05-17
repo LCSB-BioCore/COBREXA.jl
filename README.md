@@ -69,7 +69,7 @@ add COBREXA
 You also need to install your favorite solver supported by `JuMP.jl`, typing
 e.g.:
 ```
-add GLPK
+add Tulip
 ```
 
 When the packages are installed, switch back to the "normal" julia shell by
@@ -80,7 +80,7 @@ flux balance analysis as follows:
 
 ```julia
 using COBREXA   # loads the package
-using GLPK      # loads the optimization solver
+using Tulip     # loads the optimization solver
 
 # download the model
 download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
@@ -89,7 +89,7 @@ download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml"
 model = load_model("e_coli_core.xml")
 
 # run a FBA
-fluxes = flux_balance_analysis_dict(model, GLPK.Optimizer)
+fluxes = flux_balance_analysis_dict(model, Tulip.Optimizer)
 ```
 
 The variable `fluxes` will now contain a dictionary of the computed optimal
@@ -104,7 +104,7 @@ Dict{String,Float64} with 95 entries:
   "R_EX_pi_e"     => -3.2149
   "R_PPC"         => 2.50431
   "R_O2t"         => 21.7995
-  "R_G6PDH2r"     => 4.95998
+  "R_G6PDH2r"     => 4.95999
   "R_TALA"        => 1.49698
   ⋮               => ⋮
 ```
