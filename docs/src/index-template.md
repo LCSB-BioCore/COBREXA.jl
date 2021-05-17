@@ -70,16 +70,4 @@ Pages = ["functions.md"]
 If you wish to contribute code, patches or improvements to `COBREXA.jl`, please
 read the basic [contribution guidelines and hints.](howToContribute.md).
 
-## Acknowledgements
-
-`COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
-the University of Luxembourg ([uni.lu/lcsb](https://www.uni.lu/lcsb)),
-cooperating with the Institute for Quantitative and Theoretical Biology at the Heinrich
-Heine University in Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
-
-The development was supported by European Union's Horizon 2020 Programme under
-PerMedCoE project ([permedcoe.eu](https://www.permedcoe.eu/)) agreement no. 951773.
-
-```@raw html
-<img src="assets/cobrexa.svg" alt="COBREXA logo" style="height:8ex;width:auto">   <img src="assets/unilu.svg" alt="Uni.lu logo" style="height:8ex;width:auto">   <img src="assets/lcsb.svg" alt="LCSB logo" style="height:8ex;width:auto">   <img src="assets/hhu.svg" alt="HHU logo" style="height:8ex;width:auto">   <img src="assets/qtb.svg" alt="QTB logo" style="height:8ex;width:auto">   <img src="assets/permedcoe.svg" alt="PerMedCoE logo" style="height:8ex;width:auto">
-```
+<!--insert_acknowledgements-->

@@ -34,14 +34,13 @@ for notebook in notebooks
 end
 
 # generate index.md from .template and the quickstart in README.md
-quickstart = match(
-    r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->",
-    open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md")),
-).captures[1]
-index_md = replace(
-    open(f -> read(f, String), joinpath(@__DIR__, "src", "index-template.md")),
-    "<!--insert_quickstart-->\n" => quickstart,
-)
+readme=open(f -> read(f, String), joinpath(@__DIR__, ".." ,"README.md"))
+quickstart = match(r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->", readme).captures[1]
+acks = match(r"<!--acknowledgements_begin-->\n([^\0]*)<!--acknowledgements_end-->", readme).captures[1]
+index_md = open(f -> read(f, String),
+    joinpath(@__DIR__, "src", "index-template.md"))
+index_md = replace(index_md, "<!--insert_quickstart-->\n" => quickstart)
+index_md = replace(index_md, "<!--insert_acknowledgements-->\n" => acks)
 open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
 # build the docs
