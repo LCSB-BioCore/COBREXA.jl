@@ -9,6 +9,11 @@
 
 # Constraint-Based Reconstruction and EXascale Analysis
 
+| **Repository** | **Tests** | **Coverage** | **How to contribute?** |
+|:--------------:|:-------:|:---------:|:---------:|
+| [![GitHub](https://img.shields.io/github/stars/LCSB-BioCore/COBREXA.jl?label=COBREXA.jl&style=social)](http://github.com/LCSB-BioCore/COBREXA.jl) | [![CI](https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml) | [![codecov](https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=H3WSWOBD7L)](https://codecov.io/gh/LCSB-BioCore/COBREXA.jl) | [![contrib](https://img.shields.io/badge/contributions-start%20here-green)](https://github.com/LCSB-BioCore/COBREXA.jl/blob/master/.github/CONTRIBUTING.md) |
+
+
 COBREXA is a toolkit for working with large constraint-based metabolic models,
 and a running very large number of analysis tasks on these models in parallel.
 Its main purpose is to make the methods of Constraint-based Reconstruction and
@@ -64,3 +69,9 @@ Pages = ["functions.md"]
 
 If you wish to contribute code, patches or improvements to `COBREXA.jl`, please
 read the basic [contribution guidelines and hints.](howToContribute.md).
+
+<!--insert_acknowledgements-->
+
+```@raw html
+<!--insert_ack_logos-->
+```
