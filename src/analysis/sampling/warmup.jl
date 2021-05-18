@@ -14,40 +14,37 @@ function warmup(
     optimizer;
     warmup_points::Vector{Int},
     modifications = [],
-    workers = [myid()],
+    workerids = [myid()],
 )
     # create optimization problem, apply constraints, load on all workers
     save_model = :(
         begin
             optmodel = $COBREXA.make_optimization_model($model, $optimizer)
-            for mod in $modifications
-                mod($model, optmodel)
-            end
             optmodel
         end
     )
 
-    map(fetch, save_at.(workers, :cobrexa_hit_and_run_warmup_model, Ref(save_model)))
+    map(fetch, save_at.(workerids, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
 
     ret = m -> value.(m[:x]) # get all the fluxes
     fluxes = dpmap(
         rid -> :($COBREXA._FVA_optimize_reaction(
-            cobrexa_hit_and_run_warmup_model,
+            cobrexa_sampling_warmup_optmodel,
             $rid,
             $ret,
         )),
-        CachingPool(workers),
+        CachingPool(workerids),
         [-warmup_points warmup_points],
     )
 
     # get constraints from one of the workers
     lbs, ubs = get_val_from(
-        workers[1],
-        :(COBREXA.get_bound_vectors(cobrexa_hit_and_run_warmup_model)),
+        workerids[1],
+        :($COBREXA.get_bound_vectors(cobrexa_sampling_warmup_optmodel)),
     )
 
     # free the data on workers
-    map(fetch, remove_from.(workers, :cobrexa_hit_and_run_warmup_model))
+    map(fetch, remove_from.(workerids, :cobrexa_sampling_warmup_optmodel))
 
     return fluxes, lbs, ubs
 end
