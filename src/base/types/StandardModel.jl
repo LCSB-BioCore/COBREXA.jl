@@ -307,8 +307,8 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     lbs, ubs = bounds(model)
     ocs = objective(model)
 
-    @sync begin 
-        gtask = Base.Threads.@spawn begin 
+    @sync begin
+        gtask = Base.Threads.@spawn begin
             for gid in gids
                 modelgenes[gid] = Gene(
                     gid;
@@ -318,7 +318,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             end
         end
 
-        mtask = Base.Threads.@spawn begin 
+        mtask = Base.Threads.@spawn begin
             for mid in metids
                 modelmetabolites[mid] = Metabolite(
                     mid;
