@@ -303,44 +303,53 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     metids = metabolites(model)
     rxnids = reactions(model)
 
-    for gid in gids
-        modelgenes[gid] = Gene(
-            gid;
-            notes = gene_notes(model, gid),
-            annotations = gene_annotations(model, gid),
-        ) # TODO: add name accessor
-    end
-
-    for mid in metids
-        modelmetabolites[mid] = Metabolite(
-            mid;
-            charge = metabolite_charge(model, mid),
-            formula = _maybemap(_unparse_formula, metabolite_formula(model, mid)),
-            compartment = metabolite_compartment(model, mid),
-            notes = metabolite_notes(model, mid),
-            annotations = metabolite_annotations(model, mid),
-        )
-    end
-
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
     ocs = objective(model)
-    for (i, rid) in enumerate(rxnids)
-        rmets = Dict{String,Float64}()
-        for (j, stoich) in zip(findnz(S[:, i])...)
-            rmets[metids[j]] = stoich
+
+    @sync begin 
+        gtask = Base.Threads.@spawn begin 
+            for gid in gids
+                modelgenes[gid] = Gene(
+                    gid;
+                    notes = gene_notes(model, gid),
+                    annotations = gene_annotations(model, gid),
+                ) # TODO: add name accessor
+            end
         end
-        modelreactions[rid] = Reaction(
-            rid;
-            metabolites = rmets,
-            lb = lbs[i],
-            ub = ubs[i],
-            grr = reaction_gene_association(model, rid),
-            objective_coefficient = ocs[i],
-            notes = reaction_notes(model, rid),
-            annotations = reaction_annotations(model, rid),
-            subsystem = reaction_subsystem(model, rid),
-        ) # TODO: add name accessor
+
+        mtask = Base.Threads.@spawn begin 
+            for mid in metids
+                modelmetabolites[mid] = Metabolite(
+                    mid;
+                    charge = metabolite_charge(model, mid),
+                    formula = _maybemap(_unparse_formula, metabolite_formula(model, mid)),
+                    compartment = metabolite_compartment(model, mid),
+                    notes = metabolite_notes(model, mid),
+                    annotations = metabolite_annotations(model, mid),
+                )
+            end
+        end
+
+        rtask = Base.Threads.@spawn begin
+            for (i, rid) in enumerate(rxnids)
+                rmets = Dict{String,Float64}()
+                for (j, stoich) in zip(findnz(S[:, i])...)
+                    rmets[metids[j]] = stoich
+                end
+                modelreactions[rid] = Reaction(
+                    rid;
+                    metabolites = rmets,
+                    lb = lbs[i],
+                    ub = ubs[i],
+                    grr = reaction_gene_association(model, rid),
+                    objective_coefficient = ocs[i],
+                    notes = reaction_notes(model, rid),
+                    annotations = reaction_annotations(model, rid),
+                    subsystem = reaction_subsystem(model, rid),
+                ) # TODO: add name accessor
+            end
+        end
     end
 
     return StandardModel(

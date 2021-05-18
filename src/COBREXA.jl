@@ -12,6 +12,7 @@ using OrderedCollections
 using Random
 using SparseArrays
 using Statistics
+using Base.Threads
 
 import Base: findfirst, getindex, show
 import Pkg
