@@ -157,7 +157,7 @@ function Base.join(
     reaction_cumsum = cumsum(reaction_lengths)
     metabolite_cumsum = cumsum(metabolite_lengths)
     for i = 1:length(models)
-        species = isempty(species_names) ? "species" : species_names[i]
+        species = isempty(species_names) ? "species_$(i)" : species_names[i]
         tlbs, tubs = bounds(models[i])
         lbs[reaction_offset[i]+1:reaction_cumsum[i]] .= tlbs
         ubs[reaction_offset[i]+1:reaction_cumsum[i]] .= tubs
@@ -172,7 +172,7 @@ function Base.join(
     if add_biomass_objective
         rxns[end] = "community_biomass"
         for i=1:length(models)
-            species = isempty(species_names) ? "species" : species_names[i]
+            species = isempty(species_names) ? "species_$(i)" : species_names[i]
             mets[end-length(biomass_ids)+i] = "$(species)_".*biomass_ids[i]
         end
     end
