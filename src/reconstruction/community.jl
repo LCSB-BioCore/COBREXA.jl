@@ -152,7 +152,13 @@ function Base.join(
             kstart += 1
         end
     end
-    S = sparse(I[1:kstart-1], J[1:kstart-1], V[1:kstart-1], n_metabolites_total, n_reactions_total) # could be that some microbes don't have all the exchanges
+    S = sparse(
+        I[1:kstart-1],
+        J[1:kstart-1],
+        V[1:kstart-1],
+        n_metabolites_total,
+        n_reactions_total,
+    ) # could be that some microbes don't have all the exchanges
 
     reaction_cumsum = cumsum(reaction_lengths)
     metabolite_cumsum = cumsum(metabolite_lengths)
@@ -166,14 +172,16 @@ function Base.join(
         mets[metabolite_offset[i]+1:metabolite_cumsum[i]] =
             "$(species)_" .* metabolites(models[i])
     end
-    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .= exchange_met_ids
-    rxns[reaction_cumsum[end]+1:reaction_cumsum[end]+length(exchange_rxn_ids)] .= exchange_rxn_ids
-    
+    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .=
+        exchange_met_ids
+    rxns[reaction_cumsum[end]+1:reaction_cumsum[end]+length(exchange_rxn_ids)] .=
+        exchange_rxn_ids
+
     if add_biomass_objective
         rxns[end] = "community_biomass"
-        for i=1:length(models)
+        for i = 1:length(models)
             species = isempty(species_names) ? "species_$(i)" : species_names[i]
-            mets[end-length(biomass_ids)+i] = "$(species)_".*biomass_ids[i]
+            mets[end-length(biomass_ids)+i] = "$(species)_" .* biomass_ids[i]
         end
     end
 
