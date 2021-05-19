@@ -14,9 +14,14 @@ Append `model` to `cmodel` where `cmodel` is a pre-existing community model with
 `exchange_met_ids`. If an objective function has already been assigned then supply its column index in `objective_col`
 and the metabolites used by the objective in `objective_rows` as well as the weight to assign the new
 """
-function Base.append!(cmodel::CoreModel, model::M, exchange_rxn_ids::Vector{String}, exchange_met_ids::Vector{String}; 
-   species_name="", objective_ind=0
-    ) where {M<:MetabolicModel}
+function Base.append!(
+    cmodel::CoreModel,
+    model::M,
+    exchange_rxn_ids::Vector{String},
+    exchange_met_ids::Vector{String};
+    species_name = "",
+    objective_ind = 0,
+) where {M<:MetabolicModel}
     cmI, cmJ, cmV = findnz(cmodel)
     mI, mJ, mV = findnz(model)
 
@@ -27,8 +32,8 @@ function Base.append!(cmodel::CoreModel, model::M, exchange_rxn_ids::Vector{Stri
     # find location of environmental exchange reactions
     ex_mets = indexin(exchange_met_ids, metabolites(cmodel))
     ex_rxns = indexin(exchange_rxn_ids, reactions(cmodel))
-    
-    
+
+
 end
 
 """
@@ -57,12 +62,22 @@ reaction. Note, this reaction is unspecified, further action needs to be taken
 to specify it, e.g. assign weights to the last column of the stoichiometric matrix
 in the rows corresponding to the biomass metabolites.
 """
-function Base.join(models::Vector{M}, exchange_rxn_ids::Vector{String}, exchange_met_ids::Vector{String}; 
-    add_biomass_objective=true, biomass_ids=String[], species_names=String[]
-    ) where {M<:MetabolicModel}
-    
+function Base.join(
+    models::Vector{M},
+    exchange_rxn_ids::Vector{String},
+    exchange_met_ids::Vector{String};
+    add_biomass_objective = true,
+    biomass_ids = String[],
+    species_names = String[],
+) where {M<:MetabolicModel}
+
     if add_biomass_objective && isempty(biomass_ids)
-        throw(DomainError("biomass_ids", "Please add supply the string ids of the biomass functions when `add_biomass_objective` is true."))
+        throw(
+            DomainError(
+                "biomass_ids",
+                "Please add supply the string ids of the biomass functions when `add_biomass_objective` is true.",
+            ),
+        )
     end
 
     # get offsets to construct community S
@@ -70,7 +85,7 @@ function Base.join(models::Vector{M}, exchange_rxn_ids::Vector{String}, exchange
     metabolite_lengths = [n_metabolites(model) for model in models]
     reaction_offset = [0; cumsum(reaction_lengths[1:end-1])]
     metabolite_offset = [0; cumsum(metabolite_lengths[1:end-1])]
-    
+
     # get each model's S matrix (needed for the size calculations)
     stoichs = [stoichiometry(model) for model in models]
     nnzs = [findnz(stoich) for stoich in stoichs] # nonzero indices per model
@@ -79,33 +94,36 @@ function Base.join(models::Vector{M}, exchange_rxn_ids::Vector{String}, exchange
     column_add = add_biomass_objective ? 1 : 0 # objective rxn
     row_add = add_biomass_objective ? length(models) : 0 # biomass as metabolites
     nnz_add = add_biomass_objective ? (1 + length(models)) : 0
-    nnz_total = sum(length(first(nnz)) for nnz in nnzs) + length(models)*length(exchange_rxn_ids) + length(exchange_met_ids) + nnz_add
+    nnz_total =
+        sum(length(first(nnz)) for nnz in nnzs) +
+        length(models) * length(exchange_rxn_ids) +
+        length(exchange_met_ids) + nnz_add
     n_reactions_metabolic = sum(reaction_lengths)
     n_reactions_total = n_reactions_metabolic + length(exchange_rxn_ids) + column_add
     n_metabolites_metabolic = sum(metabolite_lengths)
     n_metabolites_total = n_metabolites_metabolic + length(exchange_met_ids) + row_add
-    
+
     # Create empty storage vectors
     lbs = spzeros(n_reactions_total)
     ubs = spzeros(n_reactions_total)
-    rxns = Array{String, 1}(undef, n_reactions_total)
-    mets = Array{String, 1}(undef, n_metabolites_total)
-    I = Array{Int, 1}(undef, nnz_total)
-    J = Array{Int, 1}(undef, nnz_total)
-    V = Array{Float64, 1}(undef, nnz_total)
+    rxns = Array{String,1}(undef, n_reactions_total)
+    mets = Array{String,1}(undef, n_metabolites_total)
+    I = Array{Int,1}(undef, nnz_total)
+    J = Array{Int,1}(undef, nnz_total)
+    V = Array{Float64,1}(undef, nnz_total)
 
     # build metabolic components
     kstart = 1
-    for i in 1:length(models)
+    for i = 1:length(models)
         kend = kstart + length(nnzs[i][3]) - 1
-        rng = kstart:kend 
+        rng = kstart:kend
         I[rng] .= nnzs[i][1] .+ metabolite_offset[i]
         J[rng] .= nnzs[i][2] .+ reaction_offset[i]
         V[rng] .= nnzs[i][3]
         kstart += length(nnzs[i][3])
     end
     # build environmental components
-    for i in 1:length(models)
+    for i = 1:length(models)
         exchange_rxn_inds = indexin(exchange_rxn_ids, reactions(models[i]))
         for (n, ex_rxn) in enumerate(exchange_rxn_inds) # each exchange rxn has one exchange met
             isnothing(ex_rxn) && continue
@@ -113,11 +131,11 @@ function Base.join(models::Vector{M}, exchange_rxn_ids::Vector{String}, exchange
             I[kstart] = n_metabolites_metabolic + n
             J[kstart] = ex_rxn + reaction_offset[i]
             V[kstart] = nnzs[i][3][ex_rxn]
-            kstart+=1
+            kstart += 1
         end
     end
     # build diagonal environmental exchanges
-    for i=1:length(exchange_rxn_ids)
+    for i = 1:length(exchange_rxn_ids)
         I[kstart] = n_metabolites_metabolic + i
         J[kstart] = n_reactions_metabolic + i
         V[kstart] = -1.0
@@ -126,41 +144,36 @@ function Base.join(models::Vector{M}, exchange_rxn_ids::Vector{String}, exchange
 
     if add_biomass_objective
         n_before_biomass_row = n_metabolites_metabolic + length(exchange_met_ids)
-        for i=1:length(models)
+        for i = 1:length(models)
             biomass_ind = first(indexin([biomass_ids[i]], reactions(models[i])))
-            I[kstart] = i + n_before_biomass_row 
+            I[kstart] = i + n_before_biomass_row
             J[kstart] = biomass_ind + reaction_offset[i]
-            V[kstart] = 1.0 
-            kstart+=1
+            V[kstart] = 1.0
+            kstart += 1
         end
     end
     S = sparse(I[1:kstart-1], J[1:kstart-1], V[1:kstart-1]) # could be that some microbes don't have all the exchanges
 
     reaction_cumsum = cumsum(reaction_lengths)
     metabolite_cumsum = cumsum(metabolite_lengths)
-    for i=1:length(models)
+    for i = 1:length(models)
         species = isempty(species_names) ? "species" : species_names[i]
         tlbs, tubs = bounds(models[i])
         lbs[reaction_offset[i]+1:reaction_cumsum[i]] .= tlbs
-        ubs[reaction_offset[i]+1:reaction_cumsum[i]] .= tubs    
-        rxns[reaction_offset[i]+1:reaction_cumsum[i]] = "$(species)_".*reactions(models[i])
-        mets[metabolite_offset[i]+1:metabolite_cumsum[i]] = "$(species)_".*metabolites(models[i])
+        ubs[reaction_offset[i]+1:reaction_cumsum[i]] .= tubs
+        rxns[reaction_offset[i]+1:reaction_cumsum[i]] =
+            "$(species)_" .* reactions(models[i])
+        mets[metabolite_offset[i]+1:metabolite_cumsum[i]] =
+            "$(species)_" .* metabolites(models[i])
     end
-    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .= exchange_met_ids
+    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .=
+        exchange_met_ids
     if add_biomass_objective
         rxns[end] = "community_biomass"
-        mets[end-length(biomass_ids)+1:end] = "$(species)_".*biomass_ids
+        mets[end-length(biomass_ids)+1:end] = "$(species)_" .* biomass_ids
     end
-    
-    return CoreModel(
-            S, 
-            spzeros(size(S, 1)), 
-            spzeros(size(S, 2)), 
-            lbs, 
-            ubs, 
-            rxns, 
-            mets,
-            )
+
+    return CoreModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
 end
 
 
@@ -178,7 +191,7 @@ function all_boundaries(model::M) where {M<:MetabolicModel}
     S = stoichiometry(model)
     rxns = reactions(model)
     mets = metabolites(model)
-    for i in 1:size(S, 2)
+    for i = 1:size(S, 2)
         j, b = findnz(S[:, i])
         if length(j) == 1
             push!(boundary_mets, mets[first(j)])
