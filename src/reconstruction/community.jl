@@ -7,33 +7,80 @@ function add_objective!()
 
 end
 
+
+
 """
-append!()
+push!()
 
 Append `model` to `cmodel` where `cmodel` is a pre-existing community model with `exchange_rxn_ids` and
 `exchange_met_ids`. If an objective function has already been assigned then supply its column index in `objective_col`
 and the metabolites used by the objective in `objective_rows` as well as the weight to assign the new
 """
-function Base.append!(
+function Base.push!(
     cmodel::CoreModel,
     model::M,
+    exchange_met_ids::Vector{String},
     exchange_rxn_ids::Vector{String},
-    exchange_met_ids::Vector{String};
-    species_name = "",
-    objective_ind = 0,
+    species_name,
+    has_biomass_objective;
+    biomass_id = "",
 ) where {M<:MetabolicModel}
-    cmI, cmJ, cmV = findnz(cmodel)
-    mI, mJ, mV = findnz(model)
+   
+    if has_biomass_objective && biomass_id == ""
+        throw(DomainError("Argument required.", "The community uses a biomass objective function, please supply the objective id of the model you want to add."))
+    end
 
-    nI = zeros(Int, length(cmI) + length(mI))
-    nJ = zeros(Int, length(cmJ) + length(mJ))
-    nV = zeros(Int, length(cmV) + length(mV))
+    n_cmodel_rows, n_cmodel_cols = size(stoichiometry(cmodel))
+    Iadd, Jadd, Vadd = findnz(stoichiometry(model))
+    add_row = has_biomass_objective ? 1 : 0
+    n_metabolites_total = 
+    n_reactions_total = 
+    # shift to fit into bigger model
+    Iadd .+= n_cmodel_rows
+    Jadd .+= n_cmodel_cols
 
-    # find location of environmental exchange reactions
-    ex_mets = indexin(exchange_met_ids, metabolites(cmodel))
-    ex_rxns = indexin(exchange_rxn_ids, reactions(cmodel))
+    exchange_met_community_inds = indexin(exchange_met_ids, metabolites(cmodel))
+    if any(isnothing.(exchange_met_community_inds))
+        throw(DomainError("Exchange metabolite not found.", "Exchange metabolite not found in community model."))
+    end
+    exchange_rxn_model_inds = indexin(exchange_rxn_ids, reactions(model))
+    
+    # when adding a single model not that many reactions, push! okay?
+    for i=1:length(exchange_met_community_inds)
+        isnothing(exchange_rxn_model_inds[i]) && continue
+        push!(Iadd, n_cmodel_rows + exchange_met_community_inds[i])
+        push!(Jadd, n_cmodel_cols + exchange_rxn_model_inds[i])
+        push!(Vadd, 1.0)
+    end
 
+    if has_biomass_objective
+        biomass_ind = first(indexin([biomass_id]), reactions(model))
 
+        push!(Iadd, n_cmodel_rows + )
+        push!(Jadd, n_cmodel_cols + )
+        push!(Vadd, 1.0)
+    end
+
+    I, J, V = findnz(stoichiometry(cmodel))
+    I = [I; Iadd]
+    J = [J; Jadd]
+    V = [V; Vadd]
+    S = sparse(I, J, V, n_metabolites_total, n_reactions_total)
+
+    lbsadd, ubsadd = bounds(model)
+    lbs = [lbs; lbsadd]
+    ubs = [lbs; ubsadd]
+
+    rxnsadd = "$(species_name)_".reactions(model)
+    if has_biomass_objective
+        metsadd = ["$(species_name)_".*metabolites(model); "$(species_name)_"*biomass_id]
+    else
+        metsadd = "$(species_name)_".metabolites(model)
+    end
+    rxns = [rxns; rxnsadd]
+    mets = [mets; metsadd]
+
+    return CoreModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
 end
 
 """
@@ -112,7 +159,7 @@ function Base.join(
     J = Array{Int,1}(undef, nnz_total)
     V = Array{Float64,1}(undef, nnz_total)
 
-    # build metabolic components
+    # build metabolic components, block diagonals
     kstart = 1
     for i = 1:length(models)
         kend = kstart + length(nnzs[i][3]) - 1
@@ -122,7 +169,7 @@ function Base.join(
         V[rng] .= nnzs[i][3]
         kstart += length(nnzs[i][3])
     end
-    # build environmental components
+    # build environmental - exchange links
     for i = 1:length(models)
         exchange_rxn_inds = indexin(exchange_rxn_ids, reactions(models[i]))
         for (n, ex_rxn) in enumerate(exchange_rxn_inds) # each exchange rxn has one exchange met
@@ -130,7 +177,7 @@ function Base.join(
             # connect environmental metabolite with exchange metabolite
             I[kstart] = n_metabolites_metabolic + n
             J[kstart] = ex_rxn + reaction_offset[i]
-            V[kstart] = nnzs[i][3][ex_rxn]
+            V[kstart] = -nnzs[i][3][ex_rxn] # ex is normally negative, so make connection positive
             kstart += 1
         end
     end
@@ -158,7 +205,7 @@ function Base.join(
         V[1:kstart-1],
         n_metabolites_total,
         n_reactions_total,
-    ) # could be that some microbes don't have all the exchanges
+    ) # could be that some microbes don't have all the exchanges, hence kstart-1
 
     reaction_cumsum = cumsum(reaction_lengths)
     metabolite_cumsum = cumsum(metabolite_lengths)
