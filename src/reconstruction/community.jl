@@ -166,16 +166,19 @@ function Base.join(
         mets[metabolite_offset[i]+1:metabolite_cumsum[i]] =
             "$(species)_" .* metabolites(models[i])
     end
-    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .=
-        exchange_met_ids
+    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .= exchange_met_ids
+    rxns[reaction_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_rxn_ids)] .= exchange_rxn_ids
+    
     if add_biomass_objective
         rxns[end] = "community_biomass"
-        mets[end-length(biomass_ids)+1:end] = "$(species)_" .* biomass_ids
+        for i=1:length(models)
+            species = isempty(species_names) ? "species" : species_names[i]
+            mets[end-length(biomass_ids)+i] = "$(species)_".*biomass_ids[i]
+        end
     end
 
     return CoreModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
 end
-
 
 """
     all_boundaries(model::M) where {M<:MetabolicModel}
