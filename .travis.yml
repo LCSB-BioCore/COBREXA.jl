@@ -1,10 +1,13 @@
 language: julia
 
+branches:
+  only:
+    - master
+
 os:
     - linux
 
 julia:
-    - 1.0
     - 1.6
 
 notifications:
