@@ -25,28 +25,38 @@ function Base.push!(
     has_biomass_objective;
     biomass_id = "",
 ) where {M<:MetabolicModel}
-   
+
     if has_biomass_objective && biomass_id == ""
-        throw(DomainError("Argument required.", "The community uses a biomass objective function, please supply the objective id of the model you want to add."))
+        throw(
+            DomainError(
+                "Argument required.",
+                "The community uses a biomass objective function, please supply the objective id of the model you want to add.",
+            ),
+        )
     end
 
     n_cmodel_rows, n_cmodel_cols = size(stoichiometry(cmodel))
     Iadd, Jadd, Vadd = findnz(stoichiometry(model))
     add_row = has_biomass_objective ? 1 : 0
-    n_metabolites_total = 
-    n_reactions_total = 
-    # shift to fit into bigger model
-    Iadd .+= n_cmodel_rows
+    n_metabolites_total =
+        n_reactions_total =
+        # shift to fit into bigger model
+            Iadd .+= n_cmodel_rows
     Jadd .+= n_cmodel_cols
 
     exchange_met_community_inds = indexin(exchange_met_ids, metabolites(cmodel))
     if any(isnothing.(exchange_met_community_inds))
-        throw(DomainError("Exchange metabolite not found.", "Exchange metabolite not found in community model."))
+        throw(
+            DomainError(
+                "Exchange metabolite not found.",
+                "Exchange metabolite not found in community model.",
+            ),
+        )
     end
     exchange_rxn_model_inds = indexin(exchange_rxn_ids, reactions(model))
-    
+
     # when adding a single model not that many reactions, push! okay?
-    for i=1:length(exchange_met_community_inds)
+    for i = 1:length(exchange_met_community_inds)
         isnothing(exchange_rxn_model_inds[i]) && continue
         push!(Iadd, n_cmodel_rows + exchange_met_community_inds[i])
         push!(Jadd, n_cmodel_cols + exchange_rxn_model_inds[i])
@@ -73,7 +83,8 @@ function Base.push!(
 
     rxnsadd = "$(species_name)_".reactions(model)
     if has_biomass_objective
-        metsadd = ["$(species_name)_".*metabolites(model); "$(species_name)_"*biomass_id]
+        metsadd =
+            ["$(species_name)_" .* metabolites(model); "$(species_name)_" * biomass_id]
     else
         metsadd = "$(species_name)_".metabolites(model)
     end
