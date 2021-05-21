@@ -84,7 +84,7 @@ function Base.push!(
 end
 
 """
-    Base.join(models::Vector{M}, 
+    join(models::Vector{M}, 
         exchange_rxn_ids::Vector{String}, 
         exchange_met_ids::Vector{String}; 
         add_biomass_objective=false, 
@@ -94,7 +94,7 @@ end
 
 Return a `CoreModel` representing the community model of `models` joined through
 their `exchange_rxn_ids` and `exchange_met_ids`. These exchange reactions and
-metabolites are converted into environmental metabolites that link the models.
+metabolites link to environmental metabolites and reactions.
 Optionally specify `species_names` to append a specific name to each reaction
 and metabolite of an organism for easier reference (default is `species_i` for
 each model index i in `models`). Note, the bounds of the environmental variables
@@ -109,6 +109,29 @@ reaction. It also creates biomass "metabolites" that can be used in this
 objective reaction. Note, this reaction is unspecified, further action needs to
 be taken to specify it, e.g. assign weights to the last column of the
 stoichiometric matrix in the rows corresponding to the biomass metabolites.
+
+To further clarify how this `join` works. Suppose you have 2 organisms with
+stoichiometric matrices S₁ and S₂ and you want to link them with `exchange_met_ids = [em₁, em₂, em₃, ...]`
+and `exchange_rxn_ids = [er₁, er₂, er₃, ...]`. Then a new community stoichiometric matrix is constructed
+that looks like this:
+```
+            _      er₁  er₂  er₃  ...  b_
+           |S₁                           |
+           |   S₂                        |
+        em₁|                             |
+S   =   em₂|                             |
+        em₃|                             |
+        ...|                             |
+        bm₁|                             |  
+        bm₂|_                           _|
+
+```
+Each of the exchange reactions in each model get linked to `emᵢ` and these get
+linked to `erᵢ`. These `erᵢ` behave like normal single organism exchange
+reactions. When `add_biomass_objective` is true each model's biomass becomes a
+pseudo-metabolite (`bmᵢ`). These can be weighted in column `b`, called the
+`community_biomass` reaction in the communit model, if desired. Refer to the 
+tutorial if this is unclear.
 
 # Example
 ```
