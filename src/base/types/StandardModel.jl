@@ -311,25 +311,24 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         lbs, ubs = bounds(model)
         ocs = objective(model)
     end
-    
+
     @timeit timer "assign genes" begin
-    # gtask = Base.Threads.@spawn begin
+        # gtask = Base.Threads.@spawn begin
         for gid in gids
             notes = @timeit timer "gene_notes" gene_notes(model, gid)
             annotations = @timeit timer "gene_annotations" gene_annotations(model, gid)
-            modelgenes[gid] = Gene(
-                gid;
-                notes = notes,
-                annotations = annotations,
-            ) # TODO: add name accessor
+            modelgenes[gid] = Gene(gid; notes = notes, annotations = annotations) # TODO: add name accessor
         end
     end
 
     @timeit timer "assign metabolites" begin
-    # mtask = Base.Threads.@spawn begin
+        # mtask = Base.Threads.@spawn begin
         for mid in metids
             charge = @timeit timer "charge" metabolite_charge(model, mid)
-            formula = @timeit timer "formula" _maybemap(_unparse_formula, metabolite_formula(model, mid))
+            formula = @timeit timer "formula" _maybemap(
+                _unparse_formula,
+                metabolite_formula(model, mid),
+            )
             compartment = @timeit timer "compartment" metabolite_compartment(model, mid)
             notes = @timeit timer "notes" metabolite_notes(model, mid)
             annotations = @timeit timer "annotations" metabolite_annotations(model, mid)
@@ -345,7 +344,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     end
 
     @timeit timer "assign reactions" begin
-    # rtask = Base.Threads.@spawn begin
+        # rtask = Base.Threads.@spawn begin
 
         for (i, rid) in enumerate(rxnids)
 
@@ -354,10 +353,10 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             annotations = @timeit timer "annotations" reaction_annotations(model, rid)
             subsys = @timeit timer "subsystem" reaction_subsystem(model, rid)
             @timeit timer "get reaction equation" begin
-            rmets = Dict{String,Float64}()
-            for (j, stoich) in zip(findnz(S[:, i])...)
-                rmets[metids[j]] = stoich
-            end
+                rmets = Dict{String,Float64}()
+                for (j, stoich) in zip(findnz(S[:, i])...)
+                    rmets[metids[j]] = stoich
+                end
             end
             modelreactions[rid] = Reaction(
                 rid;
@@ -376,7 +375,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     # wait(rtask)
     # wait(mtask)
     # wait(gtask)
-    
+
     show(timer)
     println()
     return StandardModel(
