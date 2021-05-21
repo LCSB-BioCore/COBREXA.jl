@@ -14,9 +14,9 @@ mutable struct Serialized{M} <: MetabolicModel where {M<:MetabolicModel}
     filename::String
 end
 
-function _on_precached(m::Serialized, f)
+function _on_precached(m::Serialized, f, args...)
     precache!(m)
-    f(m.m)
+    f(m.m, args...)
 end
 
 reactions(m::Serialized) = _on_precached(m, reactions)
@@ -32,16 +32,18 @@ n_coupling_constraints(m::Serialized) = _on_precached(m, n_coupling_constraints)
 coupling_bounds(m::Serialized) = _on_precached(m, coupling_bounds)
 genes(m::Serialized) = _on_precached(m, genes)
 n_genes(m::Serialized) = _on_precached(m, n_genes)
-metabolite_formula(m::Serialized) = _on_precached(m, metabolite_formula)
-metabolite_charge(m::Serialized) = _on_precached(m, metabolite_charge)
-reaction_annotations(m::Serialized) = _on_precached(m, reaction_annotations)
-metabolite_annotations(m::Serialized) = _on_precached(m, metabolite_annotations)
-gene_annotations(m::Serialized) = _on_precached(m, gene_annotations)
-reaction_nodes(m::Serialized) = _on_precached(m, reaction_nodes)
-metabolite_nodes(m::Serialized) = _on_precached(m, metabolite_nodes)
-gene_notes(m::Serialized) = _on_precached(m, gene_notes)
-metabolite_compartment(m::Serialized) = _on_precached(m, metabolite_compartment)
-reaction_subsystem(m::Serialized) = _on_precached(m, reaction_subsystem)
+metabolite_formula(m::Serialized, id::String) = _on_precached(m, metabolite_formula, id)
+metabolite_charge(m::Serialized, id::String) = _on_precached(m, metabolite_charge, id)
+reaction_annotations(m::Serialized, id::String) = _on_precached(m, reaction_annotations, id)
+metabolite_annotations(m::Serialized, id::String) =
+    _on_precached(m, metabolite_annotations, id)
+gene_annotations(m::Serialized, id::String) = _on_precached(m, gene_annotations, id)
+reaction_notes(m::Serialized, id::String) = _on_precached(m, reaction_notes, id)
+metabolite_notes(m::Serialized, id::String) = _on_precached(m, metabolite_notes, id)
+gene_notes(m::Serialized, id::String) = _on_precached(m, gene_notes, id)
+metabolite_compartment(m::Serialized, id::String) =
+    _on_precached(m, metabolite_compartment, id)
+reaction_subsystem(m::Serialized, id::String) = _on_precached(m, reaction_subsystem, id)
 
 """
     precache!(model::Serialized{MetabolicModel})::Nothing
