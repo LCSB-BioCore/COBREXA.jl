@@ -29,7 +29,7 @@ function warmup(
 
     # load on all workers
     map(fetch, save_at.(workerids, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
-    
+
     # generate warm up points, like FVA
     ret = m -> value.(m[:x]) # get all the fluxes, not just max/min like FVA
     fluxes = dpmap(

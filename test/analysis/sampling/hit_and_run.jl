@@ -12,7 +12,7 @@
     nps = 4 - nprocs()
 
     # load extra processes, have at least 4 available
-    if 1 <= nps <= 3 
+    if 1 <= nps <= 3
         addprocs(nps)
     end
     @everywhere using COBREXA, Tulip

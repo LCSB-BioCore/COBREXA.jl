@@ -11,7 +11,7 @@
     nps = 4 - nprocs()
 
     # load extra processes, have at least 4 available
-    if 1 <= nps <= 3 
+    if 1 <= nps <= 3
         addprocs(nps)
     end
     @everywhere using COBREXA, Tulip
@@ -27,10 +27,10 @@
 
     ind = first(indexin(["EX_glc__D_e"], reactions(model)))
     @test size(ws) == (95, 2)
-    @test size(ws[1,1]) == (95,)
+    @test size(ws[1, 1]) == (95,)
     @test lbs[ind] ≈ -4
     @test ubs[ind] ≈ 4
-    
+
     # Parallel test
     wsparallel, lbsparallel, ubsparallel = warmup(
         model,
@@ -42,7 +42,7 @@
 
     ind = first(indexin(["EX_glc__D_e"], reactions(model)))
     @test size(wsparallel) == (95, 2)
-    @test size(wsparallel[1,1]) == (95,)
+    @test size(wsparallel[1, 1]) == (95,)
     @test lbsparallel[ind] ≈ -4
     @test ubsparallel[ind] ≈ 4
 end
