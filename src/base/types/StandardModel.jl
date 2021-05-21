@@ -294,65 +294,91 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         return model
     end
 
-    id = "" # TODO: add accessor to get model ID
-    modelreactions = OrderedDict{String,Reaction}()
-    modelmetabolites = OrderedDict{String,Metabolite}()
-    modelgenes = OrderedDict{String,Gene}()
-    metids = metabolites(model)
-    
-    gtask = Base.Threads.@spawn begin
+    timer = TimerOutput()
+
+    @timeit timer "instantiate dicts" begin
+        id = "" # TODO: add accessor to get model ID
+        modelreactions = OrderedDict{String,Reaction}()
+        modelmetabolites = OrderedDict{String,Metabolite}()
+        modelgenes = OrderedDict{String,Gene}()
+    end
+
+    @timeit timer "access model details" begin
         gids = genes(model)
-        for gid in gids
-            modelgenes[gid] = Gene(
-                gid;
-                notes = gene_notes($model, gid),
-                annotations = gene_annotations($model, gid),
-            ) # TODO: add name accessor
-        end
-    end
-
-    mtask = Base.Threads.@spawn begin
-        for mid in metids
-            modelmetabolites[mid] = Metabolite(
-                mid;
-                charge = metabolite_charge(model, mid),
-                formula = _maybemap(_unparse_formula, metabolite_formula(model, mid)),
-                compartment = metabolite_compartment(model, mid),
-                notes = metabolite_notes(model, mid),
-                annotations = metabolite_annotations(model, mid),
-            )
-        end
-    end
-
-    rtask = Base.Threads.@spawn begin
+        metids = metabolites(model)
         rxnids = reactions(model)
         S = stoichiometry(model)
         lbs, ubs = bounds(model)
         ocs = objective(model)
+    end
+    
+    @timeit timer "assign genes" begin
+    # gtask = Base.Threads.@spawn begin
+        for gid in gids
+            notes = @timeit timer "gene_notes" gene_notes(model, gid)
+            annotations = @timeit timer "gene_annotations" gene_annotations(model, gid)
+            modelgenes[gid] = Gene(
+                gid;
+                notes = notes,
+                annotations = annotations,
+            ) # TODO: add name accessor
+        end
+    end
+
+    @timeit timer "assign metabolites" begin
+    # mtask = Base.Threads.@spawn begin
+        for mid in metids
+            charge = @timeit timer "charge" metabolite_charge(model, mid)
+            formula = @timeit timer "formula" _maybemap(_unparse_formula, metabolite_formula(model, mid))
+            compartment = @timeit timer "compartment" metabolite_compartment(model, mid)
+            notes = @timeit timer "notes" metabolite_notes(model, mid)
+            annotations = @timeit timer "annotations" metabolite_annotations(model, mid)
+            modelmetabolites[mid] = Metabolite(
+                mid;
+                charge = charge,
+                formula = formula,
+                compartment = compartment,
+                notes = notes,
+                annotations = annotations,
+            )
+        end
+    end
+
+    @timeit timer "assign reactions" begin
+    # rtask = Base.Threads.@spawn begin
+
         for (i, rid) in enumerate(rxnids)
+
+            grr = @timeit timer "grr" reaction_gene_association(model, rid)
+            notes = @timeit timer "notes" reaction_notes(model, rid)
+            annotations = @timeit timer "annotations" reaction_annotations(model, rid)
+            subsys = @timeit timer "subsystem" reaction_subsystem(model, rid)
+            @timeit timer "get reaction equation" begin
             rmets = Dict{String,Float64}()
             for (j, stoich) in zip(findnz(S[:, i])...)
                 rmets[metids[j]] = stoich
+            end
             end
             modelreactions[rid] = Reaction(
                 rid;
                 metabolites = rmets,
                 lb = lbs[i],
                 ub = ubs[i],
-                grr = reaction_gene_association(model, rid),
+                grr = grr,
                 objective_coefficient = ocs[i],
-                notes = reaction_notes(model, rid),
-                annotations = reaction_annotations(model, rid),
-                subsystem = reaction_subsystem(model, rid),
+                notes = notes,
+                annotations = annotations,
+                subsystem = subsys,
             ) # TODO: add name accessor
         end
     end
 
-        wait(rtask)
-        wait(mtask)
-        wait(gtask)
+    # wait(rtask)
+    # wait(mtask)
+    # wait(gtask)
     
-
+    show(timer)
+    println()
     return StandardModel(
         id;
         reactions = modelreactions,

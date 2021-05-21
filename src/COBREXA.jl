@@ -13,6 +13,7 @@ using Random
 using SparseArrays
 using Statistics
 using Base.Threads
+using TimerOutputs
 
 import Base: findfirst, getindex, show
 import Pkg
