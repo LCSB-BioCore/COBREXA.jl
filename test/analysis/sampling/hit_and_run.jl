@@ -7,22 +7,46 @@
 
     model = load_model(StandardModel, model_path)
 
+    using Distributed
+
+    nps = 4 - nprocs()
+
+    # load extra processes, have at least 4 available
+    if 1 <= nps <= 3 
+        addprocs(nps)
+    end
+    @everywhere using COBREXA, Tulip
+
+    # Serial test
     chains = hit_and_run(
         model,
         Tulip.Optimizer;
-        N = 5000_000,
+        N = 10_000,
         nchains = 3,
-        samplesize = 10_000,
+        samplesize = 1000,
         modifications = [
             change_constraint("EX_glc__D_e", -10, -10),
             change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
         ],
+        workerids = [myid()],
     )
 
-    # # The sampling converges very slowly, so can't really do an accurate test 
-    # with so few samples
-    # this test is ugly, there must be a better way to get the mean
-    @test isapprox(mean(chains[[:PFL]]).nt.mean[1], 0.8, atol = 0.5)
+    # Do not test for convergence, that requires too many samples
+    @test isapprox(mean(chains[[:PFL]]).nt.mean[1], 0.8, atol = 1.0)
 
-    # TODO: parallel tests (still broken, not sure why)
+    # parallel tests (still broken, not sure why)
+    chainsparallel = hit_and_run(
+        model,
+        Tulip.Optimizer;
+        N = 10_000,
+        nchains = 3,
+        samplesize = 1000,
+        modifications = [
+            change_constraint("EX_glc__D_e", -10, -10),
+            change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
+        ],
+        workerids = workers(),
+    )
+
+    @test isapprox(mean(chainsparallel[[:PFL]]).nt.mean[1], 0.8, atol = 1.0)
 end

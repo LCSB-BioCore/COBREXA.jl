@@ -7,7 +7,7 @@
         keepevery = _constants.sampling_keep_iters,
         samplesize = _constants.sampling_size,
         warmup_indices = collect(1:n_reactions(model)),
-        workers = [myid()],
+        workerids = [myid()],
         nchains = 1,
     )
 
@@ -60,7 +60,7 @@ chains = hit_and_run(
     N = 1000_000,
     nchains = 3,
     modifications = [change_constraint("EX_glc__D_e",-8, -8)]
-    workers = workers()
+    workerids = workers()
     )
 ```
 """
@@ -68,11 +68,11 @@ function hit_and_run(
     model,
     optimizer;
     modifications = [],
-    N = 1000,
+    N = 150_000,
     keepevery = _constants.sampling_keep_iters,
     samplesize = _constants.sampling_size,
     warmup_indices = collect(1:n_reactions(model)),
-    workers = [myid()],
+    workerids = [myid()],
     nchains = 1,
 )
 
@@ -81,16 +81,16 @@ function hit_and_run(
         model,
         optimizer;
         modifications = modifications,
-        workers = workers, # parallel
+        workerids = workerids, # parallel
         warmup_points = warmup_indices,
     )
 
     # load warmup points to workers
-    save_at.(workers, :cobrexa_ws, Ref(:($ws)))
-    save_at.(workers, :cobrexa_lbs, Ref(:($lbs)))
-    save_at.(workers, :cobrexa_ubs, Ref(:($ubs)))
+    save_at.(workerids, :cobrexa_ws, Ref(:($ws)))
+    save_at.(workerids, :cobrexa_lbs, Ref(:($lbs)))
+    save_at.(workerids, :cobrexa_ubs, Ref(:($ubs)))
 
-    # do in parallel! 
+    # sample in parallel! 
     samples = dpmap(
         x -> :($COBREXA._serial_hit_and_run(
             cobrexa_ws,
@@ -100,14 +100,14 @@ function hit_and_run(
             $keepevery,
             $N,
         )),
-        CachingPool(workers),
+        CachingPool(workerids),
         1:nchains,
     )
 
     # remove warmup points from workers
-    map(fetch, remove_from.(workers, :cobrexa_ws))
-    map(fetch, remove_from.(workers, :cobrexa_lbs))
-    map(fetch, remove_from.(workers, :cobrexa_ubs))
+    map(fetch, remove_from.(workerids, :cobrexa_ws))
+    map(fetch, remove_from.(workerids, :cobrexa_lbs))
+    map(fetch, remove_from.(workerids, :cobrexa_ubs))
 
     # not sure how to do this better - cat/vcat doesn't work, oh well 
     vals = zeros(samplesize, length(lbs), nchains)
@@ -159,7 +159,7 @@ function _serial_hit_and_run(ws, lbs, ubs, samplesize, keepevery, N)
         end
 
         if λmax <= λmin || λmin == -Inf || λmax == Inf # this sometimes can happen
-            #     @warn "Infeasible direction at iteration $(n)..." # noisy
+            #     @warn "Infeasible direction at iteration $(n)..." # TODO: make this optional/ add to a logger... very noisy otherwise
             continue
         end
 
