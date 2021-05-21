@@ -17,4 +17,9 @@
         reactions(convert(StandardModel, sm)),
         reactions(convert(StandardModel, sm2)),
     )
+    sm.m = nothing
+    @test issetequal(
+        metabolites(convert(CoreModelCoupled, sm)),
+        metabolites(convert(CoreModelCoupled, sm2)),
+    )
 end
