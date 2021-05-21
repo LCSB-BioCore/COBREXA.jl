@@ -53,13 +53,13 @@ function Base.push!(
         push!(Vadd, 1.0)
     end
 
-    if has_biomass_objective
-        biomass_ind = first(indexin([biomass_id]), reactions(model))
+    # if has_biomass_objective
+    #     biomass_ind = first(indexin([biomass_id]), reactions(model))
 
-        push!(Iadd, n_cmodel_rows + )
-        push!(Jadd, n_cmodel_cols + )
-        push!(Vadd, 1.0)
-    end
+    #     push!(Iadd, n_cmodel_rows + )
+    #     push!(Jadd, n_cmodel_cols + )
+    #     push!(Vadd, 1.0)
+    # end
 
     I, J, V = findnz(stoichiometry(cmodel))
     I = [I; Iadd]
@@ -92,22 +92,35 @@ end
         species_names=String[]
     ) 
 
-Return a `CoreModel` representing the community model of `models` joined
-through their `exchange_rxn_ids` and `exchange_met_ids`. These exchange
-reactions and metabolites are converted into environmental metabolites that link the models.
+Return a `CoreModel` representing the community model of `models` joined through
+their `exchange_rxn_ids` and `exchange_met_ids`. These exchange reactions and
+metabolites are converted into environmental metabolites that link the models.
 Optionally specify `species_names` to append a specific name to each reaction
-and metabolite of an organism for easier reference. Note, the bounds of the 
-environmental variables are all set to zero. Thus, to run a simulation
-you need to constrain them appropriately. All the other bounds are inherited
-from the models used to construct the community model.
+and metabolite of an organism for easier reference (default is `species_i` for
+each model index i in `models`). Note, the bounds of the environmental variables
+are all set to zero. Thus, to run a simulation you need to constrain them
+appropriately. All the other bounds are inherited from the models used to
+construct the community model.
 
 If `add_biomass_objective` is true then `biomass_ids` needs to be supplied as
 well. This creates a model with an extra reaction added to the end of the
 stoichiometric matrix (last column) that can be assigned as the objective
-reaction. It also creates biomass "metabolites" that can be used in this objective
-reaction. Note, this reaction is unspecified, further action needs to be taken
-to specify it, e.g. assign weights to the last column of the stoichiometric matrix
-in the rows corresponding to the biomass metabolites.
+reaction. It also creates biomass "metabolites" that can be used in this
+objective reaction. Note, this reaction is unspecified, further action needs to
+be taken to specify it, e.g. assign weights to the last column of the
+stoichiometric matrix in the rows corresponding to the biomass metabolites.
+
+# Example
+```
+model_path = joinpath("..","models","e_coli_core.json")
+m1 = load_model(StandardModel, model_path)
+model_path = joinpath("iML1515.xml")
+m2 = load_model(StandardModel, model_path)
+
+exchange_rxn_ids, exchange_met_ids = all_boundaries(m2)
+biomass_ids = ["BIOMASS_Ecoli_core_w_GAM","R_BIOMASS_Ec_iML1515_core_75p37M"]
+community = COBREXA.join([m1, m2], exchange_rxn_ids, exchange_met_ids; add_biomass_objective=true, biomass_ids=biomass_ids, species_names=["Core", "iML1515"])
+```
 """
 function Base.join(
     models::Vector{M},
