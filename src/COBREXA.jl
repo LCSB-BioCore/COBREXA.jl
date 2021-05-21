@@ -10,6 +10,7 @@ using MAT
 using MacroTools
 using OrderedCollections
 using Random
+using Serialization
 using SparseArrays
 using Statistics
 
