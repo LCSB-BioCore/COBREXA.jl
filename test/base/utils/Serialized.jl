@@ -13,4 +13,8 @@
     @test isequal(m, sm.m) # the data is kept okay
     @test sm2.m == nothing # nothing is cached here
     @test isequal(m, COBREXA.Serialization.deserialize(joinpath("data", "toy2.smod"))) # it was written as-is
+    @test issetequal(
+        reactions(convert(StandardModel, sm)),
+        reactions(convert(StandardModel, sm2)),
+    )
 end
