@@ -16,17 +16,22 @@ function warmup(
     modifications = [],
     workerids = [myid()],
 )
-    # create optimization problem, apply constraints, load on all workers
+    # create optimization problem, apply constraints
     save_model = :(
         begin
             optmodel = $COBREXA.make_optimization_model($model, $optimizer)
+            for mod in $modifications
+                mod($model, optmodel)
+            end
             optmodel
         end
     )
 
+    # load on all workers
     map(fetch, save_at.(workerids, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
-
-    ret = m -> value.(m[:x]) # get all the fluxes
+    
+    # generate warm up points, like FVA
+    ret = m -> value.(m[:x]) # get all the fluxes, not just max/min like FVA
     fluxes = dpmap(
         rid -> :($COBREXA._FVA_optimize_reaction(
             cobrexa_sampling_warmup_optmodel,
