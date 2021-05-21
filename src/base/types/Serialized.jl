@@ -35,12 +35,14 @@ n_genes(m::Serialized) = _on_precached(m, n_genes)
 metabolite_formula(m::Serialized, id::String) = _on_precached(m, metabolite_formula, id)
 metabolite_charge(m::Serialized, id::String) = _on_precached(m, metabolite_charge, id)
 reaction_annotations(m::Serialized, id::String) = _on_precached(m, reaction_annotations, id)
-metabolite_annotations(m::Serialized, id::String) = _on_precached(m, metabolite_annotations, id)
+metabolite_annotations(m::Serialized, id::String) =
+    _on_precached(m, metabolite_annotations, id)
 gene_annotations(m::Serialized, id::String) = _on_precached(m, gene_annotations, id)
 reaction_notes(m::Serialized, id::String) = _on_precached(m, reaction_notes, id)
 metabolite_notes(m::Serialized, id::String) = _on_precached(m, metabolite_notes, id)
 gene_notes(m::Serialized, id::String) = _on_precached(m, gene_notes, id)
-metabolite_compartment(m::Serialized, id::String) = _on_precached(m, metabolite_compartment, id)
+metabolite_compartment(m::Serialized, id::String) =
+    _on_precached(m, metabolite_compartment, id)
 reaction_subsystem(m::Serialized, id::String) = _on_precached(m, reaction_subsystem, id)
 
 """
