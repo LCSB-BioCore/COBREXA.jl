@@ -77,7 +77,7 @@ function screen(
 
     map(fetch, save_at.(workers, :cobrexa_screen_variants_model, Ref(model)))
     map(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
-    map(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_model)))))
+    map(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_variants_model)))))
 
     if isnothing(variants)
         if isnothing(args)
