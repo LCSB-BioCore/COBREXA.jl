@@ -50,9 +50,8 @@ end
 
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
-    pids = addprocs(2, topology = :master_worker)
-    @everywhere using COBREXA, Tulip
-    fluxes = flux_variability_analysis(cp, [1, 2], Tulip.Optimizer; workers = pids)
+
+    fluxes = flux_variability_analysis(cp, [1, 2], Tulip.Optimizer; workers = W)
     @test isapprox(fluxes, [
         1.0 1.0
         2.0 2.0

@@ -49,9 +49,13 @@ function download_data_file(url, path, hash)
     return path
 end
 
+# set up the workers for Distributed, so that the tests that require more
+# workers do not unnecessarily load the stuff multiple times
+W = addprocs(2)
+@everywhere using COBREXA, Tulip
+
 # load the test models
 run_test_file("data", "test_models.jl")
-
 
 # import base files
 @testset "COBREXA test suite" begin
@@ -65,3 +69,5 @@ run_test_file("data", "test_models.jl")
     run_test_dir("analysis")
     run_test_dir(joinpath("analysis", "sampling"), "Sampling")
 end
+
+rmprocs(W)

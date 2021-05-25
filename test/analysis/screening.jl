@@ -34,22 +34,16 @@
         return mm
     end
 
-    ws = addprocs(2)
-    @everywhere using COBREXA
-    @everywhere using Tulip
-
     @test screen_variants(
         m,
         [[quad_rxn(i)] for i = 1:3],
         m -> flux_balance_analysis_vec(m, Tulip.Optimizer);
-        workers = ws,
+        workers = W,
     ) == [
         [250.0, -250.0, -1000.0, 250.0, 1000.0, 250.0, 250.0],
         [500.0, 500.0, 1000.0, 500.0, -1000.0, 500.0, 500.0],
         [500.0, 500.0, 1000.0, -500.0, 1000.0, 500.0, 500.0],
     ]
-
-    rmprocs(ws)
 
     # test solver modifications
     @test screen(
