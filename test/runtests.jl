@@ -1,6 +1,5 @@
 using COBREXA, Test
 
-using Clp
 using Distributed
 using Downloads
 using JSON

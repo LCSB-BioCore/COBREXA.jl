@@ -5,11 +5,6 @@
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
 
-    lp = flux_balance_analysis(cp, Clp.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
-    sol = JuMP.value.(lp[:x])
-    @test sol ≈ [1.0, 2.0]
-
     # test the maximization of the objective
     cp = test_simpleLP2()
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
