@@ -24,7 +24,7 @@ function Base.push!(
     species_name,
     has_biomass_objective;
     biomass_id = "",
-) where {M<:MetabolicModel}
+    ) where {M<:MetabolicModel}
 
     if has_biomass_objective && biomass_id == ""
         throw(
@@ -122,9 +122,10 @@ be taken to specify it, e.g. assign weights to the last column of the
 stoichiometric matrix in the rows corresponding to the biomass metabolites.
 
 To further clarify how this `join` works. Suppose you have 2 organisms with
-stoichiometric matrices S₁ and S₂ and you want to link them with `exchange_met_ids = [em₁, em₂, em₃, ...]`
-and `exchange_rxn_ids = [er₁, er₂, er₃, ...]`. Then a new community stoichiometric matrix is constructed
-that looks like this:
+stoichiometric matrices S₁ and S₂ and you want to link them with
+`exchange_met_ids = [em₁, em₂, em₃, ...]` and `exchange_rxn_ids = [er₁, er₂,
+er₃, ...]`. Then a new community stoichiometric matrix is constructed that looks
+like this:
 ```
             _      er₁  er₂  er₃  ...  b_
            |S₁                           |
@@ -137,12 +138,13 @@ S   =   em₂|                             |
         bm₂|_                           _|
 
 ```
-Each of the exchange reactions in each model get linked to `emᵢ` and these get
-linked to `erᵢ`. These `erᵢ` behave like normal single organism exchange
-reactions. When `add_biomass_objective` is true each model's biomass becomes a
-pseudo-metabolite (`bmᵢ`). These can be weighted in column `b`, called the
-`community_biomass` reaction in the communit model, if desired. Refer to the 
-tutorial if this is unclear.
+The exchange reactions in each model get linked to environmental metabolites,
+`emᵢ`, and these get linked to environmental exchanges, `erᵢ`. These `erᵢ`
+behave like normal single organism exchange reactions. When
+`add_biomass_objective` is true each model's biomass becomes a pseudo-metabolite
+(`bmᵢ`). These can be weighted in column `b`, called the `community_biomass`
+reaction in the community model, if desired. Refer to the tutorial if this is
+unclear.
 
 # Example
 ```
@@ -216,19 +218,23 @@ function Base.join(
         V[rng] .= nnzs[i][3]
         kstart += length(nnzs[i][3])
     end
+
     # build environmental - exchange links
     for i = 1:length(models)
         exchange_rxn_inds = indexin(exchange_rxn_ids, reactions(models[i]))
-        for (n, ex_rxn) in enumerate(exchange_rxn_inds) # each exchange rxn has one exchange met
+        exchange_met_inds = indexin(exchange_met_ids, metabolites(models[i]))
+        for (n, (ex_rxn, ex_met)) in enumerate(zip(exchange_rxn_inds, exchange_met_inds)) # each exchange rxn has one exchange met
             isnothing(ex_rxn) && continue
+            isnothing(ex_met) && continue
             # connect environmental metabolite with exchange metabolite
             I[kstart] = n_metabolites_metabolic + n
             J[kstart] = ex_rxn + reaction_offset[i]
-            V[kstart] = -nnzs[i][3][ex_rxn] # ex is normally negative, so make connection positive
+            V[kstart] = -stoichs[i][ex_met, ex_rxn] # ex is normally negative, make positive
             kstart += 1
         end
     end
-    # build diagonal environmental exchanges
+
+    # # build diagonal environmental exchanges
     for i = 1:length(exchange_rxn_ids)
         I[kstart] = n_metabolites_metabolic + i
         J[kstart] = n_reactions_metabolic + i
@@ -246,6 +252,7 @@ function Base.join(
             kstart += 1
         end
     end
+
     S = sparse(
         I[1:kstart-1],
         J[1:kstart-1],
