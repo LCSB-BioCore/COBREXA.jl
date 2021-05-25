@@ -12,7 +12,7 @@
     fluxes = flux_variability_analysis(cp, [2], optimizer)
 
     @test size(fluxes) == (1, 2)
-    @test isapprox(fluxes, [2 2], atol=TEST_TOLERANCE)
+    @test isapprox(fluxes, [2 2], atol = TEST_TOLERANCE)
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
     cp = CoreModel(
@@ -25,23 +25,35 @@
         ["m1"],
     )
     fluxes = flux_variability_analysis(cp, optimizer)
-    @test isapprox(fluxes, [
-        1.0 1.0
-        0.0 0.0
-        -1.0 -1.0
-    ], atol=TEST_TOLERANCE)
+    @test isapprox(
+        fluxes,
+        [
+            1.0 1.0
+            0.0 0.0
+            -1.0 -1.0
+        ],
+        atol = TEST_TOLERANCE,
+    )
     fluxes = flux_variability_analysis(cp, optimizer; bounds = gamma_bounds(0.5))
-    @test isapprox(fluxes, [
-        0.5 1.0
-        0.0 0.5
-        -1.0 -0.5
-    ], atol=TEST_TOLERANCE)
+    @test isapprox(
+        fluxes,
+        [
+            0.5 1.0
+            0.0 0.5
+            -1.0 -0.5
+        ],
+        atol = TEST_TOLERANCE,
+    )
     fluxes = flux_variability_analysis(cp, optimizer; bounds = _ -> (0, Inf))
-    @test isapprox(fluxes, [
-        0.0 1.0
-        0.0 1.0
-        -1.0 0.0
-    ], atol=TEST_TOLERANCE)
+    @test isapprox(
+        fluxes,
+        [
+            0.0 1.0
+            0.0 1.0
+            -1.0 0.0
+        ],
+        atol = TEST_TOLERANCE,
+    )
 
     @test isempty(flux_variability_analysis(cp, Vector{Int}(), Tulip.Optimizer))
     @test_throws DomainError flux_variability_analysis(cp, [-1], Tulip.Optimizer)
@@ -52,10 +64,14 @@ end
     cp = test_simpleLP()
 
     fluxes = flux_variability_analysis(cp, [1, 2], Tulip.Optimizer; workers = W)
-    @test isapprox(fluxes, [
-        1.0 1.0
-        2.0 2.0
-    ], atol = TEST_TOLERANCE)
+    @test isapprox(
+        fluxes,
+        [
+            1.0 1.0
+            2.0 2.0
+        ],
+        atol = TEST_TOLERANCE,
+    )
 end
 
 @testset "Flux variability analysis with StandardModel" begin
