@@ -3,7 +3,6 @@ using COBREXA, Test
 using Clp
 using Distributed
 using Downloads
-using GLPK
 using JSON
 using JuMP
 using LinearAlgebra

@@ -1,6 +1,6 @@
 @testset "Flux balance analysis with CoreModel" begin
     cp = test_simpleLP()
-    lp = flux_balance_analysis(cp, GLPK.Optimizer)
+    lp = flux_balance_analysis(cp, Tulip.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
@@ -12,7 +12,7 @@
 
     # test the maximization of the objective
     cp = test_simpleLP2()
-    lp = flux_balance_analysis(cp, GLPK.Optimizer)
+    lp = flux_balance_analysis(cp, Tulip.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [-1.0, 2.0]
@@ -27,16 +27,16 @@
     cp = load_model(CoreModel, model_path)
     expected_optimum = 0.9219480950504393
 
-    lp = flux_balance_analysis(cp, GLPK.Optimizer)
+    lp = flux_balance_analysis(cp, Tulip.Optimizer)
     @test termination_status(lp) === MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test objective_value(lp) ≈ expected_optimum
     @test cp.c' * sol ≈ expected_optimum
 
     # test the "nicer output" variants
-    fluxes_vec = flux_balance_analysis_vec(cp, GLPK.Optimizer)
+    fluxes_vec = flux_balance_analysis_vec(cp, Tulip.Optimizer)
     @test all(fluxes_vec .== sol)
-    fluxes_dict = flux_balance_analysis_dict(cp, GLPK.Optimizer)
+    fluxes_dict = flux_balance_analysis_dict(cp, Tulip.Optimizer)
     rxns = reactions(cp)
     @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end

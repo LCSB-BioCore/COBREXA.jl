@@ -1,6 +1,6 @@
 @testset "Flux variability analysis" begin
     cp = test_simpleLP()
-    optimizer = GLPK.Optimizer
+    optimizer = Tulip.Optimizer
     fluxes = flux_variability_analysis(cp, optimizer)
 
     @test size(fluxes) == (2, 2)
@@ -12,7 +12,7 @@
     fluxes = flux_variability_analysis(cp, [2], optimizer)
 
     @test size(fluxes) == (1, 2)
-    @test fluxes == Matrix{Float64}([2 2])
+    @test isapprox(fluxes, [2 2], atol=TEST_TOLERANCE)
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
     cp = CoreModel(
@@ -25,39 +25,38 @@
         ["m1"],
     )
     fluxes = flux_variability_analysis(cp, optimizer)
-    @test fluxes ≈ [
+    @test isapprox(fluxes, [
         1.0 1.0
         0.0 0.0
         -1.0 -1.0
-    ]
+    ], atol=TEST_TOLERANCE)
     fluxes = flux_variability_analysis(cp, optimizer; bounds = gamma_bounds(0.5))
-    @test fluxes ≈ [
+    @test isapprox(fluxes, [
         0.5 1.0
         0.0 0.5
         -1.0 -0.5
-    ]
+    ], atol=TEST_TOLERANCE)
     fluxes = flux_variability_analysis(cp, optimizer; bounds = _ -> (0, Inf))
-    @test fluxes ≈ [
+    @test isapprox(fluxes, [
         0.0 1.0
         0.0 1.0
         -1.0 0.0
-    ]
+    ], atol=TEST_TOLERANCE)
 
-    @test isempty(flux_variability_analysis(cp, Vector{Int}(), GLPK.Optimizer))
-    @test_throws DomainError flux_variability_analysis(cp, [-1], GLPK.Optimizer)
-    @test_throws DomainError flux_variability_analysis(cp, [99999999], GLPK.Optimizer)
+    @test isempty(flux_variability_analysis(cp, Vector{Int}(), Tulip.Optimizer))
+    @test_throws DomainError flux_variability_analysis(cp, [-1], Tulip.Optimizer)
+    @test_throws DomainError flux_variability_analysis(cp, [99999999], Tulip.Optimizer)
 end
 
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
     pids = addprocs(2, topology = :master_worker)
-    @everywhere using COBREXA, GLPK
-    fluxes = flux_variability_analysis(cp, [1, 2], GLPK.Optimizer; workers = pids)
-    @test fluxes ≈ [
+    @everywhere using COBREXA, Tulip
+    fluxes = flux_variability_analysis(cp, [1, 2], Tulip.Optimizer; workers = pids)
+    @test isapprox(fluxes, [
         1.0 1.0
         2.0 2.0
-    ]
-    rmprocs(pids)
+    ], atol = TEST_TOLERANCE)
 end
 
 @testset "Flux variability analysis with StandardModel" begin
