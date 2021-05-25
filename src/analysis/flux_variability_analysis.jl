@@ -64,7 +64,11 @@ function flux_variability_analysis(
     # store a JuMP optimization model at all workers
     save_model = :(
         begin
-            optmodel = $COBREXA.make_optimization_model($model, $optimizer)
+            model = $model
+            opt_model = $COBREXA.make_optimization_model(model, $optimizer)
+            for mod in $modifications
+                mod(model, opt_model)
+            end
             $COBREXA._FVA_add_constraint(optmodel, $(objective(model)), optmodel[:x], $Z)
             optmodel
         end
