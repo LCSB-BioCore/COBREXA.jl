@@ -49,6 +49,9 @@ index_md = replace(index_md, "<!--insert_acknowledgements-->\n" => acks)
 index_md = replace(index_md, "<!--insert_ack_logos-->\n" => ack_logos)
 open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
+# copy the contribution guide
+cp(joinpath("..",".github","CONTRIBUTING.md"), joinpath("src", "howToContribute.md"))
+
 # build the docs
 makedocs(
     modules = [COBREXA],
