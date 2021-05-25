@@ -69,8 +69,8 @@ function flux_variability_analysis(
             for mod in $modifications
                 mod(model, opt_model)
             end
-            $COBREXA._FVA_add_constraint(optmodel, $(objective(model)), optmodel[:x], $Z)
-            optmodel
+            $COBREXA._FVA_add_constraint(opt_model, $(objective(model)), opt_model[:x], $Z)
+            opt_model
         end
     )
     map(fetch, save_at.(workers, :cobrexa_parfva_model, Ref(save_model)))
