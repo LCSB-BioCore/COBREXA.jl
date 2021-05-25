@@ -34,13 +34,15 @@ the individual optimization problems is transparently distributed to `workers`
 (see `Distributed.workers()`).
 
 `ret` is a function used to extract results from optimized JuMP models of the
-individual reactions. More detailed information can be extracted e.g. by
-setting it to `m -> (JuMP.objective_value(m), JuMP.value.(m[:x]))`.
+individual reactions. By default, it calls and returns the value of
+`JuMP.objective_value`. More information can be extracted e.g. by setting it to
+a function that returns a more elaborate data structure; such as `m ->
+(JuMP.objective_value(m), JuMP.value.(m[:x]))`.
 
 Returns a matrix of extracted `ret` values for minima and maxima, of total size
-`length(reactions)`×2. The optimizer result status is not checked by default,
-instead `ret` function can access the `JuMP.termination_status` of the model
-and react accordingly, depending on user decision.
+(`length(reactions)`,2). The optimizer result status is checked with
+[`is_solved`](@ref); `nothing` is returned if the optimization failed for any
+reason.
 """
 function flux_variability_analysis(
     model::MetabolicModel,
