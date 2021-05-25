@@ -59,6 +59,7 @@ makedocs(
         prettyurls = !("local" in ARGS),
         assets = ["assets/favicon.ico"],
         highlights = ["yaml"],
+        edit_link = nothing,
     ),
     authors = "The developers of COBREXA.jl",
     linkcheck = !("skiplinks" in ARGS),
