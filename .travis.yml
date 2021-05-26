@@ -1,9 +1,5 @@
 language: julia
 
-branches:
-  only:
-    - master
-
 os:
     - linux
 
