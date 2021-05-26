@@ -19,9 +19,10 @@ function warmup(
     # create optimization problem, apply constraints
     save_model = :(
         begin
-            optmodel = $COBREXA.make_optimization_model($model, $optimizer)
+            model = $model
+            optmodel = $COBREXA.make_optimization_model(model, $optimizer)
             for mod in $modifications
-                mod($model, optmodel)
+                mod(model, optmodel)
             end
             optmodel
         end
