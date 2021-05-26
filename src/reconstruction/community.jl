@@ -24,7 +24,7 @@ function Base.push!(
     species_name,
     has_biomass_objective;
     biomass_id = "",
-) where {M<:MetabolicModel}
+    ) where {M<:MetabolicModel}
 
     if has_biomass_objective && biomass_id == ""
         throw(
