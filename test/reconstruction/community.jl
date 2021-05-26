@@ -1,5 +1,4 @@
 @testset "Small model join" begin
-
     model_path = download_data_file(
         "http://bigg.ucsd.edu/static/models/e_coli_core.json",
         joinpath("data", "e_coli_core.json"),
@@ -46,36 +45,39 @@ end
         "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
     )
 
+    m1 = load_model(CoreModel, core_json)
+    m2 = load_model(CoreModel, iJO1366_mat)
 
-m1 = load_model(core_json)
-m2 = load_model(iJO1366_mat)
+    boundary_rxn_ids, boundary_met_ids = all_boundaries(m2)
+    exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
+    exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
 
-boundary_rxn_ids, boundary_met_ids = all_boundaries(m2)
-exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
-exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
+    biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
 
-biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iML1515_core_75p37M"]
+    community = COBREXA.join([m1, m2], exchange_rxn_ids, exchange_met_ids; add_biomass_objective=true, biomass_ids=biomass_ids)
 
-community = COBREXA.join([m1, m2], exchange_rxn_ids, exchange_met_ids; add_biomass_objective=true, biomass_ids=biomass_ids)
+    env_ex_inds = indexin(exchange_rxn_ids, reactions(community))
+    m2_ex_inds = indexin(exchange_rxn_ids, reactions(m2))
+    m1_ex_inds = indexin(exchange_rxn_ids, reactions(m1))
 
-exchange_rxn_ids, exchange_met_ids = all_boundaries(community)
+    for (env_ex, m2_ex, m1_ex) in zip(env_ex_inds, m2_ex_inds, m1_ex_inds)
+        m2lb = isnothing(m2_ex) ? 0.0 : m2.xl[m2_ex]
+        m2ub = isnothing(m2_ex) ? 0.0 : m2.xu[m2_ex]
+        
+        m1lb = isnothing(m1_ex) ? 0.0 : m1.xl[m1_ex]
+        m1ub = isnothing(m1_ex) ? 0.0 : m1.xu[m1_ex]
+         
+        community.xl[env_ex] = m1lb + m2lb # give less overall 
+        community.xu[env_ex] = m1ub + m2ub # give less overall
+    end
 
-exchange_rxn_ids = filter(startswith("EX_"), exchange_rxn_ids)
-exchange_met_ids = filter(endswith("_e"), exchange_met_ids)
+    biomass_metabolite_inds = indexin(["species_1_BIOMASS_Ecoli_core_w_GAM", "species_2_BIOMASS_Ec_iJO1366_core_53p95M"], metabolites(community))
+    
+    community.S[biomass_metabolite_inds, end] .= -1.0
+    community.c[end] = 1.0
+    community.xl[end] = 0.0
+    community.xu[end] = 1000.0
 
-env_ex_inds = indexin(exchange_rxn_ids, reactions(community))
-m2_ex_inds = indexin(exchange_rxn_ids, reactions(m2))
-community.xl[env_ex_inds] .= m2.xl[m2_ex_inds]
-community.xu[env_ex_inds] .= m2.xu[m2_ex_inds]
-
-biomass_metabolite_inds = indexin(["Core1_BIOMASS_Ecoli_core_w_GAM", "Core2_BIOMASS_Ecoli_core_w_GAM"], metabolites(community))
-biomass_metabolite_inds = indexin(["species_1_BIOMASS_Ecoli_core_w_GAM", "species_2_BIOMASS_Ec_iML1515_core_75p37M"], metabolites(community))
-community.S[biomass_metabolite_inds, end] .= -1.0
-community.c[end] = 1.0
-community.xl[end] = 0.0
-community.xu[end] = 1000.0
-
-d = flux_balance_analysis_dict(community, Tulip.Optimizer)#; modifications=[change_optimizer_attribute("OutputFlag", 0)])
-d["community_biomass"]
-
+    @test size(stoichiometry(community)) == (2203, 3003)
+    @test isapprox(d["community_biomass"], 0.8, atol = TEST_TOLERANCE,)
 end
