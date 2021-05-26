@@ -67,8 +67,8 @@ end
         m1lb = isnothing(m1_ex) ? 0.0 : m1.xl[m1_ex]
         m1ub = isnothing(m1_ex) ? 0.0 : m1.xu[m1_ex]
          
-        community.xl[env_ex] = m1lb + m2lb # give less overall 
-        community.xu[env_ex] = m1ub + m2ub # give less overall
+        community.xl[env_ex] = m1lb + m2lb 
+        community.xu[env_ex] = m1ub + m2ub 
     end
 
     biomass_metabolite_inds = indexin(["species_1_BIOMASS_Ecoli_core_w_GAM", "species_2_BIOMASS_Ec_iJO1366_core_53p95M"], metabolites(community))
