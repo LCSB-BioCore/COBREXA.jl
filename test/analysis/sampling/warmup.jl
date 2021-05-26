@@ -6,23 +6,13 @@
     )
     model = load_model(StandardModel, model_path)
 
-    using Distributed
-
-    nps = 4 - nprocs()
-
-    # load extra processes, have at least 4 available
-    if 1 <= nps <= 3
-        addprocs(nps)
-    end
-    @everywhere using COBREXA, Tulip
-
     # Serial test
     ws, lbs, ubs = warmup(
         model,
         Tulip.Optimizer;
         modifications = [change_constraint("EX_glc__D_e", -4, 4)],
         warmup_points = collect(1:n_reactions(model)),
-        workerids = [myid()],
+        workerids = W,
     )
 
     ind = first(indexin(["EX_glc__D_e"], reactions(model)))
@@ -37,7 +27,7 @@
         Tulip.Optimizer;
         modifications = [change_constraint("EX_glc__D_e", -4, 4)],
         warmup_points = collect(1:n_reactions(model)),
-        workerids = [workers()],
+        workerids = W,
     )
 
     ind = first(indexin(["EX_glc__D_e"], reactions(model)))

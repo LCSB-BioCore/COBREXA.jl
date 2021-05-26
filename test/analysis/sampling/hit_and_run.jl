@@ -7,16 +7,6 @@
 
     model = load_model(StandardModel, model_path)
 
-    using Distributed
-
-    nps = 4 - nprocs()
-
-    # load extra processes, have at least 4 available
-    if 1 <= nps <= 3
-        addprocs(nps)
-    end
-    @everywhere using COBREXA, Tulip
-
     # Serial test
     chains = hit_and_run(
         model,
@@ -28,7 +18,7 @@
             change_constraint("EX_glc__D_e", -10, -10),
             change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
         ],
-        workerids = [myid()],
+        workerids = W,
     )
 
     # Do not test for convergence, that requires too many samples
@@ -45,7 +35,7 @@
             change_constraint("EX_glc__D_e", -10, -10),
             change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
         ],
-        workerids = workers(),
+        workerids = W,
     )
 
     @test isapprox(mean(chainsparallel[[:PFL]]).nt.mean[1], 0.8, atol = 1.0)
