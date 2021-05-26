@@ -27,15 +27,8 @@
     community.xl[env_ex_inds] .= m2.xl[m2_ex_inds]
     community.xu[env_ex_inds] .= m2.xu[m2_ex_inds]
 
-    biomass_metabolite_inds = indexin(
-        ["species_1_BIOMASS_Ecoli_core_w_GAM", "species_2_BIOMASS_Ecoli_core_w_GAM"],
-        metabolites(community),
-    )
-
-    community.S[biomass_metabolite_inds, end] .= -1.0
-    community.c[end] = 1.0
-    community.xl[end] = 0.0
-    community.xu[end] = 1000.0
+    biomass_ids = ["species_1_BIOMASS_Ecoli_core_w_GAM", "species_2_BIOMASS_Ecoli_core_w_GAM"]
+    add_objective!(community, biomass_ids; objective_column_index=first(indexin(["community_biomass"], reactions(community))))
 
     d = flux_balance_analysis_dict(community, Tulip.Optimizer)
     @test size(stoichiometry(community)) == (166, 211)
@@ -104,4 +97,43 @@ end
 
     @test size(stoichiometry(community)) == (2203, 3003)
     @test isapprox(d["community_biomass"], 0.8739215069675402, atol = TEST_TOLERANCE)
+end
+
+@testset "Community model modifications" begin
+    model_path = download_data_file(
+        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+        joinpath("data", "e_coli_core.json"),
+        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
+    )
+
+    m1 = load_model(CoreModel, model_path)
+    boundary_rxn_ids, boundary_met_ids = all_boundaries(m1)
+    exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
+    exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
+    biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
+
+    community = COBREXA.join(
+        [m1],
+        exchange_rxn_ids,
+        exchange_met_ids;
+        add_biomass_objective = true,
+        biomass_ids = biomass_ids,
+    )
+
+    env_ex_inds = indexin(exchange_rxn_ids, reactions(community))
+    m1_ex_inds = indexin(exchange_rxn_ids, reactions(m1))
+    community.xl[env_ex_inds] .= m1.xl[m1_ex_inds]
+    community.xu[env_ex_inds] .= m1.xu[m1_ex_inds]
+
+    m2 = load_model(CoreModel, model_path)
+
+    community = add_model(community, m2, exchange_rxn_ids, exchange_met_ids; species_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
+  
+    biomass_ids = ["species_1_BIOMASS_Ecoli_core_w_GAM", "species_2_BIOMASS_Ecoli_core_w_GAM"]
+    add_objective!(community, biomass_ids; objective_column_index=first(indexin(["community_biomass"], reactions(community))))
+    
+    d = flux_balance_analysis_dict(community, Tulip.Optimizer)
+
+    @test size(stoichiometry(community)) == (166, 211)
+    @test isapprox(d["community_biomass"], 0.41559777495618294, atol = TEST_TOLERANCE)
 end

@@ -1,97 +1,155 @@
 """
-add_objective!(cmodel, objective_mets, objective_weights, objective_column)
+add_objective!(community::CoreModel, objective_mets::Vector{String}; objective_weights=Float64[], objective_column_index=0)
 
+Add an objective to the `community` model. Supply the string names of the
+objective metabolites in `objective_mets`. Optionally specify the weight to
+assign each metabolite in the objective function, if unassigned then equal
+weight is assumed. Also, optionally specify whether the objective already exists
+in the model by assigning `objective_column_index`. If unassigned then an
+objective column will be added, otherwise the column at `objective_column_index`
+will be updated.
 
+Note, the weights are negated inside the function so that the objective metabolites 
+are seen as reagents/substrates, not products in the reaction equation. 
+
+# Example
+```
+add_objective!(model, ["met1", "met2"]) # adds a new column with weights = [1,1]
+add_objective!(model, ["met1", "met2"]; objective_weights=[0.1, 0.9]) # adds a new column
+add_objective!(model, ["met1", "met2"]; objective_weights=[0.1, 0.9], objective_column_index=10) # updates column 10
+```
 """
-function add_objective!()
+function add_objective!(community::CoreModel, objective_mets::Vector{String}; objective_weights=Float64[], objective_column_index=0)
+    obj_inds = indexin(objective_mets, metabolites(community))
+    if isempty(objective_weights)
+        objective_weights = repeat([1.0], inner=length(objective_mets))
+    end
 
+    if objective_column_index == 0 # needs to be created
+        nr, _ = size(community.S)
+        objcol = spzeros(nr)
+        objcol[obj_inds] .= -objective_weights
+        
+        # extend model by one reaction 
+        community.S = hcat(community.S, objcol)
+        community.xl = [community.xl; 0.0]
+        community.xu = [community.xu; 1000.0]
+        community.rxns = [community.rxns; "community_biomass"]
+        community.c = spzeros(size(community.S, 2))
+        community.c[end] = 1.0
+    else # only update
+        community.S[:, objective_column_index] .= 0.0 # reset
+        community.S[obj_inds, objective_column_index] .= -objective_weights
+        dropzeros!(community.S)
+        community.c = spzeros(size(community.S, 2))
+        community.c[objective_column_index] = 1.0
+        community.xl[objective_column_index] = 0.0
+        community.xu[objective_column_index] = 1000.0
+    end
 end
 
-
+add_objective!(model::CoreModel, objective_met::String, objective_weight::Float64) = add_objective!(model, [objective_met], [objective_weight])
 
 """
-push!()
-
-Append `model` to `cmodel` where `cmodel` is a pre-existing community model with `exchange_rxn_ids` and
-`exchange_met_ids`. If an objective function has already been assigned then supply its column index in `objective_col`
-and the metabolites used by the objective in `objective_rows` as well as the weight to assign the new
-"""
-function Base.push!(
-    cmodel::CoreModel,
+add_model(
+    community::CoreModel,
     model::M,
-    exchange_met_ids::Vector{String},
     exchange_rxn_ids::Vector{String},
-    species_name,
-    has_biomass_objective;
-    biomass_id = "",
-) where {M<:MetabolicModel}
+    exchange_met_ids::Vector{String};
+    species_name="",
+    biomass_id=""
+    ) where {M<:MetabolicModel}
 
-    if has_biomass_objective && biomass_id == ""
+Add `model` to `community`, which is a pre-existing community model with
+`exchange_rxn_ids` and `exchange_met_ids`. The `species_name` is appended to
+each reaction and metabolite, see [`join`](@ref). If `biomass_id` is specified
+then a biomass metabolite for `model` is also added to the resulting model. The
+column corresponding to the `biomass_id` reaction then produces this new biomass
+metabolite with unit coefficient. Note, `exchange_rxn_ids` and
+`exchange_met_ids` must already exist in the `community` model.
+
+# Example
+```
+community = add_model(community, model, exchange_rxn_ids, exchange_met_ids; species_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
+```
+"""
+function add_model(
+    community::CoreModel,
+    model::M,
+    exchange_rxn_ids::Vector{String},
+    exchange_met_ids::Vector{String};
+    species_name="",
+    biomass_id=""
+    ) where {M<:MetabolicModel}
+
+    exchange_met_community_inds = indexin(exchange_met_ids, metabolites(community))
+    exchange_rxn_community_inds = indexin(exchange_rxn_ids, reactions(community))
+    if any(isnothing.(exchange_met_community_inds)) || any(isnothing.(exchange_rxn_community_inds))
         throw(
             DomainError(
-                "Argument required.",
-                "The community uses a biomass objective function, please supply the objective id of the model you want to add.",
+                "exchange metabolite/reaction not found.",
+                "Exchange metabolites/reactions must already be contained in the community model.",
             ),
         )
     end
 
-    n_cmodel_rows, n_cmodel_cols = size(stoichiometry(cmodel))
+    n_cmodel_rows, n_cmodel_cols = size(stoichiometry(community))
+    n_model_rows, n_model_cols = size(stoichiometry(model))
     Iadd, Jadd, Vadd = findnz(stoichiometry(model))
-    add_row = has_biomass_objective ? 1 : 0
-    n_metabolites_total =
-        n_reactions_total =
-        # shift to fit into bigger model
-            Iadd .+= n_cmodel_rows
+
+    # shift to fit into community         
+    Iadd .+= n_cmodel_rows
     Jadd .+= n_cmodel_cols
 
-    exchange_met_community_inds = indexin(exchange_met_ids, metabolites(cmodel))
-    if any(isnothing.(exchange_met_community_inds))
-        throw(
-            DomainError(
-                "Exchange metabolite not found.",
-                "Exchange metabolite not found in community model.",
-            ),
-        )
-    end
-    exchange_rxn_model_inds = indexin(exchange_rxn_ids, reactions(model))
-
     # when adding a single model not that many reactions, push! okay?
-    for i = 1:length(exchange_met_community_inds)
+    exchange_rxn_model_inds = indexin(exchange_rxn_ids, reactions(model))
+    for i = 1:length(exchange_rxn_ids)
         isnothing(exchange_rxn_model_inds[i]) && continue
-        push!(Iadd, n_cmodel_rows + exchange_met_community_inds[i])
-        push!(Jadd, n_cmodel_cols + exchange_rxn_model_inds[i])
+        push!(Iadd, exchange_met_community_inds[i]) # already present ex met in community model
+        push!(Jadd, n_cmodel_cols + exchange_rxn_model_inds[i]) # new column hence the offset
         push!(Vadd, 1.0)
     end
 
-    # if has_biomass_objective
-    #     biomass_ind = first(indexin([biomass_id]), reactions(model))
+    biomass_met = 0.0
+    if biomass_id != "" # add biomass metabolite
+        biomass_rxn = first(indexin([biomass_id],  reactions(model)))
+        push!(Iadd, n_model_rows + n_cmodel_rows + 1)
+        push!(Jadd, biomass_rxn + n_cmodel_cols)
+        push!(Vadd, 1.0)
+        biomass_met = 1    
+    end
 
-    #     push!(Iadd, n_cmodel_rows + )
-    #     push!(Jadd, n_cmodel_cols + )
-    #     push!(Vadd, 1.0)
-    # end
+    n_metabolites_total = n_model_rows + n_cmodel_rows + biomass_met
+    n_reactions_total = n_cmodel_cols + n_model_cols
 
-    I, J, V = findnz(stoichiometry(cmodel))
+    I, J, V = findnz(stoichiometry(community))
     I = [I; Iadd]
     J = [J; Jadd]
     V = [V; Vadd]
     S = sparse(I, J, V, n_metabolites_total, n_reactions_total)
 
     lbsadd, ubsadd = bounds(model)
+    lbs, ubs = bounds(community)
     lbs = [lbs; lbsadd]
-    ubs = [lbs; ubsadd]
+    ubs = [ubs; ubsadd]
 
-    rxnsadd = "$(species_name)_".reactions(model)
-    if has_biomass_objective
+    rxnsadd = "$(species_name)_".*reactions(model)
+    if biomass_id != ""
         metsadd =
             ["$(species_name)_" .* metabolites(model); "$(species_name)_" * biomass_id]
     else
-        metsadd = "$(species_name)_".metabolites(model)
+        metsadd = "$(species_name)_".*metabolites(model)
     end
-    rxns = [rxns; rxnsadd]
-    mets = [mets; metsadd]
+    rxns = [reactions(community); rxnsadd]
+    mets = [metabolites(community); metsadd]
 
-    return CoreModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
+    # adds to the original community data, could possibly reset?
+    I, V = findnz(balance(community))
+    b = sparsevec(I, V, n_metabolites_total)
+    I, V = findnz(objective(community))
+    c = sparsevec(I, V, n_reactions_total)
+
+    return CoreModel(S, b, c, lbs, ubs, rxns, mets)
 end
 
 """
@@ -172,6 +230,15 @@ function Base.join(
             DomainError(
                 "biomass_ids",
                 "Please add supply the string ids of the biomass functions when `add_biomass_objective` is true.",
+            ),
+        )
+    end
+
+    if length(exchange_met_ids) != length(exchange_rxn_ids)
+        throw(
+            DomainError(
+                "Exchange identifiers are misspecified",
+                "The lenghts of the exchange metabolite and reactions are different.",
             ),
         )
     end
