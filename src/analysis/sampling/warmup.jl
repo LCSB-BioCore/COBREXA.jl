@@ -1,22 +1,35 @@
 """
-warmup(
-    model::MetabolicModel,
-    optimizer;
-    warmup_points::Vector{Int},
-    modifications = [],
-    workers = [myid()],
+    warmup_from_variability(
+        n_points::Int,
+        model::MetabolicModel,
+        optimizer;
+        modifications = [],
+        workers = [myid()],
+    )
 
-Generates warmup points for samplers by sequentially minimizing and maximizing 
-reactions at `warmup_points`. Very similar to [`flux_variability_analysis`](@ref).
+Generates warmup points for samplers by minimizing and maximizing random
+reactions. Very similar to
+[`flux_variability_analysis`](@ref).
 """
-function warmup(
+function warmup_from_variability(
+    n_points::Int,
     model::MetabolicModel,
     optimizer;
-    warmup_points::Vector{Int},
-    modifications = [],
-    workerids = [myid()],
+    kwargs...
 )
-    # create optimization problem, apply constraints
+
+    
+end
+
+function warmup_from_variability(
+    min_reactions::Vector{Int},
+    max_reactions::Vector{Int},
+    model::MetabolicModel,
+    optimizer;
+    modifications=[],
+    workers::Vector{Int}=[myid()]
+)::Tuple{Matrix{Float64}, AbstractVector{Float64}, AbstractVector{Float64}}
+    # create optimization problem at workers, apply modifications
     save_model = :(
         begin
             model = $model
@@ -28,29 +41,20 @@ function warmup(
         end
     )
 
-    # load on all workers
-    map(fetch, save_at.(workerids, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
+    map(fetch, save_at.(workers, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
 
-    # generate warm up points, like FVA
-    ret = m -> value.(m[:x]) # get all the fluxes, not just max/min like FVA
     fluxes = dpmap(
         rid -> :($COBREXA._FVA_optimize_reaction(
             cobrexa_sampling_warmup_optmodel,
             $rid,
-            $ret,
+            optmodel -> value.(optmodel[:x]),
         )),
-        CachingPool(workerids),
-        [-warmup_points warmup_points],
-    )
-
-    # get constraints from one of the workers
-    lbs, ubs = get_val_from(
-        workerids[1],
-        :($COBREXA.get_bound_vectors(cobrexa_sampling_warmup_optmodel)),
+        CachingPool(workers),
+        vcat(-min_reactions, max_reactions),
     )
 
     # free the data on workers
-    map(fetch, remove_from.(workerids, :cobrexa_sampling_warmup_optmodel))
+    map(fetch, remove_from.(workers, :cobrexa_sampling_warmup_optmodel))
 
-    return fluxes, lbs, ubs
+    return hcat(fluxes...)
 end
