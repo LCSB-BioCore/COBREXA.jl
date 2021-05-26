@@ -73,7 +73,7 @@ makedocs(
 
 # replace the link for index.md
 index_html = open(f -> read(f, String), joinpath(@__DIR__, "build", "index.html"))
-index_html = replace(index_html, "/docs/src/index.md\n" => "/README.md")
+index_html = replace(index_html, "/docs/src/index.md" => "")
 open(f -> write(f, index_html), joinpath(@__DIR__, "build", "index.html"), "w")
 
 deploydocs(
