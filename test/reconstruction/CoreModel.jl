@@ -210,7 +210,7 @@ end
     @test size(stoichiometry(m1)) == (70, 94)
     @test size(stoichiometry(m2)) == (71, 94)
     @test size(stoichiometry(m3)) == (70, 94)
-    @test size(stoichiometry(m4)) == (71, 94) 
+    @test size(stoichiometry(m4)) == (71, 94)
     @test any(["glc__D_e", "for_c"] .∉ Ref(metabolites(m1)))
     @test any(["glc__D_e"] .∉ Ref(metabolites(m2)))
     @test any(["glc__D_e", "for_c"] .∉ Ref(metabolites(m3)))
