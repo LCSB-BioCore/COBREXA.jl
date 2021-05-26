@@ -19,17 +19,22 @@ add_objective!(model, ["met1", "met2"]; objective_weights=[0.1, 0.9]) # adds a n
 add_objective!(model, ["met1", "met2"]; objective_weights=[0.1, 0.9], objective_column_index=10) # updates column 10
 ```
 """
-function add_objective!(community::CoreModel, objective_mets::Vector{String}; objective_weights=Float64[], objective_column_index=0)
+function add_objective!(
+    community::CoreModel,
+    objective_mets::Vector{String};
+    objective_weights = Float64[],
+    objective_column_index = 0,
+)
     obj_inds = indexin(objective_mets, metabolites(community))
     if isempty(objective_weights)
-        objective_weights = repeat([1.0], inner=length(objective_mets))
+        objective_weights = repeat([1.0], inner = length(objective_mets))
     end
 
     if objective_column_index == 0 # needs to be created
         nr, _ = size(community.S)
         objcol = spzeros(nr)
         objcol[obj_inds] .= -objective_weights
-        
+
         # extend model by one reaction 
         community.S = hcat(community.S, objcol)
         community.xl = [community.xl; 0.0]
@@ -48,7 +53,8 @@ function add_objective!(community::CoreModel, objective_mets::Vector{String}; ob
     end
 end
 
-add_objective!(model::CoreModel, objective_met::String, objective_weight::Float64) = add_objective!(model, [objective_met], [objective_weight])
+add_objective!(model::CoreModel, objective_met::String, objective_weight::Float64) =
+    add_objective!(model, [objective_met], [objective_weight])
 
 """
 add_model(
@@ -78,13 +84,14 @@ function add_model(
     model::M,
     exchange_rxn_ids::Vector{String},
     exchange_met_ids::Vector{String};
-    species_name="",
-    biomass_id=""
-    ) where {M<:MetabolicModel}
+    species_name = "",
+    biomass_id = "",
+) where {M<:MetabolicModel}
 
     exchange_met_community_inds = indexin(exchange_met_ids, metabolites(community))
     exchange_rxn_community_inds = indexin(exchange_rxn_ids, reactions(community))
-    if any(isnothing.(exchange_met_community_inds)) || any(isnothing.(exchange_rxn_community_inds))
+    if any(isnothing.(exchange_met_community_inds)) ||
+       any(isnothing.(exchange_rxn_community_inds))
         throw(
             DomainError(
                 "exchange metabolite/reaction not found.",
@@ -112,11 +119,11 @@ function add_model(
 
     biomass_met = 0.0
     if biomass_id != "" # add biomass metabolite
-        biomass_rxn = first(indexin([biomass_id],  reactions(model)))
+        biomass_rxn = first(indexin([biomass_id], reactions(model)))
         push!(Iadd, n_model_rows + n_cmodel_rows + 1)
         push!(Jadd, biomass_rxn + n_cmodel_cols)
         push!(Vadd, 1.0)
-        biomass_met = 1    
+        biomass_met = 1
     end
 
     n_metabolites_total = n_model_rows + n_cmodel_rows + biomass_met
@@ -133,12 +140,12 @@ function add_model(
     lbs = [lbs; lbsadd]
     ubs = [ubs; ubsadd]
 
-    rxnsadd = "$(species_name)_".*reactions(model)
+    rxnsadd = "$(species_name)_" .* reactions(model)
     if biomass_id != ""
         metsadd =
             ["$(species_name)_" .* metabolites(model); "$(species_name)_" * biomass_id]
     else
-        metsadd = "$(species_name)_".*metabolites(model)
+        metsadd = "$(species_name)_" .* metabolites(model)
     end
     rxns = [reactions(community); rxnsadd]
     mets = [metabolites(community); metsadd]
