@@ -59,7 +59,6 @@ makedocs(
         prettyurls = !("local" in ARGS),
         assets = ["assets/favicon.ico"],
         highlights = ["yaml"],
-        edit_link = nothing,
     ),
     authors = "The developers of COBREXA.jl",
     linkcheck = !("skiplinks" in ARGS),
@@ -71,6 +70,11 @@ makedocs(
         "How to contribute" => "howToContribute.md",
     ],
 )
+
+# replace the link for index.md
+index_html = open(f -> read(f, String), joinpath(@__DIR__, "build", "index.html"))
+index_html = replace(index_html, "/docs/src/index.md\n" => "/README.md")
+open(f -> write(f, index_html), joinpath(@__DIR__, "build", "index.html"), "w")
 
 deploydocs(
     repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"]).git",
