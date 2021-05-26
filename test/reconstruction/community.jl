@@ -95,8 +95,12 @@ end
     community.c[end] = 1.0
     community.xl[end] = 0.0
     community.xu[end] = 1000.0
-    
-    d = flux_balance_analysis_dict(community, Tulip.Optimizer; modifications=[change_optimizer_attribute("IPM_IterationsLimit", 1000)])
+
+    d = flux_balance_analysis_dict(
+        community,
+        Tulip.Optimizer;
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    )
 
     @test size(stoichiometry(community)) == (2203, 3003)
     @test isapprox(d["community_biomass"], 0.8739215069675402, atol = TEST_TOLERANCE)
