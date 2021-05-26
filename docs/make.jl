@@ -49,6 +49,13 @@ index_md = replace(index_md, "<!--insert_acknowledgements-->\n" => acks)
 index_md = replace(index_md, "<!--insert_ack_logos-->\n" => ack_logos)
 open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
+# copy the contribution guide
+cp(
+    joinpath("..", ".github", "CONTRIBUTING.md"),
+    joinpath("src", "howToContribute.md"),
+    force = true,
+)
+
 # build the docs
 makedocs(
     modules = [COBREXA],
@@ -70,6 +77,20 @@ makedocs(
         "How to contribute" => "howToContribute.md",
     ],
 )
+
+# replace the "edit this" links for the generated documentation
+function replace_in_doc(filename, replacement)
+    contents = open(f -> read(f, String), joinpath(@__DIR__, "build", filename))
+    contents = replace(contents, replacement)
+    open(f -> write(f, contents), joinpath(@__DIR__, "build", filename), "w")
+end
+
+replace_in_doc("index.html", "blob/master/docs/src/index.md" => "")
+replace_in_doc(
+    joinpath("howToContribute", "index.html"),
+    "blob/master/docs/src/howToContribute.md" => "",
+)
+
 
 deploydocs(
     repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"]).git",
