@@ -16,6 +16,10 @@ variables:
   rules:
    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
 
+.global_settings_upstream: &global_settings_upstream
+  rules:
+   - if: $CI_EXTERNAL_PULL_REQUEST_SOURCE_REPOSITORY == $CI_EXTERNAL_PULL_REQUEST_TARGET_REPOSITORY
+
 .global_settings: &global_settings_master
   rules:
    - if: $CI_COMMIT_BRANCH == "master"
@@ -72,6 +76,7 @@ format:
     - git checkout $CI_COMMIT_BRANCH || true
     - git commit -am "automatic formatting changes" || true
     - git push origin $CI_COMMIT_BRANCH || true
+  <<: *global_settings_upstream
   <<: *global_settings
 
 # Documentation history
@@ -92,7 +97,9 @@ generator:gource:
     - mv output.gif docs/src/assets/output.gif
   artifacts:
     paths: ['docs/src/assets/output.gif']
+  <<: *global_settings_upstream
   <<: *global_settings_master
+
 
 # Documentation tests
 # --------------------------------------
@@ -103,6 +110,7 @@ doc-tests:v1.6:
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
+  <<: *global_settings_upstream
   <<: *global_settings
 
 # Deploy the documentation
@@ -120,6 +128,7 @@ pages:
   artifacts:
     paths:
       - public
+  <<: *global_settings_upstream
   <<: *global_settings_master
 
 # Test Docker run with Julia v1.6
@@ -132,6 +141,7 @@ docker:v1.6:
     - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
+  <<: *global_settings_upstream
   <<: *global_settings
 
 # Test Julia v1.5
@@ -139,12 +149,14 @@ docker:v1.6:
 
 linux:v1.5:
   stage: test-required
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_linux
 
 windows10:v1.5:
   stage: test-additional-v1.5
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_win10
@@ -152,6 +164,7 @@ windows10:v1.5:
 
 windows8:v1.5:
   stage: test-additional-v1.5
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_win8
@@ -159,6 +172,7 @@ windows8:v1.5:
 
 mac:v1.5:
   stage: test-additional-v1.5
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v15
   <<: *global_testing_mac
@@ -169,6 +183,7 @@ mac:v1.5:
 linux:v1.6:
   stage: test-additional-v1.6
   needs: ["linux:v1.5"]
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_linux
@@ -176,6 +191,7 @@ linux:v1.6:
 windows10:v1.6:
   stage: test-additional-v1.6
   needs: ["windows10:v1.5"]
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_win10
@@ -184,6 +200,7 @@ windows10:v1.6:
 windows8:v1.6:
   stage: test-additional-v1.6
   needs: ["windows8:v1.5"]
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_win8
@@ -192,6 +209,7 @@ windows8:v1.6:
 mac:v1.6:
   stage: test-additional-v1.6
   needs: ["mac:v1.5"]
+  <<: *global_settings_upstream
   <<: *global_settings_master
   <<: *global_testing_v16
   <<: *global_testing_mac
@@ -209,4 +227,5 @@ trigger:
       command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   script:
     - docker run curlimages/curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
+  <<: *global_settings_upstream
   <<: *global_settings_master
