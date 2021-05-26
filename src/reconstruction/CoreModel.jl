@@ -201,6 +201,60 @@ function verify_consistency(
 end
 
 """
+    remove_metabolites(model::CoreModel, metabolites)
+
+Removes a set of `metabolites` from the `model` of type `CoreModel` and returns
+a new `CoreModel` without those metabolites. Here, `metabolites` can be either a
+string, a vector of strings, an index or a vector of indices. Also removes any
+reactions that have no associated metabolites after the metabolites have been
+removed.
+
+# Example
+```
+model = load_model(CoreModel, "e_coli_core.json")
+
+m1 = remove_metabolites(model, ["glc__D_e", "for_c"])
+m2 = remove_metabolites(model, "glc__D_e")
+m3 = remove_metabolites(model, indexin(["glc__D_e", "for_c"], metabolites(model)))
+m4 = remove_metabolites(model, first(indexin(["glc__D_e"], metabolites(model))))
+```
+"""
+function remove_metabolites(model::CoreModel, mets)
+    mets_to_keep = filter(x -> x ∉ mets, 1:n_metabolites(model))
+    temp_S = model.S[mets_to_keep, :]
+
+    (I, rxns_to_keep, val) = findnz(temp_S)
+    sort!(rxns_to_keep)
+    unique!(rxns_to_keep)
+    new_S = model.S[mets_to_keep, rxns_to_keep]
+    new_b = model.b[mets_to_keep]
+    new_c = model.c[rxns_to_keep]
+    new_lbs = model.xl[rxns_to_keep]
+    new_ubs = model.xu[rxns_to_keep]
+    new_rxns = model.rxns[rxns_to_keep]
+    new_mets = model.mets[mets_to_keep]
+
+    return CoreModel(new_S, new_b, new_c, new_lbs, new_ubs, new_rxns, new_mets)
+end
+
+function remove_metabolites(model::CoreModel, met::Integer)
+    return remove_metabolites(model, [met])
+end
+
+function remove_metabolites(model::CoreModel, met::String)
+    return remove_metabolites(model, [met])
+end
+
+function remove_metabolites(model::CoreModel, mets::Vector{String})
+    met_indices = filter(!isnothing, indexin(mets, metabolites(model)))
+    if isempty(met_indices)
+        return model
+    else
+        return remove_metabolites(model, met_indices)
+    end
+end
+
+"""
 Removes a set of reactions from a CoreModel.
 Also removes the metabolites not involved in any reaction.
 """
