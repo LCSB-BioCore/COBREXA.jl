@@ -6,33 +6,16 @@
     )
     model = load_model(StandardModel, model_path)
 
-    # Serial test
-    ws, lbs, ubs = warmup(
+    pts = warmup_from_variability(
+        100,
         model,
         Tulip.Optimizer;
-        modifications = [change_constraint("EX_glc__D_e", -4, 4)],
-        warmup_points = collect(1:n_reactions(model)),
-        workerids = W,
+        modifications = [change_constraint("EX_glc__D_e", -2, 2)],
+        workers = W,
     )
 
-    ind = first(indexin(["EX_glc__D_e"], reactions(model)))
-    @test size(ws) == (95, 2)
-    @test size(ws[1, 1]) == (95,)
-    @test lbs[ind] ≈ -4
-    @test ubs[ind] ≈ 4
-
-    # Parallel test
-    wsparallel, lbsparallel, ubsparallel = warmup(
-        model,
-        Tulip.Optimizer;
-        modifications = [change_constraint("EX_glc__D_e", -4, 4)],
-        warmup_points = collect(1:n_reactions(model)),
-        workerids = W,
-    )
-
-    ind = first(indexin(["EX_glc__D_e"], reactions(model)))
-    @test size(wsparallel) == (95, 2)
-    @test size(wsparallel[1, 1]) == (95,)
-    @test lbsparallel[ind] ≈ -4
-    @test ubsparallel[ind] ≈ 4
+    idx = first(indexin(["EX_glc__D_e"], reactions(model)))
+    @test size(pts) == (95, 100)
+    @test all(pts[idx, :] .>= -2)
+    @test all(pts[idx, :] .<= 2)
 end
