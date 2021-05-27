@@ -88,7 +88,7 @@ end
 replace_in_doc("index.html", "blob/master/docs/src/index.md" => "")
 replace_in_doc(
     joinpath("howToContribute", "index.html"),
-    "blob/master/docs/src/howToContribute.md" => "",
+    "blob/master/docs/src/howToContribute.md" => "blob/master/.github/CONTRIBUTING.md",
 )
 
 
