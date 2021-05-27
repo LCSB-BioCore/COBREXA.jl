@@ -10,10 +10,7 @@ Generates FVA-like warmup points for samplers, by selecting random points by
 minimizing and maximizing reactions. Can not return more than 2 times the
 number of reactions in the model.
 """
-function warmup_from_variability(model::MetabolicModel,
-    optimizer,
-    n_points::Int;
-    kwargs...)
+function warmup_from_variability(model::MetabolicModel, optimizer, n_points::Int; kwargs...)
     nr = n_reactions(model)
 
     n_points > 2 * nr && throw(
