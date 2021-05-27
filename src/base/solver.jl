@@ -54,5 +54,19 @@ Return `true` if `optmodel` solved successfully (solution is optimal or locally
 optimal).  Return `false` if any other termination status is reached.
 Termination status is defined in the documentation of `JuMP`.
 """
-is_solved(optmodel) =
-    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+function is_solved(optmodel)
+    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true :
+    false
+end
+
+"""
+    get_bound_vectors(opt_model)
+
+Returns vectors of the lower and upper bounds of `opt_model` constraints, where
+`opt_model` is a JuMP model constructed by e.g.
+[`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
+"""
+get_bound_vectors(opt_model) = (
+    [-normalized_rhs(lb) for lb in opt_model[:lbs]],
+    [normalized_rhs(ub) for ub in opt_model[:ubs]],
+)
