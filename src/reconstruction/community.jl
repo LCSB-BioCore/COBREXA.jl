@@ -167,7 +167,7 @@ function add_model(
 end
 
 """
-    join(models::Vector{M}, 
+    join_with_exchanges(models::Vector{M}, 
         exchange_rxn_ids::Vector{String}, 
         exchange_met_ids::Vector{String}; 
         add_biomass_objective=false, 
@@ -223,13 +223,13 @@ unclear.
 m1 = load_model(core_model_path)
 m2 = load_model(CoreModel, core_model_path)
 
-boundary_rxn_ids, boundary_met_ids = all_boundaries(m2)
+boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m2)
 exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
 exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
 
 biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
-community = COBREXA.join(
+community = join_with_exchanges(
     [m1, m2],
     exchange_rxn_ids,
     exchange_met_ids;
@@ -238,12 +238,25 @@ community = COBREXA.join(
 )
 
 # output
-
 Metabolic model of type CoreModel
-[...]
+
+⠤⡤⣤⣼⢤⣤⠀⢘⡄⢤⡼⢷⣦⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢸⣘⢀⢛⣠⠘⠀⠀⢡⠀⠻⠒⢛⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢚⢛⢙⢹⡨⢌⡀⠀⠰⠹⠚⢈⠒⠔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣭⣨⣦⣯⠕⢺⢌⠀⠀⠒⢠⣀⠃⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⡶⠘⠉⠻⠃⡶⠮⡀⠀⢦⡀⠈⠊⠘⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠈⠀⠀⠈⠀⠈⠁⠁⠀⠁⠉⠀⠀⢀⣄⣠⣤⣦⣤⡀⠀⢆⠠⣠⣲⣦⣀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢔⠂⠐⠆⣁⠆⠀⠈⡄⠸⠶⠾⠻⡂⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠛⠜⠗⣏⣬⢂⠀⠀⠲⡼⠗⡡⢥⠄⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢐⣘⣥⣱⡲⠒⡯⡁⠀⠐⠂⣀⢐⠀⠂⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠕⠍⠙⠟⠠⠷⢢⠀⢰⡠⠉⠙⠉⠃⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠲⣄⠀⠀⠀⠀⠀⠀⠂⠀⠀⠃⠈⠙⢮⡀⠈⠙⠃⠀⠀⠲⣄⠀⠀
+⠀⠀⠀⢀⠀⠀⠀⠈⠳⠄⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠙⠦⠀⠀⠀⠀⠀⠈⠳⠄
+Number of reactions: 211
+Number of metabolites: 166
 ```
 """
-function Base.join(
+function join_with_exchanges(
     models::Vector{M},
     exchange_rxn_ids::Vector{String},
     exchange_met_ids::Vector{String};
@@ -384,22 +397,23 @@ function Base.join(
 end
 
 """
-    all_boundaries(model::M) where {M<:MetabolicModel}
+    boundary_reactions_metabolites(model::MetabolicModel)::Tuple{Vector{String}, Vector{String}}
 
 Return `boundary_rxns` and `boundary_mets` given `model`. Boundary reactions
 are reactions with a single stoichiometric coefficient in a column in the
 stoichiometric matrix, and boundary metabolites are the corresponding row/metabolite
 for that column.
 """
-function all_boundaries(model::M) where {M<:MetabolicModel}
+function boundary_reactions_metabolites(model::MetabolicModel)::Tuple{Vector{String}, Vector{String}}
     boundary_mets = String[]
     boundary_rxns = String[]
     S = stoichiometry(model)
     rxns = reactions(model)
     mets = metabolites(model)
     for i = 1:size(S, 2)
-        j, b = findnz(S[:, i])
-        if length(j) == 1
+        n = nnz(S[:, i])
+        if n == 1
+            j, _ = findnz(S[:, i])
             push!(boundary_mets, mets[first(j)])
             push!(boundary_rxns, rxns[i])
         end
