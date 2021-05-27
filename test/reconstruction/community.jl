@@ -8,13 +8,13 @@
     m1 = load_model(model_path)
     m2 = load_model(CoreModel, model_path)
 
-    boundary_rxn_ids, boundary_met_ids = all_boundaries(m2)
+    boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m2)
     exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
     exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
-    community = COBREXA.join(
+    community = join_with_exchanges(
         [m1, m2],
         exchange_rxn_ids,
         exchange_met_ids;
@@ -57,13 +57,13 @@ end
     m1 = load_model(CoreModel, core_json)
     m2 = load_model(CoreModel, iJO1366_mat)
 
-    boundary_rxn_ids, boundary_met_ids = all_boundaries(m2)
+    boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m2)
     exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
     exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
 
-    community = COBREXA.join(
+    community = join_with_exchanges(
         [m1, m2],
         exchange_rxn_ids,
         exchange_met_ids;
@@ -114,12 +114,12 @@ end
     )
 
     m1 = load_model(CoreModel, model_path)
-    boundary_rxn_ids, boundary_met_ids = all_boundaries(m1)
+    boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m1)
     exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
     exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
 
-    community = COBREXA.join(
+    community = join_with_exchanges(
         [m1],
         exchange_rxn_ids,
         exchange_met_ids;
