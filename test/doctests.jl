@@ -4,7 +4,7 @@ ex = quote
     using COBREXA, Tulip
     include(joinpath(dirname(pathof(COBREXA)), "..", "test", "data_static.jl"))
     model = test_LP()
-    core_model_path = joinpath("data", "e_coli_core.json")
+    core_model_path = joinpath(dirname(pathof(COBREXA)), "..", "test", "data", "e_coli_core.json")
     Downloads.download(
         "http://bigg.ucsd.edu/static/models/e_coli_core.json",
         core_model_path,
