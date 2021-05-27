@@ -81,12 +81,12 @@ community = add_model(community, model, exchange_rxn_ids, exchange_met_ids; spec
 """
 function add_model(
     community::CoreModel,
-    model::M,
+    model::MetabolicModel,
     exchange_rxn_ids::Vector{String},
     exchange_met_ids::Vector{String};
-    species_name = "",
-    biomass_id = "",
-) where {M<:MetabolicModel}
+    species_name="unknown_species",
+    biomass_id=nothing,
+)::CoreModel
 
     exchange_met_community_inds = indexin(exchange_met_ids, metabolites(community))
     exchange_rxn_community_inds = indexin(exchange_rxn_ids, reactions(community))
@@ -148,7 +148,7 @@ function add_model(
     ubs = [ubs; ubsadd]
 
     rxnsadd = "$(species_name)_" .* reactions(model)
-    if biomass_id != ""
+    if !isnothing(biomass_id)
         metsadd =
             ["$(species_name)_" .* metabolites(model); "$(species_name)_" * biomass_id]
     else
@@ -219,7 +219,7 @@ reaction in the community model, if desired. Refer to the tutorial if this is
 unclear.
 
 # Example
-```jldoctest; output = false
+```
 m1 = load_model(core_model_path)
 m2 = load_model(CoreModel, core_model_path)
 
@@ -236,24 +236,6 @@ community = join_with_exchanges(
     add_biomass_objective = true,
     biomass_ids = biomass_ids,
 )
-
-# output
-Metabolic model of type CoreModel
-
-⠤⡤⣤⣼⢤⣤⠀⢘⡄⢤⡼⢷⣦⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⢸⣘⢀⢛⣠⠘⠀⠀⢡⠀⠻⠒⢛⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⢚⢛⢙⢹⡨⢌⡀⠀⠰⠹⠚⢈⠒⠔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⣭⣨⣦⣯⠕⢺⢌⠀⠀⠒⢠⣀⠃⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⡶⠘⠉⠻⠃⡶⠮⡀⠀⢦⡀⠈⠊⠘⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠈⠀⠀⠈⠀⠈⠁⠁⠀⠁⠉⠀⠀⢀⣄⣠⣤⣦⣤⡀⠀⢆⠠⣠⣲⣦⣀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢔⠂⠐⠆⣁⠆⠀⠈⡄⠸⠶⠾⠻⡂⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠛⠜⠗⣏⣬⢂⠀⠀⠲⡼⠗⡡⢥⠄⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢐⣘⣥⣱⡲⠒⡯⡁⠀⠐⠂⣀⢐⠀⠂⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠕⠍⠙⠟⠠⠷⢢⠀⢰⡠⠉⠙⠉⠃⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠲⣄⠀⠀⠀⠀⠀⠀⠂⠀⠀⠃⠈⠙⢮⡀⠈⠙⠃⠀⠀⠲⣄⠀⠀
-⠀⠀⠀⢀⠀⠀⠀⠈⠳⠄⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠙⠦⠀⠀⠀⠀⠀⠈⠳⠄
-Number of reactions: 211
-Number of metabolites: 166
 ```
 """
 function join_with_exchanges(
