@@ -12,7 +12,6 @@ using SHA
 using SparseArrays
 using Statistics
 using Tulip
-using MCMCChains
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)

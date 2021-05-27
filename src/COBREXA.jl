@@ -13,7 +13,6 @@ using Random
 using Serialization
 using SparseArrays
 using Statistics
-using MCMCChains
 
 import Base: findfirst, getindex, show
 import Pkg
