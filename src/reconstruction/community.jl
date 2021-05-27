@@ -84,8 +84,8 @@ function add_model(
     model::MetabolicModel,
     exchange_rxn_ids::Vector{String},
     exchange_met_ids::Vector{String};
-    species_name="unknown_species",
-    biomass_id=nothing,
+    species_name = "unknown_species",
+    biomass_id = nothing,
 )::CoreModel
 
     exchange_met_community_inds = indexin(exchange_met_ids, metabolites(community))
