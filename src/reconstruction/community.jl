@@ -404,7 +404,9 @@ are reactions with a single stoichiometric coefficient in a column in the
 stoichiometric matrix, and boundary metabolites are the corresponding row/metabolite
 for that column.
 """
-function boundary_reactions_metabolites(model::MetabolicModel)::Tuple{Vector{String}, Vector{String}}
+function boundary_reactions_metabolites(
+    model::MetabolicModel,
+)::Tuple{Vector{String},Vector{String}}
     boundary_mets = String[]
     boundary_rxns = String[]
     S = stoichiometry(model)
