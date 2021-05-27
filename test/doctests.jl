@@ -4,6 +4,7 @@ ex = quote
     using COBREXA, Tulip
     include(joinpath(dirname(pathof(COBREXA)), "..", "test", "data_static.jl"))
     model = test_LP()
+    core_model_path = joinpath("data", "e_coli_core.json")
 end
 
 # set module-level metadata

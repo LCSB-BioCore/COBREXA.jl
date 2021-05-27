@@ -102,6 +102,9 @@ function add_model(
 
     n_cmodel_rows, n_cmodel_cols = size(stoichiometry(community))
     n_model_rows, n_model_cols = size(stoichiometry(model))
+    # A note on the variable names here.Suppose M is some sparse matrix, then I
+    # = row indices, J = column indices and V = values at the associated
+    # indices. So I[a] = i, J[a]=j and then M[i,j] = V[a]
     Iadd, Jadd, Vadd = findnz(stoichiometry(model))
 
     # shift to fit into community         
@@ -135,6 +138,10 @@ function add_model(
     V = [V; Vadd]
     S = sparse(I, J, V, n_metabolites_total, n_reactions_total)
 
+    # A note on the variables here. The bounds are vectors of upper and lower
+    # bounds for each reaction. So lbs = [lb_1, lb_2, lb_i, ...], ubs = [ub_1,
+    # ub_2, ub_i, ...] for reaction i. See the bounds function for more
+    # information 
     lbsadd, ubsadd = bounds(model)
     lbs, ubs = bounds(community)
     lbs = [lbs; lbsadd]
@@ -212,15 +219,29 @@ reaction in the community model, if desired. Refer to the tutorial if this is
 unclear.
 
 # Example
-```
-model_path = joinpath("..","models","e_coli_core.json")
-m1 = load_model(StandardModel, model_path)
-model_path = joinpath("iML1515.xml")
-m2 = load_model(StandardModel, model_path)
+```jldoctest; output = false
+m1 = load_model(core_model_path)
+m2 = load_model(CoreModel, core_model_path)
 
-exchange_rxn_ids, exchange_met_ids = all_boundaries(m2)
-biomass_ids = ["BIOMASS_Ecoli_core_w_GAM","R_BIOMASS_Ec_iML1515_core_75p37M"]
-community = COBREXA.join([m1, m2], exchange_rxn_ids, exchange_met_ids; add_biomass_objective=true, biomass_ids=biomass_ids, species_names=["Core", "iML1515"])
+boundary_rxn_ids, boundary_met_ids = all_boundaries(m2)
+exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
+exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
+
+biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
+
+community = COBREXA.join(
+    [m1, m2],
+    exchange_rxn_ids,
+    exchange_met_ids;
+    add_biomass_objective = true,
+    biomass_ids = biomass_ids,
+)
+
+size(stoichiometry(community))
+
+# output
+
+(166, 211)
 ```
 """
 function Base.join(
