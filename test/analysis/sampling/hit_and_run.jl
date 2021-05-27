@@ -7,36 +7,21 @@
 
     model = load_model(StandardModel, model_path)
 
-    # Serial test
-    chains = hit_and_run(
-        model,
-        Tulip.Optimizer;
-        N = 10_000,
-        nchains = 3,
-        samplesize = 1000,
-        modifications = [
-            change_constraint("EX_glc__D_e", -10, -10),
-            change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
-        ],
-        workerids = W,
+    warmup, lbs, ubs = warmup_from_variability(model, Tulip.Optimizer; workers = W)
+
+    samples = affine_hit_and_run(
+        warmup,
+        lbs,
+        ubs;
+        sample_iters = 10 * (1:3),
+        workers = W,
+        chains = length(W),
     )
 
-    # Do not test for convergence, that requires too many samples
-    @test isapprox(mean(chains[[:PFL]]).nt.mean[1], 0.8, atol = 1.0)
+    @test size(samples, 1) == size(warmup, 1)
+    @test size(samples, 2) == size(warmup, 2) * 3 * length(W)
 
-    # parallel tests (still broken, not sure why)
-    chainsparallel = hit_and_run(
-        model,
-        Tulip.Optimizer;
-        N = 10_000,
-        nchains = 3,
-        samplesize = 1000,
-        modifications = [
-            change_constraint("EX_glc__D_e", -10, -10),
-            change_constraint("BIOMASS_Ecoli_core_w_GAM", 0.8, 0.8),
-        ],
-        workerids = W,
-    )
-
-    @test isapprox(mean(chainsparallel[[:PFL]]).nt.mean[1], 0.8, atol = 1.0)
+    @test all(samples .>= lbs)
+    @test all(samples .<= ubs)
+    @test all(stoichiometry(model) * samples .< TEST_TOLERANCE)
 end

@@ -65,17 +65,8 @@ end
 Returns vectors of the lower and upper bounds of `opt_model` constraints, where
 `opt_model` is a JuMP model constructed by e.g.
 [`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
-
-
 """
-function get_bound_vectors(opt_model)
-    lbconref = opt_model[:lbs]
-    ubconref = opt_model[:ubs]
-    lbs = zeros(length(lbconref))
-    for i in eachindex(lbs)
-        lbs[i] = -normalized_rhs(lbconref[i])
-    end
-    ubs = [normalized_rhs(ubconref[i]) for i in eachindex(ubconref)]
-
-    return lbs, ubs
-end
+get_bound_vectors(opt_model) = (
+    [-normalized_rhs(lb) for lb in opt_model[:lbs]],
+    [normalized_rhs(ub) for ub in opt_model[:ubs]],
+)

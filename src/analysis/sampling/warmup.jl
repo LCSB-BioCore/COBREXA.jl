@@ -1,17 +1,19 @@
 """
     warmup_from_variability(
-        n_points::Int,
         model::MetabolicModel,
-        optimizer;
-        modifications = [],
-        workers = [myid()],
+        optimizer,
+        n_points::Int;
+        kwargs...
     )
 
 Generates FVA-like warmup points for samplers, by selecting random points by
 minimizing and maximizing reactions. Can not return more than 2 times the
 number of reactions in the model.
 """
-function warmup_from_variability(n_points::Int, model::MetabolicModel, optimizer; kwargs...)
+function warmup_from_variability(model::MetabolicModel,
+    optimizer,
+    n_points::Int;
+    kwargs...)
     nr = n_reactions(model)
 
     n_points > 2 * nr && throw(
@@ -23,36 +25,36 @@ function warmup_from_variability(n_points::Int, model::MetabolicModel, optimizer
 
     sample = shuffle(vcat(1:nr, -(1:nr)))[begin:n_points]
     warmup_from_variability(
-        -filter(x -> x < 0, sample),
-        filter(x -> x > 0, sample),
         model,
-        optimizer;
+        optimizer,
+        -filter(x -> x < 0, sample),
+        filter(x -> x > 0, sample);
         kwargs...,
     )
 end
 
 """
-    warmup_from_variability(
-        min_reactions::Vector{Int},
-        max_reactions::Vector{Int},
+    function warmup_from_variability(
         model::MetabolicModel,
-        optimizer;
-        modifications=[],
-        workers::Vector{Int}=[myid()]
-    )::Matrix{Float64}
+        optimizer,
+        min_reactions::Vector{Int}=1:n_reactions(model),
+        max_reactions::Vector{Int}=1:n_reactions(model);
+        modifications = [],
+        workers::Vector{Int} = [myid()],
+    )::Tuple{Matrix{Float64}, Vector{Float64}, Vector{Float64}}
 
 Generate FVA-like warmup points for samplers, by minimizing and maximizing the
 specified reactions. The result is returned as a matrix, each point occupies as
 single column in the result.
 """
 function warmup_from_variability(
-    min_reactions::Vector{Int},
-    max_reactions::Vector{Int},
     model::MetabolicModel,
-    optimizer;
+    optimizer,
+    min_reactions::AbstractVector{Int} = 1:n_reactions(model),
+    max_reactions::AbstractVector{Int} = 1:n_reactions(model);
     modifications = [],
     workers::Vector{Int} = [myid()],
-)::Matrix{Float64}
+)::Tuple{Matrix{Float64},Vector{Float64},Vector{Float64}}
 
     # create optimization problem at workers, apply modifications
     save_model = :(
@@ -80,8 +82,14 @@ function warmup_from_variability(
         )...,
     )
 
+    # snatch the bounds from whatever worker is around
+    lbs, ubs = get_val_from(
+        workers[1],
+        :($COBREXA.get_bound_vectors(cobrexa_sampling_warmup_optmodel)),
+    )
+
     # free the data on workers
     map(fetch, remove_from.(workers, :cobrexa_sampling_warmup_optmodel))
 
-    return fluxes
+    return fluxes, lbs, ubs
 end

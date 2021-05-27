@@ -6,10 +6,10 @@
     )
     model = load_model(StandardModel, model_path)
 
-    pts = warmup_from_variability(
-        100,
+    pts, lbs, ubs = warmup_from_variability(
         model,
-        Tulip.Optimizer;
+        Tulip.Optimizer,
+        100;
         modifications = [change_constraint("EX_glc__D_e", -2, 2)],
         workers = W,
     )
@@ -18,4 +18,6 @@
     @test size(pts) == (95, 100)
     @test all(pts[idx, :] .>= -2)
     @test all(pts[idx, :] .<= 2)
+    @test lbs[idx] == -2
+    @test ubs[idx] == 2
 end
