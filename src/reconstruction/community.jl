@@ -237,11 +237,10 @@ community = COBREXA.join(
     biomass_ids = biomass_ids,
 )
 
-size(stoichiometry(community))
-
 # output
 
-(166, 211)
+Metabolic model of type CoreModel
+[...]
 ```
 """
 function Base.join(
