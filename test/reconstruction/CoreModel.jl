@@ -1,13 +1,22 @@
 @testset "Remove reactions" begin
     lp = CoreModel(
         [1.0 1 1 0; 1 1 1 0; 1 1 1 0; 0 0 0 1],
-        zeros(4),
-        zeros(4),
-        zeros(4),
-        zeros(4),
+        collect(1.:4),
+        collect(1.:4),
+        collect(1.:4),
+        collect(1.:4),
         ["r1"; "r2"; "r3"; "r4"],
         ["m1"; "m2"; "m3"; "m4"],
     )
+
+    modLp = remove_reactions(lp, [4; 1])
+    @test stoichiometry(modLp) == stoichiometry(lp)[1:3, 2:3]
+    @test balance(modLp) == balance(lp)[1:3]
+    @test objective(modLp) == objective(lp)[2:3]
+    @test bounds(modLp)[1] == bounds(lp)[1][2:3]
+    @test bounds(modLp)[2] == bounds(lp)[2][2:3]
+    @test reactions(modLp) == reactions(lp)[2:3]
+    @test metabolites(modLp) == metabolites(lp)[1:3]
 end
 
 @testset "Find exchange reactions and metabolites" begin
