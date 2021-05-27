@@ -51,8 +51,8 @@ open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
 # copy the contribution guide
 cp(
-    joinpath("..", ".github", "CONTRIBUTING.md"),
-    joinpath("src", "howToContribute.md"),
+    joinpath(@__DIR__, "..", ".github", "CONTRIBUTING.md"),
+    joinpath(@__DIR__, "src", "howToContribute.md"),
     force = true,
 )
 
