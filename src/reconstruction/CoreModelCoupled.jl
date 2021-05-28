@@ -127,6 +127,36 @@ function add_reactions(
     )
 end
 
+"""
+Remove a set of reactions from a `CoreModelCoupled`.
+
+Also removes the metabolites not involved in any reaction.
+"""
+function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
+    return CoreModelCoupled(
+                remove_reactions(m.lm, rxns),
+                m.C[:, filter(e -> e ∉ rxns, 1:n_reactions(m))],
+                m.cl,
+                m.cu
+            )
+end
+
+function remove_reactions(m::CoreModelCoupled, rxn::Integer)
+    return remove_reactions(m, [rxn])
+end
+
+function remove_reactions(m::CoreModelCoupled, rxn::String)
+    return remove_reactions(m, [rxn])
+end
+
+function remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
+    rxn_indices = [findfirst(isequal(name), m.lm.rxns) for name in intersect(rxns, m.lm.rxns)]
+    if isempty(rxn_indices)
+        return m
+    else
+        return remove_reactions(m, rxn_indices)
+    end
+end
 
 """
 Add constraints of the following form to a CoreModelCoupled and return a modified one.
