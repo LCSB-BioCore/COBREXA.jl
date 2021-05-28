@@ -2,6 +2,7 @@
 *.json
 *.mat
 *.xml
+*.smod
 
 .DS_Store
 
