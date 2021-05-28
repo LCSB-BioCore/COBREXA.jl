@@ -54,7 +54,7 @@ W = addprocs(2)
 @everywhere using COBREXA, Tulip
 
 # load the test models
-run_test_file("data", "test_models.jl")
+run_test_file("test_models.jl")
 
 # import base files
 @testset "COBREXA test suite" begin

@@ -1,15 +1,3 @@
-@testset "Remove reactions" begin
-    lp = CoreModel(
-        [1.0 1 1 0; 1 1 1 0; 1 1 1 0; 0 0 0 1],
-        zeros(4),
-        zeros(4),
-        zeros(4),
-        zeros(4),
-        ["r1"; "r2"; "r3"; "r4"],
-        ["m1"; "m2"; "m3"; "m4"],
-    )
-end
-
 @testset "Find exchange reactions and metabolites" begin
     cp = test_LP()
     @test isempty(find_exchange_reactions(cp))
@@ -44,7 +32,9 @@ end
     @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
     @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
 
-    cp = load_model(CoreModel, joinpath("data", "toyModel1.mat"))
+    # this is originally the "toyModel1.mat"
+    cp = test_toyModel()
+
     @test find_exchange_reactions(cp) == [4; 5; 6]
     @test find_exchange_metabolites(cp) == [4; 5; 6]
     @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5]

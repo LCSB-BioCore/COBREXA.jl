@@ -1,6 +1,6 @@
 
 @testset "Screening functions" begin
-    m = load_model(CoreModel, joinpath("data", "toyModel1.mat"))
+    m = test_toyModel()
 
     # nothing to analyze
     @test_throws DomainError screen(m; analysis = identity)
