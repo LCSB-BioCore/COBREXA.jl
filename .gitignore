@@ -1,5 +1,6 @@
 #ignore data files
-test/data/
+test/downloaded/
+test/tmpfiles/
 
 .DS_Store
 
