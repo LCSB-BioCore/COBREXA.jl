@@ -179,3 +179,21 @@ end
     @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
     @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
 end
+
+@testset "Change bounds" begin
+    cp = convert(CoreModelCoupled, test_LP())
+    change_bounds!(cp, [3; 1], xl = [-10.0; -20], xu = [10.0; 20])
+    @test cp isa CoreModelCoupled
+    @test cp.lm.xl == [-20; 1; -10]
+    @test cp.lm.xu == [20; 1; 10]
+    change_bounds!(
+        cp,
+        ["gibberish1"; "r3"; "r1"; "gibberish2"],
+        xl = [0; -30.0; -40; 0],
+        xu = [0; 30.0; 40; 0],
+    )
+    @test cp.lm.xl == [-40; 1; -30]
+    @test cp.lm.xu == [40; 1; 30]
+    change_bounds!(cp, ["r1"; "r3"], xl = [-50.0; -60])
+    @test cp.lm.xl == [-50; 1; -60]
+end

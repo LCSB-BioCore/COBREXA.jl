@@ -307,3 +307,34 @@ function find_exchange_metabolites(
         exc_prefs = exc_prefs,
     )
 end
+
+"""
+Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
+"""
+function change_bounds!(
+    model::CoreModelCoupled,
+    rxns::Vector{Int};
+    xl::V = Float64[],
+    xu::V = Float64[],
+) where {V<:VecType}
+    change_bounds!(
+        model.lm,
+        rxns,
+        xl = xl,
+        xu = xu
+    )
+end
+
+function change_bounds!(
+    model::CoreModelCoupled,
+    rxns::Vector{String};
+    xl::V = Float64[],
+    xu::V = Float64[],
+) where {V<:VecType}
+    change_bounds!(
+        model.lm,
+        rxns,
+        xl = xl,
+        xu = xu
+    )
+end
