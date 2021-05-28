@@ -1,4 +1,134 @@
 """
+Adds reactions to the coupled model `m`
+"""
+function add_reactions(
+    m::CoreModelCoupled,
+    s::V1,
+    b::V2,
+    c::AbstractFloat,
+    xl::AbstractFloat,
+    xu::AbstractFloat;
+    check_consistency = false,
+) where {V1<:VecType,V2<:VecType}
+    new_lm = add_reactions(
+                m.lm,
+                s,
+                b,
+                c,
+                xl,
+                xu,
+                check_consistency = check_consistency,
+            )
+    return CoreModelCoupled(
+        new_lm,
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        m.cl,
+        m.cu
+    )
+end
+
+function add_reactions(
+    m::CoreModelCoupled,
+    s::V1,
+    b::V2,
+    c::AbstractFloat,
+    xl::AbstractFloat,
+    xu::AbstractFloat,
+    rxn::String,
+    mets::K;
+    check_consistency = false,
+) where {V1<:VecType,V2<:VecType,K<:StringVecType}
+    new_lm = add_reactions(
+                m.lm,
+                s,
+                b,
+                c,
+                xl,
+                xu,
+                rxn,
+                mets,
+                check_consistency = check_consistency
+            )
+    return CoreModelCoupled(
+        new_lm,
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        m.cl,
+        m.cu
+    )
+end
+
+function add_reactions(
+    m::CoreModelCoupled,
+    Sp::M,
+    b::V,
+    c::V,
+    xl::V,
+    xu::V;
+    check_consistency = false,
+) where {M<:MatType,V<:VecType}
+    new_lm = add_reactions(
+                m.lm,
+                Sp,
+                b,
+                c,
+                xl,
+                xu,
+                check_consistency = check_consistency,
+            )
+    return CoreModelCoupled(
+        new_lm,
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        m.cl,
+        m.cu
+    )
+end
+
+function add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = false)
+    new_lm = add_reactions(
+                m1.lm,
+                m2,
+                check_consistency=check_consistency
+            )
+    return CoreModelCoupled(
+        new_lm,
+        hcat(m1.C, spzeros(size(m1.C, 1), n_reactions(new_lm)-n_reactions(m1.lm))),
+        m1.cl,
+        m1.cu
+    )
+end
+
+function add_reactions(
+    m::CoreModelCoupled,
+    Sp::M,
+    b::V,
+    c::V,
+    xl::V,
+    xu::V,
+    rxns::K,
+    mets::K;
+    check_consistency = false,
+) where {M<:MatType,V<:VecType,K<:StringVecType}
+    new_lm = add_reactions(
+            m.lm,
+            Sp,
+            b,
+            c,
+            xl,
+            xu,
+            rxns,
+            mets,
+            check_consistency = check_consistency
+        )
+    return CoreModelCoupled(
+        new_lm,
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        m.cl,
+        m.cu
+    )
+end
+
+
+"""
 Add constraints of the following form to a CoreModelCoupled and return a modified one.
 
 The arguments are same as for in-place `add_coupling_constraints!`.
