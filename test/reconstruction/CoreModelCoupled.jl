@@ -146,3 +146,36 @@ end
     new_cp = remove_reactions(cp, [1;1;2])
     @test new_cp.C[:] == cp.C[:, 3]
 end
+
+@testset "Find exchanges" begin
+    cp = convert(
+            CoreModelCoupled,
+            CoreModel(
+                [-1.0 -1 -2; 0 -1 0; 0 0 0],
+                zeros(3),
+                ones(3),
+                ones(3),
+                ones(3),
+                ["EX_m1"; "r2"; "r3"],
+                ["m1"; "m2"; "m3"]
+            )
+        )
+    @test find_exchange_reactions(cp) == [1]
+
+    cp = convert(
+            CoreModelCoupled,
+            CoreModel(
+                [-1.0 0 0; 0 0 -1; 0 -1 0],
+                zeros(3),
+                ones(3),
+                ones(3),
+                ones(3),
+                ["EX_m1"; "Exch_m3"; "Ex_m2"],
+                ["m1"; "m2"; "m3"]
+            )
+        )
+    @test find_exchange_reactions(cp) == [1; 2; 3]
+    @test find_exchange_metabolites(cp) == [1; 3; 2]
+    @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
+    @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
+end

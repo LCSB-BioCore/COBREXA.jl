@@ -268,3 +268,42 @@ function change_coupling_bounds!(
         model.cu[red_constraints] = cu[found]
     end
 end
+
+"""
+Return indices of exchange reactions.
+
+Exchange reactions are identified based on most commonly used prefixes.
+"""
+function find_exchange_reactions(
+    model::CoreModelCoupled;
+    exclude_biomass = false,
+    biomass_str::String = "biomass",
+    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+)
+    return find_exchange_reactions(
+        model.lm;
+        exclude_biomass = exclude_biomass,
+        biomass_str = biomass_str,
+        exc_prefs = exc_prefs,
+    )
+end
+
+"""
+Return indices of exchange metabolites.
+
+Exchange metabolites are identified based on the exchange reactions return
+by `find_exchange_reactions`.
+"""
+function find_exchange_metabolites(
+    model::CoreModelCoupled;
+    exclude_biomass = false,
+    biomass_str::String = "biomass",
+    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+)
+    return find_exchange_metabolites(
+        model.lm;
+        exclude_biomass = exclude_biomass,
+        biomass_str = biomass_str,
+        exc_prefs = exc_prefs,
+    )
+end
