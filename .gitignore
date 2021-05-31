@@ -1,7 +1,6 @@
 #ignore data files
-*.json
-*.mat
-*.xml
+test/downloaded/
+test/tmpfiles/
 
 .DS_Store
 
@@ -35,4 +34,5 @@ docs/src/notebooks/
 
 # add generated docs and tutorial specifics
 docs/src/index.md
+docs/src/howToContribute.md
 docs/src/assets/output.gif
