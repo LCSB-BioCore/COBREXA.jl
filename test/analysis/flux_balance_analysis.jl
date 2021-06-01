@@ -1,14 +1,14 @@
 @testset "Flux balance analysis with CoreModel" begin
     cp = test_simpleLP()
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
+    @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
+    @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [-1.0, 2.0]
 
@@ -17,10 +17,10 @@
     expected_optimum = 0.9219480950504393
 
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
+    @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
-    @test objective_value(lp) ≈ expected_optimum
-    @test cp.c' * sol ≈ expected_optimum
+    @test isapprox(objective_value(lp), expected_optimum, atol=TEST_TOLERANCE)
+    @test isapprox(cp.c' * sol, expected_optimum, atol=TEST_TOLERANCE)
 
     # test the "nicer output" variants
     fluxes_vec = flux_balance_analysis_vec(cp, Tulip.Optimizer)
