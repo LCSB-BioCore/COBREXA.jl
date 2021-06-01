@@ -48,11 +48,6 @@ model_paths = Dict{String,String}(
         df("e_coli_core.json"),
         "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
     ),
-    "mycoplasma-23114.mat" => download_data_file(
-        "https://www.vmh.life/files/reconstructions/AGORA/1.03/reconstructions/mat/Mycoplasma_hominis_ATCC_23114.mat",
-        df("mycoplasma-23114.mat"),
-        "03362073aa917f0691a0c896948f6e8eebe47f02dcbe0c3f00275fa87396e220",
-    ),
     "iJR904.mat" => download_data_file(
         "http://bigg.ucsd.edu/static/models/iJR904.mat",
         df("iJR904.mat"),
