@@ -40,3 +40,6 @@ docs/src/notebooks/
 docs/src/index.md
 docs/src/howToContribute.md
 docs/src/assets/output.gif
+
+# ignore container files
+*.sif
