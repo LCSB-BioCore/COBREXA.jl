@@ -5,7 +5,7 @@ From: cylon-x/lcsb-biocore/julia-base:latest
     dir=`pwd`
     git clone \
     "file://$dir" \
-    ${SINGULARITY_ROOTFS}/project
+    ${SINGULARITY_ROOTFS}/project --branch master --single-branch
 
 %post
     export JULIA_DEPOT_PATH=/user/.julia
