@@ -1,5 +1,5 @@
 Bootstrap: library
-From: crown421/default/juliabase:latest
+From: cylon-x/lcsb-biocore/julia-base:latest
 
 %setup
     dir=`pwd`
