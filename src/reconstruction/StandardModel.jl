@@ -1,45 +1,60 @@
 """
-    add!(model::StandardModel, rxns::Union{Vector{Reaction}, Reaction})
+    add_reactions!(model::StandardModel, rxns::Vector{Reaction})
 
-Add `rxn(s)` to `model` if they are not already present based on reaction `id`.
+Add `rxns` to `model` based on reaction `id`.
 """
-function add!(model::StandardModel, rxns::Vector{Reaction})
+function add_reactions!(model::StandardModel, rxns::Vector{Reaction})
     for rxn in rxns
-        add!(model, rxn)
+        add_reaction!(model, rxn)
     end
 end
 
-function add!(model::StandardModel, rxn::Reaction)
+"""
+    add_reaction(model::StandardModel, rxn::Reaction)
+
+Add `rxn` to `model` based on reaction `id`.
+"""
+function add_reaction!(model::StandardModel, rxn::Reaction)
     model.reactions[rxn.id] = rxn
 end
 
 """
-    add!(model::StandardModel, mets::Union{Vector{Metabolite}, Metabolite})
+    add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
 
-Add `met(s)` to `model` if they are not already present, based on metabolite `id`.
+Add `mets` to `model` based on metabolite `id`.
 """
-function add!(model::StandardModel, mets::Vector{Metabolite})
+function add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
     for met in mets
-        add!(model, met)
+        add_metabolite!(model, met)
     end
 end
 
-function add!(model::StandardModel, met::Metabolite)
+"""
+    add_metabolite!(model::StandardModel, met::Metabolite)
+
+Add `mets` to `model` based on metabolite `id`.
+"""
+function add_metabolite!(model::StandardModel, met::Metabolite)
     model.metabolites[met.id] = met
 end
 
 """
-    add!(model::StandardModel, genes::Union{Vector{Gene}, Gene})
+    add_genes!(model::StandardModel, genes::Vector{Gene})
 
-Add `gene(s)` to `model` if they are not already present based on gene `id`.
+Add `genes` to `model` based on gene `id`.
 """
-function add!(model::StandardModel, genes::Vector{Gene})
+function add_genes!(model::StandardModel, genes::Vector{Gene})
     for gene in genes
-        add!(model, gene)
+        add_gene!(model, gene)
     end
 end
 
-function add!(model::StandardModel, gene::Gene)
+"""
+    add_gene!(model::StandardModel, gene::Gene)
+
+Add `gene` to `model` based on gene `id`.
+"""
+function add_gene!(model::StandardModel, gene::Gene)
     model.genes[gene.id] = gene
 end
 
