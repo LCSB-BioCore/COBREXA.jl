@@ -44,10 +44,10 @@ function find_exchange_reactions(
 )::Vector{Int}
     ex_inds = Int[]
     for (i, rxn_id) in enumerate(reactions(model))
-        if any([startswith(rxn_id, x) for x in ex_prefixes]) # exchange reactions
+        if any(startswith(rxn_id, x) for x in ex_prefixes) # exchange reactions
             push!(ex_inds, i)
             continue
-        elseif !exclude_biomass && any([occursin(x, rxn_id) for x in biomass_strings]) # biomass
+        elseif !exclude_biomass && any(occursin(x, rxn_id) for x in biomass_strings) # biomass
             push!(ex_inds, i)
         end
     end
