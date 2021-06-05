@@ -152,7 +152,7 @@ function remove_genes!(
         rm_reactions = String[]
         for (rid, r) in model.reactions
             if !isnothing(r.grr) &&
-               all([any(in.(gids, Ref(conjunction))) for conjunction in r.grr])
+               all(any(in.(gids, Ref(conjunction))) for conjunction in r.grr)
                 push!(rm_reactions, rid)
             end
         end
