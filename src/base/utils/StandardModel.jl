@@ -142,7 +142,10 @@ on their prefixes, see `_constants.exchange_prefixes` for the default list (incl
 prefixes like "EX_", etc.). If `exclude_biomass` is true then the biomass reaction is
 not returned as in this list, otherwise looks for the biomass reaction by checking if 
 a reaction contains a string in the list `biomass_strings`, see `_constants.biomass_strings`
-for the default list (includes strings like "biomass", etc.)
+for the default list (includes strings like "biomass", etc.).
+
+Note: biomass exchange reactions are counted as exchange reactions and will NOT
+be excluded when `exclude_biomass` is true.
 """
 function find_exchange_reactions(
     model::StandardModel;
@@ -178,7 +181,10 @@ dictionary. Identifies these reactions based on their prefixes, see
 returned as in this list, otherwise looks for the biomass reaction by checking
 if a reaction contains a string in the list `biomass_strings`, see
 `_constants.biomass_strings` for the default list (includes strings like
-"biomass", etc.)
+"biomass", etc.).
+
+Note: biomass exchange reactions are counted as exchange reactions and will NOT
+be excluded when `exclude_biomass` is true.
 """
 function find_exchange_metabolites(
     model::StandardModel;
