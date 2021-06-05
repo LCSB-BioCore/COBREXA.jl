@@ -28,21 +28,17 @@
         ["m1"; "m2"; "m3"],
     )
     @test find_exchange_reactions(cp) == [1; 2; 3]
-    @test find_exchange_metabolites(cp) == [1; 3; 2]
-    @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
-    @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
+    @test find_exchange_metabolites(cp)[1][1] == -1.0 
+    @test find_exchange_reactions(cp, ex_prefixes = ["Exch_"]) == [2]
+    @test find_exchange_metabolites(cp, ex_prefixes = ["Exch_"])[2][3] == -1.0
 
     # this is originally the "toyModel1.mat"
     cp = test_toyModel()
 
-    @test find_exchange_reactions(cp) == [4; 5; 6]
-    @test find_exchange_metabolites(cp) == [4; 5; 6]
-    @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5]
-    @test find_exchange_metabolites(cp, exclude_biomass = true) == [4; 5]
-    @test find_exchange_reactions(cp, exclude_biomass = true, biomass_str = "biom") ==
-          [4; 5]
-    @test find_exchange_metabolites(cp, exclude_biomass = true, biomass_str = "biom") ==
-          [4; 5]
+    @test find_exchange_reactions(cp) == [4; 5; 6; 7]
+    @test find_exchange_metabolites(cp)[7][6] == 1.0
+    @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5; 6]
+    @test find_exchange_metabolites(cp, exclude_biomass = true)[5][5] == -1.0
 end
 
 @testset "CoreModel utilities" begin

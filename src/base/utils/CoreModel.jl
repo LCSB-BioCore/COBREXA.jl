@@ -19,44 +19,75 @@ Base.isequal(model1::CoreModelCoupled, model2::CoreModelCoupled) =
 Base.copy(model::CoreModelCoupled) = CoreModelCoupled(model.lm, model.C, model.cl, model.cu)
 
 """
-Returns indices of exchange reactions.
-Exchange reactions are identified based on most commonly used prefixes.
+    find_exchange_reactions(
+        model::CoreModel;
+        exclude_biomass = false,
+        biomass_strings = _constants.biomass_strings,
+        ex_prefixes = _constants.exchange_prefixes,
+    )::Vector{String}
+
+Returns indices of exchange reactions. Exchange reactions are identified based
+on most commonly used prefixes, these prefixes can be set using `ex_prefixes`.
+See `_constants.biomass_strings` for the default list. The biomass reaction is
+also added if it can be identified by looking for the strings listed in
+`biomass_strings` in the reaction ids. If `exclude_biomass` is true then this
+does not occur.
+
+Note: biomass exchange reactions are counted as exchange reactions and will NOT
+be excluded when `exclude_biomass` is true.
 """
 function find_exchange_reactions(
     model::CoreModel;
     exclude_biomass = false,
-    biomass_str::String = "biomass",
-    exc_prefs = ["EX_"; "Exch_"; "Ex_"; "R_EX_"],
-)
-    is_exc = falses(n_reactions(model))
-    for pref in exc_prefs
-        is_exc = is_exc .| startswith.(model.rxns, pref)
+    biomass_strings = _constants.biomass_strings,
+    ex_prefixes = _constants.exchange_prefixes,
+)::Vector{Int}
+    ex_inds = Int[]
+    for (i, rxn_id) in enumerate(reactions(model))
+        if any([startswith(rxn_id, x) for x in ex_prefixes]) # exchange reactions
+            push!(ex_inds, i)
+            continue
+        elseif !exclude_biomass && any([occursin(x, rxn_id) for x in biomass_strings]) # biomass
+            push!(ex_inds, i)
+        end
     end
-    exc_inds = findall(is_exc)
-    if exclude_biomass
-        biom_inds = findall(x -> occursin(biomass_str, x), model.rxns)
-        exc_inds = setdiff(exc_inds, biom_inds)
-    end
-    return exc_inds
+    return ex_inds
 end
 
 """
-Returns indices of exchanged metabolites, ie, the outermost metabolites in the network
-In practice returns the metabolites consumed by the reactions given by `find_exchange_reactions`
-and if called with the same arguments, the two outputs correspond.
+    find_exchange_metabolites(
+        model::CoreModel;
+        exclude_biomass = false,
+        biomass_strings = _constants.biomass_strings,
+        ex_prefixes = _constants.exchange_prefixes,
+    )::Vector{String}
+
+Returns a dictionary mapping indices of exchange reactions to dictionaries of
+exchange metabolites where the metabolite dictionary corresponds to metabolite
+indices mapped to stoichiometric coefficients. Exchange reactions are identified
+based on most commonly used prefixes, these prefixes can be set using
+`ex_prefixes`. See `_constants.biomass_strings` for the default list. The
+biomass reaction is also added if it can be identified by looking for the
+strings listed in `biomass_strings` in the reaction ids. If `exclude_biomass` is
+true then this does not occur.
+
+Note: biomass exchange reactions are counted as exchange reactions and will NOT
+be excluded when `exclude_biomass` is true.
 """
 function find_exchange_metabolites(
     model::CoreModel;
     exclude_biomass = false,
-    biomass_str::String = "biomass",
-    exc_prefs = ["EX_"; "Exch_"; "Ex_"; "R_EX_"],
-)
+    biomass_strings = _constants.biomass_strings,
+    ex_prefixes = _constants.exchange_prefixes,
+)::Dict{Int, Dict{Int, Float64}}
     exc_rxn_inds = find_exchange_reactions(
         model,
         exclude_biomass = exclude_biomass,
-        biomass_str = biomass_str,
-        exc_prefs = exc_prefs,
+        biomass_strings = biomass_strings,
+        ex_prefixes = ex_prefixes,
     )
-    exc_met_inds = [findfirst(x -> x == -1, model.S[:, j]) for j in exc_rxn_inds]
+    exc_met_inds = Dict(exc_rxn_ind =>
+        Dict(k=>v for (k, v) in zip(findnz(model.S[:, exc_rxn_ind])...)) for exc_rxn_ind in exc_rxn_inds
+    )
     return exc_met_inds
 end
