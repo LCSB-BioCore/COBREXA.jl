@@ -49,8 +49,6 @@ end
     @test new_mets == [4]
 end
 
-
-
 @testset "Add reactions (checking existence and consistency)" begin
     cp = test_LP()
     @test size(cp.S) == (4, 3)
@@ -157,7 +155,6 @@ end
         ones(1),
     )
 end
-
 
 @testset "Remove reactions" begin
     cp = test_LP()
