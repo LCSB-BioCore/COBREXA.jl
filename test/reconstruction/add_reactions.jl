@@ -3,9 +3,9 @@
     A = Metabolite("A")
     B = Metabolite("B")
     C = Metabolite("C")
-    add!(mod, A)
-    add!(mod, B)
-    add!(mod, C)
+    add_metabolites!(mod, A)
+    add_metabolites!(mod, B)
+    add_metabolites!(mod, C)
 
     @add_reactions! mod begin
         "v1", nothing ⟷ A
