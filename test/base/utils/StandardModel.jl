@@ -15,10 +15,6 @@
     atom_fluxes = atom_exchange(sol, model)
     @test isapprox(atom_fluxes["C"], -37.1902, atol = 1e-3)
 
-    # exchange trackers
-    consuming, producing = exchange_reactions(sol, model; verbose = false)
-    @test isapprox(consuming["EX_nh4_e"], -4.76532, atol = 1e-3)
-
     # metabolite trackers
     consuming, producing = metabolite_fluxes(sol, model)
     @test isapprox(consuming["atp_c"]["PFK"], -7.47738, atol = 1e-3)
