@@ -22,7 +22,7 @@ function add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
     end
 end
 
-add_metabolites!(model::StandardModel, met::Metabolite) =  add_metabolite!(model, [met])
+add_metabolites!(model::StandardModel, met::Metabolite) =  add_metabolites!(model, [met])
     
 """
     add_genes!(model::StandardModel, genes::Vector{Gene})
@@ -57,7 +57,6 @@ end
     reaction_name, reaction, lower_bound, upper_bound
 end
 ```
-
 
 Examples
 --------
@@ -95,64 +94,56 @@ end
 """
     remove_reactions!(model::StandardModel, ids::Vector{String})
 
-Remove all reactions with `ids` from `model`.
+Remove all reactions with `ids` from `model`. Note, may result in orphan metabolites.
 
 # Example
+```
 remove_reactions!(model, ["EX_glc__D_e", "fba"])
+remove_reaction!(model, "EX_glc__D_e")
+```
 """
 function remove_reactions!(model::StandardModel, ids::Vector{String})
-    for id in ids
-        rm!(Reaction, model, id)
-    end
+    pop!.(Ref(model.reactions), ids)
 end
 
-"""
-    remove_reaction!(model::StandardModel, id::String)
-
-Remove reaction with `id` from `model`.
-
-# Example
-remove_reaction!(model, "EX_glc__D_e")
-"""
-function remove_reaction!(model::StandardModel, id::String)
-    rxn = pop!(model.reactions, id)
-end
+remove_reactions!(model::StandardModel, id::String) = remove_reactions!(model, [id]) 
 
 """
-    rm!(::Type{Metabolite}, model::StandardModel, ids::Vector{String})
+    remove_metabolites!(model::StandardModel, ids::Vector{String})
 
 Remove all metabolites with `ids` from `model`.
 Warning, this could leave the model inconsistent, e.g. a reaction might
-require the deleted metabolite.
+require the deleted metabolite, in which case analysis functions will error.
 
 # Example
-rm!(Metabolite, model, ["atp_c", "adp_c"])
-rm!(Metabolite, model, "atp_c")
+```
+remove_metabolites!(model, ["atp_c", "adp_c"])
+remove_metabolites!(model, "atp_c")
+```
 """
-function rm!(::Type{Metabolite}, model::StandardModel, ids::Vector{String})
-    for id in ids
-        rm!(Metabolite, model, id)
-    end
+function remove_metabolites!(model::StandardModel, ids::Vector{String})
+    pop!.(Ref(model.metabolites), ids)    
 end
 
-function rm!(::Type{Metabolite}, model::StandardModel, id::String)
-    delete!(model.metabolites, id)
-end
+remove_metabolites!(model::StandardModel, id::String) = remove_metabolites!(model, [id]) 
 
 """
-    rm!(::Type{Gene}, model::StandardModel, ids::Vector{String})
+    remove_genes!(
+        model::StandardModel,
+        ids::Vector{String};
+        knockout_reactions::Bool = false,
+    )
 
-Remove all genes with `ids` from `model`.
+Remove all genes with `ids` from `model`. If `knockout_reactions` is true, then also 
+constrain reactions that require the genes to function to carry zero flux.
 
 # Example
-rm!(Gene, model, ["g1", "g2"])
-rm!(Gene, model, "g1")
+```
+rm!(model, ["g1", "g2"])
+rm!(model, "g1")
+```
 """
-rm!(::Type{Gene}, model::StandardModel, gid::String; knockout_reactions::Bool = false) =
-    rm!(Gene, model, [gid]; knockout_reactions = knockout_reactions)
-
-function rm!(
-    ::Type{Gene},
+function remove_genes!(
     model::StandardModel,
     gids::Vector{String};
     knockout_reactions::Bool = false,
@@ -165,10 +156,12 @@ function rm!(
                 push!(rm_reactions, rid)
             end
         end
-        delete!.(Ref(model.reactions), rm_reactions)
+        pop!.(Ref(model.reactions), rm_reactions)
     end
-    delete!.(Ref(model.genes), gids)
+    pop!.(Ref(model.genes), gids)
 end
+
+remove_genes!(model::StandardModel, gid::String; knockout_reactions::Bool = false) = remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
 function set_bound(model::StandardModel, reaction_id::String; ub, lb)
     reaction = model.reactions[reaction_id]
