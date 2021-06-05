@@ -155,7 +155,7 @@ function find_exchange_reactions(
 )::Vector{String}
     ex_rxn_ids = String[]
     for rxn_id in reactions(model)
-        if any([startswith(rxn_id, x) for x in ex_prefixes]) # found exchange reaction
+        if any(startswith(rxn_id, x) for x in ex_prefixes) # found exchange reaction
             push!(ex_rxn_ids, rxn_id)
             continue
         elseif !exclude_biomass && any([occursin(x, rxn_id) for x in biomass_strings]) # biomass
