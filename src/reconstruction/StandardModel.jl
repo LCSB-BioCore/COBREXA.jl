@@ -5,18 +5,11 @@ Add `rxns` to `model` based on reaction `id`.
 """
 function add_reactions!(model::StandardModel, rxns::Vector{Reaction})
     for rxn in rxns
-        add_reaction!(model, rxn)
+        model.reactions[rxn.id] = rxn
     end
 end
 
-"""
-    add_reaction(model::StandardModel, rxn::Reaction)
-
-Add `rxn` to `model` based on reaction `id`.
-"""
-function add_reaction!(model::StandardModel, rxn::Reaction)
-    model.reactions[rxn.id] = rxn
-end
+add_reactions!(model::StandardModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
     add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
@@ -25,19 +18,12 @@ Add `mets` to `model` based on metabolite `id`.
 """
 function add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
     for met in mets
-        add_metabolite!(model, met)
+        model.metabolites[met.id] = met
     end
 end
 
-"""
-    add_metabolite!(model::StandardModel, met::Metabolite)
-
-Add `mets` to `model` based on metabolite `id`.
-"""
-function add_metabolite!(model::StandardModel, met::Metabolite)
-    model.metabolites[met.id] = met
-end
-
+add_metabolites!(model::StandardModel, met::Metabolite) =  add_metabolite!(model, [met])
+    
 """
     add_genes!(model::StandardModel, genes::Vector{Gene})
 
@@ -45,18 +31,11 @@ Add `genes` to `model` based on gene `id`.
 """
 function add_genes!(model::StandardModel, genes::Vector{Gene})
     for gene in genes
-        add_gene!(model, gene)
+        model.genes[gene.id] = gene
     end
 end
 
-"""
-    add_gene!(model::StandardModel, gene::Gene)
-
-Add `gene` to `model` based on gene `id`.
-"""
-function add_gene!(model::StandardModel, gene::Gene)
-    model.genes[gene.id] = gene
-end
+add_genes!(model::StandardModel, gene::Gene) = add_genes!(model, [gene]) 
 
 """
     @add_reactions!(model::Symbol, ex::Expr)
@@ -108,27 +87,34 @@ macro add_reactions!(model::Symbol, ex::Expr)
             push!(all_reactions.args, :(r.lb = $lb))
             push!(all_reactions.args, :(r.ub = $ub))
         end
-        push!(all_reactions.args, :(add!($model, r)))
+        push!(all_reactions.args, :(add_reactions!($model, r)))
     end
     return all_reactions
 end
 
 """
-    rm!(::Type{Reaction}, model::StandardModel, ids::Vector{String})
+    remove_reactions!(model::StandardModel, ids::Vector{String})
 
 Remove all reactions with `ids` from `model`.
 
 # Example
-rm!(Reaction, model, ["EX_glc__D_e", "fba"])
-rm!(Reaction, model, "EX_glc__D_e")
+remove_reactions!(model, ["EX_glc__D_e", "fba"])
 """
-function rm!(::Type{Reaction}, model::StandardModel, ids::Vector{String})
+function remove_reactions!(model::StandardModel, ids::Vector{String})
     for id in ids
         rm!(Reaction, model, id)
     end
 end
 
-function rm!(::Type{Reaction}, model::StandardModel, id::String)
+"""
+    remove_reaction!(model::StandardModel, id::String)
+
+Remove reaction with `id` from `model`.
+
+# Example
+remove_reaction!(model, "EX_glc__D_e")
+"""
+function remove_reaction!(model::StandardModel, id::String)
     rxn = pop!(model.reactions, id)
 end
 
