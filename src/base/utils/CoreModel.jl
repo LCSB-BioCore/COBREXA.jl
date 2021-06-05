@@ -26,7 +26,7 @@ function find_exchange_reactions(
     model::CoreModel;
     exclude_biomass = false,
     biomass_str::String = "biomass",
-    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+    exc_prefs = ["EX_"; "Exch_"; "Ex_"; "R_EX_"],
 )
     is_exc = falses(n_reactions(model))
     for pref in exc_prefs
@@ -49,7 +49,7 @@ function find_exchange_metabolites(
     model::CoreModel;
     exclude_biomass = false,
     biomass_str::String = "biomass",
-    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+    exc_prefs = ["EX_"; "Exch_"; "Ex_"; "R_EX_"],
 )
     exc_rxn_inds = find_exchange_reactions(
         model,
