@@ -28,13 +28,10 @@ Base.copy(model::CoreModelCoupled) = CoreModelCoupled(model.lm, model.C, model.c
 
 Returns indices of exchange reactions. Exchange reactions are identified based
 on most commonly used prefixes, these prefixes can be set using `ex_prefixes`.
-See `_constants.biomass_strings` for the default list. The biomass reaction is
+See `_constants.exchange_prefixes` for the default list. The biomass reaction is
 also added if it can be identified by looking for the strings listed in
-`biomass_strings` in the reaction ids. If `exclude_biomass` is true then this
+`_constants.biomass_strings` in the reaction ids. If `exclude_biomass` is true then this
 does not occur.
-
-Note: biomass exchange reactions are counted as exchange reactions and will NOT
-be excluded when `exclude_biomass` is true.
 """
 function find_exchange_reactions(
     model::CoreModel;
@@ -44,7 +41,7 @@ function find_exchange_reactions(
 )::Vector{Int}
     ex_inds = Int[]
     for (i, rxn_id) in enumerate(reactions(model))
-        if any(startswith(rxn_id, x) for x in ex_prefixes) # exchange reactions
+        if any(startswith(rxn_id, x) for x in ex_prefixes) && !any(occursin(x, rxn_id) for x in biomass_strings) # exchange reactions
             push!(ex_inds, i)
             continue
         elseif !exclude_biomass && any(occursin(x, rxn_id) for x in biomass_strings) # biomass
