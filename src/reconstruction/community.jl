@@ -57,17 +57,17 @@ add_objective!(model::CoreModel, objective_met::String, objective_weight::Float6
     add_objective!(model, [objective_met], [objective_weight])
 
 """
-add_model(
-    community::CoreModel,
-    model::M,
-    exchange_rxn_ids::Vector{String},
-    exchange_met_ids::Vector{String};
-    species_name="",
-    biomass_id=""
-    ) where {M<:MetabolicModel}
+    add_model(
+        community::CoreModel,
+        model::MetabolicModel,
+        exchange_rxn_ids::Vector{String},
+        exchange_met_ids::Vector{String};
+        model_name = "unknown_species",
+        biomass_id = nothing,
+    )::CoreModel
 
 Add `model` to `community`, which is a pre-existing community model with
-`exchange_rxn_ids` and `exchange_met_ids`. The `species_name` is appended to
+`exchange_rxn_ids` and `exchange_met_ids`. The `model_name` is appended to
 each reaction and metabolite, see [`join`](@ref). If `biomass_id` is specified
 then a biomass metabolite for `model` is also added to the resulting model. The
 column corresponding to the `biomass_id` reaction then produces this new biomass
@@ -76,7 +76,7 @@ metabolite with unit coefficient. Note, `exchange_rxn_ids` and
 
 # Example
 ```
-community = add_model(community, model, exchange_rxn_ids, exchange_met_ids; species_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
+community = add_model(community, model, exchange_rxn_ids, exchange_met_ids; model_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
 ```
 """
 function add_model(
@@ -84,7 +84,7 @@ function add_model(
     model::MetabolicModel,
     exchange_rxn_ids::Vector{String},
     exchange_met_ids::Vector{String};
-    species_name = "unknown_species",
+    model_name = "unknown_species",
     biomass_id = nothing,
 )::CoreModel
 
@@ -147,12 +147,12 @@ function add_model(
     lbs = [lbs; lbsadd]
     ubs = [ubs; ubsadd]
 
-    rxnsadd = "$(species_name)_" .* reactions(model)
+    rxnsadd = "$(model_name)_" .* reactions(model)
     if !isnothing(biomass_id)
         metsadd =
-            ["$(species_name)_" .* metabolites(model); "$(species_name)_" * biomass_id]
+            ["$(model_name)_" .* metabolites(model); "$(model_name)_" * biomass_id]
     else
-        metsadd = "$(species_name)_" .* metabolites(model)
+        metsadd = "$(model_name)_" .* metabolites(model)
     end
     rxns = [reactions(community); rxnsadd]
     mets = [metabolites(community); metsadd]
@@ -172,13 +172,13 @@ end
         exchange_met_ids::Vector{String}; 
         add_biomass_objective=false, 
         biomass_ids::Vector{String}, 
-        species_names=String[]
+        model_names=String[]
     ) 
 
 Return a `CoreModel` representing the community model of `models` joined through
 their `exchange_rxn_ids` and `exchange_met_ids`. These exchange reactions and
 metabolites link to environmental metabolites and reactions.
-Optionally specify `species_names` to append a specific name to each reaction
+Optionally specify `model_names` to append a specific name to each reaction
 and metabolite of an organism for easier reference (default is `species_i` for
 each model index i in `models`). Note, the bounds of the environmental variables
 are all set to zero. Thus, to run a simulation you need to constrain them
@@ -244,7 +244,7 @@ function join_with_exchanges(
     exchange_met_ids::Vector{String};
     add_biomass_objective = true,
     biomass_ids = String[],
-    species_names = String[],
+    model_names = String[],
 ) where {M<:MetabolicModel}
 
     if add_biomass_objective && isempty(biomass_ids)
@@ -353,7 +353,7 @@ function join_with_exchanges(
     reaction_cumsum = cumsum(reaction_lengths)
     metabolite_cumsum = cumsum(metabolite_lengths)
     for i = 1:length(models)
-        species = isempty(species_names) ? "species_$(i)" : species_names[i]
+        species = isempty(model_names) ? "species_$(i)" : model_names[i]
         tlbs, tubs = bounds(models[i])
         lbs[reaction_offset[i]+1:reaction_cumsum[i]] .= tlbs
         ubs[reaction_offset[i]+1:reaction_cumsum[i]] .= tubs
@@ -370,7 +370,7 @@ function join_with_exchanges(
     if add_biomass_objective
         rxns[end] = "community_biomass"
         for i = 1:length(models)
-            species = isempty(species_names) ? "species_$(i)" : species_names[i]
+            species = isempty(model_names) ? "species_$(i)" : model_names[i]
             mets[end-length(biomass_ids)+i] = "$(species)_" .* biomass_ids[i]
         end
     end
