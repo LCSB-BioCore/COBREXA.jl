@@ -1,12 +1,6 @@
 @testset "Small model join" begin
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
-
-    m1 = load_model(model_path)
-    m2 = load_model(CoreModel, model_path)
+    m1 = load_model(model_paths["e_coli_core.json"])
+    m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
     boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m2)
     exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
@@ -43,20 +37,9 @@
 end
 
 @testset "Heterogenous model join" begin
-    iJO1366_mat = download_data_file(
-        "http://bigg.ucsd.edu/static/models/iJO1366.mat",
-        joinpath("data", "iJO1366.mat"),
-        "b5cfe21b6369a00e45d600b783f89521f5cc953e25ee52c5f1d0a3f83743be30",
-    )
-    core_json = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
-
-    m1 = load_model(CoreModel, core_json)
-    m2 = load_model(CoreModel, iJO1366_mat)
-
+    m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
+    m2 = load_model(CoreModel, model_paths["iJO1366.mat"])
+    
     boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m2)
     exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
     exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
@@ -107,13 +90,8 @@ end
 end
 
 @testset "Community model modifications" begin
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
+    m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
-    m1 = load_model(CoreModel, model_path)
     boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m1)
     exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
     exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
@@ -132,7 +110,7 @@ end
     community.xl[env_ex_inds] .= m1.xl[m1_ex_inds]
     community.xu[env_ex_inds] .= m1.xu[m1_ex_inds]
 
-    m2 = load_model(CoreModel, model_path)
+    m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
     community = add_model(
         community,
