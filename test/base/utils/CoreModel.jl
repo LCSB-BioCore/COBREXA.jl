@@ -37,7 +37,7 @@
 
     @test find_exchange_reactions(cp) == [4; 5; 6; 7]
     @test find_exchange_metabolites(cp)[7][6] == 1.0
-    @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5; 6]
+    @test find_exchange_reactions(cp, exclude_biomass = true) == [4; 5]
     @test find_exchange_metabolites(cp, exclude_biomass = true)[5][5] == -1.0
 end
 
