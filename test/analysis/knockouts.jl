@@ -1,20 +1,20 @@
 @testset "single_knockout" begin
     m = StandardModel()
-    add_metabolites!(m, Metabolite("A"))
-    add_metabolites!(m, Metabolite("B"))
+    add_metabolite!(m, Metabolite("A"))
+    add_metabolite!(m, Metabolite("B"))
 
-    add_genes!(m, Gene("g1"))
-    add_genes!(m, Gene("g2"))
-    add_reactions!(m, Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]))
-    add_reactions!(
+    add_gene!(m, Gene("g1"))
+    add_gene!(m, Gene("g2"))
+    add_reaction!(m, Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]))
+    add_reaction!(
         m,
         Reaction("v2", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1", "g2"]]),
     )
-    add_reactions!(
+    add_reaction!(
         m,
         Reaction("v3", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"], ["g2"]]),
     )
-    add_reactions!(
+    add_reaction!(
         m,
         Reaction(
             "v4",
@@ -45,16 +45,16 @@ end
 
 @testset "multiple_knockouts" begin
     m = StandardModel()
-    add_metabolites!(m, Metabolite("A"))
-    add_metabolites!(m, Metabolite("B"))
-    add_genes!(m, Gene("g1"))
-    add_genes!(m, Gene("g2"))
-    add_genes!(m, Gene("g3"))
-    add_reactions!(
+    add_metabolite!(m, Metabolite("A"))
+    add_metabolite!(m, Metabolite("B"))
+    add_gene!(m, Gene("g1"))
+    add_gene!(m, Gene("g2"))
+    add_gene!(m, Gene("g3"))
+    add_reaction!(
         m,
         Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"], ["g3"]]),
     )
-    add_reactions!(
+    add_reaction!(
         m,
         Reaction(
             "v2",
@@ -62,7 +62,7 @@ end
             grr = [["g1", "g2"], ["g3"]],
         ),
     )
-    add_reactions!(
+    add_reaction!(
         m,
         Reaction(
             "v3",
