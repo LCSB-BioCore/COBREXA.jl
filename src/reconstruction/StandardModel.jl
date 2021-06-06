@@ -9,7 +9,12 @@ function add_reactions!(model::StandardModel, rxns::Vector{Reaction})
     end
 end
 
-add_reactions!(model::StandardModel, rxn::Reaction) = add_reactions!(model, [rxn])
+"""
+    add_reaction!(model::StandardModel, rxn::Reaction)
+
+Add `rxn` to `model` based on reaction `id`.
+"""
+add_reaction!(model::StandardModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
     add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
@@ -22,7 +27,12 @@ function add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
     end
 end
 
-add_metabolites!(model::StandardModel, met::Metabolite) =  add_metabolites!(model, [met])
+"""
+    add_metabolite!(model::StandardModel, met::Metabolite)
+
+Add `met` to `model` based on metabolite `id`.
+"""
+add_metabolite!(model::StandardModel, met::Metabolite) =  add_metabolites!(model, [met])
     
 """
     add_genes!(model::StandardModel, genes::Vector{Gene})
@@ -35,7 +45,12 @@ function add_genes!(model::StandardModel, genes::Vector{Gene})
     end
 end
 
-add_genes!(model::StandardModel, gene::Gene) = add_genes!(model, [gene]) 
+"""
+    add_gene!(model::StandardModel, genes::Gene)
+
+Add `gene` to `model` based on gene `id`.
+"""
+add_gene!(model::StandardModel, gene::Gene) = add_genes!(model, [gene]) 
 
 """
     @add_reactions!(model::Symbol, ex::Expr)
@@ -86,7 +101,7 @@ macro add_reactions!(model::Symbol, ex::Expr)
             push!(all_reactions.args, :(r.lb = $lb))
             push!(all_reactions.args, :(r.ub = $ub))
         end
-        push!(all_reactions.args, :(add_reactions!($model, r)))
+        push!(all_reactions.args, :(add_reaction!($model, r)))
     end
     return all_reactions
 end
@@ -99,14 +114,23 @@ Remove all reactions with `ids` from `model`. Note, may result in orphan metabol
 # Example
 ```
 remove_reactions!(model, ["EX_glc__D_e", "fba"])
-remove_reaction!(model, "EX_glc__D_e")
 ```
 """
 function remove_reactions!(model::StandardModel, ids::Vector{String})
     pop!.(Ref(model.reactions), ids)
 end
 
-remove_reactions!(model::StandardModel, id::String) = remove_reactions!(model, [id]) 
+"""
+    remove_reaction!(model::StandardModel, id::String)
+
+Remove reaction with `id` from `model`. Note, may result in orphan metabolites.
+
+# Example
+```
+remove_reaction!(model, "EX_glc__D_e")
+```
+"""
+remove_reaction!(model::StandardModel, id::String) = remove_reactions!(model, [id]) 
 
 """
     remove_metabolites!(model::StandardModel, ids::Vector{String})
@@ -118,14 +142,25 @@ require the deleted metabolite, in which case analysis functions will error.
 # Example
 ```
 remove_metabolites!(model, ["atp_c", "adp_c"])
-remove_metabolites!(model, "atp_c")
 ```
 """
 function remove_metabolites!(model::StandardModel, ids::Vector{String})
     pop!.(Ref(model.metabolites), ids)    
 end
 
-remove_metabolites!(model::StandardModel, id::String) = remove_metabolites!(model, [id]) 
+"""
+    remove_metabolite!(model::StandardModel, id::String)
+
+Remove metabolite with `id` from `model`.
+Warning, this could leave the model inconsistent, e.g. a reaction might
+require the deleted metabolite, in which case analysis functions will error.
+
+# Example
+```
+remove_metabolite!(model, "atp_c")
+```
+"""
+remove_metabolite!(model::StandardModel, id::String) = remove_metabolites!(model, [id]) 
 
 """
     remove_genes!(
@@ -139,8 +174,7 @@ constrain reactions that require the genes to function to carry zero flux.
 
 # Example
 ```
-rm!(model, ["g1", "g2"])
-rm!(model, "g1")
+remove_genes!(model, ["g1", "g2"])
 ```
 """
 function remove_genes!(
@@ -161,7 +195,22 @@ function remove_genes!(
     pop!.(Ref(model.genes), gids)
 end
 
-remove_genes!(model::StandardModel, gid::String; knockout_reactions::Bool = false) = remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
+"""
+    remove_gene!(
+        model::StandardModel,
+        id::Vector{String};
+        knockout_reactions::Bool = false,
+    )
+
+Remove gene with `id` from `model`. If `knockout_reactions` is true, then also 
+constrain reactions that require the genes to function to carry zero flux.
+
+# Example
+```
+remove_gene!(model, "g1")
+```
+"""
+remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) = remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
 function set_bound(model::StandardModel, reaction_id::String; ub, lb)
     reaction = model.reactions[reaction_id]

@@ -36,38 +36,38 @@
     add_reactions!(model, [r3, r4])
     @test length(model.reactions) == 4
 
-    add_reactions!(model, r5)
+    add_reaction!(model, r5)
     @test length(model.reactions) == 5
 
     remove_reactions!(model, ["r5", "r4"])
     @test length(model.reactions) == 3
 
-    remove_reactions!(model, "r1")
+    remove_reaction!(model, "r1")
     @test length(model.reactions) == 2
 
     ### metabolites
     add_metabolites!(model, [m5, m6])
     @test length(model.metabolites) == 6
 
-    add_metabolites!(model, m7)
+    add_metabolite!(model, m7)
     @test length(model.metabolites) == 7
 
     remove_metabolites!(model, ["m5", "m4"])
     @test length(model.metabolites) == 5
 
-    remove_metabolites!(model, "m1")
+    remove_metabolite!(model, "m1")
     @test length(model.metabolites) == 4
 
     ### genes
     add_genes!(model, [g5, g6])
     @test length(model.genes) == 6
 
-    add_genes!(model, g7)
+    add_gene!(model, g7)
     @test length(model.genes) == 7
 
     remove_genes!(model, ["g5", "g4"])
     @test length(model.genes) == 5
 
-    remove_genes!(model, "g1")
+    remove_gene!(model, "g1")
     @test length(model.genes) == 4
 end
