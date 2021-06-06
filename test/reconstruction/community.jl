@@ -117,7 +117,7 @@ end
         m2,
         exchange_rxn_ids,
         exchange_met_ids;
-        species_name = "species_2",
+        model_name = "species_2",
         biomass_id = "BIOMASS_Ecoli_core_w_GAM",
     )
 
