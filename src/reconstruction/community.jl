@@ -239,13 +239,13 @@ community = join_with_exchanges(
 ```
 """
 function join_with_exchanges(
-    models::Vector{M},
+    models::Vector{MetabolicModel},
     exchange_rxn_ids::Vector{String},
     exchange_met_ids::Vector{String};
     add_biomass_objective = true,
     biomass_ids = String[],
     model_names = String[],
-) where {M<:MetabolicModel}
+)::CoreModel
 
     if add_biomass_objective && isempty(biomass_ids)
         throw(
