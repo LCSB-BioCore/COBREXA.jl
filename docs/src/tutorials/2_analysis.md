@@ -41,7 +41,6 @@ we generally recommend to use either of these:
 - `GLPK` (based on a C library) for linear and mixed-integer problems
 - `Gurobi` (based on an external library, but requires a license that is free
   for academic use) for linear, mixed-integer and quadratic problems
-- `OSQP` as a free alternative to `Gurobi` for solving quadratic problems
 
 All solvers can be installed using the Julia package manger.
 
