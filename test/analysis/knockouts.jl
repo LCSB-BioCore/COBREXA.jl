@@ -1,21 +1,20 @@
 @testset "single_knockout" begin
-    optimizer = Tulip.Optimizer
     m = StandardModel()
-    add!(m, Metabolite("A"))
-    add!(m, Metabolite("B"))
+    add_metabolite!(m, Metabolite("A"))
+    add_metabolite!(m, Metabolite("B"))
 
-    add!(m, Gene("g1"))
-    add!(m, Gene("g2"))
-    add!(m, Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]))
-    add!(
+    add_gene!(m, Gene("g1"))
+    add_gene!(m, Gene("g2"))
+    add_reaction!(m, Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]))
+    add_reaction!(
         m,
         Reaction("v2", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1", "g2"]]),
     )
-    add!(
+    add_reaction!(
         m,
         Reaction("v3", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"], ["g2"]]),
     )
-    add!(
+    add_reaction!(
         m,
         Reaction(
             "v4",
@@ -24,7 +23,7 @@
         ),
     )
 
-    opt_model = make_optimization_model(m, optimizer)
+    opt_model = make_optimization_model(m, Tulip.Optimizer)
     knockout("g1")(m, opt_model)
 
     # Knockout should remove v1
@@ -45,18 +44,17 @@
 end
 
 @testset "multiple_knockouts" begin
-    optimizer = Tulip.Optimizer
     m = StandardModel()
-    add!(m, Metabolite("A"))
-    add!(m, Metabolite("B"))
-    add!(m, Gene("g1"))
-    add!(m, Gene("g2"))
-    add!(m, Gene("g3"))
-    add!(
+    add_metabolite!(m, Metabolite("A"))
+    add_metabolite!(m, Metabolite("B"))
+    add_gene!(m, Gene("g1"))
+    add_gene!(m, Gene("g2"))
+    add_gene!(m, Gene("g3"))
+    add_reaction!(
         m,
         Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"], ["g3"]]),
     )
-    add!(
+    add_reaction!(
         m,
         Reaction(
             "v2",
@@ -64,7 +62,7 @@ end
             grr = [["g1", "g2"], ["g3"]],
         ),
     )
-    add!(
+    add_reaction!(
         m,
         Reaction(
             "v3",
@@ -73,7 +71,7 @@ end
         ),
     )
 
-    opt_model = make_optimization_model(m, optimizer)
+    opt_model = make_optimization_model(m, Tulip.Optimizer)
     knockout(["g1", "g3"])(m, opt_model)
 
     # Reaction 1 should be knocked out, because both
@@ -93,75 +91,39 @@ end
 end
 
 @testset "Knockouts on realistic models" begin
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
+    for model in [
+        load_model(StandardModel, model_paths["e_coli_core.json"]), #test on standardModel
+        load_model(model_paths["e_coli_core.json"]), #then on JSONModel with the same contents
+    ]
 
-    model = load_model(StandardModel, model_path)
+        sol = flux_balance_analysis_dict(
+            model,
+            Tulip.Optimizer;
+            modifications = [
+                change_objective("BIOMASS_Ecoli_core_w_GAM"),
+                change_constraint("EX_glc__D_e", -12, -12),
+                change_sense(MAX_SENSE),
+                change_optimizer_attribute("IPM_IterationsLimit", 110),
+                knockout(["b0978", "b0734"]), # knockouts out cytbd
+            ],
+        )
+        @test isapprox(
+            sol["BIOMASS_Ecoli_core_w_GAM"],
+            0.2725811189335953,
+            atol = TEST_TOLERANCE,
+        )
 
-    sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_sense(MAX_SENSE),
-            change_optimizer_attribute("IPM_IterationsLimit", 110),
-            knockout(["b0978", "b0734"]), # knockouts out cytbd
-        ],
-    )
-    @test isapprox(
-        sol["BIOMASS_Ecoli_core_w_GAM"],
-        0.2725811189335953,
-        atol = TEST_TOLERANCE,
-    )
-
-    sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_sense(MAX_SENSE),
-            change_optimizer_attribute("IPM_IterationsLimit", 110),
-            knockout("b2779"), # knockouts out enolase 
-        ],
-    )
-    @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)
-
-    # now test on generic model
-    model = load_model(model_path)
-
-    sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_sense(MAX_SENSE),
-            change_optimizer_attribute("IPM_IterationsLimit", 110),
-            knockout(["b0978", "b0734"]), # knockouts out cytbd
-        ],
-    )
-    @test isapprox(
-        sol["BIOMASS_Ecoli_core_w_GAM"],
-        0.2725811189335953,
-        atol = TEST_TOLERANCE,
-    )
-
-    sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
-            change_sense(MAX_SENSE),
-            change_optimizer_attribute("IPM_IterationsLimit", 110),
-            knockout("b2779"), # knockouts out enolase 
-        ],
-    )
-    @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)
-
+        sol = flux_balance_analysis_dict(
+            model,
+            Tulip.Optimizer;
+            modifications = [
+                change_objective("BIOMASS_Ecoli_core_w_GAM"),
+                change_constraint("EX_glc__D_e", -12, -12),
+                change_sense(MAX_SENSE),
+                change_optimizer_attribute("IPM_IterationsLimit", 110),
+                knockout("b2779"), # knockouts out enolase
+            ],
+        )
+        @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)
+    end
 end

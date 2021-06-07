@@ -1,12 +1,6 @@
 
 @testset "StandardModel utilities" begin
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
-
-    model = load_model(StandardModel, model_path)
+    model = load_model(StandardModel, model_paths["e_coli_core.json"])
 
     # FBA
     glc = model.reactions["EX_glc__D_e"]
@@ -20,10 +14,6 @@
     # atom tracker
     atom_fluxes = atom_exchange(sol, model)
     @test isapprox(atom_fluxes["C"], -37.1902, atol = 1e-3)
-
-    # exchange trackers
-    consuming, producing = exchange_reactions(sol, model; verbose = false)
-    @test isapprox(consuming["EX_nh4_e"], -4.76532, atol = 1e-3)
 
     # metabolite trackers
     consuming, producing = metabolite_fluxes(sol, model)

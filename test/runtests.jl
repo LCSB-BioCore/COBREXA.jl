@@ -17,10 +17,13 @@ using Tulip
 # error tolerance in computations)
 TEST_TOLERANCE = 10 * COBREXA._constants.tolerance
 
+print_timing(fn, t) = @info "$(fn) done in $(round(t; digits = 2))s"
+
+# helper functions for running tests en masse
 function run_test_file(path...)
     fn = joinpath(path...)
     t = @elapsed include(fn)
-    @info "$(fn) done in $(round(t; digits = 2))s"
+    print_timing(fn, t)
 end
 
 function run_test_dir(dir, comment = "Directory $dir/")
@@ -29,32 +32,27 @@ function run_test_dir(dir, comment = "Directory $dir/")
     end
 end
 
-function check_data_file_hash(path, expected_checksum)
-    actual_checksum = bytes2hex(sha256(open(path)))
-    if actual_checksum != expected_checksum
-        @error "The downloaded data file `$path' seems to be different from the expected one. Tests will likely fail." actual_checksum expected_checksum
-    end
-end
-
-function download_data_file(url, path, hash)
-    if isfile(path)
-        check_data_file_hash(path, hash)
-        @info "using cached `$path'"
-        return path
-    end
-
-    Downloads.download(url, path)
-    check_data_file_hash(path, hash)
-    return path
-end
-
 # set up the workers for Distributed, so that the tests that require more
 # workers do not unnecessarily load the stuff multiple times
 W = addprocs(2)
-@everywhere using COBREXA, Tulip
+t = @elapsed @everywhere using COBREXA, Tulip, JuMP
+print_timing("import of packages", t)
+t = @elapsed @everywhere begin
+    model = Model(Tulip.Optimizer)
+    @variable(model, 0 <= x <= 1)
+    @objective(model, Max, x)
+    optimize!(model)
+end
+print_timing("JuMP+Tulip code warmup", t)
+
+# make sure there's a directory for temporary data
+tmpdir = "tmpfiles"
+isdir(tmpdir) || mkdir(tmpdir)
+tmpfile(x...) = joinpath(tmpdir, x...)
 
 # load the test models
-run_test_file("data", "test_models.jl")
+run_test_file("data_static.jl")
+run_test_file("data_downloaded.jl")
 
 # import base files
 @testset "COBREXA test suite" begin

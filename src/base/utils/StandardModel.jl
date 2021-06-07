@@ -1,3 +1,51 @@
+
+"""
+    Base.copy(m::StandardModel)
+
+Shallow copy of a [`StandardModel`](@ref)
+"""
+Base.copy(m::StandardModel) = StandardModel(m.id, m.reactions, m.metabolites, m.genes)
+
+"""
+    Base.copy(r::Reaction)
+
+Shallow copy of a [`Reaction`](@ref)
+"""
+Base.copy(r::Reaction) = Reaction(
+    r.id;
+    name = r.name,
+    metabolites = r.metabolites,
+    lb = r.lb,
+    ub = r.ub,
+    grr = r.grr,
+    subsystem = r.subsystem,
+    notes = r.notes,
+    annotations = r.annotations,
+    objective_coefficient = r.objective_coefficient,
+)
+
+"""
+    Base.copy(m::Metabolite)
+
+Shallow copy of a [`Metabolite`](@ref)
+"""
+Base.copy(m::Metabolite) = Metabolite(
+    m.id;
+    name = m.name,
+    formula = m.formula,
+    charge = m.charge,
+    compartment = m.compartment,
+    notes = m.notes,
+    annotations = m.annotations,
+)
+
+"""
+    Base.copy(g::Gene)
+
+Shallow copy of a [`Gene`](@ref)
+"""
+Base.copy(g::Gene) = Gene(g.id; name = g.name, notes = g.notes, annotations = g.annotations)
+
 """
     atom_exchange(flux_dict::Dict{String, Float64}, model::StandardModel)
 
@@ -17,75 +65,6 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
         end
     end
     return atom_flux
-end
-
-"""
-    get_exchanges(flux_dict::Dict{String, Float64}; top_n=Inf, ignorebound=_constants.default_reaction_bound, verbose=true)
-
-Display the `top_n` producing and consuming exchange fluxes.
-If `top_n` is not specified (by an integer), then all are displayed.
-Ignores infinite (problem upper/lower bound) fluxes (set with ignorebound).
-When `verbose` is false, the output is not printed out.
-Return these reactions (id => ) in two dictionaries: `consuming`, `producing`
-"""
-function exchange_reactions(
-    flux_dict::Dict{String,Float64},
-    model::StandardModel;
-    top_n = Inf,
-    ignorebound = _constants.default_reaction_bound,
-    verbose = true,
-)
-    consuming = Dict{String,Float64}()
-    producing = Dict{String,Float64}()
-
-    for (k, v) in flux_dict
-        if is_boundary(model.reactions[k])
-            if v < 0 # consuming
-                consuming[k] = v
-            elseif v > 0 # producing
-                producing[k] = v
-            else # no flux
-                continue
-            end
-        end
-    end
-
-    if verbose
-        # Do consuming
-        ks = collect(keys(consuming))
-        vs = [consuming[k] for k in ks]
-        inds = sortperm(vs)
-        n_max = length(ks)
-        println("Consuming fluxes: ")
-        ii = 0 # counter
-        for i in inds
-            if vs[i] > -ignorebound
-                println(ks[i], " = ", round(vs[i], digits = 6))
-                ii += 1
-            end
-            if ii > top_n
-                break
-            end
-        end
-        # Do producing
-        ks = collect(keys(producing))
-        vs = [producing[k] for k in ks]
-        inds = sortperm(vs, rev = true)
-        n_max = length(ks)
-        println("Producing fluxes: ")
-        ii = 0 # counter
-        for i in inds
-            if vs[i] < ignorebound
-                println(ks[i], " = ", round(vs[i], digits = 6))
-                ii += 1
-            end
-            if ii > top_n
-                break
-            end
-        end
-    end
-
-    return consuming, producing
 end
 
 """
