@@ -135,7 +135,7 @@ fluxes with [`flux_variability_analysis_dict`](@ref).
 ## Parsimonious flux balance analysis
 
 Parsimonious flux balance analysis (pFBA) requires a solver that can handle
-quadratic problems. You may use e.g. `OSQP` or `Gurobi`.
+quadratic problems. Some examples include, e.g. `OSQP`, `Gurobi`, `Mosek`, etc.
 
 Otherwise, the function behaves just like [`flux_balance_analysis`](@ref):
 
