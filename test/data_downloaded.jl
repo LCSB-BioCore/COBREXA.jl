@@ -48,6 +48,16 @@ model_paths = Dict{String,String}(
         df("e_coli_core.json"),
         "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
     ),
+    "e_coli_core.xml" => download_data_file(
+        "http://bigg.ucsd.edu/static/models/e_coli_core.xml",
+        df("e_coli_core.xml"),
+        "b4db506aeed0e434c1f5f1fdd35feda0dfe5d82badcfda0e9d1342335ab31116",
+    ),
+    "e_coli_core.mat" => download_data_file(
+        "http://bigg.ucsd.edu/static/models/e_coli_core.mat",
+        df("e_coli_core.mat"),
+        "478e6fa047ede1b248975d7565208ac9363a44dd64aad1900b63127394f4175b",
+    ),
     "iJR904.mat" => download_data_file(
         "http://bigg.ucsd.edu/static/models/iJR904.mat",
         df("iJR904.mat"),

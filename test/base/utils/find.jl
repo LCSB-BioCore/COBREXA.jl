@@ -46,7 +46,7 @@ end
     @test length(find_exchange_reactions(model)) == 21
     @test length(find_exchange_metabolites(model)["EX_fum_e"]) == 1
     
-    model = load_model(model_paths["ecoli_core_model.xml"])
+    model = load_model(model_paths["e_coli_core.xml"])
     @test length(find_exchange_reactions(model)) == 21
     @test length(find_exchange_metabolites(model)["R_EX_fum_e"]) == 1
    
