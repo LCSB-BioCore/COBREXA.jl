@@ -1,3 +1,51 @@
+
+"""
+    Base.copy(m::StandardModel)
+
+Shallow copy of a [`StandardModel`](@ref)
+"""
+Base.copy(m::StandardModel) = StandardModel(m.id, m.reactions, m.metabolites, m.genes)
+
+"""
+    Base.copy(r::Reaction)
+
+Shallow copy of a [`Reaction`](@ref)
+"""
+Base.copy(r::Reaction) = Reaction(
+    r.id;
+    name = r.name,
+    metabolites = r.metabolites,
+    lb = r.lb,
+    ub = r.ub,
+    grr = r.grr,
+    subsystem = r.subsystem,
+    notes = r.notes,
+    annotations = r.annotations,
+    objective_coefficient = r.objective_coefficient,
+)
+
+"""
+    Base.copy(m::Metabolite)
+
+Shallow copy of a [`Metabolite`](@ref)
+"""
+Base.copy(m::Metabolite) = Metabolite(
+    m.id;
+    name = m.name,
+    formula = m.formula,
+    charge = m.charge,
+    compartment = m.compartment,
+    notes = m.notes,
+    annotations = m.annotations,
+)
+
+"""
+    Base.copy(g::Gene)
+
+Shallow copy of a [`Gene`](@ref)
+"""
+Base.copy(g::Gene) = Gene(g.id; name = g.name, notes = g.notes, annotations = g.annotations)
+
 """
     atom_exchange(flux_dict::Dict{String, Float64}, model::StandardModel)
 
