@@ -12,12 +12,12 @@ of `biomass_strings` in the reaction id.
 
 # Example
 ```
-filter(is_probably_exchange_reaction, reactions(model)) # returns strings
-findall(is_probably_exchange_reaction, reactions(model)) # returns indices
+filter(looks_like_exchange_reaction, reactions(model)) # returns strings
+findall(looks_like_exchange_reaction, reactions(model)) # returns indices
 
 # to use the optional arguments you need to instantiate the function
-filter(x -> is_probably_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns strings
-findall(x -> is_probably_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns indices
+filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns strings
+findall(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns indices
 ```
 """
 function looks_like_exchange_reaction(rxn_id::String;
