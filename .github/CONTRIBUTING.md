@@ -169,8 +169,8 @@ submitting the pull requests.
 2. Make a pull request where you describe the motivation and expected outcome
    for the users. Specifically, consider any possible incompatibilities, and the
    necessity to increment the version number after your changes are applied.
-   Label your pull request with a [semantic emoji](https://gitmoji.dev/) to
-   indicate what it addresses.
+   Label your pull request with a [semantic emoji](https://gitmoji.dev/) in the
+   title to indicate what it addresses.
 3. After submitting the pull request, verify that all status checks (tests,
    documentation) are passing. Make sure any new contribution is properly
    documented and tested (you may want to check with coverage tools, using
