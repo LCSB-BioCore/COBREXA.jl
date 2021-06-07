@@ -31,6 +31,12 @@ model = load_model("e_coli_core.xml")
 # [`OSQP.jl`](https://osqp.org/docs/get_started/julia.html) to optimize quadratic
 # programs.
 
+#md # !!! note "Note: OSQP can be sensitive"
+#md #       We recommend reading the docs of `OSQP` before using it, since 
+#md #       it may give inconsistent results depending on what settings
+#md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
+#md #       require less user engagement.
+
 import Pkg
 Pkg.add("Tulip")
 Pkg.add("OSQP")
