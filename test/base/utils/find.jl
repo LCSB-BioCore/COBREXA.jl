@@ -54,7 +54,6 @@ end
     @test length(find_exchange_reactions(model)) == 21
     @test length(find_exchange_metabolites(model)["EX_fum_e"]) == 1
     
-   
     model = convert(StandardModel, model)
     @test length(find_exchange_reactions(model)) == 21
     @test length(find_exchange_metabolites(model)["EX_fum_e"]) == 1
