@@ -176,6 +176,16 @@ equation maps metabolite ids to their stoichiometric coefficients.
 """
 function reaction_equation(m::MATModel, rxn_id::String)::Dict{String, Float64}
     rxn_ind = first(indexin([rxn_id], m.mat["rxns"]))
+    reaction_equation(m, rxn_ind)
+end
+
+"""
+    reaction_equation(model::MATModel, rxn_ind::Int)::Dict{String, Float64}
+
+Return the reaction equation of reaction with index `rxn_ind` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_equation(m::MATModel, rxn_ind::Int)::Dict{String, Float64}
     met_inds = findall(m.mat["S"][:, rxn_ind] .!= 0.0)
     Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, rxn_ind] for met_ind in met_inds)
 end
