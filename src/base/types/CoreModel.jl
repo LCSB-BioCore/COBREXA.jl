@@ -94,7 +94,7 @@ function objective(a::CoreModel)::SparseVec
 end
 
 """
-    reaction_equation(model::CoreModel, rxn_id::String)::Dict{String, Int}
+    reaction_equation(model::CoreModel, rxn_id::String)::Dict{String, Float64}
 
 Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
