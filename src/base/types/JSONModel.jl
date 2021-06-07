@@ -283,7 +283,7 @@ Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
 function reaction_equation(m::JSONModel, rxn_id::String)::Dict{String, Float64}
-    ind = first(indexin([rxn_id], m.json["reactions"]))
+    ind = findfirst(x -> x["id"] == rxn_id, m.json["reactions"])
     m.json["reactions"][ind]["metabolites"]
 end
 
