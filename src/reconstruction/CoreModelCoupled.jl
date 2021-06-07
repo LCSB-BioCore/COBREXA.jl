@@ -1,5 +1,16 @@
 """
-Adds reactions to the coupled model `m`
+    add_reactions(
+        m::CoreModelCoupled,
+        s::V1,
+        b::V2,
+        c::AbstractFloat,
+        xl::AbstractFloat,
+        xu::AbstractFloat;
+        check_consistency = false,
+    ) where {V1<:VecType,V2<:VecType}
+
+Add reaction(s) to a `CoreModelCoupled` model `m`.
+
 """
 function add_reactions(
     m::CoreModelCoupled,
@@ -27,6 +38,20 @@ function add_reactions(
     )
 end
 
+"""
+    add_reactions(
+        m::CoreModelCoupled,
+        s::V1,
+        b::V2,
+        c::AbstractFloat,
+        xl::AbstractFloat,
+        xu::AbstractFloat,
+        rxn::String,
+        mets::K;
+        check_consistency = false,
+    ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
+
+"""
 function add_reactions(
     m::CoreModelCoupled,
     s::V1,
@@ -57,6 +82,18 @@ function add_reactions(
     )
 end
 
+"""
+    add_reactions(
+        m::CoreModelCoupled,
+        Sp::M,
+        b::V,
+        c::V,
+        xl::V,
+        xu::V;
+        check_consistency = false,
+    ) where {M<:MatType,V<:VecType}
+
+"""
 function add_reactions(
     m::CoreModelCoupled,
     Sp::M,
@@ -83,6 +120,12 @@ function add_reactions(
     )
 end
 
+"""
+    add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = false)
+
+Add all reactions from `m2` to `m1`.
+
+"""
 function add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = false)
     new_lm = add_reactions(
                 m1.lm,
@@ -97,6 +140,20 @@ function add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = 
     )
 end
 
+"""
+    add_reactions(
+        m::CoreModelCoupled,
+        Sp::M,
+        b::V,
+        c::V,
+        xl::V,
+        xu::V,
+        rxns::K,
+        mets::K;
+        check_consistency = false,
+    ) where {M<:MatType,V<:VecType,K<:StringVecType}
+
+"""
 function add_reactions(
     m::CoreModelCoupled,
     Sp::M,
@@ -128,9 +185,12 @@ function add_reactions(
 end
 
 """
-Remove a set of reactions from a `CoreModelCoupled`.
+    remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
 
-Also removes the metabolites not involved in any reaction.
+Remove reaction(s) from a `CoreModelCoupled`.
+
+Also removes any metabolites not involved in any reaction after the deletion.
+
 """
 function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
     return CoreModelCoupled(
@@ -141,14 +201,26 @@ function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
             )
 end
 
+"""
+    remove_reactions(m::CoreModelCoupled, rxn::Integer)
+
+"""
 function remove_reactions(m::CoreModelCoupled, rxn::Integer)
     return remove_reactions(m, [rxn])
 end
 
+"""
+    remove_reactions(m::CoreModelCoupled, rxn::String)
+
+"""
 function remove_reactions(m::CoreModelCoupled, rxn::String)
     return remove_reactions(m, [rxn])
 end
 
+"""
+    remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
+
+"""
 function remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
     rxn_indices = [findfirst(isequal(name), m.lm.rxns) for name in intersect(rxns, m.lm.rxns)]
     if isempty(rxn_indices)
@@ -310,9 +382,17 @@ function change_coupling_bounds!(
 end
 
 """
-Return indices of exchange reactions.
+    find_exchange_reactions(
+        model::CoreModelCoupled;
+        exclude_biomass = false,
+        biomass_str::String = "biomass",
+        exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+    )
+
+Get indices of exchange reactions.
 
 Exchange reactions are identified based on most commonly used prefixes.
+
 """
 function find_exchange_reactions(
     model::CoreModelCoupled;
@@ -329,10 +409,18 @@ function find_exchange_reactions(
 end
 
 """
-Return indices of exchange metabolites.
+    find_exchange_metabolites(
+        model::CoreModelCoupled;
+        exclude_biomass = false,
+        biomass_str::String = "biomass",
+        exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+    )
 
-Exchange metabolites are identified based on the exchange reactions return
-by `find_exchange_reactions`.
+Get indices of exchanged metabolites.
+
+In practice returns the metabolites consumed by the reactions given by `find_exchange_reactions`
+and if called with the same arguments, the two outputs correspond.
+
 """
 function find_exchange_metabolites(
     model::CoreModelCoupled;
@@ -349,7 +437,15 @@ function find_exchange_metabolites(
 end
 
 """
-Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
+    change_bounds!(
+        model::CoreModelCoupled,
+        rxns::Vector{Int};
+        xl::V = Float64[],
+        xu::V = Float64[],
+    )
+
+Change the lower and/or upper bounds ('xl' and 'xu') for given reactions.
+
 """
 function change_bounds!(
     model::CoreModelCoupled,
@@ -365,6 +461,15 @@ function change_bounds!(
     )
 end
 
+"""
+    change_bounds!(
+        model::CoreModelCoupled,
+        rxns::Vector{String};
+        xl::V = Float64[],
+        xu::V = Float64[],
+    ) where {V<:VecType}
+
+"""
 function change_bounds!(
     model::CoreModelCoupled,
     rxns::Vector{String};
