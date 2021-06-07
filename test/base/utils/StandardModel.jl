@@ -33,17 +33,4 @@
     set_bound(o2_index, cbm; ub = 1.0, lb = 1.0)
     @test normalized_rhs(ubs[o2_index]) == 1.0
     @test normalized_rhs(lbs[o2_index]) == -1.0
-
-    # find exchange reactions
-    ex_rxns = find_exchange_reactions(model)
-    @test length(ex_rxns) == 21
-    @test "BIOMASS_Ecoli_core_w_GAM" in ex_rxns
-    
-    ex_rxns = find_exchange_reactions(model; exclude_biomass=true)
-    @test length(ex_rxns) == 20
-    @test !("BIOMASS_Ecoli_core_w_GAM" in ex_rxns)
-    
-    ex_rxn_mets = find_exchange_metabolites(model)
-    @test length(ex_rxn_mets) == 21
-    @test ex_rxn_mets["EX_for_e"]["for_e"] == -1.0
 end
