@@ -105,6 +105,16 @@ function coupling_bounds(a::CoreModelCoupled)::Tuple{SparseVec,SparseVec}
 end
 
 """
+    reaction_equation(model::CoreModelCoupled, rxn_id::String)::Dict{String, Int}
+
+Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_equation(m::CoreModelCoupled, rxn_id::String)::Dict{String, Float64}
+    reaction_equation(cc.lm, rxn_id)
+end
+
+"""
     Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
 
 Make a `CoreModelCoupled` out of any compatible model type.
