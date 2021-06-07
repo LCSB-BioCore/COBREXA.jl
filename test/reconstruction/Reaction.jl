@@ -1,11 +1,5 @@
 @testset "Construction overloading" begin
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/iJO1366.json",
-        joinpath("data", "iJO1366.json"),
-        "9376a93f62ad430719f23e612154dd94c67e0d7c9545ed9d17a4d0c347672313",
-    )
-
-    model = load_model(StandardModel, model_path)
+    model = load_model(StandardModel, model_paths["iJO1366.json"])
 
     rxn_original = model.reactions["NADH16pp"]
     nadh = model.metabolites["nadh_c"]

@@ -1,0 +1,22 @@
+Bootstrap: library
+From: cylon-x/lcsb-biocore/julia-base:latest
+
+%setup
+    dir=`pwd`
+    git clone \
+    "file://$dir" \
+    ${SINGULARITY_ROOTFS}/project --branch master --single-branch
+
+%post
+    export JULIA_DEPOT_PATH=/user/.julia
+    export PATH=/opt/julia/bin:$PATH
+
+    cd project
+    julia --project -e 'import Pkg; Pkg.add("Tulip"); Pkg.instantiate(); Pkg.build(); Pkg.precompile();'
+
+    echo 'using COBREXA; COBREXA._print_banner();' > /project/.startup.jl
+
+    chmod -R a+rX $JULIA_DEPOT_PATH
+
+%runscript
+  julia --banner=no --project=/project --compile=min -i /project/.startup.jl

@@ -1,32 +1,26 @@
 @testset "Flux balance analysis with CoreModel" begin
     cp = test_simpleLP()
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
+    @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
+    @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [-1.0, 2.0]
 
     # test with a more biologically meaningfull model
-    model_path = joinpath("data", "fba.mat")
-    download_data_file(
-        "http://bigg.ucsd.edu/static/models/iJR904.mat",
-        model_path,
-        "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
-    )
-    cp = load_model(CoreModel, model_path)
+    cp = load_model(CoreModel, model_paths["iJR904.mat"])
     expected_optimum = 0.9219480950504393
 
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
-    @test termination_status(lp) === MOI.OPTIMAL
+    @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
-    @test objective_value(lp) ≈ expected_optimum
-    @test cp.c' * sol ≈ expected_optimum
+    @test isapprox(objective_value(lp), expected_optimum, atol=TEST_TOLERANCE)
+    @test isapprox(cp.c' * sol, expected_optimum, atol=TEST_TOLERANCE)
 
     # test the "nicer output" variants
     fluxes_vec = flux_balance_analysis_vec(cp, Tulip.Optimizer)
@@ -37,13 +31,8 @@
 end
 
 @testset "Flux balance analysis with StandardModel" begin
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
 
-    model = load_model(StandardModel, model_path)
+    model = load_model(StandardModel, model_paths["e_coli_core.json"])
 
     sol = flux_balance_analysis_dict(
         model,
@@ -82,12 +71,7 @@ end
 
 @testset "Flux balance analysis with CoreModelCoupled" begin
 
-    model_path = download_data_file(
-        "http://bigg.ucsd.edu/static/models/e_coli_core.json",
-        joinpath("data", "e_coli_core.json"),
-        "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
-    )
-    model = load_model(CoreModel, model_path)
+    model = load_model(CoreModel, model_paths["e_coli_core.json"])
 
     # assume coupling constraints of the form:
     # -γ ≤ vᵢ/μ  ≤ γ

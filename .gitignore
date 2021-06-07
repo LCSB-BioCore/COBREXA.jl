@@ -1,9 +1,7 @@
 #ignore data files
-*.json
-*.mat
-*.xml
-*.smod
-
+test/downloaded/
+test/tmpfiles/
+test/data
 .DS_Store
 
 # ignore VScode clutter
@@ -15,6 +13,10 @@
 docs/build/
 docs/site/
 
+# ignore file types
+*.mat
+*.xml
+*.json
 *.jl.*.cov
 .*.swp
 
@@ -36,4 +38,8 @@ docs/src/notebooks/
 
 # add generated docs and tutorial specifics
 docs/src/index.md
+docs/src/howToContribute.md
 docs/src/assets/output.gif
+
+# ignore container files
+*.sif

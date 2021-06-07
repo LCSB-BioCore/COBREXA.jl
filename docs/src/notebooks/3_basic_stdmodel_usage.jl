@@ -63,13 +63,6 @@ dict_sol = flux_balance_analysis_dict(
 
 atom_exchange(dict_sol, model) # flux of individual atoms entering and leaving the system through boundary reactions (e.g. exchange reactions) based on flux_dict
 
-# ## Inspecting the flux solution: `exchange_reactions`
-
-# It is also sometimes useful to inspect the exchange reactions used by a flux
-# solution. The function `exchange_reactions` fulfills this purpose.
-
-consuming, producing = exchange_reactions(dict_sol, model; top_n = 4);
-
 # ## Inspecting the flux solution: `metabolite_fluxes`
 
 # Another useful flux result analysis function is `metabolite_fluxes`. This
