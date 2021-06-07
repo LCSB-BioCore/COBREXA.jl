@@ -12,3 +12,9 @@
         i in reactions(sbmlm2)
     ])
 end
+
+@testset "SBMLModel generic interface" begin
+    model = load_model(model_paths["e_coli_core.xml"])
+
+    @test reaction_equation(model, "R_EX_ac_e") == Dict("M_ac_e" => -1)
+end
