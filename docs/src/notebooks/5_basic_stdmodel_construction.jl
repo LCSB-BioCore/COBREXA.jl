@@ -27,14 +27,14 @@ gene_list = [Gene(string("g", num)) for num = 1:8]
 #md #       `reactions`. However, these names conflict with generic accessors
 #md #       functions and will create problems downstream.
 
-add!(model, gene_list)
+add_genes!(model, gene_list)
 
 # ### Add metabolites to the model
 metabolite_list = [Metabolite(string("m", num)) for num = 1:4]
 
 metabolite_list[1].formula = "C6H12O6" # can edit metabolites, etc. directly
 
-add!(model, metabolite_list)
+add_metabolites!(model, metabolite_list)
 
 # ### Add reactions to the model
 
@@ -47,7 +47,7 @@ r1.grr = [["g1", "g2"], ["g3"]] # add some gene reaction rules
 r2 = Reaction("r2", Dict("m2" => -1.0, "m1" => 1.0), :backward)
 r3 = Reaction("r3", Dict("m2" => -1.0, "m3" => 1.0), :bidirectional)
 
-add!(model, [r1, r2, r3, r_m1]) # function approach
+add_reactions!(model, [r1, r2, r3, r_m1]) # function approach
 
 m1 = metabolite_list[1]
 m2 = metabolite_list[2]
@@ -83,7 +83,7 @@ model
 # ## Modifying existing models
 
 # It is also possible to modify a model by deleting certain genes.
-# This is simply achieved by calling `rm!`.
+# This is simply achieved by calling `remove_genes!`.
 
-rm!(Gene, model, ["g1", "g2"]; knockout_reactions = false)
+remove_genes!(model, ["g1", "g2"]; knockout_reactions = false)
 model
