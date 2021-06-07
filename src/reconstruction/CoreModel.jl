@@ -1,5 +1,16 @@
 """
-Adds reactions to the model `m`
+    add_reactions(
+        m::CoreModel,
+        s::V1,
+        b::V2,
+        c::AbstractFloat,
+        xl::AbstractFloat,
+        xu::AbstractFloat;
+        check_consistency = false,
+    ) where {V1<:VecType,V2<:VecType}
+
+Add reaction(s) to a `CoreModel` model `m`.
+
 """
 function add_reactions(
     m::CoreModel,
@@ -21,7 +32,20 @@ function add_reactions(
     )
 end
 
+"""
+    add_reactions(
+        m::CoreModel,
+        s::V1,
+        b::V2,
+        c::AbstractFloat,
+        xl::AbstractFloat,
+        xu::AbstractFloat,
+        rxn::String,
+        mets::K;
+        check_consistency = false,
+    ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
 
+"""
 function add_reactions(
     m::CoreModel,
     s::V1,
@@ -46,6 +70,18 @@ function add_reactions(
     )
 end
 
+"""
+    add_reactions(
+        m::CoreModel,
+        Sp::M,
+        b::V,
+        c::V,
+        xl::V,
+        xu::V;
+        check_consistency = false,
+    ) where {M<:MatType,V<:VecType}
+
+"""
 function add_reactions(
     m::CoreModel,
     Sp::M,
@@ -70,7 +106,12 @@ function add_reactions(
     )
 end
 
+"""
+    add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
 
+Add all reactions from `m2` to `m1`.
+
+"""
 function add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
     return add_reactions(
         m1,
@@ -85,7 +126,20 @@ function add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
     )
 end
 
+"""
+    add_reactions(
+        m::CoreModel,
+        Sp::M,
+        b::V,
+        c::V,
+        xl::V,
+        xu::V,
+        rxns::K,
+        mets::K;
+        check_consistency = false,
+    ) where {M<:MatType,V<:VecType,K<:StringVecType}
 
+"""
 function add_reactions(
     m::CoreModel,
     Sp::M,
@@ -158,7 +212,23 @@ function add_reactions(
 end
 
 """
-Verifies the consistency of a given model
+    verify_consistency(
+        m::CoreModel,
+        Sp::M,
+        b::V,
+        c::V,
+        xl::V,
+        xu::V,
+        names::K,
+        mets::K,
+        new_reactions,
+        new_metabolites,
+    ) where {M<:MatType,V<:VecType,K<:StringVecType}
+
+Check the consistency of given reactions with existing reactions in `m`.
+
+TODO: work in progress, doesn't return consistency status.
+
 """
 function verify_consistency(
     m::CoreModel,
@@ -201,8 +271,12 @@ function verify_consistency(
 end
 
 """
-Removes a set of reactions from a CoreModel.
-Also removes the metabolites not involved in any reaction.
+    remove_reactions(m::CoreModel, rxns::Vector{Int})
+
+Remove reaction(s) from a `CoreModel`.
+
+Also removes any metabolites not involved in any reaction after the deletion.
+
 """
 function remove_reactions(m::CoreModel, rxns::Vector{Int})
     rxns_to_keep = filter(e -> e ∉ rxns, 1:n_reactions(m))
@@ -222,16 +296,26 @@ function remove_reactions(m::CoreModel, rxns::Vector{Int})
     return new_model
 end
 
+"""
+    remove_reactions(m::CoreModel, rxn::Integer)
+
+"""
 function remove_reactions(m::CoreModel, rxn::Integer)
     return remove_reactions(m, [rxn])
 end
 
+"""
+    remove_reactions(m::CoreModel, rxn::String)
 
+"""
 function remove_reactions(m::CoreModel, rxn::String)
     return remove_reactions(m, [rxn])
 end
 
+"""
+    remove_reactions(m::CoreModel, rxns::Vector{String})
 
+"""
 function remove_reactions(m::CoreModel, rxns::Vector{String})
     rxn_indices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
     if isempty(rxn_indices)
@@ -243,8 +327,17 @@ end
 
 
 """
-Returns indices of exchange reactions.
+    find_exchange_reactions(
+        model::CoreModel;
+        exclude_biomass = false,
+        biomass_str::String = "biomass",
+        exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+    )
+
+Get indices of exchange reactions.
+
 Exchange reactions are identified based on most commonly used prefixes.
+
 """
 function find_exchange_reactions(
     model::CoreModel;
@@ -265,9 +358,18 @@ function find_exchange_reactions(
 end
 
 """
-Returns indices of exchanged metabolites, ie, the outermost metabolites in the network
+    find_exchange_metabolites(
+        model::CoreModel;
+        exclude_biomass = false,
+        biomass_str::String = "biomass",
+        exc_prefs = ["EX_"; "Exch_"; "Ex_"],
+    )
+
+Get indices of exchanged metabolites.
+
 In practice returns the metabolites consumed by the reactions given by `find_exchange_reactions`
 and if called with the same arguments, the two outputs correspond.
+
 """
 function find_exchange_metabolites(
     model::CoreModel;
@@ -287,7 +389,15 @@ end
 
 
 """
-Change the lower and/or upper bounds ('xl' and 'xu') for given reactions
+    change_bounds!(
+        model::CoreModel,
+        rxns::Vector{Int};
+        xl::V = Float64[],
+        xu::V = Float64[],
+    ) where {V<:VecType}
+
+Change the lower and/or upper bounds ('xl' and 'xu') for given reactions.
+
 """
 function change_bounds!(
     model::CoreModel,
@@ -311,7 +421,15 @@ function change_bounds!(
     end
 end
 
+"""
+    change_bounds!(
+        model::CoreModel,
+        rxns::Vector{String};
+        xl::V = Float64[],
+        xu::V = Float64[],
+    ) where {V<:VecType}
 
+"""
 function change_bounds!(
     model::CoreModel,
     rxns::Vector{String};
