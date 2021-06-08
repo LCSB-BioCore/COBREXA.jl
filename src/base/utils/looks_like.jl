@@ -5,22 +5,22 @@
         exchange_prefixes = _constants.exchange_prefixes,
     )
 
-A predicate function that can be used to identify reactions that are probably 
-exchange or biomass reactions. Exchange reactions are identified based on matching prefixes 
-in the set `exchange_prefixes` and biomass reactions are identified by looking for occurences 
-of `biomass_strings` in the reaction id.
+A predicate that matches reaction identifiers that look like
+exchange or biomass reactions, given the usual naming schemes in common model
+repositories. Exchange reactions are identified based on matching prefixes in
+the set `exchange_prefixes` and biomass reactions are identified by looking for
+occurences of `biomass_strings` in the reaction id.
 
-Note: the order of the probable exchange reactions identified here does not necessarily match 
-that of the exchange metabolites identified in [`looks_like_exchange_metabolite`](@ref).
+Also see [`find_exchange_reactions`](@ref).
 
 # Example
 ```
-filter(looks_like_exchange_reaction, reactions(model)) # returns strings
 findall(looks_like_exchange_reaction, reactions(model)) # returns indices
+filter(looks_like_exchange_reaction, reactions(model)) # returns Strings
 
 # to use the optional arguments you need to expand the function's arguments using an anonymous function
-filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns strings
 findall(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns indices
+filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns Strings
 ```
 """
 function looks_like_exchange_reaction(rxn_id::String;
@@ -32,16 +32,34 @@ function looks_like_exchange_reaction(rxn_id::String;
 end
 
 """
+    find_exchange_reactions(m::MetabolicModel; kwargs...)
+
+Shortcut for finding exchange reaction indexes in a model; arguments are
+forwarded to [`looks_like_exchange_reaction`](@ref).
+"""
+find_exchange_reactions(m::MetabolicModel; kwargs...) =
+    findall(id -> looks_like_exchange_reaction(id; kwargs...), reactions(m))
+
+"""
+    find_exchange_reaction_ids(m::MetabolicModel; kwargs...)
+
+Shortcut for finding exchange reaction names in a model; arguments are
+forwarded to [`looks_like_exchange_reaction`](@ref).
+"""
+find_exchange_reaction_ids(m::MetabolicModel; kwargs...) =
+    filter(id -> looks_like_exchange_reaction(id, kwargs...), reactions(m))
+
+"""
     looks_like_biomass_reaction(rxn_id::String;
         exclude_exchanges = false,
         exchange_prefixes = _constants.exchange_prefixes,
         biomass_strings = _constants.biomass_strings,
     )::Bool
 
-A predicate function that can be used to identify reactions that are probably 
-biomass reactions. Biomass reactions are identified by looking for occurences 
-of `biomass_strings` in the reaction id. Can also `exclude_exchanges` that will 
-remove occurrences of biomass reactions that have a prefix in `exchange_prefixes`.
+A predicate that matches reaction identifiers that look like biomass reactions.
+Biomass reactions are identified by looking for occurences of `biomass_strings`
+in the reaction id. If `exclude_exchanges` is set, the strings that look like
+exchanges (from [`looks_like_exchange_reaction`](@ref)) will not match.
 
 # Example
 ```
@@ -56,18 +74,33 @@ function looks_like_biomass_reaction(rxn_id::String;
 )::Bool
     any(occursin(x, rxn_id) for x in biomass_strings) && !(exclude_exchanges && any(startswith(rxn_id, x) for x in exchange_prefixes))
 end
+"""
+    find_biomass_reactions(m::MetabolicModel; kwargs...)
+
+Shortcut for finding biomass reaction indexes in a model; arguments are
+forwarded to [`looks_like_biomass_reaction`](@ref).
+"""
+find_biomass_reactions(m::MetabolicModel; kwargs...) =
+    findall(id -> looks_like_biomass_reaction(id; kwargs...), reactions(m))
+
+"""
+    find_biomass_reaction_ids(m::MetabolicModel; kwargs...)
+
+Shortcut for finding biomass reaction names in a model; arguments are forwarded
+to [`looks_like_biomass_reaction`](@ref).
+"""
+find_biomass_reaction_ids(m::MetabolicModel; kwargs...) =
+    filter(id -> looks_like_biomass_reaction(id, kwargs...), reactions(m))
+
 
 """
     looks_like_exchange_metabolite(rxn_id::String;
         exchange_suffixes = _constants.exchange_suffixes,
         )::Bool
 
-A predicate function that can be used to identify metabolites that are probably 
-involved in exchange reactions. Exchange metabolites are identified by looking for occurences 
-of `exchange_suffixes` at the end of the metabolite id.
-
-Note: the order of the probable exchange metabolites identified here does not necessarily match 
-that of the exchange reactions identified in [`looks_like_exchange_reaction`](@ref).
+A predicate that matches metabolite identifiers that look like involved in
+exchange reactions. Exchange metabolites are identified by `exchange_suffixes`
+at the end of the metabolite id.
 
 # Example
 ```
