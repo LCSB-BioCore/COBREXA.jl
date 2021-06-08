@@ -18,7 +18,7 @@ that of the exchange metabolites identified in [`looks_like_exchange_metabolite`
 filter(looks_like_exchange_reaction, reactions(model)) # returns strings
 findall(looks_like_exchange_reaction, reactions(model)) # returns indices
 
-# to use the optional arguments you need to instantiate the function
+# to use the optional arguments you need to expand the function's arguments using an anonymous function
 filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns strings
 findall(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns indices
 ```
