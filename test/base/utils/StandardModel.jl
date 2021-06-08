@@ -12,14 +12,14 @@
 
     # atom tracker
     atom_fluxes = atom_exchange(sol, model)
-    @test isapprox(atom_fluxes["C"], 37.1902, TEST_TOLERANCE)
+    @test isapprox(atom_fluxes["C"], 37.1902; atol=TEST_TOLERANCE)
     @test atom_exchange("FBA", model)["C"] == 0.0
-    @test isapprox(atom_exchange("BIOMASS_Ecoli_core_w_GAM", model)["C"], -42.5555, TEST_TOLERANCE)
+    @test isapprox(atom_exchange("BIOMASS_Ecoli_core_w_GAM", model)["C"], -42.5555; atol=TEST_TOLERANCE)
     
     # metabolite trackers
     consuming, producing = metabolite_fluxes(sol, model)
-    @test isapprox(consuming["atp_c"]["PFK"], -7.47738, TEST_TOLERANCE)
-    @test isapprox(producing["atp_c"]["PYK"], 1.75818, TEST_TOLERANCE)
+    @test isapprox(consuming["atp_c"]["PFK"], -7.47738; atol=TEST_TOLERANCE)
+    @test isapprox(producing["atp_c"]["PYK"], 1.75818; atol=TEST_TOLERANCE)
 
     # set bounds
     cbm = make_optimization_model(model, optimizer)
