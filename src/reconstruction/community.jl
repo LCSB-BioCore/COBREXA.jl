@@ -1,5 +1,10 @@
 """
-add_objective!(community::CoreModel, objective_mets::Vector{String}; objective_weights=Float64[], objective_column_index=0)
+    add_objective!(
+        community::CoreModel,
+        objective_mets::Vector{String};
+        objective_weights = Float64[],
+        objective_column_index = 0,
+    )
 
 Add an objective to the `community` model. Supply the string names of the
 objective metabolites in `objective_mets`. Optionally specify the weight to
@@ -52,9 +57,6 @@ function add_objective!(
         community.xu[objective_column_index] = 1000.0
     end
 end
-
-add_objective!(model::CoreModel, objective_met::String, objective_weight::Float64) =
-    add_objective!(model, [objective_met], [objective_weight])
 
 """
     add_model_with_exchanges(
