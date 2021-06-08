@@ -21,20 +21,12 @@ function add_reactions(
     xu::AbstractFloat;
     check_consistency = false,
 ) where {V1<:VecType,V2<:VecType}
-    new_lm = add_reactions(
-                m.lm,
-                s,
-                b,
-                c,
-                xl,
-                xu,
-                check_consistency = check_consistency,
-            )
+    new_lm = add_reactions(m.lm, s, b, c, xl, xu, check_consistency = check_consistency)
     return CoreModelCoupled(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
         m.cl,
-        m.cu
+        m.cu,
     )
 end
 
@@ -64,21 +56,21 @@ function add_reactions(
     check_consistency = false,
 ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
     new_lm = add_reactions(
-                m.lm,
-                s,
-                b,
-                c,
-                xl,
-                xu,
-                rxn,
-                mets,
-                check_consistency = check_consistency
-            )
+        m.lm,
+        s,
+        b,
+        c,
+        xl,
+        xu,
+        rxn,
+        mets,
+        check_consistency = check_consistency,
+    )
     return CoreModelCoupled(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
         m.cl,
-        m.cu
+        m.cu,
     )
 end
 
@@ -103,20 +95,12 @@ function add_reactions(
     xu::V;
     check_consistency = false,
 ) where {M<:MatType,V<:VecType}
-    new_lm = add_reactions(
-                m.lm,
-                Sp,
-                b,
-                c,
-                xl,
-                xu,
-                check_consistency = check_consistency,
-            )
+    new_lm = add_reactions(m.lm, Sp, b, c, xl, xu, check_consistency = check_consistency)
     return CoreModelCoupled(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
         m.cl,
-        m.cu
+        m.cu,
     )
 end
 
@@ -127,16 +111,12 @@ Add all reactions from `m2` to `m1`.
 
 """
 function add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = false)
-    new_lm = add_reactions(
-                m1.lm,
-                m2,
-                check_consistency=check_consistency
-            )
+    new_lm = add_reactions(m1.lm, m2, check_consistency = check_consistency)
     return CoreModelCoupled(
         new_lm,
-        hcat(m1.C, spzeros(size(m1.C, 1), n_reactions(new_lm)-n_reactions(m1.lm))),
+        hcat(m1.C, spzeros(size(m1.C, 1), n_reactions(new_lm) - n_reactions(m1.lm))),
         m1.cl,
-        m1.cu
+        m1.cu,
     )
 end
 
@@ -166,21 +146,21 @@ function add_reactions(
     check_consistency = false,
 ) where {M<:MatType,V<:VecType,K<:StringVecType}
     new_lm = add_reactions(
-            m.lm,
-            Sp,
-            b,
-            c,
-            xl,
-            xu,
-            rxns,
-            mets,
-            check_consistency = check_consistency
-        )
+        m.lm,
+        Sp,
+        b,
+        c,
+        xl,
+        xu,
+        rxns,
+        mets,
+        check_consistency = check_consistency,
+    )
     return CoreModelCoupled(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm)-n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
         m.cl,
-        m.cu
+        m.cu,
     )
 end
 
@@ -194,11 +174,11 @@ Also removes any metabolites not involved in any reaction after the deletion.
 """
 function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
     return CoreModelCoupled(
-                remove_reactions(m.lm, rxns),
-                m.C[:, filter(e -> e ∉ rxns, 1:n_reactions(m))],
-                m.cl,
-                m.cu
-            )
+        remove_reactions(m.lm, rxns),
+        m.C[:, filter(e -> e ∉ rxns, 1:n_reactions(m))],
+        m.cl,
+        m.cu,
+    )
 end
 
 """
@@ -222,7 +202,8 @@ end
 
 """
 function remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
-    rxn_indices = [findfirst(isequal(name), m.lm.rxns) for name in intersect(rxns, m.lm.rxns)]
+    rxn_indices =
+        [findfirst(isequal(name), m.lm.rxns) for name in intersect(rxns, m.lm.rxns)]
     if isempty(rxn_indices)
         return m
     else
@@ -453,12 +434,7 @@ function change_bounds!(
     xl::V = Float64[],
     xu::V = Float64[],
 ) where {V<:VecType}
-    change_bounds!(
-        model.lm,
-        rxns,
-        xl = xl,
-        xu = xu
-    )
+    change_bounds!(model.lm, rxns, xl = xl, xu = xu)
 end
 
 """
@@ -476,10 +452,5 @@ function change_bounds!(
     xl::V = Float64[],
     xu::V = Float64[],
 ) where {V<:VecType}
-    change_bounds!(
-        model.lm,
-        rxns,
-        xl = xl,
-        xu = xu
-    )
+    change_bounds!(model.lm, rxns, xl = xl, xu = xu)
 end

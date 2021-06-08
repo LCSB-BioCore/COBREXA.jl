@@ -175,10 +175,10 @@ end
 
     lp = CoreModel(
         [1.0 1 1 0; 1 1 1 0; 1 1 1 0; 0 0 0 1],
-        collect(1.:4),
-        collect(1.:4),
-        collect(1.:4),
-        collect(1.:4),
+        collect(1.0:4),
+        collect(1.0:4),
+        collect(1.0:4),
+        collect(1.0:4),
         ["r1"; "r2"; "r3"; "r4"],
         ["m1"; "m2"; "m3"; "m4"],
     )

@@ -54,7 +54,16 @@ end
     @test cp.cl == new_cp.cl
     @test cp.cu == new_cp.cu
 
-    new_cp = add_reactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0, "r4", ["m$i" for i in 1:4])
+    new_cp = add_reactions(
+        cp,
+        2.0 * ones(4),
+        3 .* ones(4),
+        2.0,
+        -1.0,
+        1.0,
+        "r4",
+        ["m$i" for i = 1:4],
+    )
     @test cp.C == new_cp.C[:, 1:end-1]
     @test cp.cl == new_cp.cl
     @test cp.cu == new_cp.cu
@@ -78,34 +87,28 @@ end
         2 .* ones(10),
         -ones(10),
         ones(10),
-        ["r$i" for i in 1:10],
-        ["m$i" for i in 1:4]
+        ["r$i" for i = 1:10],
+        ["m$i" for i = 1:4],
     )
     @test cp.C == new_cp.C[:, 1:end-7] # 3 reactions were already present
     @test cp.cl == new_cp.cl
     @test cp.cu == new_cp.cu
 
-    new_cp = add_reactions(
-            cp,
-            2.0 * sprand(4000, 0.5),
-            3 .* sprand(4000, 0.5),
-            2.0,
-            -1.0,
-            1.0
-        )
+    new_cp =
+        add_reactions(cp, 2.0 * sprand(4000, 0.5), 3 .* sprand(4000, 0.5), 2.0, -1.0, 1.0)
     @test cp.C == new_cp.C[:, 1:end-1]
     @test cp.cl == new_cp.cl
     @test cp.cu == new_cp.cu
 
     cm = CoreModel(
-            2.0 * ones(4, 10),
-            3 .* ones(4),
-            2 .* ones(10),
-            -ones(10),
-            ones(10),
-            ["r$i" for i in 1:10],
-            ["m$i" for i in 1:4]
-        )
+        2.0 * ones(4, 10),
+        3 .* ones(4),
+        2 .* ones(10),
+        -ones(10),
+        ones(10),
+        ["r$i" for i = 1:10],
+        ["m$i" for i = 1:4],
+    )
     new_cp = add_reactions(cp, cm)
     @test cp.C == new_cp.C[:, 1:end-7] # 3 reactions were already present
     @test cp.cl == new_cp.cl
@@ -114,9 +117,9 @@ end
 
 @testset "Remove reactions" begin
     cp = convert(CoreModelCoupled, test_LP())
-    cp = add_coupling_constraints(cp, 1. .* collect(1:n_reactions(cp)), -1.0, 1.0)
+    cp = add_coupling_constraints(cp, 1.0 .* collect(1:n_reactions(cp)), -1.0, 1.0)
 
-    new_cp = remove_reactions(cp, [3;2])
+    new_cp = remove_reactions(cp, [3; 2])
     @test new_cp isa CoreModelCoupled
     @test new_cp.C[:] == cp.C[:, 1] # because cp.C[:, 1] comes out as a Vector
     @test new_cp.cl == cp.cl
@@ -137,13 +140,13 @@ end
     @test new_cp.cl == cp.cl
     @test new_cp.cu == cp.cu
 
-    new_cp = remove_reactions(cp, [1;4])
+    new_cp = remove_reactions(cp, [1; 4])
     @test new_cp.C == cp.C[:, 2:3]
 
     new_cp = remove_reactions(cp, "r4")
     @test new_cp.C == cp.C
 
-    new_cp = remove_reactions(cp, [1;1;2])
+    new_cp = remove_reactions(cp, [1; 1; 2])
     @test new_cp.C[:] == cp.C[:, 3]
 end
 

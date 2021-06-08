@@ -23,12 +23,14 @@ findall(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(mo
 filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(model)) # returns Strings
 ```
 """
-function looks_like_exchange_reaction(rxn_id::String;
+function looks_like_exchange_reaction(
+    rxn_id::String;
     exclude_biomass = false,
     biomass_strings = _constants.biomass_strings,
     exchange_prefixes = _constants.exchange_prefixes,
 )::Bool
-    any(startswith(rxn_id, x) for x in exchange_prefixes) && !(exclude_biomass && any(occursin(x, rxn_id) for x in biomass_strings))
+    any(startswith(rxn_id, x) for x in exchange_prefixes) &&
+        !(exclude_biomass && any(occursin(x, rxn_id) for x in biomass_strings))
 end
 
 """
@@ -67,12 +69,14 @@ filter(looks_like_biomass_reaction, reactions(model)) # returns strings
 findall(looks_like_biomass_reaction, reactions(model)) # returns indices
 ```
 """
-function looks_like_biomass_reaction(rxn_id::String;
+function looks_like_biomass_reaction(
+    rxn_id::String;
     exclude_exchanges = false,
     exchange_prefixes = _constants.exchange_prefixes,
     biomass_strings = _constants.biomass_strings,
 )::Bool
-    any(occursin(x, rxn_id) for x in biomass_strings) && !(exclude_exchanges && any(startswith(rxn_id, x) for x in exchange_prefixes))
+    any(occursin(x, rxn_id) for x in biomass_strings) &&
+        !(exclude_exchanges && any(startswith(rxn_id, x) for x in exchange_prefixes))
 end
 """
     find_biomass_reactions(m::MetabolicModel; kwargs...)
@@ -108,7 +112,8 @@ filter(looks_like_exchange_metabolite, metabolites(model)) # returns strings
 findall(looks_like_exchange_metabolite, metabolites(model)) # returns indices
 ```
 """
-function looks_like_exchange_metabolite(met_id::String;
+function looks_like_exchange_metabolite(
+    met_id::String;
     exchange_suffixes = _constants.exchange_suffixes,
 )::Bool
     any(endswith(met_id, x) for x in exchange_suffixes)
