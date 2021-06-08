@@ -112,7 +112,7 @@ end
 
     m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
-    community = add_model(
+    community = add_model_with_exchanges(
         community,
         m2,
         exchange_rxn_ids,
