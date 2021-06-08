@@ -41,7 +41,6 @@ we generally recommend to use either of these:
 - `GLPK` (based on a C library) for linear and mixed-integer problems
 - `Gurobi` (based on an external library, but requires a license that is free
   for academic use) for linear, mixed-integer and quadratic problems
-- `OSQP` as a free alternative to `Gurobi` for solving quadratic problems
 
 All solvers can be installed using the Julia package manger.
 
@@ -136,7 +135,7 @@ fluxes with [`flux_variability_analysis_dict`](@ref).
 ## Parsimonious flux balance analysis
 
 Parsimonious flux balance analysis (pFBA) requires a solver that can handle
-quadratic problems. You may use e.g. `OSQP` or `Gurobi`.
+quadratic problems. Some examples include, e.g. `OSQP`, `Gurobi`, `Mosek`, etc.
 
 Otherwise, the function behaves just like [`flux_balance_analysis`](@ref):
 
