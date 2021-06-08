@@ -225,8 +225,9 @@ unclear.
 m1 = load_model(core_model_path)
 m2 = load_model(CoreModel, core_model_path)
 
-exchange_rxn_ids = filter(looks_like_exchange_reaction, boundary_rxn_ids)
-exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
+# need to list ALL the exchanges that will form part of the entire model
+exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m1))
+exchange_met_ids = [first(keys(reaction_stoichiometry(m1, ex_rxn))) for ex_rxn in exchange_rxn_ids]
 
 biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
