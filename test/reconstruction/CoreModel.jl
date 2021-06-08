@@ -192,3 +192,21 @@ end
     @test reactions(modLp) == reactions(lp)[2:3]
     @test metabolites(modLp) == metabolites(lp)[1:3]
 end
+
+@testset "Remove metabolites" begin
+    model = load_model(CoreModel, model_paths["e_coli_core.json"])
+
+    m1 = remove_metabolites(model, ["glc__D_e", "for_c"])
+    m2 = remove_metabolites(model, "glc__D_e")
+    m3 = remove_metabolites(model, indexin(["glc__D_e", "for_c"], metabolites(model)))
+    m4 = remove_metabolites(model, first(indexin(["glc__D_e"], metabolites(model))))
+
+    @test size(stoichiometry(m1)) == (70, 94)
+    @test size(stoichiometry(m2)) == (71, 94)
+    @test size(stoichiometry(m3)) == (70, 94)
+    @test size(stoichiometry(m4)) == (71, 94)
+    @test any(["glc__D_e", "for_c"] .∉ Ref(metabolites(m1)))
+    @test any(["glc__D_e"] .∉ Ref(metabolites(m2)))
+    @test any(["glc__D_e", "for_c"] .∉ Ref(metabolites(m3)))
+    @test any(["glc__D_e"] .∉ Ref(metabolites(m4)))
+end
