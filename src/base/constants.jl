@@ -9,6 +9,7 @@ const _constants = (
     tolerance = 1e-6,
     sampling_keep_iters = 100,
     sampling_size = 1000,
+    exchange_suffixes = ["_e", "[e]", "(e)"],
     exchange_prefixes = ["EX_", "Exch_", "Ex_", "R_EX_", "R_Ex", "R_Exch_"],
     biomass_strings = ["BIOMASS", "biomass", "Biomass"],
     keynames = (
