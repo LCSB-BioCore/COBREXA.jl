@@ -84,60 +84,57 @@ consuming[&quot;atp_c&quot;] # reactions consuming atp_c</code></pre><pre class=
   &quot;b3736&quot; =&gt; Gene(&quot;b3736&quot;, nothing, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3736&quot;]), Dict(…
   &quot;b3737&quot; =&gt; Gene(&quot;b3737&quot;, nothing, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3737&quot;]), Dict(…
   ⋮       =&gt; ⋮</pre><p>The <code>Gene</code> type is a struct that can be used to store information about genes in a <code>StandardModel</code>. Each <code>Gene</code> is composed of the following fields:</p><pre><code class="language-julia">fieldnames(Gene)</code></pre><pre class="documenter-example-output">(:id, :name, :notes, :annotations)</pre><div class="admonition is-success"><header class="admonition-header">Tip: Use &lt;tab&gt; complete to explore the structure of types</header><div class="admonition-body"><p>Use &lt;tab&gt; to quickly explore the fields of a struct. For example,   Gene.&lt;tab&gt; will list all the fields shown above.</p></div></div><p>The keys used in the ordered dictionaries in <code>model.genes</code> are the ids returned using the generic accessor <code>genes</code>. <code>Gene</code>s have pretty printing, as demonstrated below for a random gene drawn from the model:</p><pre><code class="language-julia">random_gene_id = genes(model)[rand(1:n_genes(model))]
-model.genes[random_gene_id]</code></pre><pre class="documenter-example-output">Gene.id: b3734
+model.genes[random_gene_id]</code></pre><pre class="documenter-example-output">Gene.id: b1478
 Gene.name: ---
 Gene.notes: 
-	original_bigg_ids: [&quot;b3734&quot;]
+	original_bigg_ids: [&quot;b1478&quot;]
 Gene.annotations: 
 	sbo: [&quot;SBO:0000243&quot;]
-	uniprot: [&quot;P0ABB0&quot;]
-	ecogene: [&quot;EG10098&quot;]
-	ncbigene: [&quot;948242&quot;]
-	ncbigi: [&quot;16131602&quot;]
-	refseq_locus_tag: [&quot;b3734&quot;]
-	refseq_name: [&quot;atpA&quot;]
-	asap: [&quot;ABE-0012213&quot;]
-	refseq_synonym: uncA, ..., JW3712
+	uniprot: [&quot;P39451&quot;]
+	ecogene: [&quot;EG12622&quot;]
+	ncbigene: [&quot;946036&quot;]
+	ncbigi: [&quot;90111280&quot;]
+	refseq_locus_tag: [&quot;b1478&quot;]
+	refseq_name: [&quot;adhP&quot;]
+	asap: [&quot;ABE-0004928&quot;]
+	refseq_synonym: yddN, ..., JW1474
 </pre><p>The same idea holds for both metabolites (stored as <code>Metabolite</code>s) and reactions (stored as <code>Reaction</code>s). This is demonstrated below.</p><pre><code class="language-julia">random_metabolite_id = metabolites(model)[rand(1:n_metabolites(model))]
-model.metabolites[random_metabolite_id]</code></pre><pre class="documenter-example-output">Metabolite.id: lac__D_e
+model.metabolites[random_metabolite_id]</code></pre><pre class="documenter-example-output">Metabolite.id: akg_e
 Metabolite.name: ---
-Metabolite.formula: C3H5O3
-Metabolite.charge: -1
+Metabolite.formula: C5H4O5
+Metabolite.charge: -2
 Metabolite.compartment: e
 Metabolite.notes: 
-	original_bigg_ids: [&quot;lac_D_e&quot;]
+	original_bigg_ids: [&quot;akg_e&quot;]
 Metabolite.annotations: 
-	chebi: CHEBI:16004, ..., CHEBI:42105
-	metanetx.chemical: [&quot;MNXM285&quot;]
-	inchi_key: JVTAAEKCZFNVCJ-UWTAT...
-	kegg.compound: [&quot;C00256&quot;]
-	hmdb: [&quot;HMDB01311&quot;, &quot;HMDB00171&quot;]
-	sabiork: [&quot;1997&quot;, &quot;2284&quot;]
+	envipath: 32de3cf4-e3e6-4168-9...
+	sabiork: [&quot;1922&quot;]
+	kegg.compound: [&quot;C00026&quot;]
 	sbo: [&quot;SBO:0000247&quot;]
-	bigg.metabolite: [&quot;lac__D&quot;]
-	biocyc: [&quot;META:D-LACTATE&quot;]
-	seed.compound: [&quot;cpd00221&quot;]
+	biocyc: [&quot;META:2-KETOGLUTARATE&quot;]
+	chebi: CHEBI:40661, ..., CHEBI:19748
+	metanetx.chemical: [&quot;MNXM20&quot;]
+	inchi_key: KPGXRSRHYNQIFN-UHFFF...
+	hmdb: HMDB00208, ..., HMDB62781
+	bigg.metabolite: [&quot;akg&quot;]
+	seed.compound: [&quot;cpd00024&quot;]
+	reactome.compound: 113594, ..., 389537
 </pre><pre><code class="language-julia">random_reaction_id = reactions(model)[rand(1:n_reactions(model))]
-model.reactions[random_reaction_id]</code></pre><pre class="documenter-example-output">Reaction.id: ADK1
+model.reactions[random_reaction_id]</code></pre><pre class="documenter-example-output">Reaction.id: O2t
 Reaction.name: ---
-Reaction.metabolites: 1.0 atp_c + 1.0 amp_c ⟷  2.0 adp_c
+Reaction.metabolites: 1.0 o2_e ⟷  1.0 o2_c
 Reaction.lb: -1000.0
 Reaction.ub: 1000.0
-Reaction.grr: (b0474)
-Reaction.subsystem: Oxidative Phosphorylation
+Reaction.grr: (s0001)
+Reaction.subsystem: Transport, Extracellular
 Reaction.notes: 
-	original_bigg_ids: [&quot;ADK1&quot;]
+	original_bigg_ids: [&quot;O2t&quot;]
 Reaction.annotations: 
-	bigg.reaction: [&quot;ADK1&quot;]
-	sabiork: [&quot;82&quot;]
-	metanetx.reaction: [&quot;MNXR95450&quot;]
-	rhea: 12975, ..., 12974
-	sbo: [&quot;SBO:0000176&quot;]
-	seed.reaction: [&quot;rxn00097&quot;]
-	kegg.reaction: [&quot;R00127&quot;]
-	biocyc: [&quot;META:ADENYL-KIN-RXN&quot;]
-	reactome.reaction: R-ATH-110145, ..., R-MMU-110145
-	ec-code: [&quot;2.7.4.3&quot;]
+	metanetx.reaction: [&quot;MNXR102090&quot;]
+	sbo: [&quot;SBO:0000185&quot;]
+	seed.reaction: rxn09641, ..., rxn09734
+	biocyc: [&quot;META:TRANS-RXN0-474&quot;]
+	bigg.reaction: [&quot;O2t&quot;]
 Reaction.objective_coefficient: 0.0
 </pre><p><code>StandardModel</code> can be used to build your own metabolic model or modify an existing one. One of the main use cases for <code>StandardModel</code> is that it can be used to merge multiple models or parts of multiple models together. Since the internals are uniform inside each <code>StandardModel</code>, attributes of other model types are squashed into the required format (using the generic accessors). This ensures that the internals of all <code>StandardModel</code>s are the same - allowing easy systematic evaluation.</p><div class="admonition is-warning"><header class="admonition-header">Warning: Combining models with different namespaces is tricky</header><div class="admonition-body"><p>Combining models that use different namespaces requires care.   For example, in some models the water exchange reaction is called   <code>EX_h2o_e</code>, while in others it is called <code>R_EX_h2o_s</code>. This needs to   manually addressed (for now) to prevent duplicate, e.g. reactions,   from being added.</p></div></div><h2 id="Checking-the-internals-of-StandardModels:-annotation_index"><a class="docs-heading-anchor" href="#Checking-the-internals-of-StandardModels:-annotation_index">Checking the internals of <code>StandardModel</code>s: <code>annotation_index</code></a><a id="Checking-the-internals-of-StandardModels:-annotation_index-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-the-internals-of-StandardModels:-annotation_index" title="Permalink"></a></h2><p>Often when models are automatically reconstructed duplicate genes, reactions or metabolites end up in a model. <code>COBREXA</code> exports <code>annotation_index</code> to check for cases where the id of a struct may be different, but the annotations the same (possibly suggesting a duplication). <code>annotation_index</code> builds a dictionary mapping annotation features to the ids of whatever struct you are inspecting. This makes it easy to find structs that share certain annotation features.</p><pre><code class="language-julia">rxn_annotations = annotation_index(model.reactions)</code></pre><pre class="documenter-example-output">Dict{String, Dict{String, Set{String}}} with 10 entries:
   &quot;ec-code&quot;           =&gt; Dict(&quot;3.6.3.37&quot;=&gt;Set([&quot;ATPM&quot;]), &quot;3.6.3.42&quot;=&gt;Set([&quot;ATPM…
@@ -183,4 +180,4 @@ Reaction.notes: ---
 Reaction.annotations: ---
 Reaction.objective_coefficient: 0.0
 </pre><pre><code class="language-julia">check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = false) # can also just check if only the metabolites are the same but different stoichiometry is used</code></pre><pre class="documenter-example-output">&quot;PGM&quot;</pre><h2 id="Checking-the-internals-of-StandardModels:-is_mass_balanced"><a class="docs-heading-anchor" href="#Checking-the-internals-of-StandardModels:-is_mass_balanced">Checking the internals of <code>StandardModel</code>s: <code>is_mass_balanced</code></a><a id="Checking-the-internals-of-StandardModels:-is_mass_balanced-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-the-internals-of-StandardModels:-is_mass_balanced" title="Permalink"></a></h2><p>Finally, <code>is_mass_balanced</code> can be used to check if a reaction is mass balanced based on the formulas of the reaction equation.</p><pre><code class="language-julia">pgm_duplicate.metabolites = Dict{String,Float64}(&quot;3pg_c&quot; =&gt; 1, &quot;2pg_c&quot; =&gt; -1, &quot;h2o_c&quot; =&gt; 1) # not mass balanced now
-is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model) # extra_atoms shows which atoms are in excess/deficit</code></pre><pre class="documenter-example-output">(false, Dict(&quot;C&quot; =&gt; 0.0, &quot;P&quot; =&gt; 0.0, &quot;H&quot; =&gt; 2.0, &quot;O&quot; =&gt; 1.0))</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 8 June 2021 14:35">Tuesday 8 June 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model) # extra_atoms shows which atoms are in excess/deficit</code></pre><pre class="documenter-example-output">(false, Dict(&quot;C&quot; =&gt; 0.0, &quot;P&quot; =&gt; 0.0, &quot;H&quot; =&gt; 2.0, &quot;O&quot; =&gt; 1.0))</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 8 June 2021 15:38">Tuesday 8 June 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
