@@ -28,7 +28,7 @@ function looks_like_exchange_reaction(rxn_id::String;
     biomass_strings = _constants.biomass_strings,
     exchange_prefixes = _constants.exchange_prefixes,
 )::Bool
-    any(startswith(rxn_id, x) for x in exchange_prefixes) && !(exclude_biomass && any([occursin(x, rxn_id) for x in biomass_strings]))
+    any(startswith(rxn_id, x) for x in exchange_prefixes) && !(exclude_biomass && any(occursin(x, rxn_id) for x in biomass_strings))
 end
 
 """
@@ -54,7 +54,7 @@ function looks_like_biomass_reaction(rxn_id::String;
     exchange_prefixes = _constants.exchange_prefixes,
     biomass_strings = _constants.biomass_strings,
 )::Bool
-    any(occursin(x, rxn_id) for x in biomass_strings) && !(exclude_exchanges && any([startswith(x, rxn_id) for x in exchange_prefixes]))
+    any(occursin(x, rxn_id) for x in biomass_strings) && !(exclude_exchanges && any(startswith(rxn_id, x) for x in exchange_prefixes))
 end
 
 """
