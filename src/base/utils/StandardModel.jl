@@ -102,29 +102,3 @@ function metabolite_fluxes(flux_dict::Dict{String,Float64}, model::StandardModel
     end
     return consuming, producing
 end
-
-"""
-    set_bound(index, optimization_model;
-        ub=_constants.default_reaction_rate,
-        lb=-_constants.default_reaction_rate)
-
-Helper function to set the bounds of variables.
-The JuMP `set_normalized_rhs` function is a little confusing, 
-so this function simplifies setting constraints. In short, JuMP
-uses a normalized right hand side representation of constraints, 
-which means that lower bounds have their sign flipped. This function
-does this for you, so you don't have to remember to do this whenever you
-change the constraints. 
-
-Just supply the constraint `index` and the JuMP model (`opt_model`) that 
-will be solved, and the variable's bounds will be set to `ub` and `lb`.
-"""
-function set_bound(
-    vind,
-    opt_model;
-    ub = _constants.default_reaction_rate,
-    lb = -_constants.default_reaction_rate,
-)
-    set_normalized_rhs(opt_model[:lbs][vind], -lb)
-    set_normalized_rhs(opt_model[:ubs][vind], ub)
-end

@@ -136,6 +136,17 @@ end
 
 _sbml_export_notes = _sbml_export_annotation
 
+
+"""
+    reaction_stoichiometry(model::SBMLModel, rxn_id::String)::Dict{String, Float64}
+
+Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_stoichiometry(m::SBMLModel, rxn_id::String)::Dict{String, Float64}
+    m.sbml.reactions[rxn_id].stoichiometry
+end
+
 """
     Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
 

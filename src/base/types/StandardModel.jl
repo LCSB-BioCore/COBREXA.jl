@@ -283,6 +283,16 @@ function reaction_annotations(model::StandardModel, id::String)::Maybe{Annotatio
 end
 
 """
+    reaction_stoichiometry(model::StandardModel, rxn_id::String)::Dict{String, Float64}
+
+Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_stoichiometry(m::StandardModel, rxn_id::String)::Dict{String, Float64}
+    m.reactions[rxn_id].metabolites
+end
+
+"""
 Base.convert(::Type{StandardModel}, model::MetabolicModel)
 
 Convert any `MetabolicModel` into a `StandardModel`.

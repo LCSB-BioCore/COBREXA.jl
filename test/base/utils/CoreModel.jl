@@ -1,4 +1,3 @@
-
 @testset "CoreModel utilities" begin
     cp = test_LP()
     @test n_reactions(cp) == 3
