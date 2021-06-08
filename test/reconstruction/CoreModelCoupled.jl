@@ -43,3 +43,157 @@
     cl, cu = coupling_bounds(cp)
     @test cl[[1000, 1001]] == [-50.0, -60.0]
 end
+
+@testset "Add reactions" begin
+    cp = convert(CoreModelCoupled, test_LP())
+    cp = add_coupling_constraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
+
+    new_cp = add_reactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0)
+    @test new_cp isa CoreModelCoupled
+    @test cp.C == new_cp.C[:, 1:end-1]
+    @test cp.cl == new_cp.cl
+    @test cp.cu == new_cp.cu
+
+    new_cp = add_reactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0, "r4", ["m$i" for i in 1:4])
+    @test cp.C == new_cp.C[:, 1:end-1]
+    @test cp.cl == new_cp.cl
+    @test cp.cu == new_cp.cu
+
+    new_cp = add_reactions(
+        cp,
+        2.0 * ones(4, 10),
+        3 .* ones(4),
+        2 .* ones(10),
+        -ones(10),
+        ones(10),
+    )
+    @test cp.C == new_cp.C[:, 1:end-10]
+    @test cp.cl == new_cp.cl
+    @test cp.cu == new_cp.cu
+
+    new_cp = add_reactions(
+        cp,
+        2.0 * ones(4, 10),
+        3 .* ones(4),
+        2 .* ones(10),
+        -ones(10),
+        ones(10),
+        ["r$i" for i in 1:10],
+        ["m$i" for i in 1:4]
+    )
+    @test cp.C == new_cp.C[:, 1:end-7] # 3 reactions were already present
+    @test cp.cl == new_cp.cl
+    @test cp.cu == new_cp.cu
+
+    new_cp = add_reactions(
+            cp,
+            2.0 * sprand(4000, 0.5),
+            3 .* sprand(4000, 0.5),
+            2.0,
+            -1.0,
+            1.0
+        )
+    @test cp.C == new_cp.C[:, 1:end-1]
+    @test cp.cl == new_cp.cl
+    @test cp.cu == new_cp.cu
+
+    cm = CoreModel(
+            2.0 * ones(4, 10),
+            3 .* ones(4),
+            2 .* ones(10),
+            -ones(10),
+            ones(10),
+            ["r$i" for i in 1:10],
+            ["m$i" for i in 1:4]
+        )
+    new_cp = add_reactions(cp, cm)
+    @test cp.C == new_cp.C[:, 1:end-7] # 3 reactions were already present
+    @test cp.cl == new_cp.cl
+    @test cp.cu == new_cp.cu
+end
+
+@testset "Remove reactions" begin
+    cp = convert(CoreModelCoupled, test_LP())
+    cp = add_coupling_constraints(cp, 1. .* collect(1:n_reactions(cp)), -1.0, 1.0)
+
+    new_cp = remove_reactions(cp, [3;2])
+    @test new_cp isa CoreModelCoupled
+    @test new_cp.C[:] == cp.C[:, 1] # because cp.C[:, 1] comes out as a Vector
+    @test new_cp.cl == cp.cl
+    @test new_cp.cu == cp.cu
+
+    new_cp = remove_reactions(cp, 2)
+    @test new_cp.C == cp.C[:, [1; 3]]
+    @test new_cp.cl == cp.cl
+    @test new_cp.cu == cp.cu
+
+    new_cp = remove_reactions(cp, "r1")
+    @test new_cp.C == cp.C[:, 2:3]
+    @test new_cp.cl == cp.cl
+    @test new_cp.cu == cp.cu
+
+    new_cp = remove_reactions(cp, ["r1"; "r3"])
+    @test new_cp.C[:] == cp.C[:, 2]
+    @test new_cp.cl == cp.cl
+    @test new_cp.cu == cp.cu
+
+    new_cp = remove_reactions(cp, [1;4])
+    @test new_cp.C == cp.C[:, 2:3]
+
+    new_cp = remove_reactions(cp, "r4")
+    @test new_cp.C == cp.C
+
+    new_cp = remove_reactions(cp, [1;1;2])
+    @test new_cp.C[:] == cp.C[:, 3]
+end
+
+@testset "Find exchanges" begin
+    cp = convert(
+            CoreModelCoupled,
+            CoreModel(
+                [-1.0 -1 -2; 0 -1 0; 0 0 0],
+                zeros(3),
+                ones(3),
+                ones(3),
+                ones(3),
+                ["EX_m1"; "r2"; "r3"],
+                ["m1"; "m2"; "m3"]
+            )
+        )
+    @test find_exchange_reactions(cp) == [1]
+
+    cp = convert(
+            CoreModelCoupled,
+            CoreModel(
+                [-1.0 0 0; 0 0 -1; 0 -1 0],
+                zeros(3),
+                ones(3),
+                ones(3),
+                ones(3),
+                ["EX_m1"; "Exch_m3"; "Ex_m2"],
+                ["m1"; "m2"; "m3"]
+            )
+        )
+    @test find_exchange_reactions(cp) == [1; 2; 3]
+    @test find_exchange_metabolites(cp) == [1; 3; 2]
+    @test find_exchange_reactions(cp, exc_prefs = ["Exch_"]) == [2]
+    @test find_exchange_metabolites(cp, exc_prefs = ["Exch_"]) == [3]
+end
+
+@testset "Change bounds" begin
+    cp = convert(CoreModelCoupled, test_LP())
+    change_bounds!(cp, [3; 1], xl = [-10.0; -20], xu = [10.0; 20])
+    @test cp isa CoreModelCoupled
+    @test cp.lm.xl == [-20; 1; -10]
+    @test cp.lm.xu == [20; 1; 10]
+    change_bounds!(
+        cp,
+        ["gibberish1"; "r3"; "r1"; "gibberish2"],
+        xl = [0; -30.0; -40; 0],
+        xu = [0; 30.0; 40; 0],
+    )
+    @test cp.lm.xl == [-40; 1; -30]
+    @test cp.lm.xu == [40; 1; 30]
+    change_bounds!(cp, ["r1"; "r3"], xl = [-50.0; -60])
+    @test cp.lm.xl == [-50; 1; -60]
+end
