@@ -16,25 +16,27 @@ using COBREXA
 using Tulip
 
 # ## Create mutants by knocking out certain reactions
-cytbd_knockout = remove_reactions(load_model(CoreModel, "e_coli_core.json"), "CYTBD")
+
+base_model = load_model(CoreModel, "e_coli_core.json")
+
+cytbd_knockout = remove_reactions(base_model, "CYTBD")
 sol = flux_balance_analysis_dict(cytbd_knockout, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"]
 
-atps4r_knockout = remove_reactions(load_model(CoreModel, "e_coli_core.json"), "ATPS4r")
+atps4r_knockout = remove_reactions(base_model, "ATPS4r")
 sol = flux_balance_analysis_dict(atps4r_knockout, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"]
 
-pdh_knockout = remove_reactions(load_model(CoreModel, "e_coli_core.json"), "PDH")
+pdh_knockout = remove_reactions(base_model, "PDH")
 sol = flux_balance_analysis_dict(pdh_knockout, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"]
 
-# ## Construct a 2 member community model
+ex_rxns = filter(looks_like_exchange_reaction, reactions(base_model))
+ex_mets = [first(keys(reaction_stoichiometry(base_model, ex_rxn))) for ex_rxn in ex_rxns]
 
-# First, 
-
-community_model = join_with_exchanges([cytbd_knockout, atps4r_knockout],
-        ; 
+models = [cytbd_knockout, atps4r_knockout, pdh_knockout]
+community_model = join_with_exchanges(models, ex_rxns, ex_mets; 
         add_biomass_objective=true, 
-        biomass_ids=["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"], 
-        model_names=["cytbd_ko", "atps4r_ko"]
+        biomass_ids=["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"], 
+        model_names=["cytbd_ko", "atps4r_ko", ]
     ) 
