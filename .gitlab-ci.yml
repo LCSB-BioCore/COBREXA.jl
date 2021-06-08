@@ -1,7 +1,7 @@
 stages:
-  - formatter
   - generator
   - test-containers
+  - format-check
   - test-required
   - documentation
   - test-additional-v1.5
@@ -61,7 +61,7 @@ variables:
 # --------------------------------------
 
 format:
-  stage: formatter
+  stage: format-check
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
