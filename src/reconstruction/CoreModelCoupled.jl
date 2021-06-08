@@ -382,61 +382,6 @@ function change_coupling_bounds!(
 end
 
 """
-    find_exchange_reactions(
-        model::CoreModelCoupled;
-        exclude_biomass = false,
-        biomass_str::String = "biomass",
-        exc_prefs = ["EX_"; "Exch_"; "Ex_"],
-    )
-
-Get indices of exchange reactions.
-
-Exchange reactions are identified based on most commonly used prefixes.
-
-"""
-function find_exchange_reactions(
-    model::CoreModelCoupled;
-    exclude_biomass = false,
-    biomass_str::String = "biomass",
-    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
-)
-    return find_exchange_reactions(
-        model.lm;
-        exclude_biomass = exclude_biomass,
-        biomass_str = biomass_str,
-        exc_prefs = exc_prefs,
-    )
-end
-
-"""
-    find_exchange_metabolites(
-        model::CoreModelCoupled;
-        exclude_biomass = false,
-        biomass_str::String = "biomass",
-        exc_prefs = ["EX_"; "Exch_"; "Ex_"],
-    )
-
-Get indices of exchanged metabolites.
-
-In practice returns the metabolites consumed by the reactions given by `find_exchange_reactions`
-and if called with the same arguments, the two outputs correspond.
-
-"""
-function find_exchange_metabolites(
-    model::CoreModelCoupled;
-    exclude_biomass = false,
-    biomass_str::String = "biomass",
-    exc_prefs = ["EX_"; "Exch_"; "Ex_"],
-)
-    return find_exchange_metabolites(
-        model.lm;
-        exclude_biomass = exclude_biomass,
-        biomass_str = biomass_str,
-        exc_prefs = exc_prefs,
-    )
-end
-
-"""
     change_bounds!(
         model::CoreModelCoupled,
         rxns::Vector{Int};
