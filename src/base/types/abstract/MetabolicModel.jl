@@ -313,7 +313,8 @@ Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
 function reaction_stoichiometry(m::MetabolicModel, rxn_id::String)::Dict{String, Float64}
-    _missing_impl_error(reaction_stoichiometry, (m,rxn_id))
+    mets = metabolites(m)
+    Dict(mets[k] => v for (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rxn_id], reactions(model)))])...))
 end
 
 """
