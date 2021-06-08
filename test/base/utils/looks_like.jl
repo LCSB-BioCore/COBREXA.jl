@@ -35,7 +35,7 @@
     @test filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(cp)) == ["EX_m1(e)", "EX_m3(e)"]
     @test filter(looks_like_exchange_metabolite, metabolites(cp)) == ["m1[e]", "m3[e]"]
     @test filter(looks_like_biomass_reaction, reactions(cp)) == ["EX_biomass(e)", "biomass1"]
-    @test filter(x -> looks_like_biomass_reaction(x; exclude_exchanges=true), reactions(cp))
+    @test filter(x -> looks_like_biomass_reaction(x; exclude_exchanges=true), reactions(cp)) == ["biomass1"] 
 end
 
 @testset "Looks like functions, basic" begin
