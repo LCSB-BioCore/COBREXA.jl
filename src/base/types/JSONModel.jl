@@ -277,12 +277,12 @@ function metabolite_notes(model::JSONModel, mid::String)::Notes
 end
 
 """
-    reaction_equation(model::JSONModel, rxn_id::String)::Dict{String, Float64}
+    reaction_stoichiometry(model::JSONModel, rxn_id::String)::Dict{String, Float64}
 
 Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_equation(m::JSONModel, rxn_id::String)::Dict{String, Float64}
+function reaction_stoichiometry(m::JSONModel, rxn_id::String)::Dict{String, Float64}
     ind = findfirst(x -> x["id"] == rxn_id, m.json["reactions"])
     m.json["reactions"][ind]["metabolites"]
 end
