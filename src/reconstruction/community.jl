@@ -57,7 +57,7 @@ add_objective!(model::CoreModel, objective_met::String, objective_weight::Float6
     add_objective!(model, [objective_met], [objective_weight])
 
 """
-    add_model(
+    add_model_with_exchanges(
         community::CoreModel,
         model::MetabolicModel,
         exchange_rxn_ids::Vector{String},
@@ -76,10 +76,10 @@ metabolite with unit coefficient. Note, `exchange_rxn_ids` and
 
 # Example
 ```
-community = add_model(community, model, exchange_rxn_ids, exchange_met_ids; model_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
+community = add_model_with_exchanges(community, model, exchange_rxn_ids, exchange_met_ids; model_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
 ```
 """
-function add_model(
+function add_model_with_exchanges(
     community::CoreModel,
     model::MetabolicModel,
     exchange_rxn_ids::Vector{String},
@@ -112,11 +112,11 @@ function add_model(
     Jadd .+= n_cmodel_cols
 
     # when adding a single model not that many reactions, push! okay?
-    exchange_rxn_model_inds = indexin(exchange_rxn_ids, reactions(model))
+    exchange_rxn_model_idxs = indexin(exchange_rxn_ids, reactions(model))
     for i = 1:length(exchange_rxn_ids)
-        isnothing(exchange_rxn_model_inds[i]) && continue
+        isnothing(exchange_rxn_model_idxs[i]) && continue
         push!(Iadd, exchange_met_community_inds[i]) # already present ex met in community model
-        push!(Jadd, n_cmodel_cols + exchange_rxn_model_inds[i]) # new column hence the offset
+        push!(Jadd, n_cmodel_cols + exchange_rxn_model_idxs[i]) # new column hence the offset
         push!(Vadd, 1.0)
     end
 
@@ -223,8 +223,7 @@ unclear.
 m1 = load_model(core_model_path)
 m2 = load_model(CoreModel, core_model_path)
 
-boundary_rxn_ids, boundary_met_ids = boundary_reactions_metabolites(m2)
-exchange_rxn_ids = filter(startswith("EX_"), boundary_rxn_ids)
+exchange_rxn_ids = filter(looks_like_exchange_reaction, boundary_rxn_ids)
 exchange_met_ids = filter(endswith("_e"), boundary_met_ids)
 
 biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
