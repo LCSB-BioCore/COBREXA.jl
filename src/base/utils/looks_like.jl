@@ -56,7 +56,7 @@ findall(looks_like_biomass_reaction, reactions(model)) # returns indices
 ```
 """
 function looks_like_biomass_reaction(rxn_id::String;
-    biomass_strings = _constants.exchange_suffixes,
+    biomass_strings = _constants.biomass_strings,
 )::Bool
     any(occursin(x, rxn_id) for x in biomass_strings) && return true
     return false
