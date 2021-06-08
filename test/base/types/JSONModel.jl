@@ -8,3 +8,9 @@
     @test Set(reactions(jm)) == Set(reactions(sm))
     @test Set(reactions(jm)) == Set(reactions(jm2))
 end
+
+@testset "JSONModel generic interface" begin
+    model = load_model(model_paths["e_coli_core.json"])
+
+    @test reaction_stoichiometry(model, "EX_ac_e") == Dict("ac_e" => -1)
+end

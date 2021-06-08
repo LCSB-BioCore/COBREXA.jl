@@ -307,6 +307,17 @@ function reaction_subsystem(model::MetabolicModel, reaction_id::String)::Maybe{S
 end
 
 """
+    reaction_stoichiometry(model::MetaboliteModel, rxn_id::String)::Dict{String, Float64}
+
+Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_stoichiometry(m::MetabolicModel, rxn_id::String)::Dict{String, Float64}
+    mets = metabolites(m)
+    Dict(mets[k] => v for (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rxn_id], reactions(m)))])...))
+end
+
+"""
     precache!(a::MetabolicModel)::Nothing
 
 Do whatever is feasible to get the model into a state that can be read from

@@ -94,6 +94,26 @@ function objective(a::CoreModel)::SparseVec
 end
 
 """
+    reaction_stoichiometry(model::CoreModel, rxn_id::String)::Dict{String, Float64}
+
+Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_stoichiometry(m::CoreModel, rxn_id::String)::Dict{String, Float64}
+    Dict(m.mets[k]=>v for (k, v) in zip(findnz(m.S[:, first(indexin([rxn_id], m.rxns))])...))
+end
+
+"""
+    reaction_stoichiometry(model::CoreModel, rxn_id::String)::Dict{String, Float64}
+
+Return the reaction equation of reaction with id `rxn_ind` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_stoichiometry(m::CoreModel, rxn_ind::Int)::Dict{String, Float64}
+    Dict(m.mets[k]=>v for (k, v) in zip(findnz(m.S[:, rxn_ind])...))
+end
+
+"""
     Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
 
 Make a `CoreModel` out of any compatible model type.

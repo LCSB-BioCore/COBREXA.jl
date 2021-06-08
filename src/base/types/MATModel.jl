@@ -167,6 +167,30 @@ metabolite_compartment(m::MATModel, mid::String) = _maybemap(
     get(m.mat, "metCompartment", get(m.mat, "metCompartments", nothing)),
 )
 
+
+"""
+    reaction_stoichiometry(model::MATModel, rxn_id::String)::Dict{String, Float64}
+
+Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
+"""
+function reaction_stoichiometry(m::MATModel, rxn_id::String)::Dict{String, Float64}
+    rxn_ind = first(indexin([rxn_id], m.mat["rxns"]))
+    reaction_stoichiometry(m, rxn_ind)
+end
+
+"""
+    reaction_stoichiometry(model::MATModel, rxn_index)::Dict{String, Float64}
+
+Return the reaction equation of reaction with index `rxn_index` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients. Note, `rxn_index` can 
+be any suitable type that can index into an array.
+"""
+function reaction_stoichiometry(m::MATModel, rxn_ind)::Dict{String, Float64}
+    met_inds = findall(m.mat["S"][:, rxn_ind] .!= 0.0)
+    Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, rxn_ind] for met_ind in met_inds)
+end
+
 # NOTE: There's no useful standard on how and where to store notes and
 # annotations in MATLAB models. We therefore leave it very open for the users,
 # who can easily support any annotation scheme using a custom wrapper.
