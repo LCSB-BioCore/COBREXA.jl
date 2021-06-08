@@ -312,18 +312,8 @@ end
 Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::MetabolicModel, rxn_id::String)::Maybe{Dict{String, Float64}}
-    return nothing
-end
-
-"""
-    reaction_stoichiometry(model::MetaboliteModel, rxn_idx)::Dict{String, Float64}
-
-Return the reaction equation of reaction at `rxn_idx` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
-"""
-function reaction_stoichiometry(m::MetabolicModel, rxn_idx)::Maybe{Dict{String, Float64}}
-    return nothing
+function reaction_stoichiometry(m::MetabolicModel, rxn_id::String)::Dict{String, Float64}
+    _missing_impl_error(reaction_stoichiometry, (m,rxn_id))
 end
 
 """
