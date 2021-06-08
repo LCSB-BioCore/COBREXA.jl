@@ -114,7 +114,7 @@
     @test isempty(reaction_notes(model, "r2"))
     @test isempty(reaction_annotations(model, "r2"))
 
-    @test reaction_equation(model, "r1") == Dict("m1" => -1.0, "m2" => 1.0)
+    @test reaction_stoichiometry(model, "r1") == Dict("m1" => -1.0, "m2" => 1.0)
 
     # To do: test convert
     same_model = convert(StandardModel, model)
