@@ -349,21 +349,21 @@ function join_with_exchanges(
         n_reactions_total,
     ) # could be that some microbes don't have all the exchanges, hence kstart-1
 
-    reaction_cumsum = cumsum(reaction_lengths)
-    metabolite_cumsum = cumsum(metabolite_lengths)
+    _reaction_offsets = cumsum(reaction_lengths)
+    _metabolite_offsets = cumsum(metabolite_lengths)
     for i = 1:length(models)
         species = isempty(model_names) ? "species_$(i)" : model_names[i]
         tlbs, tubs = bounds(models[i])
-        lbs[reaction_offset[i]+1:reaction_cumsum[i]] .= tlbs
-        ubs[reaction_offset[i]+1:reaction_cumsum[i]] .= tubs
-        rxns[reaction_offset[i]+1:reaction_cumsum[i]] =
+        lbs[reaction_offset[i]+1:_reaction_offsets[i]] .= tlbs
+        ubs[reaction_offset[i]+1:_reaction_offsets[i]] .= tubs
+        rxns[reaction_offset[i]+1:_reaction_offsets[i]] =
             "$(species)_" .* reactions(models[i])
-        mets[metabolite_offset[i]+1:metabolite_cumsum[i]] =
+        mets[metabolite_offset[i]+1:_metabolite_offsets[i]] =
             "$(species)_" .* metabolites(models[i])
     end
-    mets[metabolite_cumsum[end]+1:metabolite_cumsum[end]+length(exchange_met_ids)] .=
+    mets[_metabolite_offsets[end]+1:_metabolite_offsets[end]+length(exchange_met_ids)] .=
         exchange_met_ids
-    rxns[reaction_cumsum[end]+1:reaction_cumsum[end]+length(exchange_rxn_ids)] .=
+    rxns[_reaction_offsets[end]+1:_reaction_offsets[end]+length(exchange_rxn_ids)] .=
         exchange_rxn_ids
 
     if add_biomass_objective
@@ -375,31 +375,4 @@ function join_with_exchanges(
     end
 
     return CoreModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
-end
-
-"""
-    boundary_reactions_metabolites(model::MetabolicModel)::Tuple{Vector{String}, Vector{String}}
-
-Return `boundary_rxns` and `boundary_mets` given `model`. Boundary reactions
-are reactions with a single stoichiometric coefficient in a column in the
-stoichiometric matrix, and boundary metabolites are the corresponding row/metabolite
-for that column.
-"""
-function boundary_reactions_metabolites(
-    model::MetabolicModel,
-)::Tuple{Vector{String},Vector{String}}
-    boundary_mets = String[]
-    boundary_rxns = String[]
-    S = stoichiometry(model)
-    rxns = reactions(model)
-    mets = metabolites(model)
-    for i = 1:size(S, 2)
-        n = nnz(S[:, i])
-        if n == 1
-            j, _ = findnz(S[:, i])
-            push!(boundary_mets, mets[first(j)])
-            push!(boundary_rxns, rxns[i])
-        end
-    end
-    return boundary_rxns, boundary_mets
 end
