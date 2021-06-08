@@ -68,6 +68,22 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
 end
 
 """
+    atom_exchange(rxn_id::String, model::StandardModel)
+
+Return a dictionary mapping the flux of atoms through a reaction in `model`.
+"""
+function atom_exchange(rxn_id::String, model::StandardModel)
+    atom_flux = Dict{String,Float64}()
+    for (met, stoich_rxn) in model.reactions[rxn_id].metabolites
+        adict = get_atoms(model.metabolites[met])
+        for (atom, stoich_molecule) in adict
+            atom_flux[atom] = get(atom_flux, atom, 0.0) + stoich_rxn * stoich_molecule
+        end
+    end
+    return atom_flux
+end
+
+"""
     metabolite_fluxes(flux_dict::Dict{String, Float64}, model::StandardModel)
 
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or 
@@ -75,7 +91,6 @@ produce them given the flux distribution supplied in `fluxdict`.
 """
 function metabolite_fluxes(flux_dict::Dict{String,Float64}, model::StandardModel)
     S = stoichiometry(model)
-    met_flux = Dict{String,Float64}()
     rxnids = reactions(model)
     metids = metabolites(model)
 
