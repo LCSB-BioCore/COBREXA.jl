@@ -65,6 +65,7 @@ format:
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
+    - git status
     - git diff --check --exit-code
   <<: *global_settings
 
