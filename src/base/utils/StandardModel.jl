@@ -59,7 +59,8 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
             for (met, stoich_rxn) in model.reactions[rxn_id].metabolites
                 adict = get_atoms(model.metabolites[met])
                 for (atom, stoich_molecule) in adict
-                    atom_flux[atom] = get(atom_flux, atom, 0.0) + flux * stoich_rxn * stoich_molecule
+                    atom_flux[atom] =
+                        get(atom_flux, atom, 0.0) + flux * stoich_rxn * stoich_molecule
                 end
             end
         end

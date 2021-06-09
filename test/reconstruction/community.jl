@@ -3,7 +3,8 @@
     m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
     exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m2))
-    exchange_met_ids = [first(keys(reaction_stoichiometry(m2, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+    exchange_met_ids =
+        [first(keys(reaction_stoichiometry(m2, ex_rxn))) for ex_rxn in exchange_rxn_ids]
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
@@ -38,9 +39,10 @@ end
 @testset "Heterogenous model join" begin
     m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
     m2 = load_model(CoreModel, model_paths["iJO1366.mat"])
-    
+
     exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m2))
-    exchange_met_ids = [first(keys(reaction_stoichiometry(m2, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+    exchange_met_ids =
+        [first(keys(reaction_stoichiometry(m2, ex_rxn))) for ex_rxn in exchange_rxn_ids]
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
 
@@ -91,7 +93,8 @@ end
     m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
     exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m1))
-    exchange_met_ids = [first(keys(reaction_stoichiometry(m1, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+    exchange_met_ids =
+        [first(keys(reaction_stoichiometry(m1, ex_rxn))) for ex_rxn in exchange_rxn_ids]
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
 
