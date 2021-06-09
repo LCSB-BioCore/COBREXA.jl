@@ -4,7 +4,12 @@
 
 Shallow copy of a [`StandardModel`](@ref)
 """
-Base.copy(m::StandardModel) = StandardModel(m.id, m.reactions, m.metabolites, m.genes)
+Base.copy(m::StandardModel) = StandardModel(
+    m.id,
+    reactions = m.reactions,
+    metabolites = m.metabolites,
+    genes = m.genes,
+)
 
 """
     Base.copy(r::Reaction)
