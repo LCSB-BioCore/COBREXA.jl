@@ -32,8 +32,8 @@ end
 
 Add `met` to `model` based on metabolite `id`.
 """
-add_metabolite!(model::StandardModel, met::Metabolite) =  add_metabolites!(model, [met])
-    
+add_metabolite!(model::StandardModel, met::Metabolite) = add_metabolites!(model, [met])
+
 """
     add_genes!(model::StandardModel, genes::Vector{Gene})
 
@@ -50,7 +50,7 @@ end
 
 Add `gene` to `model` based on gene `id`.
 """
-add_gene!(model::StandardModel, gene::Gene) = add_genes!(model, [gene]) 
+add_gene!(model::StandardModel, gene::Gene) = add_genes!(model, [gene])
 
 """
     @add_reactions!(model::Symbol, ex::Expr)
@@ -130,7 +130,7 @@ Remove reaction with `id` from `model`. Note, may result in orphan metabolites.
 remove_reaction!(model, "EX_glc__D_e")
 ```
 """
-remove_reaction!(model::StandardModel, id::String) = remove_reactions!(model, [id]) 
+remove_reaction!(model::StandardModel, id::String) = remove_reactions!(model, [id])
 
 """
     remove_metabolites!(model::StandardModel, ids::Vector{String})
@@ -145,7 +145,7 @@ remove_metabolites!(model, ["atp_c", "adp_c"])
 ```
 """
 function remove_metabolites!(model::StandardModel, ids::Vector{String})
-    pop!.(Ref(model.metabolites), ids)    
+    pop!.(Ref(model.metabolites), ids)
 end
 
 """
@@ -160,7 +160,7 @@ require the deleted metabolite, in which case analysis functions will error.
 remove_metabolite!(model, "atp_c")
 ```
 """
-remove_metabolite!(model::StandardModel, id::String) = remove_metabolites!(model, [id]) 
+remove_metabolite!(model::StandardModel, id::String) = remove_metabolites!(model, [id])
 
 """
     remove_genes!(
@@ -210,7 +210,8 @@ constrain reactions that require the genes to function to carry zero flux.
 remove_gene!(model, "g1")
 ```
 """
-remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) = remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
+remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
+    remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
 function set_bound(model::StandardModel, reaction_id::String; ub, lb)
     reaction = model.reactions[reaction_id]

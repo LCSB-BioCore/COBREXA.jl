@@ -5,7 +5,10 @@
 
     add_gene!(m, Gene("g1"))
     add_gene!(m, Gene("g2"))
-    add_reaction!(m, Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]))
+    add_reaction!(
+        m,
+        Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]),
+    )
     add_reaction!(
         m,
         Reaction("v2", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1", "g2"]]),

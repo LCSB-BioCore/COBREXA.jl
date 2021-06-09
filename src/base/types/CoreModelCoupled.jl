@@ -110,7 +110,7 @@ end
 Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::CoreModelCoupled, rxn_id::String)::Dict{String, Float64}
+function reaction_stoichiometry(m::CoreModelCoupled, rxn_id::String)::Dict{String,Float64}
     reaction_stoichiometry(m.lm, rxn_id)
 end
 
@@ -120,7 +120,7 @@ end
 Return the reaction equation of reaction with id `rxn_ind` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::CoreModelCoupled, rxn_ind::Int)::Dict{String, Float64}
+function reaction_stoichiometry(m::CoreModelCoupled, rxn_ind::Int)::Dict{String,Float64}
     reaction_stoichiometry(m.lm, rxn_ind)
 end
 

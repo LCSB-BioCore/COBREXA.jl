@@ -174,7 +174,7 @@ metabolite_compartment(m::MATModel, mid::String) = _maybemap(
 Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::MATModel, rxn_id::String)::Dict{String, Float64}
+function reaction_stoichiometry(m::MATModel, rxn_id::String)::Dict{String,Float64}
     rxn_ind = first(indexin([rxn_id], m.mat["rxns"]))
     reaction_stoichiometry(m, rxn_ind)
 end
@@ -186,7 +186,7 @@ Return the reaction equation of reaction with index `rxn_index` in model. The re
 equation maps metabolite ids to their stoichiometric coefficients. Note, `rxn_index` can 
 be any suitable type that can index into an array.
 """
-function reaction_stoichiometry(m::MATModel, rxn_ind)::Dict{String, Float64}
+function reaction_stoichiometry(m::MATModel, rxn_ind)::Dict{String,Float64}
     met_inds = findall(m.mat["S"][:, rxn_ind] .!= 0.0)
     Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, rxn_ind] for met_ind in met_inds)
 end

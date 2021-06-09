@@ -99,8 +99,11 @@ end
 Return the reaction equation of reaction with id `rxn_id` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::CoreModel, rxn_id::String)::Dict{String, Float64}
-    Dict(m.mets[k]=>v for (k, v) in zip(findnz(m.S[:, first(indexin([rxn_id], m.rxns))])...))
+function reaction_stoichiometry(m::CoreModel, rxn_id::String)::Dict{String,Float64}
+    Dict(
+        m.mets[k] => v for
+        (k, v) in zip(findnz(m.S[:, first(indexin([rxn_id], m.rxns))])...)
+    )
 end
 
 """
@@ -109,8 +112,8 @@ end
 Return the reaction equation of reaction with id `rxn_ind` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::CoreModel, rxn_ind::Int)::Dict{String, Float64}
-    Dict(m.mets[k]=>v for (k, v) in zip(findnz(m.S[:, rxn_ind])...))
+function reaction_stoichiometry(m::CoreModel, rxn_ind::Int)::Dict{String,Float64}
+    Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, rxn_ind])...))
 end
 
 """
