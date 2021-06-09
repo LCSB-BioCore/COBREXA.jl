@@ -19,8 +19,8 @@
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
     @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
-    @test isapprox(objective_value(lp), expected_optimum, atol=TEST_TOLERANCE)
-    @test isapprox(cp.c' * sol, expected_optimum, atol=TEST_TOLERANCE)
+    @test isapprox(objective_value(lp), expected_optimum, atol = TEST_TOLERANCE)
+    @test isapprox(cp.c' * sol, expected_optimum, atol = TEST_TOLERANCE)
 
     # test the "nicer output" variants
     fluxes_vec = flux_balance_analysis_vec(cp, Tulip.Optimizer)

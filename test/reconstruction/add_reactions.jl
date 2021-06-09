@@ -4,7 +4,7 @@
     B = Metabolite("B")
     C = Metabolite("C")
     add_metabolites!(mod, [A, B, C])
-    
+
     @add_reactions! mod begin
         "v1", nothing ⟷ A
         "v2", nothing ⟷ B, -500

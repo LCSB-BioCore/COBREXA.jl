@@ -151,8 +151,7 @@ function add_model_with_exchanges(
 
     rxnsadd = "$(model_name)_" .* reactions(model)
     if !isnothing(biomass_id)
-        metsadd =
-            ["$(model_name)_" .* metabolites(model); "$(model_name)_" * biomass_id]
+        metsadd = ["$(model_name)_" .* metabolites(model); "$(model_name)_" * biomass_id]
     else
         metsadd = "$(model_name)_" .* metabolites(model)
     end
@@ -247,7 +246,7 @@ function join_with_exchanges(
     add_biomass_objective = true,
     biomass_ids = String[],
     model_names = String[],
-)::CoreModel where M <: MetabolicModel
+)::CoreModel where {M<:MetabolicModel}
 
     if add_biomass_objective && isempty(biomass_ids)
         throw(
@@ -284,7 +283,8 @@ function join_with_exchanges(
     nnz_total =
         sum(length(first(nnz)) for nnz in nnzs) +
         length(models) * length(exchange_rxn_ids) +
-        length(exchange_met_ids) + nnz_add
+        length(exchange_met_ids) +
+        nnz_add
     n_reactions_metabolic = sum(reaction_lengths)
     n_reactions_total = n_reactions_metabolic + length(exchange_rxn_ids) + column_add
     n_metabolites_metabolic = sum(metabolite_lengths)
