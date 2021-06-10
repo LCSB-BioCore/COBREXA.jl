@@ -22,18 +22,19 @@ model = load_model(StandardModel, "e_coli_core.json")
 # is a straightforward modification of the [`with_set_bound`](@ref) that does
 # not set bounds "outside" of the original bounds:
 
-with_limited_rate(reaction_id::String, limit) = model::StandardModel -> begin
-    m = copy(model)
-    m.reactions = copy(model.reactions)
-    r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
-    if -limit > r.lb
-        r.lb = -limit
+with_limited_rate(reaction_id::String, limit) =
+    model::StandardModel -> begin
+        m = copy(model)
+        m.reactions = copy(model.reactions)
+        r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
+        if -limit > r.lb
+            r.lb = -limit
+        end
+        if limit < r.ub
+            r.ub = limit
+        end
+        m
     end
-    if limit < r.ub
-        r.ub = limit
-    end
-    m
-end
 
 # ## Knocking out single reactions
 #
@@ -42,15 +43,17 @@ end
 
 get_biomass(x) = isnothing(x) ? 0 : x["BIOMASS_Ecoli_core_w_GAM"]
 
-productions = screen_variants(model,
-    [ [with_limited_rate(rxn, 0.1)] for rxn in reactions(model)],
-    model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)))
+productions = screen_variants(
+    model,
+    [[with_limited_rate(rxn, 0.1)] for rxn in reactions(model)],
+    model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)),
+)
 
 # This can be nicely plotted to give a more comprehensive overview of which
 # reactions are critical or not:
 
 using Plots
-bar(reactions(model), productions, orientation=:hor)
+bar(reactions(model), productions, orientation = :hor, size = [600, 500])
 
 # ## Knocking out reaction combinations
 #
@@ -66,10 +69,15 @@ using IterTools
 # up using parallel execution, by specifying `workers` argument (see
 # documentation of [`screen`](@ref) for details)
 
-rxns=reactions(model)
+rxns = reactions(model)
 
-productions = screen_variants(model,
-    [ [with_limited_rate(rxn1, 3), with_limited_rate(rxn2, 0.1)] for (rxn1,rxn2) in product(rxns,rxns)],
-    model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)))
+productions = screen_variants(
+    model,
+    [
+        [with_limited_rate(rxn1, 3), with_limited_rate(rxn2, 0.1)] for
+        (rxn1, rxn2) in product(rxns, rxns)
+    ],
+    model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)),
+)
 
-heatmap(productions)
+heatmap(productions, size = [600, 500])
