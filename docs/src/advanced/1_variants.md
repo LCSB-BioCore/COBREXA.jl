@@ -1,26 +1,28 @@
 
-# Screening model variants
+# Exploring many model variants
 
-A major goal of COBREXA is to make exploring of many model variants easy and
+A major goal of COBREXA.jl is to make exploring of many model variants easy and
 fast.
 
-One main concept that can be utilized for doing that is implemented in function
-[`screen`](@ref), which takes your model, a list of model _variants_ that you
-want to explore by some specified _analysis_, and schedules the analysis of the
-model variants on all available distributed workers.
+One main concept that can be utilized for doing that is implemented in the
+function [`screen`](@ref), which takes your model, a list of model _variants_
+that you want to explore by some specified _analysis_, and schedules the
+analysis of the model variants parallely on the available distributed workers.
 
-In the most basic form, using the slightly simplified variant of
-[`screen`](@ref) that is called [`screen_variants`](@ref) may work as follows:
+In its most basic form, the "screening" may use the slightly simplified variant
+of [`screen`](@ref) that is called [`screen_variants`](@ref), which works as
+follows:
 
 ```julia
-m = load_model(StandardModel, "ecoli_core_model.json")
+m = load_model(StandardModel, "e_coli_core.json")
 
 screen_variants(
     m,    # the model for screening
     [
         [],    # a variant with no modifications
-        [with_set_bound("CO2t", lb = 0, ub = 0)],   # disable CO2 transport
-        [with_set_bound("O2t", lb = 0, ub = 0)],   # disable O2 transport
+        [with_set_bound("CO2t", lb = 0, ub = 0)],  # disable CO2 transport
+        [with_set_bound("O2t", lb = 0, ub = 0)],  # disable O2 transport
+        [with_set_bound("CO2t", lb = 0, ub = 0), with_set_bound("O2t", lb = 0, ub = 0)],  # disable both transports
     ],
     m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
 )
@@ -30,27 +32,28 @@ then a vector of model variants to be created and tested, and then the analysis
 that is being run on each variant -- in this case, we find an optimal steady
 state of each of the variants, and check out the biomass production rate at
 that state. In this particular case, we are checking what will be the effect of
-disabling CO2 transport and O2 transport in the cells. For that, we get the
-following result:
+disabling combinations of CO2 transport and O2 transport in the cells. For
+that, we get the following result:
 ```
-3-element Vector{Float64}:
- 0.8739215022674809
+4-element Vector{Float64}:
+ 0.8739215022678488
  0.46166961413944896
- 0.21166294973372796
+ 0.21166294973372135
+ 0.21114065173865518
 ```
 
-The numbers are the biomass production rates for all variants. We can see that
-disabling O2 transport really does not help the organism much.
+The numbers are the biomass production rates for the specified variants. We can
+see that disabling O2 transport really does not help the organism much.
 
 ## Variant specification
 
-In the above example, we have specified 3 variants, thus the analysis returned
-3 different results that correspond with the specifications. Let us have a look
+In the above example, we have specified 4 variants, thus the analysis returned
+4 different results that correspond with the specifications. Let us have a look
 at the precise format of the specification and result.
 
 Importantly, the `variants` argument is of type `Array{Vector{Any}}`, meaning
-that it can be array of any dimensionality that contains vectors. Each of the
-vectors specifies precisely one variants, possibly with more modifications
+that it can be an array of any dimensionality that contains vectors. Each of the
+vectors specifies precisely one variant, possibly with more modifications
 applied to the model in sequence.
 
 For example:
@@ -59,10 +62,12 @@ For example:
 - `[with_set_bound("CO2t", lb=0, ub=2), with_set_bound("O2t", lb=0, ub=100)]`
   severely limits the CO2 transport _and_ slightly restricts the transport of
   O2
-- because the variants are just generators of single parameter functions that
-  take the model and return its modified version, you can also use `identity`
-  to specify a variant that does nothing -- `[identity]` is perfectly same as
-  `[]`
+
+!!! note "Variants are single-parameter model-transforming functions"
+	Because the variants are just generators of single parameter functions
+	that take the model and return its modified version, you can also use
+	`identity` to specify a variant that does nothing -- `[identity]` is
+	perfectly same as `[]`
 
 The shape of the variants array is important too, because it is precisely
 retained in the result (just as with `pmap`). If you pass in a matrix of
@@ -100,7 +105,7 @@ Notably, this shows that O2 transport and NH4 exchange may be serious
 bottlenecks for biomass production.
 
 For clarity, you may always annotate the result by zipping it with the
-specification structure you have used:
+specification structure you have used and collecting the data:
 ``` julia
 collect(zip(
     product(
