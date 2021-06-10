@@ -42,6 +42,13 @@ Modules = [COBREXA]
 Pages = map(file -> joinpath("reconstruction", file), readdir("../src/reconstruction"))
 ```
 
+### Model variant specifications
+
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("reconstruction", "modifications", file), readdir("../src/reconstruction/modifications"))
+```
+
 ## Analysis functions
 
 ```@autodocs
