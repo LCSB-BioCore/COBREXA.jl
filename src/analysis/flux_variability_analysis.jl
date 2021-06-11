@@ -19,9 +19,8 @@ s.t. S x = b
      cᵀx ≤ bounds(Z₀)[2]
 ```
 where Z₀:= cᵀx₀ is the objective value of an optimal solution of the associated
-FBA problem (see [`flux_balance_analysis`](@ref)). See "Gudmundsson, S., Thiele,
-I. Computationally efficient flux variability analysis. BMC Bioinformatics 11,
-489 (2010). https://doi.org/10.1186/1471-2105-11-489" for more information.
+FBA problem (see [`flux_balance_analysis`](@ref) for a related analysis, also
+for explanation of the `modifications` argument).
 
 The `bounds` is a user-supplied function that specifies the objective bounds
 for the variability optimizations, by default it restricts the flux objective
@@ -43,6 +42,12 @@ Returns a matrix of extracted `ret` values for minima and maxima, of total size
 (`length(reactions)`,2). The optimizer result status is checked with
 [`is_solved`](@ref); `nothing` is returned if the optimization failed for any
 reason.
+
+# Example
+```
+model = load_model("e_coli_core.json")
+flux_variability_analysis(model, [1, 2, 3, 42], GLPK.optimizer)
+```
 """
 function flux_variability_analysis(
     model::MetabolicModel,
@@ -98,7 +103,8 @@ end
         kwargs...
     )
 
-A simpler version of [`flux_variability_analysis`](@ref) that maximizes and minimizes all reactions in the model. Arguments are forwarded.
+A simpler version of [`flux_variability_analysis`](@ref) that maximizes and
+minimizes all reactions in the model. Arguments are forwarded.
 """
 function flux_variability_analysis(model::MetabolicModel, optimizer; kwargs...)
     n = n_reactions(model)
@@ -115,6 +121,20 @@ end
 A variant of [`flux_variability_analysis`](@ref) that returns the individual
 maximized and minimized fluxes of all reactions as two dictionaries (of
 dictionaries). All keyword arguments except `ret` are passed through.
+
+# Example
+```
+mins, maxs = flux_variability_analysis_dict(
+    model,
+    Tulip.Optimizer;
+    bounds = objective_bounds(0.99),
+    modifications = [
+        change_optimizer_attribute("IPM_IterationsLimit", 500),
+        change_constraint("EX_glc__D_e", -10, -10),
+        change_constraint("EX_o2_e", 0.0, 0.0),
+    ],
+)
+```
 """
 function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs...)
     vs = flux_variability_analysis(
