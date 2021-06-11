@@ -21,7 +21,3 @@ function Base.show(io::IO, ::MIME"text/plain", flux_res::FluxSummary)
     # end
 
 end
-
-function Base.show(io::IO, ::MIME"text/html", flux_res::FluxSummary)
-
-end
