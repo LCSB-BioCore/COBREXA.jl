@@ -41,7 +41,7 @@ model = load_model(StandardModel, "e_coli_core.json") # we specifically want to 
 
 using Tulip
 
-dict_sol = flux_balance_analysis_dict(
+fluxes = flux_balance_analysis_dict(
     model,
     Tulip.Optimizer;
     modifications = [
@@ -59,18 +59,24 @@ dict_sol = flux_balance_analysis_dict(
 
 # It is sometimes interesting to keep track of the atoms entering and leaving
 # the system through boundary reactions. This can be inspected by calling
-# `atom_exchange`.
+# [`atom_exchange`](@ref). That gives you the flux of individual atoms getting
+# consumed and produced by all reactions, based on `fluxes`. We erase the
+# reaction that consumes the atoms for creating biomass, to see how much mass
+# the "rest" of the reaction produces for it:
 
-atom_exchange(dict_sol, model) # flux of individual atoms entering and leaving the system through boundary reactions (e.g. exchange reactions) based on flux_dict
+fluxes_without_biomass = copy(fluxes);
+delete!(fluxes_without_biomass, "BIOMASS_Ecoli_core_w_GAM");
+atom_exchange(model, fluxes_without_biomass)
 
 # ## Inspecting the flux solution: `metabolite_fluxes`
 
-# Another useful flux result analysis function is `metabolite_fluxes`. This
-# function keeps track of reactions consuming and producing each metabolite.
+# Another useful flux result analysis function is [`metabolite_fluxes`](@ref).
+# This function gives an overview of reactions consuming and producing each
+# metabolite.
 
-consuming, producing = metabolite_fluxes(dict_sol, model)
+consuming, producing = metabolite_fluxes(model, fluxes)
 
-consuming["atp_c"] # reactions consuming atp_c
+consuming["atp_c"] # reactions consuming `atp_c`
 
 # ## Internals of `StandardModel`
 
@@ -170,8 +176,8 @@ check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = fals
 
 # ## Checking the internals of `StandardModel`s: `is_mass_balanced`
 
-# Finally, `is_mass_balanced` can be used to check if a reaction is mass
+# Finally, [`is_mass_balanced`](@ref) can be used to check if a reaction is mass
 # balanced based on the formulas of the reaction equation.
 
 pgm_duplicate.metabolites = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c" => 1) # not mass balanced now
-is_bal, extra_atoms = is_mass_balanced(pgm_duplicate, model) # extra_atoms shows which atoms are in excess/deficit
+is_bal, extra_atoms = is_mass_balanced(model, pgm_duplicate) # extra_atoms shows which atoms are in excess/deficit

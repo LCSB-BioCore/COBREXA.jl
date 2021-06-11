@@ -2,31 +2,22 @@
     model = load_model(StandardModel, model_paths["e_coli_core.json"])
 
     # FBA
-    glc = model.reactions["EX_glc__D_e"]
-    optimizer = Tulip.Optimizer # quiet by default
-    sol = flux_balance_analysis_dict(
+    fluxes = flux_balance_analysis_dict(
         model,
-        optimizer;
+        Tulip.Optimizer;
         modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
     )
 
-    # atom tracker
-    atom_fluxes = atom_exchange(sol, model)
-    @test isapprox(atom_fluxes["C"], 37.19016648975907; atol = TEST_TOLERANCE)
-    @test atom_exchange("FBA", model)["C"] == 0.0
+    # single-reaction atom exchanges
+    @test atom_exchange(model, "FBA")["C"] == 0.0
     @test isapprox(
-        atom_exchange("BIOMASS_Ecoli_core_w_GAM", model)["C"],
+        atom_exchange(model, "BIOMASS_Ecoli_core_w_GAM")["C"],
         -42.5555;
         atol = TEST_TOLERANCE,
     )
 
-    # metabolite trackers
-    consuming, producing = metabolite_fluxes(sol, model)
-    @test isapprox(consuming["atp_c"]["PFK"], -7.47738; atol = TEST_TOLERANCE)
-    @test isapprox(producing["atp_c"]["PYK"], 1.75818; atol = TEST_TOLERANCE)
-
-    # set bounds
-    cbm = make_optimization_model(model, optimizer)
+    # bounds setting
+    cbm = make_optimization_model(model, Tulip.Optimizer)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
     glucose_index = first(indexin(["EX_glc__D_e"], reactions(model)))
