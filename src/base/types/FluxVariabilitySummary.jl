@@ -33,7 +33,7 @@ function flux_variability_summary(flux_result::Tuple{Dict{String, Dict{String, F
     for rxn_id in bmasses
         lb = isnothing(flux_result[1][rxn_id]) ? nothing : flux_result[1][rxn_id][rxn_id]
         ub = isnothing(flux_result[2][rxn_id]) ? nothing : flux_result[2][rxn_id][rxn_id]
-        res[rxn_id] = [lb, ub]
+        biomass_fluxes[rxn_id] = [lb, ub]
     end
 
     ex_rxn_fluxes = Dict{String, Vector{Union{Float64, Nothing}}}() 
