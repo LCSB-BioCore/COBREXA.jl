@@ -25,12 +25,10 @@ end
 Return a `FluxSummary` struct based on the `flux_result` of a constraint based
 analysis simulation of `model`. Internally this function uses
 [`looks_like_biomass_reaction`](@ref) and
-[`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments can
-be set in `summarize` and are then passed to these functions if your model has
-nonstandard ids for reactions. Fluxes smaller than `small_flux_bound` are not
-displayed, while fluxes larger than `large_flux_bound` are only displayed if
-`display_unbounded` is `true`. `round_digits` is used to round the displayed
-value of the flux.
+[`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments
+passed to these functions. Use this if your model has non-standard ids for
+reactions. Fluxes smaller than `small_flux_bound` are not stored, while fluxes
+larger than `large_flux_bound` are only stored if `keep_unbounded` is `true`.
 
 This function is most useful as a way to generate a struct that has nice pretty
 printing of flux results. The resultant struct can also be used in downstream
@@ -38,6 +36,18 @@ applications if necessary.
 
 # Example
 ```
+julia> fr = flux_summary(model, sol)
+Biomass:
+  BIOMASS_Ecoli_core_w_GAM: 0.8739
+Import:
+  EX_o2_e:     -21.7995
+  EX_glc__D_e: -10.0
+  EX_nh4_e:    -4.7653
+  EX_pi_e:     -3.2149
+Export:
+  EX_h_e:      17.5309
+  EX_co2_e:    22.8098
+  EX_h2o_e:    29.1758
 ```
 """
 function flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64}; 
