@@ -57,12 +57,9 @@ bar(reactions(model), productions, orientation = :hor, dpi = 600)
 
 # ## Knocking out reaction combinations
 #
-# With a bit of help from `IterTools` package, it is very easy to prepare
-# matrices of biomass productions from all possible two-reaction knockouts. To
-# make it more interesting, we will restrict one of the reactions of the pair a
-# bit less, to see more possible outcomes.
-#
-using IterTools
+# It is very easy to prepare matrices of biomass productions from all possible
+# two-reaction knockouts. To make it more interesting, we will restrict one of
+# the reactions of the pair a bit less, to see more possible outcomes.
 
 # We do not process all reactions here to make the notebook rendering
 # efficient, but you can easily remove the restriction, and speed the process
@@ -74,8 +71,8 @@ rxns = reactions(model)
 productions = screen_variants(
     model,
     [
-        [with_limited_rate(rxn1, 3), with_limited_rate(rxn2, 0.1)] for
-        (rxn1, rxn2) in product(rxns, rxns)
+        [with_limited_rate(rxn1, 3), with_limited_rate(rxn2, 0.1)] for rxn1 in rxns,
+        rxn2 in rxns
     ],
     model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)),
 )
