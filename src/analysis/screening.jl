@@ -66,6 +66,7 @@ screen_variants(m,
         [reverse_reaction(3), reverse_reaction(6)]
     ],
     mod -> flux_balance_analysis_vec(mod, GLPK.Optimizer))  # run analysis
+```
 """
 function screen(
     model::MetabolicModel;

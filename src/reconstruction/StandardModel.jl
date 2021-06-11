@@ -213,8 +213,27 @@ remove_gene!(model, "g1")
 remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-function set_bound(model::StandardModel, reaction_id::String; ub, lb)
+"""
+    set_bound!(model::StandardModel, reaction_id::String; lb, ub)
+
+Change the bounds of a reaction in-place.
+"""
+function set_bound!(model::StandardModel, reaction_id::String; lb, ub)
     reaction = model.reactions[reaction_id]
     reaction.lb = lb
     reaction.ub = ub
+end
+
+"""
+    set_bound(model::StandardModel, reaction_id::String; lb, ub)
+
+Return a shallow copy of the `model` with reaction bounds changed.
+"""
+function set_bound(model::StandardModel, reaction_id::String; lb, ub)
+    m = copy(model)
+    m.reactions = copy(model.reactions)
+    r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
+    r.lb = lb
+    r.ub = ub
+    m
 end

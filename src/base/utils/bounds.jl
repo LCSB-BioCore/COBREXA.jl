@@ -11,7 +11,7 @@ flux_variability_analysis(model, some_optimizer; bounds = gamma_bounds(0.9))
 gamma_bounds(gamma) = z -> (gamma * z, Inf)
 
 """
-    (tolerance) = z -> begin
+    objective_bounds(tolerance)
 
 A bounds-generating function for [`flux_variability_analysis`](@ref) that
 limits the objective value to a small multiple of Z₀. Use as `bounds` argument,

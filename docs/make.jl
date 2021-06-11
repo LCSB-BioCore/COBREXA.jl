@@ -71,7 +71,8 @@ makedocs(
     linkcheck = !("skiplinks" in ARGS),
     pages = [
         "Home" => "index.md",
-        "Tutorials" => "tutorials.md",
+        "Quickstart tutorials" => "tutorials.md",
+        "Advanced tutorials" => "advanced.md",
         "Examples and notebooks" => "notebooks.md",
         "Function reference" => "functions.md",
         "How to contribute" => "howToContribute.md",

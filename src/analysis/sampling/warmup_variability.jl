@@ -82,7 +82,7 @@ function warmup_from_variability(
     # snatch the bounds from whatever worker is around
     lbs, ubs = get_val_from(
         workers[1],
-        :($COBREXA.get_bound_vectors(cobrexa_sampling_warmup_optmodel)),
+        :($COBREXA.get_optmodel_bounds(cobrexa_sampling_warmup_optmodel)),
     )
 
     # free the data on workers

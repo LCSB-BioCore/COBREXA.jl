@@ -59,7 +59,7 @@ Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id`.
 function change_constraint(id::String, lb, ub)
     (model, opt_model) -> begin
         ind = first(indexin([id], reactions(model)))
-        set_bound(ind, opt_model, lb = lb, ub = ub)
+        set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
     end
 end
 

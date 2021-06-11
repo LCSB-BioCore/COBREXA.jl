@@ -60,19 +60,19 @@ function is_solved(optmodel)
 end
 
 """
-    get_bound_vectors(opt_model)
+    get_optmodel_bounds(opt_model)
 
 Returns vectors of the lower and upper bounds of `opt_model` constraints, where
 `opt_model` is a JuMP model constructed by e.g.
 [`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
 """
-get_bound_vectors(opt_model) = (
+get_optmodel_bounds(opt_model) = (
     [-normalized_rhs(lb) for lb in opt_model[:lbs]],
     [normalized_rhs(ub) for ub in opt_model[:ubs]],
 )
 
 """
-    set_bound(index, optimization_model;
+    set_optmodel_bound!(index, optimization_model;
         ub=_constants.default_reaction_rate,
         lb=-_constants.default_reaction_rate)
 
@@ -87,7 +87,7 @@ change the constraints.
 Just supply the constraint `index` and the JuMP model (`opt_model`) that 
 will be solved, and the variable's bounds will be set to `ub` and `lb`.
 """
-function set_bound(
+function set_optmodel_bound!(
     vind,
     opt_model;
     ub = _constants.default_reaction_rate,
