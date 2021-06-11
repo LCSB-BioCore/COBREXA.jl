@@ -59,13 +59,14 @@ fluxes = flux_balance_analysis_dict(
 
 # It is sometimes interesting to keep track of the atoms entering and leaving
 # the system through boundary reactions. This can be inspected by calling
-# [`atom_exchange`](@ref). That gives you the flux of individual atoms entering
-# and leaving the system through boundary reactions (e.g. exchange reactions),
-# based on `fluxes`:
+# [`atom_exchange`](@ref). That gives you the flux of individual atoms getting
+# consumed and produced by all reactions, based on `fluxes`. We erase the
+# reaction that consumes the atoms for creating biomass, to see how much mass
+# the "rest" of the reaction produces for it:
 
 fluxes_without_biomass = copy(fluxes);
 delete!(fluxes_without_biomass, "BIOMASS_Ecoli_core_w_GAM");
-atom_exchange(model, fluxes)
+atom_exchange(model, fluxes_without_biomass)
 
 # ## Inspecting the flux solution: `metabolite_fluxes`
 
