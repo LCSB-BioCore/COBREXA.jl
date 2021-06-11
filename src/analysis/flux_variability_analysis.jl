@@ -121,6 +121,20 @@ end
 A variant of [`flux_variability_analysis`](@ref) that returns the individual
 maximized and minimized fluxes of all reactions as two dictionaries (of
 dictionaries). All keyword arguments except `ret` are passed through.
+
+# Example
+```
+mins, maxs = flux_variability_analysis_dict(
+    model,
+    Tulip.Optimizer;
+    bounds = objective_bounds(0.99),
+    modifications = [
+        change_optimizer_attribute("IPM_IterationsLimit", 500),
+        change_constraint("EX_glc__D_e", -10, -10),
+        change_constraint("EX_o2_e", 0.0, 0.0),
+    ],
+)
+```
 """
 function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs...)
     vs = flux_variability_analysis(
