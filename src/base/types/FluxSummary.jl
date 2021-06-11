@@ -97,7 +97,7 @@ function flux_summary(
         upper_unbounded =
             [idx for idx in idx_srt_fluxes if ex_fluxes[idx] >= large_flux_bound]
         return FluxSummary(
-            Dict(k => v for (k, v) in zip(bmasses, bmass_fluxes)),
+            OrderedDict(k => v for (k, v) in zip(bmasses, bmass_fluxes)),
             OrderedDict(
                 k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])
             ),
