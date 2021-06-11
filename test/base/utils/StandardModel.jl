@@ -17,7 +17,7 @@
     )
 
     # bounds setting
-    cbm = make_optimization_model(model, optimizer)
+    cbm = make_optimization_model(model, Tulip.Optimizer)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]
     glucose_index = first(indexin(["EX_glc__D_e"], reactions(model)))

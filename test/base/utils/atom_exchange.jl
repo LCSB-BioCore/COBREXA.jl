@@ -8,7 +8,7 @@
     )
 
     # atom tracker
-    atom_fluxes = atom_exchange(fluxes, model)
+    atom_fluxes = atom_exchange(model, fluxes)
     @test isapprox(atom_fluxes["C"], 37.19016648975907; atol = TEST_TOLERANCE)
     @test isapprox(atom_fluxes["N"], 37.19016648975907; atol = TEST_TOLERANCE)
 end

@@ -16,7 +16,7 @@ function atom_exchange(model::MetabolicModel, flux_dict::Dict{String,Float64})
             atoms = metabolite_formula(model, mids[midx])
             isnothing(atoms) && continue
             for (atom, abundance) in atoms
-                atom_flux[atom] = get(atom_flux, atom, 0.0) + flux * mstoi * abundance
+                atom_flux[atom] = get(atom_flux, atom, 0.0) + rflux * mstoi * abundance
             end
         end
     end
