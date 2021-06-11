@@ -19,7 +19,6 @@ end
                 exclude_biomass = false,
                 small_flux_bound = 1.0/_constants.default_reaction_bound^2,
                 large_flux_bound = _constants.default_reaction_bound,
-                round_digits = 3,
                 keep_unbounded = false,
                 )::FluxSummary
 
