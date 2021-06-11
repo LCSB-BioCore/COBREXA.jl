@@ -35,7 +35,8 @@ pFBA gets the model optimum by standard FBA (using
 finds a minimal total flux through the model that still satisfies the (slightly
 relaxed) optimum. This is done using a quadratic problem optimizer. If the
 original optimizer does not support quadratic optimization, it can be changed
-using the callback in `qp_modifications`, which are applied after the FBA.
+using the callback in `qp_modifications`, which are applied after the FBA. See
+the documentation of flux_balance_analysis for usage examples of modifications.
 
 Thhe optimum relaxation sequence can be specified in `relax` parameter, it
 defaults to multiplicative range of `[1.0, 0.999999, ..., 0.99]` of the
@@ -46,11 +47,9 @@ optimization failed.
 
 # Example
 ```
-optimizer = Gurobi.Optimizer
-atts = Dict("OutputFlag" => 0)
-model = load_model(StandardModel, "iJO1366.json")
-biomass = findfirst(model.reactions, "BIOMASS_Ec_iJO1366_WT_53p95M")
-sol = pfba(model, biomass, Gurobi.optimizer)
+model = load_model("e_coli_core.json")
+optmodel = parsimonious_flux_balance_analysis(model, biomass, Gurobi.Optimizer)
+value.(solution[:x])  # extract the flux from the optimizer
 ```
 """
 function parsimonious_flux_balance_analysis(
@@ -97,9 +96,10 @@ end
 """
     parsimonious_flux_balance_analysis_vec(args...; kwargs...)
 
-Perform parsimonious flux balance analysis on `model` using `optimizer`. 
-Returns a vector of fluxes in the same order as the reactions in `model`. 
-Arguments are forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
+Perform parsimonious flux balance analysis on `model` using `optimizer`.
+Returns a vector of fluxes in the same order as the reactions in `model`.
+Arguments are forwarded to [`parsimonious_flux_balance_analysis`](@ref)
+internally.
 """
 function parsimonious_flux_balance_analysis_vec(args...; kwargs...)
     opt_model = parsimonious_flux_balance_analysis(args...; kwargs...)
@@ -112,9 +112,9 @@ end
 """
     parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...)
 
-Perform parsimonious flux balance analysis on `model` using `optimizer`. 
-Returns a dictionary mapping the reaction IDs to fluxes. 
-Arguments are forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
+Perform parsimonious flux balance analysis on `model` using `optimizer`.
+Returns a dictionary mapping the reaction IDs to fluxes. Arguments are
+forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
 """
 function parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...)
     opt_fluxes = parsimonious_flux_balance_analysis_vec(model, args...; kwargs...)

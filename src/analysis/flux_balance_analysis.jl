@@ -50,17 +50,21 @@ The `optimizer` must be set to a `JuMP`-compatible optimizer, such as
 `GLPK.Optimizer` or `Tulip.Optimizer`
 
 Optionally, you may specify one or more modifications to be applied to the
-model before the analysis, such as
-[`change_optimizer_attribute`](@ref),[`change_objective`](@ref), and
-[`change_sense`](@ref).
+model before the analysis, such as [`change_optimizer_attribute`](@ref),
+[`change_objective`](@ref), and [`change_sense`](@ref).
 
 Returns an optimized `JuMP` model.
 
 # Example
 ```
-model = load_model(StandardModel, "e_coli_core.json")
-biomass = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
-solution = flux_balance_analysis(model, GLPK.optimizer; modifications=[change_objective(biomass)])
+model = load_model("e_coli_core.json")
+solution = flux_balance_analysis(model, GLPK.optimizer)
+value.(solution[:x])  # extract flux steady state from the optimizer
+
+biomass_reaction_id = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
+
+modified_solution = flux_balance_analysis(model, GLPK.optimizer;
+    modifications=[change_objective(biomass_reaction_id)])
 ```
 
 """
