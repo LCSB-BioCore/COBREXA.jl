@@ -3,6 +3,7 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 OSQP = "ab2f91bb-94b4-55e3-9ba0-7f65df51de79"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [compat]
