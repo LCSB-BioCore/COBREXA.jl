@@ -41,7 +41,7 @@ model = load_model(StandardModel, "e_coli_core.json") # we specifically want to 
 
 using Tulip
 
-dict_sol = flux_balance_analysis_dict(
+fluxes = flux_balance_analysis_dict(
     model,
     Tulip.Optimizer;
     modifications = [
@@ -59,18 +59,21 @@ dict_sol = flux_balance_analysis_dict(
 
 # It is sometimes interesting to keep track of the atoms entering and leaving
 # the system through boundary reactions. This can be inspected by calling
-# `atom_exchange`.
+# [`atom_exchange`](@ref). That gives you the flux of individual atoms entering
+# and leaving the system through boundary reactions (e.g. exchange reactions),
+# based on `fluxes`:
 
-atom_exchange(dict_sol, model) # flux of individual atoms entering and leaving the system through boundary reactions (e.g. exchange reactions) based on flux_dict
+atom_exchange(model, fluxes)
 
 # ## Inspecting the flux solution: `metabolite_fluxes`
 
-# Another useful flux result analysis function is `metabolite_fluxes`. This
-# function keeps track of reactions consuming and producing each metabolite.
+# Another useful flux result analysis function is [`metabolite_fluxes`](@ref).
+# This function gives an overview of reactions consuming and producing each
+# metabolite.
 
-consuming, producing = metabolite_fluxes(dict_sol, model)
+consuming, producing = metabolite_fluxes(model, fluxes)
 
-consuming["atp_c"] # reactions consuming atp_c
+consuming["atp_c"] # reactions consuming `atp_c`
 
 # ## Internals of `StandardModel`
 
