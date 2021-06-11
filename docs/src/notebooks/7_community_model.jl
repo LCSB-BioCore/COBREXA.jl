@@ -45,11 +45,14 @@ ex_mets = [first(keys(reaction_stoichiometry(base_model, ex_rxn))) for ex_rxn in
 [ex_rxns ex_mets]
 #
 model_names = ["cytbd_ko", "atps4r_ko"]
-community_model = join_with_exchanges([cytbd_knockout_model, atps4r_knockout_model], ex_rxns, ex_mets; 
-        add_biomass_objective=true, 
-        biomass_ids=["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"], 
-        model_names=model_names
-        )     
+community_model = join_with_exchanges(
+    [cytbd_knockout_model, atps4r_knockout_model],
+    ex_rxns,
+    ex_mets;
+    add_biomass_objective = true,
+    biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"],
+    model_names = model_names,
+)
 
 # ## Set exchange reaction bounds of community model based on the bounds of the individual models
 
@@ -57,21 +60,19 @@ env_ex_rxn_idxs = indexin(ex_rxns, reactions(community_model)) # identify the gl
 cytbd_ex_rxn_idxs = indexin(ex_rxns, reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
 atps4r_ex_rxn_idxs = indexin(ex_rxns, reactions(atps4r_knockout_model))
 
+# In case some exchange reactions are not present in both models, set
+# environmental exchange bound to the sum of the individual exchange bounds
 for (env_ex, m2_ex, m1_ex) in zip(env_ex_rxn_idxs, cytbd_ex_rxn_idxs, atps4r_ex_rxn_idxs)
-    # in case some exchange reactions are not present in both models
     m2lb = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xl[m2_ex]
     m2ub = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xu[m2_ex]
-
     m1lb = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xl[m1_ex]
     m1ub = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xu[m1_ex]
-
-    # set environmental exchange bound to the sum of the individual exchange bounds
-    change_bounds!(community_model, [env_ex]; xl= [m1lb + m2lb], xu = [m1ub + m2ub])
+    change_bounds!(community_model, [env_ex]; xl = [m1lb + m2lb], xu = [m1ub + m2ub])
 end
 
 # ## Add objective function to community model`
 
-biomass_ids = model_names.*"_BIOMASS_Ecoli_core_w_GAM"
+biomass_ids = model_names .* "_BIOMASS_Ecoli_core_w_GAM"
 add_objective!(
     community_model,
     biomass_ids;
@@ -102,7 +103,7 @@ community_model = add_model_with_exchanges(
 )
 
 push!(model_names, "eno_ko")
-biomass_ids = model_names.*"_BIOMASS_Ecoli_core_w_GAM"
+biomass_ids = model_names .* "_BIOMASS_Ecoli_core_w_GAM"
 add_objective!(
     community_model,
     biomass_ids;
@@ -116,7 +117,7 @@ d = flux_balance_analysis_dict(
     Tulip.Optimizer;
     modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
-println("Community μ = ", d["community_biomass"])   
+println("Community μ = ", d["community_biomass"])
 # Notice that the high communal growth rate is 0, due to the enolase knockout. 
 # The reason for this behaviour: enolase is a central reaction in glycolysis - without 
 # it the organism cannot access the lower glycolysis pathways or the TCA cycle, hence 
@@ -125,7 +126,7 @@ println("Community μ = ", d["community_biomass"])
 
 # ## Allow the mutants to rescue each other by sharing pyruvate
 
-pyr_exs = model_names.*"_EX_pyr_e"
+pyr_exs = model_names .* "_EX_pyr_e"
 change_bounds!(community_model, pyr_exs; xl = fill(-1000.0, 3), xu = fill(1000.0, 3))
 
 d = flux_balance_analysis_dict(
