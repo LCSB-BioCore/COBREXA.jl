@@ -1,3 +1,8 @@
+"""
+struct FluxSummary
+
+A struct used to store information.
+"""
 struct FluxSummary
     biomass_fluxes :: Dict{String, Float64}
     import_fluxes :: Dict{String, Float64}
@@ -6,16 +11,16 @@ struct FluxSummary
 end
 
 """
-flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64}; 
-    exclude_exchanges = false,
-    exchange_prefixes = _constants.exchange_prefixes,
-    biomass_strings = _constants.biomass_strings,
-    exclude_biomass = false,
-    small_flux_bound = 1.0/_constants.default_reaction_bound^2,
-    large_flux_bound = _constants.default_reaction_bound,
-    round_digits = 3,
-    keep_unbounded = false,
-    )::FluxSummary
+    flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64}; 
+        exclude_exchanges = false,
+        exchange_prefixes = _constants.exchange_prefixes,
+        biomass_strings = _constants.biomass_strings,
+        exclude_biomass = false,
+        small_flux_bound = 1.0/_constants.default_reaction_bound^2,
+        large_flux_bound = _constants.default_reaction_bound,
+        round_digits = 3,
+        keep_unbounded = false,
+        )::FluxSummary
 
 Return a `FluxSummary` struct based on the `flux_result` of a constraint based
 analysis simulation of `model`. Internally this function uses
