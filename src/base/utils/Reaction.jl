@@ -60,8 +60,8 @@ See also: [`get_atoms`](@ref), [`check_duplicate_reaction`](@ref)
 function is_mass_balanced(rxn::Reaction, model::StandardModel)
     atom_balances = Dict{String,Float64}() # float here because stoichiometry is not Int
     for (met, stoich) in rxn.metabolites
-        atoms = get_atoms(model.metabolites[met])
-        isempty(atoms) && continue # ignore blanks
+        atoms = metabolite_formula(model, met)
+        isnothing(atoms) && continue # ignore blanks
         for (k, v) in atoms
             atom_balances[k] = get(atom_balances, k, 0) + v * stoich
         end

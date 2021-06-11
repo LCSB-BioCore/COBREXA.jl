@@ -57,7 +57,8 @@ function atom_exchange(flux_dict::Dict{String,Float64}, model::StandardModel)
     for (rxn_id, flux) in flux_dict
         if is_boundary(model.reactions[rxn_id])
             for (met, stoich_rxn) in model.reactions[rxn_id].metabolites
-                adict = get_atoms(model.metabolites[met])
+                adict = metabolite_formula(model, met)
+                isnothing(adict) && continue
                 for (atom, stoich_molecule) in adict
                     atom_flux[atom] =
                         get(atom_flux, atom, 0.0) + flux * stoich_rxn * stoich_molecule
@@ -76,7 +77,8 @@ Return a dictionary mapping the flux of atoms through a reaction in `model`.
 function atom_exchange(rxn_id::String, model::StandardModel)
     atom_flux = Dict{String,Float64}()
     for (met, stoich_rxn) in model.reactions[rxn_id].metabolites
-        adict = get_atoms(model.metabolites[met])
+        adict = metabolite_formula(model, met)
+        isnothing(adict) && continue
         for (atom, stoich_molecule) in adict
             atom_flux[atom] = get(atom_flux, atom, 0.0) + stoich_rxn * stoich_molecule
         end
