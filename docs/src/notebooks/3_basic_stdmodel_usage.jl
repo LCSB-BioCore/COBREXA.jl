@@ -63,6 +63,8 @@ fluxes = flux_balance_analysis_dict(
 # and leaving the system through boundary reactions (e.g. exchange reactions),
 # based on `fluxes`:
 
+fluxes_without_biomass = copy(fluxes);
+delete!(fluxes_without_biomass, "BIOMASS_Ecoli_core_w_GAM");
 atom_exchange(model, fluxes)
 
 # ## Inspecting the flux solution: `metabolite_fluxes`

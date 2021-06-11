@@ -1,5 +1,5 @@
 """
-    atom_exchange(model::MetabolicModel, flux_dict::Dlicict{String, Float64})
+    atom_exchange(model::MetabolicModel, flux_dict::Dict{String, Float64})
 
 Return a dictionary mapping the flux of atoms across the boundary of the model 
 given `flux_dict` (the solution of a constraint based analysis) of reactions in `model`.
@@ -11,6 +11,7 @@ function atom_exchange(model::MetabolicModel, flux_dict::Dict{String,Float64})
 
     atom_flux = Dict{String,Float64}()
     for (ridx, rid) in enumerate(rids)
+        haskey(flux_dict, rid) || continue
         rflux = flux_dict[rid]
         for (midx, mstoi) in zip(findnz(S[:, ridx])...)
             atoms = metabolite_formula(model, mids[midx])
