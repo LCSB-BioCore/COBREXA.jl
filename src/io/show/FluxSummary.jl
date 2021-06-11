@@ -1,23 +1,32 @@
+function _pad_spaces(str, maxlen)
+   join(repeat([" "], inner=maxlen - length(str) + 1)) 
+end
+
 function Base.show(io::IO, ::MIME"text/plain", flux_res::FluxSummary)
-    c = Base.text_colors # of course I added colors :)
-    # println(c[:bold]*c[:light_black], "Biomass:", c[:normal]) # display all the biomass fluxes
-    # for (k, v) in zip(bmasses, bmass_fluxes)
-    #     println("\t", c[:light_magenta], k, ": ", c[:normal], round(v, digits=round_digits), c[:normal])
-    # end
+    longest_biomass_len = maximum([length(k) for k in keys(flux_res.biomass_fluxes)])
+    println(io, "Biomass:")
+    for (k, v) in flux_res.biomass_fluxes
+        println(io, "  ", k, ":", _pad_spaces(k, longest_biomass_len), round(v, digits=4))
+    end
 
-    # println(c[:bold]*c[:light_black],"Import:", c[:normal])
-    # for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])
-    #     println("\t", c[:light_magenta], k, ": ", c[:normal], round(v, digits=round_digits))
-    # end
+    longest_import_len = maximum([length(k) for k in keys(flux_res.import_fluxes)])
+    println(io, "Import:")
+    for (k, v) in flux_res.import_fluxes
+        println(io, "  ",  k, ":", _pad_spaces(k, longest_import_len), round(v, digits=4))
+    end
 
-    # println(c[:bold]*c[:light_black],"Export:", c[:normal])
-    # for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])
-    #     println("\t", c[:light_magenta], k, ": ", c[:normal], round(v, digits=round_digits))
-    # end
+    longest_export_len = maximum([length(k) for k in keys(flux_res.import_fluxes)])
+    println(io, "Export:")
+    for (k, v) in flux_res.export_fluxes
+        println(io, "  ", k, ":", _pad_spaces(k, longest_export_len), round(v, digits=4))
+    end
 
-    # println(c[:bold]*c[:light_black],"Unbounded:", c[:normal])
-    # for (k, v) in zip([ex_rxns[lower_unbounded]; ex_rxns[upper_unbounded]], [ex_fluxes[lower_unbounded]; ex_fluxes[upper_unbounded]])
-    #     println("\t", c[:light_magenta], k, ": ", c[:normal], round(v, digits=round_digits))
-    # end
-
+    if !isempty(flux_res.unbounded_fluxes)
+        longest_unbounded_len = maximum([length(k) for k in keys(flux_res.unbounded_fluxes)])
+        println(io, "Unbounded:")
+        for (k, v) in flux_res.unbounded_fluxes
+            println(io, "  ", k, ":", _pad_spaces(k, longest_unbounded_len), round(v, digits=4))
+        end
+    end
+    return nothing
 end

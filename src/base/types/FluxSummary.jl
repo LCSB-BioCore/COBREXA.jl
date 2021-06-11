@@ -4,10 +4,10 @@ struct FluxSummary
 A struct used to store information.
 """
 struct FluxSummary
-    biomass_fluxes :: Dict{String, Float64}
-    import_fluxes :: Dict{String, Float64}
-    export_fluxes :: Dict{String, Float64}
-    unbounded_fluxes :: Dict{String, Float64}
+    biomass_fluxes :: OrderedDict{String, Float64}
+    import_fluxes :: OrderedDict{String, Float64}
+    export_fluxes :: OrderedDict{String, Float64}
+    unbounded_fluxes :: OrderedDict{String, Float64}
 end
 
 """
@@ -64,15 +64,15 @@ function flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64};
 
     if keep_unbounded
         return FluxSummary(Dict(k => v for (k, v) in zip(bmasses, bmass_fluxes)), 
-        Dict(k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])),
-        Dict(k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])),
-        Dict(k => v for (k, v) in zip([ex_rxns[lower_unbounded]; ex_rxns[upper_unbounded]], [ex_fluxes[lower_unbounded]; ex_fluxes[upper_unbounded]])),
+        OrderedDict(k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])),
+        OrderedDict(k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])),
+        OrderedDict(k => v for (k, v) in zip([ex_rxns[lower_unbounded]; ex_rxns[upper_unbounded]], [ex_fluxes[lower_unbounded]; ex_fluxes[upper_unbounded]])),
         )
     else
-        return FluxSummary(Dict(k => v for (k, v) in zip(bmasses, bmass_fluxes)), 
-        Dict(k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])),
-        Dict(k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])),
-        Dict{String, Float64}(),
+        return FluxSummary(OrderedDict(k => v for (k, v) in zip(bmasses, bmass_fluxes)), 
+        OrderedDict(k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])),
+        OrderedDict(k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])),
+        OrderedDict{String, Float64}(),
         )
     end
 end
