@@ -60,15 +60,13 @@ env_ex_rxn_idxs = indexin(ex_rxns, reactions(community_model)) # identify the gl
 cytbd_ex_rxn_idxs = indexin(ex_rxns, reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
 atps4r_ex_rxn_idxs = indexin(ex_rxns, reactions(atps4r_knockout_model))
 
+# In case some exchange reactions are not present in both models, set
+# environmental exchange bound to the sum of the individual exchange bounds
 for (env_ex, m2_ex, m1_ex) in zip(env_ex_rxn_idxs, cytbd_ex_rxn_idxs, atps4r_ex_rxn_idxs)
-    # in case some exchange reactions are not present in both models
     m2lb = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xl[m2_ex]
     m2ub = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xu[m2_ex]
-
     m1lb = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xl[m1_ex]
     m1ub = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xu[m1_ex]
-
-    # set environmental exchange bound to the sum of the individual exchange bounds
     change_bounds!(community_model, [env_ex]; xl = [m1lb + m2lb], xu = [m1ub + m2ub])
 end
 
