@@ -53,7 +53,7 @@ productions = screen_variants(
 # reactions are critical or not:
 
 using Plots
-bar(reactions(model), productions, orientation = :hor, size = [600, 500])
+bar(reactions(model), productions, orientation = :hor, dpi = 600)
 
 # ## Knocking out reaction combinations
 #
@@ -80,4 +80,4 @@ productions = screen_variants(
     model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)),
 )
 
-heatmap(productions, size = [600, 500])
+heatmap(productions, dpi = 600)
