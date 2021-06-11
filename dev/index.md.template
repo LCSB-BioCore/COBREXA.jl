@@ -41,12 +41,21 @@ Development history of COBREXA.jl.
 
 <!--insert_quickstart-->
 
-## Tutorials
+## Basic and quick-start tutorials
 
 Detailed tutorial content is [available here](tutorials.md).
 
 ```@contents
 Pages = joinpath.("tutorials", filter(x -> endswith(x, ".md"), readdir("tutorials")))
+Depth = 1
+```
+
+## Advanced tutorials
+
+Detailed listing of advanced tutorials is [available here](advanced.md).
+
+```@contents
+Pages = joinpath.("advanced", filter(x -> endswith(x, ".md"), readdir("advanced")))
 Depth = 1
 ```
 

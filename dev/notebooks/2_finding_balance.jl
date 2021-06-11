@@ -37,12 +37,7 @@ model = load_model("e_coli_core.xml")
 #md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
 #md #       require less user engagement.
 
-import Pkg
-Pkg.add("Tulip")
-Pkg.add("OSQP")
-
-using Tulip
-using OSQP
+using Tulip, OSQP
 
 # ## Flux balance analysis (FBA)
 #
