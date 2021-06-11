@@ -1,14 +1,14 @@
 """
-FluxSummary
+    FluxSummary
 
 A struct used to store summary information about the solution 
 of a constraint based analysis result.
 """
 struct FluxSummary
-    biomass_fluxes :: OrderedDict{String, Float64}
-    import_fluxes :: OrderedDict{String, Float64}
-    export_fluxes :: OrderedDict{String, Float64}
-    unbounded_fluxes :: OrderedDict{String, Float64}
+    biomass_fluxes::OrderedDict{String,Float64}
+    import_fluxes::OrderedDict{String,Float64}
+    export_fluxes::OrderedDict{String,Float64}
+    unbounded_fluxes::OrderedDict{String,Float64}
 end
 
 """
@@ -22,17 +22,14 @@ end
                 keep_unbounded = false,
                 )::FluxSummary
 
-Return a `FluxSummary` struct based on the `flux_result` of a constraint based
-analysis simulation. Internally this function uses
+Summarize a dictionary of fluxes into small, useful representation of the most
+important information contained. Useful for pretty-printing and quickly
+exploring the results. Internally this function uses
 [`looks_like_biomass_reaction`](@ref) and
 [`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments
 passed to these functions. Use this if your model has non-standard ids for
 reactions. Fluxes smaller than `small_flux_bound` are not stored, while fluxes
 larger than `large_flux_bound` are only stored if `keep_unbounded` is `true`.
-
-This function is most useful as a way to generate a struct that has nice pretty
-printing of flux results. The resultant struct can also be used in downstream
-applications if necessary.
 
 # Example
 ```
@@ -51,39 +48,79 @@ Export:
   EX_h2o_e:    29.1758
 ```
 """
-function flux_summary(flux_result::Dict{String, Float64}; 
+function flux_summary(
+    flux_result::Dict{String,Float64};
     exclude_exchanges = false,
     exchange_prefixes = _constants.exchange_prefixes,
     biomass_strings = _constants.biomass_strings,
     exclude_biomass = false,
-    small_flux_bound = 1.0/_constants.default_reaction_bound^2,
+    small_flux_bound = 1.0 / _constants.default_reaction_bound^2,
     large_flux_bound = _constants.default_reaction_bound,
     keep_unbounded = false,
-    )
+)
     rxn_ids = collect(keys(flux_result))
-    ex_rxns = filter(x -> looks_like_exchange_reaction(x, exclude_biomass=exclude_biomass, biomass_strings=biomass_strings, exchange_prefixes=exchange_prefixes), rxn_ids)
-    bmasses = filter(x -> looks_like_biomass_reaction(x; exclude_exchanges=exclude_exchanges, exchange_prefixes=exchange_prefixes, biomass_strings=biomass_strings), rxn_ids)
+    ex_rxns = filter(
+        x -> looks_like_exchange_reaction(
+            x,
+            exclude_biomass = exclude_biomass,
+            biomass_strings = biomass_strings,
+            exchange_prefixes = exchange_prefixes,
+        ),
+        rxn_ids,
+    )
+    bmasses = filter(
+        x -> looks_like_biomass_reaction(
+            x;
+            exclude_exchanges = exclude_exchanges,
+            exchange_prefixes = exchange_prefixes,
+            biomass_strings = biomass_strings,
+        ),
+        rxn_ids,
+    )
 
     ex_fluxes = [flux_result[k] for k in ex_rxns]
     bmass_fluxes = [flux_result[k] for k in bmasses]
 
     idx_srt_fluxes = sortperm(ex_fluxes)
-    import_fluxes = [idx for idx in idx_srt_fluxes if -large_flux_bound < ex_fluxes[idx] <= -small_flux_bound]
-    export_fluxes =  [idx for idx in idx_srt_fluxes if small_flux_bound < ex_fluxes[idx] <= large_flux_bound]
+    import_fluxes = [
+        idx for
+        idx in idx_srt_fluxes if -large_flux_bound < ex_fluxes[idx] <= -small_flux_bound
+    ]
+    export_fluxes = [
+        idx for
+        idx in idx_srt_fluxes if small_flux_bound < ex_fluxes[idx] <= large_flux_bound
+    ]
 
     if keep_unbounded
-      lower_unbounded = [idx for idx in idx_srt_fluxes if ex_fluxes[idx] <= -large_flux_bound]
-      upper_unbounded = [idx for idx in idx_srt_fluxes if ex_fluxes[idx] >= large_flux_bound]
-      return FluxSummary(Dict(k => v for (k, v) in zip(bmasses, bmass_fluxes)), 
-        OrderedDict(k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])),
-        OrderedDict(k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])),
-        OrderedDict(k => v for (k, v) in zip([ex_rxns[lower_unbounded]; ex_rxns[upper_unbounded]], [ex_fluxes[lower_unbounded]; ex_fluxes[upper_unbounded]])),
+        lower_unbounded =
+            [idx for idx in idx_srt_fluxes if ex_fluxes[idx] <= -large_flux_bound]
+        upper_unbounded =
+            [idx for idx in idx_srt_fluxes if ex_fluxes[idx] >= large_flux_bound]
+        return FluxSummary(
+            Dict(k => v for (k, v) in zip(bmasses, bmass_fluxes)),
+            OrderedDict(
+                k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])
+            ),
+            OrderedDict(
+                k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])
+            ),
+            OrderedDict(
+                k => v for (k, v) in zip(
+                    [ex_rxns[lower_unbounded]; ex_rxns[upper_unbounded]],
+                    [ex_fluxes[lower_unbounded]; ex_fluxes[upper_unbounded]],
+                )
+            ),
         )
     else
-        return FluxSummary(OrderedDict(k => v for (k, v) in zip(bmasses, bmass_fluxes)), 
-        OrderedDict(k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])),
-        OrderedDict(k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])),
-        OrderedDict{String, Float64}(),
+        return FluxSummary(
+            OrderedDict(k => v for (k, v) in zip(bmasses, bmass_fluxes)),
+            OrderedDict(
+                k => v for (k, v) in zip(ex_rxns[import_fluxes], ex_fluxes[import_fluxes])
+            ),
+            OrderedDict(
+                k => v for (k, v) in zip(ex_rxns[export_fluxes], ex_fluxes[export_fluxes])
+            ),
+            OrderedDict{String,Float64}(),
         )
     end
 end
