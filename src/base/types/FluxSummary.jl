@@ -11,7 +11,7 @@ struct FluxSummary
 end
 
 """
-    flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64}; 
+    flux_summary(flux_result::Dict{String, Float64}; 
         exclude_exchanges = false,
         exchange_prefixes = _constants.exchange_prefixes,
         biomass_strings = _constants.biomass_strings,
@@ -23,7 +23,7 @@ end
         )::FluxSummary
 
 Return a `FluxSummary` struct based on the `flux_result` of a constraint based
-analysis simulation of `model`. Internally this function uses
+analysis simulation. Internally this function uses
 [`looks_like_biomass_reaction`](@ref) and
 [`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments
 passed to these functions. Use this if your model has non-standard ids for
@@ -36,7 +36,8 @@ applications if necessary.
 
 # Example
 ```
-julia> fr = flux_summary(model, sol)
+julia> sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
+julia> fr = flux_summary(sol)
 Biomass:
   BIOMASS_Ecoli_core_w_GAM: 0.8739
 Import:
@@ -50,7 +51,7 @@ Export:
   EX_h2o_e:    29.1758
 ```
 """
-function flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64}; 
+function flux_summary(flux_result::Dict{String, Float64}; 
     exclude_exchanges = false,
     exchange_prefixes = _constants.exchange_prefixes,
     biomass_strings = _constants.biomass_strings,
@@ -60,8 +61,8 @@ function flux_summary(model::MetabolicModel, flux_result::Dict{String, Float64};
     keep_unbounded = false,
     )
     
-    ex_rxns = filter(x -> looks_like_exchange_reaction(x, exclude_biomass=exclude_biomass, biomass_strings=biomass_strings, exchange_prefixes=exchange_prefixes), reactions(model))
-    bmasses = filter(x -> looks_like_biomass_reaction(x; exclude_exchanges=exclude_exchanges, exchange_prefixes=exchange_prefixes, biomass_strings=biomass_strings), reactions(model))
+    ex_rxns = filter(x -> looks_like_exchange_reaction(x, exclude_biomass=exclude_biomass, biomass_strings=biomass_strings, exchange_prefixes=exchange_prefixes), keys(flux_result))
+    bmasses = filter(x -> looks_like_biomass_reaction(x; exclude_exchanges=exclude_exchanges, exchange_prefixes=exchange_prefixes, biomass_strings=biomass_strings), keys(flux_result))
 
     ex_fluxes = [flux_result[k] for k in ex_rxns]
     bmass_fluxes = [flux_result[k] for k in bmasses]

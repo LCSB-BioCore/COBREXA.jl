@@ -17,9 +17,14 @@ function flux_variability_summary(model::MetabolicModel,
     )
 
     rxn_ids = keys(flux_result[1])
+    ex_rxns = filter(x -> looks_like_exchange_reaction(x, exclude_biomass=exclude_biomass, biomass_strings=biomass_strings, exchange_prefixes=exchange_prefixes), rxn_ids)
+    bmasses = filter(x -> looks_like_biomass_reaction(x; exclude_exchanges=exclude_exchanges, exchange_prefixes=exchange_prefixes, biomass_strings=biomass_strings), rxn_ids)
+
+
     res = Dict{String, Vector{Float64}}()
     for rxn_id in rxn_ids
-        
+
+        res[rxn_id] = [lb, ub]
     end
 
 
