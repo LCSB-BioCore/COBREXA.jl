@@ -68,10 +68,9 @@ function frugal_flux_balance_analysis(
     # add transformation variables
     t = @variable(opt_model, t[1:length(frugal_reactions)])
     @objective(opt_model, Min, sum(t))
-    for (i, frugal_reaction) in enumerate(frugal_reactions)
-        @constraint(opt_model, t[i] >= opt_model[:x][frugal_reaction])
-        @constraint(opt_model, t[i] >= -opt_model[:x][frugal_reaction])
-    end
+    
+    @constraint(opt_model, t .>= I(length(frugal_reactions))*opt_model[:x][frugal_reactions])
+    @constraint(opt_model, t .>= -I(length(frugal_reactions))*opt_model[:x][frugal_reactions])
 
     for rb in relax_bounds
         lb, ub = objective_bounds(rb)(Z)
