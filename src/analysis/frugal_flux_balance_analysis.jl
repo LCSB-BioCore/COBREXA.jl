@@ -4,6 +4,7 @@
         optimizer;
         modifications = [],
         frugal_reactions = 1:n_reactions(model),
+        relax_bounds = [0.999999, 0.99999, 0.9999, 0.999, 0.99],
     )
 
 Run "frugal" flux balance analysis on the `model`. Frugal FBA is similar to pFBA
@@ -65,11 +66,11 @@ function frugal_flux_balance_analysis(
     original_objective = COBREXA.JuMP.objective_function(opt_model)
 
     # add transformation variables
-    @variable(opt_model, t[1:length(frugal_reactions)])
+    t = @variable(opt_model, t[1:length(frugal_reactions)])
     @objective(opt_model, Min, sum(t))
     for (i, frugal_reaction) in enumerate(frugal_reactions)
-        @constraint(opt_model, t[i] >= opt_model[:x[frugal_reaction]])
-        @constraint(opt_model, t[i] >= -opt_model[:x[frugal_reaction]])
+        @constraint(opt_model, t[i] >= opt_model[:x][frugal_reaction])
+        @constraint(opt_model, t[i] >= -opt_model[:x][frugal_reaction])
     end
 
     for rb in relax_bounds
@@ -79,7 +80,7 @@ function frugal_flux_balance_analysis(
 
         optimize!(opt_model)
         is_solved(opt_model) && break
-
+        @warn rb
         COBREXA.JuMP.delete(opt_model, obj_constraint)
         COBREXA.JuMP.unregister(opt_model, :obj_constraint)
     end
