@@ -182,6 +182,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     metabolite_formula(mm, mid),
                     metabolite_charge(mm, mid),
                     nothing, # initial amount
+                    nothing, # initial concentration
                     nothing, # only substance unit flags
                     _sbml_export_notes(metabolite_notes(mm, mid)),
                     _sbml_export_annotation(metabolite_annotations(mm, mid)),
@@ -200,7 +201,8 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
                         reaction_gene_association(mm, rid),
                     ),
-                    nothing,
+                    nothing, # no kinetic math
+                    true, # reversible by default
                     _sbml_export_notes(reaction_notes(mm, rid)),
                     _sbml_export_annotation(reaction_annotations(mm, rid)),
                 ) for (ri, rid) in enumerate(rxns)
