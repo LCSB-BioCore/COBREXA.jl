@@ -83,13 +83,15 @@ function change_objective(
 
         # Construct objective_indices array
         if typeof(new_objective) == String
-            objective_indices = [first(indexin([new_objective], reactions(model)))]
+            objective_indices = indexin([new_objective], reactions(model))
         else
             objective_indices =
                 [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
         end
 
-        any(isnothing.(objective_indices)) && throw(DomainError(new_objective, "No matching reaction found for one or more ids."))
+        any(isnothing.(objective_indices)) && throw(
+            DomainError(new_objective, "No matching reaction found for one or more ids."),
+        )
 
         # Initialize weights
         opt_weights = spzeros(n_reactions(model))
