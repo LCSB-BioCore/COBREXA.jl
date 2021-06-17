@@ -59,6 +59,7 @@ Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id`.
 function change_constraint(id::String, lb, ub)
     (model, opt_model) -> begin
         ind = first(indexin([id], reactions(model)))
+        isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
         set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
     end
 end
@@ -87,6 +88,8 @@ function change_objective(
             objective_indices =
                 [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
         end
+
+        any(isnothing.(objective_indices)) && throw(DomainError(new_objective, "No matching reaction found for one or more ids."))
 
         # Initialize weights
         opt_weights = spzeros(n_reactions(model))
