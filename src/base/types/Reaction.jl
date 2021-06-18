@@ -1,4 +1,3 @@
-using Base: kwarg_decl
 """
 Reaction struct.
 
@@ -77,7 +76,7 @@ Reaction(
     kwargs...
 ) = Reaction(
     id;
-    Dict(k => float(v) for (k, v) in metabolites),
+    metabolites = Dict(k => float(v) for (k, v) in metabolites),
     kwargs...
 )
 
