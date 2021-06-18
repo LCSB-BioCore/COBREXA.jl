@@ -213,7 +213,7 @@ remove_gene!(model, "g1")
 remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-@_change_bound!("StandardModel","String", "\"PFL\"")
+@doc @_change_bound!("StandardModel", "String", "\"PFL\"")
 function change_bound!(
     model::StandardModel,
     reaction_id::String;
