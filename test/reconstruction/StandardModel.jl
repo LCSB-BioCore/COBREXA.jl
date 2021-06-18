@@ -32,6 +32,28 @@
     model.metabolites = OrderedDict(m.id => m for m in mets)
     model.genes = OrderedDict(g.id => g for g in genes)
 
+    # change bound tests - in place
+    change_bound!(model, "r2"; lower_bound=-10, upper_bound=10)
+    @test model.reactions["r2"].lb == -10
+    @test model.reactions["r2"].ub == 10
+    
+    change_bounds!(model, ["r1", "r2"]; lower_bounds=[-10, -20], upper_bounds=[10.0, 20.0])
+    @test model.reactions["r1"].lb == -10
+    @test model.reactions["r1"].ub == 10
+    @test model.reactions["r2"].lb == -20
+    @test model.reactions["r2"].ub == 20
+    
+    # change bound - new model
+    new_model = change_bound(model, "r2"; lower_bound=-10, upper_bound=10)
+    @test new_model.reactions["r2"].lb == -10
+    @test new_model.reactions["r2"].ub == 10
+    
+    new_model = change_bounds(model, ["r1", "r2"]; lower_bounds=[-10, -20], upper_bounds=[10.0, 20.0])
+    @test new_model.reactions["r1"].lb == -10
+    @test new_model.reactions["r1"].ub == 10
+    @test new_model.reactions["r2"].lb == -20
+    @test new_model.reactions["r2"].ub == 20
+
     ### reactions
     add_reactions!(model, [r3, r4])
     @test length(model.reactions) == 4

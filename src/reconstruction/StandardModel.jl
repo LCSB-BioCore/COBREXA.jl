@@ -1,3 +1,4 @@
+using Base: upperbound, lowerbound
 """
     add_reactions!(model::StandardModel, rxns::Vector{Reaction})
 
@@ -214,26 +215,162 @@ remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
 """
-    set_bound!(model::StandardModel, reaction_id::String; lb, ub)
+    change_bound!(
+        model::StandardModel,
+        reaction_id::String;
+        lower_bound = -_constants.default_reaction_bound,
+        upper_bound = _constants.default_reaction_bound,
+    )
 
-Change the bounds of a reaction in-place.
+Change the bounds of a reaction with `reaction_id` in `model` in-place. Note
+that if the bound argument is not supplied then a default (see
+`_constants.default_reaction_bound`) is used. 
+
+See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bounds!`](@ref) 
+
+# Example
+```
+change_bound!(model, "PFL"; lower_bound=-10, ub=10)
+change_bound!(model, "PFL"; lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
+change_bound!(model, "PFL"; upper_bound=10)
+```
 """
-function set_bound!(model::StandardModel, reaction_id::String; lb, ub)
+function change_bound!(
+    model::StandardModel,
+    reaction_id::String;
+    lower_bound = -_constants.default_reaction_bound,
+    upper_bound = _constants.default_reaction_bound,
+)
     reaction = model.reactions[reaction_id]
-    reaction.lb = lb
-    reaction.ub = ub
+    reaction.lb = float(lower_bound)
+    reaction.ub = float(upper_bound)
 end
 
 """
-    set_bound(model::StandardModel, reaction_id::String; lb, ub)
+    change_bounds!(
+        model::StandardModel,
+        reaction_ids::Vector{String};
+        lower_bounds = repeat(
+            [-_constants.default_reaction_bound],
+            inner = length(reaction_ids),
+        ),
+        upper_bounds = repeat(
+            [-_constants.default_reaction_bound],
+            inner = length(reaction_ids),
+        ),
+    )
 
-Return a shallow copy of the `model` with reaction bounds changed.
+Change the bounds of all reactions with `reaction_ids` in `model` in-place. Note
+that if the bound argument is not supplied then a default (see
+`_constants.default_reaction_bound`) is used. The same default bound argument is
+used for each reaction bound if not supplied. 
+
+See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
+
+# Example
+```
+change_bounds!(model, ["PFL", "FBA"]; lower_bounds=[-10, -20], ub=[10, 22])
+change_bounds!(model, ["PFL", "FBA"]; lower_bounds=[-10.2, -14.3]) # all upper_bounds are set to _constants.default_reaction_bound
+change_bounds!(model, ["PFL", "FBA"]; upper_bounds=[10.2, 23])
+```
 """
-function set_bound(model::StandardModel, reaction_id::String; lb, ub)
+function change_bounds!(
+    model::StandardModel,
+    reaction_ids::Vector{String};
+    lower_bounds = repeat(
+        [-_constants.default_reaction_bound],
+        inner = length(reaction_ids),
+    ),
+    upper_bounds = repeat(
+        [-_constants.default_reaction_bound],
+        inner = length(reaction_ids),
+    ),
+)
+    for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
+        change_bound!(model, rid; lower_bound = lb, upper_bound = ub)
+    end
+end
+
+"""
+    change_bound(
+        model::StandardModel,
+        reaction_id::String;
+        lower_bound = -_constants.default_reaction_bound,
+        upper_bound = _constants.default_reaction_bound,
+    )
+
+Return a shallow copy of the `model` where the reaction bounds of `reaction_id`
+are changed. Note that if the bound argument is not supplied then a default (see
+`_constants.default_reaction_bound`) is used.
+
+See also: [`change_bounds`](@ref), [`change_bounds!`](@ref), [`change_bound!`](@ref) 
+
+# Example
+```
+new_model = change_bound(model, "PFL"; lower_bound=-10, ub=10)
+new_model = change_bound(model, "PFL"; lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
+new_model = change_bound(model, "PFL"; upper_bound=10)
+```
+"""
+function change_bound(
+    model::StandardModel,
+    reaction_id::String;
+    lower_bound = -_constants.default_reaction_bound,
+    upper_bound = _constants.default_reaction_bound,
+)
     m = copy(model)
     m.reactions = copy(model.reactions)
     r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
-    r.lb = lb
-    r.ub = ub
+    r.lb = float(lower_bound)
+    r.ub = float(upper_bound)
     m
+end
+
+"""
+    change_bounds(
+        model::StandardModel,
+        reaction_ids::Vector{String};
+        lower_bounds = repeat(
+            [-_constants.default_reaction_bound],
+            inner = length(reaction_ids),
+        ),
+        upper_bounds = repeat(
+            [-_constants.default_reaction_bound],
+            inner = length(reaction_ids),
+        ),
+    )
+
+Return a shallow copy of the `model` where the reaction bounds of all
+`reaction_ids` are changed. Note that if the bound argument is not supplied then
+a default (see `_constants.default_reaction_bound`) is used.
+
+See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bound!`](@ref) 
+
+# Example
+```
+new_model = change_bounds(model, ["PFL", "FBA"]; lower_bounds=[-10, -20], ub=[10, 22])
+new_model = change_bounds(model, ["PFL", "FBA"]; lower_bounds=[-10, -20.2]) # all upper_bounds are set to _constants.default_reaction_bound
+new_model = change_bounds(model, ["PFL", "FBA"]; ub=[10, 22])
+```
+"""
+function change_bounds(
+    model::StandardModel,
+    reaction_ids::Vector{String};
+    lower_bounds = repeat(
+        [-_constants.default_reaction_bound],
+        inner = length(reaction_ids),
+    ),
+    upper_bounds = repeat(
+        [-_constants.default_reaction_bound],
+        inner = length(reaction_ids),
+    ),
+)
+    m = copy(model)
+    m.reactions = copy(model.reactions)
+    for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
+        r = m.reactions[rid] = copy(model.reactions[rid])
+        r.lb = float(lb)
+        r.ub = float(ub)
+    end
+    return m
 end
