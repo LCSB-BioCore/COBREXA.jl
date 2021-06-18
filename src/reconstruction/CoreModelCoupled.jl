@@ -426,6 +426,7 @@ function change_bound!(
 )
     model.lm.xl[rxn] = lower_bound    
     model.lm.xu[rxn] = upper_bound
+    return nothing # so that nothing gets printed
 end
 
 """

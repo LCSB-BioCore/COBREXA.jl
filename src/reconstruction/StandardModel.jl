@@ -243,6 +243,7 @@ function change_bound!(
     reaction = model.reactions[reaction_id]
     reaction.lb = float(lower_bound)
     reaction.ub = float(upper_bound)
+    return nothing # so that nothing gets printed
 end
 
 """
