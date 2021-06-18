@@ -387,9 +387,9 @@ change_bounds!(model, [2, 3]; upper_bounds=[10.2, 23])
 """
 function change_bounds!(
     model::CoreModelCoupled,
-    rxns::Vector{Int};
+    reaction_idxs::Vector{Int};
     lower_bounds = fill(-_constants.default_reaction_bound, length(rxns)),
-    upper_bounds = fill(constants.default_reaction_bound, length(rxns)),
+    upper_bounds = fill(_constants.default_reaction_bound, length(rxns)),
 )   
     for (rxn_idx, lb, ub) in zip(reaction_idxs, lower_bounds, upper_bounds)
         change_bound!(model, rxn_idx; lower_bound=lb, upper_bound=ub)

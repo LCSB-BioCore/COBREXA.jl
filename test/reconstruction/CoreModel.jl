@@ -29,7 +29,6 @@ using Base: lowerbound, upperbound
     new_model = change_bounds(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
     @test new_model.xl[2] == -12.23
     @test new_model.xu[1] == 113
-
 end
 
 @testset "Verify consistency" begin
