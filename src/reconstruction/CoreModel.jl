@@ -408,7 +408,7 @@ function change_bounds!(
     end
 end
 
-@_change_bound!("CoreModel")
+@_change_bound!("CoreModel","Int", "2")
 function change_bound!(
     model::CoreModel,
     rxn::Int;
@@ -451,7 +451,7 @@ function change_bounds!(
     change_bounds!(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
 
-@_change_bound!("CoreModel",)
+@_change_bound!("CoreModel","String", "\"PFL\"")
 function change_bound!(
     model::CoreModel,
     rxn_id::String;
