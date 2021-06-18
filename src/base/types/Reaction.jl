@@ -46,10 +46,10 @@ A constructor for Reaction that only takes a reaction `id` and
 assigns default/uninformative values to all the fields that are not
 explicitely assigned.
 """
-Reaction(
+function Reaction(
     id = "";
     name = nothing,
-    metabolites = Dict{String,Float64}(),
+    metabolites = Dict{String,Real}(),
     lb = -_constants.default_reaction_bound,
     ub = _constants.default_reaction_bound,
     grr = nothing,
@@ -57,28 +57,21 @@ Reaction(
     notes = Notes(),
     annotations = Annotations(),
     objective_coefficient = 0.0,
-) = Reaction(
-    id,
-    name,
-    metabolites,
-    lb,
-    ub,
-    grr,
-    subsystem,
-    notes,
-    annotations,
-    objective_coefficient,
 )
-
-Reaction(
-    id::String;
-    metabolites = Dict{String,Real}(),
-    kwargs...
-) = Reaction(
-    id;
-    metabolites = Dict(k => float(v) for (k, v) in metabolites),
-    kwargs...
-)
+    mets = Dict(k => float(v) for (k, v) in metabolites)
+    return Reaction(
+        id,
+        name,
+        mets,
+        lb,
+        ub,
+        grr,
+        subsystem,
+        notes,
+        annotations,
+        objective_coefficient,
+    )
+end
 
 """
 Reaction(
