@@ -1,4 +1,3 @@
-using Base: upperbound, lowerbound
 """
     add_reactions!(model::StandardModel, rxns::Vector{Reaction})
 
