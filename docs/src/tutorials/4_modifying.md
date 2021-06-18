@@ -23,7 +23,7 @@ With `COBREXA.jl`, you have two main choices of making model modifications:
 ## Manual modifications
 
 Certain model types, including [`CoreModel`](@ref) and [`StandardModel`](@ref),
-are built from mutable `strucs` that you are free to modify as you want.
+are built from mutable `structs` that you are free to modify as you want.
 
 [`CoreModel`](@ref) consists of sparse matrices and vectors that describe the
 model precisely. For example, modifying a bound of the reaction is as simple as
