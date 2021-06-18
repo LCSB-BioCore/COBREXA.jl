@@ -408,7 +408,7 @@ function change_bounds!(
     end
 end
 
-@_change_bound!("CoreModel","Int", "2")
+@_change_bound!("CoreModel", "Int", "2")
 function change_bound!(
     model::CoreModel,
     rxn::Int;
