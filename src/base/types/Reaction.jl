@@ -1,3 +1,4 @@
+using Base: Float64
 """
 Reaction struct.
 
@@ -49,7 +50,7 @@ explicitely assigned.
 function Reaction(
     id = "";
     name = nothing,
-    metabolites = Dict{String,Real}(),
+    metabolites = Dict{String,Float64}(),
     lb = -_constants.default_reaction_bound,
     ub = _constants.default_reaction_bound,
     grr = nothing,
@@ -90,7 +91,7 @@ based models, often this is set to a very high flux value like 1000.
 """
 function Reaction(
     id::String,
-    metabolites::Dict{String,Float64},
+    metabolites,
     dir = :bidirectional;
     default_bound = _constants.default_reaction_bound,
 )
@@ -106,30 +107,3 @@ function Reaction(
     end
     Reaction(id; metabolites = metabolites, lb = lb, ub = ub)
 end
-
-"""
-Reaction(
-    id::String,
-    metabolites,
-    dir = :bidirectional;
-    default_bound = _constants.default_reaction_bound,
-)
-
-Convenience constructor for `Reaction`. The reaction equation is specified using
-`metabolites`, which is a dictionary mapping metabolite ids to stoichiometric
-coefficients. The direcion of the reaction is set through `dir` which can take
-`:bidirectional`, `:forward`, and `:reverse` as values. Finally, the
-`default_bound` is the value taken to mean infinity in the context of constraint
-based models, often this is set to a very high flux value like 1000.
-"""
-Reaction(
-    id::String,
-    metabolites,
-    dir = :bidirectional;
-    default_bound = _constants.default_reaction_bound,
-) = Reaction(
-    id,
-    Dict(k => float(v) for (k, v) in metabolites),
-    dir;
-    default_bound = default_bound,
-)
