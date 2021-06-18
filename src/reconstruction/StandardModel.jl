@@ -249,14 +249,8 @@ end
     change_bounds!(
         model::StandardModel,
         reaction_ids::Vector{String};
-        lower_bounds = repeat(
-            [-_constants.default_reaction_bound],
-            inner = length(reaction_ids),
-        ),
-        upper_bounds = repeat(
-            [_constants.default_reaction_bound],
-            inner = length(reaction_ids),
-        ),
+        lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_ids)),
+        upper_bounds = fill(_constants.default_reaction_bound, length(reaction_ids)),
     )
 
 Change the bounds of all reactions with `reaction_ids` in `model` in-place. Note
@@ -276,14 +270,8 @@ change_bounds!(model, ["PFL", "FBA"]; upper_bounds=[10.2, 23])
 function change_bounds!(
     model::StandardModel,
     reaction_ids::Vector{String};
-    lower_bounds = repeat(
-        [-_constants.default_reaction_bound],
-        inner = length(reaction_ids),
-    ),
-    upper_bounds = repeat(
-        [_constants.default_reaction_bound],
-        inner = length(reaction_ids),
-    ),
+    lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_ids)),
+    upper_bounds = fill(_constants.default_reaction_bound, length(reaction_ids)),
 )
     for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
         change_bound!(model, rid; lower_bound = lb, upper_bound = ub)
@@ -329,14 +317,8 @@ end
     change_bounds(
         model::StandardModel,
         reaction_ids::Vector{String};
-        lower_bounds = repeat(
-            [-_constants.default_reaction_bound],
-            inner = length(reaction_ids),
-        ),
-        upper_bounds = repeat(
-            [_constants.default_reaction_bound],
-            inner = length(reaction_ids),
-        ),
+        lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_ids)),
+        upper_bounds = fill(constants.default_reaction_bound, length(reaction_ids)),
     )
 
 Return a shallow copy of the `model` where the reaction bounds of all
@@ -355,14 +337,8 @@ new_model = change_bounds(model, ["PFL", "FBA"]; ub=[10, 22])
 function change_bounds(
     model::StandardModel,
     reaction_ids::Vector{String};
-    lower_bounds = repeat(
-        [-_constants.default_reaction_bound],
-        inner = length(reaction_ids),
-    ),
-    upper_bounds = repeat(
-        [_constants.default_reaction_bound],
-        inner = length(reaction_ids),
-    ),
+    lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_ids)),
+    upper_bounds = fill(constants.default_reaction_bound, length(reaction_ids)),
 )
     m = copy(model)
     m.reactions = copy(model.reactions)
