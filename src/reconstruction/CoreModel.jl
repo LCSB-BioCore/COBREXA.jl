@@ -399,12 +399,13 @@ change_bounds!(model, [2, 3]; upper_bounds=[10.2, 23])
 """
 function change_bounds!(
     model::CoreModel,
-    rxns::Vector{Int};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(rxns)),
-    upper_bounds = fill(constants.default_reaction_bound, length(rxns)),
+    reaction_idxs::Vector{Int};
+    lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_idxs)),
+    upper_bounds = fill(constants.default_reaction_bound, length(reaction_idxs)),
 )   
-    model.xl[rxns] .= lower_bounds    
-    model.xu[rxns] .= upper_bounds
+    for (rxn_idx, lb, ub) in zip(reaction_idxs, lower_bounds, upper_bounds)
+        change_bound!(model, rxn_idx; lower_bound=lb, upper_bound=ub)
+    end
 end
 
 """
@@ -472,7 +473,7 @@ end
 
 """
     change_bound!(
-        model::StandardModel,
+        model::CoreModel,
         reaction_id::String;
         lower_bound = -_constants.default_reaction_bound,
         upper_bound = _constants.default_reaction_bound,
@@ -606,7 +607,7 @@ end
 
 """
     change_bound(
-        model::StandardModel,
+        model::CoreModel,
         reaction_id::String;
         lower_bound = -_constants.default_reaction_bound,
         upper_bound = _constants.default_reaction_bound,

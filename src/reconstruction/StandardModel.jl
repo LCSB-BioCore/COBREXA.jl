@@ -310,7 +310,7 @@ function change_bound(
     r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
     r.lb = float(lower_bound)
     r.ub = float(upper_bound)
-    m
+    return m
 end
 
 """
