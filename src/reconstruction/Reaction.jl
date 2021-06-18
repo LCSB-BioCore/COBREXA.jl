@@ -1,7 +1,7 @@
 struct MetaboliteWithCoefficient
     coeff::Float64
     metabolite::Metabolite
-    MetaboliteWithCoefficient(c, m) = new(Float64(c), m)
+    MetaboliteWithCoefficient(c, m) = new(float(c), m)
 end
 
 function Base.:*(coeff, met::Metabolite)
