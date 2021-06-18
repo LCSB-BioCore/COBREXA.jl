@@ -375,28 +375,7 @@ function remove_reactions(m::CoreModel, rxns::Vector{String})
     end
 end
 
-"""
-    change_bounds!(
-        model::CoreModel,
-        reaction_idxs::Vector{Int};
-        lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_idxs)),
-        upper_bounds = fill(constants.default_reaction_bound, length(reaction_idxs)),
-    )   
-
-Change the bounds of all reactions with indices `reaction_idxs` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. The same default bound argument is
-used for each reaction bound if not supplied. 
-
-See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
-
-# Example
-```
-change_bounds!(model, [2, 3]; lower_bounds=[-10, -20], ub=[10, 22])
-change_bounds!(model, [2, 3]; lower_bounds=[-10.2, -14.3]) # all upper_bounds are set to _constants.default_reaction_bound
-change_bounds!(model, [2, 3]; upper_bounds=[10.2, 23])
-```
-"""
+@doc @_change_bound_s_bang("CoreModel", "rxn_idxs", "Vector{Int}", "[2, 43]", true, true)
 function change_bounds!(
     model::CoreModel,
     reaction_idxs::Vector{Int};
@@ -408,7 +387,7 @@ function change_bounds!(
     end
 end
 
-@doc @_change_bound!("CoreModel", "Int", "2")
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", false, true)
 function change_bound!(
     model::CoreModel,
     rxn::Int;
@@ -420,28 +399,7 @@ function change_bound!(
     return nothing # so that nothing gets printed
 end
 
-"""
-    change_bounds!(
-        model::CoreModel,
-        rxn_ids::Vector{String};
-        lower_bounds = fill(-_constants.default_reaction_bound, length(rxn_ids)),
-        upper_bounds = fill(constants.default_reaction_bound, length(rxn_ids)),
-    )
-
-Change the bounds of all reactions with `rxn_ids` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. The same default bound argument is
-used for each reaction bound if not supplied. 
-
-See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
-
-# Example
-```
-change_bounds!(model, ["PFL", "FBA"]; lower_bounds=[-10, -20], ub=[10, 22])
-change_bounds!(model, ["PFL", "FBA"]; lower_bounds=[-10.2, -14.3]) # all upper_bounds are set to _constants.default_reaction_bound
-change_bounds!(model, ["PFL", "FBA"]; upper_bounds=[10.2, 23])
-```
-"""
+@doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", true, true)
 function change_bounds!(
     model::CoreModel,
     rxn_ids::Vector{String};
@@ -451,7 +409,7 @@ function change_bounds!(
     change_bounds!(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
 
-@doc @_change_bound!("CoreModel","String", "\"PFL\"")
+@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", false, true)
 function change_bound!(
     model::CoreModel,
     rxn_id::String;
@@ -461,29 +419,7 @@ function change_bound!(
     change_bound!(model, first(indexin([rxn_id], reactions(model))); lower_bound = lower_bound, upper_bound = upper_bound)
 end
 
-"""
-    change_bounds(
-        model::CoreModel,
-        rxns::Vector{Int};
-        lower_bounds = fill(-_constants.default_reaction_bound, length(rxns)),
-        upper_bounds = fill(constants.default_reaction_bound, length(rxns)),
-    ) 
-
-Return a shallow copy of the `model` where the bounds of all reactions with
-indices `rxns` in `model` have been changed. Note that if the bound
-argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. The same default bound argument is
-used for each reaction bound if not supplied. 
-
-See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
-
-# Example
-```
-new_model = change_bounds(model, [2, 3]; lower_bounds=[-10, -20], ub=[10, 22])
-new_model = change_bounds(model, [2, 3]; lower_bounds=[-10.2, -14.3]) # all upper_bounds are set to _constants.default_reaction_bound
-new_model = change_bounds(model, [2, 3]; upper_bounds=[10.2, 23])
-```
-"""
+@doc @_change_bound_s_bang("CoreModel", "rxn_idxs", "Vector{Int}", "[2, 43]", true, false)
 function change_bounds(
     model::CoreModel,
     rxns::Vector{Int};
@@ -498,28 +434,7 @@ function change_bounds(
     return m
 end
 
-"""
-    change_bound(
-        model::CoreModel,
-        reaction_idx::Int;
-        lower_bound = -_constants.default_reaction_bound,
-        upper_bound = _constants.default_reaction_bound,
-    )
-
-Return a shallow copy of the `model` where the bound of a reaction with index
-`reaction_idx` in `model` has been changed. Note that if the bound argument is
-not supplied then a default (see `_constants.default_reaction_bound`) is used.
-The same default bound argument is used for each reaction bound if not supplied.
-
-See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
-
-# Example
-```
-new_model = change_bound(model, 2; lower_bounds=-10, ub=22)
-new_model = change_bound(model, 2; lower_bounds=-10.2) # all upper_bounds are set to _constants.default_reaction_bound
-new_model = change_bound(model, 2; upper_bounds=10.2)
-```
-"""
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", false, false)
 function change_bound(
     model::CoreModel,
     rxn::Int;
@@ -534,28 +449,7 @@ function change_bound(
     return m
 end
 
-"""
-    change_bounds(
-        model::CoreModel,
-        rxn_ids::Vector{String};
-        lower_bounds = fill(-_constants.default_reaction_bound, length(rxn_ids)),
-        upper_bounds = fill(constants.default_reaction_bound, length(rxn_ids)),
-    )
-
-Change the bounds of all reactions with `reaction_ids` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. The same default bound argument is
-used for each reaction bound if not supplied. 
-
-See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
-
-# Example
-```
-new_model = change_bounds(model, ["PFL", "FBA"]; lower_bounds=[-10, -20], ub=[10, 22])
-new_model = change_bounds(model, ["PFL", "FBA"]; lower_bounds=[-10.2, -14.3]) # all upper_bounds are set to _constants.default_reaction_bound
-new_model = change_bounds(model, ["PFL", "FBA"]; upper_bounds=[10.2, 23])
-```
-"""
+@doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", true, false)
 function change_bounds(
     model::CoreModel,
     rxn_ids::Vector{String};
@@ -565,27 +459,7 @@ function change_bounds(
     change_bounds(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
 
-"""
-    change_bound(
-        model::CoreModel,
-        reaction_id::String;
-        lower_bound = -_constants.default_reaction_bound,
-        upper_bound = _constants.default_reaction_bound,
-    )
-
-Change the bounds of a reaction with `reaction_id` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. 
-
-See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bounds!`](@ref) 
-
-# Example
-```
-new_model = change_bound!(model, "PFL"; lower_bound=-10, ub=10)
-new_model = change_bound!(model, "PFL"; lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
-new_model = change_bound!(model, "PFL"; upper_bound=10)
-```
-"""
+@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", false, false)
 function change_bound(
     model::CoreModel,
     rxn_id::String;
