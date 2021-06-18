@@ -61,7 +61,10 @@ function is_mass_balanced(model::StandardModel, rxn::Reaction)
     atom_balances = Dict{String,Float64}() # float here because stoichiometry is not Int
     for (met, stoich) in rxn.metabolites
         atoms = metabolite_formula(model, met)
-        isnothing(atoms) && continue # ignore blanks
+        if isnothing(atoms) # ignore blanks 
+            @warn "$met has no atoms associated with it."
+            continue
+        end
         for (k, v) in atoms
             atom_balances[k] = get(atom_balances, k, 0) + v * stoich
         end
