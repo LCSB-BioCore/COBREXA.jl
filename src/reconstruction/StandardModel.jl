@@ -254,7 +254,7 @@ end
             inner = length(reaction_ids),
         ),
         upper_bounds = repeat(
-            [-_constants.default_reaction_bound],
+            [_constants.default_reaction_bound],
             inner = length(reaction_ids),
         ),
     )
@@ -281,7 +281,7 @@ function change_bounds!(
         inner = length(reaction_ids),
     ),
     upper_bounds = repeat(
-        [-_constants.default_reaction_bound],
+        [_constants.default_reaction_bound],
         inner = length(reaction_ids),
     ),
 )
@@ -334,7 +334,7 @@ end
             inner = length(reaction_ids),
         ),
         upper_bounds = repeat(
-            [-_constants.default_reaction_bound],
+            [_constants.default_reaction_bound],
             inner = length(reaction_ids),
         ),
     )
@@ -360,7 +360,7 @@ function change_bounds(
         inner = length(reaction_ids),
     ),
     upper_bounds = repeat(
-        [-_constants.default_reaction_bound],
+        [_constants.default_reaction_bound],
         inner = length(reaction_ids),
     ),
 )

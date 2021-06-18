@@ -1,18 +1,35 @@
+using Base: lowerbound, upperbound
 @testset "Change bounds" begin
     cp = test_LP()
-    change_bounds!(cp, [3; 1], xl = [-10.0; -20], xu = [10.0; 20])
-    @test cp.xl == [-20; 1; -10]
-    @test cp.xu == [20; 1; 10]
-    change_bounds!(
-        cp,
-        ["gibberish1"; "r3"; "r1"; "gibberish2"],
-        xl = [0; -30.0; -40; 0],
-        xu = [0; 30.0; 40; 0],
-    )
-    @test cp.xl == [-40; 1; -30]
-    @test cp.xu == [40; 1; 30]
-    change_bounds!(cp, ["r1"; "r3"], xl = [-50.0; -60])
-    @test cp.xl == [-50; 1; -60]
+    
+    change_bound!(cp, 1, lower_bound=-10, upper_bound=10)
+    @test cp.xl[1] == -10
+    @test cp.xu[1] == 10
+    change_bounds!(cp, [1,2]; lower_bounds=[-11, -12.2], upper_bounds=[11, 23.0])
+    @test cp.xl[2] == -12.2
+    @test cp.xu[1] == 11
+
+    change_bound!(cp, "r1", lower_bound=-101, upper_bound=101)
+    @test cp.xl[1] == -101
+    @test cp.xu[1] == 101
+    change_bounds!(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
+    @test cp.xl[2] == -12.23
+    @test cp.xu[1] == 113
+
+    new_model = change_bound(cp, 1, lower_bound=-10, upper_bound=10)
+    @test new_model.xl[1] == -10
+    @test new_model.xu[1] == 10
+    new_model = change_bounds(cp, [1,2]; lower_bounds=[-11, -12.2], upper_bounds=[11, 23.0])
+    @test new_model.xl[2] == -12.2
+    @test new_model.xu[1] == 11
+
+    new_model = change_bound(cp, "r1", lower_bound=-101, upper_bound=101)
+    @test new_model.xl[1] == -101
+    @test new_model.xu[1] == 101
+    new_model = change_bounds(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
+    @test new_model.xl[2] == -12.23
+    @test new_model.xu[1] == 113
+
 end
 
 @testset "Verify consistency" begin
