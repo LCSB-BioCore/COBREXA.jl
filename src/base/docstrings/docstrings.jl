@@ -2,8 +2,8 @@ macro _change_bound!(model_type, index_type, example)
     return :(
         """
         change_bound!(
-            model::$model_type,
-            rxn::$index_type;
+            model::$($model_type),
+            rxn::$($index_type);
             lower_bound = -_constants.default_reaction_bound,
             upper_bound = _constants.default_reaction_bound,
         )
@@ -16,9 +16,9 @@ macro _change_bound!(model_type, index_type, example)
     
     # Example
     ```
-    change_bound!(model, $example; lower_bound=-10, ub=10)
-    change_bound!(model, $example; lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
-    change_bound!(model, $example; upper_bound=10)
+    change_bound!(model, $($example); lower_bound=-10, ub=10)
+    change_bound!(model, $($example); lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
+    change_bound!(model, $($example); upper_bound=10)
     ```
     """
     )
