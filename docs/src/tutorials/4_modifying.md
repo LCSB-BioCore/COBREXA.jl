@@ -23,7 +23,7 @@ With `COBREXA.jl`, you have two main choices of making model modifications:
 ## Manual modifications
 
 Certain model types, including [`CoreModel`](@ref) and [`StandardModel`](@ref),
-are built from mutable `structs` that you are free to modify as you want.
+are built from mutable `strucs` that you are free to modify as you want.
 
 [`CoreModel`](@ref) consists of sparse matrices and vectors that describe the
 model precisely. For example, modifying a bound of the reaction is as simple as
@@ -78,12 +78,10 @@ m.reactions["R_GLNS"].metabolites["M_co2_e"] = 1.0
 ...
 ```
 
-There are other functions that may be used to change the StandardModel in a
-more systematic way. See the documentation of [`add_reaction!`](@ref), [`add_reactions!`](@ref),
-[`@add_reactions!`](@ref), [`add_metabolite!`](@ref), [`add_metabolites!`](@ref), [`add_gene!`](@ref), 
-[`add_genes!`](@ref), [`remove_reaction!`](@ref),[`remove_reactions!`](@ref), [`remove_metabolite!`](@ref),
-[`remove_metabolites!`](@ref), [`remove_gene!`](@ref), [`remove_genes!`](@ref), [`change_bound`](@ref),
-[`change_bound!`](@ref), [`change_bounds`](@ref), and [`change_bounds!`](@ref) for examples.
+There are other functions that may be used to change the `StandardModel` in a
+more systematic way. See the documentation of [`add_reaction!`](@ref), [`add_metabolite!`](@ref), 
+[`add_gene!`](@ref), [`remove_reaction!`](@ref), [`remove_metabolite!`](@ref),
+[ [`remove_gene!`](@ref), and the [Model reconstruction](@ref) reference for more examples.
 
 ## Analysis modifiers
 
