@@ -56,6 +56,7 @@ function add_objective!(
         community.xl[objective_column_index] = 0.0
         community.xu[objective_column_index] = 1000.0
     end
+    return nothing # stop annoying return value
 end
 
 """
