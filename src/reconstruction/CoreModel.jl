@@ -408,28 +408,7 @@ function change_bounds!(
     end
 end
 
-"""
-    change_bound!(
-        model::CoreModel,
-        reaction_idx::Int;
-        lower_bound = -_constants.default_reaction_bound,
-        upper_bound = _constants.default_reaction_bound,
-    )
-
-Change the bound of a reaction with index `reaction_idx` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. The same default bound argument is
-used for each reaction bound if not supplied. 
-
-See also: [`change_bound`](@ref), [`change_bound!`](@ref), [`change_bounds`](@ref) 
-
-# Example
-```
-change_bound!(model, 2; lower_bounds=-10, ub=22)
-change_bound!(model, 2; lower_bounds=-10.2) # all upper_bounds are set to _constants.default_reaction_bound
-change_bound!(model, 2; upper_bounds=10.2)
-```
-"""
+@_change_bound!("CoreModel")
 function change_bound!(
     model::CoreModel,
     rxn::Int;
@@ -472,27 +451,7 @@ function change_bounds!(
     change_bounds!(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
 
-"""
-    change_bound!(
-        model::CoreModel,
-        reaction_id::String;
-        lower_bound = -_constants.default_reaction_bound,
-        upper_bound = _constants.default_reaction_bound,
-    )
-
-Change the bounds of a reaction with `reaction_id` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. 
-
-See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bounds!`](@ref) 
-
-# Example
-```
-change_bound!(model, "PFL"; lower_bound=-10, ub=10)
-change_bound!(model, "PFL"; lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
-change_bound!(model, "PFL"; upper_bound=10)
-```
-"""
+@_change_bound!("CoreModel",)
 function change_bound!(
     model::CoreModel,
     rxn_id::String;

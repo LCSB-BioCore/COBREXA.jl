@@ -213,27 +213,7 @@ remove_gene!(model, "g1")
 remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-"""
-    change_bound!(
-        model::StandardModel,
-        reaction_id::String;
-        lower_bound = -_constants.default_reaction_bound,
-        upper_bound = _constants.default_reaction_bound,
-    )
-
-Change the bounds of a reaction with `reaction_id` in `model` in-place. Note
-that if the bound argument is not supplied then a default (see
-`_constants.default_reaction_bound`) is used. 
-
-See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bounds!`](@ref) 
-
-# Example
-```
-change_bound!(model, "PFL"; lower_bound=-10, ub=10)
-change_bound!(model, "PFL"; lower_bound=-10.2) # upper_bound is set to _constants.default_reaction_bound
-change_bound!(model, "PFL"; upper_bound=10)
-```
-"""
+@_change_bound!("StandardModel",)
 function change_bound!(
     model::StandardModel,
     reaction_id::String;
