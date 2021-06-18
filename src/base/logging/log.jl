@@ -57,3 +57,4 @@ end
 @_make_logging_tag io "messages and warnings from model input/output"
 @_make_logging_tag perf "performance-related tracing information"
 @_make_logging_tag utilities "Utility function related logging information"
+log_utilities(true) # switch log on
