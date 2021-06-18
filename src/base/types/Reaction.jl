@@ -1,4 +1,4 @@
-using Base: Float64
+using Base: kwarg_decl
 """
 Reaction struct.
 
@@ -27,31 +27,59 @@ mutable struct Reaction
     notes::Notes
     annotations::Annotations
     objective_coefficient::Float64
-
-    Reaction(
-        id = "";
-        name = nothing,
-        metabolites = Dict{String,Float64}(),
-        lb = -_constants.default_reaction_bound,
-        ub = _constants.default_reaction_bound,
-        grr = nothing,
-        subsystem = nothing,
-        notes = Notes(),
-        annotations = Annotations(),
-        objective_coefficient = 0.0,
-    ) = new(
-        id,
-        name,
-        metabolites,
-        lb,
-        ub,
-        grr,
-        subsystem,
-        notes,
-        annotations,
-        objective_coefficient,
-    )
 end
+
+"""
+Reaction(
+    id = "";
+    name = nothing,
+    metabolites = Dict{String,Float64}(),
+    lb = -_constants.default_reaction_bound,
+    ub = _constants.default_reaction_bound,
+    grr = nothing,
+    subsystem = nothing,
+    notes = Notes(),
+    annotations = Annotations(),
+    objective_coefficient = 0.0,
+)
+
+A constructor for Reaction that only takes a reaction `id` and 
+assigns default/uninformative values to all the fields that are not
+explicitely assigned.
+"""
+Reaction(
+    id = "";
+    name = nothing,
+    metabolites = Dict{String,Float64}(),
+    lb = -_constants.default_reaction_bound,
+    ub = _constants.default_reaction_bound,
+    grr = nothing,
+    subsystem = nothing,
+    notes = Notes(),
+    annotations = Annotations(),
+    objective_coefficient = 0.0,
+) = Reaction(
+    id,
+    name,
+    metabolites,
+    lb,
+    ub,
+    grr,
+    subsystem,
+    notes,
+    annotations,
+    objective_coefficient,
+)
+
+Reaction(
+    id::String;
+    metabolites = Dict{String,Real}(),
+    kwargs...
+) = Reaction(
+    id;
+    Dict(k => float(v) for (k, v) in metabolites),
+    kwargs...
+)
 
 """
 Reaction(
@@ -61,7 +89,12 @@ Reaction(
     default_bound = _constants.default_reaction_bound,
 )
 
-Convenience constructor for `Reaction`.
+Convenience constructor for `Reaction`. The reaction equation is specified using
+`metabolites`, which is a dictionary mapping metabolite ids to stoichiometric
+coefficients. The direcion of the reaction is set through `dir` which can take
+`:bidirectional`, `:forward`, and `:reverse` as values. Finally, the
+`default_bound` is the value taken to mean infinity in the context of constraint
+based models, often this is set to a very high flux value like 1000.
 """
 function Reaction(
     id::String,
@@ -90,7 +123,12 @@ Reaction(
     default_bound = _constants.default_reaction_bound,
 )
 
-Convenience constructor for `Reaction`.
+Convenience constructor for `Reaction`. The reaction equation is specified using
+`metabolites`, which is a dictionary mapping metabolite ids to stoichiometric
+coefficients. The direcion of the reaction is set through `dir` which can take
+`:bidirectional`, `:forward`, and `:reverse` as values. Finally, the
+`default_bound` is the value taken to mean infinity in the context of constraint
+based models, often this is set to a very high flux value like 1000.
 """
 Reaction(
     id::String,
@@ -102,44 +140,4 @@ Reaction(
     Dict(k => float(v) for (k, v) in metabolites),
     dir;
     default_bound = default_bound,
-)
-
-"""
-Reaction(
-    id::String;
-    name = nothing,
-    metabolites = Dict{String,Real}(),
-    lb = -_constants.default_reaction_bound,
-    ub = _constants.default_reaction_bound,
-    grr = nothing,
-    subsystem = nothing,
-    notes = Notes(),
-    annotations = Annotations(),
-    objective_coefficient = 0.0,
-)
-
-Convenience constructor for `Reaction`.
-"""
-Reaction(
-    id::String;
-    name = nothing,
-    metabolites = Dict{String,Real}(),
-    lb = -_constants.default_reaction_bound,
-    ub = _constants.default_reaction_bound,
-    grr = nothing,
-    subsystem = nothing,
-    notes = Notes(),
-    annotations = Annotations(),
-    objective_coefficient = 0.0,
-) = Reaction(
-    id,
-    name,
-    Dict(k => float(v) for (k, v) in metabolites),
-    lb,
-    ub,
-    grr,
-    subsystem,
-    notes,
-    annotations,
-    objective_coefficient,
 )
