@@ -2,9 +2,9 @@
     with_set_bound(args...; kwargs...) 
 
 Specifies a model variant that has a new bound set. Forwards arguments to
-[`set_bound`](@ref). Intended for usage with [`screen`](@ref).
+[`change_bound`](@ref). Intended for usage with [`screen`](@ref).
 """
-with_set_bound(args...; kwargs...) = m -> set_bound(m, args...; kwargs...)
+with_set_bound(args...; kwargs...) = m -> change_bound(m, args...; kwargs...) # TODO: change to with_change_bound? Mirek, what do you think?
 
 """
     with_removed_metabolites(args...; kwargs...) 
