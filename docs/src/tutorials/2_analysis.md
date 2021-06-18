@@ -7,7 +7,8 @@ exploring the biological models. The currently supported methods include
 
 - Flux balance analysis (FBA), in function [`flux_balance_analysis`](@ref)
 - Flux variability analysis (FVA), in [`flux_variability_analysis`](@ref)
-- Flux sampling by hit-and-run algorithm, in [`hit_and_run`](@ref)
+- Flux sampling by linearized hit-and-run algorithm, in
+  [`affine_hit_and_run`](@ref)
 - Parsimonious flux balance analysis (pFBA), in
   [`parsimonious_flux_balance_analysis`](@ref)
 
@@ -149,15 +150,15 @@ Otherwise, the function behaves just like [`flux_balance_analysis`](@ref):
 
 ## Flux sampling
 
-For the [`hit_and_run`](@ref), you need a previously optimized and constrained
+For the [`affine_hit_and_run`](@ref), you need a previously optimized and constrained
 model from another analysis function, such as [`flux_balance_analysis`](@ref),
 or created by [`make_optimization_model`](@ref). You may need to carefully
 choose the number of iterations and sample sizes to match your model; see the
-documentation of [`hit_and_run`](@ref) for details.
+documentation of [`affine_hit_and_run`](@ref) for details.
 
 As an example, you can run the sampling for 100 thousand iterations with:
 ```
-hit_and_run(100_000, make_optimization_model(m, GLPK.Optimizer))
+affine_hit_and_run(100_000, make_optimization_model(m, GLPK.Optimizer))
 ```
 
 You should receive a matching flux sample with the (default) 1000 samples in a

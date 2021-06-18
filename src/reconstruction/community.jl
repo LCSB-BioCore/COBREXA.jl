@@ -70,11 +70,12 @@ end
 
 Add `model` to `community`, which is a pre-existing community model with
 `exchange_rxn_ids` and `exchange_met_ids`. The `model_name` is appended to
-each reaction and metabolite, see [`join`](@ref). If `biomass_id` is specified
-then a biomass metabolite for `model` is also added to the resulting model. The
-column corresponding to the `biomass_id` reaction then produces this new biomass
-metabolite with unit coefficient. Note, `exchange_rxn_ids` and
-`exchange_met_ids` must already exist in the `community` model.
+each reaction and metabolite, see [`join_with_exchanges`](@ref). If
+`biomass_id` is specified then a biomass metabolite for `model` is also added
+to the resulting model. The column corresponding to the `biomass_id` reaction
+then produces this new biomass metabolite with unit coefficient. Note,
+`exchange_rxn_ids` and `exchange_met_ids` must already exist in the `community`
+model.
 
 # Example
 ```

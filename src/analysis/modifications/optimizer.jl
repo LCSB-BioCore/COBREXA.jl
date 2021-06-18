@@ -89,7 +89,9 @@ function change_objective(
                 [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
         end
 
-        any(isnothing.(objective_indices)) && throw(DomainError(new_objective, "No matching reaction found for one or more ids."))
+        any(isnothing.(objective_indices)) && throw(
+            DomainError(new_objective, "No matching reaction found for one or more ids."),
+        )
 
         # Initialize weights
         opt_weights = spzeros(n_reactions(model))

@@ -20,7 +20,7 @@ with_removed_metabolites(args...; kwargs...) =
     with_added_reactions(args...; kwargs...) 
 
 Specifies a model variant with reactions added. Forwards the arguments to
-[`add_Reactions`](@ref). Intended to be used with [`screen`](@ref).
+[`add_reactions`](@ref). Intended to be used with [`screen`](@ref).
 """
 with_added_reactions(args...; kwargs...) = m -> add_reactions(m, args...; kwargs...)
 

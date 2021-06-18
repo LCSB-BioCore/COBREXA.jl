@@ -69,28 +69,20 @@ end
     )
 
     @test_throws DomainError flux_balance_analysis_dict(
-                                model,
-                                Tulip.Optimizer;
-                                modifications = [
-                                    change_constraint("gbbrsh", -12, -12)
-                                ],
-                            )
+        model,
+        Tulip.Optimizer;
+        modifications = [change_constraint("gbbrsh", -12, -12)],
+    )
     @test_throws DomainError flux_balance_analysis_dict(
-                                model,
-                                Tulip.Optimizer;
-                                modifications = [
-                                    change_objective("gbbrsh")
-                                ],
-                            )
+        model,
+        Tulip.Optimizer;
+        modifications = [change_objective("gbbrsh")],
+    )
     @test_throws DomainError flux_balance_analysis_dict(
-                                model,
-                                Tulip.Optimizer;
-                                modifications = [
-                                    change_objective(
-                                        ["BIOMASS_Ecoli_core_w_GAM"; "gbbrsh"]
-                                    )
-                                ],
-                            )
+        model,
+        Tulip.Optimizer;
+        modifications = [change_objective(["BIOMASS_Ecoli_core_w_GAM"; "gbbrsh"])],
+    )
 end
 
 @testset "Flux balance analysis with CoreModelCoupled" begin
