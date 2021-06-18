@@ -49,7 +49,7 @@ function Base.show(io::IO, ::MIME"text/plain", flux_res::FluxVariabilitySummary)
     for k in ex_ids[idxs]
         v = flux_res.exchange_fluxes[k]
         lb = isnothing(v[1]) ? " " : string(round(v[1], digits = 4))
-        ub = isnothing(v[2]) ? " " : string(round(v[1], digits = 4))
+        ub = isnothing(v[2]) ? " " : string(round(v[2], digits = 4))
         println(
             io,
             "  ",
