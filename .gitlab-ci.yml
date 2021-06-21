@@ -119,9 +119,6 @@ pages:
     # deploy doc (without git history)
     - julia --project=docs --color=yes docs/make.jl
 
-    # move the git history to the docs directory
-    - mv output.gif docs/src/assets/output.gif
-
     # move to the directory picked up by Gitlab pages (with git history)
     - mv docs/build public
   artifacts:
@@ -217,4 +214,3 @@ trigger:
   script:
     - docker run curlimages/curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
   <<: *global_settings_master
-
