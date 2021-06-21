@@ -89,9 +89,8 @@ generator:gource:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
-    - mv output.gif docs/src/assets/output.gif
   artifacts:
-    paths: ['docs/src/assets/output.gif']
+    paths: ['output.gif']
   <<: *global_settings_master
 
 # Documentation tests
@@ -114,9 +113,17 @@ pages:
     - generator:gource
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
+    # resolve and build packages from the docs/Project.toml file
     - julia --project=docs -e 'using Pkg; Pkg.resolve(); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
+
+    # deploy doc (without git history)
     - julia --project=docs --color=yes docs/make.jl
-    - mv docs/build public # move to the directory picked up by Gitlab pages
+
+    # move the git history to the docs directory
+    - mv output.gif docs/src/assets/output.gif
+
+    # move to the directory picked up by Gitlab pages (with git history)
+    - mv docs/build public
   artifacts:
     paths:
       - public
@@ -210,3 +217,4 @@ trigger:
   script:
     - docker run curlimages/curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
   <<: *global_settings_master
+
