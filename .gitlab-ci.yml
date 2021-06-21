@@ -115,7 +115,7 @@ pages:
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     # resolve and build packages from the docs/Project.toml file
-    - julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.resolve(); Pkg.instantiate(); Pkg.precompile(); Pkg.build();'
+    - julia --project=docs -e 'julia --project=docs -e 'using Pkg; Pkg.resolve(); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
     - julia --project=docs --color=yes docs/make.jl
     - mv docs/build public # move to the directory picked up by Gitlab pages
   artifacts:
