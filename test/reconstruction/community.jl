@@ -1,3 +1,58 @@
+@testset "Detailed community stoichiometrix matrix check" begin
+    m1 = test_toyModel()
+    m2 = test_toyModel()
+    ex_rxn_ids = ["EX_m1(e)", "EX_m3(e)"]
+    ex_met_ids = ["m1[e]", "m3[e]"]
+
+    c1 = join_with_exchanges(
+        [m1, m2],
+        ex_rxn_ids,
+        ex_met_ids;
+        add_biomass_objective = false,)
+    
+    # test of stoichs are the same
+    @test all(c1.S[1:6, 1:7] .== c1.S[7:12, 8:14])
+    # test if each models exchange reactions have been added to the environmental exchange properly
+    @test sum(c1.S[:, 4]) == 0 
+    @test sum(c1.S[:, 5]) == 0
+    @test sum(c1.S[:, 11]) == 0 
+    @test sum(c1.S[:, 12]) == 0
+    @test sum(c1.S[:, 15]) == -1
+    @test sum(c1.S[:, 16]) == -1
+    # test if exchange metablites with environment are added properly
+    @test c1.S[13, 4] == c1.S[13, 11] == 1
+    @test c1.S[14, 5] == c1.S[14, 12] == 1
+    # test if environmental exchanges have been added properly
+    @test c1.S[13, 15] == c1.S[14, 16] == -1 
+    # test of bounds set properly
+    lb, ub = bounds(c1)
+    @test all(lb[1:14] .== -ub[1:14] .== -1000)
+    @test all(lb[15:16] .== -ub[15:16] .== 0.0)
+
+    c2 = join_with_exchanges(
+        [m1, m2],
+        ex_rxn_ids,
+        ex_met_ids;
+        add_biomass_objective = true,
+        biomass_ids = ["biomass1", "biomass1"]
+        )
+    # test if same base stoich matrix
+    @test all(c2.S[1:14, 1:16] .== c1.S)
+    # test if biomass reaction and metabolites are added correctly
+    @test all(c2.S[:, end] .== 0)
+    @test c2.S[15, 7] == 1
+    @test c2.S[16, 14] == 1
+    
+    add_objective!(
+        c2,
+        ["species_1_biomass1", "species_2_biomass1"];
+        objective_weights = [0.1, 0.9],
+        objective_column_index = 17,
+    )
+    @test c2.S[15, end] == -0.1
+    @test c2.S[16, end] == -0.9
+end
+
 @testset "Small model join" begin
     m1 = load_model(model_paths["e_coli_core.json"])
     m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
