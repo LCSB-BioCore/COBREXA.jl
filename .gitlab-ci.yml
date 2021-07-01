@@ -71,7 +71,7 @@ format:
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
-    - docker run -v $(pwd):/project $CI_REGISTRY/r3/docker/julia-custom --project=/project -e 'using JuliaFormatter; format(".", verbose=true);'
+    #- docker run -v $(pwd):/project $CI_REGISTRY/r3/docker/julia-custom --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
     - if [[ (git status -s | wc -l) -gt 0 ]] then
         GITHUB_COMMENT="There are files that need formatting."
       else
