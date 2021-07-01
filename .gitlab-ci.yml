@@ -62,16 +62,29 @@ variables:
 
 format:
   stage: formatter
-  image: $CI_REGISTRY/r3/docker/julia-custom
+  image: docker:19.03.13
+  tags:
+    - privileged
+  services:
+    - name: docker:19.03.13-dind
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+  before_script:
+    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
-    - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
-    - git status
-    - git remote set-url origin "https://$CI_USER_NAME:$GITHUB_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
-    - git config --global user.name $CI_USER_NAME
-    - git config --global user.email $CI_USER_EMAIL
-    - git checkout $CI_COMMIT_BRANCH || true
-    - git commit -am "automatic formatting changes" || true
-    - git push origin $CI_COMMIT_BRANCH || true
+    - docker run -v $(pwd):/project $CI_REGISTRY/r3/docker/julia-custom --project=/project -e 'using JuliaFormatter; format(".", verbose=true);'
+    - if [[ (git status -s | wc -l) -gt 0 ]] then
+        GITHUB_COMMENT="There are files that need formatting."
+      else
+        GITHUB_COMMENT="All files are formatted properly :white_check_mark:"
+      fi
+    - docker run -i --rm \
+          -e $GITHUB_ACCESS_TOKEN \
+          -e "LCSB-BioCore" \
+          -e $GITHUB_REPOSITORY \
+          -e "pr" \
+          -e $CI_EXTERNAL_PULL_REQUEST_IID \
+          -e $GITHUB_COMMENT \
+          cloudposse/github-commenter
   <<: *global_settings
 
 # Documentation history
