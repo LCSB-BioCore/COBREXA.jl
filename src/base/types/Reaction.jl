@@ -1,4 +1,3 @@
-using Base: Float64
 """
 Reaction struct.
 
