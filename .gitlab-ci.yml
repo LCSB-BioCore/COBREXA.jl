@@ -77,14 +77,23 @@ format:
       else
         GITHUB_COMMENT="All files are formatted properly :white_check_mark:";
       fi
+    - |
+      export GITHUB_TOKEN="${GITHUB_ACCESS_TOKEN_FORMATTER}"
+      export GITHUB_OWNER="lcsb-biocore"
+      export GITHUB_REPO="cobrexa.jl"
+      export GITHUB_COMMENT_TYPE=pr
+      export GITHUB_PR_ISSUE_NUMBER="${CI_EXTERNAL_PULL_REQUEST_IID}"
+      export GITHUB_COMMENT_FORMAT=""
+      export GITHUB_COMMENT="${GITHUB_COMMENT}"
     - docker run -i --rm \
-          -e GITHUB_TOKEN="${GITHUB_ACCESS_TOKEN_FORMATTER}" \
-          -e GITHUB_OWNER="lcsb-biocore" \
-          -e GITHUB_REPO="cobrexa.jl" \
-          -e GITHUB_COMMENT_TYPE=pr \
-          -e GITHUB_PR_ISSUE_NUMBER="${CI_EXTERNAL_PULL_REQUEST_IID}" \
-          -e GITHUB_COMMENT="${GITHUB_COMMENT}" \
-          cloudposse/github-commenter
+            -e GITHUB_TOKEN \
+            -e GITHUB_OWNER \
+            -e GITHUB_REPO \
+            -e GITHUB_COMMENT_TYPE \
+            -e GITHUB_PR_ISSUE_NUMBER \
+            -e GITHUB_COMMENT_FORMAT \
+            -e GITHUB_COMMENT \
+            cloudposse/github-commenter
   <<: *global_settings
 
 # Documentation history
