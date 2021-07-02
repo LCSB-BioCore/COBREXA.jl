@@ -72,10 +72,10 @@ format:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     #- docker run -v $(pwd):/project $CI_REGISTRY/r3/docker/julia-custom --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
-    - if [[ (git status -s | wc -l) -gt 0 ]] then
-        GITHUB_COMMENT="There are files that need formatting."
+    - if [[ $(git status -s | wc -l) -gt 0 ]]; then
+        GITHUB_COMMENT="There are files that need formatting.";
       else
-        GITHUB_COMMENT="All files are formatted properly :white_check_mark:"
+        GITHUB_COMMENT="All files are formatted properly :white_check_mark:";
       fi
     - docker run -i --rm \
           -e $GITHUB_ACCESS_TOKEN \
