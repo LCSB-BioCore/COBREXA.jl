@@ -32,7 +32,7 @@ functions such as [`with_added_reactions`](@ref) and [`with_set_bound`](@ref).
     A better example of using a custom model structure is available
     [in a separate notebook](../notebooks/8_custom_model.md).
 
-# Writing the generic accessors
+## Writing the generic accessors
 
 Let's write a data structure that represents a very small model that contains N
 metabolites that are converted in circle by N reactions. This may be useful for
