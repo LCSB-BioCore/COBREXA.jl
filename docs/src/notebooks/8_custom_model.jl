@@ -16,7 +16,7 @@ using COBREXA
 
 mutable struct MyReaction
     max_rate::Float64 # maximum absolute conversion rate
-    stoi::Dict{String, Float64} # stoichimetry of the reaction
+    stoi::Dict{String,Float64} # stoichimetry of the reaction
 
     MyReaction() = new(0.0, Dict{String,Float64}())
 end
@@ -26,7 +26,7 @@ mutable struct MyModel <: MetabolicModel
     reactions::Dict{String,MyReaction} # dictionary of reactions
 
     MyModel() = new("", Dict{String,MyReaction}())
-    MyModel(o, r) = new(o,r)
+    MyModel(o, r) = new(o, r)
 end
 
 # With this, we can start defining the accessors:
@@ -40,8 +40,8 @@ COBREXA.reactions(m::MyModel) = sort(collect(keys(m.reactions)))
 
 function COBREXA.metabolites(m::MyModel)
     mets = Set{String}()
-    for (_,r) in m.reactions
-        for (m,_) in r.stoi
+    for (_, r) in m.reactions
+        for (m, _) in r.stoi
             push!(mets, m)
         end
     end
@@ -65,14 +65,18 @@ function COBREXA.objective(m::MyModel)
         c[first(indexin([m.optimization_target], reactions(m)))] = 1.0
         c
     else
-        throw(DomainError(m.optimization_target, "The target reaction for flux optimization not found"))
+        throw(
+            DomainError(
+                m.optimization_target,
+                "The target reaction for flux optimization not found",
+            ),
+        )
     end
 end
 
 function COBREXA.stoichiometry(m::MyModel)
     sparse([
-        get(m.reactions[rxn].stoi, met, 0.0)
-        for met in metabolites(m), rxn in reactions(m)
+        get(m.reactions[rxn].stoi, met, 0.0) for met in metabolites(m), rxn in reactions(m)
     ])
 end
 
@@ -81,18 +85,18 @@ end
 import Random
 Random.seed!(123)
 
-rxn_names = ["Reaction $i" for i in 'A':'Z'];
-metabolite_names = ["Metabolite $i" for i in 1:20];
+rxn_names = ["Reaction $i" for i = 'A':'Z'];
+metabolite_names = ["Metabolite $i" for i = 1:20];
 
 m = MyModel();
 for i in rxn_names
-    m.reactions[i]=MyReaction()
+    m.reactions[i] = MyReaction()
 end
 
-for i in 1:50
+for i = 1:50
     rxn = rand(rxn_names)
     met = rand(metabolite_names)
-    m.reactions[rxn].stoi[met] = rand([-3,-2,-1,1,2,3])
+    m.reactions[rxn].stoi[met] = rand([-3, -2, -1, 1, 2, 3])
     m.reactions[rxn].max_rate = rand()
 end
 
@@ -122,8 +126,10 @@ end
 
 # The screening is ready now!
 
-reactions_to_remove = ("Reaction $i" for i in 'B':'Z')
+reactions_to_remove = ("Reaction $i" for i = 'B':'Z')
 
-reactions_to_remove .=> screen_variants(m,
-    [ [with_removed_reactions([r])] for r in reactions_to_remove],
-    m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["Reaction A"])
+reactions_to_remove .=> screen_variants(
+    m,
+    [[with_removed_reactions([r])] for r in reactions_to_remove],
+    m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["Reaction A"],
+)
