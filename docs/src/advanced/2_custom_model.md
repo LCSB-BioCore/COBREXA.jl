@@ -1,9 +1,9 @@
 
 # Working with custom models
 
-It often happens that the intuitive representation of your data does not really
-match what is supported by the given COBRA package. COBREXA.jl attempts to
-avoid this problem by providing a flexible framework for containing any data
+It may happen that the intuitive representation of your data does not really
+match what is supported by a given COBRA package. COBREXA.jl attempts to avoid
+this problem by providing a flexible framework for containing any data
 structure that can, somehow, represent the constraint-based model.
 
 The task of having such a polymorphic model definition can be split into 2
@@ -24,7 +24,7 @@ by COBREXA.  You may see a complete list of accessors
 [here](../functions#Base-Types).
 
 A good solution to the second concern is a slightly more involved, as writing
-generic data modifiers is notoriously hard. Wtill, there is support for easily
+generic data modifiers is notoriously hard. Still, there is support for easily
 making small changes to the model using the modifications system, with
 functions such as [`with_added_reactions`](@ref) and [`with_set_bound`](@ref).
 
@@ -35,10 +35,12 @@ functions such as [`with_added_reactions`](@ref) and [`with_set_bound`](@ref).
 ## Writing the generic accessors
 
 Let's write a data structure that represents a very small model that contains N
-metabolites that are converted in circle by N reactions. This may be useful for
-testing purposes; we will use it just for the demonstration.
+metabolites that are converted in a circle through N linear, coupled reactions.
+(E.g., for N=3, we would have a conversion of metabolites A, B and C ordered as
+A → B → C → A.) This may be useful for testing purposes; we will use it for a
+simple demonstration.
 
-The whole model can thus be represented with a single integer that specifies
+The whole model can thus be specified with a single integer N that represents
 the length of the reaction cycle:
 
 ```julia
