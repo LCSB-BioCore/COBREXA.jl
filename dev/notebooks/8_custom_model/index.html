@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Using a custom model data structure · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../tutorials/">Quickstart tutorials</a></li><li><a class="tocitem" href="../../advanced/">Advanced tutorials</a></li><li><a class="tocitem" href="../">Examples and notebooks</a></li><li><a class="tocitem" href="../../functions/">Function reference</a></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Using a custom model data structure</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Using a custom model data structure</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/LCSB-BioCore/COBREXA.jl/blob/master/docs/src/notebooks/8_custom_model.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-a-custom-model-data-structure"><a class="docs-heading-anchor" href="#Using-a-custom-model-data-structure">Using a custom model data structure</a><a id="Using-a-custom-model-data-structure-1"></a><a class="docs-heading-anchor-permalink" href="#Using-a-custom-model-data-structure" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/LCSB-BioCore/COBREXA.jl/gh-pages?filepath=dev/notebooks/8_custom_model.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/LCSB-BioCore/COBREXA.jl/blob/gh-pages/dev/notebooks/8_custom_model.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><p>This notebooks shows how to utilize the generic accessors and modification functions in COBREXA.jl to run the analysis on any custom model type. We will create a simple dictionary-style structure that describes the model, allow COBREXA to run a FVA on it, and create a simple reaction-removing modification.</p><p>First, let&#39;s define a very simple stoichiometry-only structure for the model:</p><pre><code class="language-julia">using COBREXA
+
+mutable struct MyReaction
+    max_rate::Float64 # maximum absolute conversion rate
+    stoi::Dict{String,Float64} # stoichimetry of the reaction
+
+    MyReaction() = new(0.0, Dict{String,Float64}())
+end
+
+mutable struct MyModel &lt;: MetabolicModel
+    optimization_target::String # the &quot;objective&quot; reaction name
+    reactions::Dict{String,MyReaction} # dictionary of reactions
+
+    MyModel() = new(&quot;&quot;, Dict{String,MyReaction}())
+    MyModel(o, r) = new(o, r)
+end</code></pre><p>With this, we can start defining the accessors:</p><pre><code class="language-julia">COBREXA.n_reactions(m::MyModel) = length(m.reactions)
+COBREXA.reactions(m::MyModel) = sort(collect(keys(m.reactions)))</code></pre><p>Metabolites are defined only very implicitly, so let&#39;s just make a function that collects all names. <a href="../../functions/#COBREXA.n_metabolites-Tuple{MetabolicModel}"><code>n_metabolites</code></a> can be left at the default definition that just measures the output of <a href="../../functions/#COBREXA.metabolites-Tuple{MetabolicModel}"><code>metabolites</code></a>.</p><pre><code class="language-julia">function COBREXA.metabolites(m::MyModel)
+    mets = Set{String}()
+    for (_, r) in m.reactions
+        for (m, _) in r.stoi
+            push!(mets, m)
+        end
+    end
+    return sort(collect(mets))
+end</code></pre><p>Now, the extraction of the linear model. Remember the order of element in the vectors must match the order in the output of <a href="../../functions/#COBREXA.reactions-Tuple{MetabolicModel}"><code>reactions</code></a> and <a href="../../functions/#COBREXA.metabolites-Tuple{MetabolicModel}"><code>metabolites</code></a>.</p><pre><code class="language-julia">using SparseArrays
+
+function COBREXA.bounds(m::MyModel)
+    max_rates = [m.reactions[r].max_rate for r in reactions(m)]
+    (sparse(-max_rates), sparse(max_rates))
+end
+
+function COBREXA.objective(m::MyModel)
+    if m.optimization_target in keys(m.reactions)
+        c = spzeros(n_reactions(m))
+        c[first(indexin([m.optimization_target], reactions(m)))] = 1.0
+        c
+    else
+        throw(
+            DomainError(
+                m.optimization_target,
+                &quot;The target reaction for flux optimization not found&quot;,
+            ),
+        )
+    end
+end
+
+function COBREXA.stoichiometry(m::MyModel)
+    sparse([
+        get(m.reactions[rxn].stoi, met, 0.0) for met in metabolites(m), rxn in reactions(m)
+    ])
+end</code></pre><p>Now the model is complete! We can generate a random one and see how it performs</p><pre><code class="language-julia">import Random
+Random.seed!(123)
+
+rxn_names = [&quot;Reaction $i&quot; for i = &#39;A&#39;:&#39;Z&#39;];
+metabolite_names = [&quot;Metabolite $i&quot; for i = 1:20];
+
+m = MyModel();
+for i in rxn_names
+    m.reactions[i] = MyReaction()
+end
+
+for i = 1:50
+    rxn = rand(rxn_names)
+    met = rand(metabolite_names)
+    m.reactions[rxn].stoi[met] = rand([-3, -2, -1, 1, 2, 3])
+    m.reactions[rxn].max_rate = rand()
+end</code></pre><p>Let&#39;s see what the model looks like now:</p><pre><code class="language-julia">m</code></pre><pre class="documenter-example-output">Metabolic model of type Main.ex-8_custom_model.MyModel
+
+⠐⠀⠀⡈⠀⠀⠈⠁⠂⠀⠠⠀⠀
+⠀⠄⠀⡀⠀⠀⠁⠒⡀⠀⠐⠈⠀
+⠂⠀⠐⠀⠆⠠⠡⢀⠠⠐⡀⠀⢀
+⠀⠨⠁⡂⠀⠘⠀⠃⠀⠀⠀⠀⠀
+⠡⠉⠐⠀⢀⠀⠈⠀⢄⠈⠀⠀⡄
+Number of reactions: 26
+Number of metabolites: 20
+</pre><p>We can run most of the standard function on the model data right away:</p><pre><code class="language-julia">using Tulip
+m.optimization_target = &quot;Reaction A&quot;
+flux_balance_analysis_dict(m, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 26 entries:
+  &quot;Reaction E&quot; =&gt; 0.000322931
+  &quot;Reaction F&quot; =&gt; -0.0
+  &quot;Reaction T&quot; =&gt; 0.174544
+  &quot;Reaction G&quot; =&gt; 0.0
+  &quot;Reaction B&quot; =&gt; -4.55624e-12
+  &quot;Reaction J&quot; =&gt; -0.102165
+  &quot;Reaction K&quot; =&gt; -0.0
+  &quot;Reaction P&quot; =&gt; 0.00193759
+  &quot;Reaction R&quot; =&gt; -0.102165
+  &quot;Reaction U&quot; =&gt; 0.000443018
+  &quot;Reaction Y&quot; =&gt; -1.849e-11
+  &quot;Reaction N&quot; =&gt; 0.56429
+  &quot;Reaction Z&quot; =&gt; 0.000350518
+  &quot;Reaction D&quot; =&gt; 0.0
+  &quot;Reaction W&quot; =&gt; -0.0
+  &quot;Reaction M&quot; =&gt; -0.0
+  &quot;Reaction X&quot; =&gt; 0.0
+  &quot;Reaction C&quot; =&gt; 0.0
+  &quot;Reaction A&quot; =&gt; 0.30446
+  ⋮            =&gt; ⋮</pre><p>To be able to use the model conveniently in functions such as <a href="../../functions/#COBREXA.screen-Union{Tuple{MetabolicModel}, Tuple{N}, Tuple{T}, Tuple{V}} where {V&lt;:(AbstractVector{T} where T), T&lt;:Tuple, N}"><code>screen</code></a>, you usually want to be able to easily specify the modifications. In this example, we enable use of <a href="../../functions/#COBREXA.with_removed_reactions-Tuple"><code>with_removed_reactions</code></a> by overloading the internal <a href="../../functions/#COBREXA.remove_reactions-Tuple{CoreModel, Integer}"><code>remove_reactions</code></a> for this specific model type:</p><p>We need to make an as-shallow-as-possible copy of the model that allows us to remove the reactions without breaking the original model.</p><pre><code class="language-julia">function COBREXA.remove_reactions(m::MyModel, rxns::AbstractVector{String})
+    m = MyModel(m.optimization_target, copy(m.reactions))
+    delete!.(Ref(m.reactions), rxns)
+    return m
+end</code></pre><p>The screening is ready now!</p><pre><code class="language-julia">reactions_to_remove = (&quot;Reaction $i&quot; for i = &#39;B&#39;:&#39;Z&#39;)
+
+reactions_to_remove .=&gt; screen_variants(
+    m,
+    [[with_removed_reactions([r])] for r in reactions_to_remove],
+    m -&gt; flux_balance_analysis_dict(m, Tulip.Optimizer)[&quot;Reaction A&quot;],
+)</code></pre><pre class="documenter-example-output">25-element Vector{Pair{String, Float64}}:
+ &quot;Reaction B&quot; =&gt; 0.3044596278261141
+ &quot;Reaction C&quot; =&gt; 0.3044596423819445
+ &quot;Reaction D&quot; =&gt; 0.3044596423819445
+ &quot;Reaction E&quot; =&gt; 0.303975242543509
+ &quot;Reaction F&quot; =&gt; 0.3044596423819445
+ &quot;Reaction G&quot; =&gt; 0.3044596424143211
+ &quot;Reaction H&quot; =&gt; 0.04135032969093828
+ &quot;Reaction I&quot; =&gt; 0.03084320823855454
+ &quot;Reaction J&quot; =&gt; 0.26359370990717723
+ &quot;Reaction K&quot; =&gt; 0.3044596423819445
+              ⋮
+ &quot;Reaction R&quot; =&gt; 0.263593709330887
+ &quot;Reaction S&quot; =&gt; 0.3044596423819445
+ &quot;Reaction T&quot; =&gt; 0.10281069417903423
+ &quot;Reaction U&quot; =&gt; 0.3044596424137387
+ &quot;Reaction V&quot; =&gt; 0.3044596423819445
+ &quot;Reaction W&quot; =&gt; 0.3044596423819445
+ &quot;Reaction X&quot; =&gt; 0.3044596423819445
+ &quot;Reaction Y&quot; =&gt; 0.3044596260552588
+ &quot;Reaction Z&quot; =&gt; 0.3044596424137387</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 7 July 2021 08:46">Wednesday 7 July 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
