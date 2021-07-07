@@ -14,8 +14,9 @@ end
 
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks")
-notebooks =
-    joinpath.(notebooks_path, filter(x -> endswith(x, ".jl"), readdir(notebooks_path)))
+notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
+@info "base names:" notebooks_basenames
+notebooks = joinpath.(notebooks_path, notebooks_basenames)
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
 
 # only temporary - will be removed once properly tagged and released
@@ -92,7 +93,25 @@ replace_in_doc(
     "blob/master/docs/src/howToContribute.md" => "blob/master/.github/CONTRIBUTING.md",
 )
 
+# clean up notebooks -- we do not need to deploy all the stuff that was
+# generated in the process
+#
+# extra fun: failing programs (such as plotting libraries) may generate core
+# dumps that contain the dumped environment strings, which in turn contain
+# github auth tokens. These certainly need to be avoided.
+notebooks_names = [n[begin:end-3] for n in notebooks_basenames]
+notebooks_allowed_files = vcat("index.html", notebooks_names .* ".ipynb")
+@info "allowed files:" notebooks_allowed_files
+for (root, dirs, files) in walkdir(joinpath(@__DIR__, "build", "notebooks"))
+    for f in files
+        if !(f in notebooks_allowed_files)
+            @info "removing notebook build artifact `$(joinpath(root, f))'"
+            rm(joinpath(root, f))
+        end
+    end
+end
 
+# deploy the result
 deploydocs(
     repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"]).git",
     target = "build",
