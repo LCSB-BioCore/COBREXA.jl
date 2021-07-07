@@ -111,6 +111,9 @@ for (root, dirs, files) in walkdir(joinpath(@__DIR__, "build", "notebooks"))
     end
 end
 
+# also remove the index template
+rm(joinpath(@__DIR__, "build", "index.md.template"))
+
 # deploy the result
 deploydocs(
     repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"]).git",
