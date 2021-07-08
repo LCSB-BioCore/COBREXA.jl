@@ -1,7 +1,6 @@
 stages:
-  - formatter
   - generator
-  - test-containers
+  - test-basic
   - test-required
   - documentation
   - test-additional-v1.5
@@ -61,7 +60,7 @@ variables:
 # --------------------------------------
 
 format:
-  stage: formatter
+  stage: test-basic
   image: docker:19.03.13
   tags:
     - privileged
@@ -155,7 +154,7 @@ pages:
 # --------------------------------------
 
 docker:v1.6:
-  stage: test-containers
+  stage: test-basic
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
