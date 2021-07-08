@@ -85,7 +85,8 @@ format:
       export GITHUB_PR_ISSUE_NUMBER="${CI_EXTERNAL_PULL_REQUEST_IID}"
       export GITHUB_COMMENT_FORMAT=""
       export GITHUB_COMMENT="${GITHUB_COMMENT}"
-    - docker run -i --rm \
+    - |
+      docker run -i --rm \
             -e GITHUB_TOKEN \
             -e GITHUB_OWNER \
             -e GITHUB_REPO \
