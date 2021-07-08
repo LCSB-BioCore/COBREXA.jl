@@ -1,7 +1,6 @@
 stages:
-  - formatter
   - generator
-  - test-containers
+  - test-basic
   - test-required
   - documentation
   - test-additional-v1.5
@@ -61,17 +60,44 @@ variables:
 # --------------------------------------
 
 format:
-  stage: formatter
-  image: $CI_REGISTRY/r3/docker/julia-custom
+  stage: test-basic
+  image: docker:19.03.13
+  tags:
+    - privileged
+  services:
+    - name: docker:19.03.13-dind
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+  before_script:
+    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
-    - julia --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
-    - git status
-    - git remote set-url origin "https://$CI_USER_NAME:$GITHUB_ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY"
-    - git config --global user.name $CI_USER_NAME
-    - git config --global user.email $CI_USER_EMAIL
-    - git checkout $CI_COMMIT_BRANCH || true
-    - git commit -am "automatic formatting changes" || true
-    - git push origin $CI_COMMIT_BRANCH || true
+    - |
+      docker run -v "$PWD":/project $CI_REGISTRY/r3/docker/julia-custom julia -e 'using JuliaFormatter; format("/project", verbose=true);'
+    - |
+      if [ `docker run -i -v "$PWD":/git alpine/git status -s | wc -l` -ne 0 ] ; then
+        GITHUB_COMMENT=":red_square: &nbsp;Commit ${CI_COMMIT_SHORT_SHA} requires formatting!\
+      "$'\n\n'"Required formatting changes summary:\
+      "$'\n```'"`docker run -i -v \"$PWD\":/git alpine/git diff --stat`"$'\n```'
+      else
+        GITHUB_COMMENT=":green_circle: &nbsp;Commit ${CI_COMMIT_SHORT_SHA} is formatted properly."
+      fi
+    - |
+      export GITHUB_TOKEN="${GITHUB_ACCESS_TOKEN_FORMATTER}"
+      export GITHUB_OWNER="lcsb-biocore"
+      export GITHUB_REPO="cobrexa.jl"
+      export GITHUB_COMMENT_TYPE=pr
+      export GITHUB_PR_ISSUE_NUMBER="${CI_EXTERNAL_PULL_REQUEST_IID}"
+      export GITHUB_COMMENT_FORMAT=""
+      export GITHUB_COMMENT
+    - |
+      docker run -i --rm \
+            -e GITHUB_TOKEN \
+            -e GITHUB_OWNER \
+            -e GITHUB_REPO \
+            -e GITHUB_COMMENT_TYPE \
+            -e GITHUB_PR_ISSUE_NUMBER \
+            -e GITHUB_COMMENT_FORMAT \
+            -e GITHUB_COMMENT \
+            cloudposse/github-commenter
   <<: *global_settings
 
 # Documentation history
@@ -88,7 +114,7 @@ generator:gource:
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
-    - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
+    - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
   <<: *global_settings_master
@@ -130,7 +156,7 @@ pages:
 # --------------------------------------
 
 docker:v1.6:
-  stage: test-containers
+  stage: test-basic
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
