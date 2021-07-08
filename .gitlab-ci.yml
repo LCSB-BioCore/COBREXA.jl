@@ -71,11 +71,13 @@ format:
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
-    #- docker run -v $(pwd):/project $CI_REGISTRY/r3/docker/julia-custom --project=@. -e 'using JuliaFormatter; format(".", verbose=true);'
-    - if [[ $(docker run -i -v $(pwd):/git alpine/git status -s | wc -l) -gt 0 ]]; then
-        GITHUB_COMMENT="There are files that need formatting :x:";
+    - |
+      docker run -v "$PWD":/project $CI_REGISTRY/r3/docker/julia-custom julia -e 'using JuliaFormatter; format("/project", verbose=true);'
+    - |
+      if [ `docker run -i -v "$PWD":/git alpine/git status -s | wc -l` -ne 0 ] ; then
+        GITHUB_COMMENT=":red_square: Commit ${CI_COMMIT_SHORT_SHA} requires formatting! :red_square:"$'\n\n'"Affected files:"$'\n```'"`docker run -i -v \"$PWD\":/git alpine/git status -s`"$'\n```'
       else
-        GITHUB_COMMENT="All files are formatted properly :white_check_mark:";
+        GITHUB_COMMENT=":green_circle: Commit ${CI_COMMIT_SHORT_SHA} is formatted properly. :green_circle:"
       fi
     - |
       export GITHUB_TOKEN="${GITHUB_ACCESS_TOKEN_FORMATTER}"
@@ -84,7 +86,7 @@ format:
       export GITHUB_COMMENT_TYPE=pr
       export GITHUB_PR_ISSUE_NUMBER="${CI_EXTERNAL_PULL_REQUEST_IID}"
       export GITHUB_COMMENT_FORMAT=""
-      export GITHUB_COMMENT="${GITHUB_COMMENT}"
+      export GITHUB_COMMENT
     - |
       docker run -i --rm \
             -e GITHUB_TOKEN \
@@ -111,7 +113,7 @@ generator:gource:
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
-    - docker run -v $(pwd):/visualization $CI_REGISTRY/r3/docker/gource
+    - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
   <<: *global_settings_master
