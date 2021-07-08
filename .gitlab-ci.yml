@@ -74,7 +74,9 @@ format:
       docker run -v "$PWD":/project $CI_REGISTRY/r3/docker/julia-custom julia -e 'using JuliaFormatter; format("/project", verbose=true);'
     - |
       if [ `docker run -i -v "$PWD":/git alpine/git status -s | wc -l` -ne 0 ] ; then
-        GITHUB_COMMENT=":red_square: Commit ${CI_COMMIT_SHORT_SHA} requires formatting! :red_square:"$'\n\n'"Required formatting changes summary:"$'\n```'"`docker run -i -v \"$PWD\":/git alpine/git diff --stat`"$'\n```'
+        GITHUB_COMMENT=":red_square: Commit ${CI_COMMIT_SHORT_SHA} requires formatting! :red_square:\
+      "$'\n\n'"Required formatting changes summary:\
+      "$'\n```'"`docker run -i -v \"$PWD\":/git alpine/git diff --stat`"$'\n```'
       else
         GITHUB_COMMENT=":green_circle: Commit ${CI_COMMIT_SHORT_SHA} is formatted properly. :green_circle:"
       fi
