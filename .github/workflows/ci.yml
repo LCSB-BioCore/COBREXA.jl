@@ -13,7 +13,7 @@ jobs:
       - uses: addnab/docker-run-action@v3
         with:
           username: cylon-x
-          password: ${{ secrets.docker_pwd }}
+          password: ${{ secrets.gitlab_access_token }}
           registry: ${{ secrets.docker_registry }}
           image: ${{ secrets.docker_img }}
           options: -v ${{ github.workspace }}:/pkg
