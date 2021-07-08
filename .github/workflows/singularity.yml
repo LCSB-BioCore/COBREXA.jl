@@ -1,0 +1,66 @@
+name: Publish Singularity image
+
+on:
+  push:
+    tags:
+      - "v*"
+  release:
+    types: [published, created]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        singularity_version:
+          - '3.5.3'
+    container:
+      image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
+      options: --privileged
+    steps:
+    - name: Check out code for the container build
+      uses: actions/checkout@v1
+
+    - name: Build Container
+      env:
+        SINGULARITY_RECIPE: cobrexa
+        OUTPUT_CONTAINER: cobrexa.sif
+      run: |
+       ls
+       if [ -f "${SINGULARITY_RECIPE}" ]; then
+           singularity build ${OUTPUT_CONTAINER} ${SINGULARITY_RECIPE}
+       else
+           echo "${SINGULARITY_RECIPE} is not found."
+           echo "Present working directory: $PWD"
+           ls
+       fi
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        singularity_version:
+          - '3.5.3'
+    container:
+      image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
+      options: --privileged
+    steps:
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y \
+          build-essential \
+          libssl-dev \
+          uuid-dev \
+          libgpgme11-dev \
+          squashfs-tools \
+          libseccomp-dev \
+          pkg-config \
+          python-dev python python3-pip
+
+    - name: Deploy Container
+      run: |
+        sudo pip3 install sregistry
+        SREGISTRY_CLIENT=registry sregistry push --name cylon-x/lcsb-biocore cobrexa.sif
