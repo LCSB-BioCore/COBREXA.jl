@@ -17,9 +17,9 @@ model = load_model(StandardModel, "e_coli_core.json")
 
 # ## Preparing the functions
 #
-# While we could use the [`with_change_bound`](@ref) to limit the reaction rates,
+# While we could use the [`with_changed_bound`](@ref) to limit the reaction rates,
 # but we will make a slightly more precise, usage-tailored modification. This
-# is a straightforward modification of the [`with_change_bound`](@ref) that does
+# is a straightforward modification of the [`with_changed_bound`](@ref) that does
 # not set bounds "outside" of the original bounds:
 
 with_limited_rate(reaction_id::String, limit) =
