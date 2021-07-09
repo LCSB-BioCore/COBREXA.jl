@@ -213,83 +213,29 @@ remove_gene!(model, "g1")
 remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-@doc @_change_bound_s_bang(
-    "StandardModel",
-    "rxn_id",
-    "String",
-    "\"PFL\"",
-    :singular,
-    :inplace
-) function change_bound!(
-    model::StandardModel,
-    reaction_id::String;
-    lower_bound = nothing,
-    upper_bound = nothing,
-)
-    reaction = model.reactions[reaction_id]
-    !isnothing(lower_bound) && (reaction.lb = float(lower_bound))
-    !isnothing(upper_bound) && (reaction.ub = float(upper_bound))
-    return nothing # so that nothing gets printed
+
+@_change_bounds_fn StandardModel String inplace begin
+    isnothing(lower) || (model.reactions[rxn_id].lb = lower)
+    isnothing(upper) || (model.reactions[rxn_id].ub = upper)
+    nothing
 end
 
-@doc @_change_bound_s_bang(
-    "StandardModel",
-    "rxn_ids",
-    "Vector{String}",
-    "[\"PFL\", \"FBA\"]",
-    :plural,
-    :inplace
-) function change_bounds!(
-    model::StandardModel,
-    reaction_ids::Vector{String};
-    lower_bounds = fill(nothing, length(reaction_ids)),
-    upper_bounds = fill(nothing, length(reaction_ids)),
-)
-    for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
-        change_bound!(model, rid; lower_bound = lb, upper_bound = ub)
+@_change_bounds_fn StandardModel String inplace plural begin
+    for (i, l, u) in zip(rxn_ids, lower, upper)
+        change_bound!(model, i, lower = l, upper = u)
     end
 end
 
-@doc @_change_bound_s_bang(
-    "StandardModel",
-    "rxn_id",
-    "String",
-    "\"PFL\"",
-    :singular,
-    :notinplace
-) function change_bound(
-    model::StandardModel,
-    reaction_id::String;
-    lower_bound = nothing,
-    upper_bound = nothing,
-)
-    m = copy(model)
-    m.reactions = copy(model.reactions)
-    r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
-    !isnothing(lower_bound) && (r.lb = float(lower_bound))
-    !isnothing(upper_bound) && (r.ub = float(upper_bound))
-    return m
+@_change_bounds_fn StandardModel String begin
+    change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
 end
 
-@doc @_change_bound_s_bang(
-    "StandardModel",
-    "rxn_ids",
-    "Vector{String}",
-    "[\"PFL\", \"FBA\"]",
-    :plural,
-    :notinplace
-) function change_bounds(
-    model::StandardModel,
-    reaction_ids::Vector{String};
-    lower_bounds = fill(nothing, length(reaction_ids)),
-    upper_bounds = fill(nothing, length(reaction_ids)),
-)
-    m = copy(model)
-    m.reactions = copy(model.reactions)
-    for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
-        r = m.reactions[rid] = copy(model.reactions[rid])
-        !isnothing(lb) && (r.lb = float(lb))
-        !isnothing(ub) && (r.ub = float(ub))
+@_change_bounds_fn StandardModel String plural begin
+    n = copy(model)
+    n.reactions = copy(model.reactions)
+    for i in rxn_ids
+        n.reactions[i] = copy(n.reactions[i])
     end
-    return m
+    change_bounds!(n, rxn_ids, lower = lower, upper = upper)
+    n
 end
