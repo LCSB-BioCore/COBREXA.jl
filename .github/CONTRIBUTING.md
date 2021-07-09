@@ -179,11 +179,38 @@ submitting the pull requests.
 After you submitted a pull request, a label might be assigned that allows us
 to track and manage issues and pull requests.
 
-**Tip**: if you commit many small, partial changes, you may help us save energy
-by prefixing your commit names with `[skip ci]`, which deactivates the CI
-trigger on that commit. With each skipped CI, you may save as much as 15Wh of
-energy. Testing just the "final" commit of the pull-request branch is
-sufficient.
+### Code culture and style recommendations
+
+Follow basic rules for software maintainability and extensibility:
+- Do not reimplement functionality that is available in other packages, unless
+  the reimplementation is either trivial and short, or there is a grave need to
+  do so because the other implementations are deficient in some manner.
+- Try to keep the function names and interfaces consistent with ecosystem
+  standards and the other functions in the package. Consistency reduces the
+  amount of surprise on the user side, thus lowers the need to reach for
+  documentation, and in turn makes the software much easier and faster to use.
+- Code less. Shorter code is almost always better unless demonstrated
+  otherwise, e.g. with a benchmark. Avoid repetitive boilerplate (there should
+  be ways to generate it, if needed).
+- Keep the functionality "open" and composable. In particular, avoid all
+  unnecessarily opaque and leaky abstractions (common in object-oriented
+  programming).
+- Avoid producing lots of "informative" text side-output by default, unless
+  that is what the user asked for.
+- Adhere to the code formatting rules defined by
+  [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl). We usually
+  have a bot running that checks all PRs and reports whether the code is
+  properly formatted.
+
+Follow the common rules for making easily mergable and reviewable PRs:
+- Create one PR for each logical "feature" you want to merge. If your change is
+  more complex and contains multiple "stages", open multiple PRs.
+- Keep the test coverage reasonably high.
+- If you commit many small, partial changes in a PR, you may help us save
+  energy by prefixing your commit names with `[skip ci]`, which deactivates the
+  CI trigger on that commit. With each skipped CI, you save a few watt-hours of
+  energy. Testing just the "final" commit of the pull-request branch is
+  sufficient.
 
 ## For developers: What is the expected branch management/workflow?
 
