@@ -12,9 +12,14 @@ using Base: lowerbound, upperbound
     change_bound!(cp, "r1", lower_bound=-101, upper_bound=101)
     @test cp.xl[1] == -101
     @test cp.xu[1] == 101
-    change_bounds!(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
+    change_bounds!(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[114, 233.0])
     @test cp.xl[2] == -12.23
-    @test cp.xu[1] == 113
+    @test cp.xu[1] == 114
+    change_bounds!(cp, ["r1","r2"]; lower_bounds=[-114, nothing], upper_bounds=[nothing, 2333.0])
+    @test cp.xl[1] == -114
+    @test cp.xl[2] == -12.23
+    @test cp.xu[1] == 114
+    @test cp.xu[2] == 2333
 
     new_model = change_bound(cp, 1, lower_bound=-10, upper_bound=10)
     @test new_model.xl[1] == -10
@@ -26,9 +31,14 @@ using Base: lowerbound, upperbound
     new_model = change_bound(cp, "r1", lower_bound=-101, upper_bound=101)
     @test new_model.xl[1] == -101
     @test new_model.xu[1] == 101
-    new_model = change_bounds(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
+    new_model = change_bounds(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 1000])
     @test new_model.xl[2] == -12.23
     @test new_model.xu[1] == 113
+    new_model = change_bounds(cp, ["r1", "r2"]; lower_bounds=[nothing, -10], upper_bounds=[110, nothing])
+    @test new_model.xl[1] == -114
+    @test new_model.xl[2] == -10
+    @test new_model.xu[1] == 110
+    @test new_model.xu[2] == 2333
 end
 
 @testset "Verify consistency" begin
