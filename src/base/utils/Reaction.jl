@@ -62,7 +62,7 @@ function is_mass_balanced(model::StandardModel, rxn::Reaction)
     for (met, stoich) in rxn.metabolites
         atoms = metabolite_formula(model, met)
         if isnothing(atoms) # ignore blanks 
-            @_utilities_log @warn "$met has no atoms associated with it."
+            @_models_log @warn "$met has no atoms associated with it."
             continue
         end
         for (k, v) in atoms
