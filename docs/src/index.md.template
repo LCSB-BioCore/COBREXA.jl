@@ -27,7 +27,7 @@ underlying linear programming solvers. We use
 many solvers; you can plug in whichever compatible solver you want, including
 the popular [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl),
 [`GLPK.jl`](https://github.com/jump-dev/GLPK.jl),
-[`OSQP.jl`](https://github.com/oxfordcontrol/OSQP.jl), and
+[`OSQP.jl`](https://github.com/osqp/OSQP.jl), and
 [`Gurobi.jl`](https://github.com/jump-dev/Gurobi.jl).
 
 ```@raw html

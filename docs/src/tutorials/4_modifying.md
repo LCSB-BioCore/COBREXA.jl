@@ -79,7 +79,7 @@ m.reactions["R_GLNS"].metabolites["M_co2_e"] = 1.0
 ```
 
 There are other functions that may be used to change the StandardModel in a
-more systematic way. See the documentation of [`add!`](@ref), [`rm!`](@ref),
+more systematic way. See the documentation of [`add_reactions!`](@ref),
 [`@add_reactions!`](@ref), and [`set_bound`](@ref) for examples.
 
 ## Analysis modifiers
