@@ -1,4 +1,11 @@
-macro _change_bound_s_bang(model_type, index_name, index_type, example, is_singular, is_inplace)
+macro _change_bound_s_bang(
+    model_type,
+    index_name,
+    index_type,
+    example,
+    is_singular,
+    is_inplace,
+)
     if eval(:($is_singular != :singular))
         if eval(:($is_inplace == :inplace))
             add_bang = "!"
@@ -36,11 +43,11 @@ macro _change_bound_s_bang(model_type, index_name, index_type, example, is_singu
             lower_bound$($add_s) = $($lbs)
             upper_bound$($add_s) = $($ubs),
         )
-    
+
     $($descr_sentence) Note, if the bound argument is `nothing` then it is not changed. 
-    
+
     See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bound!`](@ref), [`change_bounds!`](@ref)
-    
+
     # Example
     ```
     change_bound$($add_s)$($add_bang)(model, $($example); $($bounds1))
