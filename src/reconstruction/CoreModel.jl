@@ -325,6 +325,8 @@ function remove_metabolites(model::CoreModel, mets::Vector{String})
 end
 
 """
+    remove_reactions(m::CoreModel, rxns::Vector{Int})
+
 Removes a set of reactions from a CoreModel.
 Also removes the metabolites not involved in any reaction.
 """
@@ -375,145 +377,52 @@ function remove_reactions(m::CoreModel, rxns::Vector{String})
     end
 end
 
-@doc @_change_bound_s_bang(
-    "CoreModel",
-    "rxn_idxs",
-    "Vector{Int}",
-    "[2, 43]",
-    :plural,
-    :inplace
-) function change_bounds!(
-    model::CoreModel,
-    reaction_idxs::Vector{Int};
-    lower_bounds = fill(nothing, length(reaction_idxs)),
-    upper_bounds = fill(nothing, length(reaction_idxs)),
-)
-    for (rxn_idx, lb, ub) in zip(reaction_idxs, lower_bounds, upper_bounds)
-        change_bound!(model, rxn_idx; lower_bound = lb, upper_bound = ub)
+@_change_bounds_fn CoreModel Int inplace begin
+    isnothing(lower) || (model.xl[rxn_idx] = lower)
+    isnothing(upper) || (model.xu[rxn_idx] = upper)
+    nothing
+end
+
+@_change_bounds_fn CoreModel Int inplace plural begin
+    for (i, l, u) in zip(rxn_idxs, lower, upper)
+        change_bound!(model, i, lower = l, upper = u)
     end
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :inplace) function change_bound!(
-    model::CoreModel,
-    rxn::Int;
-    lower_bound = nothing,
-    upper_bound = nothing,
-)
-    !isnothing(lower_bound) && (model.xl[rxn] = lower_bound)
-    !isnothing(upper_bound) && (model.xu[rxn] = upper_bound)
-    return nothing # so that nothing gets printed
+@_change_bounds_fn CoreModel Int begin
+    change_bounds(model, [rxn_idx], lower = [lower], upper = [upper])
 end
 
-@doc @_change_bound_s_bang(
-    "CoreModel",
-    "rxn_ids",
-    "Vector{String}",
-    "[\"PFL\", \"FBA\"]",
-    :plural,
-    :inplace
-) function change_bounds!(
-    model::CoreModel,
-    rxn_ids::Vector{String};
-    lower_bounds = fill(nothing, length(rxn_ids)),
-    upper_bounds = fill(nothing, length(rxn_ids)),
-)
+@_change_bounds_fn CoreModel Int plural begin
+    n = copy(model)
+    n.xl = copy(n.xl)
+    n.xu = copy(n.xu)
+    change_bounds!(n, rxn_idxs, lower = lower, upper = upper)
+    n
+end
+
+@_change_bounds_fn CoreModel String inplace begin
+    change_bounds!(model, [rxn_id], lower = [lower], upper = [upper])
+end
+
+@_change_bounds_fn CoreModel String inplace plural begin
     change_bounds!(
         model,
-        Int.(indexin(rxn_ids, reactions(model)));
-        lower_bounds = lower_bounds,
-        upper_bounds = upper_bounds,
+        Vector{Int}(indexin(rxn_ids, reactions(model))),
+        lower = lower,
+        upper = upper,
     )
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace) function change_bound!(
-    model::CoreModel,
-    rxn_id::String;
-    lower_bound = nothing,
-    upper_bound = nothing,
-)
-    change_bound!(
-        model,
-        first(indexin([rxn_id], reactions(model)));
-        lower_bound = lower_bound,
-        upper_bound = upper_bound,
-    )
+@_change_bounds_fn CoreModel String begin
+    change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
 end
 
-@doc @_change_bound_s_bang(
-    "CoreModel",
-    "rxn_idxs",
-    "Vector{Int}",
-    "[2, 43]",
-    :plural,
-    :notinplace
-) function change_bounds(
-    model::CoreModel,
-    rxns::Vector{Int};
-    lower_bounds = fill(nothing, length(rxns)),
-    upper_bounds = fill(nothing, length(rxns)),
-)
-    m = copy(model)
-    m.xl = copy(model.xl)
-    m.xu = copy(model.xu)
-    for idx in rxns
-        !isnothing(lower_bounds[idx]) && (m.xl[idx] = lower_bounds[idx])
-        !isnothing(upper_bounds[idx]) && (m.xu[idx] = upper_bounds[idx])
-    end
-    return m
-end
-
-@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :notinplace) function change_bound(
-    model::CoreModel,
-    rxn::Int;
-    lower_bound = nothing,
-    upper_bound = nothing,
-)
-    m = copy(model)
-    m.xl = copy(model.xl)
-    m.xu = copy(model.xu)
-    !isnothing(lower_bound) && (m.xl[rxn] = lower_bound)
-    !isnothing(upper_bound) && (m.xu[rxn] = upper_bound)
-    return m
-end
-
-@doc @_change_bound_s_bang(
-    "CoreModel",
-    "rxn_ids",
-    "Vector{String}",
-    "[\"PFL\", \"FBA\"]",
-    :plural,
-    :notinplace
-) function change_bounds(
-    model::CoreModel,
-    rxn_ids::Vector{String};
-    lower_bounds = fill(nothing, length(rxn_ids)),
-    upper_bounds = fill(nothing, length(rxn_ids)),
-)
+@_change_bounds_fn CoreModel String plural begin
     change_bounds(
         model,
-        Int.(indexin(rxn_ids, reactions(model)));
-        lower_bounds = lower_bounds,
-        upper_bounds = upper_bounds,
-    )
-end
-
-@doc @_change_bound_s_bang(
-    "CoreModel",
-    "rxn_id",
-    "String",
-    "\"PFL\"",
-    :singular,
-    :notinplace
-) function change_bound(
-    model::CoreModel,
-    rxn_id::String;
-    lower_bound = nothing,
-    upper_bound = nothing,
-)
-    change_bound(
-        model,
-        first(indexin([rxn_id], reactions(model)));
-        lower_bound = lower_bound,
-        upper_bound = upper_bound,
+        Vector{Int}(indexin(rxn_ids, reactions(model))),
+        lower = lower,
+        upper = upper,
     )
 end
