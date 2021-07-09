@@ -57,7 +57,7 @@ Free-form notes about something (e.g. a [`Gene`](@ref)), categorized by
 """
 const Notes = Dict{String,Vector{String}}
 
-_missing_impl_error = (m, a) -> throw(MethodError(m, a))
+_missing_impl_error(m, a) = throw(MethodError(m, a))
 
 """
     reactions(a::MetabolicModel)::Vector{String}

@@ -134,7 +134,7 @@ function _sbml_export_annotation(annotation)::Maybe{String}
     end
 end
 
-_sbml_export_notes = _sbml_export_annotation
+const _sbml_export_notes = _sbml_export_annotation
 
 
 """
