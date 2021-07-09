@@ -1,6 +1,6 @@
 macro _change_bound_s_bang(model_type, index_name, index_type, example, is_singular, is_inplace)
-    if eval(:($is_singular) != :singular)
-        if eval(:($is_inplace) == :inplace)
+    if eval(:($is_singular != :singular))
+        if eval(:($is_inplace == :inplace))
             add_bang = "!"
             descr_sentence = "Change the bounds of all reactions with `$(index_name)` in `model` in-place."
         else
@@ -14,13 +14,12 @@ macro _change_bound_s_bang(model_type, index_name, index_type, example, is_singu
         lbs = "fill(nothing, length($(index_name)))"
         ubs = "fill(nothing, length($(index_name)))"
     else
-        if eval(:($is_inplace) == :inplace)
+        if eval(:($is_inplace == :inplace))
             add_bang = "!"
             descr_sentence = "Change the bounds of a reaction `$(index_name)` in `model` in-place."
         else
             add_bang = ""
-            descr_sentence = "Return a shallow copy of the `model` where the bounds of reaction with
-            `$(index_name)` has been changed."
+            descr_sentence = "Return a shallow copy of the `model` where the bounds of reaction with `$(index_name)` has been changed."
         end
         add_s = ""
         bounds1 = "lower_bound=-10, upper_bound=10"
@@ -38,7 +37,7 @@ macro _change_bound_s_bang(model_type, index_name, index_type, example, is_singu
             upper_bound$($add_s) = $($ubs),
         )
     
-    $($descr_sentence) Note that if the bound argument is `nothing` then it is not changed. 
+    $($descr_sentence) Note, if the bound argument is `nothing` then it is not changed. 
     
     See also: [`change_bound`](@ref), [`change_bounds!`](@ref), [`change_bound!`](@ref), [`change_bounds!`](@ref)
     

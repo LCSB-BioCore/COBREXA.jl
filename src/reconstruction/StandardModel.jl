@@ -213,7 +213,7 @@ remove_gene!(model, "g1")
 remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-# @doc @_change_bound_s_bang("StandardModel", "rxn_id", "String", "\"PFL\"", not_plural, is_inplace)
+@doc @_change_bound_s_bang("StandardModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace)
 function change_bound!(
     model::StandardModel,
     reaction_id::String;
@@ -226,7 +226,7 @@ function change_bound!(
     return nothing # so that nothing gets printed
 end
 
-# @doc @_change_bound_s_bang("StandardModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", is_plural, is_inplace)
+@doc @_change_bound_s_bang("StandardModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", :plural, :inplace)
 function change_bounds!(
     model::StandardModel,
     reaction_ids::Vector{String};
@@ -238,7 +238,7 @@ function change_bounds!(
     end
 end
 
-# @doc @_change_bound_s_bang("StandardModel", "rxn_id", "String", "\"PFL\"", not_plural, not_inplace)
+@doc @_change_bound_s_bang("StandardModel", "rxn_id", "String", "\"PFL\"", :singular, :notinplace)
 function change_bound(
     model::StandardModel,
     reaction_id::String;
@@ -253,7 +253,7 @@ function change_bound(
     return m
 end
 
-# @doc @_change_bound_s_bang("StandardModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", is_plural, not_inplace)
+@doc @_change_bound_s_bang("StandardModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", :plural, :notinplace)
 function change_bounds(
     model::StandardModel,
     reaction_ids::Vector{String};

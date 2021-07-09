@@ -387,7 +387,7 @@ function change_bounds!(
     end
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", not_plural, is_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :inplace)
 function change_bound!(
     model::CoreModel,
     rxn::Int;
@@ -399,7 +399,7 @@ function change_bound!(
     return nothing # so that nothing gets printed
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", is_plural, is_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", :plural, :inplace)
 function change_bounds!(
     model::CoreModel,
     rxn_ids::Vector{String};
@@ -409,7 +409,7 @@ function change_bounds!(
     change_bounds!(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", not_plural, is_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace)
 function change_bound!(
     model::CoreModel,
     rxn_id::String;
@@ -419,7 +419,7 @@ function change_bound!(
     change_bound!(model, first(indexin([rxn_id], reactions(model))); lower_bound = lower_bound, upper_bound = upper_bound)
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_idxs", "Vector{Int}", "[2, 43]", is_plural, not_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_idxs", "Vector{Int}", "[2, 43]", :plural, :notinplace)
 function change_bounds(
     model::CoreModel,
     rxns::Vector{Int};
@@ -436,7 +436,7 @@ function change_bounds(
     return m
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", not_plural, not_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :notinplace)
 function change_bound(
     model::CoreModel,
     rxn::Int;
@@ -451,7 +451,7 @@ function change_bound(
     return m
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", is_plural, not_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", :plural, :notinplace)
 function change_bounds(
     model::CoreModel,
     rxn_ids::Vector{String};
@@ -461,7 +461,7 @@ function change_bounds(
     change_bounds(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
 
-# @doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", not_plural, not_inplace)
+@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :notinplace)
 function change_bound(
     model::CoreModel,
     rxn_id::String;
