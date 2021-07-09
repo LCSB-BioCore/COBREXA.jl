@@ -393,8 +393,7 @@ end
     end
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :inplace) 
-function change_bound!(
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :inplace) function change_bound!(
     model::CoreModel,
     rxn::Int;
     lower_bound = nothing,
@@ -426,8 +425,7 @@ end
     )
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace) 
-function change_bound!(
+@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace) function change_bound!(
     model::CoreModel,
     rxn_id::String;
     lower_bound = nothing,
@@ -464,8 +462,7 @@ end
     return m
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :notinplace) 
-function change_bound(
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :notinplace) function change_bound(
     model::CoreModel,
     rxn::Int;
     lower_bound = nothing,
