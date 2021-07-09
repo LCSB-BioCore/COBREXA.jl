@@ -380,7 +380,8 @@ end
     end
 end
 
-@doc @_change_bound_s_bang("CoreModelCoupled", "rxn_idx", "Int", "2", :singular, :inplace) function change_bound!(
+@doc @_change_bound_s_bang("CoreModelCoupled", "rxn_idx", "Int", "2", :singular, :inplace) 
+function change_bound!(
     model::CoreModelCoupled,
     rxn::Int;
     lower_bound = nothing,
