@@ -375,57 +375,83 @@ function remove_reactions(m::CoreModel, rxns::Vector{String})
     end
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idxs", "Vector{Int}", "[2, 43]", :plural, :inplace)
-function change_bounds!(
+@doc @_change_bound_s_bang(
+    "CoreModel",
+    "rxn_idxs",
+    "Vector{Int}",
+    "[2, 43]",
+    :plural,
+    :inplace
+) function change_bounds!(
     model::CoreModel,
     reaction_idxs::Vector{Int};
     lower_bounds = fill(nothing, length(reaction_idxs)),
     upper_bounds = fill(nothing, length(reaction_idxs)),
-)   
+)
     for (rxn_idx, lb, ub) in zip(reaction_idxs, lower_bounds, upper_bounds)
-        change_bound!(model, rxn_idx; lower_bound=lb, upper_bound=ub)
+        change_bound!(model, rxn_idx; lower_bound = lb, upper_bound = ub)
     end
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :inplace)
-function change_bound!(
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :inplace) function change_bound!(
     model::CoreModel,
     rxn::Int;
     lower_bound = nothing,
     upper_bound = nothing,
 )
     !isnothing(lower_bound) && (model.xl[rxn] = lower_bound)
-    !isnothing(upper_bound) && (model.xu[rxn] = upper_bound) 
+    !isnothing(upper_bound) && (model.xu[rxn] = upper_bound)
     return nothing # so that nothing gets printed
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", :plural, :inplace)
-function change_bounds!(
+@doc @_change_bound_s_bang(
+    "CoreModel",
+    "rxn_ids",
+    "Vector{String}",
+    "[\"PFL\", \"FBA\"]",
+    :plural,
+    :inplace
+) function change_bounds!(
     model::CoreModel,
     rxn_ids::Vector{String};
     lower_bounds = fill(nothing, length(rxn_ids)),
     upper_bounds = fill(nothing, length(rxn_ids)),
 )
-    change_bounds!(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
+    change_bounds!(
+        model,
+        Int.(indexin(rxn_ids, reactions(model)));
+        lower_bounds = lower_bounds,
+        upper_bounds = upper_bounds,
+    )
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace)
-function change_bound!(
+@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :inplace) function change_bound!(
     model::CoreModel,
     rxn_id::String;
     lower_bound = nothing,
     upper_bound = nothing,
 )
-    change_bound!(model, first(indexin([rxn_id], reactions(model))); lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bound!(
+        model,
+        first(indexin([rxn_id], reactions(model)));
+        lower_bound = lower_bound,
+        upper_bound = upper_bound,
+    )
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idxs", "Vector{Int}", "[2, 43]", :plural, :notinplace)
-function change_bounds(
+@doc @_change_bound_s_bang(
+    "CoreModel",
+    "rxn_idxs",
+    "Vector{Int}",
+    "[2, 43]",
+    :plural,
+    :notinplace
+) function change_bounds(
     model::CoreModel,
     rxns::Vector{Int};
     lower_bounds = fill(nothing, length(rxns)),
     upper_bounds = fill(nothing, length(rxns)),
-)       
+)
     m = copy(model)
     m.xl = copy(model.xl)
     m.xu = copy(model.xu)
@@ -436,8 +462,7 @@ function change_bounds(
     return m
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :notinplace)
-function change_bound(
+@doc @_change_bound_s_bang("CoreModel", "rxn_idx", "Int", "2", :singular, :notinplace) function change_bound(
     model::CoreModel,
     rxn::Int;
     lower_bound = nothing,
@@ -451,22 +476,44 @@ function change_bound(
     return m
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_ids", "Vector{String}", "[\"PFL\", \"FBA\"]", :plural, :notinplace)
-function change_bounds(
+@doc @_change_bound_s_bang(
+    "CoreModel",
+    "rxn_ids",
+    "Vector{String}",
+    "[\"PFL\", \"FBA\"]",
+    :plural,
+    :notinplace
+) function change_bounds(
     model::CoreModel,
     rxn_ids::Vector{String};
     lower_bounds = fill(nothing, length(rxn_ids)),
     upper_bounds = fill(nothing, length(rxn_ids)),
 )
-    change_bounds(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
+    change_bounds(
+        model,
+        Int.(indexin(rxn_ids, reactions(model)));
+        lower_bounds = lower_bounds,
+        upper_bounds = upper_bounds,
+    )
 end
 
-@doc @_change_bound_s_bang("CoreModel", "rxn_id", "String", "\"PFL\"", :singular, :notinplace)
-function change_bound(
+@doc @_change_bound_s_bang(
+    "CoreModel",
+    "rxn_id",
+    "String",
+    "\"PFL\"",
+    :singular,
+    :notinplace
+) function change_bound(
     model::CoreModel,
     rxn_id::String;
     lower_bound = nothing,
     upper_bound = nothing,
 )
-    change_bound(model, first(indexin([rxn_id], reactions(model))); lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bound(
+        model,
+        first(indexin([rxn_id], reactions(model)));
+        lower_bound = lower_bound,
+        upper_bound = upper_bound,
+    )
 end

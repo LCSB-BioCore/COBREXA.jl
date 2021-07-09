@@ -153,33 +153,44 @@ end
 @testset "Change bounds" begin
     cp = convert(CoreModelCoupled, test_LP())
     @test cp isa CoreModelCoupled
-    
-    change_bound!(cp, 1, lower_bound=-10, upper_bound=10)
+
+    change_bound!(cp, 1, lower_bound = -10, upper_bound = 10)
     @test cp.lm.xl[1] == -10
     @test cp.lm.xu[1] == 10
-    change_bounds!(cp, [1,2]; lower_bounds=[-11, -12.2], upper_bounds=[11, 23.0])
+    change_bounds!(cp, [1, 2]; lower_bounds = [-11, -12.2], upper_bounds = [11, 23.0])
     @test cp.lm.xl[2] == -12.2
     @test cp.lm.xu[1] == 11
 
-    change_bound!(cp, "r1", lower_bound=-101, upper_bound=101)
+    change_bound!(cp, "r1", lower_bound = -101, upper_bound = 101)
     @test cp.lm.xl[1] == -101
     @test cp.lm.xu[1] == 101
-    change_bounds!(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
+    change_bounds!(
+        cp,
+        ["r1", "r2"];
+        lower_bounds = [-113, -12.23],
+        upper_bounds = [113, 233.0],
+    )
     @test cp.lm.xl[2] == -12.23
     @test cp.lm.xu[1] == 113
 
-    new_model = change_bound(cp, 1, lower_bound=-10, upper_bound=10)
+    new_model = change_bound(cp, 1, lower_bound = -10, upper_bound = 10)
     @test new_model.lm.xl[1] == -10
     @test new_model.lm.xu[1] == 10
-    new_model = change_bounds(cp, [1,2]; lower_bounds=[-11, -12.2], upper_bounds=[11, 23.0])
+    new_model =
+        change_bounds(cp, [1, 2]; lower_bounds = [-11, -12.2], upper_bounds = [11, 23.0])
     @test new_model.lm.xl[2] == -12.2
     @test new_model.lm.xu[1] == 11
 
-    new_model = change_bound(cp, "r1", lower_bound=-101, upper_bound=101)
+    new_model = change_bound(cp, "r1", lower_bound = -101, upper_bound = 101)
     @test new_model.lm.xl[1] == -101
     @test new_model.lm.xu[1] == 101
-    new_model = change_bounds(cp, ["r1","r2"]; lower_bounds=[-113, -12.23], upper_bounds=[113, 233.0])
+    new_model = change_bounds(
+        cp,
+        ["r1", "r2"];
+        lower_bounds = [-113, -12.23],
+        upper_bounds = [113, 233.0],
+    )
     @test new_model.lm.xl[2] == -12.23
     @test new_model.lm.xu[1] == 113
-    
+
 end
