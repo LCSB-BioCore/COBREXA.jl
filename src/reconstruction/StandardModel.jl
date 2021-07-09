@@ -217,12 +217,12 @@ remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false
 function change_bound!(
     model::StandardModel,
     reaction_id::String;
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = nothing,
+    upper_bound = nothing,
 )
     reaction = model.reactions[reaction_id]
-    reaction.lb = float(lower_bound)
-    reaction.ub = float(upper_bound)
+    !isnothing(lower_bound) && (reaction.lb = float(lower_bound))
+    !isnothing(upper_bound) && (reaction.ub = float(upper_bound))
     return nothing # so that nothing gets printed
 end
 
@@ -230,8 +230,8 @@ end
 function change_bounds!(
     model::StandardModel,
     reaction_ids::Vector{String};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_ids)),
-    upper_bounds = fill(_constants.default_reaction_bound, length(reaction_ids)),
+    lower_bounds = fill(nothing, length(reaction_ids)),
+    upper_bounds = fill(nothing, length(reaction_ids)),
 )
     for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
         change_bound!(model, rid; lower_bound = lb, upper_bound = ub)
@@ -242,14 +242,14 @@ end
 function change_bound(
     model::StandardModel,
     reaction_id::String;
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = nothing,
+    upper_bound = nothing,
 )
     m = copy(model)
     m.reactions = copy(model.reactions)
     r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
-    r.lb = float(lower_bound)
-    r.ub = float(upper_bound)
+    !isnothing(lower_bound) && (r.lb = float(lower_bound))
+    !isnothing(upper_bound) && (r.ub = float(upper_bound))
     return m
 end
 
@@ -257,15 +257,15 @@ end
 function change_bounds(
     model::StandardModel,
     reaction_ids::Vector{String};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(reaction_ids)),
-    upper_bounds = fill(constants.default_reaction_bound, length(reaction_ids)),
+    lower_bounds = fill(nothing, length(reaction_ids)),
+    upper_bounds = fill(nothing, length(reaction_ids)),
 )
     m = copy(model)
     m.reactions = copy(model.reactions)
     for (rid, lb, ub) in zip(reaction_ids, lower_bounds, upper_bounds)
         r = m.reactions[rid] = copy(model.reactions[rid])
-        r.lb = float(lb)
-        r.ub = float(ub)
+        !isnothing(lb) && (r.lb = float(lb))
+        !isnothing(ub) && (r.ub = float(ub))
     end
     return m
 end

@@ -366,8 +366,8 @@ end
 function change_bounds!(
     model::CoreModelCoupled,
     reaction_idxs::Vector{Int};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(rxns)),
-    upper_bounds = fill(_constants.default_reaction_bound, length(rxns)),
+    lower_bounds = fill(nothing, length(rxns)),
+    upper_bounds = fill(nothing, length(rxns)),
 )   
     for (rxn_idx, lb, ub) in zip(reaction_idxs, lower_bounds, upper_bounds)
         change_bound!(model, rxn_idx; lower_bound=lb, upper_bound=ub)
@@ -378,11 +378,11 @@ end
 function change_bound!(
     model::CoreModelCoupled,
     rxn::Int;
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = nothing,
+    upper_bound = nothing,
 )
-    model.lm.xl[rxn] = lower_bound    
-    model.lm.xu[rxn] = upper_bound
+    !isnothing(lower_bound) && (model.lm.xl[rxn] = lower_bound)   
+    !isnothing(upper_bound) && (model.lm.xu[rxn] = upper_bound)
     return nothing # so that nothing gets printed
 end
 
@@ -390,8 +390,8 @@ end
 function change_bounds!(
     model::CoreModelCoupled,
     rxn_ids::Vector{String};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(rxn_ids)),
-    upper_bounds = fill(constants.default_reaction_bound, length(rxn_ids)),
+    lower_bounds = fill(nothing, length(rxn_ids)),
+    upper_bounds = fill(nothing, length(rxn_ids)),
 )
     change_bounds!(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
@@ -400,8 +400,8 @@ end
 function change_bound!(
     model::CoreModelCoupled,
     rxn_id::String;
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = nothing,
+    upper_bound = nothing,
 )
     change_bound!(model, first(indexin([rxn_id], reactions(model))); lower_bound = lower_bound, upper_bound = upper_bound)
 end
@@ -410,14 +410,16 @@ end
 function change_bounds(
     model::CoreModelCoupled,
     rxns::Vector{Int};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(rxns)),
-    upper_bounds = fill(constants.default_reaction_bound, length(rxns)),
+    lower_bounds = fill(nothing, length(rxns)),
+    upper_bounds = fill(nothing, length(rxns)),
 )       
     m = copy(model)
     m.lm.xl = copy(model.lm.xl)
     m.lm.xu = copy(model.lm.xu)
-    m.lm.xl[rxns] .= lower_bounds    
-    m.lm.xu[rxns] .= upper_bounds
+    for idx in rxns
+        !isnothing(lower_bounds[idx]) && (m.lm.xl[idx] = lower_bounds[idx])
+        !isnothing(upper_bounds[idx]) && (m.lm.xu[idx] = upper_bounds[idx])
+    end
     return m
 end
 
@@ -425,14 +427,14 @@ end
 function change_bound(
     model::CoreModelCoupled,
     reaction_idx::Int;
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = nothing,
+    upper_bound = nothing,
 )
     m = copy(model)
     m.lm.xl = copy(model.lm.xl)
     m.lm.xu = copy(model.lm.xu)
-    m.lm.xl[reaction_idx] = lower_bound
-    m.lm.xu[reaction_idx] = upper_bound
+    !isnothing(lower_bound) && (m.lm.xl[reaction_idx] = lower_bound)
+    !isnothing(upper_bound) && (m.lm.xu[reaction_idx] = upper_bound)
     return m
 end
 
@@ -440,8 +442,8 @@ end
 function change_bounds(
     model::CoreModelCoupled,
     rxn_ids::Vector{String};
-    lower_bounds = fill(-_constants.default_reaction_bound, length(rxn_ids)),
-    upper_bounds = fill(constants.default_reaction_bound, length(rxn_ids)),
+    lower_bounds = fill(nothing, length(rxn_ids)),
+    upper_bounds = fill(nothing, length(rxn_ids)),
 )
     change_bounds(model, Int.(indexin(rxn_ids, reactions(model))); lower_bounds = lower_bounds, upper_bounds = upper_bounds)
 end
@@ -450,8 +452,8 @@ end
 function change_bound(
     model::CoreModelCoupled,
     rxn_id::String;
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = nothing,
+    upper_bound = nothing,
 )
     change_bound(model, first(indexin([rxn_id], reactions(model))); lower_bound = lower_bound, upper_bound = upper_bound)
 end
