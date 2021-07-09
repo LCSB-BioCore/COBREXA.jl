@@ -56,4 +56,3 @@ end
 @_make_logging_tag models "model-related messages"
 @_make_logging_tag io "messages and warnings from model input/output"
 @_make_logging_tag perf "performance-related tracing information"
-log_models(true)
