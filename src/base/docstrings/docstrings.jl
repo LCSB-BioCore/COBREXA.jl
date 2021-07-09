@@ -1,3 +1,8 @@
+const is_inplace = true
+const not_inplace = false
+const is_plural = true
+const not_plural = false
+
 macro _change_bound_s_bang(model_type, index_name, index_type, example, isplural, isinplace)
     if isplural
         if isinplace
