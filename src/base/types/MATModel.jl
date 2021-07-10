@@ -183,7 +183,7 @@ end
     reaction_stoichiometry(model::MATModel, rxn_index)::Dict{String, Float64}
 
 Return the reaction equation of reaction with index `rxn_index` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients. Note, `rxn_index` can 
+equation maps metabolite ids to their stoichiometric coefficients. Note, `rxn_index` can
 be any suitable type that can index into an array.
 """
 function reaction_stoichiometry(m::MATModel, rxn_ind)::Dict{String,Float64}

@@ -53,7 +53,7 @@ fluxes = flux_balance_analysis_dict(
 
 # This is not very exciting yet, since every other model type can also do this.
 # However, deeper inspection of flux results is possible when using
-# `StandardModel`. 
+# `StandardModel`.
 
 # ## Inspecting the flux solution: `atom_exchange`
 
@@ -98,7 +98,7 @@ consuming["atp_c"] # reactions consuming `atp_c`
 
 fieldnames(StandardModel) # fields of a StandardModel
 
-# The `:genes` field of a `StandardModel` contains an ordered dictionary of gene ids mapped to `Gene`s. 
+# The `:genes` field of a `StandardModel` contains an ordered dictionary of gene ids mapped to `Gene`s.
 
 model.genes # the keys of this dictionary are the same as genes(model)
 
@@ -143,7 +143,7 @@ model.reactions[random_reaction_id]
 #md #       Combining models that use different namespaces requires care.
 #md #       For example, in some models the water exchange reaction is called
 #md #       `EX_h2o_e`, while in others it is called `R_EX_h2o_s`. This needs to
-#md #       manually addressed (for now) to prevent duplicate, e.g. reactions, 
+#md #       manually addressed (for now) to prevent duplicate, e.g. reactions,
 #md #       from being added.
 
 # ## Checking the internals of `StandardModel`s: `annotation_index`

@@ -70,7 +70,7 @@ end
             Vector{MetaboliteWithCoefficient},
         },
         products::Union{
-            Nothing, 
+            Nothing,
             Metabolite,
             MetaboliteWithCoefficient,
             Vector{MetaboliteWithCoefficient}

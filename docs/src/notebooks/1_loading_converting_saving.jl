@@ -4,7 +4,7 @@
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats (with
-# the latter denoting SBML formatted models). 
+# the latter denoting SBML formatted models).
 
 # We will primarily use the *E. Coli* "core" model to demonstrate the utilities
 # found in `COBREXA`. First, let's download the model in several formats.
@@ -21,7 +21,7 @@
 
 using COBREXA
 
-#md # !!! tip "Save bandwidth!" 
+#md # !!! tip "Save bandwidth!"
 #md #     The published models usually do not change very often. It is
 #md #     therefore pretty useful to save them to a central location and load
 #md #     them from there. That saves your time, and does not unnecessarily
@@ -45,7 +45,7 @@ sbml_model = load_model("e_coli_core.xml")
 #md #       Notice how each model was read into memory as a model type corresponding
 #md #       to its file type, i.e. the file ending with `.json` loaded as a
 #md #       [`JSONModel`](@ref), the file ending with `.mat` loaded as [`MATModel`](@ref), and the
-#md #       file ending with `.xml` loaded as an [`SBMLModel`](@ref). 
+#md #       file ending with `.xml` loaded as an [`SBMLModel`](@ref).
 
 # You can directly inspect the model objects, although only with a specific way
 # for each specific type.

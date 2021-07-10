@@ -42,8 +42,8 @@ end
     is_boundary(rxn::Reaction)
 
 Return true if reaction is a boundary reaction, otherwise return false.
-Checks if boundary by inspecting number of metabolites in reaction equation. 
-Boundary reactions have only one metabolite, e.g. an exchange reaction, or a sink/demand reaction. 
+Checks if boundary by inspecting number of metabolites in reaction equation.
+Boundary reactions have only one metabolite, e.g. an exchange reaction, or a sink/demand reaction.
 """
 function is_boundary(rxn::Reaction)::Bool
     length(keys(rxn.metabolites)) == 1 ? true : false

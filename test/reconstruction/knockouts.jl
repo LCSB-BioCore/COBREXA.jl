@@ -1,5 +1,5 @@
 """
-The gene-reaction rules (grr) are written as 
+The gene-reaction rules (grr) are written as
 [[gene1 and gene2...] or [gene3 and...] ...]
 so for a reaction to be available it is sufficient that one group
 is available, but inside a group all of the genes need to be available

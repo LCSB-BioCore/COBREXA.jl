@@ -1,7 +1,7 @@
 """
     FluxSummary
 
-A struct used to store summary information about the solution 
+A struct used to store summary information about the solution
 of a constraint based analysis result.
 """
 struct FluxSummary
@@ -12,7 +12,7 @@ struct FluxSummary
 end
 
 """
-    flux_summary(flux_result::Dict{String, Float64}; 
+    flux_summary(flux_result::Dict{String, Float64};
                 exclude_exchanges = false,
                 exchange_prefixes = _constants.exchange_prefixes,
                 biomass_strings = _constants.biomass_strings,

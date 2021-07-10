@@ -206,7 +206,7 @@ end
         metabolite_id::String,
     )::Maybe{MetaboliteFormula}
 
-Return the formula of metabolite `metabolite_id` in `model`. 
+Return the formula of metabolite `metabolite_id` in `model`.
 Return `nothing` in case the formula is not known or irrelevant.
 """
 function metabolite_formula(
@@ -219,7 +219,7 @@ end
 """
 metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
 
-Return the charge associated with metabolite `metabolite_id` in `model`. 
+Return the charge associated with metabolite `metabolite_id` in `model`.
 Returns `nothing` if charge not present.
 """
 function metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
@@ -289,8 +289,8 @@ end
 """
     metabolite_compartment(model::MetabolicModel, metabolite_id::String)::Maybe{String}
 
-Return the compartment of metabolite `metabolite_id` in `model` if it is assigned. If not, 
-return `nothing`. 
+Return the compartment of metabolite `metabolite_id` in `model` if it is assigned. If not,
+return `nothing`.
 """
 function metabolite_compartment(model::MetabolicModel, metabolite_id::String)::Maybe{String}
     return nothing

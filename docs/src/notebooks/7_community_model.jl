@@ -3,7 +3,7 @@
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 
-# Here we will use `COBREXA` to build and analyze a small community model  
+# Here we will use `COBREXA` to build and analyze a small community model
 # consisting of three *E. coli* mutants using the `CoreModel`. We will use an
 # objective function that enforces equal growth rates.
 
@@ -38,7 +38,7 @@ eno_knockout_model = remove_reactions(base_model, "ENO") # knockout the enolase 
 sol = flux_balance_analysis_dict(eno_knockout_model, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"] # Enolase knockout μ, cannot grow by itself
 
-# ## Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models 
+# ## Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models
 
 ex_rxns = filter(looks_like_exchange_reaction, reactions(base_model)) # identify exchange reactions heuristically
 ex_mets = [first(keys(reaction_stoichiometry(base_model, ex_rxn))) for ex_rxn in ex_rxns] # identify exchange metabolites IN THE SAME ORDER as ex_rxns
@@ -118,9 +118,9 @@ d = flux_balance_analysis_dict(
     modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 println("Community μ = ", d["community_biomass"])
-# Notice that the high communal growth rate is 0, due to the enolase knockout. 
-# The reason for this behaviour: enolase is a central reaction in glycolysis - without 
-# it the organism cannot access the lower glycolysis pathways or the TCA cycle, hence 
+# Notice that the high communal growth rate is 0, due to the enolase knockout.
+# The reason for this behaviour: enolase is a central reaction in glycolysis - without
+# it the organism cannot access the lower glycolysis pathways or the TCA cycle, hence
 # the model predicts no growth for the knockout, and hence no growth for the system since
 # they all have to have the same growth rate.
 
@@ -135,4 +135,4 @@ d = flux_balance_analysis_dict(
     modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 d["community_biomass"] # community μ
-# Notice that the growth rate is now above 0! Nutrient sharing saved the day!  
+# Notice that the growth rate is now above 0! Nutrient sharing saved the day!
