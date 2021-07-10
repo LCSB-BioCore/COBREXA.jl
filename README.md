@@ -5,8 +5,11 @@
 
 # COnstraint-Based Reconstruction and EXascale Analysis
 
-[docs-img]:https://img.shields.io/badge/docs-latest-blue.svg
-[docs-url]: http://lcsb-biocore.github.io/COBREXA.jl
+[docs-img-stable]: https://img.shields.io/badge/docs-stable-blue.svg
+[docs-url-stable]: https://lcsb-biocore.github.io/COBREXA.jl
+
+[docs-img-dev]: https://img.shields.io/badge/docs-latest-0af.svg
+[docs-url-dev]: https://lcsb-biocore.github.io/COBREXA.jl/dev/
 
 [ci-img]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master
 [ci-url]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml
@@ -19,7 +22,7 @@
 
 | **Documentation** | **Tests** | **Coverage** | **How to contribute?** |
 |:--------------:|:-------:|:---------:|:---------:|
-| [![docs-img]][docs-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] |
+| [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] |
 
 This is package provides constraint-based reconstruction and analysis tools for
 exa-scale metabolic models in Julia.
@@ -124,12 +127,12 @@ the test suite to ensure that everything works as expected:
 ## Acknowledgements
 
 `COBREXA.jl` is developed at the Luxembourg Centre for Systems Biomedicine of
-the University of Luxembourg ([uni.lu/lcsb](https://www.uni.lu/lcsb)),
+the University of Luxembourg ([uni.lu/lcsb](https://wwwen.uni.lu/lcsb)),
 cooperating with the Institute for Quantitative and Theoretical Biology at the Heinrich
 Heine University in Düsseldorf ([qtb.hhu.de](https://www.qtb.hhu.de/)).
 
 The development was supported by European Union's Horizon 2020 Programme under
-PerMedCoE project ([permedcoe.eu](https://www.permedcoe.eu/)) agreement no. 951773.
+PerMedCoE project ([permedcoe.eu](https://permedcoe.eu/)) agreement no. 951773.
 <!--acknowledgements_end-->
 
 <!--ack_logos_begin-->
