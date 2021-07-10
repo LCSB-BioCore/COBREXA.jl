@@ -14,8 +14,8 @@ in the model by assigning `objective_column_index`. If unassigned then an
 objective column will be added, otherwise the column at `objective_column_index`
 will be updated.
 
-Note, the weights are negated inside the function so that the objective metabolites 
-are seen as reagents/substrates, not products in the reaction equation. 
+Note, the weights are negated inside the function so that the objective metabolites
+are seen as reagents/substrates, not products in the reaction equation.
 
 # Example
 ```
@@ -40,7 +40,7 @@ function add_objective!(
         objcol = spzeros(nr)
         objcol[obj_inds] .= -objective_weights
 
-        # extend model by one reaction 
+        # extend model by one reaction
         community.S = hcat(community.S, objcol)
         community.xl = [community.xl; 0.0]
         community.xu = [community.xu; 1000.0]
@@ -111,7 +111,7 @@ function add_model_with_exchanges(
     # indices. So I[a] = i, J[a]=j and then M[i,j] = V[a]
     Iadd, Jadd, Vadd = findnz(stoichiometry(model))
 
-    # shift to fit into community         
+    # shift to fit into community
     Iadd .+= n_cmodel_rows
     Jadd .+= n_cmodel_cols
 
@@ -145,7 +145,7 @@ function add_model_with_exchanges(
     # A note on the variables here. The bounds are vectors of upper and lower
     # bounds for each reaction. So lbs = [lb_1, lb_2, lb_i, ...], ubs = [ub_1,
     # ub_2, ub_i, ...] for reaction i. See the bounds function for more
-    # information 
+    # information
     lbsadd, ubsadd = bounds(model)
     lbs, ubs = bounds(community)
     lbs = [lbs; lbsadd]
@@ -170,13 +170,13 @@ function add_model_with_exchanges(
 end
 
 """
-    join_with_exchanges(models::Vector{M}, 
-        exchange_rxn_ids::Vector{String}, 
-        exchange_met_ids::Vector{String}; 
-        add_biomass_objective=false, 
-        biomass_ids::Vector{String}, 
+    join_with_exchanges(models::Vector{M},
+        exchange_rxn_ids::Vector{String},
+        exchange_met_ids::Vector{String};
+        add_biomass_objective=false,
+        biomass_ids::Vector{String},
         model_names=String[]
-    ) 
+    )
 
 Return a `CoreModel` representing the community model of `models` joined through
 their `exchange_rxn_ids` and `exchange_met_ids`. These exchange reactions and
@@ -209,7 +209,7 @@ like this:
 S   =   em₂|                             |
         em₃|                             |
         ...|                             |
-        bm₁|                             |  
+        bm₁|                             |
         bm₂|_                           _|
 
 ```

@@ -169,7 +169,7 @@ remove_metabolite!(model::StandardModel, id::String) = remove_metabolites!(model
         knockout_reactions::Bool = false,
     )
 
-Remove all genes with `ids` from `model`. If `knockout_reactions` is true, then also 
+Remove all genes with `ids` from `model`. If `knockout_reactions` is true, then also
 constrain reactions that require the genes to function to carry zero flux.
 
 # Example
@@ -202,7 +202,7 @@ end
         knockout_reactions::Bool = false,
     )
 
-Remove gene with `id` from `model`. If `knockout_reactions` is true, then also 
+Remove gene with `id` from `model`. If `knockout_reactions` is true, then also
 constrain reactions that require the genes to function to carry zero flux.
 
 # Example

@@ -42,7 +42,7 @@ Reaction(
     objective_coefficient = 0.0,
 )
 
-A constructor for Reaction that only takes a reaction `id` and 
+A constructor for Reaction that only takes a reaction `id` and
 assigns default/uninformative values to all the fields that are not
 explicitely assigned.
 """

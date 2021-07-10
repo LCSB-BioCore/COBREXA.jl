@@ -8,9 +8,9 @@
 # from scratch, and modify existing models. This will be demonstrated
 # here.
 
-# ## Model construction 
+# ## Model construction
 
-# In `COBREXA`, model construction is primarily supported through `StandardModel`s.  
+# In `COBREXA`, model construction is primarily supported through `StandardModel`s.
 # To begin, create an empty `StandardModel`.
 
 using COBREXA
@@ -23,7 +23,7 @@ model = StandardModel("FirstModel") # assign model id = "FirstModel"
 gene_list = [Gene(string("g", num)) for num = 1:8]
 
 #md # !!! warning "Warning: Don't accidentally overwrite the generic accessors"
-#md #       It may be tempting to call a variable `genes`, `metabolites`, or 
+#md #       It may be tempting to call a variable `genes`, `metabolites`, or
 #md #       `reactions`. However, these names conflict with generic accessors
 #md #       functions and will create problems downstream.
 
@@ -38,7 +38,7 @@ add_metabolites!(model, metabolite_list)
 
 # ### Add reactions to the model
 
-# There are two ways to create and add reactions to a model. 
+# There are two ways to create and add reactions to a model.
 # These are using functions, or macros.
 
 r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> (is the same as m1 ⟷ nothing)
@@ -66,7 +66,7 @@ model.reactions["r4"].grr = [["g5"], ["g6", "g7"], ["g8"]]
 #md # !!! note "Note: Using reaction arrows"
 #md #       `COBREXA` exports arrows that can be used to construct reactions.
 #md #       Both the long and short arrows (`⟶ == →`) mean the same thing if they
-#md #       point in the same direction. 
+#md #       point in the same direction.
 #md #
 #md #       These arrows are accessible by using the `LaTeX` completions built into
 #md #       Julia. For example:

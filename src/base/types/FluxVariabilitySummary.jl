@@ -1,7 +1,7 @@
 """
     FluxVariabilitySummary
 
-A struct used to store summary information about the 
+A struct used to store summary information about the
 solution of a flux variability analysis result.
 """
 struct FluxVariabilitySummary
@@ -10,7 +10,7 @@ struct FluxVariabilitySummary
 end
 
 """
-    flux_variability_summary(flux_result::Tuple{Dict{String, Dict{String, Float64}}, Dict{String, Dict{String, Float64}}}; 
+    flux_variability_summary(flux_result::Tuple{Dict{String, Dict{String, Float64}}, Dict{String, Dict{String, Float64}}};
         exclude_exchanges = false,
         exchange_prefixes = _constants.exchange_prefixes,
         biomass_strings = _constants.biomass_strings,
@@ -23,7 +23,7 @@ for pretty-printing and easily showing the most important results. Internally
 this function uses [`looks_like_biomass_reaction`](@ref) and
 [`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments
 passed to these functions. Use this if your model has non-standard ids for
-reactions. 
+reactions.
 
 # Example
 ```

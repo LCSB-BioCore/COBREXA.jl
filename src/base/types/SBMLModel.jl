@@ -81,7 +81,7 @@ balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
 """
     objective(model::SBMLModel)::SparseVec
 
-Objective of the [`SBMLModel`](@ref). 
+Objective of the [`SBMLModel`](@ref).
 """
 objective(model::SBMLModel)::SparseVec = SBML.getOCs(model.sbml)
 

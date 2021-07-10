@@ -81,7 +81,7 @@ function COBREXA.stoichiometry(m::CircularModel)
     stoi(i,j) =
         i == j ? 1.0 :
         (i % nr + 1) == j  ? -1.0 :
-        0.0 
+        0.0
 
     sparse([stoi(i,j) for i in 1:nr, j in 1:nr])
 end
@@ -94,9 +94,9 @@ You may check that the result now works just as with [`CoreModel`](@ref) and
 julia> m = CircularModel(5)
 Metabolic model of type CircularModel
 
-  1.0  -1.0    ⋅     ⋅     ⋅ 
-   ⋅    1.0  -1.0    ⋅     ⋅ 
-   ⋅     ⋅    1.0  -1.0    ⋅ 
+  1.0  -1.0    ⋅     ⋅     ⋅
+   ⋅    1.0  -1.0    ⋅     ⋅
+   ⋅     ⋅    1.0  -1.0    ⋅
    ⋅     ⋅     ⋅    1.0  -1.0
  -1.0    ⋅     ⋅     ⋅    1.0
 Number of reactions: 5

@@ -106,7 +106,7 @@ like this (possibly showing minor numeric errors in the GLPK optimizer):
 95×2 Array{Float64,2}:
    0.0            0.0
    6.00725        6.00725
-   ⋮            
+   ⋮
    3.64414e-13    3.17348e-13
    3.2149         3.2149
 ```
@@ -123,7 +123,7 @@ bounds=gamma_bounds(0.8))` will return a much less constrained system:
 95×2 Array{Float64,2}:
    0.0            0.0
    0.754299      10.1285
-   ⋮            
+   ⋮
   -4.42865        0.0
    2.57192        3.2149
 ```
@@ -170,7 +170,7 @@ matrix that may look like this one:
    7.13016       4.36813         9.64434
   -0.290925     -9.3037         -0.0908829
   24.1294       17.4794          0.0511032
-   ⋮                         ⋱  
+   ⋮                         ⋱
  -16.243       -37.4763         -5.57301
    0.0           0.0             0.0
   -0.310819     -1.20057e-7     -2.13126

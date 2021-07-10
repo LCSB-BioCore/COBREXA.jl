@@ -79,7 +79,7 @@ properties. Let's try exploring a "cube" of possible restricted reactions:
 using IterTools # for cartesian products
 
 res = screen_variants(m,
-    [ 
+    [
         # for each variant we restricts 2 reactions
         [with_changed_bound(r1, lb=-3, ub=3), with_changed_bound(r2, lb=-1, ub=1)]
 

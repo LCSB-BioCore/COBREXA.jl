@@ -77,14 +77,14 @@ get_optmodel_bounds(opt_model) = (
         lb=-_constants.default_reaction_rate)
 
 Helper function to set the bounds of variables.
-The JuMP `set_normalized_rhs` function is a little confusing, 
+The JuMP `set_normalized_rhs` function is a little confusing,
 so this function simplifies setting constraints. In short, JuMP
-uses a normalized right hand side representation of constraints, 
+uses a normalized right hand side representation of constraints,
 which means that lower bounds have their sign flipped. This function
 does this for you, so you don't have to remember to do this whenever you
-change the constraints. 
+change the constraints.
 
-Just supply the constraint `index` and the JuMP model (`opt_model`) that 
+Just supply the constraint `index` and the JuMP model (`opt_model`) that
 will be solved, and the variable's bounds will be set to `ub` and `lb`.
 """
 function set_optmodel_bound!(
