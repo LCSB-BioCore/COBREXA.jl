@@ -76,7 +76,7 @@ format:
       if [ `docker run -i -v "$PWD":/git alpine/git status -s | wc -l` -ne 0 ] ; then
         GITHUB_COMMENT=":red_square: &nbsp;Commit ${CI_COMMIT_SHORT_SHA} requires formatting!\
       "$'\n\n'"Required formatting changes summary:\
-      "$'\n```'"`docker run -i -v \"$PWD\":/git alpine/git diff --stat`"$'\n```'
+      "$'\n```\n'"`docker run -i -v \"$PWD\":/git alpine/git diff --stat`"$'\n```'
       else
         GITHUB_COMMENT=":green_circle: &nbsp;Commit ${CI_COMMIT_SHORT_SHA} is formatted properly."
       fi
