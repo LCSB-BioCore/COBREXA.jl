@@ -77,6 +77,11 @@ Modules = [COBREXA]
 Pages = map(file -> joinpath("base", "utils", file), readdir("../src/base/utils"))
 ```
 
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("base", "macros", file), readdir("../src/base/macros"))
+```
+
 ### Logging and debugging helpers
 
 ```@autodocs

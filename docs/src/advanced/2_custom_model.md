@@ -21,12 +21,13 @@ and overload the required accessors. The accessors are functions that extract
 some relevant information, such as [`stoichiometry`](@ref) and
 [`bounds`](@ref), returning a fixed simple data type that can be further used
 by COBREXA.  You may see a complete list of accessors
-[here](../functions#Base-Types).
+[here](../functions.md#Base-Types).
 
 A good solution to the second concern is a slightly more involved, as writing
 generic data modifiers is notoriously hard. Still, there is support for easily
 making small changes to the model using the modifications system, with
-functions such as [`with_added_reactions`](@ref) and [`with_set_bound`](@ref).
+functions such as [`with_added_reactions`](@ref) and
+[`with_changed_bound`](@ref).
 
 !!! tip "Notebook available"
     A better example of using a custom model structure is available

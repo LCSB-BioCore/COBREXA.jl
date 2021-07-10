@@ -27,7 +27,7 @@ macro _change_bounds_fn(model_type, idx_type, args...)
     docstring = """
         $fname(
             model::$model_type,
-            $idx_var::$idx_type,
+            $idx_var::$idx_type;
             lower = $missing_default,
             upper = $missing_default,
         )
