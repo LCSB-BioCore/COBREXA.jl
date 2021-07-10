@@ -67,7 +67,7 @@ for (env_ex, m2_ex, m1_ex) in zip(env_ex_rxn_idxs, cytbd_ex_rxn_idxs, atps4r_ex_
     m2ub = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xu[m2_ex]
     m1lb = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xl[m1_ex]
     m1ub = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xu[m1_ex]
-    change_bounds!(community_model, [env_ex]; xl = [m1lb + m2lb], xu = [m1ub + m2ub])
+    change_bounds!(community_model, [env_ex]; lower = [m1lb + m2lb], upper = [m1ub + m2ub])
 end
 
 # ## Add objective function to community model`
@@ -127,7 +127,7 @@ println("Community μ = ", d["community_biomass"])
 # ## Allow the mutants to rescue each other by sharing pyruvate
 
 pyr_exs = model_names .* "_EX_pyr_e"
-change_bounds!(community_model, pyr_exs; xl = fill(-1000.0, 3), xu = fill(1000.0, 3))
+change_bounds!(community_model, pyr_exs; lower = fill(-1000.0, 3), upper = fill(1000.0, 3))
 
 d = flux_balance_analysis_dict(
     community_model,
