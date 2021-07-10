@@ -1,18 +1,44 @@
 @testset "Change bounds" begin
     cp = test_LP()
-    change_bounds!(cp, [3; 1], xl = [-10.0; -20], xu = [10.0; 20])
-    @test cp.xl == [-20; 1; -10]
-    @test cp.xu == [20; 1; 10]
-    change_bounds!(
-        cp,
-        ["gibberish1"; "r3"; "r1"; "gibberish2"],
-        xl = [0; -30.0; -40; 0],
-        xu = [0; 30.0; 40; 0],
-    )
-    @test cp.xl == [-40; 1; -30]
-    @test cp.xu == [40; 1; 30]
-    change_bounds!(cp, ["r1"; "r3"], xl = [-50.0; -60])
-    @test cp.xl == [-50; 1; -60]
+
+    change_bound!(cp, 1, lower = -10, upper = 10)
+    @test cp.xl[1] == -10
+    @test cp.xu[1] == 10
+    change_bounds!(cp, [1, 2]; lower = [-11, -12.2], upper = [11, 23.0])
+    @test cp.xl[2] == -12.2
+    @test cp.xu[1] == 11
+
+    change_bound!(cp, "r1", lower = -101, upper = 101)
+    @test cp.xl[1] == -101
+    @test cp.xu[1] == 101
+    change_bounds!(cp, ["r1", "r2"]; lower = [-113, -12.23], upper = [114, 233.0])
+    @test cp.xl[2] == -12.23
+    @test cp.xu[1] == 114
+    change_bounds!(cp, ["r1", "r2"]; lower = [-114, nothing], upper = [nothing, 2333.0])
+    @test cp.xl[1] == -114
+    @test cp.xl[2] == -12.23
+    @test cp.xu[1] == 114
+    @test cp.xu[2] == 2333
+
+    new_model = change_bound(cp, 1, lower = -10, upper = 10)
+    @test new_model.xl[1] == -10
+    @test new_model.xu[1] == 10
+    new_model = change_bounds(cp, [1, 2]; lower = [-11, -12.2], upper = [11, 23.0])
+    @test new_model.xl[2] == -12.2
+    @test new_model.xu[1] == 11
+
+    new_model = change_bound(cp, "r1", lower = -101, upper = 101)
+    @test new_model.xl[1] == -101
+    @test new_model.xu[1] == 101
+    new_model = change_bounds(cp, ["r1", "r2"]; lower = [-113, -12.23], upper = [113, 1000])
+    @test new_model.xl[2] == -12.23
+    @test new_model.xu[1] == 113
+    new_model =
+        change_bounds(cp, ["r1", "r2"]; lower = [nothing, -10], upper = [110, nothing])
+    @test new_model.xl[1] == -114
+    @test new_model.xl[2] == -10
+    @test new_model.xu[1] == 110
+    @test new_model.xu[2] == 2333
 end
 
 @testset "Verify consistency" begin

@@ -32,6 +32,7 @@ _inc_all.(
         [
             joinpath("base", "types", "abstract"),
             joinpath("base", "logging"),
+            joinpath("base", "macros"),
             joinpath("base", "types"),
             "base",
             "io",

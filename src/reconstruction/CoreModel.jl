@@ -325,6 +325,8 @@ function remove_metabolites(model::CoreModel, mets::Vector{String})
 end
 
 """
+    remove_reactions(m::CoreModel, rxns::Vector{Int})
+
 Removes a set of reactions from a CoreModel.
 Also removes the metabolites not involved in any reaction.
 """
@@ -375,56 +377,52 @@ function remove_reactions(m::CoreModel, rxns::Vector{String})
     end
 end
 
-"""
-    change_bounds!(
-        model::CoreModel,
-        rxns::Vector{Int};
-        xl::V = Float64[],
-        xu::V = Float64[],
-    ) where {V<:VecType}
+@_change_bounds_fn CoreModel Int inplace begin
+    isnothing(lower) || (model.xl[rxn_idx] = lower)
+    isnothing(upper) || (model.xu[rxn_idx] = upper)
+    nothing
+end
 
-Change the lower and/or upper bounds ('xl' and 'xu') for given reactions.
-
-"""
-function change_bounds!(
-    model::CoreModel,
-    rxns::Vector{Int};
-    xl::V = Float64[],
-    xu::V = Float64[],
-) where {V<:VecType}
-    found = [index ∈ 1:n_reactions(model) for index in rxns]
-    length(rxns[found]) == length(unique(rxns[found])) ||
-        error("`rxns` appears to contain duplicates")
-
-    if !isempty(xl)
-        length(rxns) == length(xl) ||
-            throw(DimensionMismatch("`rxns` size doesn't match with `xl`"))
-        model.xl[rxns[found]] = xl[found]
-    end
-    if !isempty(xu)
-        length(rxns) == length(xu) ||
-            throw(DimensionMismatch("`rxns` size doesn't match with `xu`"))
-        model.xu[rxns[found]] = xu[found]
+@_change_bounds_fn CoreModel Int inplace plural begin
+    for (i, l, u) in zip(rxn_idxs, lower, upper)
+        change_bound!(model, i, lower = l, upper = u)
     end
 end
 
-"""
-    change_bounds!(
-        model::CoreModel,
-        rxns::Vector{String};
-        xl::V = Float64[],
-        xu::V = Float64[],
-    ) where {V<:VecType}
+@_change_bounds_fn CoreModel Int begin
+    change_bounds(model, [rxn_idx], lower = [lower], upper = [upper])
+end
 
-"""
-function change_bounds!(
-    model::CoreModel,
-    rxns::Vector{String};
-    xl::V = Float64[],
-    xu::V = Float64[],
-) where {V<:VecType}
-    found = [name ∈ model.rxns for name in rxns]
-    rxn_indices = zeros(Int, length(rxns))
-    rxn_indices[found] = [findfirst(isequal(name), model.rxns) for name in rxns[found]]
-    change_bounds!(model, rxn_indices, xl = xl, xu = xu)
+@_change_bounds_fn CoreModel Int plural begin
+    n = copy(model)
+    n.xl = copy(n.xl)
+    n.xu = copy(n.xu)
+    change_bounds!(n, rxn_idxs, lower = lower, upper = upper)
+    n
+end
+
+@_change_bounds_fn CoreModel String inplace begin
+    change_bounds!(model, [rxn_id], lower = [lower], upper = [upper])
+end
+
+@_change_bounds_fn CoreModel String inplace plural begin
+    change_bounds!(
+        model,
+        Vector{Int}(indexin(rxn_ids, reactions(model))),
+        lower = lower,
+        upper = upper,
+    )
+end
+
+@_change_bounds_fn CoreModel String begin
+    change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
+end
+
+@_change_bounds_fn CoreModel String plural begin
+    change_bounds(
+        model,
+        Vector{Int}(indexin(rxn_ids, reactions(model))),
+        lower = lower,
+        upper = upper,
+    )
 end

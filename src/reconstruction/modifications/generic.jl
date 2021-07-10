@@ -1,10 +1,18 @@
 """
-    with_set_bound(args...; kwargs...) 
+    with_changed_bound(args...; kwargs...) 
 
 Specifies a model variant that has a new bound set. Forwards arguments to
-[`set_bound`](@ref). Intended for usage with [`screen`](@ref).
+[`change_bound`](@ref). Intended for usage with [`screen`](@ref).
 """
-with_set_bound(args...; kwargs...) = m -> set_bound(m, args...; kwargs...)
+with_changed_bound(args...; kwargs...) = m -> change_bound(m, args...; kwargs...)
+
+"""
+    with_changed_bounds(args...; kwargs...) 
+
+Specifies a model variant that has new bounds set. Forwards arguments to
+[`change_bounds`](@ref). Intended for usage with [`screen`](@ref).
+"""
+with_changed_bounds(args...; kwargs...) = m -> change_bounds(m, args...; kwargs...)
 
 """
     with_removed_metabolites(args...; kwargs...) 

@@ -20,9 +20,9 @@ screen_variants(
     m,    # the model for screening
     [
         [],    # a variant with no modifications
-        [with_set_bound("CO2t", lb = 0, ub = 0)],  # disable CO2 transport
-        [with_set_bound("O2t", lb = 0, ub = 0)],  # disable O2 transport
-        [with_set_bound("CO2t", lb = 0, ub = 0), with_set_bound("O2t", lb = 0, ub = 0)],  # disable both transports
+        [with_changed_bound("CO2t", lb = 0, ub = 0)],  # disable CO2 transport
+        [with_changed_bound("O2t", lb = 0, ub = 0)],  # disable O2 transport
+        [with_changed_bound("CO2t", lb = 0, ub = 0), with_changed_bound("O2t", lb = 0, ub = 0)],  # disable both transports
     ],
     m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
 )
@@ -58,8 +58,8 @@ applied to the model in sequence.
 
 For example:
 - `[]` specifies no modifications at all
-- `[with_set_bound("CO2t", lb=0, ub=10)]` limits the CO2 transport
-- `[with_set_bound("CO2t", lb=0, ub=2), with_set_bound("O2t", lb=0, ub=100)]`
+- `[with_changed_bound("CO2t", lb=0, ub=10)]` limits the CO2 transport
+- `[with_changed_bound("CO2t", lb=0, ub=2), with_changed_bound("O2t", lb=0, ub=100)]`
   severely limits the CO2 transport _and_ slightly restricts the transport of
   O2
 
@@ -81,7 +81,7 @@ using IterTools # for cartesian products
 res = screen_variants(m,
     [ 
         # for each variant we restricts 2 reactions
-        [with_set_bound(r1, lb=-3, ub=3), with_set_bound(r2, lb=-1, ub=1)]
+        [with_changed_bound(r1, lb=-3, ub=3), with_changed_bound(r2, lb=-1, ub=1)]
 
         # the reaction pair will be chosen from a cartesian product
         for (r1,r2) in product(
@@ -193,7 +193,7 @@ end
 ```
 
 In turn, these variants can be used in [`screen_variants`](@ref) just as we
-used [`with_set_bound`](@ref) above:
+used [`with_changed_bound`](@ref) above:
 
 ```julia
 screen_variants(

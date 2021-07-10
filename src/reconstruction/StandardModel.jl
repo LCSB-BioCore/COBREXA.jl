@@ -213,27 +213,29 @@ remove_gene!(model, "g1")
 remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-"""
-    set_bound!(model::StandardModel, reaction_id::String; lb, ub)
 
-Change the bounds of a reaction in-place.
-"""
-function set_bound!(model::StandardModel, reaction_id::String; lb, ub)
-    reaction = model.reactions[reaction_id]
-    reaction.lb = lb
-    reaction.ub = ub
+@_change_bounds_fn StandardModel String inplace begin
+    isnothing(lower) || (model.reactions[rxn_id].lb = lower)
+    isnothing(upper) || (model.reactions[rxn_id].ub = upper)
+    nothing
 end
 
-"""
-    set_bound(model::StandardModel, reaction_id::String; lb, ub)
+@_change_bounds_fn StandardModel String inplace plural begin
+    for (i, l, u) in zip(rxn_ids, lower, upper)
+        change_bound!(model, i, lower = l, upper = u)
+    end
+end
 
-Return a shallow copy of the `model` with reaction bounds changed.
-"""
-function set_bound(model::StandardModel, reaction_id::String; lb, ub)
-    m = copy(model)
-    m.reactions = copy(model.reactions)
-    r = m.reactions[reaction_id] = copy(model.reactions[reaction_id])
-    r.lb = lb
-    r.ub = ub
-    m
+@_change_bounds_fn StandardModel String begin
+    change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
+end
+
+@_change_bounds_fn StandardModel String plural begin
+    n = copy(model)
+    n.reactions = copy(model.reactions)
+    for i in rxn_ids
+        n.reactions[i] = copy(n.reactions[i])
+    end
+    change_bounds!(n, rxn_ids, lower = lower, upper = upper)
+    n
 end

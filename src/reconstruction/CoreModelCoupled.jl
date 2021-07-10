@@ -362,40 +362,42 @@ function change_coupling_bounds!(
     end
 end
 
-"""
-    change_bounds!(
-        model::CoreModelCoupled,
-        rxns::Vector{Int};
-        xl::V = Float64[],
-        xu::V = Float64[],
-    )
-
-Change the lower and/or upper bounds ('xl' and 'xu') for given reactions.
-
-"""
-function change_bounds!(
-    model::CoreModelCoupled,
-    rxns::Vector{Int};
-    xl::V = Float64[],
-    xu::V = Float64[],
-) where {V<:VecType}
-    change_bounds!(model.lm, rxns, xl = xl, xu = xu)
+@_change_bounds_fn CoreModelCoupled Int inplace begin
+    change_bound!(model.lm, rxn_idx, lower = lower, upper = upper)
 end
 
-"""
-    change_bounds!(
-        model::CoreModelCoupled,
-        rxns::Vector{String};
-        xl::V = Float64[],
-        xu::V = Float64[],
-    ) where {V<:VecType}
+@_change_bounds_fn CoreModelCoupled Int inplace plural begin
+    change_bounds!(model.lm, rxn_idxs, lower = lower, upper = upper)
+end
 
-"""
-function change_bounds!(
-    model::CoreModelCoupled,
-    rxns::Vector{String};
-    xl::V = Float64[],
-    xu::V = Float64[],
-) where {V<:VecType}
-    change_bounds!(model.lm, rxns, xl = xl, xu = xu)
+@_change_bounds_fn CoreModelCoupled String inplace begin
+    change_bound!(model.lm, rxn_id, lower = lower, upper = upper)
+end
+
+@_change_bounds_fn CoreModelCoupled String inplace plural begin
+    change_bounds!(model.lm, rxn_ids, lower = lower, upper = upper)
+end
+
+@_change_bounds_fn CoreModelCoupled Int begin
+    n = copy(model)
+    n.lm = change_bound(model.lm, rxn_idx, lower = lower, upper = upper)
+    n
+end
+
+@_change_bounds_fn CoreModelCoupled Int plural begin
+    n = copy(model)
+    n.lm = change_bounds(model.lm, rxn_idxs, lower = lower, upper = upper)
+    n
+end
+
+@_change_bounds_fn CoreModelCoupled String begin
+    n = copy(model)
+    n.lm = change_bound(model.lm, rxn_id, lower = lower, upper = upper)
+    n
+end
+
+@_change_bounds_fn CoreModelCoupled String plural begin
+    n = copy(model)
+    n.lm = change_bounds(model.lm, rxn_ids, lower = lower, upper = upper)
+    n
 end
