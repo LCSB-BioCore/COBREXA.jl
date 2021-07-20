@@ -52,8 +52,12 @@ productions = screen_variants(
 # This can be nicely plotted to give a more comprehensive overview of which
 # reactions are critical or not:
 
-using Plots
-bar(reactions(model), productions, orientation = :hor, dpi = 600)
+using CairoMakie
+
+disp_rxns = rand(1:95, 10) # only display 10 random fluxes to save space
+barplot(productions[disp_rxns], direction = :x, axis = (yticks=(1:10, reactions(model)[disp_rxns]),
+                                                        xlabel="Flux [mmol/gDW/h]",
+                                                        ylabel="Reaction ID"))
 
 # ## Knocking out reaction combinations
 #
@@ -77,4 +81,9 @@ productions = screen_variants(
     model -> get_biomass(flux_balance_analysis_dict(model, Tulip.Optimizer)),
 )
 
-heatmap(productions, dpi = 600)
+f = Figure()
+ax = Axis(f[1,1], ylabel="Reaction KO", xlabel="Reaction KO", yticks=(1:10, reactions(model)[disp_rxns]),
+          xticks=(1:10, reactions(model)[disp_rxns]), xticklabelrotation =-pi/4)
+hm = heatmap!(ax, productions[disp_rxns, disp_rxns])
+Colorbar(f[1,2], hm, label="Flux [mmol/gDW/h]")
+f
