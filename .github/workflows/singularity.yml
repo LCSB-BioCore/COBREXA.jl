@@ -1,15 +1,13 @@
 name: Publish Singularity image
 
+# Controls when the action will run.
 on:
-  push:
-    tags:
-      - "v*"
-  release:
-    types: [published, created]
+  # Triggers the workflow on push or pull request events but only for the main branch
+  create:
 
 jobs:
-
   build:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     name: Build
     runs-on: ubuntu-18.04
     strategy:
@@ -38,6 +36,7 @@ jobs:
        fi
 
   deploy:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     name: Deploy
     runs-on: ubuntu-18.04
     strategy:
