@@ -1,23 +1,28 @@
 """
     mutable struct StandardModel
 
-`StandardModel` is used to store a constraint based metabolic model with meta-information.
-Meta-information is defined as annotation details, which include gene-reaction-rules, formulas, etc.
+`StandardModel` is used to store a constraint based metabolic model with
+meta-information.  Meta-information is defined as annotation details, which
+include gene-reaction-rules, formulas, etc.
 
-This model type seeks to keep as much meta-information as possible, as opposed to `CoreModel` and `CoreModelCoupled`,
-which keep the bare neccessities only.
-When merging models and keeping meta-information is important, use this as the model type.
-If meta-information is not important, use the more efficient core model types.
-See [`CoreModel`](@ref) and [`CoreModelCoupled`](@ref) for comparison.
+This model type seeks to keep as much meta-information as possible, as opposed
+to `CoreModel` and `CoreModelCoupled`, which keep the bare neccessities only.
+When merging models and keeping meta-information is important, use this as the
+model type.  If meta-information is not important, use the more efficient core
+model types.  See [`CoreModel`](@ref) and [`CoreModelCoupled`](@ref) for
+comparison.
 
-In this model, reactions, metabolites, and genes are stored in ordered dictionaries indexed by each struct's `id` field.
-For example, `model.reactions["rxn1_id"]` returns a `Reaction` where the field `id` equals `"rxn1_id"`.
-This makes adding and removing reactions efficient.
+In this model, reactions, metabolites, and genes are stored in ordered
+dictionaries indexed by each struct's `id` field.  For example,
+`model.reactions["rxn1_id"]` returns a `Reaction` where the field `id` equals
+`"rxn1_id"`.  This makes adding and removing reactions efficient.
 
-Note that the stoichiometric matrix (or any other core data, e.g. flux bounds) is not stored directly as in `CoreModel`.
-When this model type is used in analysis functions, these core data structures are built from scratch each time an analysis function is called.
-This can cause performance issues if you run many small analysis functions sequentially.
-Consider using the core model types if performance is critical.
+Note that the stoichiometric matrix (or any other core data, e.g. flux bounds)
+is not stored directly as in `CoreModel`.  When this model type is used in
+analysis functions, these core data structures are built from scratch each time
+an analysis function is called.  This can cause performance issues if you run
+many small analysis functions sequentially.  Consider using the core model
+types if performance is critical.
 
 See also: [`Reaction`](@ref), [`Metabolite`](@ref), [`Gene`](@ref)
 
@@ -31,7 +36,8 @@ genes :: OrderedDict{String, Gene}
 
 # Example
 ```
-model = load_model(StandardModel, "model_location")
+model = load_model(StandardModel, "my_model.json")
+keys(model.reactions)
 ```
 """
 mutable struct StandardModel <: MetabolicModel
@@ -127,9 +133,8 @@ end
 
 Return the lower bounds for all reactions in `model` in sparse format.
 """
-function lower_bounds(model::StandardModel)::SparseVec
+lower_bounds(model::StandardModel)::SparseVec =
     sparse([model.reactions[rxn].lb for rxn in reactions(model)])
-end
 
 """
     upper_bounds(model::StandardModel)
@@ -137,9 +142,8 @@ end
 Return the upper bounds for all reactions in `model` in sparse format.
 Order matches that of the reaction ids returned in `reactions()`.
 """
-function upper_bounds(model::StandardModel)::SparseVec
+upper_bounds(model::StandardModel)::SparseVec =
     sparse([model.reactions[rxn].ub for rxn in reactions(model)])
-end
 
 """
     bounds(model::StandardModel)
@@ -147,11 +151,8 @@ end
 Return the lower and upper bounds, respectively, for reactions in `model`.
 Order matches that of the reaction ids returned in `reactions()`.
 """
-function bounds(model::StandardModel)::Tuple{SparseVec,SparseVec}
-    ubs = upper_bounds(model)
-    lbs = lower_bounds(model)
-    return lbs, ubs
-end
+bounds(model::StandardModel)::Tuple{SparseVec,SparseVec} =
+    (lower_bounds(model), upper_bounds(model))
 
 """
     balance(model::StandardModel)
@@ -166,11 +167,8 @@ balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 
 Return sparse objective vector for `model`.
 """
-function objective(model::StandardModel)::SparseVec
-    return sparse([
-        model.reactions[rid].objective_coefficient for rid in keys(model.reactions)
-    ])
-end
+objective(model::StandardModel)::SparseVec =
+    sparse([model.reactions[rid].objective_coefficient for rid in keys(model.reactions)])
 
 """
     reaction_gene_association(model::StandardModel, id::String)
@@ -178,9 +176,8 @@ end
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-function reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation}
+reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation} =
     _maybemap(identity, model.reactions[id].grr)
-end
 
 """
     metabolite_formula(model::StandardModel, id::String)
@@ -188,9 +185,8 @@ end
 Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
 """
-function metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula}
+metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula} =
     _maybemap(_parse_formula, model.metabolites[id].formula)
-end
 
 """
     metabolite_charge(model::StandardModel, id::String)
@@ -198,9 +194,8 @@ end
 Return the charge associated with metabolite `id` in `model`.
 Return nothing if not present.
 """
-function metabolite_charge(model::StandardModel, id::String)::Maybe{Int}
+metabolite_charge(model::StandardModel, id::String)::Maybe{Int} =
     model.metabolites[id].charge
-end
 
 """
     metabolite_compartment(model::StandardModel, id::String)
@@ -208,9 +203,8 @@ end
 Return compartment associated with metabolite `id` in `model`.
 Return `nothing` if not present.
 """
-function metabolite_compartment(model::StandardModel, id::String)::Maybe{String}
+metabolite_compartment(model::StandardModel, id::String)::Maybe{String} =
     model.metabolites[id].compartment
-end
 
 """
     reaction_subsystem(id::String, model::StandardModel)
@@ -218,9 +212,8 @@ end
 Return the subsystem associated with reaction `id` in `model`.
 Return `nothing` if not present.
 """
-function reaction_subsystem(model::StandardModel, id::String)::Maybe{String}
+reaction_subsystem(model::StandardModel, id::String)::Maybe{String} =
     model.reactions[id].subsystem
-end
 
 """
     metabolite_notes(model::StandardModel, id::String)::Notes
@@ -228,9 +221,8 @@ end
 Return the notes associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
 """
-function metabolite_notes(model::StandardModel, id::String)::Maybe{Notes}
+metabolite_notes(model::StandardModel, id::String)::Maybe{Notes} =
     model.metabolites[id].notes
-end
 
 """
     metabolite_annotations(model::StandardModel, id::String)::Annotations
@@ -238,9 +230,8 @@ end
 Return the annotation associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
 """
-function metabolite_annotations(model::StandardModel, id::String)::Maybe{Annotations}
+metabolite_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.metabolites[id].annotations
-end
 
 """
     gene_notes(model::StandardModel, id::String)::Notes
@@ -248,9 +239,7 @@ end
 Return the notes associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-function gene_notes(model::StandardModel, id::String)::Maybe{Notes}
-    model.genes[id].notes
-end
+gene_notes(model::StandardModel, id::String)::Maybe{Notes} = model.genes[id].notes
 
 """
     gene_annotations(model::StandardModel, id::String)::Annotations
@@ -258,9 +247,8 @@ end
 Return the annotation associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-function gene_annotations(model::StandardModel, id::String)::Maybe{Annotations}
+gene_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.genes[id].annotations
-end
 
 """
     reaction_notes(model::StandardModel, id::String)::Notes
@@ -268,9 +256,7 @@ end
 Return the notes associated with reaction `id` in `model`.
 Return an empty Dict if not present.
 """
-function reaction_notes(model::StandardModel, id::String)::Maybe{Notes}
-    model.reactions[id].notes
-end
+reaction_notes(model::StandardModel, id::String)::Maybe{Notes} = model.reactions[id].notes
 
 """
     reaction_annotations(model::StandardModel, id::String)::Annotations
@@ -278,19 +264,17 @@ end
 Return the annotation associated with reaction `id` in `model`.
 Return an empty Dict if not present.
 """
-function reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations}
+reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.reactions[id].annotations
-end
 
 """
-    reaction_stoichiometry(model::StandardModel, rxn_id::String)::Dict{String, Float64}
+    reaction_stoichiometry(model::StandardModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+Return the reaction equation of reaction with id `rid` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::StandardModel, rxn_id::String)::Dict{String,Float64}
-    m.reactions[rxn_id].metabolites
-end
+reaction_stoichiometry(m::StandardModel, rid::String)::Dict{String,Float64} =
+    m.reactions[rid].metabolites
 
 """
 Base.convert(::Type{StandardModel}, model::MetabolicModel)

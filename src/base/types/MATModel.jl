@@ -169,25 +169,24 @@ metabolite_compartment(m::MATModel, mid::String) = _maybemap(
 
 
 """
-    reaction_stoichiometry(model::MATModel, rxn_id::String)::Dict{String, Float64}
+    reaction_stoichiometry(model::MATModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+Return the reaction equation of reaction with ID `rid` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::MATModel, rxn_id::String)::Dict{String,Float64}
-    rxn_ind = first(indexin([rxn_id], m.mat["rxns"]))
-    reaction_stoichiometry(m, rxn_ind)
+function reaction_stoichiometry(m::MATModel, rid::String)::Dict{String,Float64}
+    ridx = first(indexin([rid], m.mat["rxns"]))
+    reaction_stoichiometry(m, ridx)
 end
 
 """
-    reaction_stoichiometry(model::MATModel, rxn_index)::Dict{String, Float64}
+    reaction_stoichiometry(model::MATModel, ridx::Integer)::Dict{String, Float64}
 
-Return the reaction equation of reaction with index `rxn_index` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients. Note, `rxn_index` can
-be any suitable type that can index into an array.
+Return the reaction equation of reaction with index `ridx` in model. The reaction
+equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::MATModel, rxn_ind)::Dict{String,Float64}
-    met_inds = findall(m.mat["S"][:, rxn_ind] .!= 0.0)
+function reaction_stoichiometry(m::MATModel, ridx::Integer)::Dict{String,Float64}
+    met_inds = findall(m.mat["S"][:, ridx] .!= 0.0)
     Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, rxn_ind] for met_ind in met_inds)
 end
 

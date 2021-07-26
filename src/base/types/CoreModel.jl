@@ -44,77 +44,60 @@ end
 
 Get the reactions in a `CoreModel`.
 """
-function reactions(a::CoreModel)::Vector{String}
-    a.rxns
-end
+reactions(a::CoreModel)::Vector{String} = a.rxns
 
 """
     metabolites(a::CoreModel)::Vector{String}
 
 Metabolites in a `CoreModel`.
 """
-function metabolites(a::CoreModel)::Vector{String}
-    a.mets
-end
+metabolites(a::CoreModel)::Vector{String} = a.mets
 
 """
     stoichiometry(a::CoreModel)::SparseMat
 
 `CoreModel` stoichiometry matrix.
 """
-function stoichiometry(a::CoreModel)::SparseMat
-    a.S
-end
+stoichiometry(a::CoreModel)::SparseMat = a.S
 
 """
     bounds(a::CoreModel)::Tuple{SparseVec,SparseVec}
 
 `CoreModel` flux bounds.
 """
-function bounds(a::CoreModel)::Tuple{SparseVec,SparseVec}
-    (a.xl, a.xu)
-end
+bounds(a::CoreModel)::Tuple{SparseVec,SparseVec} = (a.xl, a.xu)
 
 """
     balance(a::CoreModel)::SparseVec
 
 `CoreModel` target flux balance.
 """
-function balance(a::CoreModel)::SparseVec
-    a.b
-end
+balance(a::CoreModel)::SparseVec = a.b
 
 """
     objective(a::CoreModel)::SparseVec
 
 `CoreModel` objective vector.
 """
-function objective(a::CoreModel)::SparseVec
-    a.c
-end
+objective(a::CoreModel)::SparseVec = a.c
 
 """
-    reaction_stoichiometry(model::CoreModel, rxn_id::String)::Dict{String, Float64}
+    reaction_stoichiometry(model::CoreModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rxn_id` in model. The reaction
+Return the reaction equation of reaction with ID `rid` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::CoreModel, rxn_id::String)::Dict{String,Float64}
-    Dict(
-        m.mets[k] => v for
-        (k, v) in zip(findnz(m.S[:, first(indexin([rxn_id], m.rxns))])...)
-    )
-end
+reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
+    Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
 """
-    reaction_stoichiometry(model::CoreModel, rxn_id::String)::Dict{String, Float64}
+    reaction_stoichiometry(model::CoreModel, ridx::Integer)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rxn_ind` in model. The reaction
+Return the reaction equation of reaction with index `ridx` in model. The reaction
 equation maps metabolite ids to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::CoreModel, rxn_ind::Int)::Dict{String,Float64}
-    Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, rxn_ind])...))
-end
+reaction_stoichiometry(m::CoreModel, ridx::Integer)::Dict{String,Float64} =
+    Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
     Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
