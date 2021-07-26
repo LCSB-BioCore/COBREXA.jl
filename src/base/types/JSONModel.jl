@@ -259,8 +259,7 @@ metabolite_notes(model::JSONModel, mid::String)::Notes =
 """
     reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with ID `rid` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
 reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]

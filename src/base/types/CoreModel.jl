@@ -84,8 +84,7 @@ objective(a::CoreModel)::SparseVec = a.c
 """
     reaction_stoichiometry(model::CoreModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with ID `rid` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
 reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
@@ -93,8 +92,7 @@ reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
 """
     reaction_stoichiometry(model::CoreModel, ridx::Integer)::Dict{String, Float64}
 
-Return the reaction equation of reaction with index `ridx` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction at index `ridx`.
 """
 reaction_stoichiometry(m::CoreModel, ridx::Integer)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))

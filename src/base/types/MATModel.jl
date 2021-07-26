@@ -171,8 +171,7 @@ metabolite_compartment(m::MATModel, mid::String) = _maybemap(
 """
     reaction_stoichiometry(model::MATModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with ID `rid` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
 function reaction_stoichiometry(m::MATModel, rid::String)::Dict{String,Float64}
     ridx = first(indexin([rid], m.mat["rxns"]))
@@ -182,8 +181,7 @@ end
 """
     reaction_stoichiometry(model::MATModel, ridx::Integer)::Dict{String, Float64}
 
-Return the reaction equation of reaction with index `ridx` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction at index `ridx`.
 """
 function reaction_stoichiometry(m::MATModel, ridx::Integer)::Dict{String,Float64}
     met_inds = findall(m.mat["S"][:, ridx] .!= 0.0)

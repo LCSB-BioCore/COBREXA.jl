@@ -270,8 +270,7 @@ reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
 """
     reaction_stoichiometry(model::StandardModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rid` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
 reaction_stoichiometry(m::StandardModel, rid::String)::Dict{String,Float64} =
     m.reactions[rid].metabolites

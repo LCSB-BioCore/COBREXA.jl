@@ -101,16 +101,14 @@ coupling_bounds(a::CoreModelCoupled)::Tuple{SparseVec,SparseVec} = (a.cl, a.cu)
 """
     reaction_stoichiometry(model::CoreModelCoupled, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rid` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
 reaction_stoichiometry(m::CoreModelCoupled, rid::String) = reaction_stoichiometry(m.lm, rid)
 
 """
     reaction_stoichiometry(model::CoreModelCoupled, ridx::Integer)::Dict{String, Float64}
 
-Return the reaction equation of reaction with index `ridx` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction at index `ridx`.
 """
 function reaction_stoichiometry(m::CoreModelCoupled, ridx::Integer)::Dict{String,Float64}
     reaction_stoichiometry(m.lm, ridx)

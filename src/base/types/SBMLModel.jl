@@ -139,8 +139,7 @@ const _sbml_export_notes = _sbml_export_annotation
 """
     reaction_stoichiometry(model::SBMLModel, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with ID `rid` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
 reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64} =
     m.sbml.reactions[rid].stoichiometry
