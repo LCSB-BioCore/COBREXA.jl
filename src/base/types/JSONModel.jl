@@ -25,34 +25,11 @@ reactions(model) # see the list of reactions
 struct JSONModel <: MetabolicModel
     json::Dict{String,Any}
     rxn_index::Dict{String,Int}
-    rxns::Dict{String,Any}
+    rxns::Vector{Any}
     met_index::Dict{String,Int}
-    mets::Dict{String,Any}
+    mets::Vector{Any}
     gene_index::Dict{String,Int}
-    genes::Dict{String,Any}
-end
-
-
-# helper access macros, see examples below for usage
-macro _json_sectionkey(namesConstant::Symbol, error)
-    esc(:(
-        begin
-            _key = _guesskey(keys(model.json), _constants.keynames.$namesConstant)
-            if isnothing(_key)
-                $error
-            end
-            _key
-        end
-    ))
-end
-
-macro _json_section(namesConstant::Symbol, error)
-    esc(:(
-        begin
-            _key = @_json_sectionkey $namesConstant ($error)
-            model.json[_key]
-        end
-    ))
+    genes::Vector{Any}
 end
 
 _json_rxn_name(r, i) = string(get(r, "id", "rxn$i"))
@@ -60,20 +37,24 @@ _json_met_name(m, i) = string(get(m, "id", "met$i"))
 _json_gene_name(g, i) = string(get(g, "id", "gene$i"))
 
 JSONModel(json::Dict{String,Any}) = begin
-    rs = @_json_section rxns throw(
-        DomainError(keys(model.json), "JSON model has no reaction keys"),
-    )
-    ms = @_json_section mets throw(
-        DomainError(keys(model.json), "JSON model has no metabolite keys"),
-    )
-    gs = @_json_section genes []
+    rkey = _guesskey(keys(json), _constants.keynames.rxns)
+    isnothing(rkey) && throw(DomainError(keys(json), "JSON model has no reaction keys"))
+    rs = json[rkey]
+
+    mkey = _guesskey(keys(json), _constants.keynames.mets)
+    ms = json[mkey]
+    isnothing(mkey) && throw(DomainError(keys(json), "JSON model has no metabolite keys"))
+
+    gkey = _guesskey(keys(json), _constants.keynames.genes)
+    gs = isnothing(gkey) ? [] : json[gkey]
+
     JSONModel(
         json,
-        Dict(i => _json_rxn_name(r, i) for (i, r) in enumerate(rs)),
+        Dict(_json_rxn_name(r, i) => i for (i, r) in enumerate(rs)),
         rs,
-        Dict(i => _json_met_name(m, i) for (i, m) in enumerate(ms)),
+        Dict(_json_met_name(m, i) => i for (i, m) in enumerate(ms)),
         ms,
-        Dict(i => _json_gene_name(g, i) for (i, g) in enumerate(gs)),
+        Dict(_json_gene_name(g, i) => i for (i, g) in enumerate(gs)),
         gs,
     )
 end
@@ -281,7 +262,6 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     lbs, ubs = bounds(mm)
     ocs = objective(mm)
 
-    json_model = JSONModel(Dict{String,Any}())
     json = Dict{String,Any}()
     json["id"] = "model" # default
 

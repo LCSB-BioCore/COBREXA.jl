@@ -106,11 +106,11 @@ Return the stoichiometry of reaction with ID `rid`.
 reaction_stoichiometry(m::CoreModelCoupled, rid::String) = reaction_stoichiometry(m.lm, rid)
 
 """
-    reaction_stoichiometry(model::CoreModelCoupled, ridx::Integer)::Dict{String, Float64}
+    reaction_stoichiometry(model::CoreModelCoupled, ridx)::Dict{String, Float64}
 
 Return the stoichiometry of reaction at index `ridx`.
 """
-function reaction_stoichiometry(m::CoreModelCoupled, ridx::Integer)::Dict{String,Float64}
+function reaction_stoichiometry(m::CoreModelCoupled, ridx)::Dict{String,Float64}
     reaction_stoichiometry(m.lm, ridx)
 end
 

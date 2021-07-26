@@ -179,13 +179,13 @@ function reaction_stoichiometry(m::MATModel, rid::String)::Dict{String,Float64}
 end
 
 """
-    reaction_stoichiometry(model::MATModel, ridx::Integer)::Dict{String, Float64}
+    reaction_stoichiometry(model::MATModel, ridx)::Dict{String, Float64}
 
 Return the stoichiometry of reaction at index `ridx`.
 """
-function reaction_stoichiometry(m::MATModel, ridx::Integer)::Dict{String,Float64}
+function reaction_stoichiometry(m::MATModel, ridx)::Dict{String,Float64}
     met_inds = findall(m.mat["S"][:, ridx] .!= 0.0)
-    Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, rxn_ind] for met_ind in met_inds)
+    Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, ridx] for met_ind in met_inds)
 end
 
 # NOTE: There's no useful standard on how and where to store notes and

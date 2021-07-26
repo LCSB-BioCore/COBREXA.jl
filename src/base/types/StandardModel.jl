@@ -108,17 +108,17 @@ n_genes(model::StandardModel)::Int = length(model.genes)
 Return the stoichiometric matrix associated with `model` in sparse format.
 """
 function stoichiometry(model::StandardModel)::SparseMat
-    S = SparseArrays.spzeros(length(model.metabolites), length(model.reactions))
-    met_ids = metabolites(model) # vector of metabolite ids
-    rxn_ids = reactions(model)
-    for (i, rxn_id) in enumerate(rxn_ids) # column, in order
-        for (met_id, coeff) in model.reactions[rxn_id].metabolites
-            j = findfirst(==(met_id), met_ids) # row
+    S = SparseArrays.spzeros(n_metabolites(model), n_reactions(model))
+    mets = metabolites(model) # vector of metabolite ids
+    rxns = reactions(model)
+    for (i, rid) in enumerate(rxns) # column, in order
+        for (mid, coeff) in model.reactions[rid].metabolites
+            j = findfirst(==(mid), mets) # row
             if isnothing(j)
                 throw(
                     DomainError(
-                        met_id,
-                        "Metabolite not found in model but occurs in stoichiometry of $(rxn_id). Perhaps it was deleted?",
+                        mid,
+                        "Metabolite $(mid) not found in model but occurs in stoichiometry of $(rid)",
                     ),
                 )
             end

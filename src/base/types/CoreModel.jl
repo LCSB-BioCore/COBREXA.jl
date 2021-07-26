@@ -90,11 +90,11 @@ reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
 """
-    reaction_stoichiometry(model::CoreModel, ridx::Integer)::Dict{String, Float64}
+    reaction_stoichiometry(model::CoreModel, ridx)::Dict{String, Float64}
 
 Return the stoichiometry of reaction at index `ridx`.
 """
-reaction_stoichiometry(m::CoreModel, ridx::Integer)::Dict{String,Float64} =
+reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
