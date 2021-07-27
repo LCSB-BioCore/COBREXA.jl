@@ -19,7 +19,6 @@
 
     r1 = Reaction()
     r1.id = "r1"
-    r1.name = "reaction 1"
     r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
     r1.lb = -100.0
     r1.ub = 100.0
@@ -35,7 +34,7 @@
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
 
     mets = [m1, m2, m3, m4]
-    gs = [g1, g2, g3] # DO NOT name variables the names of accessor functions!
+    gs = [g1, g2, g3]
     rxns = [r1, r2, r3, r4]
 
     model = StandardModel()

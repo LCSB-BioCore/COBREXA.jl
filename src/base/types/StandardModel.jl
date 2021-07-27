@@ -301,7 +301,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             gid;
             notes = gene_notes(model, gid),
             annotations = gene_annotations(model, gid),
-        ) # TODO: add name accessor
+        )
     end
 
     for mid in metids
@@ -333,7 +333,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             notes = reaction_notes(model, rid),
             annotations = reaction_annotations(model, rid),
             subsystem = reaction_subsystem(model, rid),
-        ) # TODO: add name accessor
+        )
     end
 
     return StandardModel(

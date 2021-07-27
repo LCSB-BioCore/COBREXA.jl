@@ -1,7 +1,6 @@
 @testset "Metabolite" begin
     m1 = Metabolite()
     m1.id = "met1"
-    m1.name = "metabolite 1"
     m1.formula = "C6H12O6N"
     m1.charge = 1
     m1.compartment = "c"
@@ -11,7 +10,7 @@
     @test all(
         contains.(
             sprint(show, MIME("text/plain"), m1),
-            ["met1", "metabolite 1", "C6H12O6N", "blah", "asds"],
+            ["met1", "C6H12O6N", "blah", "asds"],
         ),
     )
 

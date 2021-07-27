@@ -18,7 +18,6 @@ Shallow copy of a [`Reaction`](@ref)
 """
 Base.copy(r::Reaction) = Reaction(
     r.id;
-    name = r.name,
     metabolites = r.metabolites,
     lb = r.lb,
     ub = r.ub,
@@ -36,7 +35,6 @@ Shallow copy of a [`Metabolite`](@ref)
 """
 Base.copy(m::Metabolite) = Metabolite(
     m.id;
-    name = m.name,
     formula = m.formula,
     charge = m.charge,
     compartment = m.compartment,
@@ -49,7 +47,7 @@ Base.copy(m::Metabolite) = Metabolite(
 
 Shallow copy of a [`Gene`](@ref)
 """
-Base.copy(g::Gene) = Gene(g.id; name = g.name, notes = g.notes, annotations = g.annotations)
+Base.copy(g::Gene) = Gene(g.id; notes = g.notes, annotations = g.annotations)
 
 """
     atom_exchange(model::StandardModel, rxn_id::String)

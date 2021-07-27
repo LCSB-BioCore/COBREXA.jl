@@ -2,23 +2,16 @@
     g = Gene()
 
     # test defaults
-    @test isnothing(g.name)
     @test isempty(g.notes)
     @test isempty(g.annotations)
 
     # Now assign
     g.id = "gene1"
-    g.name = "gene_name"
     g.notes = Dict("notes" => ["blah", "blah"])
     g.annotations = Dict("sboterm" => ["sbo"], "ncbigene" => ["ads", "asds"])
 
     # Test pretty printing
-    @test all(
-        contains.(
-            sprint(show, MIME("text/plain"), g),
-            ["gene1", "gene_name", "blah", "asds"],
-        ),
-    )
+    @test all(contains.(sprint(show, MIME("text/plain"), g), ["gene1", "blah", "asds"]))
 
     # Test duplicate annotation finder
     g2 = Gene("gene2")

@@ -20,7 +20,6 @@
 
     r1 = Reaction()
     r1.id = "r1"
-    r1.name = "reaction 1"
     r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
     r1.lb = -100.0
     r1.ub = 100.0
@@ -33,7 +32,7 @@
     @test all(
         contains.(
             sprint(show, MIME("text/plain"), r1),
-            ["r1", "reaction 1", "100.0", "g1 and g2", "glycolysis", "blah", "biocyc"],
+            ["r1", "100.0", "g1 and g2", "glycolysis", "blah", "biocyc"],
         ),
     )
 
