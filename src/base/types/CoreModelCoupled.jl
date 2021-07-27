@@ -82,46 +82,36 @@ objective(a::CoreModelCoupled) = objective(a.lm)
 
 Coupling constraint matrix for a `CoreModelCoupled`.
 """
-function coupling(a::CoreModelCoupled)::SparseMat
-    a.C
-end
+coupling(a::CoreModelCoupled)::SparseMat = a.C
 
 """
     n_coupling_constraints(a::CoreModelCoupled)::Int
 
 The number of coupling constraints in a `CoreModelCoupled`.
 """
-function n_coupling_constraints(a::CoreModelCoupled)::Int
-    return size(a.C, 1)
-end
+n_coupling_constraints(a::CoreModelCoupled)::Int = size(a.C, 1)
 
 """
     coupling_bounds(a::CoreModelCoupled)::Tuple{SparseVec,SparseVec}
 
 Coupling bounds for a `CoreModelCoupled`.
 """
-function coupling_bounds(a::CoreModelCoupled)::Tuple{SparseVec,SparseVec}
-    (a.cl, a.cu)
-end
+coupling_bounds(a::CoreModelCoupled)::Tuple{SparseVec,SparseVec} = (a.cl, a.cu)
 
 """
-    reaction_stoichiometry(model::CoreModelCoupled, rxn_id::String)::Dict{String, Float64}
+    reaction_stoichiometry(model::CoreModelCoupled, rid::String)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rxn_id` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction with ID `rid`.
 """
-function reaction_stoichiometry(m::CoreModelCoupled, rxn_id::String)::Dict{String,Float64}
-    reaction_stoichiometry(m.lm, rxn_id)
-end
+reaction_stoichiometry(m::CoreModelCoupled, rid::String) = reaction_stoichiometry(m.lm, rid)
 
 """
-    reaction_stoichiometry(model::CoreModelCoupled, rxn_ind::Int)::Dict{String, Float64}
+    reaction_stoichiometry(model::CoreModelCoupled, ridx)::Dict{String, Float64}
 
-Return the reaction equation of reaction with id `rxn_ind` in model. The reaction
-equation maps metabolite ids to their stoichiometric coefficients.
+Return the stoichiometry of reaction at index `ridx`.
 """
-function reaction_stoichiometry(m::CoreModelCoupled, rxn_ind::Int)::Dict{String,Float64}
-    reaction_stoichiometry(m.lm, rxn_ind)
+function reaction_stoichiometry(m::CoreModelCoupled, ridx)::Dict{String,Float64}
+    reaction_stoichiometry(m.lm, ridx)
 end
 
 """

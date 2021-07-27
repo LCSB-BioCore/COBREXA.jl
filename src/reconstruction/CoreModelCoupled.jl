@@ -182,10 +182,10 @@ function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
 end
 
 """
-    remove_reactions(m::CoreModelCoupled, rxn::Integer)
+    remove_reactions(m::CoreModelCoupled, rxn::Int)
 
 """
-function remove_reactions(m::CoreModelCoupled, rxn::Integer)
+function remove_reactions(m::CoreModelCoupled, rxn::Int)
     return remove_reactions(m, [rxn])
 end
 

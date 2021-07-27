@@ -307,7 +307,7 @@ function remove_metabolites(model::CoreModel, mets)
     return CoreModel(new_S, new_b, new_c, new_lbs, new_ubs, new_rxns, new_mets)
 end
 
-function remove_metabolites(model::CoreModel, met::Integer)
+function remove_metabolites(model::CoreModel, met::Int)
     return remove_metabolites(model, [met])
 end
 
@@ -349,10 +349,10 @@ function remove_reactions(m::CoreModel, rxns::Vector{Int})
 end
 
 """
-    remove_reactions(m::CoreModel, rxn::Integer)
+    remove_reactions(m::CoreModel, rxn::Int)
 
 """
-function remove_reactions(m::CoreModel, rxn::Integer)
+function remove_reactions(m::CoreModel, rxn::Int)
     return remove_reactions(m, [rxn])
 end
 
