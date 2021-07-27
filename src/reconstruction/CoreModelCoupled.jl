@@ -202,8 +202,7 @@ end
 
 """
 function remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
-    rxn_indices =
-        [findfirst(isequal(name), m.lm.rxns) for name in intersect(rxns, m.lm.rxns)]
+    rxn_indices = [findfirst(isequal(rid), m.lm.rxns) for rid in intersect(rxns, m.lm.rxns)]
     if isempty(rxn_indices)
         return m
     else

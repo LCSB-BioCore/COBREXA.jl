@@ -1,7 +1,6 @@
 """
     mutable struct Reaction
         id::String
-        name::Maybe{String}
         metabolites::Dict{String,Float64}
         lb::Float64
         ub::Float64
@@ -16,7 +15,6 @@ A structure for representing a single reaction in a [`StandardModel`](@ref).
 """
 mutable struct Reaction
     id::String
-    name::Maybe{String}
     metabolites::Dict{String,Float64}
     lb::Float64
     ub::Float64
@@ -30,7 +28,6 @@ end
 """
     Reaction(
         id = "";
-        name = nothing,
         metabolites = Dict{String,Float64}(),
         lb = -_constants.default_reaction_bound,
         ub = _constants.default_reaction_bound,
@@ -47,7 +44,6 @@ explicitely assigned.
 """
 function Reaction(
     id = "";
-    name = nothing,
     metabolites = Dict{String,Float64}(),
     lb = -_constants.default_reaction_bound,
     ub = _constants.default_reaction_bound,
@@ -60,7 +56,6 @@ function Reaction(
     mets = Dict(k => float(v) for (k, v) in metabolites)
     return Reaction(
         id,
-        name,
         mets,
         lb,
         ub,
