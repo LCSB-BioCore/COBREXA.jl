@@ -42,7 +42,7 @@ n_metabolites(model::SBMLModel)::Int = length(model.sbml.species)
 Recreate the stoichiometry matrix from the [`SBMLModel`](@ref).
 """
 function stoichiometry(model::SBMLModel)::SparseMat
-    _, _, S = SBML.getS(model.sbml)
+    _, _, S = SBML.stoichiometry_matrix(model.sbml)
     return S
 end
 
@@ -53,8 +53,7 @@ Get the lower and upper flux bounds of model [`SBMLModel`](@ref). Throws `Domain
 case if the SBML contains mismatching units.
 """
 function bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
-    lbu = SBML.getLBs(model.sbml)
-    ubu = SBML.getUBs(model.sbml)
+    lbu, ubu = SBML.flux_bounds(model.sbml)
 
     unit = lbu[1][2]
     getvalue = (val, _)::Tuple -> val
@@ -83,7 +82,7 @@ balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
 
 Objective of the [`SBMLModel`](@ref).
 """
-objective(model::SBMLModel)::SparseVec = SBML.getOCs(model.sbml)
+objective(model::SBMLModel)::SparseVec = SBML.flux_objective(model.sbml)
 
 """
     genes(model::SBMLModel)::Vector{String}
@@ -165,13 +164,13 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
     return SBMLModel(
         SBML.Model(
             Dict(), # parameters
-            Dict("" => []), # units
-            Dict([
+            Dict("" => 1), # units
+            Dict(
                 comp =>
                     SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing)
                 for comp in compss
-            ],),
-            Dict([
+            ),
+            Dict(
                 mid => SBML.Species(
                     nothing, # name
                     _default("", comps[mi]), # compartment
@@ -184,8 +183,8 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     _sbml_export_notes(metabolite_notes(mm, mid)),
                     _sbml_export_annotation(metabolite_annotations(mm, mid)),
                 ) for (mi, mid) in enumerate(mets)
-            ],),
-            Dict([
+            ),
+            Dict(
                 rid => SBML.Reaction(
                     Dict([
                         mets[i] => stoi[i, ri] for
@@ -203,15 +202,15 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     _sbml_export_notes(reaction_notes(mm, rid)),
                     _sbml_export_annotation(reaction_annotations(mm, rid)),
                 ) for (ri, rid) in enumerate(rxns)
-            ],),
-            Dict([
+            ),
+            Dict(
                 gid => SBML.GeneProduct(
                     nothing,
                     nothing,
                     _sbml_export_notes(gene_notes(mm, gid)),
                     _sbml_export_annotation(gene_annotations(mm, gid)),
                 ) for gid in genes(mm)
-            ],),
+            ),
             Dict(), # function definitions
         ),
     )
