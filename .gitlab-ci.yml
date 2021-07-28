@@ -231,12 +231,9 @@ mac:v1.6:
 
 trigger:
   stage: test-required
-  image: docker:19.03.13
+  image: curlimages/curl
   tags:
     - privileged
-  services:
-    - name: docker:19.03.13-dind
-      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   script:
-    - docker run curlimages/curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
+    - curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
   <<: *global_settings_master
