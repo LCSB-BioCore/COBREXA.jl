@@ -41,7 +41,7 @@ add_metabolites!(model, metabolite_list)
 # There are two ways to create and add reactions to a model.
 # These are using functions, or macros.
 
-r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> (is the same as m1 ⟷ nothing)
+r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> (is the same as m1 ↔ nothing)
 r1 = Reaction("r1", Dict("m1" => -1.0, "m2" => 1.0), :forward)
 r1.grr = [["g1", "g2"], ["g3"]] # add some gene reaction rules
 r2 = Reaction("r2", Dict("m2" => -1.0, "m1" => 1.0), :backward)
@@ -55,27 +55,13 @@ m3 = metabolite_list[3]
 m4 = metabolite_list[4]
 
 @add_reactions! model begin # macro approach
-    "r4", m2 ⟶ m4, 0, 1000
-    "r_m3", m3 ⟷ nothing, -1000, 1000
-    "r_m4", m4 ⟶ nothing
-    "r5", m4 ⟶ m2
+    "r4", m2 → m4, 0, 1000
+    "r_m3", m3 ↔ nothing, -1000, 1000
+    "r_m4", m4 → nothing
+    "r5", m4 → m2
 end
 
 model.reactions["r4"].grr = [["g5"], ["g6", "g7"], ["g8"]]
-
-#md # !!! note "Note: Using reaction arrows"
-#md #       `COBREXA` exports arrows that can be used to construct reactions.
-#md #       Both the long and short arrows (`⟶ == →`) mean the same thing if they
-#md #       point in the same direction.
-#md #
-#md #       These arrows are accessible by using the `LaTeX` completions built into
-#md #       Julia. For example:
-#md #       1. → is \rightarrow<tab>
-#md #       2. ⟶ is \longrightarrow<tab>
-#md #       3. ← is \leftarrow<tab>
-#md #       4. ⟵ is \longleftarrow<tab>
-#md #       5. ↔ is \leftrightarrow<tab>
-#md #       6. ⟷ is \longleftrightarrow<tab>
 
 # The constructed model can now be inspected.
 model

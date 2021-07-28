@@ -175,7 +175,7 @@ Also removes any metabolites not involved in any reaction after the deletion.
 function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
     return CoreModelCoupled(
         remove_reactions(m.lm, rxns),
-        m.C[:, filter(e -> e ∉ rxns, 1:n_reactions(m))],
+        m.C[:, filter(!in(rxns), 1:n_reactions(m))],
         m.cl,
         m.cu,
     )
@@ -319,7 +319,7 @@ Removes a set of coupling constraints from a [`CoreModelCoupled`](@ref)
 in-place.
 """
 function remove_coupling_constraints!(m::CoreModelCoupled, constraints::Vector{Int})
-    to_be_kept = filter(e -> e ∉ constraints, 1:n_coupling_constraints(m))
+    to_be_kept = filter(!in(constraints), 1:n_coupling_constraints(m))
     m.C = m.C[to_be_kept, :]
     m.cl = m.cl[to_be_kept]
     m.cu = m.cu[to_be_kept]
@@ -343,7 +343,7 @@ function change_coupling_bounds!(
     cl::V = Float64[],
     cu::V = Float64[],
 ) where {V<:VecType}
-    found = [index ∈ 1:n_coupling_constraints(model) for index in constraints]
+    found = (constraints .>= 1) .& (constraints .<= n_coupling_constraints(model))
     red_constraints = constraints[found]
 
     length(red_constraints) == length(unique(red_constraints)) ||

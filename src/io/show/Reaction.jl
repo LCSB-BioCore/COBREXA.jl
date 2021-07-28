@@ -16,13 +16,13 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
     if r.ub > 0.0 && r.lb < 0.0
-        arrow = " ⟷  "
+        arrow = " ↔  "
     elseif r.ub <= 0.0 && r.lb < 0.0
-        arrow = " ⟵  "
+        arrow = " ←  "
     elseif r.ub > 0.0 && r.lb >= 0.0
-        arrow = " ⟶  "
+        arrow = " →  "
     else
-        arrow = " →∣←  " # blocked reaction
+        arrow = " →|←  " # blocked reaction
     end
     substrates =
         ["$(-v) $k" for (k, v) in Iterators.filter(((_, v)::Pair -> v < 0), r.metabolites)]

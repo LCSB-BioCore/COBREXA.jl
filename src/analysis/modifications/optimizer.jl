@@ -45,9 +45,9 @@ with [`objective_bounds`](@ref).
 """
 function constrain_objective_value(tolerance)
     return (model, opt_model) -> begin
-        λmin, λmax = objective_bounds(tolerance)(objective_value(opt_model))
+        lambda_min, lambda_max = objective_bounds(tolerance)(objective_value(opt_model))
         old_objective = objective_function(opt_model)
-        @constraint(opt_model, λmin <= sum(old_objective) <= λmax)
+        @constraint(opt_model, lambda_min <= sum(old_objective) <= lambda_max)
     end
 end
 

@@ -62,7 +62,7 @@ function _mkrxn(substrates, products)
 end
 
 """
-    ⟶(
+    →(
         substrates::Union{
             Nothing,
             Metabolite,
@@ -78,9 +78,8 @@ end
     )
 
 Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
-An equivalent alternative is `→`.
 """
-function ⟶(
+function →(
     substrates::Union{
         Nothing,
         Metabolite,
@@ -97,10 +96,9 @@ function ⟶(
     metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :forward)
 end
-const → = ⟶
 
 """
-    ⟵(
+    ←(
         substrates::Union{
             Nothing,
             Metabolite,
@@ -116,9 +114,8 @@ const → = ⟶
     )
 
 Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
-An equivalent alternative is `←`.
 """
-function ⟵(
+function ←(
     substrates::Union{
         Nothing,
         Metabolite,
@@ -135,10 +132,9 @@ function ⟵(
     metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :reverse)
 end
-const ← = ⟵
 
 """
-    ⟷(
+    ↔(
         substrates::Union{
             Nothing,
             Metabolite,
@@ -153,10 +149,10 @@ const ← = ⟵
         },
     )
 
-Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and `products`.
-An equivalent alternative is `↔`.
+Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and
+`products`.
 """
-function ⟷(
+function ↔(
     substrates::Union{
         Nothing,
         Metabolite,
@@ -173,4 +169,3 @@ function ⟷(
     metdict = _mkrxn(substrates, products)
     return Reaction("", metdict, :bidirectional)
 end
-const ↔ = ⟷

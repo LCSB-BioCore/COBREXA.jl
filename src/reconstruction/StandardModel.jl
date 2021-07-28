@@ -77,9 +77,9 @@ Examples
 --------
 ```
 @add_reactions! model begin
-    "v1", nothing ⟶ A, 0, 500
-    "v2", A ⟷ B + C, -500
-    "v3", B + C ⟶ nothing
+    "v1", nothing → A, 0, 500
+    "v2", A ↔ B + C, -500
+    "v3", B + C → nothing
 end
 ```
 """

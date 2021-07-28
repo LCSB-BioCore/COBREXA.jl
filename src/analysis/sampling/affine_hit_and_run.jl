@@ -99,8 +99,8 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, chain)
 
                 # iteratively collect the maximum and minimum possible multiple
                 # of `dir` added to the current point
-                λmax = Inf
-                λmin = -Inf
+                lambda_max = Inf
+                lambda_min = -Inf
                 for j = 1:d
                     dl = lbs[j] - points[j, i]
                     du = ubs[j] - points[j, i]
@@ -115,13 +115,13 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, chain)
                         lower = -Inf
                         upper = Inf
                     end
-                    λmin = max(λmin, lower)
-                    λmax = min(λmax, upper)
+                    lambda_min = max(lambda_min, lower)
+                    lambda_max = min(lambda_max, upper)
                 end
 
-                λ = λmin + rand() * (λmax - λmin)
-                !isfinite(λ) && continue # avoid divergence
-                new_points[:, i] = points[:, i] .+ λ .* dir
+                lambda = lambda_min + rand() * (lambda_max - lambda_min)
+                !isfinite(lambda) && continue # avoid divergence
+                new_points[:, i] = points[:, i] .+ lambda .* dir
 
                 # TODO normally, here we would check if sum(S*new_point) is still
                 # lower than the tolerance, but we shall trust the computer
