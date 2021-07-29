@@ -63,6 +63,15 @@ end
 
 model.reactions["r4"].grr = [["g5"], ["g6", "g7"], ["g8"]]
 
+#md # !!! note "Note: Writing unicode arrows"
+#md #     The reaction arrows can be easily written by using the `LaTeX`
+#md #     completions built into Julia shell (and many Julia-compatible
+#md #     editors). You can type:
+#md #
+#md #     - `→` as `\rightarrow` (press `Tab` to complete)
+#md #     - `←` as `\leftarrow`
+#md #     - `↔` as `\leftrightarrow`
+
 # The constructed model can now be inspected.
 model
 
