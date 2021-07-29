@@ -43,7 +43,7 @@ s.t. S x = b
      xₗ ≤ x ≤ xᵤ
 ```
 See "Orth, J., Thiele, I. & Palsson, B. What is flux balance analysis?. Nat
-Biotechnol 28, 245–248 (2010). https://doi.org/10.1038/nbt.1614" for more
+Biotechnol 28, 245-248 (2010). https://doi.org/10.1038/nbt.1614" for more
 information.
 
 The `optimizer` must be set to a `JuMP`-compatible optimizer, such as

@@ -290,7 +290,7 @@ m4 = remove_metabolites(model, first(indexin(["glc__D_e"], metabolites(model))))
 ```
 """
 function remove_metabolites(model::CoreModel, mets)
-    mets_to_keep = filter(x -> x ∉ mets, 1:n_metabolites(model))
+    mets_to_keep = filter(!in(mets), 1:n_metabolites(model))
     temp_S = model.S[mets_to_keep, :]
 
     (I, rxns_to_keep, val) = findnz(temp_S)
@@ -331,7 +331,7 @@ Removes a set of reactions from a CoreModel.
 Also removes the metabolites not involved in any reaction.
 """
 function remove_reactions(m::CoreModel, rxns::Vector{Int})
-    rxns_to_keep = filter(e -> e ∉ rxns, 1:n_reactions(m))
+    rxns_to_keep = filter(!in(rxns), 1:n_reactions(m))
     temp_s = m.S[:, rxns_to_keep]
 
     (mets_to_keep, J, val) = findnz(temp_s)

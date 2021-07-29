@@ -9,7 +9,7 @@
     nad = model.metabolites["nad_c"]
     h_p = model.metabolites["h_p"]
 
-    rxn = nadh + 4.0 * h_c + 1.0 * q8 ⟶ 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
+    rxn = nadh + 4.0 * h_c + 1.0 * q8 → 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
     @test rxn.lb == 0.0 && rxn.ub > 0.0
 
     rxn = 1.0 * nadh + 4.0 * h_c + q8 ← 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
@@ -27,11 +27,11 @@
     rxn = nothing → 1.0nadh
     @test length(rxn.metabolites) == 1
 
-    rxn = 1.0 * nadh + 4.0 * h_c + 1.0 * q8 ⟶ 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
+    rxn = 1.0 * nadh + 4.0 * h_c + 1.0 * q8 → 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
     @test prod(values(rxn.metabolites)) == -12
     @test ("q8h2_c" in [x for x in keys(rxn.metabolites)])
 
-    rxn = nadh + 4.0 * h_c + 1.0 * q8 ⟶ 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
+    rxn = nadh + 4.0 * h_c + 1.0 * q8 → 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
     @test rxn.lb == 0.0 && rxn.ub > 0.0
 
     @test length(h_p + h_p) == 2

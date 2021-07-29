@@ -24,10 +24,10 @@ s.t. S x = b
 Where the optimal solution of the FBA problem, μ⁰, has been added as an
 additional constraint. See "Lewis, Nathan E, Hixson, Kim K, Conrad, Tom M,
 Lerman, Joshua A, Charusanti, Pep, Polpitiya, Ashoka D, Adkins, Joshua N,
-Schramm, Gunnar, Purvine, Samuel O, Lopez‐Ferrer, Daniel, Weitz, Karl K, Eils,
+Schramm, Gunnar, Purvine, Samuel O, Lopez-Ferrer, Daniel, Weitz, Karl K, Eils,
 Roland, König, Rainer, Smith, Richard D, Palsson, Bernhard Ø, (2010) Omic data
 from evolved E. coli are consistent with computed optimal growth from
-genome‐scale models. Molecular Systems Biology, 6. 390. doi:
+genome-scale models. Molecular Systems Biology, 6. 390. doi:
 accession:10.1038/msb.2010.47" for more details.
 
 pFBA gets the model optimum by standard FBA (using
