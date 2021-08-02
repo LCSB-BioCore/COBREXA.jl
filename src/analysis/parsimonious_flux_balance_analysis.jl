@@ -84,8 +84,8 @@ function parsimonious_flux_balance_analysis(
         optimize!(opt_model)
         is_solved(opt_model) && break
 
-        COBREXA.JuMP.delete(opt_model, pfba_constraint)
-        COBREXA.JuMP.unregister(opt_model, :pfba_constraint)
+        JuMP.delete(opt_model, pfba_constraint)
+        JuMP.unregister(opt_model, :pfba_constraint)
     end
 
     is_solved(opt_model) || return nothing # pFBA failed
