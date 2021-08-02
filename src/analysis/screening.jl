@@ -143,3 +143,47 @@ A shortcut for [`screen`](@ref) that only works with model variants.
 """
 screen_variants(model, variants, analysis; workers = [myid()]) =
     screen(model; variants = variants, analysis = analysis, workers = workers)
+
+screen_optimize_objective(_, optmodel)::Union{Float64,Nothing} =
+    optimize_objective(optmodel)
+
+function screen_optmodel_modifications(
+    model,
+    optimizer;
+    modifications::Array{V,N},
+    analysis = screen_optimize_objective,
+    workers = [myid()],
+) where {V<:AbstractVector,N}
+    save_model = :(
+        begin
+            local model = $model
+            $COBREXA.precache!(model)
+            (model, $COBREXA.make_optimization_model(model, $optimizer))
+        end
+    )
+    map(
+        fetch,
+        save_at.(workers, :cobrexa_screen_optmodel_modifications_data, Ref(save_model)),
+    )
+    save_model = nothing
+    map(fetch, save_at.(workers, :cobrexa_screen_optmodel_modifications_fn, Ref(analysis)))
+
+    res = dpmap(
+        mods -> :(
+            begin
+                local (model, optmodel) = cobrexa_screen_optmodel_modifications_data
+                for mod in $mods
+                    mod(model, optmodel)
+                end
+                cobrexa_screen_optmodel_modifications_fn(model, optmodel)
+            end
+        ),
+        CachingPool(workers),
+        modifications,
+    )
+
+    map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_data))
+    map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_fn))
+
+    return res
+end

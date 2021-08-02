@@ -59,6 +59,15 @@ function is_solved(optmodel)
     false
 end
 
+function optimize_objective(optmodel)::Union{Float64,Nothing}
+    optimize!(optmodel)
+    if is_solved(optmodel)
+        objective_value(optmodel)
+    else
+        nothing
+    end
+end
+
 """
     get_optmodel_bounds(opt_model)
 
