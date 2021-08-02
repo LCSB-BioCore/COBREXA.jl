@@ -84,8 +84,8 @@ function parsimonious_flux_balance_analysis(
         optimize!(opt_model)
         is_solved(opt_model) && break
 
-        JuMP.delete(opt_model, pfba_constraint)
-        JuMP.unregister(opt_model, :pfba_constraint)
+        delete(opt_model, pfba_constraint)
+        unregister(opt_model, :pfba_constraint)
     end
 
     is_solved(opt_model) || return nothing # pFBA failed
