@@ -18,7 +18,7 @@ Number of metabolites: 0
 
 metabolite_list[1].formula = &quot;C6H12O6&quot; # can edit metabolites, etc. directly
 
-add_metabolites!(model, metabolite_list)</code></pre><h3 id="Add-reactions-to-the-model"><a class="docs-heading-anchor" href="#Add-reactions-to-the-model">Add reactions to the model</a><a id="Add-reactions-to-the-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-reactions-to-the-model" title="Permalink"></a></h3><p>There are two ways to create and add reactions to a model. These are using functions, or macros.</p><pre><code class="language-julia">r_m1 = Reaction(&quot;EX_m1&quot;, Dict(&quot;m1&quot; =&gt; -1.0), :bidirectional) # exchange reaction: m1 &lt;-&gt; (is the same as m1 ⟷ nothing)
+add_metabolites!(model, metabolite_list)</code></pre><h3 id="Add-reactions-to-the-model"><a class="docs-heading-anchor" href="#Add-reactions-to-the-model">Add reactions to the model</a><a id="Add-reactions-to-the-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-reactions-to-the-model" title="Permalink"></a></h3><p>There are two ways to create and add reactions to a model. These are using functions, or macros.</p><pre><code class="language-julia">r_m1 = Reaction(&quot;EX_m1&quot;, Dict(&quot;m1&quot; =&gt; -1.0), :bidirectional) # exchange reaction: m1 &lt;-&gt; (is the same as m1 ↔ nothing)
 r1 = Reaction(&quot;r1&quot;, Dict(&quot;m1&quot; =&gt; -1.0, &quot;m2&quot; =&gt; 1.0), :forward)
 r1.grr = [[&quot;g1&quot;, &quot;g2&quot;], [&quot;g3&quot;]] # add some gene reaction rules
 r2 = Reaction(&quot;r2&quot;, Dict(&quot;m2&quot; =&gt; -1.0, &quot;m1&quot; =&gt; 1.0), :backward)
@@ -32,16 +32,16 @@ m3 = metabolite_list[3]
 m4 = metabolite_list[4]
 
 @add_reactions! model begin # macro approach
-    &quot;r4&quot;, m2 ⟶ m4, 0, 1000
-    &quot;r_m3&quot;, m3 ⟷ nothing, -1000, 1000
-    &quot;r_m4&quot;, m4 ⟶ nothing
-    &quot;r5&quot;, m4 ⟶ m2
+    &quot;r4&quot;, m2 → m4, 0, 1000
+    &quot;r_m3&quot;, m3 ↔ nothing, -1000, 1000
+    &quot;r_m4&quot;, m4 → nothing
+    &quot;r5&quot;, m4 → m2
 end
 
 model.reactions[&quot;r4&quot;].grr = [[&quot;g5&quot;], [&quot;g6&quot;, &quot;g7&quot;], [&quot;g8&quot;]]</code></pre><pre class="documenter-example-output">3-element Vector{Vector{String}}:
  [&quot;g5&quot;]
  [&quot;g6&quot;, &quot;g7&quot;]
- [&quot;g8&quot;]</pre><div class="admonition is-info"><header class="admonition-header">Note: Using reaction arrows</header><div class="admonition-body"><p><code>COBREXA</code> exports arrows that can be used to construct reactions.   Both the long and short arrows (<code>⟶ == →</code>) mean the same thing if they   point in the same direction.</p><p>These arrows are accessible by using the <code>LaTeX</code> completions built into   Julia. For example:</p><ol><li>→ is \rightarrow&lt;tab&gt;</li><li>⟶ is \longrightarrow&lt;tab&gt;</li><li>← is \leftarrow&lt;tab&gt;</li><li>⟵ is \longleftarrow&lt;tab&gt;</li><li>↔ is \leftrightarrow&lt;tab&gt;</li><li>⟷ is \longleftrightarrow&lt;tab&gt;</li></ol></div></div><p>The constructed model can now be inspected.</p><pre><code class="language-julia">model</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
+ [&quot;g8&quot;]</pre><div class="admonition is-info"><header class="admonition-header">Note: Writing unicode arrows</header><div class="admonition-body"><p>The reaction arrows can be easily written by using the <code>LaTeX</code> completions built into Julia shell (and many Julia-compatible editors). You can type:</p><ul><li><code>→</code> as <code>\rightarrow</code> (press <code>Tab</code> to complete)</li><li><code>←</code> as <code>\leftarrow</code></li><li><code>↔</code> as <code>\leftrightarrow</code></li></ul></div></div><p>The constructed model can now be inspected.</p><pre><code class="language-julia">model</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
 
  -1.0   1.0    ⋅   -1.0    ⋅     ⋅     ⋅     ⋅ 
   1.0  -1.0  -1.0    ⋅   -1.0    ⋅     ⋅    1.0
@@ -58,4 +58,4 @@ model</code></pre><pre class="documenter-example-output">Metabolic model of type
    ⋅     ⋅     ⋅     ⋅    1.0    ⋅   -1.0  -1.0
 Number of reactions: 8
 Number of metabolites: 4
-</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 28 July 2021 14:12">Wednesday 28 July 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 2 August 2021 07:27">Monday 2 August 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
