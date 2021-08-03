@@ -166,7 +166,9 @@ Screen multiple modifications of the same optimization model.
 
 This function is potentially more efficient than [`screen`](@ref) because it
 avoids making variants of the model structure and remaking of the optimization
-model, but on the other hand can not express the scale of modifications.
+model. On the other hand, modification functions need to keep the optimization
+model in a recoverable state (one that leaves the model usable for the next
+modification), which limits the possible spectrum of modifications applied.
 
 Internally, `model` is distributed to `workers` and transformed into the
 optimization model using [`make_optimization_model`](@ref). With that,
