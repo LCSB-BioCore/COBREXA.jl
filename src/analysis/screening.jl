@@ -144,11 +144,44 @@ A shortcut for [`screen`](@ref) that only works with model variants.
 screen_variants(model, variants, analysis; workers = [myid()]) =
     screen(model; variants = variants, analysis = analysis, workers = workers)
 
+"""
+    screen_optimize_objective(_, optmodel)::Union{Float64,Nothing}
+
+A variant of [`optimize_objective`](@ref) directly usable in
+[`screen_optmodel_modifications`](@ref).
+"""
 screen_optimize_objective(_, optmodel)::Union{Float64,Nothing} =
     optimize_objective(optmodel)
 
+"""
+    screen_optmodel_modifications(
+        model::MetabolicModel,
+        optimizer;
+        modifications::Array{V,N},
+        analysis = screen_optimize_objective,
+        workers = [myid()],
+    ) where {V<:AbstractVector,N}
+
+Screen multiple modifications of the same optimization model.
+
+This function is potentially more efficient than [`screen`](@ref) because it
+avoids making variants of the model structure and remaking of the optimization
+model, but on the other hand can not express the scale of modifications.
+
+Internally, `model` is distributed to `workers` and transformed into the
+optimization model using [`make_optimization_model`](@ref). With that,
+vectors of functions in `modifications` are consecutively applied, and the
+result of `analysis` function called on model are collected to an array of the
+same extent as `modifications`.
+
+Both the modification functions (in vectors) and the analysis function here
+have 2 parameters (as opposed to 1 with [`screen`](@ref)): first is the `model`
+(carried through as-is), second is the prepared JuMP optimization model that
+may be modified and acted upon. As an example, you can use modification
+[`change_constraint`](@ref) and analysis [`screen_optimize_objective`](@ref).
+"""
 function screen_optmodel_modifications(
-    model,
+    model::MetabolicModel,
     optimizer;
     modifications::Array{V,N},
     analysis = screen_optimize_objective,
