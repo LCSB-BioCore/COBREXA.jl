@@ -65,7 +65,7 @@ function parsimonious_flux_balance_analysis(
 
     # get the objective
     Z = objective_value(opt_model)
-    original_objective = COBREXA.JuMP.objective_function(opt_model)
+    original_objective = objective_function(opt_model)
 
     # prepare the model for pFBA
     for mod in qp_modifications

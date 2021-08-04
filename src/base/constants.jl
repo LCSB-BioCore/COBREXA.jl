@@ -56,5 +56,5 @@ const _constants = (
     ),
 )
 
-const MAX_SENSE = COBREXA.MOI.MAX_SENSE
-const MIN_SENSE = COBREXA.MOI.MIN_SENSE
+const MAX_SENSE = MOI.MAX_SENSE
+const MIN_SENSE = MOI.MIN_SENSE

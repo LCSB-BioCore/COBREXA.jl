@@ -9,7 +9,7 @@ If you want to change the objective and sense at the same time, use
 [`change_objective`](@ref) instead to do both at once.
 """
 function change_sense(objective_sense)
-    (model, opt_model) -> COBREXA.JuMP.set_objective_sense(opt_model, objective_sense)
+    (model, opt_model) -> set_objective_sense(opt_model, objective_sense)
 end
 
 """
@@ -22,7 +22,7 @@ problems that may require different optimizers for different parts, such as the
 [`parsimonious_flux_balance_analysis`](@ref).
 """
 function change_optimizer(optimizer)
-    (model, opt_model) -> COBREXA.JuMP.set_optimizer(opt_model, optimizer)
+    (model, opt_model) -> set_optimizer(opt_model, optimizer)
 end
 
 """
@@ -33,8 +33,7 @@ to the JuMP documentation and the documentation of the specific optimizer for
 usable keys and values.
 """
 function change_optimizer_attribute(attribute_key, value)
-    (model, opt_model) ->
-        COBREXA.JuMP.set_optimizer_attribute(opt_model, attribute_key, value)
+    (model, opt_model) -> set_optimizer_attribute(opt_model, attribute_key, value)
 end
 
 """

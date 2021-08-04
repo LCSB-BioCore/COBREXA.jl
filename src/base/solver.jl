@@ -16,7 +16,7 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
-    optimization_model = COBREXA.JuMP.Model(optimizer)
+    optimization_model = Model(optimizer)
     @variable(optimization_model, x[i = 1:n])
     @objective(optimization_model, sense, objective(model)' * x)
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
@@ -42,7 +42,7 @@ Use JuMP to solve an instance of CoreModel
 """
 function optimize_model(model::MetabolicModel, optimizer; sense = MOI.MIN_SENSE)
     optimization_model = make_optimization_model(model, optimizer; sense = sense)
-    COBREXA.JuMP.optimize!(optimization_model)
+    optimize!(optimization_model)
     return optimization_model
 end
 
@@ -55,8 +55,7 @@ optimal).  Return `false` if any other termination status is reached.
 Termination status is defined in the documentation of `JuMP`.
 """
 function is_solved(optmodel)
-    COBREXA.JuMP.termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true :
-    false
+    termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true : false
 end
 
 """
