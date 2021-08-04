@@ -80,6 +80,6 @@ function flux_balance_analysis(
         mod(model, opt_model)
     end
 
-    COBREXA.JuMP.optimize!(opt_model)
+    optimize!(opt_model)
     return opt_model
 end
