@@ -40,15 +40,15 @@ sol["BIOMASS_Ecoli_core_w_GAM"] # Enolase knockout μ, cannot grow by itself
 
 # ## Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models
 
-ex_rxns = filter(looks_like_exchange_reaction, reactions(base_model)) # identify exchange reactions heuristically
-ex_mets = [first(keys(reaction_stoichiometry(base_model, ex_rxn))) for ex_rxn in ex_rxns] # identify exchange metabolites IN THE SAME ORDER as ex_rxns
-[ex_rxns ex_mets]
+ex_rxn_mets = Dict(
+    ex_rxn => first(keys(reaction_stoichiometry(base_model, ex_rxn))) for
+    ex_rxn in filter(looks_like_exchange_reaction, reactions(base_model))
+) # identify exchange reactions heuristically
 #
 model_names = ["cytbd_ko", "atps4r_ko"]
 community_model = join_with_exchanges(
     [cytbd_knockout_model, atps4r_knockout_model],
-    ex_rxns,
-    ex_mets;
+    ex_rxn_mets;
     add_biomass_objective = true,
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"],
     model_names = model_names,
@@ -56,9 +56,9 @@ community_model = join_with_exchanges(
 
 # ## Set exchange reaction bounds of community model based on the bounds of the individual models
 
-env_ex_rxn_idxs = indexin(ex_rxns, reactions(community_model)) # identify the global (environmental exchange reactions)
-cytbd_ex_rxn_idxs = indexin(ex_rxns, reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
-atps4r_ex_rxn_idxs = indexin(ex_rxns, reactions(atps4r_knockout_model))
+env_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(community_model)) # identify the global (environmental exchange reactions)
+cytbd_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
+atps4r_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(atps4r_knockout_model))
 
 # In case some exchange reactions are not present in both models, set
 # environmental exchange bound to the sum of the individual exchange bounds
@@ -96,8 +96,7 @@ d["community_biomass"] # community μ
 community_model = add_model_with_exchanges(
     community_model,
     eno_knockout_model,
-    ex_rxns,
-    ex_mets;
+    ex_rxn_mets;
     model_name = "eno_ko",
     biomass_id = "BIOMASS_Ecoli_core_w_GAM",
 )
