@@ -5,26 +5,24 @@
 Limit the objective value to `tolerance`-times the current objective value, as
 with [`objective_bounds`](@ref).
 """
-function constrain_objective_value(tolerance)
-    return (_, opt_model) -> begin
+constrain_objective_value(tolerance) =
+    (_, opt_model) -> begin
         lambda_min, lambda_max = objective_bounds(tolerance)(objective_value(opt_model))
         old_objective = objective_function(opt_model)
         @constraint(opt_model, lambda_min <= sum(old_objective) <= lambda_max)
     end
-end
 
 """
     change_constraint(id::String, lb, ub)
 
 Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id`.
 """
-function change_constraint(id::String, lb, ub)
+change_constraint(id::String, lb, ub) =
     (model, opt_model) -> begin
         ind = first(indexin([id], reactions(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
         set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
     end
-end
 
 """
     change_objective(new_objective::Union{String,Vector{String}}; weights=[], sense=MOI.MAX_SENSE)
@@ -36,11 +34,11 @@ array of reactions identifiers.
 Optionally, the objective can be weighted by a vector of `weights`, and a
 optimization `sense` can be set.
 """
-function change_objective(
+change_objective(
     new_objective::Union{String,Vector{String}};
     weights = [],
     sense = MOI.MAX_SENSE,
-)
+) =
     (model, opt_model) -> begin
 
         # Construct objective_indices array
@@ -67,4 +65,3 @@ function change_objective(
         v = opt_model[:x]
         @objective(opt_model, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
-end
