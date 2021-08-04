@@ -59,6 +59,12 @@ function is_solved(optmodel)
     false
 end
 
+"""
+    optimize_objective(optmodel)::Union{Float64,Nothing}
+
+Shortcut for running JuMP `optimize!` on a model and returning the objective
+value, if solved.
+"""
 function optimize_objective(optmodel)::Union{Float64,Nothing}
     optimize!(optmodel)
     if is_solved(optmodel)
