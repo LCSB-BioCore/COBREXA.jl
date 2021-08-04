@@ -143,6 +143,6 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     ],
     qp_modifications = [
         change_optimizer(OSQP.Optimizer), # now switch to OSQP (Tulip wouldn't be able to finish the computation)
-        silence # and make it quiet.
+        silence, # and make it quiet.
     ],
 )

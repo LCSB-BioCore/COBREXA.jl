@@ -20,8 +20,7 @@ This may be used to try different approaches for reaching the optimum, and in
 problems that may require different optimizers for different parts, such as the
 [`parsimonious_flux_balance_analysis`](@ref).
 """
-change_optimizer(optimizer) =
-    (_, opt_model) -> set_optimizer(opt_model, optimizer)
+change_optimizer(optimizer) = (_, opt_model) -> set_optimizer(opt_model, optimizer)
 
 """
     change_optimizer_attribute(attribute_key, value)

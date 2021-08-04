@@ -7,10 +7,7 @@
             change_constraint("EX_glc__D_e", -12, -12),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
-        qp_modifications = [
-            change_optimizer(OSQP.Optimizer),
-            silence
-        ],
+        qp_modifications = [change_optimizer(OSQP.Optimizer), silence],
     )
     v = parsimonious_flux_balance_analysis_vec(
         model,
@@ -19,10 +16,7 @@
             change_constraint("EX_glc__D_e", -12, -12),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
-        qp_modifications = [
-            change_optimizer(OSQP.Optimizer),
-            silence
-        ],
+        qp_modifications = [change_optimizer(OSQP.Optimizer), silence],
     )
 
     # The used optimizer doesn't really converge to the same answer everytime
