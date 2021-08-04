@@ -72,7 +72,7 @@ function warmup_from_variability(
             rid -> :($COBREXA._FVA_optimize_reaction(
                 cobrexa_sampling_warmup_optmodel,
                 $rid,
-                optmodel -> $COBREXA.JuMP.value.(optmodel[:x]),
+                optmodel -> $JuMP.value.(optmodel[:x]),
             )),
             CachingPool(workers),
             vcat(-min_reactions, max_reactions),
