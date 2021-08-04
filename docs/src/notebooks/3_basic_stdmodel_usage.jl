@@ -55,18 +55,18 @@ fluxes = flux_balance_analysis_dict(
 # However, deeper inspection of flux results is possible when using
 # `StandardModel`.
 
-# ## Inspecting the flux solution: `atom_exchange`
+# ## Inspecting the flux solution: `atom_fluxes`
 
 # It is sometimes interesting to keep track of the atoms entering and leaving
 # the system through boundary reactions. This can be inspected by calling
-# [`atom_exchange`](@ref). That gives you the flux of individual atoms getting
+# [`atom_fluxes`](@ref). That gives you the flux of individual atoms getting
 # consumed and produced by all reactions, based on `fluxes`. We erase the
 # reaction that consumes the atoms for creating biomass, to see how much mass
 # the "rest" of the reaction produces for it:
 
 fluxes_without_biomass = copy(fluxes);
 delete!(fluxes_without_biomass, "BIOMASS_Ecoli_core_w_GAM");
-atom_exchange(model, fluxes_without_biomass)
+atom_fluxes(model, fluxes_without_biomass)
 
 # ## Inspecting the flux solution: `metabolite_fluxes`
 
@@ -174,10 +174,16 @@ pgm_duplicate
 #
 check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = false) # can also just check if only the metabolites are the same but different stoichiometry is used
 
-# ## Checking the internals of `StandardModel`s: `is_mass_balanced`
+# ## Checking the internals of `StandardModel`s: `reaction_mass_balanced`
 
-# Finally, [`is_mass_balanced`](@ref) can be used to check if a reaction is mass
+# Finally, [`reaction_mass_balanced`](@ref) can be used to check if a reaction is mass
 # balanced based on the formulas of the reaction equation.
 
-pgm_duplicate.metabolites = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c" => 1) # not mass balanced now
-is_bal, extra_atoms = is_mass_balanced(model, pgm_duplicate) # extra_atoms shows which atoms are in excess/deficit
+rxn_dict = Dict{String,Float64}("3pg_c" => 1, "2pg_c" => -1, "h2o_c" => 1)
+reaction_mass_balanced(model, rxn_dict)
+
+# Now to determine which atoms are unbalanced, you can use `reaction_atom_balance`
+reaction_atom_balance(model, rxn_dict)
+
+# Note, since `pgm_duplicate` is not in the model, we cannot use the other variants of this
+# function because they find the reaction equation stored inside the `model`.
