@@ -122,7 +122,7 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     model,
     OSQP.Optimizer;
     modifications = [
-        change_optimizer_attribute("verbose", false), # silence the optimizer (OSQP is very verbose by default)
+        silence, # silence the optimizer (OSQP is very verbose by default)
         change_constraint("R_EX_glc__D_e", -12, -12),
     ],
 )
@@ -143,6 +143,6 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     ],
     qp_modifications = [
         change_optimizer(OSQP.Optimizer), # now switch to OSQP (Tulip wouldn't be able to finish the computation)
-        change_optimizer_attribute("verbose", false), # and silence it.
+        silence # and make it quiet.
     ],
 )

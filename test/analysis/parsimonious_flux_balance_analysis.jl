@@ -9,7 +9,7 @@
         ],
         qp_modifications = [
             change_optimizer(OSQP.Optimizer),
-            change_optimizer_attribute("verbose", false),
+            silence
         ],
     )
     v = parsimonious_flux_balance_analysis_vec(
@@ -21,7 +21,7 @@
         ],
         qp_modifications = [
             change_optimizer(OSQP.Optimizer),
-            change_optimizer_attribute("verbose", false),
+            silence
         ],
     )
 

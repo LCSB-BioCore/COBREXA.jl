@@ -32,3 +32,11 @@ usable keys and values.
 """
 change_optimizer_attribute(attribute_key, value) =
     (_, opt_model) -> set_optimizer_attribute(opt_model, attribute_key, value)
+
+"""
+    silence
+
+Modification that disable all output from the JuMP optimizer (shortcut for
+`set_silent` from JuMP).
+"""
+const silence = (_, opt_model) -> set_silent(opt_model)
