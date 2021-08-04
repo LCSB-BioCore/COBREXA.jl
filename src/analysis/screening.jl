@@ -1,12 +1,47 @@
 
 """
+    _check_screen_mods_args(mods, args, modsname)
+
+Internal helper to check the presence and shape of modification and argument
+arrays in [`screen`](@ref) and pals.
+"""
+function _check_screen_mods_args(
+    mods::Maybe{Array{V,N}},
+    args::Maybe{Array{A,N}},
+    modsname,
+) where {V,A,N}
+    if isnothing(mods)
+        if isnothing(args)
+            throw(
+                DomainError(
+                    args,
+                    "at least one of `$modsname` and `args` must be non-empty",
+                ),
+            )
+        end
+        ([[] for _ in args], Array{A,N}(args))
+    elseif isnothing(args)
+        (Array{V,N}(mods), [() for _ in mods])
+    else
+        if size(mods) != size(args)
+            throw(
+                DomainError(
+                    "$(size(mods)) != $(size(args))",
+                    "sizes of `$modsname` and `args` differ",
+                ),
+            )
+        end
+    end
+end
+
+"""
     function screen(
         model::MetabolicModel;
         variants::Maybe{Array{V,N}} = nothing,
         analysis,
-        args::Maybe{Array{T,N}} = nothing,
+        args::Maybe{Array{A,N}} = nothing,
         workers = [myid()],
-    )::Array where {V<:AbstractVector, T<:Tuple,N}
+    )::Array where {V<:AbstractVector,A,N}
 
 Take an array of model-modifying function vectors in `variants`, and execute
 the function `analysis` on all variants of the `model` specified by `variants`.
@@ -22,7 +57,10 @@ the argument model in-place will cause unpredictable results. Refer to the
 definition of [`screen_variant`](@ref) for details.
 
 The function `analysis` will receive a single argument (the modified model),
-together with an expanded tuple of arguments from `args`.
+together with arguments from `args` expanded by `...`. Supply an array of
+tuples or vectors to pass in multiple arguments to each function. If the
+argument values should be left intact (not expanded to multiple arguments),
+they must be wrapped in single-item tuple or vector.
 
 The modification and analysis functions are transferred to `workers` as-is; all
 packages required to run them (e.g. the optimization solvers) must be loaded
@@ -72,36 +110,15 @@ function screen(
     model::MetabolicModel;
     variants::Maybe{Array{V,N}} = nothing,
     analysis,
-    args::Maybe{Array{T,N}} = nothing,
+    args::Maybe{Array{A,N}} = nothing,
     workers = [myid()],
-)::Array where {V<:AbstractVector,T<:Tuple,N}
+)::Array where {V<:AbstractVector,A,N}
+
+    (variants, args) = _check_screen_mods_args(variants, args, :variants)
 
     map(fetch, save_at.(workers, :cobrexa_screen_variants_model, Ref(model)))
     map(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
     map(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_variants_model)))))
-
-    if isnothing(variants)
-        if isnothing(args)
-            throw(
-                DomainError(
-                    args,
-                    "at least one of `variants` and `args` must be non-empty",
-                ),
-            )
-        end
-        variants = [[] for _ in args]
-    elseif isnothing(args)
-        args = [() for _ in variants]
-    else
-        if size(variants) != size(args)
-            throw(
-                DomainError(
-                    "$(size(variants)) != $(size(args))",
-                    "sizes of `variants` and `args` differ",
-                ),
-            )
-        end
-    end
 
     res = dpmap(
         (vars, args)::Tuple -> :($COBREXA.screen_variant(
@@ -150,17 +167,18 @@ screen_variants(model, variants, analysis; workers = [myid()]) =
 A variant of [`optimize_objective`](@ref) directly usable in
 [`screen_optmodel_modifications`](@ref).
 """
-screen_optimize_objective(_, optmodel)::Union{Float64,Nothing} =
-    optimize_objective(optmodel)
+screen_optimize_objective(_, optmodel)::Maybe{Float64} = optimize_objective(optmodel)
 
 """
-    screen_optmodel_modifications(
+    function screen_optmodel_modifications(
         model::MetabolicModel,
         optimizer;
-        modifications::Array{V,N},
+        common_modifications::V,
+        modifications::Maybe{Array{V,N}} = nothing,
+        args::Maybe{Array{T,N}} = nothing,
         analysis = screen_optimize_objective,
         workers = [myid()],
-    ) where {V<:AbstractVector,N}
+    ) where {V<:AbstractVector,T<:Tuple,N}
 
 Screen multiple modifications of the same optimization model.
 
@@ -171,29 +189,40 @@ model in a recoverable state (one that leaves the model usable for the next
 modification), which limits the possible spectrum of modifications applied.
 
 Internally, `model` is distributed to `workers` and transformed into the
-optimization model using [`make_optimization_model`](@ref). With that,
-vectors of functions in `modifications` are consecutively applied, and the
-result of `analysis` function called on model are collected to an array of the
-same extent as `modifications`.
+optimization model using [`make_optimization_model`](@ref).
+`common_modifications` are applied to the models at that point. Next, vectors
+of functions in `modifications` are consecutively applied, and the result of
+`analysis` function called on model are collected to an array of the same
+extent as `modifications`. Calls of `analysis` are optionally supplied with
+extra arguments from `args` expanded with `...`, just like in [`screen`](@ref).
 
 Both the modification functions (in vectors) and the analysis function here
-have 2 parameters (as opposed to 1 with [`screen`](@ref)): first is the `model`
-(carried through as-is), second is the prepared JuMP optimization model that
-may be modified and acted upon. As an example, you can use modification
+have 2 base parameters (as opposed to 1 with [`screen`](@ref)): first is the
+`model` (carried through as-is), second is the prepared JuMP optimization model
+that may be modified and acted upon. As an example, you can use modification
 [`change_constraint`](@ref) and analysis [`screen_optimize_objective`](@ref).
 """
 function screen_optmodel_modifications(
     model::MetabolicModel,
     optimizer;
-    modifications::Array{V,N},
-    analysis = screen_optimize_objective,
+    common_modifications::Vector = [],
+    modifications::Maybe{Array{V,N}} = nothing,
+    args::Maybe{Array{A,N}} = nothing,
+    analysis::Any,
     workers = [myid()],
-) where {V<:AbstractVector,N}
+) where {V<:AbstractVector,A,N}
+
+    (modifications, args) = _check_screen_mods_args(modifications, args, :modifications)
+
     save_model = :(
         begin
             local model = $model
             $COBREXA.precache!(model)
-            (model, $COBREXA.make_optimization_model(model, $optimizer))
+            local optmodel = $COBREXA.make_optimization_model(model, $optimizer)
+            for mod in $common_modifications
+                mod(model, optmodel)
+            end
+            (model, optmodel)
         end
     )
     map(
@@ -204,17 +233,17 @@ function screen_optmodel_modifications(
     map(fetch, save_at.(workers, :cobrexa_screen_optmodel_modifications_fn, Ref(analysis)))
 
     res = dpmap(
-        mods -> :(
+        (mods, args)::Tuple -> :(
             begin
                 local (model, optmodel) = cobrexa_screen_optmodel_modifications_data
                 for mod in $mods
                     mod(model, optmodel)
                 end
-                cobrexa_screen_optmodel_modifications_fn(model, optmodel)
+                cobrexa_screen_optmodel_modifications_fn(model, optmodel, $args...)
             end
         ),
         CachingPool(workers),
-        modifications,
+        zip(modifications, args),
     )
 
     map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_data))

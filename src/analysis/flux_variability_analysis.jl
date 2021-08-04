@@ -68,32 +68,27 @@ function flux_variability_analysis(
         ),
     )
 
-    # store a JuMP optimization model at all workers
-    save_model = :(
-        begin
-            model = $model
-            opt_model = $COBREXA.make_optimization_model(model, $optimizer)
-            for mod in $modifications
-                mod(model, opt_model)
-            end
-            $COBREXA._FVA_add_constraint(opt_model, $(objective(model)), opt_model[:x], $Z)
-            opt_model
-        end
+    return screen_optmodel_modifications(
+        model,
+        optimizer;
+        common_modifications = vcat(
+            modifications,
+            [
+                (model, opt_model) -> begin
+                    Z[1] > -Inf && @constraint(
+                        opt_model,
+                        objective(model)' * opt_model[:x] >= Z[1]
+                    )
+                    Z[2] < Inf && @constraint(
+                        opt_model,
+                        objective(model)' * opt_model[:x] <= Z[2]
+                    )
+                end,
+            ],
+        ),
+        args = [-reactions reactions],
+        analysis = (_, opt_model, ridx) -> _max_variability_flux(opt_model, ridx, ret),
     )
-    map(fetch, save_at.(workers, :cobrexa_parfva_model, Ref(save_model)))
-    save_model = nothing # this has some volume, free it again
-
-    # schedule FVA parts parallely using pmap
-    fluxes = dpmap(
-        rid -> :($COBREXA._FVA_optimize_reaction(cobrexa_parfva_model, $rid, $ret)),
-        CachingPool(workers),
-        [-reactions reactions],
-    )
-
-    # free the data on workers
-    map(fetch, remove_from.(workers, :cobrexa_parfva_model))
-
-    return fluxes
 end
 
 """
@@ -152,31 +147,19 @@ function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs
 end
 
 """
-    _FVA_add_constraint(model, c, x, Z)
+    _max_variability_flux(opt_model, rid, ret)
 
-Internal helper function for adding constraints to a model. Exists mainly
-because for avoiding namespace problems on remote workers.
+Internal helper for maximizing reactions in optimization model.
 """
-function _FVA_add_constraint(model, c, x, Z)
-    Z[1] > -Inf && @constraint(model, c' * x >= Z[1])
-    Z[2] < Inf && @constraint(model, c' * x <= Z[2])
-end
-
-"""
-    _FVA_get_opt(model, rid)
-
-Internal helper for creating the optimized model on a remote worker, for
-avoiding namespace problems.
-"""
-function _FVA_optimize_reaction(model, rid, ret)
+function _max_variability_flux(opt_model, rid, ret)
     sense = rid > 0 ? MAX_SENSE : MIN_SENSE
-    var = all_variables(model)[abs(rid)]
+    var = all_variables(opt_model)[abs(rid)]
 
-    @objective(model, sense, var)
-    optimize!(model)
+    @objective(opt_model, sense, var)
+    optimize!(opt_model)
 
-    if is_solved(model)
-        return ret(model)
+    if is_solved(opt_model)
+        return ret(opt_model)
     else
         return nothing
     end
