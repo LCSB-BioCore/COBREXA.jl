@@ -65,44 +65,64 @@ function change_constraint(id::String, lb, ub)
 end
 
 """
-    change_objective(new_objective::Union{String,Vector{String}}; weights=[], sense=MOI.MAX_SENSE)
+    change_objective(rxn::Union{Int,String}; weight::Float64 = 1.0, sense = MOI.MAX_SENSE)
+
+Modification that changes the objective to maximize or minimize the specified
+reaction (either by index or string ID), optionally specifying the objective
+weight.
+"""
+change_objective(rxn::Union{Int,String}; weight::Float64 = 1.0, sense = MOI.MAX_SENSE) =
+    change_objective([rxn]; weights = [weight], sense = sense)
+
+"""
+    change_objective(
+        rids::Vector{String};
+        weights::Vector{Float64} = ones(length(rids)),
+        sense = MOI.MAX_SENSE,
+    )
 
 Modification that changes the objective function used in a constraint based
-analysis function.  `new_objective` can be a single reaction identifier, or an
-array of reactions identifiers.
-
-Optionally, the objective can be weighted by a vector of `weights`, and a
-optimization `sense` can be set.
+analysis function to maximize (or minimize, based on `sense`) the sum
+(optionally weighted by `weights`) of the rates of the reactions specified by
+string IDs.
 """
-function change_objective(
-    new_objective::Union{String,Vector{String}};
-    weights = [],
+change_objective(
+    rids::Vector{String};
+    weights::Vector{Float64} = ones(length(rids)),
     sense = MOI.MAX_SENSE,
-)
+) =
     (model, opt_model) -> begin
 
-        # Construct objective_indices array
-        if typeof(new_objective) == String
-            objective_indices = indexin([new_objective], reactions(model))
-        else
-            objective_indices =
-                [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
-        end
+        ridxs = indexin(rids, reactions(model))
+        any(isnothing, ridxs) &&
+            throw(DomainError(rids[isnothing.(ridxs)], "Unknown reaction IDs"))
 
-        any(isnothing.(objective_indices)) && throw(
-            DomainError(new_objective, "No matching reaction found for one or more ids."),
+        change_objective(Vector{Int}(ridxs); weights = weights, sense = sense)(
+            model,
+            opt_model,
         )
-
-        # Initialize weights
-        opt_weights = spzeros(n_reactions(model))
-
-        isempty(weights) && (weights = ones(length(objective_indices))) # equal weights
-
-        for (j, i) in enumerate(objective_indices)
-            opt_weights[i] = weights[j]
-        end
-
-        v = opt_model[:x]
-        @objective(opt_model, sense, sum(opt_weights[i] * v[i] for i in objective_indices))
     end
-end
+
+"""
+    change_objective(
+        ridxs::Vector{Int};
+        weights::Vector{Float64} = ones(length(ridxs)),
+        sense = MOI.MAX_SENSE,
+    )
+
+A potentially more efficient variant of [`change_objective`](@ref) that works
+on integer indexes of the reactions.
+"""
+change_objective(
+    ridxs::Vector{Int};
+    weights::Vector{Float64} = ones(length(ridxs)),
+    sense = MOI.MAX_SENSE,
+) =
+    (model, opt_model) -> begin
+
+        @objective(
+            opt_model,
+            sense,
+            sum(weights[i] * opt_model[:x][ridx] for (i, ridx) in enumerate(ridxs))
+        )
+    end
