@@ -32,22 +32,6 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
 end
 
 """
-    optimize_model(
-        model::MetabolicModel,
-        optimizer;
-        sense = MOI.MIN_SENSE,
-    )
-
-Use JuMP to solve an instance of CoreModel
-"""
-function optimize_model(model::MetabolicModel, optimizer; sense = MOI.MIN_SENSE)
-    optimization_model = make_optimization_model(model, optimizer; sense = sense)
-    optimize!(optimization_model)
-    return optimization_model
-end
-
-
-"""
     is_solved(optmodel)
 
 Return `true` if `optmodel` solved successfully (solution is optimal or locally
