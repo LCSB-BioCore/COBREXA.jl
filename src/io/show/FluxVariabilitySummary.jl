@@ -1,17 +1,21 @@
 function Base.show(io::IO, ::MIME"text/plain", flux_res::FluxVariabilitySummary)
 
-    longest_biomass_len = maximum([length(k) for k in keys(flux_res.biomass_fluxes)])
-    longest_exchange_len = maximum([length(k) for k in keys(flux_res.exchange_fluxes)])
+    longest_biomass_len =
+        maximum(length(k) for k in keys(flux_res.biomass_fluxes); init = 0)
+    longest_exchange_len =
+        maximum(length(k) for k in keys(flux_res.exchange_fluxes); init = 0)
     word_pad_len = max(longest_biomass_len, longest_exchange_len)
 
-    longest_biomass_flux_len = maximum([
-        length(string(round(v[1], digits = 4))) for v in values(flux_res.biomass_fluxes)
-    ])
+    longest_biomass_flux_len = maximum(
+        length(string(round(v[1], digits = 4))) for v in values(flux_res.biomass_fluxes);
+        init = 0,
+    )
     longest_exchange_flux_len = max(
-        maximum([
+        maximum(
             length(string(round(v[1], digits = 4))) for
-            v in values(flux_res.exchange_fluxes)
-        ]),
+            v in values(flux_res.exchange_fluxes);
+            init = 0,
+        ),
         length("Lower bound  "),
     )
     number_pad_len = max(longest_biomass_flux_len, longest_exchange_flux_len)

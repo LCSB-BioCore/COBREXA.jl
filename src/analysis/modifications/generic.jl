@@ -25,19 +25,19 @@ change_constraint(id::String, lb, ub) =
     end
 
 """
-    change_objective(new_objective::Union{String,Vector{String}}; weights=[], sense=MOI.MAX_SENSE)
+    change_objective(new_objective::Union{String,Vector{String}}; weights=[], sense=MAX_SENSE)
 
 Modification that changes the objective function used in a constraint based
 analysis function.  `new_objective` can be a single reaction identifier, or an
 array of reactions identifiers.
 
 Optionally, the objective can be weighted by a vector of `weights`, and a
-optimization `sense` can be set.
+optimization `sense` can be set to either `MAX_SENSE` or `MIN_SENSE`.
 """
 change_objective(
     new_objective::Union{String,Vector{String}};
     weights = [],
-    sense = MOI.MAX_SENSE,
+    sense = MAX_SENSE,
 ) =
     (model, opt_model) -> begin
 

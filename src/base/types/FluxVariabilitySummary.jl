@@ -10,6 +10,18 @@ struct FluxVariabilitySummary
 end
 
 """
+    FluxVariabilitySummary()
+
+A default empty constructor for `FluxVariabilitySummary`
+"""
+function FluxVariabilitySummary()
+    FluxVariabilitySummary(
+        Dict{String,Vector{Union{Float64,Nothing}}}(),
+        Dict{String,Vector{Union{Float64,Nothing}}}(),
+    )
+end
+
+"""
     flux_variability_summary(flux_result::Tuple{Dict{String, Dict{String, Float64}}, Dict{String, Dict{String, Float64}}};
         exclude_exchanges = false,
         exchange_prefixes = _constants.exchange_prefixes,
@@ -50,6 +62,7 @@ function flux_variability_summary(
     biomass_strings = _constants.biomass_strings,
     exclude_biomass = false,
 )
+    isnothing(flux_result) && return FluxVariabilitySummary()
 
     rxn_ids = keys(flux_result[1])
     ex_rxns = filter(

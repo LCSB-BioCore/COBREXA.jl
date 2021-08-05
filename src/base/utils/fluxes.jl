@@ -14,14 +14,13 @@ function metabolite_fluxes(model::MetabolicModel, flux_dict::Dict{String,Float64
     for (row, mid) in enumerate(mids)
         for (col, rid) in enumerate(rids)
             mf = flux_dict[rid] * S[row, col]
-            # ignore zero flux
-            if mf < -_constants.tolerance # consuming rxn
+            if mf < 0 # consuming rxn
                 if haskey(consuming, mid)
                     consuming[mid][rid] = mf
                 else
                     consuming[mid] = Dict(rid => mf)
                 end
-            elseif mf > _constants.tolerance
+            elseif mf >= 0 # producing rxn
                 if haskey(producing, mid)
                     producing[mid][rid] = mf
                 else

@@ -12,6 +12,20 @@ struct FluxSummary
 end
 
 """
+    FluxSummary()
+
+A default empty constructor for `FluxSummary`.
+"""
+function FluxSummary()
+    FluxSummary(
+        OrderedDict{String,Float64}(),
+        OrderedDict{String,Float64}(),
+        OrderedDict{String,Float64}(),
+        OrderedDict{String,Float64}(),
+    )
+end
+
+"""
     flux_summary(flux_result::Dict{String, Float64};
                 exclude_exchanges = false,
                 exchange_prefixes = _constants.exchange_prefixes,
@@ -49,7 +63,7 @@ Export:
 ```
 """
 function flux_summary(
-    flux_result::Dict{String,Float64};
+    flux_result::Maybe{Dict{String,Float64}};
     exclude_exchanges = false,
     exchange_prefixes = _constants.exchange_prefixes,
     biomass_strings = _constants.biomass_strings,
@@ -58,6 +72,8 @@ function flux_summary(
     large_flux_bound = _constants.default_reaction_bound,
     keep_unbounded = false,
 )
+    isnothing(flux_result) && return FluxSummary()
+
     rxn_ids = collect(keys(flux_result))
     ex_rxns = filter(
         x -> looks_like_exchange_reaction(

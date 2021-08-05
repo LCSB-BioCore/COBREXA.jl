@@ -53,7 +53,7 @@ end
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
-        ex_rxn in filter(looks_like_exchange_reaction, reactions(m2))
+        ex_rxn in reactions(m2) if looks_like_exchange_reaction(ex_rxn)
     )
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
@@ -91,7 +91,7 @@ end
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
-        ex_rxn in filter(looks_like_exchange_reaction, reactions(m2))
+        ex_rxn in reactions(m2) if looks_like_exchange_reaction(ex_rxn)
     )
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
@@ -143,7 +143,7 @@ end
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m1, ex_rxn))) for
-        ex_rxn in filter(looks_like_exchange_reaction, reactions(m1))
+        ex_rxn in reactions(m1) if looks_like_exchange_reaction(ex_rxn)
     )
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
