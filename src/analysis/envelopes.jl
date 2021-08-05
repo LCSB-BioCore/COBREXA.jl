@@ -85,16 +85,16 @@ objective_envelope(
     lattice = collect.(lattice),
     values = screen_optmodel_modifications(
         model,
-        optimizer,
+        optimizer;
         modifications = collect(
             [(_, optmodel) -> begin
                     for (i, ridx) in enumerate(ridxs)
-                        set_normalized_rhs(optmodel[:lbs][ridx], bounds[i])
-                        set_normalized_rhs(optmodel[:ubs][ridx], bounds[i])
+                        set_normalized_rhs(optmodel[:lbs][ridx], fluxes[i])
+                        set_normalized_rhs(optmodel[:ubs][ridx], fluxes[i])
                     end
-                end] for bounds in Iterators.product(lattice...)
+                end] for fluxes in Iterators.product(lattice...)
         ),
-        analysis = screen_optimize_objective;
+        analysis = screen_optimize_objective,
         kwargs...,
     ),
 )

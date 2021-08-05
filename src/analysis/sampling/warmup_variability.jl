@@ -69,10 +69,10 @@ function warmup_from_variability(
 
     fluxes = hcat(
         dpmap(
-            rid -> :($COBREXA._FVA_optimize_reaction(
+            rid -> :($COBREXA._max_variability_flux(
                 cobrexa_sampling_warmup_optmodel,
                 $rid,
-                optmodel -> $JuMP.value.(optmodel[:x]),
+                om -> $COBREXA.JuMP.value.(om[:x]),
             )),
             CachingPool(workers),
             vcat(-min_reactions, max_reactions),
