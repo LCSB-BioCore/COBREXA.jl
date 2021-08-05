@@ -1,11 +1,9 @@
 @testset "Detailed community stoichiometrix matrix check" begin
     m1 = test_toyModel()
     m2 = test_toyModel()
-    ex_rxn_ids = ["EX_m1(e)", "EX_m3(e)"]
-    ex_met_ids = ["m1[e]", "m3[e]"]
+    ex_rxn_mets = Dict("EX_m1(e)" => "m1[e]", "EX_m3(e)" => "m3[e]")
 
-    c1 =
-        join_with_exchanges([m1, m2], ex_rxn_ids, ex_met_ids; add_biomass_objective = false)
+    c1 = join_with_exchanges([m1, m2], ex_rxn_mets; add_biomass_objective = false)
 
     # test of stoichs are the same
     @test all(c1.S[1:6, 1:7] .== c1.S[7:12, 8:14])
@@ -28,8 +26,7 @@
 
     c2 = join_with_exchanges(
         [m1, m2],
-        ex_rxn_ids,
-        ex_met_ids;
+        ex_rxn_mets;
         add_biomass_objective = true,
         biomass_ids = ["biomass1", "biomass1"],
     )
@@ -54,22 +51,22 @@ end
     m1 = load_model(model_paths["e_coli_core.json"])
     m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
-    exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m2))
-    exchange_met_ids =
-        [first(keys(reaction_stoichiometry(m2, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+    exchange_rxn_mets = Dict(
+        ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
+        ex_rxn in filter(looks_like_exchange_reaction, reactions(m2))
+    )
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
     community = join_with_exchanges(
         [m1, m2],
-        exchange_rxn_ids,
-        exchange_met_ids;
+        exchange_rxn_mets;
         add_biomass_objective = true,
         biomass_ids = biomass_ids,
     )
 
-    env_ex_inds = indexin(exchange_rxn_ids, reactions(community))
-    m2_ex_inds = indexin(exchange_rxn_ids, reactions(m2))
+    env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
+    m2_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m2))
     community.xl[env_ex_inds] .= m2.xl[m2_ex_inds]
     community.xu[env_ex_inds] .= m2.xu[m2_ex_inds]
 
@@ -92,23 +89,23 @@ end
     m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
     m2 = load_model(CoreModel, model_paths["iJO1366.mat"])
 
-    exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m2))
-    exchange_met_ids =
-        [first(keys(reaction_stoichiometry(m2, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+    exchange_rxn_mets = Dict(
+        ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
+        ex_rxn in filter(looks_like_exchange_reaction, reactions(m2))
+    )
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
 
     community = join_with_exchanges(
         [m1, m2],
-        exchange_rxn_ids,
-        exchange_met_ids;
+        exchange_rxn_mets;
         add_biomass_objective = true,
         biomass_ids = biomass_ids,
     )
 
-    env_ex_inds = indexin(exchange_rxn_ids, reactions(community))
-    m2_ex_inds = indexin(exchange_rxn_ids, reactions(m2))
-    m1_ex_inds = indexin(exchange_rxn_ids, reactions(m1))
+    env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
+    m2_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m2))
+    m1_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m1))
 
     for (env_ex, m2_ex, m1_ex) in zip(env_ex_inds, m2_ex_inds, m1_ex_inds)
         m2lb = isnothing(m2_ex) ? 0.0 : m2.xl[m2_ex]
@@ -144,22 +141,22 @@ end
 @testset "Community model modifications" begin
     m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
 
-    exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m1))
-    exchange_met_ids =
-        [first(keys(reaction_stoichiometry(m1, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+    exchange_rxn_mets = Dict(
+        ex_rxn => first(keys(reaction_stoichiometry(m1, ex_rxn))) for
+        ex_rxn in filter(looks_like_exchange_reaction, reactions(m1))
+    )
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
 
     community = join_with_exchanges(
         [m1],
-        exchange_rxn_ids,
-        exchange_met_ids;
+        exchange_rxn_mets;
         add_biomass_objective = true,
         biomass_ids = biomass_ids,
     )
 
-    env_ex_inds = indexin(exchange_rxn_ids, reactions(community))
-    m1_ex_inds = indexin(exchange_rxn_ids, reactions(m1))
+    env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
+    m1_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m1))
     community.xl[env_ex_inds] .= m1.xl[m1_ex_inds]
     community.xu[env_ex_inds] .= m1.xu[m1_ex_inds]
 
@@ -168,8 +165,7 @@ end
     community = add_model_with_exchanges(
         community,
         m2,
-        exchange_rxn_ids,
-        exchange_met_ids;
+        exchange_rxn_mets;
         model_name = "species_2",
         biomass_id = "BIOMASS_Ecoli_core_w_GAM",
     )

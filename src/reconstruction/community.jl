@@ -63,35 +63,38 @@ end
     add_model_with_exchanges(
         community::CoreModel,
         model::MetabolicModel,
-        exchange_rxn_ids::Vector{String},
-        exchange_met_ids::Vector{String};
+        exchange_rxn_mets::Dict{String,String};
         model_name = "unknown_species",
         biomass_id = nothing,
     )::CoreModel
 
-Add `model` to `community`, which is a pre-existing community model with
-`exchange_rxn_ids` and `exchange_met_ids`. The `model_name` is appended to
-each reaction and metabolite, see [`join_with_exchanges`](@ref). If
-`biomass_id` is specified then a biomass metabolite for `model` is also added
-to the resulting model. The column corresponding to the `biomass_id` reaction
-then produces this new biomass metabolite with unit coefficient. Note,
-`exchange_rxn_ids` and `exchange_met_ids` must already exist in the `community`
-model.
+Add `model` to `community`, which is a pre-existing community model with exchange reactions
+and metabolites in the dictionary `exchange_rxn_mets`. The `model_name` is appended to each
+reaction and metabolite, see [`join_with_exchanges`](@ref). If `biomass_id` is specified
+then a biomass metabolite for `model` is also added to the resulting model. The column
+corresponding to the `biomass_id` reaction then produces this new biomass metabolite with
+unit coefficient. Note, `exchange_rxn_ids` and `exchange_met_ids` must already exist in the
+`community` model.
 
 # Example
 ```
-community = add_model_with_exchanges(community, model, exchange_rxn_ids, exchange_met_ids; model_name="species_2", biomass_id="BIOMASS_Ecoli_core_w_GAM")
+community = add_model_with_exchanges(community,
+    model,
+    exchange_rxn_mets;
+    model_name="species_2",
+    biomass_id="BIOMASS_Ecoli_core_w_GAM")
 ```
 """
 function add_model_with_exchanges(
     community::CoreModel,
     model::MetabolicModel,
-    exchange_rxn_ids::Vector{String},
-    exchange_met_ids::Vector{String};
+    exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",
     biomass_id = nothing,
 )::CoreModel
 
+    exchange_rxn_ids = keys(exchange_rxn_mets)
+    exchange_met_ids = values(exchange_rxn_mets)
     exchange_met_community_inds = indexin(exchange_met_ids, metabolites(community))
     exchange_rxn_community_inds = indexin(exchange_rxn_ids, reactions(community))
     if any(isnothing.(exchange_met_community_inds)) ||
@@ -171,36 +174,33 @@ end
 
 """
     join_with_exchanges(models::Vector{M},
-        exchange_rxn_ids::Vector{String},
-        exchange_met_ids::Vector{String};
+        exchange_rxn_mets::Dict{String, String};
         add_biomass_objective=false,
         biomass_ids::Vector{String},
         model_names=String[]
     )
 
-Return a `CoreModel` representing the community model of `models` joined through
-their `exchange_rxn_ids` and `exchange_met_ids`. These exchange reactions and
-metabolites link to environmental metabolites and reactions.
-Optionally specify `model_names` to append a specific name to each reaction
-and metabolite of an organism for easier reference (default is `species_i` for
-each model index i in `models`). Note, the bounds of the environmental variables
-are all set to zero. Thus, to run a simulation you need to constrain them
-appropriately. All the other bounds are inherited from the models used to
-construct the community model.
+Return a `CoreModel` representing the community model of `models` joined through their
+exchange reactions and metabolites in the dictionary `exchange_rxn_mets`, which maps
+exchange reactions to their associated metabolite. These exchange reactions and metabolites
+link model metabolites to environmental metabolites and reactions. Optionally specify
+`model_names` to append a specific name to each reaction and metabolite of an organism for
+easier reference (default is `species_i` for each model index i in `models`). Note, the
+bounds of the environmental variables are all set to zero. Thus, to run a simulation you
+need to constrain them appropriately. All the other bounds are inherited from the models
+used to construct the community model.
 
-If `add_biomass_objective` is true then `biomass_ids` needs to be supplied as
-well. This creates a model with an extra reaction added to the end of the
-stoichiometric matrix (last column) that can be assigned as the objective
-reaction. It also creates biomass "metabolites" that can be used in this
-objective reaction. Note, this reaction is unspecified, further action needs to
-be taken to specify it, e.g. assign weights to the last column of the
-stoichiometric matrix in the rows corresponding to the biomass metabolites.
+If `add_biomass_objective` is true then `biomass_ids` needs to be supplied as well. This
+creates a model with an extra reaction added to the end of the stoichiometric matrix (last
+column) that can be assigned as the objective reaction. It also creates biomass
+"metabolites" that can be used in this objective reaction. Note, this reaction is
+unspecified, further action needs to be taken to specify it, e.g. assign weights to the last
+column of the stoichiometric matrix in the rows corresponding to the biomass metabolites.
 
-To further clarify how this `join` works. Suppose you have 2 organisms with
-stoichiometric matrices S₁ and S₂ and you want to link them with
-`exchange_met_ids = [em₁, em₂, em₃, ...]` and `exchange_rxn_ids = [er₁, er₂,
-er₃, ...]`. Then a new community stoichiometric matrix is constructed that looks
-like this:
+To further clarify how this `join` works. Suppose you have 2 organisms with stoichiometric
+matrices S₁ and S₂ and you want to link them with `exchange_rxn_mets = Dict(er₁ => em₁, er₂
+=> em₂, er₃ => em₃, ...)`. Then a new community stoichiometric matrix is constructed that
+looks like this:
 ```
             _      er₁  er₂  er₃  ...  b_
            |S₁                           |
@@ -213,13 +213,12 @@ S   =   em₂|                             |
         bm₂|_                           _|
 
 ```
-The exchange reactions in each model get linked to environmental metabolites,
-`emᵢ`, and these get linked to environmental exchanges, `erᵢ`. These `erᵢ`
-behave like normal single organism exchange reactions. When
-`add_biomass_objective` is true each model's biomass becomes a pseudo-metabolite
-(`bmᵢ`). These can be weighted in column `b`, called the `community_biomass`
-reaction in the community model, if desired. Refer to the tutorial if this is
-unclear.
+The exchange reactions in each model get linked to environmental metabolites, `emᵢ`, and
+these get linked to environmental exchanges, `erᵢ`. These `erᵢ` behave like normal single
+organism exchange reactions. When `add_biomass_objective` is true each model's biomass
+becomes a pseudo-metabolite (`bmᵢ`). These can be weighted in column `b`, called the
+`community_biomass` reaction in the community model, if desired. Refer to the tutorial if
+this is unclear.
 
 # Example
 ```
@@ -227,15 +226,14 @@ m1 = load_model(core_model_path)
 m2 = load_model(CoreModel, core_model_path)
 
 # need to list ALL the exchanges that will form part of the entire model
-exchange_rxn_ids = filter(looks_like_exchange_reaction, reactions(m1))
-exchange_met_ids = [first(keys(reaction_stoichiometry(m1, ex_rxn))) for ex_rxn in exchange_rxn_ids]
+exchange_rxn_mets = Dict(k => first(keys(reaction_stoichiometry(m1, ex_rxn)))
+    for filter(looks_like_exchange_reaction, reactions(m1)))
 
 biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
 community = join_with_exchanges(
     [m1, m2],
-    exchange_rxn_ids,
-    exchange_met_ids;
+    exchange_rxn_mets;
     add_biomass_objective = true,
     biomass_ids = biomass_ids,
 )
@@ -243,18 +241,20 @@ community = join_with_exchanges(
 """
 function join_with_exchanges(
     models::Vector{M},
-    exchange_rxn_ids::Vector{String},
-    exchange_met_ids::Vector{String};
+    exchange_rxn_mets::Dict{String,String};
     add_biomass_objective = true,
     biomass_ids = String[],
     model_names = String[],
 )::CoreModel where {M<:MetabolicModel}
 
+    exchange_rxn_ids = keys(exchange_rxn_mets)
+    exchange_met_ids = values(exchange_rxn_mets)
     if add_biomass_objective && isempty(biomass_ids)
         throw(
             DomainError(
                 "biomass_ids",
-                "Please add supply the string ids of the biomass functions when `add_biomass_objective` is true.",
+                "Please add supply the string ids of the biomass functions when
+                `add_biomass_objective` is true.",
             ),
         )
     end
