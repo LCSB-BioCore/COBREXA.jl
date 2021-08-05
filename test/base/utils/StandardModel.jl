@@ -8,14 +8,6 @@
         modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
     )
 
-    # single-reaction atom exchanges
-    @test atom_exchange(model, "FBA")["C"] == 0.0
-    @test isapprox(
-        atom_exchange(model, "BIOMASS_Ecoli_core_w_GAM")["C"],
-        -42.5555;
-        atol = TEST_TOLERANCE,
-    )
-
     # bounds setting
     cbm = make_optimization_model(model, Tulip.Optimizer)
     ubs = cbm[:ubs]

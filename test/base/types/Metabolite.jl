@@ -22,9 +22,6 @@
     m3.formula = "X"
     m3.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ad2s", "asds"])
 
-    ats = get_atoms(m1)
-    @test ats["C"] == 6 && ats["N"] == 1
-
     m4 = Metabolite("met4")
     m4.formula = "X"
     m4.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
