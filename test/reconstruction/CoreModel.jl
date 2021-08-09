@@ -236,3 +236,23 @@ end
     @test all((!in(metabolites(m3))).(["glc__D_e", "for_c"]))
     @test !(["glc__D_e"] in metabolites(m4))
 end
+
+@testset "Core in place modifications" begin
+    toymodel = test_toyModel()
+
+    rxn1 = Reaction("nr1"; metabolites = Dict("m1[c]" => -1, "m3[c]" => 1))
+    rxn2 = Reaction("nr2"; metabolites = Dict("m1[c]" => -1, "m2[c]" => 1))
+    rxn3 = Reaction("nr3"; metabolites = Dict("m2[c]" => -1, "m3[c]" => 1))
+    rxn3.lb = 10
+
+    add_reaction!(toymodel, rxn1)
+    @test toymodel.S[1, 8] == -1
+    @test toymodel.S[2, 8] == 1
+    @test all(toymodel.S[3:end, 8] .== 0)
+    @test size(toymodel.S) == (6, 8)
+    @test toymodel.rxns[end] == "nr1"
+
+    add_reactions!(toymodel, [rxn2, rxn3])
+    @test size(toymodel.S) == (6, 10)
+    @test toymodel.xl[end] == 10
+end
