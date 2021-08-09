@@ -11,33 +11,33 @@ sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # Cytochrome oxidase knockout μ (grow
 sol = flux_balance_analysis_dict(atps4r_knockout_model, Tulip.Optimizer)
 sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # ATP synthase knockout μ</code></pre><pre class="documenter-example-output">0.37422987390664064</pre><pre><code class="language-julia">eno_knockout_model = remove_reactions(base_model, &quot;ENO&quot;) # knockout the enolase reaction
 sol = flux_balance_analysis_dict(eno_knockout_model, Tulip.Optimizer)
-sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # Enolase knockout μ, cannot grow by itself</code></pre><pre class="documenter-example-output">9.548564285305505e-16</pre><h2 id="Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models"><a class="docs-heading-anchor" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models">Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models</a><a id="Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models-1"></a><a class="docs-heading-anchor-permalink" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models" title="Permalink"></a></h2><pre><code class="language-julia">ex_rxns = filter(looks_like_exchange_reaction, reactions(base_model)) # identify exchange reactions heuristically
-ex_mets = [first(keys(reaction_stoichiometry(base_model, ex_rxn))) for ex_rxn in ex_rxns] # identify exchange metabolites IN THE SAME ORDER as ex_rxns
-[ex_rxns ex_mets]</code></pre><pre class="documenter-example-output">20×2 Matrix{String}:
- &quot;EX_ac_e&quot;      &quot;ac_e&quot;
- &quot;EX_acald_e&quot;   &quot;acald_e&quot;
- &quot;EX_akg_e&quot;     &quot;akg_e&quot;
- &quot;EX_co2_e&quot;     &quot;co2_e&quot;
- &quot;EX_etoh_e&quot;    &quot;etoh_e&quot;
- &quot;EX_for_e&quot;     &quot;for_e&quot;
- &quot;EX_fru_e&quot;     &quot;fru_e&quot;
- &quot;EX_fum_e&quot;     &quot;fum_e&quot;
- &quot;EX_glc__D_e&quot;  &quot;glc__D_e&quot;
- &quot;EX_gln__L_e&quot;  &quot;gln__L_e&quot;
- &quot;EX_glu__L_e&quot;  &quot;glu__L_e&quot;
- &quot;EX_h_e&quot;       &quot;h_e&quot;
- &quot;EX_h2o_e&quot;     &quot;h2o_e&quot;
- &quot;EX_lac__D_e&quot;  &quot;lac__D_e&quot;
- &quot;EX_mal__L_e&quot;  &quot;mal__L_e&quot;
- &quot;EX_nh4_e&quot;     &quot;nh4_e&quot;
- &quot;EX_o2_e&quot;      &quot;o2_e&quot;
- &quot;EX_pi_e&quot;      &quot;pi_e&quot;
- &quot;EX_pyr_e&quot;     &quot;pyr_e&quot;
- &quot;EX_succ_e&quot;    &quot;succ_e&quot;</pre><pre><code class="language-julia">model_names = [&quot;cytbd_ko&quot;, &quot;atps4r_ko&quot;]
+sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # Enolase knockout μ, cannot grow by itself</code></pre><pre class="documenter-example-output">9.548564285305505e-16</pre><h2 id="Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models"><a class="docs-heading-anchor" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models">Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models</a><a id="Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models-1"></a><a class="docs-heading-anchor-permalink" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models" title="Permalink"></a></h2><pre><code class="language-julia">ex_rxn_mets = Dict(
+    ex_rxn =&gt; first(keys(reaction_stoichiometry(base_model, ex_rxn))) for
+    ex_rxn in filter(looks_like_exchange_reaction, reactions(base_model))
+) # identify exchange reactions heuristically</code></pre><pre class="documenter-example-output">Dict{String, String} with 20 entries:
+  &quot;EX_for_e&quot;    =&gt; &quot;for_e&quot;
+  &quot;EX_nh4_e&quot;    =&gt; &quot;nh4_e&quot;
+  &quot;EX_pyr_e&quot;    =&gt; &quot;pyr_e&quot;
+  &quot;EX_co2_e&quot;    =&gt; &quot;co2_e&quot;
+  &quot;EX_ac_e&quot;     =&gt; &quot;ac_e&quot;
+  &quot;EX_h2o_e&quot;    =&gt; &quot;h2o_e&quot;
+  &quot;EX_succ_e&quot;   =&gt; &quot;succ_e&quot;
+  &quot;EX_akg_e&quot;    =&gt; &quot;akg_e&quot;
+  &quot;EX_fru_e&quot;    =&gt; &quot;fru_e&quot;
+  &quot;EX_acald_e&quot;  =&gt; &quot;acald_e&quot;
+  &quot;EX_fum_e&quot;    =&gt; &quot;fum_e&quot;
+  &quot;EX_mal__L_e&quot; =&gt; &quot;mal__L_e&quot;
+  &quot;EX_h_e&quot;      =&gt; &quot;h_e&quot;
+  &quot;EX_pi_e&quot;     =&gt; &quot;pi_e&quot;
+  &quot;EX_lac__D_e&quot; =&gt; &quot;lac__D_e&quot;
+  &quot;EX_glu__L_e&quot; =&gt; &quot;glu__L_e&quot;
+  &quot;EX_o2_e&quot;     =&gt; &quot;o2_e&quot;
+  &quot;EX_gln__L_e&quot; =&gt; &quot;gln__L_e&quot;
+  &quot;EX_glc__D_e&quot; =&gt; &quot;glc__D_e&quot;
+  &quot;EX_etoh_e&quot;   =&gt; &quot;etoh_e&quot;</pre><pre><code class="language-julia">model_names = [&quot;cytbd_ko&quot;, &quot;atps4r_ko&quot;]
 community_model = join_with_exchanges(
     [cytbd_knockout_model, atps4r_knockout_model],
-    ex_rxns,
-    ex_mets;
+    ex_rxn_mets;
     add_biomass_objective = true,
     biomass_ids = [&quot;BIOMASS_Ecoli_core_w_GAM&quot;, &quot;BIOMASS_Ecoli_core_w_GAM&quot;],
     model_names = model_names,
@@ -56,34 +56,34 @@ community_model = join_with_exchanges(
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣤⠀⠄⡊⡚⠘⠴⡄⠀⠀⠁⠘⠀⠀⠂⡀⢃⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⡄⣶⣬⡆⠊⢩⠐⡀⠀⠀⠈⠈⢠⡤⠌⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡂⠢⠉⠙⡎⠃⠰⣴⠨⠀⠀⢐⣀⠀⠀⠁⠊⠘⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠆⠀⠐⠒⣄⠃⠀⠐⠙⠶⠀⠀⠀⠠⣄⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀
-⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⠀⠈⠓⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⠄⠀⢄⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠆⠀⠐⠒⢀⠇⠠⡐⠙⠶⠀⠀⠀⠠⣄⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠓⠢⣨⡈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠆⣡⡈⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀
+⠀⠀⠀⠀⠠⠀⠀⠀⠐⠘⠁⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠐⠘⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓
 Number of reactions: 209
 Number of metabolites: 166
-</pre><h2 id="Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models"><a class="docs-heading-anchor" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models">Set exchange reaction bounds of community model based on the bounds of the individual models</a><a id="Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models-1"></a><a class="docs-heading-anchor-permalink" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models" title="Permalink"></a></h2><pre><code class="language-julia">env_ex_rxn_idxs = indexin(ex_rxns, reactions(community_model)) # identify the global (environmental exchange reactions)
-cytbd_ex_rxn_idxs = indexin(ex_rxns, reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
-atps4r_ex_rxn_idxs = indexin(ex_rxns, reactions(atps4r_knockout_model))</code></pre><pre class="documenter-example-output">20-element Vector{Union{Nothing, Int64}}:
- 43
- 44
- 45
- 46
- 47
+</pre><h2 id="Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models"><a class="docs-heading-anchor" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models">Set exchange reaction bounds of community model based on the bounds of the individual models</a><a id="Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models-1"></a><a class="docs-heading-anchor-permalink" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models" title="Permalink"></a></h2><pre><code class="language-julia">env_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(community_model)) # identify the global (environmental exchange reactions)
+cytbd_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
+atps4r_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(atps4r_knockout_model))</code></pre><pre class="documenter-example-output">20-element Vector{Union{Nothing, Int64}}:
  48
- 49
- 50
- 51
- 52
- 53
- 54
- 55
- 56
- 57
  58
- 59
- 60
  61
- 62</pre><p>In case some exchange reactions are not present in both models, set environmental exchange bound to the sum of the individual exchange bounds</p><pre><code class="language-julia">for (env_ex, m2_ex, m1_ex) in zip(env_ex_rxn_idxs, cytbd_ex_rxn_idxs, atps4r_ex_rxn_idxs)
+ 46
+ 43
+ 55
+ 62
+ 45
+ 49
+ 44
+ 50
+ 57
+ 54
+ 60
+ 56
+ 53
+ 59
+ 52
+ 51
+ 47</pre><p>In case some exchange reactions are not present in both models, set environmental exchange bound to the sum of the individual exchange bounds</p><pre><code class="language-julia">for (env_ex, m2_ex, m1_ex) in zip(env_ex_rxn_idxs, cytbd_ex_rxn_idxs, atps4r_ex_rxn_idxs)
     m2lb = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xl[m2_ex]
     m2ub = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xu[m2_ex]
     m1lb = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xl[m1_ex]
@@ -104,8 +104,7 @@ add_objective!(
 d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.21166294961691223</pre><p>Notice, the growth rate is limited to the slowest organism as per the objective function</p><h2 id="Add-the-enolase-knockout-to-the-community-model"><a class="docs-heading-anchor" href="#Add-the-enolase-knockout-to-the-community-model">Add the enolase knockout to the community model</a><a id="Add-the-enolase-knockout-to-the-community-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-the-enolase-knockout-to-the-community-model" title="Permalink"></a></h2><pre><code class="language-julia">community_model = add_model_with_exchanges(
     community_model,
     eno_knockout_model,
-    ex_rxns,
-    ex_mets;
+    ex_rxn_mets;
     model_name = &quot;eno_ko&quot;,
     biomass_id = &quot;BIOMASS_Ecoli_core_w_GAM&quot;,
 )
@@ -125,7 +124,7 @@ d = flux_balance_analysis_dict(
     Tulip.Optimizer;
     modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
 )
-println(&quot;Community μ = &quot;, d[&quot;community_biomass&quot;])</code></pre><pre class="documenter-example-output">Community μ = 1.6222069161577525e-15</pre><p>Notice that the high communal growth rate is 0, due to the enolase knockout. The reason for this behaviour: enolase is a central reaction in glycolysis - without it the organism cannot access the lower glycolysis pathways or the TCA cycle, hence the model predicts no growth for the knockout, and hence no growth for the system since they all have to have the same growth rate.</p><h2 id="Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate"><a class="docs-heading-anchor" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate">Allow the mutants to rescue each other by sharing pyruvate</a><a id="Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate-1"></a><a class="docs-heading-anchor-permalink" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate" title="Permalink"></a></h2><pre><code class="language-julia">pyr_exs = model_names .* &quot;_EX_pyr_e&quot;
+println(&quot;Community μ = &quot;, d[&quot;community_biomass&quot;])</code></pre><pre class="documenter-example-output">Community μ = 1.6243153515245851e-15</pre><p>Notice that the high communal growth rate is 0, due to the enolase knockout. The reason for this behaviour: enolase is a central reaction in glycolysis - without it the organism cannot access the lower glycolysis pathways or the TCA cycle, hence the model predicts no growth for the knockout, and hence no growth for the system since they all have to have the same growth rate.</p><h2 id="Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate"><a class="docs-heading-anchor" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate">Allow the mutants to rescue each other by sharing pyruvate</a><a id="Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate-1"></a><a class="docs-heading-anchor-permalink" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate" title="Permalink"></a></h2><pre><code class="language-julia">pyr_exs = model_names .* &quot;_EX_pyr_e&quot;
 change_bounds!(community_model, pyr_exs; lower = fill(-1000.0, 3), upper = fill(1000.0, 3))
 
 d = flux_balance_analysis_dict(
@@ -133,4 +132,4 @@ d = flux_balance_analysis_dict(
     Tulip.Optimizer;
     modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
 )
-d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.23607110796208797</pre><p>Notice that the growth rate is now above 0! Nutrient sharing saved the day!</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 5 August 2021 15:18">Thursday 5 August 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.2360711079620927</pre><p>Notice that the growth rate is now above 0! Nutrient sharing saved the day!</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 9 August 2021 10:33">Monday 9 August 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
