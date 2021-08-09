@@ -121,17 +121,18 @@ flux_variability_summary((fva_mins, fva_maxs))
 # value of the minimized flux and the associated biomass growth rate is returned instead
 # of every flux.
 
-biomass_idx = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model))) # index of biomass function
+biomass_idx = first(indexin(["R_BIOMASS_Ecoli_core_w_GAM"], reactions(model))) # index of biomass function
 vs = flux_variability_analysis(
     model,
-    Gurobi.Optimizer;
+    Tulip.Optimizer;
     bounds = objective_bounds(0.50), # biomass can vary up to 50% less than optimum
     modifications = [
         change_optimizer_attribute("IPM_IterationsLimit", 500),
-        change_constraint("EX_glc__D_e", -10, -10),
-        change_constraint("EX_o2_e", 0.0, 0.0),
+        change_constraint("R_EX_glc__D_e", -10, -10),
+        change_constraint("R_EX_o2_e", 0.0, 0.0),
     ],
-    ret = m -> (COBREXA.JuMP.objective_value(m), COBREXA.JuMP.value(m[:x][25])), # m is the model and m[:x] extracts the fluxes from the model
+    ret = m ->
+        (COBREXA.JuMP.objective_value(m), COBREXA.JuMP.value(m[:x][biomass_idx])), # m is the model and m[:x] extracts the fluxes from the model
 )
 #
 fva_mins = Dict(rxn => flux for (rxn, flux) in zip(reactions(model), vs[:, 1]))
