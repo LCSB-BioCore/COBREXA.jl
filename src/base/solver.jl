@@ -48,7 +48,7 @@ end
 Shortcut for running JuMP `optimize!` on a model and returning the objective
 value, if solved.
 """
-function optimize_objective(optmodel)::Union{Float64,Nothing}
+function optimize_objective(optmodel)::Maybe{Float64}
     optimize!(optmodel)
     if is_solved(optmodel)
         objective_value(optmodel)
@@ -70,27 +70,21 @@ get_optmodel_bounds(opt_model) = (
 )
 
 """
-    set_optmodel_bound!(index, optimization_model;
-        ub=_constants.default_reaction_rate,
-        lb=-_constants.default_reaction_rate)
+    set_optmodel_bound!(vidx, opt_model;
+        ub::Maybe{Real} = nothing,
+        lb::Maybe{Real} = nothing,
+    )
 
-Helper function to set the bounds of variables.
-The JuMP `set_normalized_rhs` function is a little confusing,
-so this function simplifies setting constraints. In short, JuMP
-uses a normalized right hand side representation of constraints,
-which means that lower bounds have their sign flipped. This function
-does this for you, so you don't have to remember to do this whenever you
-change the constraints.
-
-Just supply the constraint `index` and the JuMP model (`opt_model`) that
-will be solved, and the variable's bounds will be set to `ub` and `lb`.
+Helper function to set the bounds of a variable in the model. Internally calls
+`set_normalized_rhs` from JuMP. If the bounds are set to `nothing`, they will
+not be changed.
 """
 function set_optmodel_bound!(
-    vind,
+    vidx,
     opt_model;
-    ub = _constants.default_reaction_rate,
-    lb = -_constants.default_reaction_rate,
+    lb::Maybe{Real} = nothing,
+    ub::Maybe{Real} = nothing,
 )
-    set_normalized_rhs(opt_model[:lbs][vind], -lb)
-    set_normalized_rhs(opt_model[:ubs][vind], ub)
+    isnothing(lb) || set_normalized_rhs(opt_model[:lbs][vidx], -lb)
+    isnothing(ub) || set_normalized_rhs(opt_model[:ubs][vidx], ub)
 end
