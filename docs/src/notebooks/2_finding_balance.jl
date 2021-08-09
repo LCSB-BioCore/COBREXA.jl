@@ -86,6 +86,10 @@ dict_soln = flux_balance_analysis_dict(
     ],
 )
 
+# This solution can be display using `flux_summary`. Note, this pretty printing only works
+# on flux solutions that are represented as dictionaries.
+flux_summary(dict_soln)
+
 # ## Flux variability analysis (FVA)
 
 # The default FVA in [`flux_variability_analysis`](@ref) returns maximized and
@@ -106,6 +110,31 @@ fva_mins, fva_maxs = flux_variability_analysis_dict(
 
 #
 fva_maxs["R_EX_ac_e"]["R_EX_ac_e"] # get the maximal acetate exchange flux
+
+# Another option is to display this information using `flux_variability_summary`. This
+# pretty printing only works on flux variability analysis results where dictionary keys indicate
+# which flux is optimized and the associated value is a flux dictionary.
+flux_variability_summary((fva_mins, fva_maxs))
+
+# More sophisticated variants of [`flux_variability_analysis`](@ref) can be used to extract
+# specific pieces of information from the solved optimization problems. Here the objective
+# value of the minimized flux and the associated biomass growth rate is returned instead
+# of every flux.
+
+biomass_idx = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model))) # index of biomass function
+vs = flux_variability_analysis(
+    model,
+    Gurobi.Optimizer;
+    bounds = objective_bounds(0.50), # biomass can vary up to 50% less than optimum
+    modifications = [
+        change_optimizer_attribute("IPM_IterationsLimit", 500),
+        change_constraint("EX_glc__D_e", -10, -10),
+        change_constraint("EX_o2_e", 0.0, 0.0),
+    ],
+    ret = m -> (COBREXA.JuMP.objective_value(m), COBREXA.JuMP.value(m[:x][25])), # m is the model and m[:x] extracts the fluxes from the model
+)
+#
+fva_mins = Dict(rxn => flux for (rxn, flux) in zip(reactions(model), vs[:, 1]))
 
 # ## Parsimonious flux balance analysis (pFBA)
 
