@@ -102,7 +102,7 @@ reaction_mass_balanced(model::StandardModel, reaction_dict::Dict{String,Float64}
     all(values(reaction_atom_balance(model, reaction_dict)) .== 0)
 
 """
-    stoichiometry_string(rxn_dict)
+    stoichiometry_string(rxn_dict::Dict{String, Float64})
 
 Return the reaction equation as a string.
 
@@ -121,4 +121,11 @@ function stoichiometry_string(req)
     return substrates * " = " * products
 end
 
+"""
+    stoichiometry_string(rxn::Reaction)
+
+Return the reaction equation as a string.
+
+See also: [`stoichiometry_string(::Dict{String, Float64})`](@ref)
+"""
 stoichiometry_string(rxn::Reaction) = stoichiometry_string(rxn.metabolites)
