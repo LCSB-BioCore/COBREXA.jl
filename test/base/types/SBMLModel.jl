@@ -8,7 +8,8 @@
     @test Set(reactions(sbmlm)) == Set(reactions(sm))
     @test Set(metabolites(sbmlm)) == Set(metabolites(sbmlm2))
     @test all([
-        sbmlm.sbml.reactions[i].stoichiometry == sbmlm2.sbml.reactions[i].stoichiometry for
+        sbmlm.sbml.reactions[i].reactants == sbmlm2.sbml.reactions[i].reactants &&
+        sbmlm.sbml.reactions[i].products == sbmlm2.sbml.reactions[i].products for
         i in reactions(sbmlm2)
     ])
 end
