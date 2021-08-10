@@ -140,8 +140,16 @@ const _sbml_export_notes = _sbml_export_annotation
 
 Return the stoichiometry of reaction with ID `rid`.
 """
-reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64} =
-    m.sbml.reactions[rid].stoichiometry
+function reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
+    s = Dict{String,Float64}()
+    for (mid, x) in m.sbml.reactions[rid].reactants
+        s[mid] = get(s, mid, 0.0) - x
+    end
+    for (mid, x) in m.sbml.reactions[rid].products
+        s[mid] = get(s, mid, 0.0) + x
+    end
+    return s
+end
 
 """
     Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
@@ -186,10 +194,14 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             ),
             Dict(
                 rid => SBML.Reaction(
-                    Dict([
+                    Dict(
+                        mets[i] => -stoi[i, ri] for
+                        i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] <= 0
+                    ),
+                    Dict(
                         mets[i] => stoi[i, ri] for
-                        i in SparseArrays.nonzeroinds(stoi[:, ri])
-                    ],),
+                        i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] > 0
+                    ),
                     (lbs[ri], ""),
                     (ubs[ri], ""),
                     ocs[ri],
