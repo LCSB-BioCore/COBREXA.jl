@@ -1,16 +1,41 @@
 """
+    max_min_driving_force(
+        model::StandardModel,
+        optimizer,
+        thermodynamic_data;
+        modifications=[],
+        proton_id="h_c",
+        water_id="h2o_c",
+        concentration_ratios=[("atp_c", "adp_c", 10.0),
+        ("adp_c", "amp_c", 1.0),
+        ("nadph_c", "nadp_c", 10.0),
+        ("nadh_c", "nad_c", 0.1)],
+        constant_concentrations=[("coa_c", 1e-3),
+        ("co2_c", 10e-6),
+        ("pi_c", 10e-3),
+        ("ppi_c", 1e-3)],
+        concentration_lb=1e-6,
+        concentration_ub=10e-3)
 
 Perform max min driving force analysis on `model` using `optimizer` and
-`thermodynamic_data`. In essence, solve
+`thermodynamic_data`. The `optimizer` can be modified using `modifications`. Returns the
+maximum minimum driving force, the Gibbs free energy of reactions and the concentrations
+of metabolites that solve
 ```
 max min -ΔᵣG'
 s.t. ΔᵣG' = ΔᵣG'⁰ + R*T*S'*ln(C)
      ΔᵣG' <= 0 ∀ r
-     ln(Cₗ) ≤ ln(C) ≤ ln(C)ᵤ
+     ln(Cₗ) ≤ ln(C) ≤ ln(Cᵤ)
 ```
-This implementation
 See `Noor, Elad, et al. "Pathway thermodynamics highlights kinetic obstacles in central
 metabolism." PLoS computational biology 10.2 (2014): e1003483.` for more information.
+
+Note, protons and water need to be removed from the analysis because they do not figure
+into the thermodynamic calculations (constant pH and aqueous conditions are assumed). Typically,
+cofactors such as ATP, ADP, etc. are constrained by their ratios, as in `concentration_ratios`. Alternatively,
+metabolites in `constant_concentrations` can be directly constrained to specific values. Sensible
+defaults are supplied here, although the name space needs to be updated depending on the model.
+Finally, Cₗ and Cᵤ are set with `concentration_lb` and `concentration_ub`.
 """
 function max_min_driving_force(
     model::StandardModel,
@@ -31,7 +56,7 @@ function max_min_driving_force(
     concentration_ub=10e-3)
 
     # find reactions with thermodynamic data, ignore all other reactions in model
-    rids = filter(x-> x in keys(thermodynamic_data), reactions(model)) # all reactions with thermodynamic data
+    rids = filter(x -> haskey(thermodynamic_data, x), reactions(model)) # all reactions with thermodynamic data
     ridxs = Int.(indexin(rids, reactions(model)))
 
     # remove protons, water and all metabolites not involved in reactions that have thermodynamic data
@@ -83,12 +108,12 @@ function max_min_driving_force(
     end
 
     @objective(opt_model, Max, minDF)
-    return "hello"
-    # optimize!(opt_model)
 
-    # is_solved(opt_model) || return nothing, nothing, nothing
+    optimize!(opt_model)
 
-    # return objective_value(opt_model),
-        # Dict(rid => value(dgs[i]) for (i, rid) in enumerate(rids)),
-        # Dict(mid => exp(value(logcs[i])) for (i, mid) in enumerate(mids))
+    is_solved(opt_model) || return nothing, nothing, nothing
+
+    return objective_value(opt_model),
+        Dict(rid => value(dgs[i]) for (i, rid) in enumerate(rids)),
+        Dict(mid => exp(value(logcs[i])) for (i, mid) in enumerate(mids))
 end
