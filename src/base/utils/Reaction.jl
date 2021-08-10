@@ -100,3 +100,25 @@ reaction_mass_balanced(model::StandardModel, rxn::Reaction) =
 
 reaction_mass_balanced(model::StandardModel, reaction_dict::Dict{String,Float64}) =
     all(values(reaction_atom_balance(model, reaction_dict)) .== 0)
+
+"""
+    stoichiometry_string(rxn_dict)
+
+Return the reaction equation as a string.
+
+# Example
+```
+julia> req = Dict("coa_c" => -1, "for_c" => 1, "accoa_c" => 1, "pyr_c" => -1);
+julia> stoichiometry_string(req)
+"coa_c + pyr_c = for_c + accoa_c"
+```
+"""
+function stoichiometry_string(req)
+    replace_one(n) = abs(n) == 1 ? "" : string(abs(n))
+    substrates =
+        join(strip.(["$(replace_one(n)) $met" for (met, n) in req if n < 0]), " + ")
+    products = join(strip.(["$(replace_one(n)) $met" for (met, n) in req if n >= 0]), " + ")
+    return substrates * " = " * products
+end
+
+stoichiometry_string(rxn::Reaction) = stoichiometry_string(rxn.metabolites)
