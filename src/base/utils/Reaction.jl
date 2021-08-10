@@ -114,12 +114,23 @@ julia> stoichiometry_string(req)
 "coa_c + pyr_c = for_c + accoa_c"
 ```
 """
-function stoichiometry_string(req; remove_compartment=false)
+function stoichiometry_string(req; remove_compartment = false)
     replace_one(n) = abs(n) == 1 ? "" : string(abs(n))
     remove_compartment_indicator(s) = remove_compartment ? s[1:end-2] : s
-    substrates =
-        join(strip.(["$(replace_one(n)) $(remove_compartment_indicator(met))" for (met, n) in req if n < 0]), " + ")
-    products = join(strip.(["$(replace_one(n)) $(remove_compartment_indicator(met))" for (met, n) in req if n >= 0]), " + ")
+    substrates = join(
+        strip.([
+            "$(replace_one(n)) $(remove_compartment_indicator(met))" for
+            (met, n) in req if n < 0
+        ]),
+        " + ",
+    )
+    products = join(
+        strip.([
+            "$(replace_one(n)) $(remove_compartment_indicator(met))" for
+            (met, n) in req if n >= 0
+        ]),
+        " + ",
+    )
     return substrates * " = " * products
 end
 
@@ -130,4 +141,5 @@ Return the reaction equation as a string.
 
 See also: [`stoichiometry_string(::Dict{String, Float64})`](@ref)
 """
-stoichiometry_string(rxn::Reaction; kwargs...) = stoichiometry_string(rxn.metabolites; kwargs...)
+stoichiometry_string(rxn::Reaction; kwargs...) =
+    stoichiometry_string(rxn.metabolites; kwargs...)
