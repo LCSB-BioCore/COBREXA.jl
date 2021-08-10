@@ -41,26 +41,38 @@ function max_min_driving_force(
     model::StandardModel,
     optimizer,
     thermodynamic_data;
-    modifications=[],
-    proton_id="h_c",
-    water_id="h2o_c",
-    concentration_ratios=[("atp_c", "adp_c", 10.0),
-    ("adp_c", "amp_c", 1.0),
-    ("nadph_c", "nadp_c", 10.0),
-    ("nadh_c", "nad_c", 0.1)],
-    constant_concentrations=[("coa_c", 1e-3),
-    ("co2_c", 10e-6),
-    ("pi_c", 10e-3),
-    ("ppi_c", 1e-3)],
-    concentration_lb=1e-6,
-    concentration_ub=10e-3)
+    modifications = [],
+    proton_id = "h_c",
+    water_id = "h2o_c",
+    concentration_ratios = [
+        ("atp_c", "adp_c", 10.0),
+        ("adp_c", "amp_c", 1.0),
+        ("nadph_c", "nadp_c", 10.0),
+        ("nadh_c", "nad_c", 0.1),
+    ],
+    constant_concentrations = [
+        ("coa_c", 1e-3),
+        ("co2_c", 10e-6),
+        ("pi_c", 10e-3),
+        ("ppi_c", 1e-3),
+    ],
+    concentration_lb = 1e-6,
+    concentration_ub = 10e-3,
+)
 
     # find reactions with thermodynamic data, ignore all other reactions in model
     rids = filter(x -> haskey(thermodynamic_data, x), reactions(model)) # all reactions with thermodynamic data
     ridxs = Int.(indexin(rids, reactions(model)))
 
     # remove protons, water and all metabolites not involved in reactions that have thermodynamic data
-    mids = unique(vcat([collect(keys(rxn.metabolites)) for (rid, rxn) in model.reactions if rid in rids]...))
+    mids = unique(
+        vcat(
+            [
+                collect(keys(rxn.metabolites)) for
+                (rid, rxn) in model.reactions if rid in rids
+            ]...,
+        ),
+    )
     filter!(x -> !(x in [proton_id, water_id]), mids)
     midxs = Int.(indexin(mids, metabolites(model)))
 
@@ -85,7 +97,7 @@ function max_min_driving_force(
     @constraints opt_model begin
         minDF .<= -dgs
         dgs .<= 0
-        dgs .== dg0s .+ RT .*  S * logcs
+        dgs .== dg0s .+ RT .* S * logcs
     end
 
     log_lb = log(concentration_lb)
@@ -114,6 +126,6 @@ function max_min_driving_force(
     is_solved(opt_model) || return nothing, nothing, nothing
 
     return objective_value(opt_model),
-        Dict(rid => value(dgs[i]) for (i, rid) in enumerate(rids)),
-        Dict(mid => exp(value(logcs[i])) for (i, mid) in enumerate(mids))
+    Dict(rid => value(dgs[i]) for (i, rid) in enumerate(rids)),
+    Dict(mid => exp(value(logcs[i])) for (i, mid) in enumerate(mids))
 end
