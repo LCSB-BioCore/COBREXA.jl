@@ -100,3 +100,36 @@ reaction_mass_balanced(model::StandardModel, rxn::Reaction) =
 
 reaction_mass_balanced(model::StandardModel, reaction_dict::Dict{String,Float64}) =
     all(values(reaction_atom_balance(model, reaction_dict)) .== 0)
+
+"""
+    stoichiometry_string(rxn_dict::Dict{String, Float64}; format_id = x -> x)
+
+Return the reaction equation as a string. The metabolite strings can be manipulated by
+setting `format_id`.
+
+# Example
+```
+julia> req = Dict("coa_c" => -1, "for_c" => 1, "accoa_c" => 1, "pyr_c" => -1)
+julia> stoichiometry_string(req)
+"coa_c + pyr_c = for_c + accoa_c"
+
+julia> stoichiometry_string(req; format_id = x -> x[1:end-2])
+"coa + pyr = for + accoa"
+```
+"""
+function stoichiometry_string(req; format_id = x -> x)
+    count_prefix(n) = abs(n) == 1 ? "" : string(abs(n), " ")
+    substrates =
+        join((string(count_prefix(n), format_id(met)) for (met, n) in req if n < 0), " + ")
+    products =
+        join((string(count_prefix(n), format_id(met)) for (met, n) in req if n >= 0), " + ")
+    return substrates * " = " * products
+end
+
+"""
+    stoichiometry_string(rxn::Reaction; kwargs)
+
+Alternative of [`stoichiometry_string`](@ref) take takes a `Reaction` as an argument.
+"""
+stoichiometry_string(rxn::Reaction; kwargs...) =
+    stoichiometry_string(rxn.metabolites; kwargs...)
