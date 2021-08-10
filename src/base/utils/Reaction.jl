@@ -102,9 +102,10 @@ reaction_mass_balanced(model::StandardModel, reaction_dict::Dict{String,Float64}
     all(values(reaction_atom_balance(model, reaction_dict)) .== 0)
 
 """
-    stoichiometry_string(rxn_dict::Dict{String, Float64})
+    stoichiometry_string(rxn_dict::Dict{String, Float64}; remove_compartment=false)
 
-Return the reaction equation as a string.
+Return the reaction equation as a string. Removes trailing `_x` where `x` is any character
+if `remove_compartment` is `true`.
 
 # Example
 ```
@@ -113,11 +114,12 @@ julia> stoichiometry_string(req)
 "coa_c + pyr_c = for_c + accoa_c"
 ```
 """
-function stoichiometry_string(req)
+function stoichiometry_string(req; remove_compartment=false)
     replace_one(n) = abs(n) == 1 ? "" : string(abs(n))
+    remove_compartment_indicator(s) = remove_compartment ? s[1:end-2] : s
     substrates =
-        join(strip.(["$(replace_one(n)) $met" for (met, n) in req if n < 0]), " + ")
-    products = join(strip.(["$(replace_one(n)) $met" for (met, n) in req if n >= 0]), " + ")
+        join(strip.(["$(replace_one(n)) $(remove_compartment_indicator(met))" for (met, n) in req if n < 0]), " + ")
+    products = join(strip.(["$(replace_one(n)) $(remove_compartment_indicator(met))" for (met, n) in req if n >= 0]), " + ")
     return substrates * " = " * products
 end
 
@@ -128,4 +130,4 @@ Return the reaction equation as a string.
 
 See also: [`stoichiometry_string(::Dict{String, Float64})`](@ref)
 """
-stoichiometry_string(rxn::Reaction) = stoichiometry_string(rxn.metabolites)
+stoichiometry_string(rxn::Reaction; kwargs...) = stoichiometry_string(rxn.metabolites; kwargs...)
