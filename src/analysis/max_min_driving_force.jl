@@ -30,12 +30,31 @@ s.t. ΔᵣG' = ΔᵣG'⁰ + R*T*S'*ln(C)
 See `Noor, Elad, et al. "Pathway thermodynamics highlights kinetic obstacles in central
 metabolism." PLoS computational biology 10.2 (2014): e1003483.` for more information.
 
-Note, protons and water need to be removed from the analysis because they do not figure
-into the thermodynamic calculations (constant pH and aqueous conditions are assumed). Typically,
-cofactors such as ATP, ADP, etc. are constrained by their ratios, as in `concentration_ratios`. Alternatively,
-metabolites in `constant_concentrations` can be directly constrained to specific values. Sensible
-defaults are supplied here, although the name space needs to be updated depending on the model.
-Finally, Cₗ and Cᵤ are set with `concentration_lb` and `concentration_ub`.
+Note, protons and water need to be removed from the analysis because they do not figure into
+the thermodynamic calculations (constant pH and aqueous conditions are assumed). Typically,
+cofactors such as ATP, ADP, etc. are constrained by their ratios, as in
+`concentration_ratios`, which is a vector of tuples like [(numerator, denominator,
+value),...]. For the first element this corresponds to numerator/denominator = value.
+Alternatively, metabolites in `constant_concentrations` can be directly constrained to
+specific values, with the format being a vector of tuples [(metabolite, concentration),...].
+Sensible defaults are supplied here, although the name space needs to be updated depending
+on the model. Finally, Cₗ and Cᵤ are set with `concentration_lb` and `concentration_ub`.
+
+# Example
+```
+df, dgs, concens = max_min_driving_force(
+    model,
+    Tulip.Optimizer,
+    thermodynamic_data;
+    proton_id = "h",
+    water_id = "h2o",
+    modifications = [change_optimizer_attribute("IPM_IterationsLimit", 500)],
+    concentration_ratios = [("atp", "adp", 10.0), ("nadh", "nad", 0.1)],
+    constant_concentrations = [("pi", 10e-3)],
+    concentration_lb = 1e-6,
+    concentration_ub = 10e-3,
+)
+```
 """
 function max_min_driving_force(
     model::StandardModel,
