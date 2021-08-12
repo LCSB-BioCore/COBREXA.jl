@@ -3,7 +3,7 @@
     m2 = test_toyModel()
     ex_rxn_mets = Dict("EX_m1(e)" => "m1[e]", "EX_m3(e)" => "m3[e]")
 
-    c1 = join_with_exchanges([m1, m2], ex_rxn_mets; add_biomass_objective = false)
+    c1 = join_with_exchanges([m1, m2], ex_rxn_mets)
 
     # test of stoichs are the same
     @test all(c1.S[1:6, 1:7] .== c1.S[7:12, 8:14])
@@ -24,12 +24,7 @@
     @test all(lb[1:14] .== -ub[1:14] .== -1000)
     @test all(lb[15:16] .== -ub[15:16] .== 0.0)
 
-    c2 = join_with_exchanges(
-        [m1, m2],
-        ex_rxn_mets;
-        add_biomass_objective = true,
-        biomass_ids = ["biomass1", "biomass1"],
-    )
+    c2 = join_with_exchanges([m1, m2], ex_rxn_mets; biomass_ids = ["biomass1", "biomass1"])
     # test if same base stoich matrix
     @test all(c2.S[1:14, 1:16] .== c1.S)
     # test if biomass reaction and metabolites are added correctly
@@ -58,12 +53,7 @@ end
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
-    community = join_with_exchanges(
-        [m1, m2],
-        exchange_rxn_mets;
-        add_biomass_objective = true,
-        biomass_ids = biomass_ids,
-    )
+    community = join_with_exchanges([m1, m2], exchange_rxn_mets; biomass_ids = biomass_ids)
 
     env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
     m2_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m2))
@@ -96,12 +86,7 @@ end
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
 
-    community = join_with_exchanges(
-        [m1, m2],
-        exchange_rxn_mets;
-        add_biomass_objective = true,
-        biomass_ids = biomass_ids,
-    )
+    community = join_with_exchanges([m1, m2], exchange_rxn_mets; biomass_ids = biomass_ids)
 
     env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
     m2_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m2))
@@ -148,12 +133,7 @@ end
 
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
 
-    community = join_with_exchanges(
-        [m1],
-        exchange_rxn_mets;
-        add_biomass_objective = true,
-        biomass_ids = biomass_ids,
-    )
+    community = join_with_exchanges([m1], exchange_rxn_mets; biomass_ids = biomass_ids)
 
     env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
     m1_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m1))

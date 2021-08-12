@@ -49,7 +49,6 @@ model_names = ["cytbd_ko", "atps4r_ko"]
 community_model = join_with_exchanges(
     [cytbd_knockout_model, atps4r_knockout_model],
     ex_rxn_mets;
-    add_biomass_objective = true,
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"],
     model_names = model_names,
 )
