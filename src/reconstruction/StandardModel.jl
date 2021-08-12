@@ -107,62 +107,6 @@ macro add_reactions!(model::Symbol, ex::Expr)
 end
 
 """
-    remove_reactions!(model::StandardModel, ids::Vector{String})
-
-Remove all reactions with `ids` from `model`. Note, may result in orphan metabolites.
-
-# Example
-```
-remove_reactions!(model, ["EX_glc__D_e", "fba"])
-```
-"""
-function remove_reactions!(model::StandardModel, ids::Vector{String})
-    pop!.(Ref(model.reactions), ids)
-end
-
-"""
-    remove_reaction!(model::StandardModel, id::String)
-
-Remove reaction with `id` from `model`. Note, may result in orphan metabolites.
-
-# Example
-```
-remove_reaction!(model, "EX_glc__D_e")
-```
-"""
-remove_reaction!(model::StandardModel, id::String) = remove_reactions!(model, [id])
-
-"""
-    remove_metabolites!(model::StandardModel, ids::Vector{String})
-
-Remove all metabolites with `ids` from `model`.
-Warning, this could leave the model inconsistent, e.g. a reaction might
-require the deleted metabolite, in which case analysis functions will error.
-
-# Example
-```
-remove_metabolites!(model, ["atp_c", "adp_c"])
-```
-"""
-function remove_metabolites!(model::StandardModel, ids::Vector{String})
-    pop!.(Ref(model.metabolites), ids)
-end
-
-"""
-    remove_metabolite!(model::StandardModel, id::String)
-
-Remove metabolite with `id` from `model`.
-Warning, this could leave the model inconsistent, e.g. a reaction might
-require the deleted metabolite, in which case analysis functions will error.
-
-# Example
-```
-remove_metabolite!(model, "atp_c")
-```
-"""
-remove_metabolite!(model::StandardModel, id::String) = remove_metabolites!(model, [id])
-
-"""
     remove_genes!(
         model::StandardModel,
         ids::Vector{String};
@@ -238,4 +182,50 @@ end
     end
     change_bounds!(n, rxn_ids, lower = lower, upper = upper)
     n
+end
+
+@_remove_fn reaction StandardModel String inplace begin
+    delete!(model.reactions, reaction_id)
+end
+
+@_remove_fn reaction StandardModel String inplace plural begin
+    remove_reaction!.(Ref(model), reaction_ids)
+end
+
+@_remove_fn reaction StandardModel String begin
+    remove_reactions(model, [reaction_id])
+end
+
+@_remove_fn reaction StandardModel String plural begin
+    n = copy(model)
+    n.reactions = copy(model.reactions)
+    remove_reactions!(n, reaction_ids)
+    n
+end
+
+@_remove_fn metabolite StandardModel String inplace begin
+    remove_metabolites!(model, [metabolite_id])
+end
+
+@_remove_fn metabolite StandardModel String inplace plural begin
+    remove_reactions!(
+        model,
+        [
+            rid for (rid, rn) in model.reactions if
+            any(haskey.(Ref(rn.metabolites), metabolite_ids))
+        ],
+    )
+    delete!.(Ref(model.metabolites), metabolite_ids)
+end
+
+@_remove_fn metabolite StandardModel String plural begin
+    n = copy(model)
+    n.reactions = copy(model.reactions)
+    n.metabolites = copy(model.metabolites)
+    remove_metabolites!(n, metabolite_ids)
+    n
+end
+
+@_remove_fn metabolite StandardModel String begin
+    remove_metabolites(model, [metabolite_id])
 end
