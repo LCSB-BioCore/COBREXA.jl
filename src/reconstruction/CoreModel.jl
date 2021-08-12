@@ -1,4 +1,45 @@
 """
+    add_reactions!(model::CoreModel, rxns::Vector{Reaction})
+
+Add `rxns` to `model` efficiently. The model must already contain the metabolites used by
+`rxns` in the model.
+"""
+function add_reactions!(model::CoreModel, rxns::Vector{Reaction})
+    I = Int64[] # rows
+    J = Int64[] # cols
+    V = Float64[] # values
+    cs = zeros(length(rxns))
+    lbs = zeros(length(rxns))
+    ubs = zeros(length(rxns))
+    for (j, rxn) in enumerate(rxns)
+        req = rxn.metabolites
+        for (i, v) in zip(indexin(keys(req), metabolites(model)), values(req))
+            push!(J, j)
+            push!(I, i)
+            push!(V, v)
+        end
+        push!(model.rxns, rxn.id)
+        lbs[j] = rxn.lb
+        ubs[j] = rxn.ub
+        cs[j] = rxn.objective_coefficient
+    end
+    Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))
+    model.S = [model.S Sadd]
+    model.c = dropzeros([model.c; cs])
+    model.xu = sparse(ubs)
+    model.xl = sparse(lbs)
+    return nothing
+end
+
+"""
+    add_reaction!(model::CoreModel, rxn::Reaction)
+
+Add `rxn` to `model`. The model must already contain the metabolites used by
+`rxn` in the model.
+"""
+add_reaction!(model::CoreModel, rxn::Reaction) = add_reactions!(model, [rxn])
+
+"""
     add_reactions(
         m::CoreModel,
         s::V1,
@@ -10,7 +51,6 @@
     ) where {V1<:VecType,V2<:VecType}
 
 Add reaction(s) to a `CoreModel` model `m`.
-
 """
 function add_reactions(
     m::CoreModel,
@@ -44,7 +84,6 @@ end
         mets::K;
         check_consistency = false,
     ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
-
 """
 function add_reactions(
     m::CoreModel,
@@ -80,7 +119,6 @@ end
         xu::V;
         check_consistency = false,
     ) where {M<:MatType,V<:VecType}
-
 """
 function add_reactions(
     m::CoreModel,
@@ -110,7 +148,6 @@ end
     add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
 
 Add all reactions from `m2` to `m1`.
-
 """
 function add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
     return add_reactions(
@@ -138,7 +175,6 @@ end
         mets::K;
         check_consistency = false,
     ) where {M<:MatType,V<:VecType,K<:StringVecType}
-
 """
 function add_reactions(
     m::CoreModel,
@@ -228,7 +264,6 @@ end
 Check the consistency of given reactions with existing reactions in `m`.
 
 TODO: work in progress, doesn't return consistency status.
-
 """
 function verify_consistency(
     m::CoreModel,
@@ -271,7 +306,7 @@ function verify_consistency(
 end
 
 """
-    remove_metabolites(model::CoreModel, metabolites)
+    remove_metabolites(model::CoreModel, mets)
 
 Removes a set of `metabolites` from the `model` of type `CoreModel` and returns
 a new `CoreModel` without those metabolites. Here, `metabolites` can be either a
@@ -350,7 +385,6 @@ end
 
 """
     remove_reactions(m::CoreModel, rxn::Int)
-
 """
 function remove_reactions(m::CoreModel, rxn::Int)
     return remove_reactions(m, [rxn])
@@ -358,7 +392,6 @@ end
 
 """
     remove_reactions(m::CoreModel, rxn::String)
-
 """
 function remove_reactions(m::CoreModel, rxn::String)
     return remove_reactions(m, [rxn])
@@ -366,7 +399,6 @@ end
 
 """
     remove_reactions(m::CoreModel, rxns::Vector{String})
-
 """
 function remove_reactions(m::CoreModel, rxns::Vector{String})
     rxn_indices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
