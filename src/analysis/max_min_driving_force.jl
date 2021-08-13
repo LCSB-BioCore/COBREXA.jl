@@ -138,9 +138,9 @@ function max_min_driving_force(
     end
 
     for (met1, met2, val) in concentration_ratios
-        i = first(indexin([met1], dg_mids))
+        i = first(indexin([met1], mids))
         isnothing(i) && continue
-        j = first(indexin([met2], dg_mids))
+        j = first(indexin([met2], mids))
         isnothing(j) && continue
         @constraint(opt_model, logcs[i] == log(val) + logcs[j])
     end
