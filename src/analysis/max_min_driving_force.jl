@@ -110,7 +110,7 @@ function max_min_driving_force(
     @variables opt_model begin
         minDF
         dgs[1:length(dg0s)]
-        logcs[1:size(S, 2)]
+        logcs[1:size(St, 2)]
     end
 
     @constraints opt_model begin
