@@ -106,8 +106,8 @@
 
     df, dgs, concens = max_min_driving_force(
         model,
-        Tulip.Optimizer,
-        thermodynamic_data;
+        thermodynamic_data,
+        Tulip.Optimizer;
         proton_id = "h",
         water_id = "h2o",
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 500)],
