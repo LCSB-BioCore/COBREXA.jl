@@ -33,16 +33,16 @@ metabolism." PLoS computational biology 10.2 (2014): e1003483.` for more informa
 Note, protons and water need to be removed from the analysis because they do not figure into
 the thermodynamic calculations (constant pH and aqueous conditions are assumed). Typically,
 cofactors such as ATP, ADP, etc. are constrained by their ratios, as in
-`concentration_ratios`, which is a vector of tuples like [(numerator, denominator,
-value),...]. For the first element this corresponds to numerator/denominator = value.
+`concentration_ratios`, which is a vector of tuples like `[(numerator, denominator,
+value),...]`. For the first element this corresponds to `numerator/denominator = value`.
 Alternatively, metabolites in `constant_concentrations` can be directly constrained to
-specific values, with the format being a vector of tuples [(metabolite, concentration),...].
+specific values, with the format being a vector of tuples `[(metabolite, concentration),...]`.
 Sensible defaults are supplied here, although the name space needs to be updated depending
-on the model. Finally, Cₗ and Cᵤ are set with `concentration_lb` and `concentration_ub`.
+on the model. Finally, `Cₗ` and `Cᵤ` are set with `concentration_lb` and `concentration_ub`.
 
 # Example
 ```
-df, dgs, concens = max_min_driving_force(
+mmdf, dgs, concens = max_min_driving_force(
     model,
     Tulip.Optimizer,
     thermodynamic_data;
@@ -80,7 +80,7 @@ function max_min_driving_force(
 )
 
     # find reactions with thermodynamic data, ignore all other reactions in model
-    rids = filter(x -> haskey(thermodynamic_data, x), reactions(model)) # all reactions with thermodynamic data
+    rids = filter(x -> haskey(thermodynamic_data, x), reactions(model))
     ridxs = Int.(indexin(rids, reactions(model)))
 
     # remove protons, water and all metabolites not involved in reactions that have thermodynamic data
@@ -95,7 +95,7 @@ function max_min_driving_force(
     filter!(x -> !(x in [proton_id, water_id]), mids)
     midxs = Int.(indexin(mids, metabolites(model)))
 
-    S = (stoichiometry(model)[midxs, ridxs])'
+    St = (stoichiometry(model)[midxs, ridxs])'
 
     RT = 298.15 * 8.314e-3 # kJ/mol
 
@@ -116,7 +116,7 @@ function max_min_driving_force(
     @constraints opt_model begin
         minDF .<= -dgs
         dgs .<= 0
-        dgs .== dg0s .+ RT .* S * logcs
+        dgs .== dg0s .+ RT .* St * logcs
     end
 
     log_lb = log(concentration_lb)
