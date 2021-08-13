@@ -27,25 +27,26 @@ using Tulip
 model = StandardModel("Glycolysis")
 
 mets = [
-    Metabolite("glc__D"),
-    Metabolite("g6p"),
-    Metabolite("f6p"),
-    Metabolite("fdp"),
-    Metabolite("dhap"),
-    Metabolite("g3p"),
-    Metabolite("13dpg"),
-    Metabolite("3pg"),
-    Metabolite("2pg"),
-    Metabolite("pep"),
-    Metabolite("pyr"),
-    Metabolite("lac__D"),
-    Metabolite("nadh"),
-    Metabolite("nad"),
-    Metabolite("h"),
-    Metabolite("atp"),
-    Metabolite("adp"),
-    Metabolite("h2o"),
-    Metabolite("pi"),
+    Metabolite(id) for id in [
+        "glc__D",
+        "g6p",
+        "f6p",
+        "fdp""dhap",
+        "g3p",
+        "13dpg",
+        "3pg",
+        "2pg",
+        "pep",
+        "pyr",
+        "lac__D",
+        "nadh",
+        "nad",
+        "h",
+        "atp",
+        "adp",
+        "h2o",
+        "pi",
+    ]
 ]
 
 rxns = [
@@ -116,10 +117,12 @@ add_reactions!(model, rxns)
 
 model
 
-# Load some thermodynamic data, ΔG'⁰ from eQuilibrator. Each key maps a reaction id to a
-# standard Gibbs free energy of reaction.
+# Load some thermodynamic data, ΔG'⁰ from [eQuilibrator](https://equilibrator.weizmann.ac.il/).
+# You could also use the [Julia API to eQuilibrator](https://github.com/stelmo/eQuilibrator.jl)
+# if you want to automate this. Each key maps a reaction id to a standard Gibbs free energy
+# of reaction.
 
-thermodynamic_data = Dict( # ΔG'⁰ in kJ/mol
+gibbs_free_energies = Dict( # ΔG'⁰ in kJ/mol
     "TPI" => 5.57535,
     "PGK" => -19.32,
     "PFK" => -14.5988,
@@ -143,8 +146,8 @@ thermodynamic_data = Dict( # ΔG'⁰ in kJ/mol
 
 df, dgs, concens = max_min_driving_force(
     model,
-    Tulip.Optimizer,
-    thermodynamic_data; # units kJ/mol
+    gibbs_free_energies, # units kJ/mol
+    Tulip.Optimizer;
     proton_id = "h",
     water_id = "h2o",
     concentration_ratios = [
