@@ -82,8 +82,8 @@ end
         bounds = objective_bounds(0.99),
         modifications = [
             change_optimizer_attribute("IPM_IterationsLimit", 500),
-            change_constraint("EX_glc__D_e", -10, -10),
-            change_constraint("EX_o2_e", 0.0, 0.0),
+            change_constraint("EX_glc__D_e"; lb = -10, ub = -10),
+            change_constraint("EX_o2_e"; lb = 0.0, ub = 0.0),
         ],
     )
 

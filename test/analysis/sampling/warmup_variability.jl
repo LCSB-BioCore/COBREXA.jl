@@ -5,7 +5,7 @@
         model,
         Tulip.Optimizer,
         100;
-        modifications = [change_constraint("EX_glc__D_e", -2, 2)],
+        modifications = [change_constraint("EX_glc__D_e"; lb = -2, ub = 2)],
         workers = W,
     )
 

@@ -70,7 +70,7 @@ dict_soln = flux_balance_analysis_dict(
         change_objective("R_BIOMASS_Ecoli_core_w_GAM"),
 
         ## this fixes a specific rate of the glucose exchange
-        change_constraint("R_EX_glc__D_e", -12, -12),
+        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
 
         ## this knocks out two genes, i.e. constrains their associated reactions to zero.
         knockout(["b0978", "b0734"]), ## the gene IDs are cytochrome oxidase (CYTBD)
@@ -103,8 +103,8 @@ fva_mins, fva_maxs = flux_variability_analysis_dict(
     bounds = objective_bounds(0.99), # the objective function is allowed to vary by ~1% from the FBA optimum
     modifications = [
         change_optimizer_attribute("IPM_IterationsLimit", 500),
-        change_constraint("R_EX_glc__D_e", -10, -10),
-        change_constraint("R_EX_o2_e", 0.0, 0.0),
+        change_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
+        change_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
     ],
 )
 
@@ -128,8 +128,8 @@ vs = flux_variability_analysis(
     bounds = objective_bounds(0.50), # biomass can vary up to 50% less than optimum
     modifications = [
         change_optimizer_attribute("IPM_IterationsLimit", 500),
-        change_constraint("R_EX_glc__D_e", -10, -10),
-        change_constraint("R_EX_o2_e", 0.0, 0.0),
+        change_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
+        change_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
     ],
     ret = m ->
         (COBREXA.JuMP.objective_value(m), COBREXA.JuMP.value(m[:x][biomass_idx])), # m is the model and m[:x] extracts the fluxes from the model
@@ -153,7 +153,7 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     OSQP.Optimizer;
     modifications = [
         silence, # silence the optimizer (OSQP is very verbose by default)
-        change_constraint("R_EX_glc__D_e", -12, -12),
+        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
     ],
 )
 
@@ -168,7 +168,7 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     model,
     Tulip.Optimizer; # start with Tulip
     modifications = [
-        change_constraint("R_EX_glc__D_e", -12, -12),
+        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
         change_optimizer_attribute("IPM_IterationsLimit", 500), # we may change Tulip-specific attributes here
     ],
     qp_modifications = [
@@ -176,3 +176,97 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
         silence, # and make it quiet.
     ],
 )
+
+# ## Flux balance analysis with molecular crowding (FBAwMC)
+
+# Flux balance with molecular crowding incorporates enzyme capacity constraints into the
+# classic flux balance analysis algorithm. Essentially, an extra constraint is added to
+# the optimization problem: `∑ wᵢ × vᵢ ≤ 1` where `wᵢ` weights each internal flux `vᵢ`. See
+# `Beg, Qasim K., et al. "Intracellular crowding defines the mode and sequence of
+# substrate uptake by Escherichia coli and constrains its metabolic activity." Proceedings of
+# the National Academy of Sciences 104.31 (2007): 12663-12668.` for more details.
+
+# First load the model
+model = load_model("e_coli_core.json")
+
+# Next, simulate the model over a range of substrate uptake rates.
+without_crowding = Dict{Float64,Vector{Float64}}()
+with_crowding = Dict{Float64,Vector{Float64}}()
+glucose_uptakes = collect(-(1.0:0.5:20))
+
+for glc in glucose_uptakes
+    no_crowding = flux_balance_analysis_dict( # classic FBA
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_optimizer_attribute("IPM_IterationsLimit", 1000),
+            change_constraint("EX_glc__D_e"; lb = glc),
+        ],
+    )
+
+    without_crowding[glc] =
+        [no_crowding["BIOMASS_Ecoli_core_w_GAM"], no_crowding["EX_ac_e"]]
+
+    crowding = flux_balance_analysis_dict( # FBAwMC
+        model,
+        Tulip.Optimizer;
+        modifications = [
+            change_optimizer_attribute("IPM_IterationsLimit", 1000),
+            add_crowding_constraint(0.004), # crowding constraint gets added here
+            change_constraint("EX_glc__D_e"; lb = glc),
+        ],
+    )
+
+    with_crowding[glc] = [crowding["BIOMASS_Ecoli_core_w_GAM"], crowding["EX_ac_e"]]
+end
+
+# Finally, plot the results to compare classic FBA with FBAwMC.
+using CairoMakie
+fig = Figure();
+ax1 = Axis(fig[1, 1]);
+lines!(
+    ax1,
+    -glucose_uptakes,
+    [without_crowding[glc][1] for glc in glucose_uptakes],
+    label = "no crowding",
+    linewidth = 5,
+    linestyle = :dash,
+)
+lines!(
+    ax1,
+    -glucose_uptakes,
+    [with_crowding[glc][1] for glc in glucose_uptakes],
+    label = "with crowding",
+    linewidth = 5,
+    linestyle = :dot,
+)
+ax1.ylabel = "Growth rate [1/h]"
+ax2 = Axis(fig[2, 1])
+lines!(
+    ax2,
+    -glucose_uptakes,
+    [without_crowding[glc][2] for glc in glucose_uptakes],
+    label = "no crowding",
+    linewidth = 5,
+    linestyle = :dash,
+)
+lines!(
+    ax2,
+    -glucose_uptakes,
+    [with_crowding[glc][2] for glc in glucose_uptakes],
+    label = "with crowding",
+    linewidth = 5,
+    linestyle = :dot,
+)
+fig[1:2, 2] = Legend(fig, ax1, "Constraint")
+ax2.xlabel = "Glucose uptake rate [mmol/gDW/h]"
+ax2.ylabel = "Acetate production rate\n[mmol/gDW/h]"
+fig
+
+# Notice that overflow metabolism is modeled by incorporating the crowding constraint.
+
+#md # !!! tip "Tip: code your own modification like [`add_crowding`](@ref)"
+#md #       Making custom problem modification functions is really simple due to the
+#md #       tight intergration between COBREXA and JuMP. Look at the source code for
+#md #       the implemented modifications in `src\analysis\modifications` to get a flavour
+#md #       for it.

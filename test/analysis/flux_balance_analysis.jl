@@ -39,7 +39,7 @@ end
         Tulip.Optimizer;
         modifications = [
             change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e", -12, -12),
+            change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
             change_sense(MAX_SENSE),
             change_optimizer_attribute("IPM_IterationsLimit", 110),
         ],
@@ -71,7 +71,7 @@ end
     @test_throws DomainError flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
-        modifications = [change_constraint("gbbrsh", -12, -12)],
+        modifications = [change_constraint("gbbrsh"; lb = -12, ub = -12)],
     )
     @test_throws DomainError flux_balance_analysis_dict(
         model,
