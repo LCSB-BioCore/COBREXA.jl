@@ -305,110 +305,6 @@ function verify_consistency(
     return (new_reactions, new_metabolites)
 end
 
-"""
-    remove_metabolites(model::CoreModel, mets)
-
-Removes a set of `metabolites` from the `model` of type `CoreModel` and returns
-a new `CoreModel` without those metabolites. Here, `metabolites` can be either a
-string, a vector of strings, an index or a vector of indices. Also removes any
-reactions that have no associated metabolites after the metabolites have been
-removed.
-
-# Example
-```
-model = load_model(CoreModel, "e_coli_core.json")
-
-m1 = remove_metabolites(model, ["glc__D_e", "for_c"])
-m2 = remove_metabolites(model, "glc__D_e")
-m3 = remove_metabolites(model, indexin(["glc__D_e", "for_c"], metabolites(model)))
-m4 = remove_metabolites(model, first(indexin(["glc__D_e"], metabolites(model))))
-```
-"""
-function remove_metabolites(model::CoreModel, mets)
-    mets_to_keep = filter(!in(mets), 1:n_metabolites(model))
-    temp_S = model.S[mets_to_keep, :]
-
-    (I, rxns_to_keep, val) = findnz(temp_S)
-    sort!(rxns_to_keep)
-    unique!(rxns_to_keep)
-    new_S = model.S[mets_to_keep, rxns_to_keep]
-    new_b = model.b[mets_to_keep]
-    new_c = model.c[rxns_to_keep]
-    new_lbs = model.xl[rxns_to_keep]
-    new_ubs = model.xu[rxns_to_keep]
-    new_rxns = model.rxns[rxns_to_keep]
-    new_mets = model.mets[mets_to_keep]
-
-    return CoreModel(new_S, new_b, new_c, new_lbs, new_ubs, new_rxns, new_mets)
-end
-
-function remove_metabolites(model::CoreModel, met::Int)
-    return remove_metabolites(model, [met])
-end
-
-function remove_metabolites(model::CoreModel, met::String)
-    return remove_metabolites(model, [met])
-end
-
-function remove_metabolites(model::CoreModel, mets::Vector{String})
-    met_indices = filter(!isnothing, indexin(mets, metabolites(model)))
-    if isempty(met_indices)
-        return model
-    else
-        return remove_metabolites(model, met_indices)
-    end
-end
-
-"""
-    remove_reactions(m::CoreModel, rxns::Vector{Int})
-
-Removes a set of reactions from a CoreModel.
-Also removes the metabolites not involved in any reaction.
-"""
-function remove_reactions(m::CoreModel, rxns::Vector{Int})
-    rxns_to_keep = filter(!in(rxns), 1:n_reactions(m))
-    temp_s = m.S[:, rxns_to_keep]
-
-    (mets_to_keep, J, val) = findnz(temp_s)
-    sort!(mets_to_keep)
-    unique!(mets_to_keep)
-    new_s = m.S[mets_to_keep, rxns_to_keep]
-    newb = m.b[mets_to_keep]
-    newc = m.c[rxns_to_keep]
-    newxl = m.xl[rxns_to_keep]
-    newxu = m.xu[rxns_to_keep]
-    new_rxns = m.rxns[rxns_to_keep]
-    new_mets = m.mets[mets_to_keep]
-    new_model = CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
-    return new_model
-end
-
-"""
-    remove_reactions(m::CoreModel, rxn::Int)
-"""
-function remove_reactions(m::CoreModel, rxn::Int)
-    return remove_reactions(m, [rxn])
-end
-
-"""
-    remove_reactions(m::CoreModel, rxn::String)
-"""
-function remove_reactions(m::CoreModel, rxn::String)
-    return remove_reactions(m, [rxn])
-end
-
-"""
-    remove_reactions(m::CoreModel, rxns::Vector{String})
-"""
-function remove_reactions(m::CoreModel, rxns::Vector{String})
-    rxn_indices = [findfirst(isequal(name), m.rxns) for name in intersect(rxns, m.rxns)]
-    if isempty(rxn_indices)
-        return m
-    else
-        return remove_reactions(m, rxn_indices)
-    end
-end
-
 @_change_bounds_fn CoreModel Int inplace begin
     isnothing(lower) || (model.xl[rxn_idx] = lower)
     isnothing(upper) || (model.xu[rxn_idx] = upper)
@@ -457,4 +353,90 @@ end
         lower = lower,
         upper = upper,
     )
+end
+
+@_remove_fn reaction CoreModel Int inplace begin
+    remove_reactions!(model, [reaction_idx])
+end
+
+@_remove_fn reaction CoreModel Int inplace plural begin
+    mask = .! in.(1:n_reactions(model), Ref(reaction_idxs))
+    model.S = model.S[:, mask]
+    model.c = model.c[mask]
+    model.xl = model.xl[mask]
+    model.xu = model.xu[mask]
+    model.rxns = model.rxns[mask]
+    nothing
+end
+
+@_remove_fn reaction CoreModel Int begin
+    remove_reactions(model, [reaction_idx])
+end
+
+@_remove_fn reaction CoreModel Int plural begin
+    n = copy(model)
+    n.S = copy(n.S)
+    n.c = copy(n.c)
+    n.xl = copy(n.xl)
+    n.xu = copy(n.xu)
+    n.rxns = copy(n.rxns)
+    remove_reactions!(model, reaction_idxs)
+    return n
+end
+
+@_remove_fn reaction CoreModel String inplace begin
+    remove_reactions!(model, [reaction_id])
+end
+
+@_remove_fn reaction CoreModel String inplace plural begin
+    remove_reactions!(model, Int.(indexin(reaction_ids, reactions(model))))
+end
+
+@_remove_fn reaction CoreModel String begin
+    remove_reactions(model, [reaction_id])
+end
+
+@_remove_fn reaction CoreModel String begin
+    remove_reactions(model, Int.(indexin(reaction_ids, reactions(model))))
+end
+
+@_remove_fn metabolite CoreModel Int inplace begin
+    remove_metabolites!(model, [metabolite_idx])
+end
+
+@_remove_fn metabolite CoreModel Int plural inplace begin
+    remove_reactions!(model,
+        [ridx for ridx in 1:n_reactions(model) if
+            any(in.(findnz(model.S[:,ridx])[2], Ref(metabolite_idxs)))])
+    mask = .! in.(1:n_metabolites(model), Ref(metabolite_idxs))
+    model.S = model.S[mask, :]
+    model.b = model.b[mask]
+    model.mets = model.mets[mask]
+    return nothing
+end
+
+@_remove_fn metabolite CoreModel Int begin
+    remove_metabolites(model, [metabolite_idx])
+end
+
+@_remove_fn metabolite CoreModel Int plural begin
+    n = deepcopy(model) #everything gets changed anyway
+    remove_metabolites!(model, metabolite_idxs)
+    return n
+end
+
+@_remove_fn metabolite CoreModel String inplace begin
+    remove_metabolites!(model, [metabolite_id])
+end
+
+@_remove_fn metabolite CoreModel String inplace plural begin
+    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
+end
+
+@_remove_fn metabolite CoreModel String begin
+    remove_metabolites(model, [metabolite_id])
+end
+
+@_remove_fn metabolite CoreModel String begin
+    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end

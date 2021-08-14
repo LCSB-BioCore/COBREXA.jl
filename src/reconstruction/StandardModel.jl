@@ -161,7 +161,7 @@ remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false
 @_change_bounds_fn StandardModel String inplace begin
     isnothing(lower) || (model.reactions[rxn_id].lb = lower)
     isnothing(upper) || (model.reactions[rxn_id].ub = upper)
-    nothing
+    return nothing
 end
 
 @_change_bounds_fn StandardModel String inplace plural begin
@@ -181,7 +181,7 @@ end
         n.reactions[i] = copy(n.reactions[i])
     end
     change_bounds!(n, rxn_ids, lower = lower, upper = upper)
-    n
+    return n
 end
 
 @_remove_fn reaction StandardModel String inplace begin
@@ -200,7 +200,7 @@ end
     n = copy(model)
     n.reactions = copy(model.reactions)
     remove_reactions!(n, reaction_ids)
-    n
+    return n
 end
 
 @_remove_fn metabolite StandardModel String inplace begin
@@ -216,6 +216,11 @@ end
         ],
     )
     delete!.(Ref(model.metabolites), metabolite_ids)
+    return nothing
+end
+
+@_remove_fn metabolite StandardModel String begin
+    remove_metabolites(model, [metabolite_id])
 end
 
 @_remove_fn metabolite StandardModel String plural begin
@@ -223,9 +228,5 @@ end
     n.reactions = copy(model.reactions)
     n.metabolites = copy(model.metabolites)
     remove_metabolites!(n, metabolite_ids)
-    n
-end
-
-@_remove_fn metabolite StandardModel String begin
-    remove_metabolites(model, [metabolite_id])
+    return n
 end
