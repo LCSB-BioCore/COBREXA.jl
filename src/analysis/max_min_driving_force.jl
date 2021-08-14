@@ -1,161 +1,159 @@
 """
-    max_min_driving_force(
-        model::StandardModel,
-        standard_gibbs_reaction_energies::Dict{String, Float64},
+    function max_min_driving_force(
+        model::MetabolicModel,
+        gibbs_free_energies::Dict{String,Float64},
         optimizer;
-        modifications = [],
-        proton_id = "h_c",
-        water_id = "h2o_c",
-        concentration_ratios = [
-            ("atp_c", "adp_c", 10.0),
-            ("adp_c", "amp_c", 1.0),
-            ("nadph_c", "nadp_c", 10.0),
-            ("nadh_c", "nad_c", 0.1),
-        ],
-        constant_concentrations = [
-            ("coa_c", 1e-3),
-            ("co2_c", 10e-6),
-            ("pi_c", 10e-3),
-            ("ppi_c", 1e-3),
-        ],
+        ignore_metabolites::Vector{String} = [],
+        constant_concentrations::Dict{String, Float64} = Dict{String, Float64}(),
+        concentration_ratios::Dict{Tuple{String,String},Float64} = Dict{Tuple{String,String},Float64}(),
         concentration_lb = 1e-6,
         concentration_ub = 10e-3,
-)
+        T = 298.15,
+        R = 8.31446261815324e-3,
+        modifications = [],
+    )
 
-Perform max min driving force analysis on `model` using `optimizer` and
-`standard_gibbs_reaction_energies`. The `optimizer` can be modified using `modifications` but not
-underlying optimization problem. Returns the maximum minimum driving force, the Gibbs free
-energy of reactions and the concentrations of metabolites that solve
+Perform a max-min driving force analysis on the `model`, as defined by Noor,
+Elad, et al. ("Pathway thermodynamics highlights kinetic obstacles in central
+metabolism." *PLoS computational biology* 10.2, 2014).
+
+The analysis uses the supplied `optimizer` and Gibbs free energies of the
+reactions (in `gibbs_free_energies`) to find the max-min driving force, Gibbs
+free energy of the reactions and the concentrations of metabolites that
+optimize the following problem:
 ```
-max min -ΔᵣG'
-s.t. ΔᵣG' = ΔᵣG'⁰ + R*T*S'*ln(C)
-     ΔᵣG' <= 0 ∀ r
+max min -ΔᵣG
+s.t. ΔᵣG = ΔᵣG⁰ + R T S' ln(C)
+     ΔᵣG ≤ 0 (∀r)
      ln(Cₗ) ≤ ln(C) ≤ ln(Cᵤ)
 ```
-See `Noor, Elad, et al. "Pathway thermodynamics highlights kinetic obstacles in central
-metabolism." PLoS computational biology 10.2 (2014): e1003483.` for more information.
+where `ΔᵣG` are the Gibbs energies dissipated by the reactions, `ΔᵣG⁰` are the
+Gibbs free energies of the reactions, R is the gas constant, T is the
+temperature, S is the stoichiometry of the model, and C is the vector of
+metabolite concentrations (and their respective lower and upper bounds).
 
-Internally protons and water are removed from the model because biological thermodynamic
-calculations assume constant pH and aqueous conditions. Typically, cofactors such as ATP,
-ADP, etc. are constrained by their ratios, as in `concentration_ratios`, which is a vector
-of tuples like `[(numerator, denominator, value),...]`. For the first element this
-corresponds to `numerator/denominator = value`. Alternatively, metabolites in
-`constant_concentrations` can be directly constrained to specific values, with the format
-being a vector of tuples `[(metabolite, concentration),...]`. Sensible defaults are supplied
-here, although the name space needs to be updated depending on the model. Finally, `Cₗ` and
-`Cᵤ` are set with `concentration_lb` and `concentration_ub`.
+In case no feasible solution exists, `nothing` is returned.
 
-# Example
-```
-mmdf, dgs, concens = max_min_driving_force(
-    model,
-    gibbs_free_energies,
-    Tulip.Optimizer;
-    proton_id = "h",
-    water_id = "h2o",
-    modifications = [change_optimizer_attribute("IPM_IterationsLimit", 500)],
-    concentration_ratios = [("atp", "adp", 10.0), ("nadh", "nad", 0.1)],
-    constant_concentrations = [("pi", 10e-3)],
-    concentration_lb = 1e-6,
-    concentration_ub = 10e-3,
-)
-```
+Metabolites specified in `ignore_metabolites` are internally ignored -- that
+allows to specify e.g. removal of protons and water, thus allowing the
+thermodynamic calculations to assume constant pH and aqueous conditions.
+
+`constant_concentrations` is used to fix the concentrations of certain
+metabolites (such as the protons and CO₂). `concentration_ratios` is used to
+specify additional constraints on metabolite pair concentrations (typically,
+this is done with various cofactors such as for fixing the concentration ratios
+of ADP and ATP). For example, you can optimistically fix the concentration of
+ATP to be always 5× higher than of ADP by specifying
+`Dict(("ATP","ADP") => 5.0)`
+
+`concentration_lb` and `concentration_ub` set the `Cₗ` and `Cᵤ` in the
+optimization problems.
+
+`T` and `R` can be specified in the corresponding units; defaults are sensible
+values in Kelvin and kJ/mol.
 """
 function max_min_driving_force(
-    model::StandardModel,
-    standard_gibbs_reaction_energies::Dict{String,Float64},
+    model::MetabolicModel,
+    gibbs_free_energies::Dict{String,Float64},
     optimizer;
-    modifications = [],
-    proton_id = "h_c",
-    water_id = "h2o_c",
-    concentration_ratios = [
-        ("atp_c", "adp_c", 10.0),
-        ("adp_c", "amp_c", 1.0),
-        ("nadph_c", "nadp_c", 10.0),
-        ("nadh_c", "nad_c", 0.1),
-    ],
-    constant_concentrations = [
-        ("coa_c", 1e-3),
-        ("co2_c", 10e-6),
-        ("pi_c", 10e-3),
-        ("ppi_c", 1e-3),
-    ],
+    ignore_metabolites::Vector{String} = [],
+    constant_concentrations::Dict{String,Float64} = Dict{String,Float64}(),
+    concentration_ratios::Dict{Tuple{String,String},Float64} = Dict{
+        Tuple{String,String},
+        Float64,
+    }(),
     concentration_lb = 1e-6,
     concentration_ub = 10e-3,
+    T = 298.15,
+    R = 8.31446261815324e-3,
+    modifications = [],
 )
+    rxn_index = Dict(rid => i for (i, rid) in enumerate(reactions(model)))
 
-    # find reactions with thermodynamic data, ignore all other reactions in model
-    rids = filter(x -> haskey(standard_gibbs_reaction_energies, x), reactions(model))
-    ridxs = Int.(indexin(rids, reactions(model)))
+    # collect the information we need
+    ridxs = [
+        haskey(rxn_index, rid) ? rxn_index[rid] :
+        throw(DomainError(rid, "reaction not found")) for
+        rid in keys(gibbs_free_energies)
+    ]
+    dg0s = collect(values(gibbs_free_energies))
 
-    # remove protons, water and all metabolites not involved in reactions that have thermodynamic data
-    mids = unique(
-        vcat(
-            [
-                collect(keys(rxn.metabolites)) for
-                (rid, rxn) in model.reactions if rid in rids
-            ]...,
-        ),
-    )
-    filter!(x -> !(x in [proton_id, water_id]), mids)
-    midxs = Int.(indexin(mids, metabolites(model)))
-
-    St = (stoichiometry(model)[midxs, ridxs])'
-
-    RT = 298.15 * 8.314e-3 # kJ/mol
-
-    dg0s = [standard_gibbs_reaction_energies[rid] for rid in rids]
-
-    # modify optimization problem
-    opt_model = Model(optimizer)
-    for mod in modifications
-        mod(model, opt_model)
+    # find the corresponding metabolites
+    # (we use full S because we'll need it anyway)
+    S = stoichiometry(model)
+    midxs = Set{Int}()
+    mets = metabolites(model)
+    for ridx in ridxs
+        for midx in findnz(S[:, ridx])[1]
+            mets[midx] in ignore_metabolites || push!(midxs, midx)
+        end
     end
+    midxs = sort(collect(midxs))
+    mids = mets[midxs]
 
+    # reduce the stoichiometry to the reactions we're interested in
+    S = S[midxs, ridxs]
+
+    # start building the optimization model
+    opt_model = Model(optimizer)
     @variables opt_model begin
         minDF
-        dgs[1:length(dg0s)]
-        logcs[1:size(St, 2)]
+        logcs[1:length(midxs)]
+        dgs[1:length(ridxs)]
     end
 
+    RT = R * T
     @constraints opt_model begin
         minDF .<= -dgs
         dgs .<= 0
-        dgs .== dg0s .+ RT .* St * logcs
-    end
-
-    log_lb = log(concentration_lb)
-    log_ub = log(concentration_ub)
-    constant_concentration_dict = Dict(met => val for (met, val) in constant_concentrations)
-    for (i, mid) in enumerate(mids)
-        if haskey(constant_concentration_dict, mid)
-            @constraint(opt_model, logcs[i] == log(constant_concentration_dict[mid]))
-        else
-            @constraint(opt_model, log_lb <= logcs[i] <= log_ub)
-        end
-    end
-
-    for (met1, met2, val) in concentration_ratios
-        i = first(indexin([met1], mids))
-        isnothing(i) && continue
-        j = first(indexin([met2], mids))
-        isnothing(j) && continue
-        @constraint(opt_model, logcs[i] == log(val) + logcs[j])
+        dgs .== dg0s .+ RT .* S' * logcs
     end
 
     @objective(opt_model, Max, minDF)
+
+    # add the absolute bounds
+    all(in.(keys(constant_concentrations), Ref(mids))) || throw(
+        DomainError(
+            collect(keys(constant_concentrations)),
+            "some of the metabolites not found in relevant reactions",
+        ),
+    )
+    for (i, mid) in enumerate(mids)
+        if haskey(constant_concentrations, mid)
+            # we have an exact bound for this metabolite
+            @constraint(opt_model, logcs[i] == log(constant_concentrations[mid]))
+        else
+            # this metabolite needs default bounds
+            @constraint(
+                opt_model,
+                log(concentration_lb) <= logcs[i] <= log(concentration_ub)
+            )
+        end
+    end
+
+    # add the relative bounds
+    for ((mid1, mid2), val) in concentration_ratios
+        idxs = indexin([mid1, mid2], mids)
+        any(isnothing.(idxs)) && throw(
+            DomainError((mid1, mid2), "metabolite pair not found in relevant reactions"),
+        )
+        @constraint(opt_model, logcs[idxs[1]] == log(val) + logcs[idxs[2]])
+    end
+
+    # apply the modifications, if any
+    for mod in modifications
+        mod(model, opt_model)
+    end
 
     optimize!(opt_model)
 
     is_solved(opt_model) || return nothing
 
     return (
-        max_min_driving_force = objective_value(opt_model),
-        optimal_gibbs_free_energies = Dict(
-            rid => value(dgs[i]) for (i, rid) in enumerate(rids)
+        mmdf = objective_value(opt_model),
+        energies = Dict(
+            rid => value(dgs[i]) for (i, rid) in enumerate(keys(gibbs_free_energies))
         ),
-        optimal_concentrations = Dict(
-            mid => exp(value(logcs[i])) for (i, mid) in enumerate(mids)
-        ),
+        concentrations = Dict(mid => exp(value(logcs[i])) for (i, mid) in enumerate(mids)),
     )
 end
