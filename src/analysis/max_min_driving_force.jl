@@ -1,7 +1,7 @@
 """
     max_min_driving_force(
         model::StandardModel,
-        thermodynamic_data::Dict{String, Float64},
+        standard_gibbs_reaction_energies::Dict{String, Float64},
         optimizer;
         modifications = [],
         proton_id = "h_c",
@@ -23,7 +23,7 @@
 )
 
 Perform max min driving force analysis on `model` using `optimizer` and
-`thermodynamic_data`. The `optimizer` can be modified using `modifications` but not
+`standard_gibbs_reaction_energies`. The `optimizer` can be modified using `modifications` but not
 underlying optimization problem. Returns the maximum minimum driving force, the Gibbs free
 energy of reactions and the concentrations of metabolites that solve
 ```
@@ -63,7 +63,7 @@ mmdf, dgs, concens = max_min_driving_force(
 """
 function max_min_driving_force(
     model::StandardModel,
-    thermodynamic_data::Dict{String,Float64},
+    standard_gibbs_reaction_energies::Dict{String,Float64},
     optimizer;
     modifications = [],
     proton_id = "h_c",
@@ -85,7 +85,7 @@ function max_min_driving_force(
 )
 
     # find reactions with thermodynamic data, ignore all other reactions in model
-    rids = filter(x -> haskey(thermodynamic_data, x), reactions(model))
+    rids = filter(x -> haskey(standard_gibbs_reaction_energies, x), reactions(model))
     ridxs = Int.(indexin(rids, reactions(model)))
 
     # remove protons, water and all metabolites not involved in reactions that have thermodynamic data
@@ -104,7 +104,7 @@ function max_min_driving_force(
 
     RT = 298.15 * 8.314e-3 # kJ/mol
 
-    dg0s = [thermodynamic_data[rid] for rid in rids]
+    dg0s = [standard_gibbs_reaction_energies[rid] for rid in rids]
 
     # modify optimization problem
     opt_model = Model(optimizer)
@@ -129,10 +129,8 @@ function max_min_driving_force(
     constant_concentration_dict = Dict(met => val for (met, val) in constant_concentrations)
     for (i, mid) in enumerate(mids)
         if haskey(constant_concentration_dict, mid)
-            @constraint(opt_model, logcs[first(i)] == log(constant_concentration_dict[mid]))
+            @constraint(opt_model, logcs[i] == log(constant_concentration_dict[mid]))
         else
-            i == indexin([mid], mids)
-            isnothing(i) && continue
             @constraint(opt_model, log_lb <= logcs[i] <= log_ub)
         end
     end
