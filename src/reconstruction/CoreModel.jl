@@ -358,7 +358,7 @@ end
 end
 
 @_remove_fn reaction CoreModel Int inplace plural begin
-    mask = .! in.(1:n_reactions(model), Ref(reaction_idxs))
+    mask = .!in.(1:n_reactions(model), Ref(reaction_idxs))
     model.S = model.S[:, mask]
     model.c = model.c[mask]
     model.xl = model.xl[mask]
@@ -373,12 +373,7 @@ end
 
 @_remove_fn reaction CoreModel Int plural begin
     n = copy(model)
-    n.S = copy(n.S)
-    n.c = copy(n.c)
-    n.xl = copy(n.xl)
-    n.xu = copy(n.xu)
-    n.rxns = copy(n.rxns)
-    remove_reactions!(model, reaction_idxs)
+    remove_reactions!(n, reaction_idxs)
     return n
 end
 
@@ -394,7 +389,7 @@ end
     remove_reactions(model, [reaction_id])
 end
 
-@_remove_fn reaction CoreModel String begin
+@_remove_fn reaction CoreModel String plural begin
     remove_reactions(model, Int.(indexin(reaction_ids, reactions(model))))
 end
 
@@ -403,10 +398,14 @@ end
 end
 
 @_remove_fn metabolite CoreModel Int plural inplace begin
-    remove_reactions!(model,
-        [ridx for ridx in 1:n_reactions(model) if
-            any(in.(findnz(model.S[:,ridx])[2], Ref(metabolite_idxs)))])
-    mask = .! in.(1:n_metabolites(model), Ref(metabolite_idxs))
+    remove_reactions!(
+        model,
+        [
+            ridx for ridx in 1:n_reactions(model) if
+            any(in.(findnz(model.S[:, ridx])[2], Ref(metabolite_idxs)))
+        ],
+    )
+    mask = .!in.(1:n_metabolites(model), Ref(metabolite_idxs))
     model.S = model.S[mask, :]
     model.b = model.b[mask]
     model.mets = model.mets[mask]
@@ -419,7 +418,7 @@ end
 
 @_remove_fn metabolite CoreModel Int plural begin
     n = deepcopy(model) #everything gets changed anyway
-    remove_metabolites!(model, metabolite_idxs)
+    remove_metabolites!(n, metabolite_idxs)
     return n
 end
 
@@ -435,6 +434,6 @@ end
     remove_metabolites(model, [metabolite_id])
 end
 
-@_remove_fn metabolite CoreModel String begin
+@_remove_fn metabolite CoreModel String plural begin
     remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end

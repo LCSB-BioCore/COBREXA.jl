@@ -20,8 +20,7 @@ with_changed_bounds(args...; kwargs...) = m -> change_bounds(m, args...; kwargs.
 Specifies a model variant without a certain metabolite. Forwards arguments to
 [`remove_metabolite`](@ref). Intended to be used with [`screen`](@ref).
 """
-with_removed_metabolite(args...; kwargs...) =
-    m -> remove_metabolite(m, args...; kwargs...)
+with_removed_metabolite(args...; kwargs...) = m -> remove_metabolite(m, args...; kwargs...)
 
 """
     with_removed_metabolites(args...; kwargs...)

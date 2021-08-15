@@ -165,52 +165,6 @@ function add_reactions(
 end
 
 """
-    remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
-
-Remove reaction(s) from a `CoreModelCoupled`.
-
-Also removes any metabolites not involved in any reaction after the deletion.
-
-"""
-function remove_reactions(m::CoreModelCoupled, rxns::Vector{Int})
-    return CoreModelCoupled(
-        remove_reactions(m.lm, rxns),
-        m.C[:, filter(!in(rxns), 1:n_reactions(m))],
-        m.cl,
-        m.cu,
-    )
-end
-
-"""
-    remove_reactions(m::CoreModelCoupled, rxn::Int)
-
-"""
-function remove_reactions(m::CoreModelCoupled, rxn::Int)
-    return remove_reactions(m, [rxn])
-end
-
-"""
-    remove_reactions(m::CoreModelCoupled, rxn::String)
-
-"""
-function remove_reactions(m::CoreModelCoupled, rxn::String)
-    return remove_reactions(m, [rxn])
-end
-
-"""
-    remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
-
-"""
-function remove_reactions(m::CoreModelCoupled, rxns::Vector{String})
-    rxn_indices = [findfirst(isequal(rid), m.lm.rxns) for rid in intersect(rxns, m.lm.rxns)]
-    if isempty(rxn_indices)
-        return m
-    else
-        return remove_reactions(m, rxn_indices)
-    end
-end
-
-"""
 Add constraints of the following form to a CoreModelCoupled and return a modified one.
 
 Add constraints to a [`CoreModelCoupled`](@ref) and return a modified one.
@@ -399,4 +353,79 @@ end
     n = copy(model)
     n.lm = change_bounds(model.lm, rxn_ids, lower = lower, upper = upper)
     n
+end
+
+@_remove_fn reaction CoreModelCoupled Int inplace begin
+    remove_reactions!(model, [reaction_idx])
+end
+
+@_remove_fn reaction CoreModelCoupled Int inplace plural begin
+    orig_rxns = reactions(model.lm)
+    remove_reactions!(model.lm, reaction_idxs)
+    model.C = model.C[:, in.(orig_rxns, Ref(Set(reactions(model.lm))))]
+    return nothing
+end
+
+@_remove_fn reaction CoreModelCoupled Int begin
+    remove_reactions(model, [reaction_idx])
+end
+
+@_remove_fn reaction CoreModelCoupled Int plural begin
+    n = copy(model)
+    n.lm = remove_reactions(n.lm, reaction_idxs)
+    n.C = n.C[:, in.(reactions(model.lm), Ref(Set(reactions(n.lm))))]
+    return n
+end
+
+@_remove_fn reaction CoreModelCoupled String inplace begin
+    remove_reactions!(model, [reaction_id])
+end
+
+@_remove_fn reaction CoreModelCoupled String inplace plural begin
+    remove_reactions!(model, Int.(indexin(reaction_ids, reactions(model))))
+end
+
+@_remove_fn reaction CoreModelCoupled String begin
+    remove_reactions(model, [reaction_id])
+end
+
+@_remove_fn reaction CoreModelCoupled String plural begin
+    remove_reactions(model, Int.(indexin(reaction_ids, reactions(model))))
+end
+
+@_remove_fn metabolite CoreModelCoupled Int inplace begin
+    remove_metabolites!(model, [metabolite_idx])
+end
+
+@_remove_fn metabolite CoreModelCoupled Int plural inplace begin
+    orig_rxns = reactions(model.lm)
+    model.lm = remove_metabolites(model.lm, metabolite_idxs)
+    model.C = model.C[:, in.(orig_rxns, Ref(Set(reactions(model.lm))))]
+    return nothing
+end
+
+@_remove_fn metabolite CoreModelCoupled Int begin
+    remove_metabolites(model, [metabolite_idx])
+end
+
+@_remove_fn metabolite CoreModelCoupled Int plural begin
+    n = deepcopy(model) #almost everything gets changed anyway
+    remove_metabolites!(n, metabolite_idxs)
+    return n
+end
+
+@_remove_fn metabolite CoreModelCoupled String inplace begin
+    remove_metabolites!(model, [metabolite_id])
+end
+
+@_remove_fn metabolite CoreModelCoupled String inplace plural begin
+    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
+end
+
+@_remove_fn metabolite CoreModelCoupled String begin
+    remove_metabolites(model, [metabolite_id])
+end
+
+@_remove_fn metabolite CoreModelCoupled String plural begin
+    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end
