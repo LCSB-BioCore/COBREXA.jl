@@ -232,12 +232,10 @@ function add_reactions(
 
     new_s = hcat(ext_s, ext_sp)
     newb = vcat(m.b, b[new_metabolites])
-    #new_c = hcat(m.C, spzeros(size(m.C, 1), length(new_reactions)))
     newc = vcat(m.c, c[new_reactions])
     newxl = vcat(m.xl, xl[new_reactions])
     newxu = vcat(m.xu, xu[new_reactions])
     new_rxns = vcat(m.rxns, rxns[new_reactions])
-    #new_lp = CoreModel(new_s, newb, new_c, m.cl, m.cu, newc, newxl, newxu, new_rxns, new_mets)
     new_lp = CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
 
     if check_consistency
@@ -349,7 +347,7 @@ end
 @_change_bounds_fn CoreModel String plural begin
     change_bounds(
         model,
-        Vector{Int}(indexin(rxn_ids, reactions(model))),
+        Int.(indexin(rxn_ids, reactions(model))),
         lower = lower,
         upper = upper,
     )
@@ -366,7 +364,7 @@ end
     model.xl = model.xl[mask]
     model.xu = model.xu[mask]
     model.rxns = model.rxns[mask]
-    nothing
+    return nothing
 end
 
 @_remove_fn reaction CoreModel Int begin
