@@ -51,7 +51,8 @@ objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs.
         model::MetabolicModel,
         ridxs::Vector{Int},
         optimizer;
-        lattice = envelope_lattice(model, ridxs),
+        lattice_args = (),
+        lattice = envelope_lattice(model, ridxs; lattice_args...),
         kwargs...,
     )
 
@@ -71,7 +72,9 @@ Returns a named tuple that contains `lattice` with reference values of the
 metabolites, and an N-dimensional array `values` with the computed objective
 values, where N is the number of specified reactions.  Because of the
 increasing dimensionality, the computation gets very voluminous with increasing
-length of `ridxs`.
+length of `ridxs`. The `lattice` for computing the optima can be supplied in
+the argument; by default it is created by [`envelope_lattice`](@ref) called on
+the model and reaction indexes (`lattice_args` are forwarded to the call.
 
 `kwargs` are internally forwarded to [`screen_optmodel_modifications`](@ref).
 
