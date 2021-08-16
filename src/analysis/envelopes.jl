@@ -74,7 +74,8 @@ values, where N is the number of specified reactions.  Because of the
 increasing dimensionality, the computation gets very voluminous with increasing
 length of `ridxs`. The `lattice` for computing the optima can be supplied in
 the argument; by default it is created by [`envelope_lattice`](@ref) called on
-the model and reaction indexes (`lattice_args` are forwarded to the call.
+the model and reaction indexes. Additional arguments for the call to
+[`envelope_lattice`](@ref) can be optionally specified in `lattice_args`.
 
 `kwargs` are internally forwarded to [`screen_optmodel_modifications`](@ref).
 
