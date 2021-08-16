@@ -104,7 +104,7 @@ end
             Tulip.Optimizer;
             modifications = [
                 change_objective("BIOMASS_Ecoli_core_w_GAM"),
-                change_constraint("EX_glc__D_e", -12, -12),
+                change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
                 change_sense(MAX_SENSE),
                 change_optimizer_attribute("IPM_IterationsLimit", 110),
                 knockout(["b0978", "b0734"]), # knockouts out cytbd
@@ -121,7 +121,7 @@ end
             Tulip.Optimizer;
             modifications = [
                 change_objective("BIOMASS_Ecoli_core_w_GAM"),
-                change_constraint("EX_glc__D_e", -12, -12),
+                change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
                 change_sense(MAX_SENSE),
                 change_optimizer_attribute("IPM_IterationsLimit", 110),
                 knockout("b2779"), # knockouts out enolase

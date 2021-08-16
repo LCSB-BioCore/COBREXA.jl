@@ -15,6 +15,8 @@
         ["m1"; "m2"; "m3"],
     )
     @test filter(looks_like_exchange_reaction, reactions(cp)) == ["EX_m1"]
+    @test find_internal_reactions(cp) == [2, 3]
+    @test find_internal_reaction_ids(cp) == ["r2", "r3"]
 
     cp = CoreModel(
         [-1.0 0 0; 0 0 -1; 0 -1 0],
@@ -55,25 +57,30 @@ end
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
+    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
 
     model = load_model(model_paths["e_coli_core.xml"])
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
+    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
 
     model = load_model(model_paths["e_coli_core.mat"])
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
+    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
 
     model = convert(StandardModel, model)
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
+    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
 
     model = convert(CoreModelCoupled, model)
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
+    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
 
 end

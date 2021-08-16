@@ -4,7 +4,7 @@
         model,
         Tulip.Optimizer;
         modifications = [
-            change_constraint("EX_glc__D_e", -12, -12),
+            change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
         qp_modifications = [change_optimizer(OSQP.Optimizer), silence],
@@ -13,7 +13,7 @@
         model,
         Tulip.Optimizer;
         modifications = [
-            change_constraint("EX_glc__D_e", -12, -12),
+            change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
         qp_modifications = [change_optimizer(OSQP.Optimizer), silence],

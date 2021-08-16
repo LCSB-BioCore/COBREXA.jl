@@ -32,8 +32,8 @@ dict_sol = flux_balance_analysis_dict(
     Tulip.Optimizer;
     modifications = [
         change_objective("R_BIOMASS_Ecoli_core_w_GAM"),
-        change_constraint("R_EX_glc__D_e", -12, -12),
-        change_constraint("R_EX_o2_e", 0, 0),
+        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
+        change_constraint("R_EX_o2_e"; lb = 0, ub = 0),
     ],
 )
 

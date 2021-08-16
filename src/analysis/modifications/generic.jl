@@ -13,11 +13,11 @@ constrain_objective_value(tolerance) =
     end
 
 """
-    change_constraint(id::String, lb, ub)
+    change_constraint(id::String; lb=nothing, ub=nothing)
 
-Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id`.
+Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id` if supplied.
 """
-change_constraint(id::String, lb, ub) =
+change_constraint(id::String; lb = nothing, ub = nothing) =
     (model, opt_model) -> begin
         ind = first(indexin([id], reactions(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
