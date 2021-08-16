@@ -26,15 +26,15 @@ using Tulip
 
 base_model = load_model(CoreModel, "e_coli_core.json") # base from from which the knockouts will be constructed
 
-cytbd_knockout_model = remove_reactions(base_model, "CYTBD") # knockout the CYTBD (cytochrome oxidase) reaction
+cytbd_knockout_model = remove_reaction(base_model, "CYTBD") # knockout the CYTBD (cytochrome oxidase) reaction
 sol = flux_balance_analysis_dict(cytbd_knockout_model, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"] # Cytochrome oxidase knockout μ (growth rate)
 #
-atps4r_knockout_model = remove_reactions(base_model, "ATPS4r") # knockout the ATP synthase reaction
+atps4r_knockout_model = remove_reaction(base_model, "ATPS4r") # knockout the ATP synthase reaction
 sol = flux_balance_analysis_dict(atps4r_knockout_model, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"] # ATP synthase knockout μ
 #
-eno_knockout_model = remove_reactions(base_model, "ENO") # knockout the enolase reaction
+eno_knockout_model = remove_reaction(base_model, "ENO") # knockout the enolase reaction
 sol = flux_balance_analysis_dict(eno_knockout_model, Tulip.Optimizer)
 sol["BIOMASS_Ecoli_core_w_GAM"] # Enolase knockout μ, cannot grow by itself
 

@@ -43,7 +43,6 @@ end
 
 @testset "Verify consistency" begin
     cp = test_LP()
-    @test size(cp.S) == (4, 3)
     (new_reactions, new_mets) = verify_consistency(
         cp,
         reshape(cp.S[:, end], :, 1),
@@ -77,7 +76,6 @@ end
 
 @testset "Add reactions (checking existence and consistency)" begin
     cp = test_LP()
-    @test size(cp.S) == (4, 3)
     (new_cp, new_reactions, new_mets) = add_reactions(
         cp,
         cp.S[:, end],
@@ -106,7 +104,6 @@ end
 
 @testset "Add reactions" begin
     cp = test_LP()
-    @test size(cp.S) == (4, 3)
     cp = add_reactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0)
     @test size(cp.S) == (8, 4)
     cp = add_reactions(cp, 2.0 * ones(4, 1), 3 .* ones(4), 2 .* ones(1), -ones(1), ones(1))
@@ -184,20 +181,16 @@ end
 
 @testset "Remove reactions" begin
     cp = test_LP()
-    @test size(cp.S) == (4, 3)
-    cp = remove_reactions(cp, 2)
-    @test size(cp.S) == (0, 2)
+    cp = remove_reaction(cp, 2)
+    @test size(cp.S) == (4, 2)
     cp = remove_reactions(cp, [2, 1])
-    @test size(cp.S) == (0, 0)
+    @test size(cp.S) == (4, 0)
 
     cp = test_LP()
-    @test size(cp.S) == (4, 3)
-    cp = remove_reactions(cp, "r0")
-    @test size(cp.S) == (4, 3)
-    cp = remove_reactions(cp, "r1")
-    @test size(cp.S) == (0, 2)
+    cp = remove_reaction(cp, "r1")
+    @test size(cp.S) == (4, 2)
     cp = remove_reactions(cp, ["r2"])
-    @test size(cp.S) == (0, 1)
+    @test size(cp.S) == (4, 1)
 
     lp = CoreModel(
         [1.0 1 1 0; 1 1 1 0; 1 1 1 0; 0 0 0 1],
@@ -210,27 +203,27 @@ end
     )
 
     modLp = remove_reactions(lp, [4; 1])
-    @test stoichiometry(modLp) == stoichiometry(lp)[1:3, 2:3]
-    @test balance(modLp) == balance(lp)[1:3]
+    @test stoichiometry(modLp) == stoichiometry(lp)[:, 2:3]
+    @test balance(modLp) == balance(lp)
     @test objective(modLp) == objective(lp)[2:3]
     @test bounds(modLp)[1] == bounds(lp)[1][2:3]
     @test bounds(modLp)[2] == bounds(lp)[2][2:3]
     @test reactions(modLp) == reactions(lp)[2:3]
-    @test metabolites(modLp) == metabolites(lp)[1:3]
+    @test metabolites(modLp) == metabolites(lp)
 end
 
 @testset "Remove metabolites" begin
     model = load_model(CoreModel, model_paths["e_coli_core.json"])
 
     m1 = remove_metabolites(model, ["glc__D_e", "for_c"])
-    m2 = remove_metabolites(model, "glc__D_e")
-    m3 = remove_metabolites(model, indexin(["glc__D_e", "for_c"], metabolites(model)))
-    m4 = remove_metabolites(model, first(indexin(["glc__D_e"], metabolites(model))))
+    m2 = remove_metabolite(model, "glc__D_e")
+    m3 = remove_metabolites(model, Int.(indexin(["glc__D_e", "for_c"], metabolites(model))))
+    m4 = remove_metabolite(model, first(indexin(["glc__D_e"], metabolites(model))))
 
-    @test size(stoichiometry(m1)) == (70, 94)
-    @test size(stoichiometry(m2)) == (71, 94)
-    @test size(stoichiometry(m3)) == (70, 94)
-    @test size(stoichiometry(m4)) == (71, 94)
+    @test size(stoichiometry(m1)) == (70, 22)
+    @test size(stoichiometry(m2)) == (71, 22)
+    @test size(stoichiometry(m3)) == (70, 22)
+    @test size(stoichiometry(m4)) == (71, 22)
     @test all((!in(metabolites(m1))).(["glc__D_e", "for_c"]))
     @test !(["glc__D_e"] in metabolites(m2))
     @test all((!in(metabolites(m3))).(["glc__D_e", "for_c"]))
