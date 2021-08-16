@@ -74,12 +74,36 @@ increasing dimensionality, the computation gets very voluminous with increasing
 length of `ridxs`.
 
 `kwargs` are internally forwarded to [`screen_optmodel_modifications`](@ref).
+
+# Example
+```
+julia> m = load_model("test/downloaded/e_coli_core.xml");
+
+julia> envelope = objective_envelope(m, ["R_EX_gln__L_e", "R_EX_fum_e"],
+                                     Tulip.Optimizer;
+                                     lattice_args=(samples=6,));
+
+julia> envelope.lattice   # the reaction rates for which the optima were computed
+2-element Vector{Vector{Float64}}:
+ [0.0, 200.0, 400.0, 600.0, 800.0, 1000.0]
+ [0.0, 200.0, 400.0, 600.0, 800.0, 1000.0]
+
+julia> envelope.values   # the computed flux objective values for each reaction rate combination
+6×6 Matrix{Float64}:
+  0.873922   9.25815  17.4538  19.56   20.4121  20.4121
+ 13.0354    17.508    19.9369  21.894  22.6825  22.6825
+ 16.6666    18.6097   20.2847  21.894  22.6825  22.6825
+ 16.6666    18.6097   20.2847  21.894  22.6825  22.6825
+ 16.6666    18.6097   20.2847  21.894  22.6825  22.6825
+ 16.6666    18.6097   20.2847  21.894  22.6825  22.6825
+```
 """
 objective_envelope(
     model::MetabolicModel,
     ridxs::Vector{Int},
     optimizer;
-    lattice = envelope_lattice(model, ridxs),
+    lattice_args = (),
+    lattice = envelope_lattice(model, ridxs; lattice_args...),
     kwargs...,
 ) = (
     lattice = collect.(lattice),
