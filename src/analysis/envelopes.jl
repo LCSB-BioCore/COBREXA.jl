@@ -19,7 +19,7 @@ envelope_lattice(model::MetabolicModel, rids::Vector{String}; kwargs...) =
 
 Create a lattice (list of "tick" vectors) for reactions at indexes `ridxs` in a
 model. Arguments `samples`, `ranges`, and `reaction_samples` may be optionally
-specified to customize the latice creation process.
+specified to customize the lattice creation process.
 """
 envelope_lattice(
     model::MetabolicModel,
@@ -35,7 +35,7 @@ envelope_lattice(
 """
     objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs...)
 
-Versioin of [`objective_envelope`](@ref) that works on string reaction IDs
+Version of [`objective_envelope`](@ref) that works on string reaction IDs
 instead of integer indexes.
 """
 objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs...) =
