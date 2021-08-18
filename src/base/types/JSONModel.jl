@@ -107,22 +107,36 @@ function stoichiometry(model::JSONModel)
     rxn_ids = reactions(model)
     met_ids = metabolites(model)
 
-    S = SparseArrays.spzeros(length(met_ids), length(rxn_ids))
+    n_entries = 0
+    for r in model.rxns
+        for _ in r["metabolites"]
+            n_entries += 1
+        end
+    end
+
+    MI = Vector{Int}()
+    RI = Vector{Int}()
+    SV = Vector{Float64}()
+    sizehint!(MI, n_entries)
+    sizehint!(RI, n_entries)
+    sizehint!(SV, n_entries)
+
     for (i, rid) in enumerate(rxn_ids)
         r = model.rxns[model.rxn_index[rid]]
         for (mid, coeff) in r["metabolites"]
-            if !haskey(model.met_index, mid)
-                throw(
-                    DomainError(
-                        met_id,
-                        "Unknown metabolite found in stoichiometry of $(rxn_ids[i])",
-                    ),
-                )
-            end
-            S[model.met_index[mid], i] = coeff
+            haskey(model.met_index, mid) || throw(
+                DomainError(
+                    met_id,
+                    "Unknown metabolite found in stoichiometry of $(rxn_ids[i])",
+                ),
+            )
+
+            push!(MI, model.met_index[mid])
+            push!(RI, i)
+            push!(SV, coeff)
         end
     end
-    return S
+    return SparseArrays.sparse(MI, RI, SV, length(met_ids), length(rxn_ids))
 end
 
 """
