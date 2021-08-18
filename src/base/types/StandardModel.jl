@@ -108,24 +108,39 @@ n_genes(model::StandardModel)::Int = length(model.genes)
 Return the stoichiometric matrix associated with `model` in sparse format.
 """
 function stoichiometry(model::StandardModel)::SparseMat
-    S = SparseArrays.spzeros(n_metabolites(model), n_reactions(model))
-    mets = metabolites(model) # vector of metabolite ids
-    rxns = reactions(model)
-    for (i, rid) in enumerate(rxns) # column, in order
-        for (mid, coeff) in model.reactions[rid].metabolites
-            j = findfirst(==(mid), mets) # row
-            if isnothing(j)
-                throw(
-                    DomainError(
-                        mid,
-                        "Metabolite $(mid) not found in model but occurs in stoichiometry of $(rid)",
-                    ),
-                )
-            end
-            S[j, i] = coeff
+    n_entries = 0
+    for (_, r) in model.reactions
+        for _ in r.metabolites
+            n_entries += 1
         end
     end
-    return S
+
+    MI = Vector{Int}()
+    RI = Vector{Int}()
+    SV = Vector{Float64}()
+    sizehint!(MI, n_entries)
+    sizehint!(RI, n_entries)
+    sizehint!(SV, n_entries)
+
+    # establish the ordering
+    rxns = reactions(model)
+    met_idx = Dict(mid => i for (i, mid) in enumerate(metabolites(model)))
+
+    # fill the matrix entries
+    for (ridx, rid) in enumerate(rxns)
+        for (mid, coeff) in model.reactions[rid].metabolites
+            haskey(met_idx, mid) || throw(
+                DomainError(
+                    mid,
+                    "Metabolite $(mid) not found in model but occurs in stoichiometry of $(rid)",
+                ),
+            )
+            push!(MI, met_idx[mid])
+            push!(RI, ridx)
+            push!(SV, coeff)
+        end
+    end
+    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), n_reactions(model))
 end
 
 """
