@@ -20,9 +20,12 @@
 [contrib-img]: https://img.shields.io/badge/contributions-start%20here-green
 [contrib-url]: https://github.com/LCSB-BioCore/COBREXA.jl/blob/master/.github/CONTRIBUTING.md
 
-| **Documentation** | **Tests** | **Coverage** | **How to contribute?** |
-|:--------------:|:-------:|:---------:|:---------:|
-| [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] |
+[repostatus-url]: https://www.repostatus.org/#active
+[repostatus-img]: https://www.repostatus.org/badges/latest/active.svg
+
+| **Documentation** | **Tests** | **Coverage** | **How to contribute?** | **Project status** |
+|:--------------:|:-------:|:---------:|:---------:|:---------:|
+| [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] | [![repostatus-img]][repostatus-url] |
 
 This is package provides constraint-based reconstruction and analysis tools for
 exa-scale metabolic models in Julia.
@@ -138,4 +141,3 @@ PerMedCoE project ([permedcoe.eu](https://permedcoe.eu/)) agreement no. 951773.
 <!--ack_logos_begin-->
 <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/cobrexa.svg" alt="COBREXA logo" height="64px" style="height:64px; width:auto">   <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/unilu.svg" alt="Uni.lu logo" height="64px" style="height:64px; width:auto">   <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/lcsb.svg" alt="LCSB logo" height="64px" style="height:64px; width:auto">   <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/hhu.svg" alt="HHU logo" height="64px" style="height:64px; width:auto">   <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/qtb.svg" alt="QTB logo" height="64px" style="height:64px; width:auto">   <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/permedcoe.svg" alt="PerMedCoE logo" height="64px" style="height:64px; width:auto">
 <!--ack_logos_end-->
-
