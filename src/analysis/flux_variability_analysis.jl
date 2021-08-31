@@ -5,7 +5,8 @@
         optimizer;
         modifications = [],
         workers = [myid()],
-        bounds = z -> (z,z),
+        optimal_objective_value = nothing,
+        bounds = z -> (z, Inf),
         ret = objective_value,
     )::Matrix{Float64}
 
@@ -30,7 +31,11 @@ first and second pair to remove the limit. Use [`gamma_bounds`](@ref) and
 
 `optimizer` must be set to a `JuMP`-compatible optimizer. The computation of
 the individual optimization problems is transparently distributed to `workers`
-(see `Distributed.workers()`).
+(see `Distributed.workers()`).  The value of Z₀ can be optionally supplied in
+argument `optimal_objective_value`, which prevents this function from calling
+the non-parallelizable FBA. Separating the single-threaded FBA and
+multithreaded variability computation can be used to improve resource
+allocation efficiency in many common use-cases.
 
 `ret` is a function used to extract results from optimized JuMP models of the
 individual reactions. By default, it calls and returns the value of
@@ -55,7 +60,8 @@ function flux_variability_analysis(
     optimizer;
     modifications = [],
     workers = [myid()],
-    bounds = z -> (z, z),
+    optimal_objective_value = nothing,
+    bounds = z -> (z, Inf),
     ret = objective_value,
 )
     if any(reactions .< 1) || any(reactions .> n_reactions(model))
@@ -63,9 +69,10 @@ function flux_variability_analysis(
     end
 
     Z = bounds(
+        isnothing(optimal_objective_value) ?
         objective_value(
             flux_balance_analysis(model, optimizer; modifications = modifications),
-        ),
+        ) : optimal_objective_value,
     )
 
     return screen_optmodel_modifications(
