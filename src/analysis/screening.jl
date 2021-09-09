@@ -120,13 +120,13 @@ function screen(
     map(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
     map(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_variants_model)))))
 
-    res = dpmap(
-        (vars, args)::Tuple -> :($COBREXA.screen_variant(
-            cobrexa_screen_variants_model,
-            $vars,
-            cobrexa_screen_variants_analysis_fn,
-            $args,
-        )),
+    res = pmap(
+        (vars, args)::Tuple -> screen_variant(
+            (@remote cobrexa_screen_variants_model),
+            vars,
+            (@remote cobrexa_screen_variants_analysis_fn),
+            args,
+        ),
         CachingPool(workers),
         zip(variants, args),
     )
@@ -168,6 +168,35 @@ A variant of [`optimize_objective`](@ref) directly usable in
 [`screen_optmodel_modifications`](@ref).
 """
 screen_optimize_objective(_, optmodel)::Maybe{Float64} = optimize_objective(optmodel)
+
+"""
+    _screen_optmodel_prepare(model, optimizer, common_modifications)
+
+Internal helper for [`screen_optmodel_modifications`](@ref) that creates the
+model and applies the modifications.
+"""
+function _screen_optmodel_prepare(model, optimizer, common_modifications)
+    precache!(model)
+    optmodel = make_optimization_model(model, optimizer)
+    for mod in common_modifications
+        mod(model, optmodel)
+    end
+    return (model, optmodel)
+end
+
+"""
+    _screen_optmodel_item((mods, args))
+
+Internal helper for [`screen_optmodel_modifications`](@ref) that computes one
+item of the screening task.
+"""
+function _screen_optmodel_item((mods, args))
+    (model, optmodel) = @remote cobrexa_screen_optmodel_modifications_data
+    for mod in mods
+        mod(model, optmodel)
+    end
+    (@remote cobrexa_screen_optmodel_modifications_fn)(model, optmodel, args...)
+end
 
 """
     function screen_optmodel_modifications(
@@ -214,37 +243,23 @@ function screen_optmodel_modifications(
 
     (modifications, args) = _check_screen_mods_args(modifications, args, :modifications)
 
-    save_model = :(
-        begin
-            local model = $model
-            $COBREXA.precache!(model)
-            local optmodel = $COBREXA.make_optimization_model(model, $optimizer)
-            for mod in $common_modifications
-                mod(model, optmodel)
-            end
-            (model, optmodel)
-        end
-    )
     map(
         fetch,
-        save_at.(workers, :cobrexa_screen_optmodel_modifications_data, Ref(save_model)),
+        save_at.(
+            workers,
+            :cobrexa_screen_optmodel_modifications_data,
+            Ref(
+                :($COBREXA._screen_optmodel_prepare(
+                    $model,
+                    $optimizer,
+                    $common_modifications,
+                )),
+            ),
+        ),
     )
-    save_model = nothing
     map(fetch, save_at.(workers, :cobrexa_screen_optmodel_modifications_fn, Ref(analysis)))
 
-    res = dpmap(
-        (mods, args)::Tuple -> :(
-            begin
-                local (model, optmodel) = cobrexa_screen_optmodel_modifications_data
-                for mod in $mods
-                    mod(model, optmodel)
-                end
-                cobrexa_screen_optmodel_modifications_fn(model, optmodel, $args...)
-            end
-        ),
-        CachingPool(workers),
-        zip(modifications, args),
-    )
+    res = pmap(_screen_optmodel_item, CachingPool(workers), zip(modifications, args))
 
     map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_data))
     map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_fn))
