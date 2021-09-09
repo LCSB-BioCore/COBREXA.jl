@@ -402,7 +402,7 @@ end
         model,
         [
             ridx for ridx in 1:n_reactions(model) if
-            any(in.(findnz(model.S[:, ridx])[2], Ref(metabolite_idxs)))
+            any(in.(findnz(model.S[:, ridx])[1], Ref(metabolite_idxs)))
         ],
     )
     mask = .!in.(1:n_metabolites(model), Ref(metabolite_idxs))
