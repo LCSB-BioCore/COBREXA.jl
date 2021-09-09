@@ -51,8 +51,10 @@ objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs.
         model::MetabolicModel,
         ridxs::Vector{Int},
         optimizer;
+        modifications = [],
         lattice_args = (),
         lattice = envelope_lattice(model, ridxs; lattice_args...),
+        analysis = screen_optimize_objective,
         kwargs...,
     )
 
@@ -62,11 +64,11 @@ lower and upper bounds.
 
 This can be used to compute a "production envelope" of a metabolite; but
 generalizes to any specifiable objective and to multiple dimensions of the
-examined space. To retrieve a production envelope of any metabolite, set the
-objective coefficient vector of the `model` to a vector that contains a single
-`1` for the exchange reaction that "outputs" this metabolite, and run
-[`objective_envelope`](@ref) with the exchange reaction of the "parameter"
-metabolite specified in `ridxs`.
+examined space. For example, to retrieve a production envelope of any
+metabolite, set the objective coefficient vector of the `model` to a vector
+that contains a single `1` for the exchange reaction that "outputs" this
+metabolite, and run [`objective_envelope`](@ref) with the exchange reaction of
+the "parameter" metabolite specified in `ridxs`.
 
 Returns a named tuple that contains `lattice` with reference values of the
 metabolites, and an N-dimensional array `values` with the computed objective
@@ -78,6 +80,9 @@ the model and reaction indexes. Additional arguments for the call to
 [`envelope_lattice`](@ref) can be optionally specified in `lattice_args`.
 
 `kwargs` are internally forwarded to [`screen_optmodel_modifications`](@ref).
+`modifications` are appended to the list of modifications after the lattice
+bounds are set. By default, this returns the objective values for all points in
+the lattice; alternate outputs can be implemented via the `analysis` argument.
 
 # Example
 ```
@@ -106,8 +111,10 @@ objective_envelope(
     model::MetabolicModel,
     ridxs::Vector{Int},
     optimizer;
+    modifications = [],
     lattice_args = (),
     lattice = envelope_lattice(model, ridxs; lattice_args...),
+    analysis = screen_optimize_objective,
     kwargs...,
 ) = (
     lattice = collect.(lattice),
@@ -115,14 +122,19 @@ objective_envelope(
         model,
         optimizer;
         modifications = collect(
-            [(_, optmodel) -> begin
-                    for (i, ridx) in enumerate(ridxs)
-                        set_normalized_rhs(optmodel[:lbs][ridx], fluxes[i])
-                        set_normalized_rhs(optmodel[:ubs][ridx], fluxes[i])
-                    end
-                end] for fluxes in Iterators.product(lattice...)
+            vcat(
+                [
+                    (_, optmodel) -> begin
+                        for (i, ridx) in enumerate(ridxs)
+                            set_normalized_rhs(optmodel[:lbs][ridx], fluxes[i])
+                            set_normalized_rhs(optmodel[:ubs][ridx], fluxes[i])
+                        end
+                    end,
+                ],
+                modifications,
+            ) for fluxes in Iterators.product(lattice...)
         ),
-        analysis = screen_optimize_objective,
+        analysis = analysis,
         kwargs...,
     ),
 )
