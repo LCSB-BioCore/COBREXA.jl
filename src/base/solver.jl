@@ -16,7 +16,7 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
     m, n = size(stoichiometry(model))
     xl, xu = bounds(model)
 
-    optimization_model = Model(optimizer; bridge_constraints = false)
+    optimization_model = Model(optimizer)
     @variable(optimization_model, x[i = 1:n])
     @objective(optimization_model, sense, objective(model)' * x)
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
