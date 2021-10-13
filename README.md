@@ -118,22 +118,21 @@ Dict{String,Float64} with 95 entries:
 #### Model variant processing
 
 The main feature of COBREXA.jl is the ability to easily specify and process
-many analyses at once, in parallel. Let's see how the organism would perform if
-some reactions were disabled:
+many analyses in parallel. To demonstrate, let's see how the organism would perform if
+some reactions were disabled independently:
 
 ```julia
-# convert to a model type that is easy to modify
+# convert to a model type that is efficient to modify
 m = convert(StandardModel, m)
 
-# find the model objective value if oxygen and carbon dioxide transports are disabled
-screen(m,
-    # this specifies how to generate the desired model variants
-    variants=[
-        [], # one with no modifications
+# find the model objective value if oxygen or carbon dioxide transports are disabled
+screen(m, # the base model
+    variants=[ # this specifies how to generate the desired model variants
+        [], # one with no modifications, i.e. the base case
         [with_changed_bound("O2t", lower=0.0, upper=0.0)], # disable oxygen
         [with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable CO2
         [with_changed_bound("O2t", lower=0.0, upper=0.0),
-	 with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable both
+	        with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable both
     ],
     # this specifies what to do with the model variants (received as the argument `x`)
     analysis = x ->
@@ -151,8 +150,10 @@ biomass production much harder:
 ```
 
 Most importantly, such analyses can be easily specified by automatically
-generating long lists of the modifications to apply to the model, and
-parallelized:
+generating long lists of modifications to be applied to the model, and
+parallelized.
+
+Knocking out each reaction in the model is efficiently accomplished:
 
 ```julia
 # load the task distribution package, add several worker nodes, and load
