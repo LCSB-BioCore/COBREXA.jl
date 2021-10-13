@@ -1,5 +1,6 @@
-using Documenter, COBREXA
-using Literate
+using Documenter
+using Literate, JSON
+using COBREXA
 
 # Note: required to deploy the doc from Gitlab CI instead of Travis
 ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
@@ -100,7 +101,8 @@ replace_in_doc(
 # dumps that contain the dumped environment strings, which in turn contain
 # github auth tokens. These certainly need to be avoided.
 notebooks_names = [n[begin:end-3] for n in notebooks_basenames]
-notebooks_allowed_files = vcat("index.html", notebooks_names .* ".ipynb")
+ipynb_names = notebooks_names .* ".ipynb"
+notebooks_allowed_files = vcat("index.html", ipynb_names)
 @info "allowed files:" notebooks_allowed_files
 for (root, dirs, files) in walkdir(joinpath(@__DIR__, "build", "notebooks"))
     for f in files
@@ -113,6 +115,16 @@ end
 
 # also remove the index template
 rm(joinpath(@__DIR__, "build", "index.md.template"))
+
+# Binder does not support Julia 1.6 kernels yet, so let's force the Julia 1.5
+# kernel for now.
+for ipynb in joinpath.(@__DIR__, "build", "notebooks", ipynb_names)
+    @info "changing julia version to 1.5 in `$ipynb'"
+    js = JSON.parsefile(ipynb)
+    js["metadata"]["kernelspec"]["name"] = "julia-1.5"
+    js["metadata"]["kernelspec"]["display_name"] = "Julia 1.5"
+    open(f -> JSON.print(f, js), ipynb, "w")
+end
 
 # deploy the result
 deploydocs(
