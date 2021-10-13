@@ -4,7 +4,7 @@ struct MetaboliteWithCoefficient
     MetaboliteWithCoefficient(c, m) = new(float(c), m)
 end
 
-function Base.:*(coeff, met::Metabolite)
+function Base.:*(coeff::Real, met::Metabolite)
     return MetaboliteWithCoefficient(coeff, met)
 end
 
