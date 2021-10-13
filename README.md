@@ -114,6 +114,97 @@ Dict{String,Float64} with 95 entries:
   "R_TALA"        => 1.49698
   ⋮               => ⋮
 ```
+
+#### Model variant processing
+
+The main feature of COBREXA.jl is the ability to easily specify and process
+many analyses at once, in parallel. Let's see how the organism would perform if
+some reactions were disabled:
+
+```julia
+# convert to a model type that is easy to modify
+m = convert(StandardModel, m)
+
+# find the model objective value if oxygen and carbon dioxide transports are disabled
+screen(m,
+    # this specifies how to generate the desired model variants
+    variants=[
+        [], # one with no modifications
+        [with_changed_bound("O2t", lower=0.0, upper=0.0)], # disable oxygen
+        [with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable CO2
+        [with_changed_bound("O2t", lower=0.0, upper=0.0),
+	 with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable both
+    ],
+    # this specifies what to do with the model variants (received as the argument `x`)
+    analysis = x ->
+        flux_balance_analysis_dict(x, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
+)
+```
+You should receive a result showing that missing oxygen transport makes the
+biomass production much harder:
+```julia
+4-element Vector{Float64}:
+ 0.8739215022674809
+ 0.21166294973372796
+ 0.46166961413944896
+ 0.21114065173865457
+```
+
+Most importantly, such analyses can be easily specified by automatically
+generating long lists of the modifications to apply to the model, and
+parallelized:
+
+```julia
+# load the task distribution package, add several worker nodes, and load
+# COBREXA and the solver on the nodes
+using Distributed
+addprocs(4)
+@everywhere using COBREXA, Tulip
+
+# get a list of the workers
+worker_list = workers()
+
+# run the processing in parallel for many model variants
+res = screen(m,
+    variants=[
+	# create one variant for each reaction in the model, with that reaction knocked out
+        [with_changed_bound(reaction_id, lower=0.0, upper=0.0)]
+	for reaction_id in reactions(m)
+    ],
+    analysis = model -> begin
+	# we need to check if the optimizer even found a feasible solution,
+	# which may not be the case if we knock out important reactions
+    	sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
+	isnothing(sol) ? nothing : sol["BIOMASS_Ecoli_core_w_GAM"]
+    end,
+    # run the screening in parallel on all workers in the list
+    workers = worker_list,
+)
+```
+
+In result, you should get a long list of the biomass production for each
+reaction knockout. Let's decorate it with reaction names:
+```julia
+Dict(reactions(m) .=> res)
+```
+...which should output an easily accessible dictionary with all the objective
+values named, giving a quick overview of which reactions are critical for the
+model organism to create biomass:
+```julia
+Dict{String, Union{Nothing, Float64}} with 95 entries:
+  "ACALD"       => 0.873922
+  "PTAr"        => 0.873922
+  "ALCD2x"      => 0.873922
+  "PDH"         => 0.796696
+  "PYK"         => 0.864926
+  "CO2t"        => 0.46167
+  "EX_nh4_e"    => 1.44677e-15
+  "MALt2_2"     => 0.873922
+  "CS"          => 2.44779e-14
+  "PGM"         => 1.04221e-15
+  "TKT1"        => 0.864759
+  ⋮             => ⋮
+```
 <!--quickstart_end-->
 
 ### Testing the installation
