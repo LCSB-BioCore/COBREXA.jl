@@ -1,5 +1,6 @@
 using COBREXA, Test
 
+using Aqua
 using Distributed
 using Downloads
 using JSON
@@ -65,6 +66,7 @@ run_test_file("data_downloaded.jl")
     run_test_dir("reconstruction")
     run_test_dir("analysis")
     run_test_dir(joinpath("analysis", "sampling"), "Sampling")
+    run_test_file("aqua.jl")
 end
 
 rmprocs(W)

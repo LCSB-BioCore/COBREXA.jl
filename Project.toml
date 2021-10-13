@@ -35,6 +35,7 @@ Tulip = "0.7"
 julia = "1"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
@@ -44,4 +45,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [targets]
-test = ["Downloads", "OSQP", "SHA", "Test", "Tulip"]
+test = ["Aqua", "Downloads", "OSQP", "SHA", "Test", "Tulip"]
