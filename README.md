@@ -127,14 +127,17 @@ m = convert(StandardModel, m)
 
 # find the model objective value if oxygen and carbon dioxide transports are disabled
 screen(m,
+    # this specifies how to generate the desired model variants
     variants=[
-        [], # no modifications
+        [], # one with no modifications
         [with_changed_bound("O2t", lower=0.0, upper=0.0)], # disable oxygen
         [with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable CO2
         [with_changed_bound("O2t", lower=0.0, upper=0.0),
 	 with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable both
     ],
-    analysis = x -> flux_balance_analysis_dict(x, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
+    # this specifies what to do with the model variants (received as the argument `x`)
+    analysis = x ->
+        flux_balance_analysis_dict(x, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
 )
 ```
 You should receive a result showing that missing oxygen transport makes the
@@ -164,17 +167,17 @@ worker_list = workers()
 # run the processing in parallel for many model variants
 res = screen(m,
     variants=[
-	# specify one variant for each reaction in the model, with that reaction knocked out
+	# create one variant for each reaction in the model, with that reaction knocked out
         [with_changed_bound(reaction_id, lower=0.0, upper=0.0)]
 	for reaction_id in reactions(m)
     ],
     analysis = model -> begin
-	# we need to check if the model even found a feasible solution, which
-	# may not be the case if we knock out important reactions
+	# we need to check if the optimizer even found a feasible solution,
+	# which may not be the case if we knock out important reactions
     	sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
 	isnothing(sol) ? nothing : sol["BIOMASS_Ecoli_core_w_GAM"]
     end,
-    # run the screening in parallel on all workers from the list
+    # run the screening in parallel on all workers in the list
     workers = worker_list,
 )
 ```
