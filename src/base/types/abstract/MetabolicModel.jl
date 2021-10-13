@@ -217,7 +217,7 @@ function metabolite_formula(
 end
 
 """
-metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
+    metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
 
 Return the charge associated with metabolite `metabolite_id` in `model`.
 Returns `nothing` if charge not present.

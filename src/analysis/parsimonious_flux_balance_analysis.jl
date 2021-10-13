@@ -36,7 +36,7 @@ finds a minimal total flux through the model that still satisfies the (slightly
 relaxed) optimum. This is done using a quadratic problem optimizer. If the
 original optimizer does not support quadratic optimization, it can be changed
 using the callback in `qp_modifications`, which are applied after the FBA. See
-the documentation of flux_balance_analysis for usage examples of modifications.
+the documentation of [`flux_balance_analysis`](@ref) for usage examples of modifications.
 
 Thhe optimum relaxation sequence can be specified in `relax` parameter, it
 defaults to multiplicative range of `[1.0, 0.999999, ..., 0.99]` of the
