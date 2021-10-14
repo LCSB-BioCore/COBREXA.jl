@@ -5,8 +5,8 @@
     # nothing to analyze
     @test_throws DomainError screen(m; analysis = identity)
 
-    # array dimensionalities must match (this is actually caught by typechecker)
-    @test_throws MethodError screen(
+    # array dimensionalities must match
+    @test_throws DomainError screen(
         m;
         analysis = identity,
         variants = [[], []],
