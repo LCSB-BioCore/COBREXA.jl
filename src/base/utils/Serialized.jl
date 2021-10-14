@@ -11,7 +11,7 @@ function serialize_model(
     filename::String,
 )::Serialized{MM} where {MM<:MetabolicModel}
     open(f -> serialize(f, model), filename, "w")
-    Serialized{MM}(nothing, filename)
+    Serialized{MM}(filename)
 end
 
 """
