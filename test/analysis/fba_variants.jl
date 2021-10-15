@@ -1,4 +1,4 @@
-@testset "FBAwMC" begin
+@testset "FBA with crowding constraints" begin
     model = load_model(model_paths["e_coli_core.json"])
     idxs = find_internal_reactions(model)
 
