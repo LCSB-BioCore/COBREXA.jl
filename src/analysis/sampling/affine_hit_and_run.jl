@@ -79,7 +79,7 @@ Internal helper function for computing a single affine hit-and-run chain.
 """
 function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
 
-    rng = StableRNG(seed)
+    rng = StableRNG(seed % UInt)
     points = copy(warmup)
     d, n_points = size(points)
     result = Matrix{Float64}(undef, size(points, 1), 0)

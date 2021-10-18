@@ -26,7 +26,7 @@ function warmup_from_variability(
         ),
     )
 
-    sample = shuffle(StableRNG(seed), vcat(1:nr, -(1:nr)))[begin:n_points]
+    sample = shuffle(StableRNG(seed % UInt), vcat(1:nr, -(1:nr)))[begin:n_points]
     warmup_from_variability(
         model,
         optimizer,
