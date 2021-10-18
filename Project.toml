@@ -32,6 +32,7 @@ MacroTools = "0.5.6"
 OSQP = "0.6"
 OrderedCollections = "1.4"
 SBML = "0.7, 0.8"
+StableRNGs = "1.0"
 Tulip = "0.7"
 julia = "1"
 
