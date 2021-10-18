@@ -47,6 +47,7 @@ ex_rxn_mets = Dict(
 #
 model_names = ["cytbd_ko", "atps4r_ko"]
 community_model = join_with_exchanges(
+    CoreModel,
     [cytbd_knockout_model, atps4r_knockout_model],
     ex_rxn_mets;
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"],
@@ -72,13 +73,7 @@ end
 # ## Add objective function to community model`
 
 biomass_ids = model_names .* "_BIOMASS_Ecoli_core_w_GAM"
-add_objective!(
-    community_model,
-    biomass_ids;
-    objective_column_index = first(
-        indexin(["community_biomass"], reactions(community_model)),
-    ),
-)
+update_objective!(community_model, biomass_ids, objective_id = "community_biomass")
 
 # ## Perform community FBA
 
@@ -102,13 +97,7 @@ community_model = add_model_with_exchanges(
 
 push!(model_names, "eno_ko")
 biomass_ids = model_names .* "_BIOMASS_Ecoli_core_w_GAM"
-add_objective!(
-    community_model,
-    biomass_ids;
-    objective_column_index = first(
-        indexin(["community_biomass"], reactions(community_model)),
-    ),
-)
+update_objective!(community_model, biomass_ids, "community_biomass")
 
 d = flux_balance_analysis_dict(
     community_model,
