@@ -54,6 +54,8 @@ const _constants = (
         "reactome.compound",
         "biocyc",
     ),
+    T = 298.15, # Kelvin
+    R = 8.31446261815324e-3, # kJ/K/mol
 )
 
 const MAX_SENSE = MOI.MAX_SENSE
