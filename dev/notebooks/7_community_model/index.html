@@ -36,6 +36,7 @@ sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # Enolase knockout μ, cannot grow by 
   &quot;EX_glc__D_e&quot; =&gt; &quot;glc__D_e&quot;
   &quot;EX_etoh_e&quot;   =&gt; &quot;etoh_e&quot;</pre><pre><code class="language-julia">model_names = [&quot;cytbd_ko&quot;, &quot;atps4r_ko&quot;]
 community_model = join_with_exchanges(
+    CoreModel,
     [cytbd_knockout_model, atps4r_knockout_model],
     ex_rxn_mets;
     biomass_ids = [&quot;BIOMASS_Ecoli_core_w_GAM&quot;, &quot;BIOMASS_Ecoli_core_w_GAM&quot;],
@@ -88,14 +89,8 @@ atps4r_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(atps4r_knockout_model)
     m1lb = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xl[m1_ex]
     m1ub = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xu[m1_ex]
     change_bounds!(community_model, [env_ex]; lower = [m1lb + m2lb], upper = [m1ub + m2ub])
-end</code></pre><h2 id="Add-objective-function-to-community-model"><a class="docs-heading-anchor" href="#Add-objective-function-to-community-model">Add objective function to community model`</a><a id="Add-objective-function-to-community-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-objective-function-to-community-model" title="Permalink"></a></h2><pre><code class="language-julia">biomass_ids = model_names .* &quot;_BIOMASS_Ecoli_core_w_GAM&quot;
-add_objective!(
-    community_model,
-    biomass_ids;
-    objective_column_index = first(
-        indexin([&quot;community_biomass&quot;], reactions(community_model)),
-    ),
-)</code></pre><h2 id="Perform-community-FBA"><a class="docs-heading-anchor" href="#Perform-community-FBA">Perform community FBA</a><a id="Perform-community-FBA-1"></a><a class="docs-heading-anchor-permalink" href="#Perform-community-FBA" title="Permalink"></a></h2><pre><code class="language-julia">d = flux_balance_analysis_dict(
+end</code></pre><h2 id="Add-objective-function-to-community-model"><a class="docs-heading-anchor" href="#Add-objective-function-to-community-model">Add objective function to community model`</a><a id="Add-objective-function-to-community-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-objective-function-to-community-model" title="Permalink"></a></h2><pre><code class="language-julia">biomass_ids_weights = Dict(model_names .* &quot;_BIOMASS_Ecoli_core_w_GAM&quot; .=&gt; 1.0)
+update_community_objective!(community_model, &quot;community_biomass&quot;, biomass_ids_weights)</code></pre><h2 id="Perform-community-FBA"><a class="docs-heading-anchor" href="#Perform-community-FBA">Perform community FBA</a><a id="Perform-community-FBA-1"></a><a class="docs-heading-anchor-permalink" href="#Perform-community-FBA" title="Permalink"></a></h2><pre><code class="language-julia">d = flux_balance_analysis_dict(
     community_model,
     Tulip.Optimizer;
     modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
@@ -109,14 +104,8 @@ d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="document
 )
 
 push!(model_names, &quot;eno_ko&quot;)
-biomass_ids = model_names .* &quot;_BIOMASS_Ecoli_core_w_GAM&quot;
-add_objective!(
-    community_model,
-    biomass_ids;
-    objective_column_index = first(
-        indexin([&quot;community_biomass&quot;], reactions(community_model)),
-    ),
-)
+biomass_ids_weights = Dict(model_names .* &quot;_BIOMASS_Ecoli_core_w_GAM&quot; .=&gt; 1.0)
+update_community_objective!(community_model, &quot;community_biomass&quot;, biomass_ids_weights)
 
 d = flux_balance_analysis_dict(
     community_model,
@@ -131,4 +120,4 @@ d = flux_balance_analysis_dict(
     Tulip.Optimizer;
     modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
 )
-d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.2360711079620927</pre><p>Notice that the growth rate is now above 0! Nutrient sharing saved the day!</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 18 October 2021 11:43">Monday 18 October 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.2360711079620927</pre><p>Notice that the growth rate is now above 0! Nutrient sharing saved the day!</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 18 October 2021 19:03">Monday 18 October 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
