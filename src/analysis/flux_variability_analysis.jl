@@ -93,7 +93,7 @@ function flux_variability_analysis(
                 end,
             ],
         ),
-        args = [(x,) for x in [-reactions reactions]],
+        args = Tuple.([-reactions reactions]),
         analysis = (_, opt_model, ridx) -> _max_variability_flux(opt_model, ridx, ret),
         workers = workers,
     )
