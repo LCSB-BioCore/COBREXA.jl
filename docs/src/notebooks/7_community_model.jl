@@ -72,8 +72,8 @@ end
 
 # ## Add objective function to community model`
 
-biomass_ids = model_names .* "_BIOMASS_Ecoli_core_w_GAM"
-update_objective!(community_model, biomass_ids, objective_id = "community_biomass")
+biomass_ids_weights = Dict(model_names .* "_BIOMASS_Ecoli_core_w_GAM" .=> 1.0)
+update_community_objective!(community_model, "community_biomass", biomass_ids_weights)
 
 # ## Perform community FBA
 
@@ -96,8 +96,8 @@ community_model = add_model_with_exchanges(
 )
 
 push!(model_names, "eno_ko")
-biomass_ids = model_names .* "_BIOMASS_Ecoli_core_w_GAM"
-update_objective!(community_model, biomass_ids, "community_biomass")
+biomass_ids_weights = Dict(model_names .* "_BIOMASS_Ecoli_core_w_GAM" .=> 1.0)
+update_community_objective!(community_model, "community_biomass", biomass_ids_weights)
 
 d = flux_balance_analysis_dict(
     community_model,
