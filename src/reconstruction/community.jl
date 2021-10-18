@@ -299,7 +299,7 @@ function join_with_exchanges(
     _reaction_offsets = cumsum(reaction_lengths)
     _metabolite_offsets = cumsum(metabolite_lengths)
     for i = 1:length(models)
-        species = isempty(model_names) ? "species_$(i)_" : model_names[i]
+        species = isempty(model_names) ? "species_$(i)_" : model_names[i] * "_"
         tlbs, tubs = bounds(models[i])
         lbs[reaction_offset[i]+1:_reaction_offsets[i]] .= tlbs
         ubs[reaction_offset[i]+1:_reaction_offsets[i]] .= tubs
@@ -315,7 +315,7 @@ function join_with_exchanges(
     if add_biomass_objective
         rxns[end] = "community_biomass"
         for i = 1:length(models)
-            species = isempty(model_names) ? "species_$(i)_" : model_names[i]
+            species = isempty(model_names) ? "species_$(i)_" : model_names[i] * "_"
             mets[end-length(biomass_ids)+i] = species .* biomass_ids[i]
         end
     end
@@ -354,7 +354,7 @@ function join_with_exchanges(
     sizehint!(genes, sum(n_genes(m) for m in models))
 
     for (i, model) in enumerate(models)
-        species = isempty(model_names) ? "species_$(i)_" : model_names[i]
+        species = isempty(model_names) ? "species_$(i)" : model_names[i] # underscore gets added in add_model_with_exchanges!
         biomass_id = isempty(biomass_ids) ? nothing : biomass_ids[i]
         add_model_with_exchanges!(
             community,
@@ -509,7 +509,7 @@ end
         biomass_id = nothing,
     )
 
-The `StandardModel` variant of [add_model_with_exchanges](@ref), but is in-place.
+The `StandardModel` variant of [`add_model_with_exchanges`](@ref), but is in-place.
 """
 function add_model_with_exchanges!(
     community::StandardModel,
@@ -519,6 +519,7 @@ function add_model_with_exchanges!(
     biomass_id = nothing,
 )
     stdm = model isa StandardModel ? deepcopy(model) : convert(StandardModel, model)
+    model_name = model_name * "_"
 
     for met in values(stdm.metabolites)
         met.id = model_name * met.id
@@ -565,7 +566,7 @@ end
         biomass_id = nothing,
     )
 
-The `StandardModel` variant of [add_model_with_exchanges](@ref). Makes a deepcopy of
+The `StandardModel` variant of [`add_model_with_exchanges`](@ref). Makes a deepcopy of
 `community` and calls the inplace variant of this function on that copy.
 """
 function add_model_with_exchanges(
