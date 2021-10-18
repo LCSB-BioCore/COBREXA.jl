@@ -1,27 +1,24 @@
 
 """
-    _check_screen_mods_args(mods, args, modsname)
+    _screen_args(argtuple, kwargtuple, modsname)
 
 Internal helper to check the presence and shape of modification and argument
 arrays in [`screen`](@ref) and pals.
 """
-function _check_screen_mods_args(
-    mods::Maybe{Array{V,N}},
-    args::Maybe{Array{A,N}},
-    modsname,
-) where {V,A,N}
+function _screen_args(argtuple, kwargtuple, modsname)
+
+    mods = get(kwargtuple, modsname, nothing)
+    args = get(kwargtuple, :args, nothing)
+
     if isnothing(mods)
         if isnothing(args)
             throw(
-                DomainError(
-                    args,
-                    "at least one of `$modsname` and `args` must be non-empty",
-                ),
+                DomainError(args, "at least one of `$modsname` and `args` must be defined"),
             )
         end
-        ([[] for _ in args], Array{A,N}(args))
+        return NamedTuple{(modsname,)}(Ref([[] for _ in args]))
     elseif isnothing(args)
-        (Array{V,N}(mods), [() for _ in mods])
+        return (args = [() for _ in mods],)
     else
         if size(mods) != size(args)
             throw(
@@ -31,15 +28,16 @@ function _check_screen_mods_args(
                 ),
             )
         end
+        return ()
     end
 end
 
 """
-    function screen(
+    screen(
         model::MetabolicModel;
-        variants::Maybe{Array{V,N}} = nothing,
+        variants::Array{V,N}, # defaults to an array of identities
         analysis,
-        args::Maybe{Array{A,N}} = nothing,
+        args::Array{A,N}, # defaults to an array of empty argument lists
         workers = [myid()],
     )::Array where {V<:AbstractVector,A,N}
 
@@ -79,6 +77,9 @@ JuMP models that contain pointers to allocated C structures (such as
 [`flux_balance_analysis`](@ref) used with `GLPK` or `Gurobi` otimizers) will
 generally not in this context.
 
+Note: this function is a thin argument-handling wrapper around
+[`_screen_impl`](@ref).
+
 # Example
 ```
 function reverse_reaction(i::Int)
@@ -91,30 +92,42 @@ end
 
 m = load_model(CoreModel, "e_coli_core.xml")
 
-screen_variants(m,
-           [
-               [reverse_reaction(5)],
-               [reverse_reaction(3), reverse_reaction(6)]
-           ],
-           mod -> mod.S[:,3])  # observe the changes in S
-
-screen_variants(m,
-    [
+screen(m,
+    variants = [
         [reverse_reaction(5)],
         [reverse_reaction(3), reverse_reaction(6)]
     ],
-    mod -> flux_balance_analysis_vec(mod, GLPK.Optimizer))  # run analysis
+    analysis = mod -> mod.S[:,3])  # observe the changes in S
+
+screen(m,
+    variants = [
+        [reverse_reaction(5)],
+        [reverse_reaction(3), reverse_reaction(6)]
+    ],
+    analysis = mod -> flux_balance_analysis_vec(mod, GLPK.Optimizer))
 ```
 """
-function screen(
+screen(args...; kwargs...) =
+    _screen_impl(args...; kwargs..., _screen_args(args, kwargs, :variants)...)
+
+"""
+    _screen_impl(
+        model::MetabolicModel;
+        variants::Array{V,N},
+        analysis,
+        args::Array{A,N},
+        workers = [myid()],
+    )::Array where {V<:AbstractVector,A,N}
+
+The actual implementation of [`screen`](@ref).
+"""
+function _screen_impl(
     model::MetabolicModel;
-    variants::Maybe{Array{V,N}} = nothing,
+    variants::Array{V,N},
     analysis,
-    args::Maybe{Array{A,N}} = nothing,
+    args::Array{A,N},
     workers = [myid()],
 )::Array where {V<:AbstractVector,A,N}
-
-    (variants, args) = _check_screen_mods_args(variants, args, :variants)
 
     map(fetch, save_at.(workers, :cobrexa_screen_variants_model, Ref(model)))
     map(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
@@ -199,15 +212,15 @@ function _screen_optmodel_item((mods, args))
 end
 
 """
-    function screen_optmodel_modifications(
+    screen_optmodel_modifications(
         model::MetabolicModel,
         optimizer;
-        common_modifications::V,
-        modifications::Maybe{Array{V,N}} = nothing,
-        args::Maybe{Array{T,N}} = nothing,
-        analysis = screen_optimize_objective,
+        common_modifications::VF = [],
+        modifications::Array{V,N}, # defaults to an array with no modifications
+        args::Array{A,N}, # defaults to an array of empty argument lists
+        analysis::Function,
         workers = [myid()],
-    ) where {V<:AbstractVector,T<:Tuple,N}
+    )::Array where {V<:AbstractVector,VF<:AbstractVector,A,N}
 
 Screen multiple modifications of the same optimization model.
 
@@ -230,18 +243,38 @@ have 2 base parameters (as opposed to 1 with [`screen`](@ref)): first is the
 `model` (carried through as-is), second is the prepared JuMP optimization model
 that may be modified and acted upon. As an example, you can use modification
 [`change_constraint`](@ref) and analysis [`screen_optimize_objective`](@ref).
+
+Note: This function is a thin argument-handling wrapper around
+[`_screen_optmodel_modifications_impl`](@ref).
 """
-function screen_optmodel_modifications(
+screen_optmodel_modifications(args...; kwargs...) = _screen_optmodel_modifications_impl(
+    args...;
+    kwargs...,
+    _screen_args(args, kwargs, :modifications)...,
+)
+
+"""
+    _screen_optmodel_modifications_impl(
+        model::MetabolicModel,
+        optimizer;
+        common_modifications::VF = [],
+        modifications::Array{V,N},
+        args::Array{A,N},
+        analysis::Function,
+        workers = [myid()],
+    )::Array where {V<:AbstractVector,VF<:AbstractVector,A,N}
+
+The actual implementation of [`screen_optmodel_modifications`](@ref).
+"""
+function _screen_optmodel_modifications_impl(
     model::MetabolicModel,
     optimizer;
-    common_modifications::Vector = [],
-    modifications::Maybe{Array{V,N}} = nothing,
-    args::Maybe{Array{A,N}} = nothing,
-    analysis::Any,
+    common_modifications::VF = [],
+    modifications::Array{V,N},
+    args::Array{A,N},
+    analysis::Function,
     workers = [myid()],
-) where {V<:AbstractVector,A,N}
-
-    (modifications, args) = _check_screen_mods_args(modifications, args, :modifications)
+)::Array where {V<:AbstractVector,VF<:AbstractVector,A,N}
 
     map(
         fetch,

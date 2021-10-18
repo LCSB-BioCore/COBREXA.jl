@@ -12,6 +12,10 @@ internal model will be loaded on-demand by using any accessor, or by calling
 mutable struct Serialized{M} <: MetabolicModel where {M<:MetabolicModel}
     m::Maybe{M}
     filename::String
+
+    Serialized{T}(filename::String) where {T} = new{T}(nothing, filename)
+    Serialized(model::T, filename::String) where {T<:MetabolicModel} =
+        new{T}(model, filename)
 end
 
 function _on_precached(m::Serialized, f, args...)
