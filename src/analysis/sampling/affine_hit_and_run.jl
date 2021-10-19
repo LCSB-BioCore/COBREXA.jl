@@ -6,6 +6,7 @@
         sample_iters = 100 .* (1:5),
         workers = [myid()],
         chains = length(workers),
+        seed = rand(Int),
     )
 
 Run a hit-and-run style sampling that starts from `warmup_points` and uses
@@ -46,6 +47,7 @@ function affine_hit_and_run(
     sample_iters = 100 .* (1:5),
     workers = [myid()],
     chains = length(workers),
+    seed = rand(Int),
 )
 
     # distribute starting data to workers
@@ -53,12 +55,12 @@ function affine_hit_and_run(
 
     # sample all chains
     samples = hcat(
-        dpmap(
-            chain -> :($COBREXA._affine_hit_and_run_chain(
-                cobrexa_hit_and_run_data...,
-                $sample_iters,
-                $chain,
-            )),
+        pmap(
+            chain -> _affine_hit_and_run_chain(
+                (@remote cobrexa_hit_and_run_data)...,
+                sample_iters,
+                seed + chain,
+            ),
             CachingPool(workers),
             1:chains,
         )...,
@@ -71,14 +73,13 @@ function affine_hit_and_run(
 end
 
 """
-    _affine_hit_and_run_chain(warmup, lbs, ubs, iters, chain)
+    _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
 
-Internal helper function for computing a single affine hit-and-run chain. The
-number of the chain is passed for possible future initialization of stable
-RNGs.
+Internal helper function for computing a single affine hit-and-run chain.
 """
-function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, chain)
+function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
 
+    rng = StableRNG(seed % UInt)
     points = copy(warmup)
     d, n_points = size(points)
     result = Matrix{Float64}(undef, size(points, 1), 0)
@@ -94,7 +95,7 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, chain)
 
             for i = 1:n_points
 
-                mix = rand(n_points) .+ _constants.tolerance
+                mix = rand(rng, n_points) .+ _constants.tolerance
                 dir = points * (mix ./ sum(mix)) - points[:, i]
 
                 # iteratively collect the maximum and minimum possible multiple
@@ -119,7 +120,7 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, chain)
                     lambda_max = min(lambda_max, upper)
                 end
 
-                lambda = lambda_min + rand() * (lambda_max - lambda_min)
+                lambda = lambda_min + rand(rng) * (lambda_max - lambda_min)
                 !isfinite(lambda) && continue # avoid divergence
                 new_points[:, i] = points[:, i] .+ lambda .* dir
 

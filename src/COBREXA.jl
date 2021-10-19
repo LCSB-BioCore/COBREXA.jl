@@ -12,6 +12,7 @@ using OrderedCollections
 using Random
 using Serialization
 using SparseArrays
+using StableRNGs
 using Statistics
 
 import Base: findfirst, getindex, show
