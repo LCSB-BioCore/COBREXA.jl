@@ -7,14 +7,14 @@
     )
 
 Run minimization of metabolic adjustment (MOMA) on `model` with respect to `flux_ref`, which
-is a vector of fluxes in the order of `reactions(model)`. MOMA find the shortest Euclidian
+is a vector of fluxes in the order of `reactions(model)`. MOMA finds the shortest Euclidian
 distance between `flux_ref` and `model` with `modifications`:
 ```
 min Σᵢ (xᵢ - flux_refᵢ)²
 s.t. S x = b
      xₗ ≤ x ≤ xᵤ
 ```
-Note, the problem has a quadratic constraint, so a QP solver is required. See "Daniel,
+Note, the problem has a quadratic objective, so a QP solver is required. See "Daniel,
 Vitkup & Church, Analysis of Optimality in Natural and Perturbed Metabolic Networks,
 Proceedings of the National Academy of Sciences, 2002" for more details.
 
@@ -28,7 +28,7 @@ optmodel = minimize_metabolic_adjustment(
     model,
     flux_ref,
     Gurobi.Optimizer;
-    modifications = [knockout("PFL")], # find flux of mutant that is closest to the wild type (reference) model
+    modifications = [change_constraint("PFL"; lb=0, ub=0)], # find flux of mutant that is closest to the wild type (reference) model
     )
 value.(solution[:x])  # extract the flux from the optimizer
 ```
