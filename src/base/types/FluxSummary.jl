@@ -27,14 +27,14 @@ end
 
 """
     flux_summary(flux_result::Dict{String, Float64};
-                exclude_exchanges = false,
-                exchange_prefixes = _constants.exchange_prefixes,
-                biomass_strings = _constants.biomass_strings,
-                exclude_biomass = false,
-                small_flux_bound = 1.0/_constants.default_reaction_bound^2,
-                large_flux_bound = _constants.default_reaction_bound,
-                keep_unbounded = false,
-                )::FluxSummary
+        exclude_exchanges = false,
+        exchange_prefixes = _constants.exchange_prefixes,
+        biomass_strings = _constants.biomass_strings,
+        exclude_biomass = false,
+        small_flux_bound = 1.0/_constants.default_reaction_bound^2,
+        large_flux_bound = _constants.default_reaction_bound,
+        keep_unbounded = false,
+    )::FluxSummary
 
 Summarize a dictionary of fluxes into small, useful representation of the most
 important information contained. Useful for pretty-printing and quickly

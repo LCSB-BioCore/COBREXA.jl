@@ -1,8 +1,7 @@
 """
     FluxVariabilitySummary
 
-A struct used to store summary information about the
-solution of a flux variability analysis result.
+Stores summary information about the result of a flux variability analysis.
 """
 struct FluxVariabilitySummary
     biomass_fluxes::Dict{String,Vector{Union{Float64,Nothing}}}
@@ -12,7 +11,7 @@ end
 """
     FluxVariabilitySummary()
 
-A default empty constructor for `FluxVariabilitySummary`
+A default empty constructor for [`FluxVariabilitySummary`](@ref).
 """
 function FluxVariabilitySummary()
     FluxVariabilitySummary(
@@ -30,11 +29,12 @@ end
         )::FluxVariabilitySummary
 
 Summarize a dictionary of flux dictionaries obtained eg. from
-flux_variability_analysis_dict. The simplified summary representation is useful
-for pretty-printing and easily showing the most important results. Internally
-this function uses [`looks_like_biomass_reaction`](@ref) and
-[`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments
-passed to these functions. Use this if your model has non-standard ids for
+[`flux_variability_analysis_dict`](@ref). The simplified summary representation
+is useful for pretty-printing and easily showing the most important results.
+
+Internally this function uses [`looks_like_biomass_reaction`](@ref) and
+[`looks_like_exchange_reaction`](@ref). The corresponding keyword arguments are
+passed to these functions. Use this if your model has an uncommon naming of
 reactions.
 
 # Example
