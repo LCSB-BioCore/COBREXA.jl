@@ -27,8 +27,8 @@
 |:--------------:|:-------:|:---------:|:---------:|:---------:|
 | [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] | [![repostatus-img]][repostatus-url] |
 
-This is package provides constraint-based reconstruction and analysis tools for
-exa-scale metabolic models in Julia.
+This package provides constraint-based reconstruction and analysis tools for
+exa-scale metabolic modeling in Julia.
 
 ## How to get started
 
