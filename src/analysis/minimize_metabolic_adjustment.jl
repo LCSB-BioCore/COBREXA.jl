@@ -48,7 +48,7 @@ function minimize_metabolic_adjustment(
 
     # moma objective
     v = opt_model[:x] # fluxes
-    @objective(opt_model, Min, sum((v[i] - flux_ref[i])^2 for i=1:n_reactions(model)))
+    @objective(opt_model, Min, sum((v[i] - flux_ref[i])^2 for i = 1:n_reactions(model)))
 
     optimize!(opt_model)
 
@@ -70,14 +70,14 @@ reaction ids to reference fluxes instead of a vector.
 """
 minimize_metabolic_adjustment(
     model::MetabolicModel,
-    flux_ref::Dict{String, Float64},
+    flux_ref::Dict{String,Float64},
     optimizer;
     modifications = [],
 ) = minimize_metabolic_adjustment(
     model,
     [flux_ref[k] for k in reactions(model)],
     optimizer;
-    modifications
+    modifications,
 )
 
 """
