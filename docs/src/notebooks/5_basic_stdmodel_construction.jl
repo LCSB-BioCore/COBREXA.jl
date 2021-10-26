@@ -1,5 +1,6 @@
 # # Model construction and modification
 
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats; and convert
