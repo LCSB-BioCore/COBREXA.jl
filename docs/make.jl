@@ -116,13 +116,14 @@ end
 # also remove the index template
 rm(joinpath(@__DIR__, "build", "index.md.template"))
 
-# Binder does not support Julia 1.6 kernels yet, so let's force the Julia 1.5
-# kernel for now.
+# Binder actually has 1.6.2 kernel (seen in October 2021), but for whatever
+# reason it's called julia-1.1. Don't ask me.
 for ipynb in joinpath.(@__DIR__, "build", "notebooks", ipynb_names)
-    @info "changing julia version to 1.5 in `$ipynb'"
+    @info "changing julia version to 1.1 in `$ipynb'"
     js = JSON.parsefile(ipynb)
-    js["metadata"]["kernelspec"]["name"] = "julia-1.5"
-    js["metadata"]["kernelspec"]["display_name"] = "Julia 1.5"
+    js["metadata"]["kernelspec"]["name"] = "julia-1.1"
+    js["metadata"]["kernelspec"]["display_name"] = "Julia 1.1.0"
+    js["metadata"]["language_info"]["version"] = "1.1.0"
     open(f -> JSON.print(f, js), ipynb, "w")
 end
 
