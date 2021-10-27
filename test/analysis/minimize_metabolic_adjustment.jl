@@ -7,7 +7,7 @@
         model,
         sol,
         OSQP.Optimizer;
-        modifications = [change_constraint("CYTBD"; lb = 0.0, ub = 0.0)],
+        modifications = [silence, change_constraint("CYTBD"; lb = 0.0, ub = 0.0)],
     )
 
     @test isapprox(
