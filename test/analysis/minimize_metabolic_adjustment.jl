@@ -3,7 +3,7 @@
 
     sol = parsimonious_flux_balance_analysis_dict(model, OSQP.Optimizer;)
 
-    moma = minimize_metabolic_adjustment_dict(
+    moma = minimize_metabolic_adjustment_analysis_dict(
         model,
         sol,
         OSQP.Optimizer;
