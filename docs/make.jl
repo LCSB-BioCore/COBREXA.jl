@@ -133,4 +133,5 @@ deploydocs(
     target = "build",
     branch = "gh-pages",
     push_preview = true,
+    devbranch = "develop",
 )
