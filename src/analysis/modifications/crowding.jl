@@ -23,22 +23,6 @@ add_crowding_constraint(weights::Dict{Int64,Float64}) =
     end
 
 """
-    add_crowding_constraint(weight::Float64; kwargs)
-
-Variant of [`add_crowding_constraint`](@ref) that takes a single weight and assigns it to
-each internal reaction flux, where internal reactions are identified with
-[`find_internal_reactions`](@ref) and `kwargs` are passed to this function.
-"""
-add_crowding_constraint(weight::Float64; kwargs...) =
-    (model, opt_model) -> begin
-        idxs = find_internal_reactions(model; kwargs...)
-        add_crowding_constraint(Dict(zip(idxs, fill(weight, length(idxs)))))(
-            model,
-            opt_model,
-        )
-    end
-
-"""
     add_crowding_constraint(weights::Dict{String, Float64})
 
 Variant of [`add_crowding_constraint`](@ref) that takes a dictinary of reactions `ids`

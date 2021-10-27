@@ -1,13 +1,16 @@
 @testset "FBA with crowding constraints" begin
     model = load_model(model_paths["e_coli_core.json"])
-    idxs = find_internal_reactions(model)
+    rid_weight = Dict(
+        rid => 0.004 for rid in reactions(model) if
+        !looks_like_biomass_reaction(rid) && !looks_like_exchange_reaction(rid)
+    )
 
     sol = flux_balance_analysis_dict(
         model,
         Tulip.Optimizer;
         modifications = [
             change_optimizer_attribute("IPM_IterationsLimit", 1000),
-            add_crowding_constraint(0.004),
+            add_crowding_constraint(rid_weight),
             change_constraint("EX_glc__D_e"; lb = -6),
         ],
     )
