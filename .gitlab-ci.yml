@@ -2,7 +2,7 @@ stages:
   - generator
   - test-basic
   - test-required
-  - documentation
+  - doctest
   - test-additional-v1.5
   - test-additional-v1.6
 
@@ -125,34 +125,12 @@ generator:gource:
 # --------------------------------------
 
 doc-tests:v1.6:
-  stage: documentation
+  stage: doctest
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
   <<: *global_settings_pull
-
-# Deploy the documentation
-# --------------------------------------
-
-pages:
-  stage: documentation
-  dependencies:
-    - generator:gource
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  script:
-    # resolve and build packages from the docs/Project.toml file
-    - julia --project=docs -e 'using Pkg; Pkg.resolve(); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
-
-    # deploy doc (without git history)
-    - julia --project=docs --color=yes docs/make.jl
-
-    # move to the directory picked up by Gitlab pages (with git history)
-    - mv docs/build public
-  artifacts:
-    paths:
-      - public
-  <<: *global_settings_comprehensive
 
 # Test Docker run with Julia v1.6
 # --------------------------------------
