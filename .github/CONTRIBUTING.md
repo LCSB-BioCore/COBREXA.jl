@@ -217,7 +217,7 @@ The workflow is based on [GitLab
 flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html), i.e., a `develop`
 branch with `feature` branches being merged into the `develop` branch, all
 periodically merged to `master` branch. Depending on your access rights, you
-may open the `feature` branch in this repository, on in your fork.
+may open the `feature` branch in this repository, or in your fork.
 
 The guidelines can be summarized as such:
 
