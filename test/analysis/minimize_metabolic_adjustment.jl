@@ -10,9 +10,5 @@
         modifications = [silence, change_constraint("CYTBD"; lb = 0.0, ub = 0.0)],
     )
 
-    @test isapprox(
-        moma["BIOMASS_Ecoli_core_w_GAM"],
-        0.06214149238730545,
-        atol = TEST_TOLERANCE,
-    )
+    @test isapprox(moma["BIOMASS_Ecoli_core_w_GAM"], 0.06214149238730545, atol = 0.05)
 end
