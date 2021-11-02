@@ -51,6 +51,9 @@ cp(
     force = true,
 )
 
+find_mds(path) =
+    joinpath.(Ref(path), filter(x -> endswith(x, ".md"), readdir(joinpath("src", path))))
+
 # build the docs
 makedocs(
     modules = [COBREXA],
@@ -66,10 +69,21 @@ makedocs(
     linkcheck = !("skiplinks" in ARGS),
     pages = [
         "Home" => "index.md",
-        "Quickstart tutorials" => "tutorials.md",
-        "Advanced tutorials" => "advanced.md",
-        "Examples and notebooks" => "notebooks.md",
-        "Function reference" => "functions.md",
+        "User guide" => [
+            "Quickstart tutorials" => vcat(
+                "Detailed tutorial listing" => "tutorials.md",
+                find_mds("tutorials"),
+            ),
+            "Advanced tutorials" => vcat(
+                "Detailed tutorial listing" => "advanced.md",
+                find_mds("advanced"),
+            ),
+            "Examples and notebooks" => vcat(
+                "Detailed notebook listing" => "notebooks.md",
+                find_mds("notebooks"),
+            ),
+        ],
+        "API reference" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
     ],
 )

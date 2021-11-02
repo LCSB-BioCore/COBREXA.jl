@@ -9,7 +9,7 @@ macro _serialized_change_unwrap(fn::Symbol)
     docstring = """
         $fn(model::Serialized, ...)
 
-    Calls [$fn](@ref) of the internal serialized model type.
+    Calls [`$fn`](@ref) of the internal serialized model type.
     Returns the modified un-serialized model.
     """
     :(@doc $docstring $fn(model::Serialized, args...; kwargs...) =
