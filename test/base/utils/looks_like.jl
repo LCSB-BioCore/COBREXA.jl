@@ -15,8 +15,6 @@
         ["m1"; "m2"; "m3"],
     )
     @test filter(looks_like_exchange_reaction, reactions(cp)) == ["EX_m1"]
-    @test find_internal_reactions(cp) == [2, 3]
-    @test find_internal_reaction_ids(cp) == ["r2", "r3"]
 
     cp = CoreModel(
         [-1.0 0 0; 0 0 -1; 0 -1 0],
@@ -43,7 +41,7 @@
         x -> looks_like_exchange_reaction(x; exclude_biomass = true),
         reactions(cp),
     ) == ["EX_m1(e)", "EX_m3(e)"]
-    @test filter(looks_like_exchange_metabolite, metabolites(cp)) == ["m1[e]", "m3[e]"]
+    @test filter(looks_like_extracellular_metabolite, metabolites(cp)) == ["m1[e]", "m3[e]"]
     @test filter(looks_like_biomass_reaction, reactions(cp)) ==
           ["EX_biomass(e)", "biomass1"]
     @test filter(
@@ -55,32 +53,26 @@ end
 @testset "Looks like functions, basic" begin
     model = load_model(model_paths["e_coli_core.json"])
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
-    @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
-    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
+    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 
     model = load_model(model_paths["e_coli_core.xml"])
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
-    @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
-    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
+    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 
     model = load_model(model_paths["e_coli_core.mat"])
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
-    @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
-    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
+    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 
     model = convert(StandardModel, model)
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
-    @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
-    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
+    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 
     model = convert(CoreModelCoupled, model)
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
-    @test length(filter(looks_like_exchange_metabolite, metabolites(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
-    @test length(filter(looks_like_internal_reaction, reactions(model))) == 74
-
+    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 end

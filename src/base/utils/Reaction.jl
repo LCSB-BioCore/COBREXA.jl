@@ -39,17 +39,20 @@ function check_duplicate_reaction(
 end
 
 """
-    is_boundary(reaction::Reaction)
+    is_boundary(rxn_dict::Dict{String, Float64})
 
-Return true if reaction is a boundary reaction, otherwise return false.
-Checks if on boundary by inspecting the number of metabolites in reaction equation.
+Return true if the reaction denoted by `rxn_dict` is a boundary reaction, otherwise return false.
+Checks if on boundary by inspecting the number of metabolites in `rxn_dict`.
 Boundary reactions have only one metabolite, e.g. an exchange reaction, or a sink/demand reaction.
 """
-function is_boundary(rxn::Reaction)::Bool
-    length(keys(rxn.metabolites)) == 1 ? true : false
+function is_boundary(rxn_dict::Dict{String,Float64})::Bool
+    length(keys(rxn_dict)) == 1
 end
 
-is_boundary(model::StandardModel, rxn_id::String) = is_boundary(model.reactions[rxn_id])
+is_boundary(model::MetabolicModel, rxn_id::String) =
+    is_boundary(reaction_stoichiometry(model, rxn_id))
+
+is_boundary(rxn::Reaction) = is_boundary(rxn.metabolites)
 
 is_boundary(model::StandardModel, rxn::Reaction) = is_boundary(rxn) # for consistency with functions below
 
