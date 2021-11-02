@@ -18,5 +18,9 @@
         ],
     )
 
-    @test isapprox(moma["BIOMASS_Ecoli_core_w_GAM"], 0.06214149238730545, atol = 0.05)
+    @test isapprox(
+        moma["BIOMASS_Ecoli_core_w_GAM"],
+        0.06214149238730545,
+        atol = QP_TEST_TOLERANCE,
+    )
 end

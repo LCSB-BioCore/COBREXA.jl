@@ -7,7 +7,11 @@
             change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
-        qp_modifications = [change_optimizer(OSQP.Optimizer), silence],
+        qp_modifications = [
+            change_optimizer(OSQP.Optimizer),
+            change_optimizer_attribute("polish", true),
+            silence,
+        ],
     )
     v = parsimonious_flux_balance_analysis_vec(
         model,
@@ -16,11 +20,15 @@
             change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
-        qp_modifications = [change_optimizer(OSQP.Optimizer), silence],
+        qp_modifications = [
+            change_optimizer(OSQP.Optimizer),
+            change_optimizer_attribute("polish", true),
+            silence,
+        ],
     )
 
     # The used optimizer doesn't really converge to the same answer everytime
     # here, we therefore tolerate a wide range of results.
-    @test isapprox(d["PGM"], -17.568590034769613, atol = 0.5)
-    @test isapprox(v[8], -17.568590034769613, atol = 0.5)
+    @test isapprox(d["PGM"], -17.606459419216442, atol = QP_TEST_TOLERANCE)
+    @test isapprox(v[8], -17.606459419216442, atol = QP_TEST_TOLERANCE)
 end
