@@ -2,6 +2,12 @@ using Documenter
 using Literate, JSON
 using COBREXA
 
+# some settings
+dev_docs_folder = "dev"
+pages_branch = "gh-pages"
+github_repo_slug = "LCSB-BioCore/COBREXA.jl"
+delete!(ENV, "GITHUB_REPOSITORY")
+
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks")
 notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
@@ -9,10 +15,7 @@ notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
 notebooks = joinpath.(notebooks_path, notebooks_basenames)
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
 
-# only temporary - will be removed once properly tagged and released
-dev_docs_folder = "dev"
-pages_branch = "gh-pages"
-github_repo_slug = "LCSB-BioCore/COBREXA.jl"
+
 
 for notebook in notebooks
     Literate.markdown(
