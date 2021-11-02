@@ -108,7 +108,7 @@ format:
 # Documentation history
 # --------------------------------------
 
-generator:gource:
+gource:
   stage: documentation
   image: docker:19.03.13
   tags:
@@ -140,8 +140,6 @@ doc-tests:v1.6:
 
 pages:
   stage: documentation
-  dependencies:
-    - generator:gource
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     # resolve and build packages from the docs/Project.toml file
