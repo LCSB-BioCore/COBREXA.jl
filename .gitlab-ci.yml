@@ -1,5 +1,4 @@
 stages:
-  - generator
   - test-basic
   - test-required
   - documentation
@@ -106,7 +105,7 @@ format:
 # --------------------------------------
 
 generator:gource:
-  stage: generator
+  stage: documentation
   image: docker:19.03.13
   tags:
     - privileged
