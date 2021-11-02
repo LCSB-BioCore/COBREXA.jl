@@ -2,17 +2,6 @@ using Documenter
 using Literate, JSON
 using COBREXA
 
-# Note: required to deploy the doc from Gitlab CI instead of Travis
-ENV["TRAVIS_REPO_SLUG"] = "LCSB-BioCore/COBREXA.jl"
-ENV["TRAVIS_BRANCH"] = "master"
-
-# set the merge/pull request ID
-if "CI_EXTERNAL_PULL_REQUEST_IID" in keys(ENV)
-    ENV["TRAVIS_PULL_REQUEST"] = ENV["CI_EXTERNAL_PULL_REQUEST_IID"]
-else
-    ENV["TRAVIS_PULL_REQUEST"] = "false"
-end
-
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks")
 notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
@@ -21,16 +10,17 @@ notebooks = joinpath.(notebooks_path, notebooks_basenames)
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
 
 # only temporary - will be removed once properly tagged and released
-folder = "dev"
-branch = "gh-pages"
+dev_docs_folder = "dev"
+pages_branch = "gh-pages"
+github_repo_slug = "LCSB-BioCore/COBREXA.jl"
 
 for notebook in notebooks
     Literate.markdown(
         notebook,
         notebooks_outdir;
-        repo_root_url = "https://github.com/$(ENV["TRAVIS_REPO_SLUG"])/blob/master",
-        nbviewer_root_url = "https://nbviewer.jupyter.org/github/$(ENV["TRAVIS_REPO_SLUG"])/blob/gh-pages/$(folder)",
-        binder_root_url = "https://mybinder.org/v2/gh/$(ENV["TRAVIS_REPO_SLUG"])/$(branch)?filepath=$(folder)",
+        repo_root_url = "https://github.com/$github_repo_slug/blob/master",
+        nbviewer_root_url = "https://nbviewer.jupyter.org/github/$github_repo_slug/blob/gh-pages/$dev_docs_folder",
+        binder_root_url = "https://mybinder.org/v2/gh/$github_repo_slug/$pages_branch?filepath=$dev_docs_folder",
     )
     Literate.notebook(notebook, notebooks_outdir)
 end
@@ -129,9 +119,9 @@ end
 
 # deploy the result
 deploydocs(
-    repo = "github.com/$(ENV["TRAVIS_REPO_SLUG"]).git",
+    repo = "github.com/$github_repo_slug.git",
     target = "build",
-    branch = "gh-pages",
+    branch = pages_branch,
     push_preview = true,
     devbranch = "develop",
 )
