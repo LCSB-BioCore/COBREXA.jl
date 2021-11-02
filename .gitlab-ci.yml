@@ -234,7 +234,7 @@ mac:v1.6:
 # Trigger test pipelines in external repo
 # --------------------------------------
 
-trigger:
+trigger_external:
   stage: test-required
   image: curlimages/curl
   tags:
