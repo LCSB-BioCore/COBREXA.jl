@@ -52,7 +52,10 @@ cp(
 )
 
 find_mds(path) =
-    joinpath.(Ref(path), filter(x -> endswith(x, ".md"), readdir(joinpath("src", path))))
+    joinpath.(
+        Ref(path),
+        filter(x -> endswith(x, ".md"), readdir(joinpath(@__DIR__, "src", path))),
+    )
 
 # build the docs
 makedocs(
