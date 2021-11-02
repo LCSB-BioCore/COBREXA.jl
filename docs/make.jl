@@ -80,7 +80,7 @@ makedocs(
                 find_mds("notebooks"),
             ),
         ],
-        "Function reference" => "functions.md",
+        "API reference" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
     ],
 )
