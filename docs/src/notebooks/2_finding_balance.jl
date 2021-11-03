@@ -3,10 +3,10 @@
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 
-# Here we use [`flux_balance_analysis`](@ref),
-# [`flux_variability_analysis`](@ref), and
-# [`parsimonious_flux_balance_analysis`](@ref) of `COBREXA.jl` functions to
-# analyze a toy model of *E. coli*.
+# Here we will use [`flux_balance_analysis`](@ref), [`flux_variability_analysis`](@ref),
+# [`parsimonious_flux_balance_analysis`](@ref), and
+# [`minimize_metabolic_adjustment_analysis`](@ref), along with the modification functions of
+# `COBREXA.jl`, to analyze a toy model of *E. coli*.
 
 # If it is not already present, download the model.
 
@@ -233,6 +233,7 @@ loopless_crowding_fluxes = flux_balance_analysis_dict(
         add_loopless_constraints(),
     ],
 )
+flux_summary(loopless_crowding_fluxes)
 
 # Next find a flux distribution that satisfies kinetic/capacity constraints using the moment
 # algorithm that is closest (using MOMA) to the loopless crowding solution.
@@ -252,21 +253,20 @@ moment_moma = minimize_metabolic_adjustment_analysis_dict(
         add_moment_constraints(ksas, protein_mass_fraction;),
     ],
 )
+flux_summary(moment_moma)
 
 # Finally, plot the results to inspect the flux distributions visually
 using CairoMakie, Escher, ColorSchemes
 
-!isfile("e_coli_core_map.json") && download(
+!isfile("e_coli_core_map.json") && download( # download escher map
     "http://bigg.ucsd.edu/escher_map_json/e_coli_core.Core%20metabolism",
     "e_coli_core_map.json",
 )
 
-
 maxflux = maximum(abs.(values(moment_moma)))
 minflux = minimum(abs.(values(moment_moma)))
 
-# Scale color of reaction edges to fluxes (manually binned)
-color_interp(x) = begin
+color_interp(x) = begin # Scale color of reaction edges to fluxes (manually binned)
     normed_x = (abs(x) - minflux) / (maxflux - minflux)
     if 0 <= normed_x < 0.01
         ColorSchemes.RdYlBu_4[4]
@@ -287,7 +287,7 @@ hidexdecorations!(ax)
 hideydecorations!(ax)
 fig
 
-#md # !!! tip "Tip: code your own modification like [`add_crowding_constraints`](@ref)"
+#md # !!! tip "Tip: code your own modifications"
 #md #       Making custom problem modification functions is really simple due to the
 #md #       tight intergration between COBREXA and JuMP. Look at the source code for
 #md #       the implemented modifications in `src\analysis\modifications` to get a flavour
