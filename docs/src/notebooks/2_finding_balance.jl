@@ -52,7 +52,7 @@ vec_soln = flux_balance_analysis_vec(model, Tulip.Optimizer)
 #
 dict_soln = flux_balance_analysis_dict(model, Tulip.Optimizer)
 
-# ## Extended FBA through modifications
+# ## Extended FBA with modifications
 
 # Often it is desirable to add a slight modification to the problem before
 # performing analysis, to see e.g. differences of the model behavior caused by
