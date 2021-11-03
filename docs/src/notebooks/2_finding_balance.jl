@@ -37,7 +37,7 @@ model = load_model("e_coli_core.xml")
 #md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
 #md #       require less user engagement.
 
-using Tulip, OSQP
+using Tulip, OSQP, GLPK
 
 # ## Flux balance analysis (FBA)
 #
@@ -52,15 +52,16 @@ vec_soln = flux_balance_analysis_vec(model, Tulip.Optimizer)
 #
 dict_soln = flux_balance_analysis_dict(model, Tulip.Optimizer)
 
-# ## Modifications
+# ## Extended FBA through modifications
 
-# Often it is desirable to add a slight modififaction to the problem before
+# Often it is desirable to add a slight modification to the problem before
 # performing analysis, to see e.g. differences of the model behavior caused by
 # the change introduced.
 #
-# `COBREXA.jl` supports several modifications by default, which include
-# changing objective sense, optimizer attributes, flux constraints,
-# optimization objective, reaction and gene knockouts, and others.
+# `COBREXA.jl` supports several modifications by default, which include changing objective
+# sense, optimizer attributes, flux constraints, optimization objective, reaction and gene
+# knockouts, and others. These modifications are applied in the order they are specified. It
+# is up to the user to ensure that the changes are sensible.
 
 dict_soln = flux_balance_analysis_dict(
     model,
@@ -164,6 +165,7 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
 # optimizer qualities differ for the differing tasks. pFBA allows you to
 # specify `qp_modifications` that are applied after the original optimum is
 # found, and before the quadratic part of the problem solving begins.
+
 vec_soln = parsimonious_flux_balance_analysis_vec(
     model,
     Tulip.Optimizer; # start with Tulip
@@ -173,99 +175,119 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     ],
     qp_modifications = [
         change_optimizer(OSQP.Optimizer), # now switch to OSQP (Tulip wouldn't be able to finish the computation)
+        change_optimizer_attribute("polish", true), # get an accurate solution, see OSQP's documentation
         silence, # and make it quiet.
     ],
 )
 
-# ## Flux balance analysis with molecular crowding (FBAwMC)
+# ## Minimizing metabolic adjustment analysis (MOMA)
 
-# Flux balance with molecular crowding incorporates enzyme capacity constraints into the
-# classic flux balance analysis algorithm. Essentially, an extra constraint is added to
-# the optimization problem: `∑ wᵢ × vᵢ ≤ 1` where `wᵢ` weights each internal flux `vᵢ`. See
-# `Beg, Qasim K., et al. "Intracellular crowding defines the mode and sequence of
-# substrate uptake by Escherichia coli and constrains its metabolic activity." Proceedings of
-# the National Academy of Sciences 104.31 (2007): 12663-12668.` for more details.
+# MOMA is a technique used to find a flux distribution that is closest to some reference
+# distribution with respect to the Euclidian norm.
 
-# First load the model
+reference_fluxes = parsimonious_flux_balance_analysis_dict( # reference distribution
+    model,
+    OSQP.Optimizer;
+    modifications = [silence, change_optimizer_attribute("polish", true)],
+)
+
+moma = minimize_metabolic_adjustment_analysis_dict(
+    model,
+    reference_fluxes,
+    OSQP.Optimizer;
+    modifications = [
+        silence,
+        change_optimizer_attribute("polish", true),
+        change_constraint("R_CYTBD"; lb = 0.0, ub = 0.0), # find flux distribution closest to the CYTBD knockout
+    ],
+)
+
+# ## Composing (more complicated) modifications
+
+# `COBREXA.jl` contains a number of modifications that allow the user to analyze
+# non-standard variants of the classic FBA problem. These include thermodynamic
+# ([`add_loopless_constraints`](@ref)), capacity ([`add_crowding_constraints`](@ref)), and
+# kinetic/capacity ([`add_moment_constraints`](@ref)) modifications. The documentation of
+# each modification details what their purpose is. Here, we will demonstrate how these
+# modifications can be composed to generate even more interesting analyses.
+
+# Download the json formatted model so that the reaction identifiers correspond to the Escher map.
+!isfile("e_coli_core.json") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
+
 model = load_model("e_coli_core.json")
 
-# Next, simulate the model over a range of substrate uptake rates.
-without_crowding = Dict{Float64,Vector{Float64}}()
-with_crowding = Dict{Float64,Vector{Float64}}()
-glucose_uptakes = collect(-(1.0:0.5:20))
+# First find a flux distribution that is thermodyamically loopless and incorporates enzyme
+# capacity constraints by composing loopless FBA and FBAwMC.
 
-for glc in glucose_uptakes
-    no_crowding = flux_balance_analysis_dict( # classic FBA
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_optimizer_attribute("IPM_IterationsLimit", 1000),
-            change_constraint("EX_glc__D_e"; lb = glc),
-        ],
-    )
+rid_crowding_weight = Dict(# crowding needs a weight for each flux
+    rid => 0.004 for rid in reactions(model) if
+    !looks_like_biomass_reaction(rid) && !looks_like_exchange_reaction(rid)
+)
 
-    without_crowding[glc] =
-        [no_crowding["BIOMASS_Ecoli_core_w_GAM"], no_crowding["EX_ac_e"]]
+loopless_crowding_fluxes = flux_balance_analysis_dict(
+    model,
+    GLPK.Optimizer;
+    modifications = [
+        add_crowding_constraints(rid_crowding_weight),
+        add_loopless_constraints(),
+    ],
+)
 
-    crowding = flux_balance_analysis_dict( # FBAwMC
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_optimizer_attribute("IPM_IterationsLimit", 1000),
-            add_crowding_constraint(0.004), # crowding constraint gets added here
-            change_constraint("EX_glc__D_e"; lb = glc),
-        ],
-    )
+# Next find a flux distribution that satisfies kinetic/capacity constraints using the moment
+# algorithm that is closest (using MOMA) to the loopless crowding solution.
 
-    with_crowding[glc] = [crowding["BIOMASS_Ecoli_core_w_GAM"], crowding["EX_ac_e"]]
+ksas = Dict(rid => 1000.0 for rid in reactions(model)) # make up specific activities of the enyzmes
+protein_mass_fraction = 0.56
+
+moment_moma = minimize_metabolic_adjustment_analysis_dict(
+    model,
+    loopless_crowding_fluxes,
+    OSQP.Optimizer;
+    modifications = [
+        silence,
+        change_optimizer_attribute("polish", true),
+        change_constraint("EX_glc__D_e", lb = -1000),
+        change_constraint("CYTBD"; lb = 0, ub = 0),
+        add_moment_constraints(ksas, protein_mass_fraction;),
+    ],
+)
+
+# Finally, plot the results to inspect the flux distributions visually
+using CairoMakie, Escher, ColorSchemes
+
+!isfile("e_coli_core_map.json") && download(
+    "http://bigg.ucsd.edu/escher_map_json/e_coli_core.Core%20metabolism",
+    "e_coli_core_map.json",
+)
+
+
+maxflux = maximum(abs.(values(moment_moma)))
+minflux = minimum(abs.(values(moment_moma)))
+
+# Scale color of reaction edges to fluxes (manually binned)
+color_interp(x) = begin
+    normed_x = (abs(x) - minflux) / (maxflux - minflux)
+    if 0 <= normed_x < 0.01
+        ColorSchemes.RdYlBu_4[4]
+    elseif 0.01 <= normed_x < 0.25
+        ColorSchemes.RdYlBu_4[3]
+    elseif 0.25 <= normed_x < 0.5
+        ColorSchemes.RdYlBu_4[2]
+    else
+        ColorSchemes.RdYlBu_4[1]
+    end
 end
+rc = Dict(k => color_interp(v) for (k, v) in moment_moma) # map reaction id to reaction edge color
 
-# Finally, plot the results to compare classic FBA with FBAwMC.
-using CairoMakie
 fig = Figure();
-ax1 = Axis(fig[1, 1]);
-lines!(
-    ax1,
-    -glucose_uptakes,
-    [without_crowding[glc][1] for glc in glucose_uptakes],
-    label = "no crowding",
-    linewidth = 5,
-    linestyle = :dash,
-)
-lines!(
-    ax1,
-    -glucose_uptakes,
-    [with_crowding[glc][1] for glc in glucose_uptakes],
-    label = "with crowding",
-    linewidth = 5,
-    linestyle = :dot,
-)
-ax1.ylabel = "Growth rate [1/h]"
-ax2 = Axis(fig[2, 1])
-lines!(
-    ax2,
-    -glucose_uptakes,
-    [without_crowding[glc][2] for glc in glucose_uptakes],
-    label = "no crowding",
-    linewidth = 5,
-    linestyle = :dash,
-)
-lines!(
-    ax2,
-    -glucose_uptakes,
-    [with_crowding[glc][2] for glc in glucose_uptakes],
-    label = "with crowding",
-    linewidth = 5,
-    linestyle = :dot,
-)
-fig[1:2, 2] = Legend(fig, ax1, "Constraint")
-ax2.xlabel = "Glucose uptake rate [mmol/gDW/h]"
-ax2.ylabel = "Acetate production rate\n[mmol/gDW/h]"
+ax = Axis(fig[1, 1]);
+escherplot!(ax, "e_coli_core_map.json", reaction_edge_colors = rc)
+hidexdecorations!(ax)
+hideydecorations!(ax)
 fig
 
-# Notice that overflow metabolism is modeled by incorporating the crowding constraint.
-
-#md # !!! tip "Tip: code your own modification like [`add_crowding`](@ref)"
+#md # !!! tip "Tip: code your own modification like [`add_crowding_constraints`](@ref)"
 #md #       Making custom problem modification functions is really simple due to the
 #md #       tight intergration between COBREXA and JuMP. Look at the source code for
 #md #       the implemented modifications in `src\analysis\modifications` to get a flavour

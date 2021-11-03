@@ -10,7 +10,7 @@
         Tulip.Optimizer;
         modifications = [
             change_optimizer_attribute("IPM_IterationsLimit", 1000),
-            add_crowding_constraint(rid_weight),
+            add_crowding_constraints(rid_weight),
             change_constraint("EX_glc__D_e"; lb = -6),
         ],
     )

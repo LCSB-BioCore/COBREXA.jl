@@ -22,7 +22,7 @@ are used. Specifically, this implementation uses specific activities instead of 
 Thus, for a reaction that can only proceed forward and is catalyzed by protein `a`, the flux
 `x[i]` is bounded by `x[i] <= ksas[i] * y[a]`. If isozymes `a` or `b` catalyse the
 reaction, then `x[i] <= ksas[i] * (y[a] + y[b])`. If a reaction is catalyzed by subunits `a`
-and `b` then x[i] <= ksas[i] * min(y[a], y[b]). These rules are applied recursively in the
+and `b` then `x[i] <= ksas[i] * min(y[a], y[b])`. These rules are applied recursively in the
 model like in the original algorithm. The enzyme capacity constraint is then implemented by
 `sum(y) ≤ protein_mass_fraction`. The major benefit of using `ksas` instead of `kcats` is
 that active site number and unit issues are prevented.
