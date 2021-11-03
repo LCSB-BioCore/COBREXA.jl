@@ -1,7 +1,9 @@
 # Contributing to COBREXA.jl
 
-:+1::tada: Thanks for taking the time to contribute to
-[COBREXA.jl](https://github.com/LCSB-BioCore/COBREXA.jl)! :tada::+1:
+👍🎉
+Thanks for taking the time to contribute to
+[COBREXA.jl](https://github.com/LCSB-BioCore/COBREXA.jl)!
+🎉👍
 
 ## How to report a bug or suggest an enhancement
 
@@ -127,7 +129,7 @@ type the command into the packaging shell:
 ### Step 2: Publish your changes
 
 You are expected to make a fork of the main COBREXA.jl repository, and open a
-pull request from that one to the `master` branch of the main repository.
+pull request from that one to the `develop` branch of the main repository.
 For creating the fork, just hit the "Fork" button on GitHub.
 
 After that, change the directory to your repository and adjust the remotes:
@@ -169,8 +171,7 @@ submitting the pull requests.
 2. Make a pull request where you describe the motivation and expected outcome
    for the users. Specifically, consider any possible incompatibilities, and the
    necessity to increment the version number after your changes are applied.
-   Label your pull request with a [semantic emoji](https://gitmoji.dev/) in the
-   title to indicate what it addresses.
+   Set the target branch to `develop`.
 3. After submitting the pull request, verify that all status checks (tests,
    documentation) are passing. Make sure any new contribution is properly
    documented and tested (you may want to check with coverage tools, using
@@ -215,10 +216,10 @@ Follow the common rules for making easily mergable and reviewable PRs:
 ## For developers: What is the expected branch management/workflow?
 
 The workflow is based on [GitLab
-flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html), i.e., a `master`
-branch with `feature` branches being merged into the `master` branch. Depending
-on your access rights, you may open the `feature` branch in this repository, on
-in your fork.
+flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html), i.e., a `develop`
+branch with `feature` branches being merged into the `develop` branch, all
+periodically merged to `master` branch. Depending on your access rights, you
+may open the `feature` branch in this repository, or in your fork.
 
 The guidelines can be summarized as such:
 

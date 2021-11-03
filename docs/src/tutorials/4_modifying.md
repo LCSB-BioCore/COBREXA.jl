@@ -79,9 +79,11 @@ m.reactions["R_GLNS"].metabolites["M_co2_e"] = 1.0
 ```
 
 There are other functions that may be used to change the `StandardModel` in a
-more systematic way. See the documentation of [`add_reaction!`](@ref), [`add_metabolite!`](@ref),
-[`add_gene!`](@ref), [`remove_reaction!`](@ref), [`remove_metabolite!`](@ref),
-[ [`remove_gene!`](@ref), and the [Model reconstruction](@ref) reference for more examples.
+more systematic way. See the documentation of [`add_reaction!`](@ref),
+[`add_metabolite!`](@ref), [`add_gene!`](@ref), [`remove_reaction!`](@ref),
+[`remove_metabolite!`](@ref), [ [`remove_gene!`](@ref),
+and the [Model construction functions](@ref) reference section for more
+examples.
 
 ## Analysis modifiers
 
@@ -90,7 +92,7 @@ Some analysis functions, including [`flux_balance_analysis`](@ref) and
 which is a list of descriptions of small changes that should be applied to the
 model before modification.
 
-These include e.g.:
+These include:
 - [`change_objective`](@ref) that sets a new optimization objective
 - [`change_optimizer`](@ref) that chooses a different `JuMP.jl` optimizer for
   the analysis
@@ -98,6 +100,9 @@ These include e.g.:
   parameters
 - [`change_constraint`](@ref) that changes the flux bounds of a reaction
 - [`knockout`](@ref) that disables reactions that depend on genes
+- [`add_crowding_constraints`](@ref) that adds crowding constraints to the model
+- [`add_moment_constraints`](@ref) that adds moment constraints to the model
+- [`add_loopless_constraints`](@ref) that adds loopless (thermodynamic) constraints to the model
 
 This way, you can easily check out the model state when maximizing the rate of
 "TALA" (transadenolase A) reaction:

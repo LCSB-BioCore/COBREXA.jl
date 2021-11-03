@@ -49,15 +49,71 @@ julia> _parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
  ["YIL010W", "YGR209C"]
 ```
 """
-function _parse_grr(s::String)::GeneAssociation
-    # first get the gene id list in string format
-    gene_reaction_rules = Vector{Vector{String}}()
-    or_genes = split(s, r"\s?(or|OR|(\|\|)|\|)\s?") # separate or terms
-    for or_gene in or_genes
-        and_genes = split(replace(or_gene, r"\(|\)" => ""), r"\s?(and|AND|(\&\&)|\&)\s?")
-        push!(gene_reaction_rules, and_genes)
+_parse_grr(s::String)::Maybe{GeneAssociation} = _maybemap(_parse_grr, _parse_grr_to_sbml(s))
+
+"""
+    _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
+
+Internal helper for parsing the string GRRs into SBML data structures. More
+general than [`_parse_grr`](@ref).
+"""
+function _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
+    s = str
+    toks = String[]
+    m = Nothing
+    while !isnothing(begin
+        m = match(r"( +|[a-zA-Z0-9]+|[^ a-zA-Z0-9()]+|[(]|[)])(.*)", s)
+    end)
+        tok = strip(m.captures[1])
+        !isempty(tok) && push!(toks, tok)
+        s = m.captures[2]
     end
-    return gene_reaction_rules
+
+    fail() = throw(DomainError(str, "Could not parse GRR"))
+
+    # shunting yard
+    ops = Symbol[]
+    vals = SBML.GeneProductAssociation[]
+    fold(sym, op) =
+        while !isempty(ops) && last(ops) == sym
+            r = pop!(vals)
+            l = pop!(vals)
+            pop!(ops)
+            push!(vals, op([l, r]))
+        end
+    for tok in toks
+        if tok in ["and", "AND", "&", "&&"]
+            push!(ops, :and)
+        elseif tok in ["or", "OR", "|", "||"]
+            fold(:and, SBML.GPAAnd)
+            push!(ops, :or)
+        elseif tok == "("
+            push!(ops, :paren)
+        elseif tok == ")"
+            fold(:and, SBML.GPAAnd)
+            fold(:or, SBML.GPAOr)
+            if isempty(ops) || last(ops) != :paren
+                fail()
+            else
+                pop!(ops)
+            end
+        else
+            push!(vals, SBML.GPARef(tok))
+        end
+    end
+
+    fold(:and, SBML.GPAAnd)
+    fold(:or, SBML.GPAOr)
+
+    if !isempty(ops) || length(vals) > 1
+        fail()
+    end
+
+    if isempty(vals)
+        nothing
+    else
+        first(vals)
+    end
 end
 
 """

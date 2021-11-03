@@ -11,13 +11,15 @@ variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
 
-.global_settings: &global_settings
+.global_settings: &global_settings_pull
   rules:
    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
 
-.global_settings: &global_settings_master
+.global_settings: &global_settings_comprehensive
   rules:
    - if: $CI_COMMIT_BRANCH == "master"
+   - if: $CI_COMMIT_BRANCH == "develop"
+   - if: $CI_COMMIT_TAG =~ /^v/
 
 .global_testing_v15: &global_testing_v15
   variables:
@@ -98,7 +100,7 @@ format:
             -e GITHUB_COMMENT_FORMAT \
             -e GITHUB_COMMENT \
             cloudposse/github-commenter
-  <<: *global_settings
+  <<: *global_settings_pull
 
 # Documentation history
 # --------------------------------------
@@ -117,7 +119,7 @@ generator:gource:
     - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
 
 # Documentation tests
 # --------------------------------------
@@ -128,7 +130,7 @@ doc-tests:v1.6:
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
-  <<: *global_settings
+  <<: *global_settings_pull
 
 # Deploy the documentation
 # --------------------------------------
@@ -150,7 +152,7 @@ pages:
   artifacts:
     paths:
       - public
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
 
 # Test Docker run with Julia v1.6
 # --------------------------------------
@@ -162,34 +164,34 @@ docker:v1.6:
     - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
-  <<: *global_settings
+  <<: *global_settings_pull
 
 # Test Julia v1.5
 # --------------------------------------
 
 linux:v1.5:
   stage: test-required
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v15
   <<: *global_testing_linux
 
 windows10:v1.5:
   stage: test-additional-v1.5
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v15
   <<: *global_testing_win10
   <<: *global_testing_win
 
 windows8:v1.5:
   stage: test-additional-v1.5
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v15
   <<: *global_testing_win8
   <<: *global_testing_win
 
 mac:v1.5:
   stage: test-additional-v1.5
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v15
   <<: *global_testing_mac
 
@@ -199,14 +201,14 @@ mac:v1.5:
 linux:v1.6:
   stage: test-additional-v1.6
   needs: ["linux:v1.5"]
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v16
   <<: *global_testing_linux
 
 windows10:v1.6:
   stage: test-additional-v1.6
   needs: ["windows10:v1.5"]
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v16
   <<: *global_testing_win10
   <<: *global_testing_win
@@ -214,7 +216,7 @@ windows10:v1.6:
 windows8:v1.6:
   stage: test-additional-v1.6
   needs: ["windows8:v1.5"]
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v16
   <<: *global_testing_win8
   <<: *global_testing_win
@@ -222,7 +224,7 @@ windows8:v1.6:
 mac:v1.6:
   stage: test-additional-v1.6
   needs: ["mac:v1.5"]
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
   <<: *global_testing_v16
   <<: *global_testing_mac
 
@@ -236,4 +238,4 @@ trigger:
     - privileged
   script:
     - curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
-  <<: *global_settings_master
+  <<: *global_settings_comprehensive
