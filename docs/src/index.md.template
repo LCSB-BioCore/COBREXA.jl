@@ -10,8 +10,8 @@
 # Constraint-Based Reconstruction and EXascale Analysis
 
 | **Repository** | **Tests** | **Coverage** | **How to contribute?** |
-|:--------------:|:-------:|:---------:|:---------:|
-| [![GitHub](https://img.shields.io/github/stars/LCSB-BioCore/COBREXA.jl?label=COBREXA.jl&style=social)](http://github.com/LCSB-BioCore/COBREXA.jl) | [![CI](https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml) | [![codecov](https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=H3WSWOBD7L)](https://codecov.io/gh/LCSB-BioCore/COBREXA.jl) | [![contrib](https://img.shields.io/badge/contributions-start%20here-green)](https://github.com/LCSB-BioCore/COBREXA.jl/blob/master/.github/CONTRIBUTING.md) |
+|:--------------:|:---------:|:------------:|:----------------------:|
+| [![GitHub](https://img.shields.io/github/stars/LCSB-BioCore/COBREXA.jl?label=COBREXA.jl&style=social)](http://github.com/LCSB-BioCore/COBREXA.jl) | [![CI](https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml) | [![codecov](https://codecov.io/gh/LCSB-BioCore/COBREXA.jl/branch/master/graph/badge.svg?token=H3WSWOBD7L)](https://codecov.io/gh/LCSB-BioCore/COBREXA.jl) | [![contrib](https://img.shields.io/badge/contributions-start%20here-green)](howToContribute.md) |
 
 
 COBREXA is a toolkit for working with large constraint-based metabolic models,
