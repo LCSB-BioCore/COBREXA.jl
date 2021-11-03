@@ -1,7 +1,9 @@
 # Contributing to COBREXA.jl
 
-:+1::tada: Thanks for taking the time to contribute to
-[COBREXA.jl](https://github.com/LCSB-BioCore/COBREXA.jl)! :tada::+1:
+👍🎉
+Thanks for taking the time to contribute to
+[COBREXA.jl](https://github.com/LCSB-BioCore/COBREXA.jl)!
+🎉👍
 
 ## How to report a bug or suggest an enhancement
 
