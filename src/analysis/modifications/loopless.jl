@@ -1,5 +1,5 @@
 """
-    loopless(;
+    add_loopless_constraints(;
         max_flux_bound = _constants.default_reaction_bound,
         strict_inequality_tolerance = _constants.loopless_strict_inequality_tolerance,
     )
@@ -24,7 +24,7 @@ For more details about the algorithm, see `Schellenberger, Lewis, and, Palsson. 
 of thermodynamically infeasible loops in steady-state metabolic models.", Biophysical
 journal, 2011`.
 """
-loopless(;
+add_loopless_constraints(;
     max_flux_bound = _constants.default_reaction_bound, # needs to be an order of magnitude bigger, big M method heuristic
     strict_inequality_tolerance = _constants.loopless_strict_inequality_tolerance,
 ) =
