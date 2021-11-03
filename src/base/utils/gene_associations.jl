@@ -49,15 +49,15 @@ julia> _parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
  ["YIL010W", "YGR209C"]
 ```
 """
-_parse_grr(s::String)::GeneAssociation = _parse_grr(_parse_grr_to_sbml(s))
+_parse_grr(s::String)::Maybe{GeneAssociation} = _maybemap(_parse_grr, _parse_grr_to_sbml(s))
 
 """
-    _parse_grr_to_sbml(str::String)::SBML.GeneProductAssociation
+    _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
 
 Internal helper for parsing the string GRRs into SBML data structures. More
 general than [`_parse_grr`](@ref).
 """
-function _parse_grr_to_sbml(str::String)::SBML.GeneProductAssociation
+function _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
     s = str
     toks = String[]
     m = Nothing
@@ -105,11 +105,15 @@ function _parse_grr_to_sbml(str::String)::SBML.GeneProductAssociation
     fold(:and, SBML.GPAAnd)
     fold(:or, SBML.GPAOr)
 
-    if !isempty(ops) || length(vals) != 1
+    if !isempty(ops) || length(vals) > 1
         fail()
     end
 
-    first(vals)
+    if isempty(vals)
+        nothing
+    else
+        first(vals)
+    end
 end
 
 """
