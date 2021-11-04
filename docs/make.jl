@@ -74,15 +74,15 @@ makedocs(
         "Home" => "index.md",
         "User guide" => [
             "Quickstart tutorials" => vcat(
-                "Detailed tutorial listing" => "tutorials.md",
+                "All tutorials" => "tutorials.md",
                 find_mds("tutorials"),
             ),
             "Advanced tutorials" => vcat(
-                "Detailed tutorial listing" => "advanced.md",
+                "All advanced tutorials" => "advanced.md",
                 find_mds("advanced"),
             ),
             "Examples and notebooks" => vcat(
-                "Detailed notebook listing" => "notebooks.md",
+                "All notebooks" => "notebooks.md",
                 find_mds("notebooks"),
             ),
         ],
