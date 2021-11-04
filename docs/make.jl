@@ -8,6 +8,11 @@ pages_branch = "gh-pages"
 github_repo_slug = "LCSB-BioCore/COBREXA.jl"
 delete!(ENV, "GITHUB_REPOSITORY")
 
+# Documenter tries to guess the repo slug from git remote URL but that doesn't
+# work really well here, this is the only fallback. (See Documenter.jl
+# src/Utilities/Utilities.jl, in November 2021 it was around line 500) -mk
+ENV["TRAVIS_REPO_SLUG"] = github_repo_slug
+
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks")
 notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
