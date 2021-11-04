@@ -9,12 +9,6 @@ pages_branch = "gh-pages"
 # This must match the repo slug on github!
 github_repo_slug = ENV["CI_PROJECT_NAMESPACE"] * "/" * ENV["CI_PROJECT_NAME"]
 
-# Documenter tries to guess the repo slug from git remote URL but that doesn't
-# work really well here, this is the only fallback. If this breaks, "Edit on
-# GitHub" links will stop working. (See Documenter.jl source in
-# src/Utilities/Utilities.jl, in November 2021 it was around line 500) -mk
-ENV["TRAVIS_REPO_SLUG"] = github_repo_slug
-
 # generate notebooks
 notebooks_path = joinpath(@__DIR__, "src", "notebooks")
 notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
@@ -63,6 +57,12 @@ find_mds(path) =
         filter(x -> endswith(x, ".md"), readdir(joinpath(@__DIR__, "src", path))),
     )
 
+# Documenter tries to guess the repo slug from git remote URL but that doesn't
+# work really well here, this is the only fallback. If this breaks, "Edit on
+# GitHub" links will stop working. (See Documenter.jl source in
+# src/Utilities/Utilities.jl, in November 2021 it was around line 500) -mk
+ENV["TRAVIS_REPO_SLUG"] = github_repo_slug
+
 # build the docs
 makedocs(
     modules = [COBREXA],
@@ -90,6 +90,10 @@ makedocs(
         "How to contribute" => "howToContribute.md",
     ],
 )
+
+# remove the workaround (this would cause deploydocs() to get confused and try
+# to deploy the travis way)
+delete!(ENV, "TRAVIS_REPO_SLUG")
 
 # replace the "edit this" links for the generated documentation
 function replace_in_doc(filename, replacement)
