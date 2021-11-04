@@ -14,7 +14,7 @@ variables:
 # Predefined conditions for triggering jobs
 #
 
-.global_trigger_check_incoming_code: &global_trigger_check_incoming_code
+.global_trigger_pull_request: &global_trigger_pull_request
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
 
@@ -87,7 +87,7 @@ docker:julia1.6:
     - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
-  <<: *global_trigger_check_incoming_code
+  <<: *global_trigger_pull_request
 
 #
 # The required compatibility test to pass on branches&tags before the docs get
@@ -189,7 +189,7 @@ format:
             -e GITHUB_COMMENT_FORMAT \
             -e GITHUB_COMMENT \
             cloudposse/github-commenter
-  <<: *global_trigger_check_incoming_code
+  <<: *global_trigger_pull_request
 
 #
 # DOCUMENTATION ASSETS
@@ -229,14 +229,11 @@ documentation-assets:gource:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
 
-# this gets triggered on pull requests after the tests (to avoid unnecessary
-# double failure if the tests fail already)
 doc-tests-pr:julia1.6:
   stage: documentation
   <<: *global_doctests
-  <<: *global_trigger_check_incoming_code
+  <<: *global_trigger_pull_request
 
-# this gets triggered in comprehensive tests
 doc-tests:julia1.6:
   stage: test
   <<: *global_doctests
