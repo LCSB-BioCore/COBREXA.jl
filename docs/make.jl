@@ -86,7 +86,7 @@ makedocs(
                 find_mds("notebooks"),
             ),
         ],
-        "API reference" => vcat("Contents" => "functions.md", find_mds("functions")),
+        "Types and functions" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
     ],
 )
