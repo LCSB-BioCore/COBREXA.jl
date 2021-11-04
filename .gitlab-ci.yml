@@ -116,22 +116,10 @@ windows8:julia1.5:
   <<: *global_julia15
   <<: *global_env_win8
 
-windows8:julia1.6:
-  stage: test-compat
-  <<: *global_trigger_compat_tests
-  <<: *global_julia16
-  <<: *global_env_win8
-
 windows10:julia1.5:
   stage: test-compat
   <<: *global_trigger_compat_tests
   <<: *global_julia15
-  <<: *global_env_win10
-
-windows10:julia1.6:
-  stage: test-compat
-  <<: *global_trigger_compat_tests
-  <<: *global_julia16
   <<: *global_env_win10
 
 mac:julia1.5:
@@ -139,6 +127,18 @@ mac:julia1.5:
   <<: *global_trigger_compat_tests
   <<: *global_julia15
   <<: *global_env_mac
+
+windows8:julia1.6:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia16
+  <<: *global_env_win8
+
+windows10:julia1.6:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia16
+  <<: *global_env_win10
 
 mac:julia1.6:
   stage: test-compat
