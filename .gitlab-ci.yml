@@ -37,11 +37,11 @@ variables:
 # Test environment & platform settings
 #
 
-.global_env_julia15: &global_env_julia15
+.global_julia15: &global_julia15
   variables:
     JULIA_VER: "v1.5.3"
 
-.global_env_julia16: &global_env_julia16
+.global_julia16: &global_julia16
   variables:
     JULIA_VER: "v1.6.0"
 
@@ -97,13 +97,13 @@ docker:julia1.6:
 linux:julia1.5:
   stage: test
   <<: *global_trigger_full_tests
-  <<: *global_env_julia15
+  <<: *global_julia15
   <<: *global_env_linux
 
 linux:julia1.6:
   stage: test
   <<: *global_trigger_full_tests
-  <<: *global_env_julia16
+  <<: *global_julia16
   <<: *global_env_linux
 
 #
@@ -113,37 +113,37 @@ linux:julia1.6:
 windows8:julia1.5:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_env_julia15
+  <<: *global_julia15
   <<: *global_env_win8
 
 windows8:julia1.6:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_env_julia16
+  <<: *global_julia16
   <<: *global_env_win8
 
 windows10:julia1.5:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_env_julia15
+  <<: *global_julia15
   <<: *global_env_win10
 
 windows10:julia1.6:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_env_julia16
+  <<: *global_julia16
   <<: *global_env_win10
 
 mac:julia1.5:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_env_julia15
+  <<: *global_julia15
   <<: *global_env_mac
 
 mac:julia1.6:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_env_julia16
+  <<: *global_julia16
   <<: *global_env_mac
 
 #
