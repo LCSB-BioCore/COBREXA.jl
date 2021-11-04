@@ -46,8 +46,6 @@ variables:
     JULIA_VER: "v1.6.0"
 
 .global_env_linux: &global_env_linux
-  tags:
-    - slave01
   script:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
@@ -96,12 +94,16 @@ docker:julia1.6:
 
 linux:julia1.5:
   stage: test
+  tags:
+    - slave01
   <<: *global_trigger_full_tests
   <<: *global_julia15
   <<: *global_env_linux
 
 linux:julia1.6:
   stage: test
+  tags:
+    - slave02
   <<: *global_trigger_full_tests
   <<: *global_julia16
   <<: *global_env_linux
