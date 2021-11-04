@@ -32,7 +32,7 @@ the popular [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl),
 
 ```@raw html
 <div align="center">
-<img style="width:300px;margin:10px;border-offset:15px;border: 1px solid #eee;border-radius: 50%;padding: 10px;-webkit-border-radius: 50%;-moz-border-radius: 50%;" src="https://git-r3lab.uni.lu/lcsb-biocore/COBREXA.jl/-/jobs/artifacts/master/raw/output.gif?job=documentation-assets:gource" alt="history"><br>
+<img style="width:300px;margin:10px;border-offset:15px;border: 1px solid #eee;border-radius: 50%;padding: 10px;-webkit-border-radius: 50%;-moz-border-radius: 50%;" src="https://gitlab.lcsb.uni.lu/lcsb-biocore/COBREXA.jl/-/jobs/artifacts/master/raw/output.gif?job=documentation-assets:gource" alt="history"><br>
 Development history of COBREXA.jl.
 </div>
 ```
