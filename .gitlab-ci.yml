@@ -273,7 +273,7 @@ pages:
 #
 
 trigger:
-  stage: test
+  stage: test-compat
   image: curlimages/curl
   tags:
     - privileged
