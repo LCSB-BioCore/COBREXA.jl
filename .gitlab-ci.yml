@@ -1,8 +1,8 @@
 
 stages:
   - test # this checks the viability of the code
-  - docdata # this builds stuff and assets for the documentation
-  - documentation # this builds and deploys the actual documentation
+  - documentation-assets # this builds assets to be included in documentation
+  - documentation # this processes the documentation
   - test-compat # this runs many additional compatibility tests
 
 variables:
@@ -14,22 +14,22 @@ variables:
 # Predefined conditions for triggering jobs
 #
 
-.global_on_check_incoming_code: &global_on_check_incoming_code
+.global_trigger_check_incoming_code: &global_trigger_check_incoming_code
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
 
-.global_on_build_doc: &global_on_build_doc
+.global_trigger_build_doc: &global_trigger_build_doc
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_TAG =~ /^v/
 
-.global_on_full_tests: &global_on_full_tests
+.global_trigger_full_tests: &global_trigger_full_tests
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_TAG =~ /^v/
 
-.global_on_compat_tests: &global_on_compat_tests
+.global_trigger_compat_tests: &global_trigger_compat_tests
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
 
@@ -87,7 +87,7 @@ docker:julia1.6:
     - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
   after_script:
     - julia --project=test/coverage test/coverage/coverage-summary.jl
-  <<: *global_on_check_incoming_code
+  <<: *global_trigger_check_incoming_code
 
 #
 # The required compatibility test to pass on branches&tags before the docs get
@@ -96,13 +96,13 @@ docker:julia1.6:
 
 linux:julia1.5:
   stage: test
-  <<: *global_on_full_tests
+  <<: *global_trigger_full_tests
   <<: *global_env_julia15
   <<: *global_env_linux
 
 linux:julia1.6:
   stage: test
-  <<: *global_on_full_tests
+  <<: *global_trigger_full_tests
   <<: *global_env_julia16
   <<: *global_env_linux
 
@@ -112,42 +112,42 @@ linux:julia1.6:
 
 windows8:julia1.5:
   stage: test-compat
-  <<: *global_on_compat_tests
+  <<: *global_trigger_compat_tests
   <<: *global_env_julia15
   <<: *global_env_win8
 
 windows8:julia1.6:
   stage: test-compat
-  <<: *global_on_compat_tests
+  <<: *global_trigger_compat_tests
   <<: *global_env_julia16
   <<: *global_env_win8
 
 windows10:julia1.5:
   stage: test-compat
-  <<: *global_on_compat_tests
+  <<: *global_trigger_compat_tests
   <<: *global_env_julia15
   <<: *global_env_win10
 
 windows10:julia1.6:
   stage: test-compat
-  <<: *global_on_compat_tests
+  <<: *global_trigger_compat_tests
   <<: *global_env_julia16
   <<: *global_env_win10
 
 mac:julia1.5:
   stage: test-compat
-  <<: *global_on_compat_tests
+  <<: *global_trigger_compat_tests
   <<: *global_env_julia15
   <<: *global_env_mac
 
 mac:julia1.6:
   stage: test-compat
-  <<: *global_on_compat_tests
+  <<: *global_trigger_compat_tests
   <<: *global_env_julia16
   <<: *global_env_mac
 
 #
-# Code format checker for pull-requests
+# CODE FORMAT CHECKER
 #
 
 format:
@@ -189,14 +189,16 @@ format:
             -e GITHUB_COMMENT_FORMAT \
             -e GITHUB_COMMENT \
             cloudposse/github-commenter
-  <<: *global_on_check_incoming_code
+  <<: *global_trigger_check_incoming_code
 
 #
-# Development history gif built with gource
+# DOCUMENTATION ASSETS
+#
+# This builds the development history gif using gource.
 #
 
-docdata:gource:
-  stage: docdata
+documentation-assets:gource:
+  stage: documentation-assets
   needs: [] # allow faster start
   image: docker:19.03.13
   tags:
@@ -210,28 +212,44 @@ docdata:gource:
     - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
-  <<: *global_on_build_doc
+  <<: *global_trigger_build_doc
 
 #
-# Run documentation tests
+# DOCUMENTATION TESTS
+#
+# In pull requests, triggered after the tests succeed to avoid unnecessary
+# double failure.  In normal branch testing, these get triggered with normal
+# tests (the error should be visible ASAP). We avoid a separate stage to keep
+# the pipeline parallelizable.
 #
 
-doc-tests:julia1.6:
-  stage: test
+.global_doctests: &global_doctests
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
-  <<: *global_on_full_tests
+
+# this gets triggered on pull requests after the tests (to avoid unnecessary
+# double failure if the tests fail already)
+doc-tests-pr:julia1.6:
+  stage: documentation
+  <<: *global_doctests
+  <<: *global_trigger_check_incoming_code
+
+# this gets triggered in comprehensive tests
+doc-tests:julia1.6:
+  stage: test
+  <<: *global_doctests
+  <<: *global_trigger_full_tests
 
 #
-# Build and deploy the documentation
+# DOCUMENTATION
 #
 
 pages:
   stage: documentation
   dependencies:
-    - docdata:gource
+    - documentation-assets:gource
       # Note: This dependency is also implied by the stage ordering, but let's
       # be sure. As of Nov 2021, the assets are not used directly, but referred
       # to externally from the docs.
@@ -248,10 +266,13 @@ pages:
   artifacts:
     paths:
       - public
-  <<: *global_on_build_doc
+  <<: *global_trigger_build_doc
 
 #
-# Trigger the test pipeline in external repo
+# EXTERNAL REPOSITORIES
+#
+# This trigger the test pipeline in external repo as defined by gitlab
+# variables.
 #
 
 trigger:
@@ -261,4 +282,4 @@ trigger:
     - privileged
   script:
     - curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
-  <<: *global_on_full_tests
+  <<: *global_trigger_full_tests
