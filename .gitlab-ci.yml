@@ -258,10 +258,10 @@ pages:
     # resolve and build packages from the docs/Project.toml file
     - julia --project=docs -e 'using Pkg; Pkg.resolve(); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
 
-    # deploy doc (the without git history)
+    # build and deploy docs (this doesn't upload the gource animation asset)
     - julia --project=docs --color=yes docs/make.jl
 
-    # move to the directory picked up by Gitlab pages (with git history)
+    # move to the directory to be picked up by Gitlab pages (with assets)
     - mv docs/build public
   artifacts:
     paths:
