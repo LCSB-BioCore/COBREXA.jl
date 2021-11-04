@@ -23,13 +23,13 @@ variables:
     - if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_TAG =~ /^v/
 
-.global_on_full_test: &global_on_full_tests
+.global_on_full_tests: &global_on_full_tests
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_TAG =~ /^v/
 
-.global_on_compat_test: &global_on_compat_test
+.global_on_compat_tests: &global_on_compat_tests
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
 
@@ -96,13 +96,13 @@ docker:julia1.6:
 
 linux:julia1.5:
   stage: test
-  <<: *global_on_full_test
+  <<: *global_on_full_tests
   <<: *global_env_julia15
   <<: *global_env_linux
 
 linux:julia1.6:
   stage: test
-  <<: *global_on_full_test
+  <<: *global_on_full_tests
   <<: *global_env_julia16
   <<: *global_env_linux
 
@@ -112,37 +112,37 @@ linux:julia1.6:
 
 windows8:julia1.5:
   stage: test-compat
-  <<: *global_on_compat_test
+  <<: *global_on_compat_tests
   <<: *global_env_julia15
   <<: *global_env_win8
 
 windows8:julia1.6:
   stage: test-compat
-  <<: *global_on_compat_test
+  <<: *global_on_compat_tests
   <<: *global_env_julia16
   <<: *global_env_win8
 
 windows10:julia1.5:
   stage: test-compat
-  <<: *global_on_compat_test
+  <<: *global_on_compat_tests
   <<: *global_env_julia15
   <<: *global_env_win10
 
 windows10:julia1.6:
   stage: test-compat
-  <<: *global_on_compat_test
+  <<: *global_on_compat_tests
   <<: *global_env_julia16
   <<: *global_env_win10
 
 mac:julia1.5:
   stage: test-compat
-  <<: *global_on_compat_test
+  <<: *global_on_compat_tests
   <<: *global_env_julia15
   <<: *global_env_mac
 
 mac:julia1.6:
   stage: test-compat
-  <<: *global_on_compat_test
+  <<: *global_on_compat_tests
   <<: *global_env_julia16
   <<: *global_env_mac
 
@@ -222,7 +222,7 @@ doc-tests:julia1.6:
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
-  <<: *global_on_full_test
+  <<: *global_on_full_tests
 
 #
 # Build and deploy the documentation
@@ -261,4 +261,4 @@ trigger:
     - privileged
   script:
     - curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
-  <<: *global_on_full_test
+  <<: *global_on_full_tests
