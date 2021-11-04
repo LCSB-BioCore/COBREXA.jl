@@ -5,8 +5,9 @@ using COBREXA
 # some settings
 dev_docs_folder = "dev"
 pages_branch = "gh-pages"
-github_repo_slug = "LCSB-BioCore/COBREXA.jl"
-delete!(ENV, "GITHUB_REPOSITORY")
+
+# This must match the repo slug on github!
+github_repo_slug = ENV["CI_PROJECT_NAMESPACE"] * "/" * ENV["CI_PROJECT_NAME"]
 
 # Documenter tries to guess the repo slug from git remote URL but that doesn't
 # work really well here, this is the only fallback. (See Documenter.jl
