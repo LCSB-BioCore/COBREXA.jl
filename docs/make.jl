@@ -79,18 +79,12 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "User guide" => [
-            "Quickstart tutorials" => vcat(
-                "All tutorials" => "tutorials.md",
-                find_mds("tutorials"),
-            ),
-            "Advanced tutorials" => vcat(
-                "All advanced tutorials" => "advanced.md",
-                find_mds("advanced"),
-            ),
-            "Examples and notebooks" => vcat(
-                "All notebooks" => "notebooks.md",
-                find_mds("notebooks"),
-            ),
+            "Quickstart tutorials" =>
+                vcat("All tutorials" => "tutorials.md", find_mds("tutorials")),
+            "Advanced tutorials" =>
+                vcat("All advanced tutorials" => "advanced.md", find_mds("advanced")),
+            "Examples and notebooks" =>
+                vcat("All notebooks" => "notebooks.md", find_mds("notebooks")),
         ],
         "Types and functions" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
