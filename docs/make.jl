@@ -10,7 +10,8 @@ pages_branch = "gh-pages"
 github_repo_slug = ENV["CI_PROJECT_NAMESPACE"] * "/" * ENV["CI_PROJECT_NAME"]
 
 # Documenter tries to guess the repo slug from git remote URL but that doesn't
-# work really well here, this is the only fallback. (See Documenter.jl
+# work really well here, this is the only fallback. If this breaks, "Edit on
+# GitHub" links will stop working. (See Documenter.jl source in
 # src/Utilities/Utilities.jl, in November 2021 it was around line 500) -mk
 ENV["TRAVIS_REPO_SLUG"] = github_repo_slug
 
@@ -20,8 +21,6 @@ notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
 @info "base names:" notebooks_basenames
 notebooks = joinpath.(notebooks_path, notebooks_basenames)
 notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
-
-
 
 for notebook in notebooks
     Literate.markdown(
@@ -57,6 +56,7 @@ cp(
     force = true,
 )
 
+# a helper for sourcing the documentation files from directories
 find_mds(path) =
     joinpath.(
         Ref(path),
