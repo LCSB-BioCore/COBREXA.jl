@@ -142,6 +142,5 @@ deploydocs(
     repo = "github.com/$github_repo_slug.git",
     target = "build",
     branch = pages_branch,
-    push_preview = true,
     devbranch = "develop",
 )
