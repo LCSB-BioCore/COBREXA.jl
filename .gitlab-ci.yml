@@ -1,68 +1,165 @@
+
 stages:
-  - generator
-  - test-basic
-  - test-required
-  - documentation
-  - test-additional-v1.5
-  - test-additional-v1.6
+  - test # this checks the viability of the code
+  - documentation-assets # this builds assets to be included in documentation
+  - documentation # this processes the documentation
+  - test-compat # this runs many additional compatibility tests
 
 variables:
-    GIT_STRATEGY: clone
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
+  GIT_STRATEGY: clone
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
 
-.global_settings: &global_settings_pull
+#
+# Predefined conditions for triggering jobs
+#
+
+.global_trigger_pull_request: &global_trigger_pull_request
   rules:
-   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+    - if: $CI_COMMIT_BRANCH == "develop"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
 
-.global_settings: &global_settings_comprehensive
+.global_trigger_build_doc: &global_trigger_build_doc
   rules:
-   - if: $CI_COMMIT_BRANCH == "master"
-   - if: $CI_COMMIT_BRANCH == "develop"
-   - if: $CI_COMMIT_TAG =~ /^v/
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_TAG =~ /^v/
 
-.global_testing_v15: &global_testing_v15
+.global_trigger_full_tests: &global_trigger_full_tests
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_TAG =~ /^v/
+
+.global_trigger_compat_tests: &global_trigger_compat_tests
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
+#
+# Test environment & platform settings
+#
+
+.global_julia15: &global_julia15
   variables:
     JULIA_VER: "v1.5.3"
 
-.global_testing_v16: &global_testing_v16
+.global_julia16: &global_julia16
   variables:
     JULIA_VER: "v1.6.0"
 
-# platform-specific test settings
-# --------------------------------------
-
-.global_testing_linux: &global_testing_linux
-  tags:
-   - slave01
+.global_env_linux: &global_env_linux
   script:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
-.global_testing_win8: &global_testing_win8
-  tags:
-    - windows8
-
-.global_testing_win10: &global_testing_win10
-  tags:
-    - windows10
-
-.global_testing_win: &global_testing_win
+.global_env_win: &global_env_win
   script:
     - $global:LASTEXITCODE = 0 # Note the global prefix.
-    - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'"
+    - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia" --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
     - exit $LASTEXITCODE
 
-.global_testing_mac: &global_testing_mac
+.global_env_win8: &global_env_win8
+  tags:
+    - windows8
+  <<: *global_env_win
+
+.global_env_win10: &global_env_win10
+  tags:
+    - windows10
+  <<: *global_env_win
+
+.global_env_mac: &global_env_mac
   tags:
     - mac
   script:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
-# Check the format of the code
-# --------------------------------------
+#
+# TESTS
+#
+# The "basic" required test that gets triggered for the basic testing, runs in
+# any available docker and current julia
+#
+
+docker:julia1.6:
+  stage: test
+  image: $CI_REGISTRY/r3/docker/julia-custom
+  script:
+    - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+  after_script:
+    - julia --project=test/coverage test/coverage/coverage-summary.jl
+  <<: *global_trigger_pull_request
+
+#
+# The required compatibility test to pass on branches&tags before the docs get
+# built & deployed
+#
+
+linux:julia1.5:
+  stage: test
+  tags:
+    - slave01
+  <<: *global_trigger_full_tests
+  <<: *global_julia15
+  <<: *global_env_linux
+
+linux:julia1.6:
+  stage: test
+  tags:
+    - slave02
+  <<: *global_trigger_full_tests
+  <<: *global_julia16
+  <<: *global_env_linux
+
+#
+# Additional platform&environment compatibility tests
+#
+
+windows8:julia1.5:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia15
+  <<: *global_env_win8
+
+windows10:julia1.5:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia15
+  <<: *global_env_win10
+
+mac:julia1.5:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia15
+  <<: *global_env_mac
+
+windows8:julia1.6:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia16
+  <<: *global_env_win8
+
+windows10:julia1.6:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia16
+  <<: *global_env_win10
+
+mac:julia1.6:
+  stage: test-compat
+  <<: *global_trigger_compat_tests
+  <<: *global_julia16
+  <<: *global_env_mac
+
+#
+# CODE FORMAT CHECKER
+#
 
 format:
-  stage: test-basic
+  stage: test
   image: docker:19.03.13
   tags:
     - privileged
@@ -100,13 +197,17 @@ format:
             -e GITHUB_COMMENT_FORMAT \
             -e GITHUB_COMMENT \
             cloudposse/github-commenter
-  <<: *global_settings_pull
+  <<: *global_trigger_pull_request
 
-# Documentation history
-# --------------------------------------
+#
+# DOCUMENTATION ASSETS
+#
+# This builds the development history gif using gource.
+#
 
-generator:gource:
-  stage: generator
+documentation-assets:gource:
+  stage: documentation-assets
+  needs: [] # allow faster start
   image: docker:19.03.13
   tags:
     - privileged
@@ -119,123 +220,71 @@ generator:gource:
     - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
-  <<: *global_settings_comprehensive
+  <<: *global_trigger_build_doc
 
-# Documentation tests
-# --------------------------------------
+#
+# DOCUMENTATION TESTS
+#
+# In pull requests, triggered after the tests succeed to avoid unnecessary
+# double failure.  In normal branch testing, these get triggered with normal
+# tests (the error should be visible ASAP). We avoid a separate stage to keep
+# the pipeline parallelizable.
+#
 
-doc-tests:v1.6:
-  stage: documentation
+.global_doctests: &global_doctests
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
     - julia --project=@. --color=yes test/doctests.jl
-  <<: *global_settings_pull
 
-# Deploy the documentation
-# --------------------------------------
+doc-tests-pr:julia1.6:
+  stage: documentation
+  <<: *global_doctests
+  <<: *global_trigger_pull_request
+
+doc-tests:julia1.6:
+  stage: test
+  <<: *global_doctests
+  <<: *global_trigger_full_tests
+
+#
+# DOCUMENTATION
+#
 
 pages:
   stage: documentation
   dependencies:
-    - generator:gource
+    - documentation-assets:gource
+      # Note: This dependency is also implied by the stage ordering, but let's
+      # be sure. As of Nov 2021, the assets are not used directly, but referred
+      # to externally from the docs.
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
     # resolve and build packages from the docs/Project.toml file
     - julia --project=docs -e 'using Pkg; Pkg.resolve(); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
 
-    # deploy doc (without git history)
+    # build and deploy docs (this doesn't upload the gource animation asset)
     - julia --project=docs --color=yes docs/make.jl
 
-    # move to the directory picked up by Gitlab pages (with git history)
+    # move to the directory to be picked up by Gitlab pages (with assets)
     - mv docs/build public
   artifacts:
     paths:
       - public
-  <<: *global_settings_comprehensive
+  <<: *global_trigger_build_doc
 
-# Test Docker run with Julia v1.6
-# --------------------------------------
-
-docker:v1.6:
-  stage: test-basic
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  script:
-    - julia --check-bounds=yes --inline=yes --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
-  after_script:
-    - julia --project=test/coverage test/coverage/coverage-summary.jl
-  <<: *global_settings_pull
-
-# Test Julia v1.5
-# --------------------------------------
-
-linux:v1.5:
-  stage: test-required
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v15
-  <<: *global_testing_linux
-
-windows10:v1.5:
-  stage: test-additional-v1.5
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v15
-  <<: *global_testing_win10
-  <<: *global_testing_win
-
-windows8:v1.5:
-  stage: test-additional-v1.5
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v15
-  <<: *global_testing_win8
-  <<: *global_testing_win
-
-mac:v1.5:
-  stage: test-additional-v1.5
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v15
-  <<: *global_testing_mac
-
-# Test Julia v1.6
-# --------------------------------------
-
-linux:v1.6:
-  stage: test-additional-v1.6
-  needs: ["linux:v1.5"]
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v16
-  <<: *global_testing_linux
-
-windows10:v1.6:
-  stage: test-additional-v1.6
-  needs: ["windows10:v1.5"]
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v16
-  <<: *global_testing_win10
-  <<: *global_testing_win
-
-windows8:v1.6:
-  stage: test-additional-v1.6
-  needs: ["windows8:v1.5"]
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v16
-  <<: *global_testing_win8
-  <<: *global_testing_win
-
-mac:v1.6:
-  stage: test-additional-v1.6
-  needs: ["mac:v1.5"]
-  <<: *global_settings_comprehensive
-  <<: *global_testing_v16
-  <<: *global_testing_mac
-
-# Trigger test pipelines in external repo
-# --------------------------------------
+#
+# EXTERNAL REPOSITORIES
+#
+# This trigger the test pipeline in external repo as defined by gitlab
+# variables.
+#
 
 trigger:
-  stage: test-required
+  stage: test-compat
   image: curlimages/curl
   tags:
     - privileged
   script:
     - curl --silent --output /dev/null -X POST -F token=$EXTERNAL_REPO_TOKEN -F ref=$EXTERNAL_REPO_BRANCH $EXTERNAL_REPO
-  <<: *global_settings_comprehensive
+  <<: *global_trigger_full_tests

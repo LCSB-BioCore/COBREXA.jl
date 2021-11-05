@@ -18,7 +18,7 @@
 [cov-url]: https://codecov.io/gh/LCSB-BioCore/COBREXA.jl
 
 [contrib-img]: https://img.shields.io/badge/contributions-start%20here-green
-[contrib-url]: https://lcsb-biocore.github.io/COBREXA.jl/dev/howToContribute/
+[contrib-url]: https://lcsb-biocore.github.io/COBREXA.jl/stable/howToContribute/
 
 [repostatus-url]: https://www.repostatus.org/#active
 [repostatus-img]: https://www.repostatus.org/badges/latest/active.svg
