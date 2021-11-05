@@ -155,6 +155,8 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     modifications = [
         silence, # silence the optimizer (OSQP is very verbose by default)
         change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
+        change_optimizer_attribute("polish", true),
+        change_optimizer_attribute("max-iter", 10_000),
     ],
 )
 
@@ -176,6 +178,7 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
     qp_modifications = [
         change_optimizer(OSQP.Optimizer), # now switch to OSQP (Tulip wouldn't be able to finish the computation)
         change_optimizer_attribute("polish", true), # get an accurate solution, see OSQP's documentation
+        change_optimizer_attribute("max-iter", 10_000),
         silence, # and make it quiet.
     ],
 )
@@ -188,7 +191,11 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
 reference_fluxes = parsimonious_flux_balance_analysis_dict( # reference distribution
     model,
     OSQP.Optimizer;
-    modifications = [silence, change_optimizer_attribute("polish", true)],
+    modifications = [
+        silence,
+        change_optimizer_attribute("polish", true),
+        change_optimizer_attribute("max-iter", 10_000),
+    ],
 )
 
 moma = minimize_metabolic_adjustment_analysis_dict(
@@ -198,6 +205,7 @@ moma = minimize_metabolic_adjustment_analysis_dict(
     modifications = [
         silence,
         change_optimizer_attribute("polish", true),
+        change_optimizer_attribute("max-iter", 10_000),
         change_constraint("R_CYTBD"; lb = 0.0, ub = 0.0), # find flux distribution closest to the CYTBD knockout
     ],
 )
@@ -248,6 +256,7 @@ moment_moma = minimize_metabolic_adjustment_analysis_dict(
     modifications = [
         silence,
         change_optimizer_attribute("polish", true),
+        change_optimizer_attribute("max-iter", 10_000),
         change_constraint("EX_glc__D_e", lb = -1000),
         change_constraint("CYTBD"; lb = 0, ub = 0),
         add_moment_constraints(ksas, protein_mass_fraction;),
