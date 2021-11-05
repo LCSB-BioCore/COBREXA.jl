@@ -58,7 +58,7 @@ variables:
 .global_env_win: &global_env_win
   script:
     - $global:LASTEXITCODE = 0 # Note the global prefix.
-    - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia" --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
+    - Invoke-Expression $Env:ARTENOLIS_SOFT_PATH"\julia\"$Env:JULIA_VER"\bin\julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'"
     - exit $LASTEXITCODE
 
 .global_env_win8: &global_env_win8
