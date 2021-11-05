@@ -5,7 +5,7 @@
         model,
         Tulip.Optimizer;
         modifications = [
-            change_constraint("EX_m1(e)", lb=-10.0),
+            change_constraint("EX_m1(e)", lb = -10.0),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
         qp_modifications = [

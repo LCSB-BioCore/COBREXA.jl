@@ -7,15 +7,8 @@
         model,
         sol,
         OSQP.Optimizer;
-        modifications = [
-            silence,
-            change_optimizer_attribute("polish", true),
-        ],
+        modifications = [silence, change_optimizer_attribute("polish", true)],
     )
 
-    @test isapprox(
-        moma["biomass1"],
-        0.07692307692307691,
-        atol = QP_TEST_TOLERANCE,
-    )
+    @test isapprox(moma["biomass1"], 0.07692307692307691, atol = QP_TEST_TOLERANCE)
 end

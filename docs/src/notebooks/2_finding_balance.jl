@@ -189,10 +189,7 @@ vec_soln = parsimonious_flux_balance_analysis_vec(
 reference_fluxes = parsimonious_flux_balance_analysis_dict( # reference distribution
     model,
     OSQP.Optimizer;
-    modifications = [
-        silence,
-        change_optimizer_attribute("polish", true),
-    ],
+    modifications = [silence, change_optimizer_attribute("polish", true)],
 )
 
 moma = minimize_metabolic_adjustment_analysis_dict(
