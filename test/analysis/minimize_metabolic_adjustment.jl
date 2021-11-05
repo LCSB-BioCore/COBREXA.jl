@@ -10,7 +10,6 @@
         modifications = [
             silence,
             change_optimizer_attribute("polish", true),
-            change_optimizer_attribute("max-iter", 100_000),
         ],
     )
 

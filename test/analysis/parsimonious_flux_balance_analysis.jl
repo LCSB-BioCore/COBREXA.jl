@@ -11,7 +11,6 @@
         qp_modifications = [
             change_optimizer(OSQP.Optimizer),
             change_optimizer_attribute("polish", true),
-            change_optimizer_attribute("max-iter", 10_000),
             silence,
         ],
     )
