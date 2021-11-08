@@ -155,6 +155,7 @@ dict_soln = parsimonious_flux_balance_analysis_dict(
     modifications = [
         silence, # silence the optimizer (OSQP is very verbose by default)
         change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
+        change_optimizer_attribute("polish", true),
     ],
 )
 
@@ -248,6 +249,7 @@ moment_moma = minimize_metabolic_adjustment_analysis_dict(
     modifications = [
         silence,
         change_optimizer_attribute("polish", true),
+        change_optimizer_attribute("max-iter", 10_000),
         change_constraint("EX_glc__D_e", lb = -1000),
         change_constraint("CYTBD"; lb = 0, ub = 0),
         add_moment_constraints(ksas, protein_mass_fraction;),

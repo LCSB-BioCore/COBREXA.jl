@@ -1,26 +1,14 @@
 @testset "MOMA" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = test_toyModel()
 
-    sol = parsimonious_flux_balance_analysis_dict(
-        model,
-        OSQP.Optimizer;
-        modifications = [silence, change_optimizer_attribute("polish", true)],
-    )
+    sol = [looks_like_biomass_reaction(rid) ? 0.5 : 0.0 for rid in reactions(model)]
 
     moma = minimize_metabolic_adjustment_analysis_dict(
         model,
         sol,
         OSQP.Optimizer;
-        modifications = [
-            silence,
-            change_optimizer_attribute("polish", true),
-            change_constraint("CYTBD"; lb = 0.0, ub = 0.0),
-        ],
+        modifications = [silence, change_optimizer_attribute("polish", true)],
     )
 
-    @test isapprox(
-        moma["BIOMASS_Ecoli_core_w_GAM"],
-        0.06214149238730545,
-        atol = QP_TEST_TOLERANCE,
-    )
+    @test isapprox(moma["biomass1"], 0.07692307692307691, atol = QP_TEST_TOLERANCE)
 end
