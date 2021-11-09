@@ -136,3 +136,91 @@ function _unparse_grr(::Type{String}, grr::GeneAssociation)::String
     grr_string = join(grr_strings, " or ")
     return grr_string
 end
+
+"""
+    enzyme_availability(
+        grr::GeneAssociation,
+        gene_availability::Function;
+        or_function,
+        and_function,
+    )
+
+Compute the amount of enzyme available for catalyzing a reaction from
+[`GeneAssociation`](@ref) `grr` and amount of genes available. The function
+will use `gene_available` to query for gene identifiers strings in order to
+receive the gene availability values, combine these using `and_function` and
+`or_function` for the levels of DNF grr, and return the result. Other overloads
+of the method provide simplified interface for querying dictionaries, and
+pre-set functions for combining the expressions.
+"""
+enzyme_availability(
+    grr::GeneAssociation,
+    gene_availability::Function;
+    or_function,
+    and_function,
+)::Float64 = or_function(map(gs -> and_function(map(gene_availability, gs)), grr))
+
+"""
+    enzyme_availability(
+        grr::GeneAssociation,
+        gene_availability::Dict{String,A};
+        kwargs...,
+    )
+
+Overload of [`enzyme_availability`](@ref) that takes the amounts of available
+genes from a dictionary. Error is thrown in case of genes missing in the
+dictionary.
+"""
+enzyme_availability(
+    grr::GeneAssociation,
+    gene_availability::Dict{String,A};
+    kwargs...,
+) where {A} = enzyme_availability(grr, g -> gene_availability[g]; kwargs...)
+
+"""
+    enzyme_availability(
+        grr::GeneAssociation,
+        gene_availability::Dict{String,A},
+        default::A;
+        kwargs...,
+    )
+
+Overload of [`enzyme_availability`](@ref) that takes the amounts of available
+genes from a dictionary. The `default` is used for values missing in the
+dictionary.
+"""
+enzyme_availability(
+    grr::GeneAssociation,
+    gene_availability::Dict{String,A},
+    default::A;
+    kwargs...,
+) where {A} = enzyme_availability(grr, g -> get(gene_availability, g, default); kwargs...)
+
+"""
+    enzyme_availability_probabilistic(args...; kwargs...)
+
+Variant of [`enzyme_availability`](@ref) that sets up `and_function` and
+`or_function` so that the amounts of genes are interpreted as probabilities.
+Forwards all arguments to [`enzyme_availability`](@ref).
+"""
+enzyme_availability_probabilistic(args...; kwargs...) = enzyme_availability(
+    args...;
+    or_function = vs -> 1 - prod(1 .- vs),
+    and_function = prod,
+    kwargs...,
+)
+
+"""
+    enzyme_availability_eflux(args...; kwargs...)
+
+Variant of [`enzyme_availability`](@ref) that sets up `and_function` and
+`or_function` so that the relative amounts of genes material are interpreted
+similarly as in E-Flux algorithm, taking a minimum of each gene group, then
+adding the results.  Forwards all arguments to [`enzyme_availability`](@ref).
+
+For details, see: Colijn, Caroline, et al. "Interpreting expression data with
+metabolic flux models: predicting Mycobacterium tuberculosis mycolic acid
+production." PLoS computational biology 5.8 (2009): e1000489.
+"""
+enzyme_availability_eflux(args...; kwargs...) =
+    enzyme_availability(args...; or_function = sum, and_function = min, kwargs...)
