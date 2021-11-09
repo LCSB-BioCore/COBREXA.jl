@@ -217,10 +217,6 @@ Variant of [`enzyme_availability`](@ref) that sets up `and_function` and
 `or_function` so that the relative amounts of genes material are interpreted
 similarly as in E-Flux algorithm, taking a minimum of each gene group, then
 adding the results.  Forwards all arguments to [`enzyme_availability`](@ref).
-
-For details, see: Colijn, Caroline, et al. "Interpreting expression data with
-metabolic flux models: predicting Mycobacterium tuberculosis mycolic acid
-production." PLoS computational biology 5.8 (2009): e1000489.
 """
 enzyme_availability_eflux(args...; kwargs...) =
     enzyme_availability(args...; or_function = sum, and_function = min, kwargs...)
