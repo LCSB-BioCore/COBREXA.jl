@@ -14,28 +14,27 @@ mutable struct CoreModel <: MetabolicModel
     S::SparseMat
     b::SparseVec
     c::SparseVec
-    xl::SparseVec
-    xu::SparseVec
+    xl::Vector{Float64}
+    xu::Vector{Float64}
     rxns::Vector{String}
     mets::Vector{String}
 
     function CoreModel(
-        S::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K,
-    ) where {V<:VecType,M<:MatType,K<:StringVecType}
-
+        S::MatType,
+        b::VecType,
+        c::VecType,
+        xl::VecType,
+        xu::VecType,
+        rxns::StringVecType,
+        mets::StringVecType,
+    )
         all([length(b), length(mets)] .== size(S, 1)) ||
             throw(DimensionMismatch("inconsistent number of metabolites"))
 
         all([length(c), length(xl), length(xu), length(rxns)] .== size(S, 2)) ||
             throw(DimensionMismatch("inconsistent number of reactions"))
 
-        new(sparse(S), sparse(b), sparse(c), sparse(xl), sparse(xu), rxns, mets)
+        new(sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets)
     end
 end
 
@@ -61,11 +60,11 @@ metabolites(a::CoreModel)::Vector{String} = a.mets
 stoichiometry(a::CoreModel)::SparseMat = a.S
 
 """
-    bounds(a::CoreModel)::Tuple{SparseVec,SparseVec}
+    bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}}
 
 `CoreModel` flux bounds.
 """
-bounds(a::CoreModel)::Tuple{SparseVec,SparseVec} = (a.xl, a.xu)
+bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
 
 """
     balance(a::CoreModel)::SparseVec
