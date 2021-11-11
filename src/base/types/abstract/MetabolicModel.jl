@@ -105,11 +105,11 @@ function stoichiometry(a::MetabolicModel)::SparseMat
 end
 
 """
-    bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
+    bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
 
 Get the lower and upper flux bounds of a model.
 """
-function bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
+function bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     _missing_impl_error(bounds, (a,))
 end
 
@@ -151,12 +151,12 @@ function n_coupling_constraints(a::MetabolicModel)::Int
 end
 
 """
-    coupling_bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
+    coupling_bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
 
 Get the lower and upper bounds for each coupling bound in a model, as specified
 by `coupling`. By default, the model does not have any coupling bounds.
 """
-function coupling_bounds(a::MetabolicModel)::Tuple{SparseVec,SparseVec}
+function coupling_bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     return (spzeros(0), spzeros(0))
 end
 
