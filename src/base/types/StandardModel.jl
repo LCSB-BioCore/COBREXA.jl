@@ -144,29 +144,29 @@ function stoichiometry(model::StandardModel)::SparseMat
 end
 
 """
-    lower_bounds(model::StandardModel)
+    lower_bounds(model::StandardModel)::Vector{Float64}
 
 Return the lower bounds for all reactions in `model` in sparse format.
 """
-lower_bounds(model::StandardModel)::SparseVec =
+lower_bounds(model::StandardModel)::Vector{Float64} =
     sparse([model.reactions[rxn].lb for rxn in reactions(model)])
 
 """
-    upper_bounds(model::StandardModel)
+    upper_bounds(model::StandardModel)::Vector{Float64}
 
 Return the upper bounds for all reactions in `model` in sparse format.
 Order matches that of the reaction ids returned in `reactions()`.
 """
-upper_bounds(model::StandardModel)::SparseVec =
+upper_bounds(model::StandardModel)::Vector{Float64} =
     sparse([model.reactions[rxn].ub for rxn in reactions(model)])
 
 """
-    bounds(model::StandardModel)
+    bounds(model::StandardModel)::Tuple{Vector{Float64},Vector{Float64}}
 
 Return the lower and upper bounds, respectively, for reactions in `model`.
 Order matches that of the reaction ids returned in `reactions()`.
 """
-bounds(model::StandardModel)::Tuple{SparseVec,SparseVec} =
+bounds(model::StandardModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
 """
