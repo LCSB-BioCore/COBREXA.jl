@@ -69,7 +69,7 @@ minimize_metabolic_adjustment(flux_ref::Vector{Float64}) =
     end
 
 """
-    minimize_metabolic_adjustment(flux_ref_dict::Dict{String, Float64}) 
+    minimize_metabolic_adjustment(flux_ref_dict::Dict{String, Float64})
 
 Overload of [`minimize_metabolic_adjustment`](@ref) that works with a
 dictionary of fluxes.

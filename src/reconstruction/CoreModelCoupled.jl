@@ -202,12 +202,7 @@ function add_coupling_constraints!(
     cl::AbstractFloat,
     cu::AbstractFloat,
 )
-    return add_coupling_constraints!(
-        m,
-        sparse(reshape(c, (1, length(c)))),
-        sparse([cl]),
-        sparse([cu]),
-    )
+    return add_coupling_constraints!(m, sparse(reshape(c, (1, length(c)))), [cl], [cu])
 end
 
 
@@ -237,8 +232,8 @@ function add_coupling_constraints!(
         throw(DimensionMismatch("mismatched number of reactions"))
 
     m.C = vcat(m.C, sparse(C))
-    m.cl = vcat(m.cl, sparse(cl))
-    m.cu = vcat(m.cu, sparse(cu))
+    m.cl = vcat(m.cl, collect(cl))
+    m.cu = vcat(m.cu, collect(cu))
 end
 
 

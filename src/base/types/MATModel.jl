@@ -59,8 +59,8 @@ stoichiometry(m::MATModel) = sparse(m.mat["S"])
 Extracts bounds from the MAT file, saved under `lb` and `ub`.
 """
 bounds(m::MATModel) = (
-    sparse(reshape(get(m.mat, "lb", fill(-Inf, n_reactions(m), 1)), n_reactions(m))),
-    sparse(reshape(get(m.mat, "ub", fill(Inf, n_reactions(m), 1)), n_reactions(m))),
+    reshape(get(m.mat, "lb", fill(-Inf, n_reactions(m), 1)), n_reactions(m)),
+    reshape(get(m.mat, "ub", fill(Inf, n_reactions(m), 1)), n_reactions(m)),
 )
 
 """

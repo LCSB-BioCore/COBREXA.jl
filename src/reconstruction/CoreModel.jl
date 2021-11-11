@@ -26,8 +26,8 @@ function add_reactions!(model::CoreModel, rxns::Vector{Reaction})
     Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))
     model.S = [model.S Sadd]
     model.c = dropzeros([model.c; cs])
-    model.xu = sparse(ubs)
-    model.xl = sparse(lbs)
+    model.xu = ubs
+    model.xl = lbs
     return nothing
 end
 
@@ -42,25 +42,25 @@ add_reaction!(model::CoreModel, rxn::Reaction) = add_reactions!(model, [rxn])
 """
     add_reactions(
         m::CoreModel,
-        s::V1,
-        b::V2,
+        s::VecType,
+        b::VecType,
         c::AbstractFloat,
         xl::AbstractFloat,
         xu::AbstractFloat;
         check_consistency = false,
-    ) where {V1<:VecType,V2<:VecType}
+    )
 
 Add reaction(s) to a `CoreModel` model `m`.
 """
 function add_reactions(
     m::CoreModel,
-    s::V1,
-    b::V2,
+    s::VecType,
+    b::VecType,
     c::AbstractFloat,
     xl::AbstractFloat,
     xu::AbstractFloat;
     check_consistency = false,
-) where {V1<:VecType,V2<:VecType}
+)
     return add_reactions(
         m,
         sparse(reshape(s, (length(s), 1))),
@@ -75,27 +75,27 @@ end
 """
     add_reactions(
         m::CoreModel,
-        s::V1,
-        b::V2,
+        s::VecType,
+        b::VecType,
         c::AbstractFloat,
         xl::AbstractFloat,
         xu::AbstractFloat,
         rxn::String,
         mets::K;
         check_consistency = false,
-    ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
+    )
 """
 function add_reactions(
     m::CoreModel,
-    s::V1,
-    b::V2,
+    s::VecType,
+    b::VecType,
     c::AbstractFloat,
     xl::AbstractFloat,
     xu::AbstractFloat,
     rxn::String,
-    mets::K;
+    mets::StringVecType;
     check_consistency = false,
-) where {V1<:VecType,V2<:VecType,K<:StringVecType}
+)
     return add_reactions(
         m,
         sparse(reshape(s, (length(s), 1))),
@@ -112,23 +112,23 @@ end
 """
     add_reactions(
         m::CoreModel,
-        Sp::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V;
+        Sp::MatType,
+        b::VecType,
+        c::VecType,
+        xl::VecType,
+        xu::VecType;
         check_consistency = false,
-    ) where {M<:MatType,V<:VecType}
+    )
 """
 function add_reactions(
     m::CoreModel,
-    Sp::M,
-    b::V,
-    c::V,
-    xl::V,
-    xu::V;
+    Sp::MatType,
+    b::VecType,
+    c::VecType,
+    xl::VecType,
+    xu::VecType;
     check_consistency = false,
-) where {M<:MatType,V<:VecType}
+)
     rxns = ["r$x" for x = length(m.rxns)+1:length(m.rxns)+length(xu)]
     mets = ["m$x" for x = length(m.mets)+1:length(m.mets)+size(Sp)[1]]
     return add_reactions(
@@ -166,33 +166,32 @@ end
 """
     add_reactions(
         m::CoreModel,
-        Sp::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K;
+        Sp::MatType,
+        b::VecType,
+        c::VecType,
+        xl::VecType,
+        xu::VecType,
+        rxns::StringVecType,
+        mets::StringVecType;
         check_consistency = false,
-    ) where {M<:MatType,V<:VecType,K<:StringVecType}
+    )
 """
 function add_reactions(
     m::CoreModel,
-    Sp::M,
-    b::V,
-    c::V,
-    xl::V,
-    xu::V,
-    rxns::K,
-    mets::K;
+    Sp::MatType,
+    b::VecType,
+    c::VecType,
+    xl::VecType,
+    xu::VecType,
+    rxns::StringVecType,
+    mets::StringVecType;
     check_consistency = false,
-) where {M<:MatType,V<:VecType,K<:StringVecType}
-
+)
     Sp = sparse(Sp)
     b = sparse(b)
     c = sparse(c)
-    xl = sparse(xl)
-    xu = sparse(xu)
+    xl = collect(xl)
+    xu = collect(xu)
 
     all([length(b), length(mets)] .== size(Sp, 1)) ||
         throw(DimensionMismatch("inconsistent number of metabolites"))
@@ -251,13 +250,13 @@ end
         Sp::M,
         b::V,
         c::V,
-        xl::V,
-        xu::V,
+        xl::B,
+        xu::B,
         names::K,
         mets::K,
         new_reactions,
         new_metabolites,
-    ) where {M<:MatType,V<:VecType,K<:StringVecType}
+    ) where {M<:MatType,V<:VecType,B<:VecTypeK<:StringVecType}
 
 Check the consistency of given reactions with existing reactions in `m`.
 
@@ -268,13 +267,13 @@ function verify_consistency(
     Sp::M,
     b::V,
     c::V,
-    xl::V,
-    xu::V,
+    xl::B,
+    xu::B,
     names::K,
     mets::K,
     new_reactions,
     new_metabolites,
-) where {M<:MatType,V<:VecType,K<:StringVecType}
+) where {M<:MatType,V<:VecType,B<:VecType,K<:StringVecType}
 
     if !isempty(new_reactions)
         statuses = Vector{ReactionStatus}(undef, length(names))
