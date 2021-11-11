@@ -5,28 +5,28 @@ A variant of FBA that returns a vector of fluxes in the same order as reactions
 of the model, if the solution is found.
 
 Arguments are passed to [`flux_balance_analysis`](@ref).
+
+This function is kept for backwards compatibility, use [`flux_vector`](@ref)
+instead.
 """
-function flux_balance_analysis_vec(args...; kwargs...)::Union{Vector{Float64},Nothing}
-    optmodel = flux_balance_analysis(args...; kwargs...)
-    is_solved(optmodel) || return nothing
-    value.(optmodel[:x])
-end
+flux_balance_analysis_vec(args...; kwargs...)::Maybe{Vector{Float64}} =
+    flux_vector(flux_balance_analysis(args...; kwargs...))
 
 """
     flux_balance_analysis_dict(model::MetabolicModel, args...)::Union{Dict{String, Float64},Nothing}
 
 A variant of FBA that returns a dictionary assigning fluxes to reactions, if
 the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
+
+This function is kept for backwards compatibility, use [`flux_dict`](@ref)
+instead.
 """
-function flux_balance_analysis_dict(
+flux_balance_analysis_dict(
     model::MetabolicModel,
     args...;
     kwargs...,
-)::Union{Dict{String,Float64},Nothing}
-    v = flux_balance_analysis_vec(model, args...; kwargs...)
-    isnothing(v) && return nothing
-    Dict(zip(reactions(model), v))
-end
+)::Maybe{Dict{String,Float64}} =
+    flux_dict(model, flux_balance_analysis(model, args...; kwargs...))
 
 """
     flux_balance_analysis(

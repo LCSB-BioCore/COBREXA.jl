@@ -100,14 +100,12 @@ Perform parsimonious flux balance analysis on `model` using `optimizer`.
 Returns a vector of fluxes in the same order as the reactions in `model`.
 Arguments are forwarded to [`parsimonious_flux_balance_analysis`](@ref)
 internally.
+
+This function is kept for backwards compatibility, use [`flux_vector`](@ref)
+instead.
 """
-function parsimonious_flux_balance_analysis_vec(args...; kwargs...)
-    opt_model = parsimonious_flux_balance_analysis(args...; kwargs...)
-
-    isnothing(opt_model) && return nothing
-
-    return value.(opt_model[:x])
-end
+parsimonious_flux_balance_analysis_vec(args...; kwargs...) =
+    flux_vector(parsimonious_flux_balance_analysis(args...; kwargs...))
 
 """
     parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...)
@@ -115,11 +113,9 @@ end
 Perform parsimonious flux balance analysis on `model` using `optimizer`.
 Returns a dictionary mapping the reaction IDs to fluxes. Arguments are
 forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
+
+This function is kept for backwards compatibility, use [`flux_dict`](@ref)
+instead.
 """
-function parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...)
-    opt_fluxes = parsimonious_flux_balance_analysis_vec(model, args...; kwargs...)
-
-    isnothing(opt_fluxes) && return nothing
-
-    return Dict(zip(reactions(model), opt_fluxes))
-end
+parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...) =
+    flux_dict(model, parsimonious_flux_balance_analysis(model, args...; kwargs...))

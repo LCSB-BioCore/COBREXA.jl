@@ -87,30 +87,22 @@ minimize_metabolic_adjustment(flux_ref_dict::Dict{String,Float64}) =
 Perform minimization of metabolic adjustment (MOMA) and return a vector of fluxes in the
 same order as the reactions in `model`. Arguments are forwarded to
 [`minimize_metabolic_adjustment`](@ref) internally.
+
+This function is kept for backwards compatibility, use [`flux_vector`](@ref)
+instead.
 """
-function minimize_metabolic_adjustment_analysis_vec(args...; kwargs...)
-    opt_model = minimize_metabolic_adjustment_analysis(args...; kwargs...)
-
-    isnothing(opt_model) && return nothing
-
-    return value.(opt_model[:x])
-end
+minimize_metabolic_adjustment_analysis_vec(args...; kwargs...) =
+    flux_vector(minimize_metabolic_adjustment_analysis(args...; kwargs...))
 
 """
-    minimize_metabolic_adjustment_analysis_dict(args...; kwargs...)
+    minimize_metabolic_adjustment_analysis_dict(model::MetabolicModel, args...; kwargs...)
 
 Perform minimization of metabolic adjustment (MOMA) and return a dictionary mapping the
 reaction IDs to fluxes. Arguments are forwarded to [`minimize_metabolic_adjustment`](@ref)
 internally.
+
+This function is kept for backwards compatibility, use [`flux_vector`](@ref)
+instead.
 """
-function minimize_metabolic_adjustment_analysis_dict(
-    model::MetabolicModel,
-    args...;
-    kwargs...,
-)
-    opt_fluxes = minimize_metabolic_adjustment_analysis_vec(model, args...; kwargs...)
-
-    isnothing(opt_fluxes) && return nothing
-
-    return Dict(zip(reactions(model), opt_fluxes))
-end
+minimize_metabolic_adjustment_analysis_dict(model::MetabolicModel, args...; kwargs...) =
+    flux_dict(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))

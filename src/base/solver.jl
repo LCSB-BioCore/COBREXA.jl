@@ -32,29 +32,23 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
 end
 
 """
-    is_solved(optmodel)
+    is_solved(opt_model)
 
-Return `true` if `optmodel` solved successfully (solution is optimal or locally
+Return `true` if `opt_model` solved successfully (solution is optimal or locally
 optimal).  Return `false` if any other termination status is reached.
 Termination status is defined in the documentation of `JuMP`.
 """
-function is_solved(optmodel)
-    termination_status(optmodel) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED] ? true : false
-end
+is_solved(opt_model) = termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
 
 """
-    optimize_objective(optmodel)::Union{Float64,Nothing}
+    optimize_objective(opt_model)::Maybe{Float64}
 
 Shortcut for running JuMP `optimize!` on a model and returning the objective
 value, if solved.
 """
-function optimize_objective(optmodel)::Maybe{Float64}
-    optimize!(optmodel)
-    if is_solved(optmodel)
-        objective_value(optmodel)
-    else
-        nothing
-    end
+function optimize_objective(opt_model)::Maybe{Float64}
+    optimize!(opt_model)
+    solved_objective_value(opt_model)
 end
 
 """
@@ -88,3 +82,43 @@ function set_optmodel_bound!(
     isnothing(lb) || set_normalized_rhs(opt_model[:lbs][vidx], -lb)
     isnothing(ub) || set_normalized_rhs(opt_model[:ubs][vidx], ub)
 end
+
+
+"""
+    solved_objective_value(opt_model)::Maybe{Float64}
+
+Returns the current objective value of a model, if solved.
+
+# Example
+```
+solved_objective_value(flux_balance_analysis(model, ...))
+```
+"""
+solved_objective_value(opt_model)::Maybe{Float64} =
+    is_solved(opt_model) ? objective_value(opt_model) : nothing
+
+"""
+    flux_vector(opt_model)::Maybe{Vector{Float64}}
+
+Returns a vector of fluxes of the model, if solved.
+
+# Example
+```
+flux_vector(flux_balance_analysis(model, ...))
+```
+"""
+flux_vector(opt_model)::Maybe{Vector{Float64}} =
+    is_solved(opt_model) ? value.(opt_model[:x]) : nothing
+
+"""
+    flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String, Float64}, Nothing}
+
+Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
+
+# Example
+```
+flux_dict(model, flux_balance_analysis(model, ...))
+```
+"""
+flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
+    is_solved(opt_model) ? Dict(reactions(model) .=> value.(opt_model[:x])) : nothing
