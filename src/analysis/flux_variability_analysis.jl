@@ -140,18 +140,11 @@ mins, maxs = flux_variability_analysis_dict(
 ```
 """
 function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs...)
-    vs = flux_variability_analysis(
-        model,
-        optimizer;
-        kwargs...,
-        ret = m -> JuMP.value.(m[:x]),
-    )
+    fluxes = flux_variability_analysis(model, optimizer; kwargs..., ret = flux_vector)
     rxns = reactions(model)
+    dicts = zip.(Ref(rxns), fluxes)
 
-    return (
-        Dict(zip(rxns, [Dict(zip(rxns, fluxes)) for fluxes in vs[:, 1]])),
-        Dict(zip(rxns, [Dict(zip(rxns, fluxes)) for fluxes in vs[:, 2]])),
-    )
+    return (Dict(rxns .=> Dict.(dicts[:, 1])), Dict(rxns .=> Dict.(dicts[:, 2])))
 end
 
 """
@@ -166,9 +159,5 @@ function _max_variability_flux(opt_model, rid, ret)
     @objective(opt_model, sense, var)
     optimize!(opt_model)
 
-    if is_solved(opt_model)
-        return ret(opt_model)
-    else
-        return nothing
-    end
+    is_solved(opt_model) ? ret(opt_model) : nothing
 end
