@@ -73,8 +73,8 @@ function COBREXA.objective(m::CircularModel)
 end
 
 COBREXA.bounds(m::CircularModel) = (
-    spzeros(n_reactions(m)), # lower bounds
-    sparse(ones(n_reactions(m))), # upper bounds
+    zeros(n_reactions(m)), # lower bounds
+    ones(n_reactions(m)), # upper bounds
 )
 
 function COBREXA.stoichiometry(m::CircularModel)
