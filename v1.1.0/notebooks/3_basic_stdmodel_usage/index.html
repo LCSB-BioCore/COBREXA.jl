@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Basic usage of StandardModel · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><input class="collapse-toggle" id="menuitem-2-1" type="checkbox"/><label class="tocitem" for="menuitem-2-1"><span class="docs-label">Quickstart tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../tutorials/">All tutorials</a></li><li><a class="tocitem" href="../../tutorials/1_loading/">Loading and converting model data</a></li><li><a class="tocitem" href="../../tutorials/2_analysis/">Basic analysis of constraint-based models</a></li><li><a class="tocitem" href="../../tutorials/3_hpc/">Distributed processing and HPC environments</a></li><li><a class="tocitem" href="../../tutorials/4_modifying/">Modifying and saving the models</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-2" type="checkbox"/><label class="tocitem" for="menuitem-2-2"><span class="docs-label">Advanced tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../advanced/">All advanced tutorials</a></li><li><a class="tocitem" href="../../advanced/1_variants/">Exploring many model variants</a></li><li><a class="tocitem" href="../../advanced/2_custom_model/">Working with custom models</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-3" type="checkbox" checked/><label class="tocitem" for="menuitem-2-3"><span class="docs-label">Examples and notebooks</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../">All notebooks</a></li><li><a class="tocitem" href="../1_loading_converting_saving/">Loading, converting, and saving models</a></li><li><a class="tocitem" href="../2_finding_balance/">Finding balance and variability of constraint-based models</a></li><li class="is-active"><a class="tocitem" href>Basic usage of <code>StandardModel</code></a><ul class="internal"><li><a class="tocitem" href="#Loading-a-model"><span>Loading a model</span></a></li><li><a class="tocitem" href="#Basic-analysis"><span>Basic analysis</span></a></li><li><a class="tocitem" href="#Inspecting-the-flux-solution:-atom_fluxes"><span>Inspecting the flux solution: <code>atom_fluxes</code></span></a></li><li><a class="tocitem" href="#Inspecting-the-flux-solution:-metabolite_fluxes"><span>Inspecting the flux solution: <code>metabolite_fluxes</code></span></a></li><li><a class="tocitem" href="#Internals-of-StandardModel"><span>Internals of <code>StandardModel</code></span></a></li><li><a class="tocitem" href="#Genes,-Reactions,-and-Metabolites"><span><code>Gene</code>s, <code>Reaction</code>s, and <code>Metabolite</code>s</span></a></li><li><a class="tocitem" href="#Checking-the-internals-of-StandardModels:-annotation_index"><span>Checking the internals of <code>StandardModel</code>s: <code>annotation_index</code></span></a></li><li><a class="tocitem" href="#Checking-the-internals-of-StandardModels:-check_duplicate_reaction"><span>Checking the internals of <code>StandardModel</code>s: <code>check_duplicate_reaction</code></span></a></li><li><a class="tocitem" href="#Checking-the-internals-of-StandardModels:-reaction_mass_balanced"><span>Checking the internals of <code>StandardModel</code>s: <code>reaction_mass_balanced</code></span></a></li></ul></li><li><a class="tocitem" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code></a></li><li><a class="tocitem" href="../5_basic_stdmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../6_screening/">Exploring model variants with <code>screen</code></a></li><li><a class="tocitem" href="../7_community_model/">Building and analysing a small community model</a></li><li><a class="tocitem" href="../8_custom_model/">Using a custom model data structure</a></li><li><a class="tocitem" href="../9_max_min_driving_force_analysis/">Maximum-minimum driving force analysis</a></li></ul></li></ul></li><li><span class="tocitem">Types and functions</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li><a class="is-disabled">Examples and notebooks</a></li><li class="is-active"><a href>Basic usage of <code>StandardModel</code></a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Basic usage of <code>StandardModel</code></a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/notebooks/3_basic_stdmodel_usage.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Basic-usage-of-StandardModel"><a class="docs-heading-anchor" href="#Basic-usage-of-StandardModel">Basic usage of <code>StandardModel</code></a><a id="Basic-usage-of-StandardModel-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-usage-of-StandardModel" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/lcsb-biocore/COBREXA.jl/gh-pages?filepath=dev/notebooks/3_basic_stdmodel_usage.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/lcsb-biocore/COBREXA.jl/blob/gh-pages/dev/notebooks/3_basic_stdmodel_usage.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><p>In this tutorial we will use <code>COBREXA</code>&#39;s <code>StandardModel</code> and functions that specifically operate on it. As usual we will use the toy model of <em>E. coli</em> for demonstration.</p><pre><code class="language-julia">!isfile(&quot;e_coli_core.json&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.json&quot;, &quot;e_coli_core.json&quot;)
+
+using COBREXA</code></pre><h2 id="Loading-a-model"><a class="docs-heading-anchor" href="#Loading-a-model">Loading a model</a><a id="Loading-a-model-1"></a><a class="docs-heading-anchor-permalink" href="#Loading-a-model" title="Permalink"></a></h2><pre><code class="language-julia">model = load_model(StandardModel, &quot;e_coli_core.json&quot;) # we specifically want to load a StandardModel from the model file</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢄⠀⠀⠀⠀⠀⠀⠀⠈⠶⠴⡆⠀⠀⠀⠀⠀⠀
+⡀⢐⣀⢀⡀⡒⢒⣐⠀⣂⣂⠀⣂⣂⢂⠀⢀⠀⠀⠀⠀⠀⢀⠄⠀⠀⠀⢂⠀⢂⣀⣐⡒⡀⠆⢙⣀⠀⡀⠀
+⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠈⢑⣀⣀⠀⠀
+⠀⠀⠃⠀⠃⠀⠀⠀⠘⠀⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⡜⠀⡄⣤⢠⠘⠙⢣⡇⠘
+⠀⠐⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠐⠁⠉⠀⠀⠀⠀⠀⠘⠄
+⠀⢐⠀⠂⠀⠄⠠⠠⠀⠠⠆⠀⠄⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠠⠀⠠⠀⠀⢀⠀⠀⠠⠀⠀⠁
+⢀⠐⠀⠨⢀⠁⠈⣈⠀⢁⣁⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠁⢀⠀⢊⠉⠀⠀⠀⢀⠀⣀⠀⢀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⠀⡀⠆⠀⠆⠀⡀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠆⠀
+⠀⠀⠂⠀⡂⠀⠀⠁⠀⠀⠀⠈⠁⠀⠀⠀⠄⠄⢁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀
+⠈⠀⠁⠀⠀⢀⡀⠀⠠⠁⠁⠀⠑⠀⠐⠲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠂⠀⠀⠀⠀⠀⠀⠊⠀⠀⠀⠈
+⠄⠠⢠⠀⠰⠀⠠⠀⠤⠦⠄⠈⠀⠀⠀⠠⠀⠁⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠄⠄⠠⠀⠀⠀⠀⠀
+⠂⠐⠀⠀⠐⡠⢐⠘⢃⠒⠂⡀⠄⠀⠀⠐⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠒⠀⢀⢀⠀⠀⣀⠀⢀
+⠈⠀⠁⠀⡀⠀⠀⠀⠈⠁⠅⠀⠁⠀⢀⠈⠄⠔⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠈
+⠣⠁⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠈⠀⠁⠁⠀⠈⡀⠀⠀⠀⠀⠀⠐⢣⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠂⠄⠤⠀⠀⠈⠂⠀⠀⠀⠀⠠⠀⠊⠒⣠⠀⠀⠀⠀⠀⠀⠀⠀⠀
+Number of reactions: 95
+Number of metabolites: 72
+</pre><div class="admonition is-info"><header class="admonition-header">Note: Loading `StandardModel`s implicitly uses `convert`</header><div class="admonition-body"><p>When using <code>load_model(StandardModel, file_location)</code> the model at   <code>file_location</code> is first loaded into its inferred format and is then   converted to a <code>StandardModel</code> using the generic accessor interface.   Thus, data loss may occur. Always check your model to ensure that   nothing important has been lost.</p></div></div><h2 id="Basic-analysis"><a class="docs-heading-anchor" href="#Basic-analysis">Basic analysis</a><a id="Basic-analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-analysis" title="Permalink"></a></h2><p>As before, for optimization based analysis we need to load an optimizer. Here we will use <a href="https://github.com/ds4dm/Tulip.jl"><code>Tulip.jl</code></a> to solve the linear programs of this tutorial. Refer to the basic constraint-based analysis tutorial for more informaiton.</p><p>All the normal analysis functions work on <code>StandardModel</code>, due to it also having the same generic accessor interface as all the other model types.</p><pre><code class="language-julia">using Tulip
+
+fluxes = flux_balance_analysis_dict(
+    model,
+    Tulip.Optimizer;
+    modifications = [
+        change_objective(&quot;BIOMASS_Ecoli_core_w_GAM&quot;),
+        change_constraint(&quot;EX_glc__D_e&quot;; lb = -12, ub = -12),
+        change_constraint(&quot;EX_o2_e&quot;; lb = 0, ub = 0),
+    ],
+)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;ACALD&quot;       =&gt; -9.78427
+  &quot;PTAr&quot;        =&gt; 10.0729
+  &quot;ALCD2x&quot;      =&gt; -9.78427
+  &quot;PDH&quot;         =&gt; 1.98381e-9
+  &quot;PYK&quot;         =&gt; 9.94501
+  &quot;CO2t&quot;        =&gt; 0.487021
+  &quot;EX_nh4_e&quot;    =&gt; -1.48633
+  &quot;MALt2_2&quot;     =&gt; -0.0
+  &quot;CS&quot;          =&gt; 0.294088
+  &quot;PGM&quot;         =&gt; -22.8676
+  &quot;TKT1&quot;        =&gt; -0.0487648
+  &quot;EX_mal__L_e&quot; =&gt; -0.0
+  &quot;ACONTa&quot;      =&gt; 0.294088
+  &quot;EX_pi_e&quot;     =&gt; -1.00274
+  &quot;GLNS&quot;        =&gt; 0.069699
+  &quot;ICL&quot;         =&gt; 5.34932e-11
+  &quot;EX_o2_e&quot;     =&gt; -0.0
+  &quot;FBA&quot;         =&gt; 11.7289
+  &quot;EX_gln__L_e&quot; =&gt; -0.0
+  ⋮             =&gt; ⋮</pre><p>This is not very exciting yet, since every other model type can also do this. However, deeper inspection of flux results is possible when using <code>StandardModel</code>.</p><h2 id="Inspecting-the-flux-solution:-atom_fluxes"><a class="docs-heading-anchor" href="#Inspecting-the-flux-solution:-atom_fluxes">Inspecting the flux solution: <code>atom_fluxes</code></a><a id="Inspecting-the-flux-solution:-atom_fluxes-1"></a><a class="docs-heading-anchor-permalink" href="#Inspecting-the-flux-solution:-atom_fluxes" title="Permalink"></a></h2><p>It is sometimes interesting to keep track of the atoms entering and leaving the system through boundary reactions. This can be inspected by calling <a href="../../functions/utils/#COBREXA.atom_fluxes-Tuple{MetabolicModel, Dict{String, Float64}}"><code>atom_fluxes</code></a>. That gives you the flux of individual atoms getting consumed and produced by all reactions, based on <code>fluxes</code>. We erase the reaction that consumes the atoms for creating biomass, to see how much mass the &quot;rest&quot; of the reaction produces for it:</p><pre><code class="language-julia">fluxes_without_biomass = copy(fluxes);
+delete!(fluxes_without_biomass, &quot;BIOMASS_Ecoli_core_w_GAM&quot;);
+atom_fluxes(model, fluxes_without_biomass)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 6 entries:
+  &quot;S&quot; =&gt; 0.0
+  &quot;C&quot; =&gt; 11.5998
+  &quot;N&quot; =&gt; 1.48633
+  &quot;P&quot; =&gt; 1.00274
+  &quot;H&quot; =&gt; 20.7086
+  &quot;O&quot; =&gt; 12.995</pre><h2 id="Inspecting-the-flux-solution:-metabolite_fluxes"><a class="docs-heading-anchor" href="#Inspecting-the-flux-solution:-metabolite_fluxes">Inspecting the flux solution: <code>metabolite_fluxes</code></a><a id="Inspecting-the-flux-solution:-metabolite_fluxes-1"></a><a class="docs-heading-anchor-permalink" href="#Inspecting-the-flux-solution:-metabolite_fluxes" title="Permalink"></a></h2><p>Another useful flux result analysis function is <a href="../../functions/utils/#COBREXA.metabolite_fluxes-Tuple{MetabolicModel, Dict{String, Float64}}"><code>metabolite_fluxes</code></a>. This function gives an overview of reactions consuming and producing each metabolite.</p><pre><code class="language-julia">consuming, producing = metabolite_fluxes(model, fluxes)
+
+consuming[&quot;atp_c&quot;] # reactions consuming `atp_c`</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 8 entries:
+  &quot;PFK&quot;                      =&gt; -11.7289
+  &quot;BIOMASS_Ecoli_core_w_GAM&quot; =&gt; -16.3031
+  &quot;GLNS&quot;                     =&gt; -0.069699
+  &quot;ATPM&quot;                     =&gt; -8.39
+  &quot;ADK1&quot;                     =&gt; -1.66663e-10
+  &quot;PPCK&quot;                     =&gt; -5.66231e-11
+  &quot;PPS&quot;                      =&gt; -1.66662e-10
+  &quot;ATPS4r&quot;                   =&gt; -6.80168</pre><h2 id="Internals-of-StandardModel"><a class="docs-heading-anchor" href="#Internals-of-StandardModel">Internals of <code>StandardModel</code></a><a id="Internals-of-StandardModel-1"></a><a class="docs-heading-anchor-permalink" href="#Internals-of-StandardModel" title="Permalink"></a></h2><p>Another benefit of <code>StandardModel</code> is that it supports a richer internal infrastructure that can be used to manipulate internal model attributes in a systematic way. Specifically, the genes, reactions, and metabolites with of a model each have a type. This is particularly useful when modifying or even constructing a model from scratch.</p><h2 id="Genes,-Reactions,-and-Metabolites"><a class="docs-heading-anchor" href="#Genes,-Reactions,-and-Metabolites"><code>Gene</code>s, <code>Reaction</code>s, and <code>Metabolite</code>s</a><a id="Genes,-Reactions,-and-Metabolites-1"></a><a class="docs-heading-anchor-permalink" href="#Genes,-Reactions,-and-Metabolites" title="Permalink"></a></h2><p><code>StandardModel</code> is composed of ordered dictionaries of <code>Gene</code>s, <code>Metabolite</code>s and <code>Reaction</code>s. Ordered dictionaries are used because the order of the reactions and metabolites are important for constructing a stoichiometric matrix since the rows and columns should correspond to the order of the metabolites and reactions returned by calling the accessors <code>metabolites</code> and <code>reactions</code>.</p><p>Each <code>StandardModel</code> is composed of the following fields:</p><pre><code class="language-julia">fieldnames(StandardModel) # fields of a StandardModel</code></pre><pre class="documenter-example-output">(:id, :reactions, :metabolites, :genes)</pre><p>The <code>:genes</code> field of a <code>StandardModel</code> contains an ordered dictionary of gene ids mapped to <code>Gene</code>s.</p><pre><code class="language-julia">model.genes # the keys of this dictionary are the same as genes(model)</code></pre><pre class="documenter-example-output">OrderedCollections.OrderedDict{String, Gene} with 137 entries:
+  &quot;b1241&quot; =&gt; Gene(&quot;b1241&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b1241&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0351&quot; =&gt; Gene(&quot;b0351&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0351&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;s0001&quot; =&gt; Gene(&quot;s0001&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;s0001&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b1849&quot; =&gt; Gene(&quot;b1849&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b1849&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b3115&quot; =&gt; Gene(&quot;b3115&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3115&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b2296&quot; =&gt; Gene(&quot;b2296&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b2296&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b1276&quot; =&gt; Gene(&quot;b1276&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b1276&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0118&quot; =&gt; Gene(&quot;b0118&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0118&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0474&quot; =&gt; Gene(&quot;b0474&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0474&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0116&quot; =&gt; Gene(&quot;b0116&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0116&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0727&quot; =&gt; Gene(&quot;b0727&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0727&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0726&quot; =&gt; Gene(&quot;b0726&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0726&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b2587&quot; =&gt; Gene(&quot;b2587&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b2587&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b0356&quot; =&gt; Gene(&quot;b0356&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b0356&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b1478&quot; =&gt; Gene(&quot;b1478&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b1478&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b3734&quot; =&gt; Gene(&quot;b3734&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3734&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b3733&quot; =&gt; Gene(&quot;b3733&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3733&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b3736&quot; =&gt; Gene(&quot;b3736&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3736&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  &quot;b3737&quot; =&gt; Gene(&quot;b3737&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3737&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
+  ⋮       =&gt; ⋮</pre><p>The <code>Gene</code> type is a struct that can be used to store information about genes in a <code>StandardModel</code>. Each <code>Gene</code> is composed of the following fields:</p><pre><code class="language-julia">fieldnames(Gene)</code></pre><pre class="documenter-example-output">(:id, :notes, :annotations)</pre><div class="admonition is-success"><header class="admonition-header">Tip: Use &lt;tab&gt; complete to explore the structure of types</header><div class="admonition-body"><p>Use &lt;tab&gt; to quickly explore the fields of a struct. For example,   Gene.&lt;tab&gt; will list all the fields shown above.</p></div></div><p>The keys used in the ordered dictionaries in <code>model.genes</code> are the ids returned using the generic accessor <code>genes</code>. <code>Gene</code>s have pretty printing, as demonstrated below for a random gene drawn from the model:</p><pre><code class="language-julia">random_gene_id = genes(model)[rand(1:n_genes(model))]
+model.genes[random_gene_id]</code></pre><pre class="documenter-example-output">Gene.id: b1779
+Gene.notes: 
+	original_bigg_ids: [&quot;b1779&quot;]
+Gene.annotations: 
+	sbo: [&quot;SBO:0000243&quot;]
+	uniprot: [&quot;P0A9B2&quot;]
+	ecogene: [&quot;EG10367&quot;]
+	ncbigene: [&quot;947679&quot;]
+	ncbigi: [&quot;16129733&quot;]
+	refseq_locus_tag: [&quot;b1779&quot;]
+	refseq_name: [&quot;gapA&quot;]
+	asap: [&quot;ABE-0005920&quot;]
+	refseq_synonym: [&quot;ECK1777&quot;, &quot;JW1768&quot;]
+</pre><p>The same idea holds for both metabolites (stored as <code>Metabolite</code>s) and reactions (stored as <code>Reaction</code>s). This is demonstrated below.</p><pre><code class="language-julia">random_metabolite_id = metabolites(model)[rand(1:n_metabolites(model))]
+model.metabolites[random_metabolite_id]</code></pre><pre class="documenter-example-output">Metabolite.id: succ_e
+Metabolite.formula: C4H4O4
+Metabolite.charge: -2
+Metabolite.compartment: e
+Metabolite.notes: 
+	original_bigg_ids: [&quot;succ_e&quot;]
+Metabolite.annotations: 
+	envipath: 4fd7f3e0-dd25-43ac-9...
+	sabiork: [&quot;1924&quot;]
+	kegg.compound: [&quot;C00042&quot;]
+	sbo: [&quot;SBO:0000247&quot;]
+	biocyc: [&quot;META:SUC&quot;]
+	chebi: CHEBI:22941, ..., CHEBI:30031
+	metanetx.chemical: [&quot;MNXM25&quot;]
+	inchi_key: KDYFGRWQOYBRFD-UHFFF...
+	hmdb: [&quot;HMDB00254&quot;]
+	bigg.metabolite: [&quot;succ&quot;]
+	seed.compound: [&quot;cpd00036&quot;]
+	lipidmaps: [&quot;LMFA01170043&quot;]
+	reactome.compound: 389583, ..., 113536
+</pre><pre><code class="language-julia">random_reaction_id = reactions(model)[rand(1:n_reactions(model))]
+model.reactions[random_reaction_id]</code></pre><pre class="documenter-example-output">Reaction.id: BIOMASS_Ecoli_core_w_GAM
+Reaction.metabolites: 4.9414 glu__L_c + 13.0279 nadph_c + ... + 0.2557 gln__L_c + 0.205 g6p_c →  3.547 nadh_c + 3.7478 coa_c + ... + 59.81 adp_c + 59.81 pi_c
+Reaction.lb: 0.0
+Reaction.ub: 1000.0
+Reaction.grr: ---
+Reaction.subsystem: Biomass and maintenance functions
+Reaction.notes: 
+	original_bigg_ids: Biomass_Ecoli_core_w...
+Reaction.annotations: 
+	metanetx.reaction: [&quot;MNXR96280&quot;]
+	sbo: [&quot;SBO:0000629&quot;]
+	bigg.reaction: BIOMASS_Ecoli_core_w...
+Reaction.objective_coefficient: 1.0
+</pre><p><code>StandardModel</code> can be used to build your own metabolic model or modify an existing one. One of the main use cases for <code>StandardModel</code> is that it can be used to merge multiple models or parts of multiple models together. Since the internals are uniform inside each <code>StandardModel</code>, attributes of other model types are squashed into the required format (using the generic accessors). This ensures that the internals of all <code>StandardModel</code>s are the same - allowing easy systematic evaluation.</p><div class="admonition is-warning"><header class="admonition-header">Warning: Combining models with different namespaces is tricky</header><div class="admonition-body"><p>Combining models that use different namespaces requires care.   For example, in some models the water exchange reaction is called   <code>EX_h2o_e</code>, while in others it is called <code>R_EX_h2o_s</code>. This needs to   manually addressed (for now) to prevent duplicate, e.g. reactions,   from being added.</p></div></div><h2 id="Checking-the-internals-of-StandardModels:-annotation_index"><a class="docs-heading-anchor" href="#Checking-the-internals-of-StandardModels:-annotation_index">Checking the internals of <code>StandardModel</code>s: <code>annotation_index</code></a><a id="Checking-the-internals-of-StandardModels:-annotation_index-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-the-internals-of-StandardModels:-annotation_index" title="Permalink"></a></h2><p>Often when models are automatically reconstructed duplicate genes, reactions or metabolites end up in a model. <code>COBREXA</code> exports <code>annotation_index</code> to check for cases where the id of a struct may be different, but the annotations the same (possibly suggesting a duplication). <code>annotation_index</code> builds a dictionary mapping annotation features to the ids of whatever struct you are inspecting. This makes it easy to find structs that share certain annotation features.</p><pre><code class="language-julia">rxn_annotations = annotation_index(model.reactions)</code></pre><pre class="documenter-example-output">Dict{String, Dict{String, Set{String}}} with 10 entries:
+  &quot;ec-code&quot;           =&gt; Dict(&quot;3.6.3.37&quot;=&gt;Set([&quot;ATPM&quot;]), &quot;3.6.3.42&quot;=&gt;Set([&quot;ATPM…
+  &quot;sabiork&quot;           =&gt; Dict(&quot;109&quot;=&gt;Set([&quot;PGL&quot;]), &quot;762&quot;=&gt;Set([&quot;GLUN&quot;]), &quot;155&quot;=…
+  &quot;metanetx.reaction&quot; =&gt; Dict(&quot;MNXR104869&quot;=&gt;Set([&quot;TKT2&quot;]), &quot;MNXR99715&quot;=&gt;Set([&quot;E…
+  &quot;rhea&quot;              =&gt; Dict(&quot;27626&quot;=&gt;Set([&quot;TKT2&quot;]), &quot;10229&quot;=&gt;Set([&quot;ACONTa&quot;]),…
+  &quot;sbo&quot;               =&gt; Dict(&quot;SBO:0000627&quot;=&gt;Set([&quot;EX_for_e&quot;, &quot;EX_nh4_e&quot;, &quot;EX_p…
+  &quot;seed.reaction&quot;     =&gt; Dict(&quot;rxn05297&quot;=&gt;Set([&quot;GLUt2r&quot;]), &quot;rxn09717&quot;=&gt;Set([&quot;PY…
+  &quot;kegg.reaction&quot;     =&gt; Dict(&quot;R00114&quot;=&gt;Set([&quot;GLUSy&quot;]), &quot;R00199&quot;=&gt;Set([&quot;PPS&quot;]),…
+  &quot;biocyc&quot;            =&gt; Dict(&quot;META:TRANS-RXN-121B&quot;=&gt;Set([&quot;FUMt2_2&quot;]), &quot;META:PE…
+  &quot;reactome.reaction&quot; =&gt; Dict(&quot;R-TGU-71397&quot;=&gt;Set([&quot;PDH&quot;]), &quot;R-XTR-70449&quot;=&gt;Set([…
+  &quot;bigg.reaction&quot;     =&gt; Dict(&quot;ACALD&quot;=&gt;Set([&quot;ACALD&quot;]), &quot;PTAr&quot;=&gt;Set([&quot;PTAr&quot;]), &quot;…</pre><pre><code class="language-julia">rxn_annotations[&quot;ec-code&quot;]</code></pre><pre class="documenter-example-output">Dict{String, Set{String}} with 141 entries:
+  &quot;3.6.3.37&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;3.6.3.42&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;3.6.3.38&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;3.6.3.19&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;2.3.3.1&quot;  =&gt; Set([&quot;CS&quot;])
+  &quot;1.6.1.2&quot;  =&gt; Set([&quot;NADTRHD&quot;])
+  &quot;3.6.3.35&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;6.2.1.5&quot;  =&gt; Set([&quot;SUCOAS&quot;])
+  &quot;6.3.5.4&quot;  =&gt; Set([&quot;GLUN&quot;])
+  &quot;3.6.3.49&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;3.6.3.51&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;1.2.1.12&quot; =&gt; Set([&quot;GAPD&quot;])
+  &quot;3.6.3.32&quot; =&gt; Set([&quot;ATPM&quot;])
+  &quot;2.3.3.3&quot;  =&gt; Set([&quot;CS&quot;])
+  &quot;2.7.4.3&quot;  =&gt; Set([&quot;ADK1&quot;])
+  &quot;6.3.5.5&quot;  =&gt; Set([&quot;GLUN&quot;])
+  &quot;3.5.1.2&quot;  =&gt; Set([&quot;GLUN&quot;])
+  &quot;1.1.1.49&quot; =&gt; Set([&quot;G6PDH2r&quot;])
+  &quot;5.3.1.9&quot;  =&gt; Set([&quot;PGI&quot;])
+  ⋮          =&gt; ⋮</pre><p>The <code>annotation_index</code> function can also be used on <code>Reaction</code>s and <code>Gene</code>s in the same way.</p><h2 id="Checking-the-internals-of-StandardModels:-check_duplicate_reaction"><a class="docs-heading-anchor" href="#Checking-the-internals-of-StandardModels:-check_duplicate_reaction">Checking the internals of <code>StandardModel</code>s: <code>check_duplicate_reaction</code></a><a id="Checking-the-internals-of-StandardModels:-check_duplicate_reaction-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-the-internals-of-StandardModels:-check_duplicate_reaction" title="Permalink"></a></h2><p>Another useful function is <code>check_duplicate_reaction</code>, which checks for reactions that have duplicate (or similar) reaction equations.</p><pre><code class="language-julia">pgm_duplicate = Reaction()
+pgm_duplicate.id = &quot;pgm2&quot; # Phosphoglycerate mutase
+pgm_duplicate.metabolites = Dict{String,Float64}(&quot;3pg_c&quot; =&gt; 1, &quot;2pg_c&quot; =&gt; -1)
+pgm_duplicate</code></pre><pre class="documenter-example-output">Reaction.id: pgm2
+Reaction.metabolites: 1.0 2pg_c ↔  1.0 3pg_c
+Reaction.lb: -1000.0
+Reaction.ub: 1000.0
+Reaction.grr: ---
+Reaction.subsystem: ---
+Reaction.notes: ---
+Reaction.annotations: ---
+Reaction.objective_coefficient: 0.0
+</pre><pre><code class="language-julia">check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = false) # can also just check if only the metabolites are the same but different stoichiometry is used</code></pre><pre class="documenter-example-output">&quot;PGM&quot;</pre><h2 id="Checking-the-internals-of-StandardModels:-reaction_mass_balanced"><a class="docs-heading-anchor" href="#Checking-the-internals-of-StandardModels:-reaction_mass_balanced">Checking the internals of <code>StandardModel</code>s: <code>reaction_mass_balanced</code></a><a id="Checking-the-internals-of-StandardModels:-reaction_mass_balanced-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-the-internals-of-StandardModels:-reaction_mass_balanced" title="Permalink"></a></h2><p>Finally, <a href="../../functions/utils/#COBREXA.reaction_mass_balanced-Tuple{StandardModel, String}"><code>reaction_mass_balanced</code></a> can be used to check if a reaction is mass balanced based on the formulas of the reaction equation.</p><pre><code class="language-julia">rxn_dict = Dict{String,Float64}(&quot;3pg_c&quot; =&gt; 1, &quot;2pg_c&quot; =&gt; -1, &quot;h2o_c&quot; =&gt; 1)
+reaction_mass_balanced(model, rxn_dict)</code></pre><pre class="documenter-example-output">false</pre><p>Now to determine which atoms are unbalanced, you can use <code>reaction_atom_balance</code></p><pre><code class="language-julia">reaction_atom_balance(model, rxn_dict)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 4 entries:
+  &quot;C&quot; =&gt; 0.0
+  &quot;P&quot; =&gt; 0.0
+  &quot;H&quot; =&gt; 2.0
+  &quot;O&quot; =&gt; 1.0</pre><p>Note, since <code>pgm_duplicate</code> is not in the model, we cannot use the other variants of this function because they find the reaction equation stored inside the <code>model</code>.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2_finding_balance/">« Finding balance and variability of constraint-based models</a><a class="docs-footer-nextpage" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 12 November 2021 10:34">Friday 12 November 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
