@@ -47,7 +47,7 @@ larger than `large_flux_bound` are only stored if `keep_unbounded` is `true`.
 
 # Example
 ```
-julia> sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
+julia> sol = flux_dict(flux_balance_analysis(model, Tulip.Optimizer))
 julia> fr = flux_summary(sol)
 Biomass:
   BIOMASS_Ecoli_core_w_GAM: 0.8739
