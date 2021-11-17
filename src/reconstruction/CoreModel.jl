@@ -363,7 +363,7 @@ end
     model.xl = model.xl[mask]
     model.xu = model.xu[mask]
     model.rxns = model.rxns[mask]
-    return nothing
+    nothing
 end
 
 @_remove_fn reaction CoreModel Int begin
@@ -408,7 +408,7 @@ end
     model.S = model.S[mask, :]
     model.b = model.b[mask]
     model.mets = model.mets[mask]
-    return nothing
+    nothing
 end
 
 @_remove_fn metabolite CoreModel Int begin

@@ -7,6 +7,7 @@ function add_reactions!(model::StandardModel, rxns::Vector{Reaction})
     for rxn in rxns
         model.reactions[rxn.id] = rxn
     end
+    nothing
 end
 
 """
@@ -25,6 +26,7 @@ function add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
     for met in mets
         model.metabolites[met.id] = met
     end
+    nothing
 end
 
 """
@@ -43,6 +45,7 @@ function add_genes!(model::StandardModel, genes::Vector{Gene})
     for gene in genes
         model.genes[gene.id] = gene
     end
+    nothing
 end
 
 """
@@ -137,6 +140,7 @@ function remove_genes!(
         pop!.(Ref(model.reactions), rm_reactions)
     end
     pop!.(Ref(model.genes), gids)
+    nothing
 end
 
 """
@@ -161,7 +165,7 @@ remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false
 @_change_bounds_fn StandardModel String inplace begin
     isnothing(lower) || (model.reactions[rxn_id].lb = lower)
     isnothing(upper) || (model.reactions[rxn_id].ub = upper)
-    return nothing
+    nothing
 end
 
 @_change_bounds_fn StandardModel String inplace plural begin
@@ -185,11 +189,17 @@ end
 end
 
 @_remove_fn reaction StandardModel String inplace begin
-    delete!(model.reactions, reaction_id)
+    if !(reaction_id in reactions(model))
+        @_models_log @info "Reaction $reaction_id not found in model."
+    else
+        delete!(model.reactions, reaction_id)
+    end
+    nothing
 end
 
 @_remove_fn reaction StandardModel String inplace plural begin
     remove_reaction!.(Ref(model), reaction_ids)
+    nothing
 end
 
 @_remove_fn reaction StandardModel String begin
@@ -204,19 +214,17 @@ end
 end
 
 @_remove_fn metabolite StandardModel String inplace begin
-    remove_metabolites!(model, [metabolite_id])
+    if !(metabolite_id in metabolites(model))
+        @_models_log @info "Metabolite $metabolite_id not found in model."
+    else
+        delete!(model.metabolites, metabolite_id)
+    end
+    nothing
 end
 
 @_remove_fn metabolite StandardModel String inplace plural begin
-    remove_reactions!(
-        model,
-        [
-            rid for (rid, rn) in model.reactions if
-            any(haskey.(Ref(rn.metabolites), metabolite_ids))
-        ],
-    )
-    delete!.(Ref(model.metabolites), metabolite_ids)
-    return nothing
+    remove_metabolite!.(Ref(model), metabolite_ids)
+    nothing
 end
 
 @_remove_fn metabolite StandardModel String begin
