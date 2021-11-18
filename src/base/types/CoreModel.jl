@@ -142,6 +142,23 @@ Get the gene associations in a `CoreModel`.
 grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}} = a.grrs
 
 """
+    reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction
+index.
+"""
+reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation} =
+    model.grrs[ridx]
+
+"""
+    reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction ID.
+"""
+reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation} =
+    model.grrs[first(indexin([rid], model.rxns))]
+
+"""
     Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
 
 Make a `CoreModel` out of any compatible model type.
