@@ -18,6 +18,7 @@ mutable struct CoreModel <: MetabolicModel
     xu::Vector{Float64}
     rxns::Vector{String}
     mets::Vector{String}
+    grrs::Vector{Maybe{GeneAssociation}}
 
     function CoreModel(
         S::MatType,
@@ -27,15 +28,52 @@ mutable struct CoreModel <: MetabolicModel
         xu::VecType,
         rxns::StringVecType,
         mets::StringVecType,
+        grrs::Vector{Maybe{GeneAssociation}}
     )
         all([length(b), length(mets)] .== size(S, 1)) ||
             throw(DimensionMismatch("inconsistent number of metabolites"))
 
-        all([length(c), length(xl), length(xu), length(rxns)] .== size(S, 2)) ||
+        all([length(c), length(xl), length(xu), length(rxns), length(grrs)] .== size(S, 2)) ||
             throw(DimensionMismatch("inconsistent number of reactions"))
 
-        new(sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets)
+        new(
+            sparse(S),
+            sparse(b),
+            sparse(c),
+            collect(xl),
+            collect(xu),
+            rxns,
+            mets,
+            grrs
+        )
     end
+end
+
+"""
+    CoreModel(
+        S::MatType,
+        b::VecType,
+        c::VecType,
+        xl::VecType,
+        xu::VecType,
+        rxns::StringVecType,
+        mets::StringVecType
+    )
+
+Create a `CoreModel` without specifying gene-reaction associations.
+"""
+function CoreModel(
+    S::MatType,
+    b::VecType,
+    c::VecType,
+    xl::VecType,
+    xu::VecType,
+    rxns::StringVecType,
+    mets::StringVecType
+)
+
+    CoreModel(S, b, c,xl,xu,rxns,mets,Vector{Maybe{GeneAssociation}}(nothing,length(rxns)))
+
 end
 
 """
@@ -97,6 +135,13 @@ reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
+    grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}}
+
+Get the gene associations in a `CoreModel`.
+"""
+grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}} = a.grrs
+
+"""
     Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
 
 Make a `CoreModel` out of any compatible model type.
@@ -115,5 +160,6 @@ function Base.convert(::Type{CoreModel}, m::M) where {M<:MetabolicModel}
         xu,
         reactions(m),
         metabolites(m),
+        [reaction_gene_association(m,id) for id in reactions(m)]
     )
 end
