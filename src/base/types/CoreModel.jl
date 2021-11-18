@@ -160,6 +160,8 @@ function Base.convert(::Type{CoreModel}, m::M) where {M<:MetabolicModel}
         xu,
         reactions(m),
         metabolites(m),
-        [reaction_gene_association(m,id) for id in reactions(m)]
+        Vector{Maybe{GeneAssociation}}(
+            [reaction_gene_association(m,id) for id in reactions(m)]
+        )
     )
 end
