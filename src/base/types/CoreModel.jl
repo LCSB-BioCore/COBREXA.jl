@@ -28,24 +28,16 @@ mutable struct CoreModel <: MetabolicModel
         xu::VecType,
         rxns::StringVecType,
         mets::StringVecType,
-        grrs::Vector{Maybe{GeneAssociation}}
+        grrs::Vector{Maybe{GeneAssociation}},
     )
         all([length(b), length(mets)] .== size(S, 1)) ||
             throw(DimensionMismatch("inconsistent number of metabolites"))
 
-        all([length(c), length(xl), length(xu), length(rxns), length(grrs)] .== size(S, 2)) ||
-            throw(DimensionMismatch("inconsistent number of reactions"))
+        all(
+            [length(c), length(xl), length(xu), length(rxns), length(grrs)] .== size(S, 2),
+        ) || throw(DimensionMismatch("inconsistent number of reactions"))
 
-        new(
-            sparse(S),
-            sparse(b),
-            sparse(c),
-            collect(xl),
-            collect(xu),
-            rxns,
-            mets,
-            grrs
-        )
+        new(sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets, grrs)
     end
 end
 
@@ -69,10 +61,19 @@ function CoreModel(
     xl::VecType,
     xu::VecType,
     rxns::StringVecType,
-    mets::StringVecType
+    mets::StringVecType,
 )
 
-    CoreModel(S, b, c,xl,xu,rxns,mets,Vector{Maybe{GeneAssociation}}(nothing,length(rxns)))
+    CoreModel(
+        S,
+        b,
+        c,
+        xl,
+        xu,
+        rxns,
+        mets,
+        Vector{Maybe{GeneAssociation}}(nothing, length(rxns)),
+    )
 
 end
 
@@ -177,8 +178,8 @@ function Base.convert(::Type{CoreModel}, m::M) where {M<:MetabolicModel}
         xu,
         reactions(m),
         metabolites(m),
-        Vector{Maybe{GeneAssociation}}(
-            [reaction_gene_association(m,id) for id in reactions(m)]
-        )
+        Vector{Maybe{GeneAssociation}}([
+            reaction_gene_association(m, id) for id in reactions(m)
+        ]),
     )
 end
