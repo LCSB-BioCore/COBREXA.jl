@@ -109,6 +109,30 @@ function reaction_stoichiometry(m::CoreModelCoupled, ridx)::Dict{String,Float64}
 end
 
 """
+    grrs(a::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
+
+Get the gene associations in a [`CoreModelCoupled`](@ref).
+"""
+grrs(a::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} = a.lm.grrs
+
+"""
+    reaction_gene_association(model::CoreModelCoupled, ridx::Int)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`CoreModelCoupled`](@ref) by reaction
+index.
+"""
+reaction_gene_association(model::CoreModelCoupled, ridx::Int)::Maybe{GeneAssociation} =
+    reaction_gene_association(model.lm, ridx)
+
+"""
+    reaction_gene_association(model::CoreModelCoupled, rid::String)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`CoreModelCoupled`](@ref) by reaction ID.
+"""
+reaction_gene_association(model::CoreModelCoupled, rid::String)::Maybe{GeneAssociation} =
+    reaction_gene_association(model.lm, rid)
+
+"""
     Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
 
 Make a `CoreModelCoupled` out of any compatible model type.

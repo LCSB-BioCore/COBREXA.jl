@@ -137,7 +137,7 @@ reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
 """
     grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}}
 
-Get the gene associations in a `CoreModel`.
+Get the gene associations in a [`CoreModel`](@ref).
 """
 grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}} = a.grrs
 
