@@ -28,7 +28,8 @@ mutable struct CoreModel <: MetabolicModel
         xu::VecType,
         rxns::StringVecType,
         mets::StringVecType,
-        grrs::Vector{Maybe{GeneAssociation}},
+        grrs::Vector{Maybe{GeneAssociation}} =
+            Vector{Maybe{GeneAssociation}}(nothing, length(rxns))
     )
         all([length(b), length(mets)] .== size(S, 1)) ||
             throw(DimensionMismatch("inconsistent number of metabolites"))
@@ -39,42 +40,6 @@ mutable struct CoreModel <: MetabolicModel
 
         new(sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets, grrs)
     end
-end
-
-"""
-    CoreModel(
-        S::MatType,
-        b::VecType,
-        c::VecType,
-        xl::VecType,
-        xu::VecType,
-        rxns::StringVecType,
-        mets::StringVecType
-    )
-
-Create a `CoreModel` without specifying gene-reaction associations.
-"""
-function CoreModel(
-    S::MatType,
-    b::VecType,
-    c::VecType,
-    xl::VecType,
-    xu::VecType,
-    rxns::StringVecType,
-    mets::StringVecType,
-)
-
-    CoreModel(
-        S,
-        b,
-        c,
-        xl,
-        xu,
-        rxns,
-        mets,
-        Vector{Maybe{GeneAssociation}}(nothing, length(rxns)),
-    )
-
 end
 
 """
