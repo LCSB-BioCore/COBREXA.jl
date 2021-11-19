@@ -28,8 +28,10 @@ mutable struct CoreModel <: MetabolicModel
         xu::VecType,
         rxns::StringVecType,
         mets::StringVecType,
-        grrs::Vector{Maybe{GeneAssociation}} =
-            Vector{Maybe{GeneAssociation}}(nothing, length(rxns))
+        grrs::Vector{Maybe{GeneAssociation}} = Vector{Maybe{GeneAssociation}}(
+            nothing,
+            length(rxns),
+        ),
     )
         all([length(b), length(mets)] .== size(S, 1)) ||
             throw(DimensionMismatch("inconsistent number of metabolites"))
