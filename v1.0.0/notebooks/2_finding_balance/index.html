@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Finding balance and variability of constraint-based models · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../tutorials/">Tutorials</a></li><li><a class="tocitem" href="../">Examples and notebooks</a></li><li><a class="tocitem" href="../../functions/">Function reference</a></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Finding balance and variability of constraint-based models</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Finding balance and variability of constraint-based models</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/LCSB-BioCore/COBREXA.jl/blob/master/src/notebooks/2_finding_balance.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Finding-balance-and-variability-of-constraint-based-models"><a class="docs-heading-anchor" href="#Finding-balance-and-variability-of-constraint-based-models">Finding balance and variability of constraint-based models</a><a id="Finding-balance-and-variability-of-constraint-based-models-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-balance-and-variability-of-constraint-based-models" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/LCSB-BioCore/COBREXA.jl/gh-pages?filepath=dev/notebooks/2_finding_balance.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/LCSB-BioCore/COBREXA.jl/blob/gh-pages/dev/notebooks/2_finding_balance.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><p>Here we use <a href="../../functions/#COBREXA.flux_balance_analysis-Union{Tuple{M}, Tuple{M, Any}} where M&lt;:MetabolicModel"><code>flux_balance_analysis</code></a>, <a href="../../functions/#COBREXA.flux_variability_analysis-Tuple{MetabolicModel, Any}"><code>flux_variability_analysis</code></a>, and <a href="../../functions/#COBREXA.parsimonious_flux_balance_analysis-Tuple{MetabolicModel, Any}"><code>parsimonious_flux_balance_analysis</code></a> of <code>COBREXA.jl</code> functions to analyze a toy model of <em>E. coli</em>.</p><p>If it is not already present, download the model.</p><pre><code class="language-julia">!isfile(&quot;e_coli_core.xml&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.xml&quot;, &quot;e_coli_core.xml&quot;)
+
+using COBREXA</code></pre><div class="admonition is-success"><header class="admonition-header">Tip: use `?` to get quick help about functions</header><div class="admonition-body"><p>When you are unsure about how a function works, write <code>?   function_name</code> to see the function reference documentation.</p></div></div><pre><code class="language-julia">model = load_model(&quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type SBMLModel
+
+⠀⠈⢀⠀⡀⠀⠀⠀⠀⡠⠂⠀⠀⠀⠀⠈⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⢀⠐⡀⠀⠀⠀⠀⠄
+⠀⠐⠀⠀⠀⠀⠀⠀⡠⠂⠀⠀⠀⠀⢰⠱⣀⠀⡄⢐⠀⠀⢀⠀⠀⠀⡂⠄⠔⠁⠰⠀⠠⠀⣆⠀⠄⢠⢀⠄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠠⠀⠀⠐⠀⠀⠀⠀⠀⠀⢀⠀⠀⠐⠀⠂⠀⠀⠀⠄⠀⠐⠀⢁⠄⠀⠀⠀⠀⠀
+⠀⢀⠀⠐⡈⠀⡀⠀⠂⠀⣀⠀⠑⡈⢀⠀⠀⠀⠀⠀⡀⡠⠀⡀⠰⠁⠈⠂⠁⠀⠠⠀⠀⠂⡂⠀⠂⠂⠀⠀
+⠠⠀⠐⠀⠂⠀⠀⢀⠀⠀⠀⠀⠊⠀⡐⠊⠐⠀⠀⠀⠀⠀⠐⠀⠂⠀⠀⠐⠀⠀⠀⠀⠀⠁⠃⠠⠀⠁⠐⠀
+⠀⠠⠀⡀⠄⠀⠀⠂⠀⠀⠀⠠⠀⠠⠀⠀⠄⠀⠨⠀⠀⠀⠐⠀⠀⠄⢀⠀⠀⠀⠈⠀⠀⠀⠁⠄⠀⠀⠀⠀
+⠀⢐⠐⠀⠄⠀⡂⠀⢐⠀⠀⠀⠀⠂⢀⢀⠐⠂⡀⠈⠀⠀⠀⠂⠀⠈⠀⡀⡐⠀⢄⠀⢀⠀⡆⠀⡀⣀⡀⡐
+⠀⠈⠀⠀⠀⠀⠀⠐⢂⠀⢀⠀⠈⠀⠀⠀⠀⠀⠠⠀⠀⠠⠀⠀⠀⠈⠂⠀⠀⠀⠄⠐⠐⠀⠁⠀⠀⠑⠁⠀
+⠂⠠⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠠⠈⠀⠀⠀⠀⠀⠁⠀⠀⠠⠐⠀⠁⠈⠀⠁⢀⠀⠀⠀⠀⠀⠀⠀⠀⠌⠀
+⠀⠀⠂⢨⠀⡀⠀⠐⠁⠐⠀⠐⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠢⠒⠈⠐⠐⠁⠂⠀⠀⠀⠄⠓⠕⠂⠃⠁⠀⠐
+⠠⠀⠨⠀⠁⠤⠄⠀⠁⡄⠀⠂⠠⠄⢈⠌⠠⠄⠀⢀⠀⠀⠀⠄⠨⠀⡤⠀⢀⠀⢀⠠⠀⠁⡔⠨⠀⠈⠄⠀
+⠀⢀⢀⣀⠀⡠⡒⢀⢀⣀⠀⢀⣀⡀⢀⠀⢀⠀⡀⠀⡀⠀⠈⣀⠀⢀⣀⠀⡀⠀⢀⠁⢀⣀⣀⡀⡠⡀⡀⣀
+⠀⠄⠀⠀⠀⠀⠀⠀⠀⠂⠁⠀⠀⠀⠀⠀⠀⣠⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀
+⢀⠂⠀⠀⠂⠀⠈⠀⠐⠀⠀⠀⠁⠀⠀⠀⡀⠔⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠢⠀⠀⡀⠂⠈⠀⠀⠀⠄
+⠀⠐⠀⠀⡂⠀⠂⠀⠀⠀⠒⠐⠄⠂⠐⠀⠘⡀⠀⠠⡂⠃⠀⠂⠄⠂⠀⠀⠀⠀⡀⠀⡀⠀⡂⠂⠀⠀⢀⠀
+Number of reactions: 95
+Number of metabolites: 72
+</pre><h2 id="Optimization-solvers-in-COBREXA"><a class="docs-heading-anchor" href="#Optimization-solvers-in-COBREXA">Optimization solvers in <code>COBREXA</code></a><a id="Optimization-solvers-in-COBREXA-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization-solvers-in-COBREXA" title="Permalink"></a></h2><p>To actually perform any optimization based analysis we need to load an optimizer. Any <a href="https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers"><code>JuMP.jl</code>-supported optimizers</a> will work. Here, we will use <a href="https://github.com/ds4dm/Tulip.jl"><code>Tulip.jl</code></a> to optimize linear programs and <a href="https://osqp.org/docs/get_started/julia.html"><code>OSQP.jl</code></a> to optimize quadratic programs.</p><pre><code class="language-julia">import Pkg
+Pkg.add(&quot;Tulip&quot;)
+Pkg.add(&quot;OSQP&quot;)
+
+using Tulip
+using OSQP</code></pre><h2 id="Flux-balance-analysis-(FBA)"><a class="docs-heading-anchor" href="#Flux-balance-analysis-(FBA)">Flux balance analysis (FBA)</a><a id="Flux-balance-analysis-(FBA)-1"></a><a class="docs-heading-anchor-permalink" href="#Flux-balance-analysis-(FBA)" title="Permalink"></a></h2><p>Most analysis functions come in several variants that produce different types of output. All of them usually require a model and <code>JuMP.jl</code>-compatible optimizer to work in the model.</p><p>In the case of FBA, you may choose from these variants (here using the <code>Tulip</code> optimizer):</p><pre><code class="language-julia">vec_soln = flux_balance_analysis_vec(model, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">95-element Vector{Float64}:
+  -0.0
+   6.00724956649032
+   7.477381918907127
+  -5.064375360152338
+   0.2234617471432185
+  -3.214895030387032
+   2.504309432010867
+  21.799492758475754
+   4.959985078874371
+   1.496983802869297
+   ⋮
+   3.375438217960911e-7
+  29.175827202685298
+   9.054357964341115e-9
+   4.817965631705414e-8
+   9.959461594581987e-9
+ -21.799492758475754
+  -0.0
+  -1.4340676616267298e-9
+   3.214895030387032</pre><pre><code class="language-julia">dict_soln = flux_balance_analysis_dict(model, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; -0.0
+  &quot;R_ACONTb&quot;      =&gt; 6.00725
+  &quot;R_TPI&quot;         =&gt; 7.47738
+  &quot;R_SUCOAS&quot;      =&gt; -5.06438
+  &quot;R_GLNS&quot;        =&gt; 0.223462
+  &quot;R_EX_pi_e&quot;     =&gt; -3.2149
+  &quot;R_PPC&quot;         =&gt; 2.50431
+  &quot;R_O2t&quot;         =&gt; 21.7995
+  &quot;R_G6PDH2r&quot;     =&gt; 4.95999
+  &quot;R_TALA&quot;        =&gt; 1.49698
+  &quot;R_PPCK&quot;        =&gt; 5.88317e-8
+  &quot;R_EX_lac__D_e&quot; =&gt; 2.39394e-9
+  &quot;R_PGL&quot;         =&gt; 4.95999
+  &quot;R_H2Ot&quot;        =&gt; -29.1758
+  &quot;R_GLNabc&quot;      =&gt; -0.0
+  &quot;R_EX_co2_e&quot;    =&gt; 22.8098
+  &quot;R_EX_gln__L_e&quot; =&gt; -0.0
+  &quot;R_EX_nh4_e&quot;    =&gt; -4.76532
+  &quot;R_MALt2_2&quot;     =&gt; -0.0
+  ⋮               =&gt; ⋮</pre><h2 id="Modifications"><a class="docs-heading-anchor" href="#Modifications">Modifications</a><a id="Modifications-1"></a><a class="docs-heading-anchor-permalink" href="#Modifications" title="Permalink"></a></h2><p>Often it is desirable to add a slight modififaction to the problem before performing analysis, to see e.g. differences of the model behavior caused by the change introduced.</p><p><code>COBREXA.jl</code> supports several modifications by default, which include changing objective sense, optimizer attributes, flux constraints, optimization objective, reaction and gene knockouts, and others.</p><pre><code class="language-julia">dict_soln = flux_balance_analysis_dict(
+    model,
+    OSQP.Optimizer;
+    modifications = [ # modifications are applied in order
+        # this changes the objective to maximize the biomass production
+        change_objective(&quot;R_BIOMASS_Ecoli_core_w_GAM&quot;),
+
+        # this fixes a specific rate of the glucose exchange
+        change_constraint(&quot;R_EX_glc__D_e&quot;, -12, -12),
+
+        # this knocks out two genes, i.e. constrains their associated reactions to zero.
+        knockout([&quot;b0978&quot;, &quot;b0734&quot;]), ## the gene IDs are cytochrome oxidase (CYTBD)
+
+        # ignore the optimizer specified above and change it to Tulip
+        change_optimizer(Tulip.Optimizer),
+
+        # set a custom attribute of the Tulip optimizer (see Tulip docs for more possibilities)
+        change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 110),
+
+        # explicitly tell the optimizer to maximize the new objective
+        change_sense(MAX_SENSE),
+    ],
+)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; -0.0
+  &quot;R_ACONTb&quot;      =&gt; 7.03277
+  &quot;R_TPI&quot;         =&gt; 8.90908
+  &quot;R_SUCOAS&quot;      =&gt; -5.8921
+  &quot;R_GLNS&quot;        =&gt; 0.270339
+  &quot;R_EX_pi_e&quot;     =&gt; -3.88931
+  &quot;R_PPC&quot;         =&gt; 3.02966
+  &quot;R_O2t&quot;         =&gt; 25.7859
+  &quot;R_G6PDH2r&quot;     =&gt; 6.11782
+  &quot;R_TALA&quot;        =&gt; 1.85013
+  &quot;R_PPCK&quot;        =&gt; 5.26409e-10
+  &quot;R_EX_lac__D_e&quot; =&gt; 4.37341e-12
+  &quot;R_PGL&quot;         =&gt; 6.11782
+  &quot;R_H2Ot&quot;        =&gt; -34.7096
+  &quot;R_GLNabc&quot;      =&gt; -0.0
+  &quot;R_EX_co2_e&quot;    =&gt; 27.0082
+  &quot;R_EX_gln__L_e&quot; =&gt; -0.0
+  &quot;R_EX_nh4_e&quot;    =&gt; -5.76498
+  &quot;R_MALt2_2&quot;     =&gt; -0.0
+  ⋮               =&gt; ⋮</pre><h2 id="Flux-variability-analysis-(FVA)"><a class="docs-heading-anchor" href="#Flux-variability-analysis-(FVA)">Flux variability analysis (FVA)</a><a id="Flux-variability-analysis-(FVA)-1"></a><a class="docs-heading-anchor-permalink" href="#Flux-variability-analysis-(FVA)" title="Permalink"></a></h2><p>The default FVA in <a href="../../functions/#COBREXA.flux_variability_analysis-Tuple{MetabolicModel, Any}"><code>flux_variability_analysis</code></a> returns maximized and minimized reaction fluxes in a matrix. Here we use the dictionary variant in flux<em>variability</em>analysis_dict, to show how to easily access specific fluxes from its results.</p><pre><code class="language-julia">fva_mins, fva_maxs = flux_variability_analysis_dict(
+    model,
+    Tulip.Optimizer;
+    bounds = objective_bounds(0.99), # the objective function is allowed to vary by ~1% from the FBA optimum
+    modifications = [
+        change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 500),
+        change_constraint(&quot;R_EX_glc__D_e&quot;, -10, -10),
+        change_constraint(&quot;R_EX_o2_e&quot;, 0.0, 0.0),
+    ],
+)</code></pre><pre class="documenter-example-output">(Dict(&quot;R_EX_fum_e&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 8.387567703061316, &quot;R_TPI&quot; =&gt; 7.532255418870419, &quot;R_SUCOAS&quot; =&gt; -2.1456715700928, &quot;R_GLNS&quot; =&gt; 11.72801152935013, &quot;R_EX_pi_e&quot; =&gt; -0.781841023618242, &quot;R_PPC&quot; =&gt; 12.709428540552382, &quot;R_O2t&quot; =&gt; 30.207306741855934, &quot;R_G6PDH2r&quot; =&gt; 6.3963713000040885, &quot;R_TALA&quot; =&gt; 2.094101813498349…), &quot;R_ACONTb&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 0.2260795234341539, &quot;R_TPI&quot; =&gt; 0.27629819544371975, &quot;R_SUCOAS&quot; =&gt; -2.8375942206305713e-12, &quot;R_GLNS&quot; =&gt; 9.663346629147215, &quot;R_EX_pi_e&quot; =&gt; -0.7708580431967099, &quot;R_PPC&quot; =&gt; 13.616949989618535, &quot;R_O2t&quot; =&gt; 30.324546231187313, &quot;R_G6PDH2r&quot; =&gt; 28.16720077460885, &quot;R_TALA&quot; =&gt; 9.351579088425249…), &quot;R_TPI&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 0.22607952365224862, &quot;R_TPI&quot; =&gt; -7.023645995325829, &quot;R_SUCOAS&quot; =&gt; -5.989684359376451e-11, &quot;R_GLNS&quot; =&gt; 14.308313357789281, &quot;R_EX_pi_e&quot; =&gt; -0.7708580432585497, &quot;R_PPC&quot; =&gt; 18.802685220533647, &quot;R_O2t&quot; =&gt; 50.4222650020313, &quot;R_G6PDH2r&quot; =&gt; 50.44563081566434, &quot;R_TALA&quot; =&gt; 16.777722435440715…), &quot;R_SUCOAS&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 17.041289795789567, &quot;R_TPI&quot; =&gt; 9.791564276526747, &quot;R_SUCOAS&quot; =&gt; -16.815210272246723, &quot;R_GLNS&quot; =&gt; 19.47631848364111, &quot;R_EX_pi_e&quot; =&gt; -0.770858043196644, &quot;R_PPC&quot; =&gt; 25.4355271739484, &quot;R_O2t&quot; =&gt; 48.49828617064436, &quot;R_G6PDH2r&quot; =&gt; 2.4419522059618934e-10, &quot;R_TALA&quot; =&gt; -0.03748783636298141…), &quot;R_GLNS&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 8.061973806526826, &quot;R_TPI&quot; =&gt; 7.523620762504264, &quot;R_SUCOAS&quot; =&gt; -2.0664872403347907, &quot;R_GLNS&quot; =&gt; 0.0535809937339624, &quot;R_EX_pi_e&quot; =&gt; -0.7708580431966973, &quot;R_PPC&quot; =&gt; 14.947771300763096, &quot;R_O2t&quot; =&gt; 29.036876963512825, &quot;R_G6PDH2r&quot; =&gt; 6.399244385839639, &quot;R_TALA&quot; =&gt; 2.0955936255021808…), &quot;R_EX_pi_e&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 8.388812649215613, &quot;R_TPI&quot; =&gt; 7.533309613876824, &quot;R_SUCOAS&quot; =&gt; -2.1466235942183447, &quot;R_GLNS&quot; =&gt; 11.688210901810553, &quot;R_EX_pi_e&quot; =&gt; -0.7865095839138668, &quot;R_PPC&quot; =&gt; 12.645801274331156, &quot;R_O2t&quot; =&gt; 30.188166942395195, &quot;R_G6PDH2r&quot; =&gt; 6.388553068133392, &quot;R_TALA&quot; =&gt; 2.09126869800525…), &quot;R_PPC&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 9.14053048210921, &quot;R_TPI&quot; =&gt; 7.815024382280643, &quot;R_SUCOAS&quot; =&gt; -1.4014273460315068, &quot;R_GLNS&quot; =&gt; 15.195578469146987, &quot;R_EX_pi_e&quot; =&gt; -0.7818087293451119, &quot;R_PPC&quot; =&gt; 8.00091769193397e-10, &quot;R_O2t&quot; =&gt; 31.204423146044512, &quot;R_G6PDH2r&quot; =&gt; 5.543458812160874, &quot;R_TALA&quot; =&gt; 1.809799221396707…), &quot;R_O2t&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 0.23347557615742534, &quot;R_TPI&quot; =&gt; 9.783623631549453, &quot;R_SUCOAS&quot; =&gt; -0.001629549873797233, &quot;R_GLNS&quot; =&gt; 0.06270823060221115, &quot;R_EX_pi_e&quot; =&gt; -0.7716851675773635, &quot;R_PPC&quot; =&gt; 0.6737424037490961, &quot;R_O2t&quot; =&gt; 2.0683004221209886e-10, &quot;R_G6PDH2r&quot; =&gt; 0.01992471198008615, &quot;R_TALA&quot; =&gt; -0.03088648992748138…), &quot;R_G6PDH2r&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 10.251784177340285, &quot;R_TPI&quot; =&gt; 9.659615645294526, &quot;R_SUCOAS&quot; =&gt; -3.404492835948122, &quot;R_GLNS&quot; =&gt; 11.754546921095894, &quot;R_EX_pi_e&quot; =&gt; -0.7818183172437788, &quot;R_PPC&quot; =&gt; 12.84942993145147, &quot;R_O2t&quot; =&gt; 29.407516338347314, &quot;R_G6PDH2r&quot; =&gt; 1.2044971310956056e-13, &quot;R_TALA&quot; =&gt; -0.038020848928905275…), &quot;R_TALA&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 10.35557912119309, &quot;R_TPI&quot; =&gt; 9.65911239712571, &quot;R_SUCOAS&quot; =&gt; -4.306503172360712, &quot;R_GLNS&quot; =&gt; 11.818606548613598, &quot;R_EX_pi_e&quot; =&gt; -0.786509583913964, &quot;R_PPC&quot; =&gt; 13.469379343614088, &quot;R_O2t&quot; =&gt; 29.691047792422857, &quot;R_G6PDH2r&quot; =&gt; 4.749673144081168e-13, &quot;R_TALA&quot; =&gt; -0.03824899137239327…)…), Dict(&quot;R_EX_fum_e&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 8.387567703061316, &quot;R_TPI&quot; =&gt; 7.532255418870419, &quot;R_SUCOAS&quot; =&gt; -2.1456715700928, &quot;R_GLNS&quot; =&gt; 11.72801152935013, &quot;R_EX_pi_e&quot; =&gt; -0.781841023618242, &quot;R_PPC&quot; =&gt; 12.709428540552382, &quot;R_O2t&quot; =&gt; 30.207306741855934, &quot;R_G6PDH2r&quot; =&gt; 6.3963713000040885, &quot;R_TALA&quot; =&gt; 2.094101813498349…), &quot;R_ACONTb&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 17.041289795007938, &quot;R_TPI&quot; =&gt; 9.791564276433519, &quot;R_SUCOAS&quot; =&gt; -5.688082121108331, &quot;R_GLNS&quot; =&gt; 19.780355774841556, &quot;R_EX_pi_e&quot; =&gt; -0.7708580433275182, &quot;R_PPC&quot; =&gt; 16.936579264014647, &quot;R_O2t&quot; =&gt; 48.30857236846392, &quot;R_G6PDH2r&quot; =&gt; 3.833409490124206e-10, &quot;R_TALA&quot; =&gt; -0.03748783632297794…), &quot;R_TPI&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 10.554697110858058, &quot;R_TPI&quot; =&gt; 9.79156427517227, &quot;R_SUCOAS&quot; =&gt; -4.36079829072734, &quot;R_GLNS&quot; =&gt; 12.195418956692743, &quot;R_EX_pi_e&quot; =&gt; -0.7708580443890825, &quot;R_PPC&quot; =&gt; 13.848078463930056, &quot;R_O2t&quot; =&gt; 30.26371446753615, &quot;R_G6PDH2r&quot; =&gt; 1.996871968753506e-9, &quot;R_TALA&quot; =&gt; -0.03748783583683612…), &quot;R_SUCOAS&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 8.057908581115928, &quot;R_TPI&quot; =&gt; 7.332654280738366, &quot;R_SUCOAS&quot; =&gt; -1.2187147897617456e-10, &quot;R_GLNS&quot; =&gt; 11.572637789614943, &quot;R_EX_pi_e&quot; =&gt; -0.781840987603548, &quot;R_PPC&quot; =&gt; 11.178325328275292, &quot;R_O2t&quot; =&gt; 29.841134825372734, &quot;R_G6PDH2r&quot; =&gt; 6.989508449861914, &quot;R_TALA&quot; =&gt; 2.2918141985356772…), &quot;R_GLNS&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 17.04128979542336, &quot;R_TPI&quot; =&gt; 9.791564276164623, &quot;R_SUCOAS&quot; =&gt; -16.769668728120884, &quot;R_GLNS&quot; =&gt; 127.20986479797551, &quot;R_EX_pi_e&quot; =&gt; -0.7708580431963201, &quot;R_PPC&quot; =&gt; 0.55493438797057, &quot;R_O2t&quot; =&gt; 50.84039512729372, &quot;R_G6PDH2r&quot; =&gt; 1.3335673812250126e-9, &quot;R_TALA&quot; =&gt; -0.037487835999915696…), &quot;R_EX_pi_e&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 8.477625183335908, &quot;R_TPI&quot; =&gt; 7.508226727537374, &quot;R_SUCOAS&quot; =&gt; -2.1740673997402995, &quot;R_GLNS&quot; =&gt; 11.955467607327458, &quot;R_EX_pi_e&quot; =&gt; -0.7708580431986837, &quot;R_PPC&quot; =&gt; 12.809131647158342, &quot;R_O2t&quot; =&gt; 30.488106628893533, &quot;R_G6PDH2r&quot; =&gt; 6.466262473804337, &quot;R_TALA&quot; =&gt; 2.117932988156977…), &quot;R_PPC&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 17.041289790111023, &quot;R_TPI&quot; =&gt; 9.791564273069904, &quot;R_SUCOAS&quot; =&gt; -16.815210261955922, &quot;R_GLNS&quot; =&gt; 0.05358099899733933, &quot;R_EX_pi_e&quot; =&gt; -0.7708580432275103, &quot;R_PPC&quot; =&gt; 127.7567596864386, &quot;R_O2t&quot; =&gt; 50.84039511913468, &quot;R_G6PDH2r&quot; =&gt; 1.0228880908192078e-8, &quot;R_TALA&quot; =&gt; -0.03748783303680075…), &quot;R_O2t&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 13.488565849967824, &quot;R_TPI&quot; =&gt; 6.238840330806542, &quot;R_SUCOAS&quot; =&gt; -3.772617647963326, &quot;R_GLNS&quot; =&gt; 20.283358516037556, &quot;R_EX_pi_e&quot; =&gt; -0.7708580432002806, &quot;R_PPC&quot; =&gt; 17.883676633529095, &quot;R_O2t&quot; =&gt; 50.84039512688941, &quot;R_G6PDH2r&quot; =&gt; 10.658171837390052, &quot;R_TALA&quot; =&gt; 3.515236109352078…), &quot;R_G6PDH2r&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 0.2260795280734479, &quot;R_TPI&quot; =&gt; -7.023645980797208, &quot;R_SUCOAS&quot; =&gt; -1.2263907749526956e-9, &quot;R_GLNS&quot; =&gt; 14.973603529019034, &quot;R_EX_pi_e&quot; =&gt; -0.7708580432619148, &quot;R_PPC&quot; =&gt; 18.825207611043435, &quot;R_O2t&quot; =&gt; 50.530923759776464, &quot;R_G6PDH2r&quot; =&gt; 50.445630770442904, &quot;R_TALA&quot; =&gt; 16.7777224203659…), &quot;R_TALA&quot; =&gt; Dict(&quot;R_EX_fum_e&quot; =&gt; -0.0, &quot;R_ACONTb&quot; =&gt; 0.22607952440356835, &quot;R_TPI&quot; =&gt; -7.023645988176, &quot;R_SUCOAS&quot; =&gt; -2.8144007763514797e-10, &quot;R_GLNS&quot; =&gt; 14.338969784762646, &quot;R_EX_pi_e&quot; =&gt; -0.7708580432375506, &quot;R_PPC&quot; =&gt; 18.868338300612862, &quot;R_O2t&quot; =&gt; 50.4236100549293, &quot;R_G6PDH2r&quot; =&gt; 50.445630793530995, &quot;R_TALA&quot; =&gt; 16.777722428063736…)…))</pre><pre><code class="language-julia">fva_maxs[&quot;R_EX_ac_e&quot;][&quot;R_EX_ac_e&quot;] # get the maximal acetate exchange flux</code></pre><pre class="documenter-example-output">16.815210271774536</pre><h2 id="Parsimonious-flux-balance-analysis-(pFBA)"><a class="docs-heading-anchor" href="#Parsimonious-flux-balance-analysis-(pFBA)">Parsimonious flux balance analysis (pFBA)</a><a id="Parsimonious-flux-balance-analysis-(pFBA)-1"></a><a class="docs-heading-anchor-permalink" href="#Parsimonious-flux-balance-analysis-(pFBA)" title="Permalink"></a></h2><p>Parsimonious flux balance analysis (here in <a href="../../functions/#COBREXA.parsimonious_flux_balance_analysis-Tuple{MetabolicModel, Any}"><code>parsimonious_flux_balance_analysis</code></a> finds a unique flux solution that minimizes the squared sum of fluxes of the system subject, while maintaining the same objective value as the flux balance analysis solution. Since we are optimizing a quadratic objective, we also need to switch to a quadratic optimizer. In this case, OSQP will work. We demonstrate it on the dictionary-returning variant of pFBA, <a href="../../functions/#COBREXA.parsimonious_flux_balance_analysis_dict-Tuple{MetabolicModel, Vararg{Any, N} where N}"><code>parsimonious_flux_balance_analysis_dict</code></a>:</p><pre><code class="language-julia">dict_soln = parsimonious_flux_balance_analysis_dict(
+    model,
+    OSQP.Optimizer;
+    modifications = [
+        change_optimizer_attribute(&quot;verbose&quot;, false), # silence the optimizer (OSQP is very verbose by default)
+        change_constraint(&quot;R_EX_glc__D_e&quot;, -12, -12),
+    ],
+)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; -0.0054306
+  &quot;R_ACONTb&quot;      =&gt; 6.51108
+  &quot;R_TPI&quot;         =&gt; 8.90211
+  &quot;R_SUCOAS&quot;      =&gt; -5.41568
+  &quot;R_GLNS&quot;        =&gt; 0.250914
+  &quot;R_EX_pi_e&quot;     =&gt; -3.85013
+  &quot;R_PPC&quot;         =&gt; 2.94799
+  &quot;R_O2t&quot;         =&gt; 25.1823
+  &quot;R_G6PDH2r&quot;     =&gt; 6.27109
+  &quot;R_TALA&quot;        =&gt; 1.90314
+  &quot;R_PPCK&quot;        =&gt; -0.00186526
+  &quot;R_EX_lac__D_e&quot; =&gt; -0.00399055
+  &quot;R_PGL&quot;         =&gt; 6.27111
+  &quot;R_H2Ot&quot;        =&gt; -33.9472
+  &quot;R_GLNabc&quot;      =&gt; 0.0126618
+  &quot;R_EX_co2_e&quot;    =&gt; 26.4219
+  &quot;R_EX_gln__L_e&quot; =&gt; -0.0126492
+  &quot;R_EX_nh4_e&quot;    =&gt; -5.67116
+  &quot;R_MALt2_2&quot;     =&gt; 0.00493596
+  ⋮               =&gt; ⋮</pre><p>The function also has the expectable second variant that returns a vector of solutions, in <a href="../../functions/#COBREXA.parsimonious_flux_balance_analysis_vec-Tuple"><code>parsimonious_flux_balance_analysis_vec</code></a>. Here, we utilize it to show how to use different optimizers for finding the optimum and for solving the quadratic problem. That may be preferable if the optimizer qualities differ for the differing tasks. pFBA allows you to specify <code>qp_modifications</code> that are applied after the original optimum is found, and before the quadratic part of the problem solving begins.</p><pre><code class="language-julia">vec_soln = parsimonious_flux_balance_analysis_vec(
+    model,
+    Tulip.Optimizer; # start with Tulip
+    modifications = [
+        change_constraint(&quot;R_EX_glc__D_e&quot;, -12, -12),
+        change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 500), # we may change Tulip-specific attributes here
+    ],
+    qp_modifications = [
+        change_optimizer(OSQP.Optimizer), # now switch to OSQP (Tulip wouldn&#39;t be able to finish the computation)
+        change_optimizer_attribute(&quot;verbose&quot;, false), # and silence it.
+    ],
+)</code></pre><pre class="documenter-example-output">95-element Vector{Float64}:
+  -0.006231402533094581
+   6.847122967587614
+   8.914435875871503
+  -5.738183656745528
+   0.25363156710733
+  -3.8887743417980833
+   2.977310372502161
+  25.64208341306474
+   6.1991009754149715
+   1.877264043236841
+   ⋮
+  -0.0002197051126034427
+  34.49592944330335
+  -0.0020752886988600542
+  -0.0014018715428246171
+  -0.002009900868927077
+ -25.642083259145206
+   0.0161569956400718
+   0.004729690379188246
+   3.8887743479784547</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 21 November 2021 10:48">Sunday 21 November 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
