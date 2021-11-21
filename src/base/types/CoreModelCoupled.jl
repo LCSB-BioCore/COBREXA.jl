@@ -109,11 +109,13 @@ function reaction_stoichiometry(m::CoreModelCoupled, ridx)::Dict{String,Float64}
 end
 
 """
-    grrs(a::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
+    reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
 
-Get the gene associations in a [`CoreModelCoupled`](@ref).
+Retrieve a vector of gene associations in a [`CoreModelCoupled`](@ref), in the
+same order as `genes(model)`.
 """
-grrs(a::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} = a.lm.grrs
+reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} =
+    reaction_gene_association_vec(model.lm)
 
 """
     reaction_gene_association(model::CoreModelCoupled, ridx::Int)::Maybe{GeneAssociation}

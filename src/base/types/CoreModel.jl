@@ -103,11 +103,12 @@ reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
-    grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}}
+    reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}}
 
-Get the gene associations in a [`CoreModel`](@ref).
+Retrieve a vector of all gene associations in a [`CoreModel`](@ref), in the
+same order as `genes(model)`.
 """
-grrs(a::CoreModel)::Vector{Maybe{GeneAssociation}} = a.grrs
+reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}} = model.grrs
 
 """
     reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation}
