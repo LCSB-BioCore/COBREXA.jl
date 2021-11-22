@@ -1,5 +1,5 @@
 """
-    flux_balance_analysis_vec(args...)::Union{Vector{Float64},Nothing}
+    flux_balance_analysis_vec(args...)::Maybe{Vector{Float64}}
 
 A variant of FBA that returns a vector of fluxes in the same order as reactions
 of the model, if the solution is found.
@@ -13,7 +13,7 @@ flux_balance_analysis_vec(args...; kwargs...)::Maybe{Vector{Float64}} =
     flux_vector(flux_balance_analysis(args...; kwargs...))
 
 """
-    flux_balance_analysis_dict(model::MetabolicModel, args...)::Union{Dict{String, Float64},Nothing}
+    flux_balance_analysis_dict(model::MetabolicModel, args...)::Maybe{Dict{String, Float64}}
 
 A variant of FBA that returns a dictionary assigning fluxes to reactions, if
 the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).

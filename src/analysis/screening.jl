@@ -175,7 +175,7 @@ screen_variants(model, variants, analysis; workers = [myid()]) =
     screen(model; variants = variants, analysis = analysis, workers = workers)
 
 """
-    screen_optimize_objective(_, optmodel)::Union{Float64,Nothing}
+    screen_optimize_objective(_, optmodel)::Maybe{Float64}
 
 A variant of [`optimize_objective`](@ref) directly usable in
 [`screen_optmodel_modifications`](@ref).
