@@ -106,7 +106,7 @@ reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
     reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}}
 
 Retrieve a vector of all gene associations in a [`CoreModel`](@ref), in the
-same order as `genes(model)`.
+same order as `reactions(model)`.
 """
 reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}} = model.grrs
 

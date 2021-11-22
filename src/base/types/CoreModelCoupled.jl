@@ -112,7 +112,7 @@ end
     reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
 
 Retrieve a vector of gene associations in a [`CoreModelCoupled`](@ref), in the
-same order as `genes(model)`.
+same order as `reactions(model)`.
 """
 reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} =
     reaction_gene_association_vec(model.lm)
