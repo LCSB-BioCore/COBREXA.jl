@@ -23,10 +23,8 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 DistributedData = "0.1.4"
-Documenter = "0.26"
 JSON = "0.21"
 JuMP = "0.21"
-Literate = "2.8"
 MAT = "0.10"
 MacroTools = "0.5.6"
 OSQP = "0.6"
@@ -38,14 +36,12 @@ julia = "1"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
-Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 OSQP = "ab2f91bb-94b4-55e3-9ba0-7f65df51de79"
 SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [targets]
-test = ["Aqua", "Downloads", "OSQP", "SHA", "Test", "Tulip", "GLPK"]
+test = ["Aqua", "Downloads", "GLPK", "OSQP", "SHA", "Test", "Tulip"]
