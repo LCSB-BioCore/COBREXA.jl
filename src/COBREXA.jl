@@ -19,11 +19,9 @@ import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
 
-include("banner.jl")
 
-function __init__()
-    _print_banner()
-end
+include("banner.jl")
+_print_banner()
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))
