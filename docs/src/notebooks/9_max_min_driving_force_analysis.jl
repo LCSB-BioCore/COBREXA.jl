@@ -11,130 +11,152 @@
 # strategy as a tradeoff between energy yield and protein cost.", Proceedings
 # of the National Academy of Sciences 110.24 (2013): 10039-10044.
 
-using COBREXA, Tulip
+using COBREXA, GLPK, Tulip
 
-# Let's first make a model of glycolysis fermentation.
+# Let's load the core E. coli model
 
-mets = [
-    "13dpg",
-    "2pg",
-    "3pg",
-    "adp",
-    "atp",
-    "dhap",
-    "f6p",
-    "fdp",
-    "g3p",
-    "g6p",
-    "glc__D",
-    "h",
-    "h2o",
-    "lac__D",
-    "nad",
-    "nadh",
-    "pep",
-    "pi",
-    "pyr",
-]
+model = load_model("e_coli_core.json")
 
-rxns = Dict(
-    "ENO" => Dict("2pg" => -1.0, "h2o" => 1.0, "pep" => 1.0),
-    "FBA" => Dict("fdp" => -1.0, "dhap" => 1.0, "g3p" => 1.0),
-    "GAPD" => Dict(
-        "g3p" => -1.0,
-        "nad" => -1.0,
-        "pi" => -1.0,
-        "h" => 1.0,
-        "nadh" => 1.0,
-        "13dpg" => 1.0,
-    ),
-    "HEX" =>
-        Dict("atp" => -1.0, "glc__D" => -1.0, "g6p" => 1.0, "adp" => 1.0, "h" => 1.0),
-    "LDH" =>
-        Dict("pyr" => -1.0, "nadh" => -1.0, "h" => -1.0, "nad" => 1.0, "lac__D" => 1.0),
-    "PFK" => Dict("f6p" => -1.0, "atp" => -1.0, "adp" => 1.0, "h" => 1.0, "fdp" => 1.0),
-    "PGI" => Dict("g6p" => -1.0, "f6p" => 1.0),
-    "PGK" => Dict("13dpg" => -1.0, "adp" => -1.0, "atp" => 1.0, "3pg" => 1.0),
-    "PGM" => Dict("3pg" => -1.0, "2pg" => 1.0),
-    "PYK" =>
-        Dict("pep" => -1.0, "adp" => -1.0, "h" => -1.0, "atp" => 1.0, "pyr" => 1.0),
-    "TPI" => Dict("dhap" => -1.0, "g3p" => 1.0),
-)
-
-model = StandardModel("Glycolysis")
-
-add_metabolites!(model, Metabolite.(mets))
-add_reactions!(model, collect(Reaction(rid; metabolites = mets) for (rid, mets) in rxns))
-
-model
-
-# We need some thermodynamic data. You can get Gibbs free energies (ΔG⁰) e.g.
-# from [eQuilibrator](https://equilibrator.weizmann.ac.il/), possibly using the
+# We need some thermodynamic data. You can get reaction Gibbs free energies (ΔG⁰) from
+# e.g. [eQuilibrator](https://equilibrator.weizmann.ac.il/), possibly using the
 # [Julia wrapper](https://github.com/stelmo/eQuilibrator.jl) that allows you to
 # automate this step. Here, we make a dictionary that maps the reaction IDs to
-# calculated Gibbs free energies of reactions.
+# calculated Gibbs free energy of reaction for each reaction (including the transporters).
 
-gibbs_free_energies = Dict( # ΔG⁰ in kJ/mol
-    "TPI" => 5.57535,
-    "PGK" => -19.32,
-    "PFK" => -14.5988,
-    "ENO" => -3.81089,
-    "PYK" => -27.5833,
-    "LDH" => -23.6803,
-    "FBA" => 22.3932,
-    "PGI" => 2.6617,
-    "GAPD" => 4.60271,
-    "PGM" => -4.52041,
-    "HEX" => -17.90,
+reaction_standard_gibbs_free_energies = Dict( # kJ/mol
+    "ACALD" => -21.26,
+    "PTAr" => 8.65,
+    "ALCD2x" => 17.47,
+    "PDH" => -34.24,
+    "PYK" => -24.48,
+    "CO2t" => 0.00,
+    "MALt2_2" => -6.83,
+    "CS" => -39.33,
+    "PGM" => -4.47,
+    "TKT1" => -1.49,
+    "ACONTa" => 8.46,
+    "GLNS" => -15.77,
+    "ICL" => 9.53,
+    "FBA" => 23.37,
+    "SUCCt3" => -43.97,
+    "FORt2" => -3.42,
+    "G6PDH2r" => -7.39,
+    "AKGDH" => -28.23,
+    "TKT2" => -10.31,
+    "FRD7" => 73.61,
+    "SUCOAS" => -1.15,
+    "FBP" => -11.60,
+    "ICDHyr" => 5.39,
+    "AKGt2r" => 10.08,
+    "GLUSy" => -47.21,
+    "TPI" => 5.62,
+    "FORt" => 13.50,
+    "ACONTb" => -1.62,
+    "GLNabc" => -30.19,
+    "RPE" => -3.38,
+    "ACKr" => 14.02,
+    "THD2" => -33.84,
+    "PFL" => -19.81,
+    "RPI" => 4.47,
+    "D_LACt2" => -3.42,
+    "TALA" => -0.94,
+    "PPCK" => 10.65,
+    "ACt2r" => -3.41,
+    "NH4t" => -13.60,
+    "PGL" => -25.94,
+    "NADTRHD" => -0.01,
+    "PGK" => 19.57,
+    "LDH_D" => 20.04,
+    "ME1" => 12.08,
+    "PIt2r" => 10.41,
+    "ATPS4r" => -37.57,
+    "PYRt2" => -3.42,
+    "GLCpts" => -45.42,
+    "GLUDy" => 32.83,
+    "CYTBD" => -59.70,
+    "FUMt2_2" => -6.84,
+    "FRUpts2" => -42.67,
+    "GAPD" => 0.53,
+    "H2Ot" => 0.00,
+    "PPC" => -40.81,
+    "NADH16" => -80.37,
+    "PFK" => -18.54,
+    "MDH" => 25.91,
+    "PGI" => 2.63,
+    "O2t" => 0.00,
+    "ME2" => 12.09,
+    "GND" => 10.31,
+    "SUCCt2_2" => -6.82,
+    "GLUN" => -14.38,
+    "ETOHt2r" => -16.93,
+    "ADK1" => 0.38,
+    "ACALDt" => 0.00,
+    "SUCDi" => -73.61,
+    "ENO" => -3.81,
+    "MALS" => -39.22,
+    "GLUt2r" => -3.49,
+    "PPS" => -6.05,
+    "FUM" => -3.42,
 )
 
-# Run max min driving force analysis with some reasonable constraints. Protons
-# and water are removed from the concentration calculation of the optimization
-# problem, thus we specify their IDs explicitly.  The reason for this is that
-# the standard Gibbs free energy change of biochemical reactions take place at
-# constant pH, so proton concentration should not change to make the analysis
-# behave reasonably; likewise we just assume that reactions occur in relatively
-# stable aqueous environments, hence water excluded too.
+# In general you cannot be certain that all fluxes will be positive. This poses problems
+# for systematically enforcing that ΔᵣG ≤ 0 as done in the original formulation. In COBREXA
+# ΔᵣG ⋅ vᵢ ≤ 0 is instead enforced, where vᵢ is the flux of reaction i. By default all fluxes
+# are assumed to be positive, but by supplying thermodynamically consistent flux solution
+# it is possible to drop this implicit assumption and makes it easier to directly incorporate
+# the max min driving force into non-customized models.
 
-df, dgs, concens = max_min_driving_force(
+flux_solution = flux_balance_analysis_dict(
     model,
-    gibbs_free_energies,
-    Tulip.Optimizer;
-    ignore_metabolites = ["h", "h2o"],
-    concentration_ratios = Dict(("atp", "adp") => 10.0, ("nadh", "nad") => 0.1),
-    constant_concentrations = Dict("pi" => 1e-2), # constant phosphate concentration set to 10 mM
-    concentration_lb = 1e-6, # minimum 1 μM for all metabolites
-    concentration_ub = 1e-2, # maximum 10 mM or all metabolites
+    GLPK.Optimizer;
+    modifications = [add_loopless_constraints()],
 )
+
+# Run max min driving force analysis with some reasonable constraints. Protons and water are
+# removed from the concentration calculation of the optimization problem, thus we specify
+# their IDs explicitly.  The reason for this is that the Gibbs free energies of biochemical
+# reactions is measured at constant pH, so proton concentrations is fixed; likewise we
+# assume that reactions occur in aqueous environments, hence water is excluded too.
+
+sol = max_min_driving_force(
+    model,
+    reaction_standard_gibbs_free_energies,
+    Tulip.Optimizer;
+    flux_solution = flux_solution,
+    proton_ids = ["h_c", "h_e"],
+    water_ids = ["h2o_c", "h2o_e"],
+    concentration_ratios = Dict(
+        ("atp_c", "adp_c") => 10.0,
+        ("nadh_c", "nad_c") => 0.13,
+        ("nadph_c", "nadp_c") => 1.3,
+    ),
+    concentration_lb = 1e-6,
+    concentration_ub = 100e-3,
+    ignore_reaction_ids = [
+        "H2Ot", # ignore water transport because water's concentration CANNOT change in the implementation of this function (also protons)
+    ],
+)
+
+sol.mmdf
 
 # Plot the results to show how the concentrations can be used to ensure that
 # each reach proceeds "down hill" (ΔᵣG < 0) and that the driving force is as
 # large as possible across all the reactions in the model. Compare this to the
-# driving forces at standard conditions.
+# driving forces at standard conditions. Note, we only plot glycolysis for simplicity.
 
 # We additionally scale the fluxes according to their stoichiometry in the
 # pathway. From the output, it is clear that that metabolite concentrations
 # play a large role in ensuring the thermodynamic consistency of in vivo enzyme
 # reactions.
 
-relative_flux = Dict(
-    "HEX" => 1.0,
-    "PGI" => 1.0,
-    "PFK" => 1.0,
-    "FBA" => 1.0,
-    "TPI" => 1.0,
-    "GAPD" => 2.0,
-    "PGK" => 2.0,
-    "PGM" => 2.0,
-    "ENO" => 2.0,
-    "PYK" => 2.0,
-    "LDH" => 2.0,
-)
-
-rids = ["HEX", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK", "LDH"] # in order of pathway
-rid_rf = [relative_flux[rid] for rid in rids]
-dg_standard = [gibbs_free_energies[rid] for rid in rids]
-dg_opt = [dgs[rid] for rid in rids]
+rids = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"] # glycolysis
+rid_rf = [flux_solution[rid] for rid in rids]
+dg_standard = cumsum([
+    reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for rid in rids
+])
+dg_standard .-= first(dg_standard)
+dg_opt = cumsum([sol.dg_reactions[rid] * flux_solution[rid] for rid in rids])
+dg_opt .-= first(dg_opt)
 
 using CairoMakie
 
@@ -146,29 +168,13 @@ ax = Axis(
     ylabel = "Cumulative ΔG [kJ/mol]",
 );
 
-lines!(
-    ax,
-    1:length(rids),
-    (cumsum(dg_standard) .- first(dg_standard)) .* rid_rf;
-    color = :red,
-    label = "Standard",
-)
-lines!(
-    ax,
-    1:length(rids),
-    (cumsum(dg_opt) .- first(dg_opt)) .* rid_rf;
-    color = :blue,
-    label = "Optimized",
-)
+lines!(ax, 1:length(rids), dg_standard; color = :red, label = "Standard")
+lines!(ax, 1:length(rids), dg_opt, color = :blue, label = "Optimized")
 ax.xticks = (1:length(rids), rids)
 fig[1, 2] = Legend(fig, ax, "ΔG'", framevisible = false)
 fig
 
-#md # !!! tip "Directions of reactions"
-#md #     Be careful when constructing models for MMDFA, the reaction directions in the model
-#md #     and thermodynamic data need to be consistent with the overall flux
-#md #     direction implied by the model. For example, in BiGG, `LDH_D` is written
-#md #     `lac__D + nad ⟷ h + nadh + pyr` and the associated ΔrG'⁰ is 23.6803 kJ/mol.
-#md #     For MMDFA no flux is calculated, so you need to write the reaction
-#md #     in the direction of flux, i.e. `h + nadh + pyr ⟶ lac__D + nad` with ΔrG'⁰ as
-#md #     -23.6803 kJ/mol.
+#md # !!! tip "Tip: Thermodynamic variability"
+#md #       Much like flux variability, thermodynamic constraints in a model are also
+#md #       degenerate. Check out [`max_min_driving_force_variability`](@ref) for ways
+#md #       to explore the thermodynamic solution space.
