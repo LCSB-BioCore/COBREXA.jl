@@ -205,7 +205,6 @@ function add_coupling_constraints!(
     return add_coupling_constraints!(m, sparse(reshape(c, (1, length(c)))), [cl], [cu])
 end
 
-
 """
     add_coupling_constraints!(
         m::CoreModelCoupled,
@@ -234,8 +233,8 @@ function add_coupling_constraints!(
     m.C = vcat(m.C, sparse(C))
     m.cl = vcat(m.cl, collect(cl))
     m.cu = vcat(m.cu, collect(cu))
+    nothing
 end
-
 
 """
     remove_coupling_constraints(m::CoreModelCoupled, args...)
@@ -249,7 +248,6 @@ function remove_coupling_constraints(m::CoreModelCoupled, args...)
     remove_coupling_constraints!(new_model, args...)
     return new_model
 end
-
 
 """
     remove_coupling_constraints!(m::CoreModelCoupled, constraint::Int)
@@ -272,8 +270,8 @@ function remove_coupling_constraints!(m::CoreModelCoupled, constraints::Vector{I
     m.C = m.C[to_be_kept, :]
     m.cl = m.cl[to_be_kept]
     m.cu = m.cu[to_be_kept]
+    nothing
 end
-
 
 """
     change_coupling_bounds!(
@@ -308,6 +306,7 @@ function change_coupling_bounds!(
             throw(DimensionMismatch("`constraints` size doesn't match with `cu`"))
         model.cu[red_constraints] = cu[found]
     end
+    nothing
 end
 
 @_change_bounds_fn CoreModelCoupled Int inplace begin
@@ -358,7 +357,7 @@ end
     orig_rxns = reactions(model.lm)
     remove_reactions!(model.lm, reaction_idxs)
     model.C = model.C[:, in.(orig_rxns, Ref(Set(reactions(model.lm))))]
-    return nothing
+    nothing
 end
 
 @_remove_fn reaction CoreModelCoupled Int begin
@@ -396,7 +395,7 @@ end
     orig_rxns = reactions(model.lm)
     model.lm = remove_metabolites(model.lm, metabolite_idxs)
     model.C = model.C[:, in.(orig_rxns, Ref(Set(reactions(model.lm))))]
-    return nothing
+    nothing
 end
 
 @_remove_fn metabolite CoreModelCoupled Int begin
