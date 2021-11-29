@@ -453,10 +453,8 @@ function change_objective!(
     rxn_idxs::Vector{Int};
     weights = ones(length(rxn_idxs)),
 )
-    nz_idxs, _ = findnz(objective(model))
-    model.c[nz_idxs] .= 0.0 # reset
-    dropzeros!(model.c) # cleanup
-    model.c[rxn_idxs] .= weights # set
+    model.c = spzeros(length(model.c))
+    model.c[rxn_idxs] .= weights
     nothing
 end
 

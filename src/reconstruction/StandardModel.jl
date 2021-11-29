@@ -248,14 +248,12 @@ function change_objective!(
 )
     all(!haskey(model.reactions, rid) for rid in rxn_ids) &&
         throw(DomainError(rxn_ids, "Some reaction ids were not found in model."))
-    k = 1 # counter
-    for rid in reactions(model)
-        if rid in rxn_ids
-            model.reactions[rid].objective_coefficient = weights[k]
-            k += 1
-        else # set others to zero
-            model.reactions[rid].objective_coefficient = 0.0
-        end
+
+    for rid in reactions(model) # reset to zero
+        model.reactions[rid].objective_coefficient = 0.0
+    end
+    for (k, rid) in enumerate(rxn_ids)
+        model.reactions[rid].objective_coefficient = weights[k]
     end
 end
 

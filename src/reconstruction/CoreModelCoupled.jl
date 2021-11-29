@@ -428,31 +428,21 @@ end
 """
     change_objective!(
         model::CoreModelCoupled,
-        rxn_idxs::Vector{Int};
-        weights = ones(length(rxns)),
+        args...,
+        kwargs...,
     )
 
-Change the objective for `model` to reaction(s) with indices `rxn_ids`, optionally
-specifying their `weights`. By default, assume equal weights. If no objective exists in
-model, sets objective.
+Forwards arguments to [`change_objective!`](@ref).
 """
-function change_objective!(
-    model::CoreModelCoupled,
-    rxn_idxs::Vector{Int};
-    weights = ones(length(rxns)),
-)
-    change_objective!(model.lm, rxn_idxs; weights)
+function change_objective!(model::CoreModelCoupled, args...; kwargs...)
+    change_objective!(model.lm, args...; kwargs...)
 end
 
 change_objective!(model::CoreModelCoupled, rxn_xid::Int) =
     change_objective!(model.lm, [rxn_xid])
 
-function change_objective!(
-    model::CoreModelCoupled,
-    rxn_ids::Vector{String};
-    weights = ones(length(rxns)),
-)
-    change_objective!(model.lm, rxn_ids; weights)
+function change_objective!(model::CoreModelCoupled, args...; kwargs...)
+    change_objective!(model.lm, args...; kwargs...)
 end
 
 change_objective!(model::CoreModelCoupled, rxn_id::String) =
