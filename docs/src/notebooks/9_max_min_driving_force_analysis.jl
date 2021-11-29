@@ -99,15 +99,16 @@ reaction_standard_gibbs_free_energies = Dict( # kJ/mol
     "FUM" => -3.42,
 );
 
-# In general you cannot be certain that all fluxes will be positive for a given flux
+# In general we cannot be certain that all fluxes will be positive for a given flux
 # solution. This poses problems for systematically enforcing that ΔᵣG ≤ 0 for each reaction,
 # because it implicitly assumes that all fluxes are positive, as done in the original
-# formulation of MMDF. In COBREXA we instead enforce ΔᵣG ⋅ vᵢ ≤ 0, where vᵢ is the flux of
-# reaction i. By default all fluxes are assumed to be positive, but by supplying
-# thermodynamically consistent flux solution it is possible to drop this implicit assumption
-# and makes it easier to directly incorporate the max min driving force into non-customized
-# models. Here, customized model means a model written such that a negative ΔᵣG is associated
-# with each positive flux in the model, and only positive fluxes are used by the model.
+# formulation of MMDF. In `max_min_driving_force` we instead enforce ΔᵣG ⋅ vᵢ ≤ 0, where vᵢ
+# is the flux of reaction i. By default all fluxes are assumed to be positive, but by
+# supplying thermodynamically consistent flux solution it is possible to drop this implicit
+# assumption and makes it easier to directly incorporate the max min driving force into
+# non-customized models. Here, customized model means a model written such that a negative
+# ΔᵣG is associated with each positive flux in the model, and only positive fluxes are used
+# by the model.
 
 flux_solution = flux_balance_analysis_dict( # find a thermodynamically consistent solution
     model,
@@ -116,11 +117,11 @@ flux_solution = flux_balance_analysis_dict( # find a thermodynamically consisten
 )
 
 # Run max min driving force analysis with some reasonable constraints on metabolite
-# concentration bounds. Note, protons and water are removed from the concentration
-# calculation of the optimization problem, thus we specify their IDs in the model
-# explicitly. The reason for this is that the Gibbs free energies of biochemical reactions
-# are measured at constant pH, so proton concentration is fixed; likewise, we assume that
-# reactions occur in aqueous environments, hence water is excluded too.
+# concentration bounds. To remove protons and water from the concentration calculations, we
+# explicitly specify their IDs. Note, protons and water need to be removed from the
+# concentration calculation of the optimization problem, because the Gibbs free energies of
+# biochemical reactions are measured at constant pH, so proton concentration is fixed, and
+# reactions occur in aqueous environments, hence water concentration does not change.
 
 sol = max_min_driving_force(
     model,
@@ -147,16 +148,16 @@ sol.mmdf
 #md #       Transporters can be included in MMDF analysis, however water and proton
 #md #       transporters must be excluded explicitly in `ignore_reaction_ids`. Due to
 #md #       the way the method is implemented, the ΔᵣG for these transport reactions
-#md #       will always be 0. If they are not excluded the MMDF will be 0 (if these
-#md #       reactions are used in the flux solution).
+#md #       will always be 0. If not excluded, the MMDF will only have a zero solution (if
+#md #       these reactions are used in the flux solution).
 
-# NExt, we plot the results to show how the concentrations can be used to ensure that
+# Next, we plot the results to show how the concentrations can be used to ensure that
 # each reach proceeds "down hill" (ΔᵣG < 0) and that the driving force is as
 # large as possible across all the reactions in the model. Compare this to the
 # driving forces at standard conditions. Note, we only plot glycolysis for simplicity.
 
 # We additionally scale the fluxes according to their stoichiometry in the
-# pathway. From the output, it is clear that that metabolite concentrations
+# pathway. From the output, we can clearly see that that metabolite concentrations
 # play a large role in ensuring the thermodynamic consistency of in vivo reactions.
 
 rids = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"] # glycolysis
