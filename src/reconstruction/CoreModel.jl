@@ -436,3 +436,41 @@ end
 @_remove_fn metabolite CoreModel String plural begin
     remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end
+
+"""
+    change_objective!(
+        model::CoreModel,
+        rxn_idxs::Vector{Int};
+        weights = ones(length(rxn_idxs)),
+    )
+
+Change the objective for `model` to reaction(s) with indices `rxn_idxs`, optionally
+specifying their `weights`. By default, assume equal weights. If no objective exists in
+model, sets objective. Note, also accepts `String` or `Vector{String}` of reaction ids.
+"""
+function change_objective!(
+    model::CoreModel,
+    rxn_idxs::Vector{Int};
+    weights = ones(length(rxn_idxs)),
+)
+    nz_idxs, _ = findnz(objective(model))
+    model.c[nz_idxs] .= 0.0 # reset
+    dropzeros!(model.c) # cleanup
+    model.c[rxn_idxs] .= weights # set
+    nothing
+end
+
+change_objective!(model::CoreModel, rxn_idx::Int) = change_objective!(model, [rxn_idx])
+
+function change_objective!(
+    model::CoreModel,
+    rxn_ids::Vector{String};
+    weights = ones(length(rxn_ids)),
+)
+    idxs = indexin(rxn_ids, reactions(model))
+    any(isnothing(idx) for idx in idxs) &&
+        throw(DomainError(rxn_ids, "Some reaction ids were not found in model."))
+    change_objective!(model, Int.(idxs); weights)
+end
+
+change_objective!(model::CoreModel, rxn_id::String) = change_objective!(model, [rxn_id])

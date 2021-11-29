@@ -230,3 +230,33 @@ end
     remove_metabolites!(n, metabolite_ids)
     return n
 end
+
+"""
+    change_objective!(
+        model::StandardModel,
+        rxn_ids::Vector{String};
+        weights = ones(length(rxn_ids)),
+    )
+
+Change the objective for `model` to reaction(s) with `rxn_ids`, optionally specifying their `weights`. By default,
+assume equal weights. If no objective exists in model, sets objective.
+"""
+function change_objective!(
+    model::StandardModel,
+    rxn_ids::Vector{String};
+    weights = ones(length(rxn_ids)),
+)
+    all(!haskey(model.reactions, rid) for rid in rxn_ids) &&
+        throw(DomainError(rxn_ids, "Some reaction ids were not found in model."))
+    k = 1 # counter
+    for rid in reactions(model)
+        if rid in rxn_ids
+            model.reactions[rid].objective_coefficient = weights[k]
+            k += 1
+        else # set others to zero
+            model.reactions[rid].objective_coefficient = 0.0
+        end
+    end
+end
+
+change_objective!(model::StandardModel, rxn_id::String) = change_objective!(model, [rxn_id])

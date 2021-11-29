@@ -424,3 +424,36 @@ end
 @_remove_fn metabolite CoreModelCoupled String plural begin
     remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end
+
+"""
+    change_objective!(
+        model::CoreModelCoupled,
+        rxn_idxs::Vector{Int};
+        weights = ones(length(rxns)),
+    )
+
+Change the objective for `model` to reaction(s) with indices `rxn_ids`, optionally
+specifying their `weights`. By default, assume equal weights. If no objective exists in
+model, sets objective.
+"""
+function change_objective!(
+    model::CoreModelCoupled,
+    rxn_idxs::Vector{Int};
+    weights = ones(length(rxns)),
+)
+    change_objective!(model.lm, rxn_idxs; weights)
+end
+
+change_objective!(model::CoreModelCoupled, rxn_xid::Int) =
+    change_objective!(model.lm, [rxn_xid])
+
+function change_objective!(
+    model::CoreModelCoupled,
+    rxn_ids::Vector{String};
+    weights = ones(length(rxns)),
+)
+    change_objective!(model.lm, rxn_ids; weights)
+end
+
+change_objective!(model::CoreModelCoupled, rxn_id::String) =
+    change_objective!(model, [rxn_id])
