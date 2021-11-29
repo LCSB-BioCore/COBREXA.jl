@@ -248,4 +248,8 @@ end
     add_reactions!(toymodel, [rxn2, rxn3])
     @test size(toymodel.S) == (6, 10)
     @test toymodel.xl[end] == 10
+
+    change_objective!(toymodel, "nr1")
+    @test objective(toymodel)[8] == 1.0
+    @test objective(toymodel)[7] == 0.0
 end

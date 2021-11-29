@@ -109,4 +109,8 @@
 
     remove_gene!(model, "g1")
     @test length(model.genes) == 4
+
+    ### objective
+    change_objective!(model, "r2")
+    @test model.reactions["r2"].objective_coefficient == 1.0
 end

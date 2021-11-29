@@ -424,3 +424,26 @@ end
 @_remove_fn metabolite CoreModelCoupled String plural begin
     remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end
+
+"""
+    change_objective!(
+        model::CoreModelCoupled,
+        args...,
+        kwargs...,
+    )
+
+Forwards arguments to [`change_objective!`](@ref).
+"""
+function change_objective!(model::CoreModelCoupled, args...; kwargs...)
+    change_objective!(model.lm, args...; kwargs...)
+end
+
+change_objective!(model::CoreModelCoupled, rxn_xid::Int) =
+    change_objective!(model.lm, [rxn_xid])
+
+function change_objective!(model::CoreModelCoupled, args...; kwargs...)
+    change_objective!(model.lm, args...; kwargs...)
+end
+
+change_objective!(model::CoreModelCoupled, rxn_id::String) =
+    change_objective!(model, [rxn_id])
