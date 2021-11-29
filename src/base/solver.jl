@@ -79,8 +79,8 @@ function set_optmodel_bound!(
     lb::Maybe{Real} = nothing,
     ub::Maybe{Real} = nothing,
 )
-    isnothing(lb) || set_normalized_rhs(opt_model[:lbs][vidx], -lb)
-    isnothing(ub) || set_normalized_rhs(opt_model[:ubs][vidx], ub)
+    isnothing(lb) || set_normalized_rhs(opt_model[:xl][vidx], -lb)
+    isnothing(ub) || set_normalized_rhs(opt_model[:xu][vidx], ub)
 end
 
 
