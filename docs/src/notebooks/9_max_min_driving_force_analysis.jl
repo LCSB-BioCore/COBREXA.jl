@@ -97,26 +97,30 @@ reaction_standard_gibbs_free_energies = Dict( # kJ/mol
     "GLUt2r" => -3.49,
     "PPS" => -6.05,
     "FUM" => -3.42,
-)
+);
 
-# In general you cannot be certain that all fluxes will be positive. This poses problems
-# for systematically enforcing that ΔᵣG ≤ 0 as done in the original formulation. In COBREXA
-# ΔᵣG ⋅ vᵢ ≤ 0 is instead enforced, where vᵢ is the flux of reaction i. By default all fluxes
-# are assumed to be positive, but by supplying thermodynamically consistent flux solution
-# it is possible to drop this implicit assumption and makes it easier to directly incorporate
-# the max min driving force into non-customized models.
+# In general you cannot be certain that all fluxes will be positive for a given flux
+# solution. This poses problems for systematically enforcing that ΔᵣG ≤ 0 for each reaction,
+# because it implicitly assumes that all fluxes are positive, as done in the original
+# formulation of MMDF. In COBREXA we instead enforce ΔᵣG ⋅ vᵢ ≤ 0, where vᵢ is the flux of
+# reaction i. By default all fluxes are assumed to be positive, but by supplying
+# thermodynamically consistent flux solution it is possible to drop this implicit assumption
+# and makes it easier to directly incorporate the max min driving force into non-customized
+# models. Here, customized model means a model written such that a negative ΔᵣG is associated
+# with each positive flux in the model, and only positive fluxes are used by the model.
 
-flux_solution = flux_balance_analysis_dict(
+flux_solution = flux_balance_analysis_dict( # find a thermodynamically consistent solution
     model,
     GLPK.Optimizer;
     modifications = [add_loopless_constraints()],
 )
 
-# Run max min driving force analysis with some reasonable constraints. Protons and water are
-# removed from the concentration calculation of the optimization problem, thus we specify
-# their IDs explicitly.  The reason for this is that the Gibbs free energies of biochemical
-# reactions is measured at constant pH, so proton concentrations is fixed; likewise we
-# assume that reactions occur in aqueous environments, hence water is excluded too.
+# Run max min driving force analysis with some reasonable constraints on metabolite
+# concentration bounds. Note, protons and water are removed from the concentration
+# calculation of the optimization problem, thus we specify their IDs in the model
+# explicitly. The reason for this is that the Gibbs free energies of biochemical reactions
+# are measured at constant pH, so proton concentration is fixed; likewise, we assume that
+# reactions occur in aqueous environments, hence water is excluded too.
 
 sol = max_min_driving_force(
     model,
@@ -130,24 +134,30 @@ sol = max_min_driving_force(
         ("nadh_c", "nad_c") => 0.13,
         ("nadph_c", "nadp_c") => 1.3,
     ),
-    concentration_lb = 1e-6,
-    concentration_ub = 100e-3,
+    concentration_lb = 1e-6, # M
+    concentration_ub = 100e-3, # M
     ignore_reaction_ids = [
-        "H2Ot", # ignore water transport because water's concentration CANNOT change in the implementation of this function (also protons)
+        "H2Ot", # ignore water transporter
     ],
 )
 
 sol.mmdf
 
-# Plot the results to show how the concentrations can be used to ensure that
+#md # !!! note "Note: transporters"
+#md #       Transporters can be included in MMDF analysis, however water and proton
+#md #       transporters must be excluded explicitly in `ignore_reaction_ids`. Due to
+#md #       the way the method is implemented, the ΔᵣG for these transport reactions
+#md #       will always be 0. If they are not excluded the MMDF will be 0 (if these
+#md #       reactions are used in the flux solution).
+
+# NExt, we plot the results to show how the concentrations can be used to ensure that
 # each reach proceeds "down hill" (ΔᵣG < 0) and that the driving force is as
 # large as possible across all the reactions in the model. Compare this to the
 # driving forces at standard conditions. Note, we only plot glycolysis for simplicity.
 
 # We additionally scale the fluxes according to their stoichiometry in the
 # pathway. From the output, it is clear that that metabolite concentrations
-# play a large role in ensuring the thermodynamic consistency of in vivo enzyme
-# reactions.
+# play a large role in ensuring the thermodynamic consistency of in vivo reactions.
 
 rids = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"] # glycolysis
 rid_rf = [flux_solution[rid] for rid in rids]
