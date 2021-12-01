@@ -3,22 +3,7 @@
     download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.json&quot;, &quot;e_coli_core.json&quot;)
 
 using COBREXA</code></pre><h2 id="Loading-a-model"><a class="docs-heading-anchor" href="#Loading-a-model">Loading a model</a><a id="Loading-a-model-1"></a><a class="docs-heading-anchor-permalink" href="#Loading-a-model" title="Permalink"></a></h2><pre><code class="language-julia">model = load_model(StandardModel, &quot;e_coli_core.json&quot;) # we specifically want to load a StandardModel from the model file</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
-
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢄⠀⠀⠀⠀⠀⠀⠀⠈⠶⠴⡆⠀⠀⠀⠀⠀⠀
-⡀⢐⣀⢀⡀⡒⢒⣐⠀⣂⣂⠀⣂⣂⢂⠀⢀⠀⠀⠀⠀⠀⢀⠄⠀⠀⠀⢂⠀⢂⣀⣐⡒⡀⠆⢙⣀⠀⡀⠀
-⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠈⢑⣀⣀⠀⠀
-⠀⠀⠃⠀⠃⠀⠀⠀⠘⠀⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⡜⠀⡄⣤⢠⠘⠙⢣⡇⠘
-⠀⠐⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠐⠁⠉⠀⠀⠀⠀⠀⠘⠄
-⠀⢐⠀⠂⠀⠄⠠⠠⠀⠠⠆⠀⠄⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠠⠀⠠⠀⠀⢀⠀⠀⠠⠀⠀⠁
-⢀⠐⠀⠨⢀⠁⠈⣈⠀⢁⣁⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠁⢀⠀⢊⠉⠀⠀⠀⢀⠀⣀⠀⢀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⠀⡀⠆⠀⠆⠀⡀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠆⠀
-⠀⠀⠂⠀⡂⠀⠀⠁⠀⠀⠀⠈⠁⠀⠀⠀⠄⠄⢁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀
-⠈⠀⠁⠀⠀⢀⡀⠀⠠⠁⠁⠀⠑⠀⠐⠲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠂⠀⠀⠀⠀⠀⠀⠊⠀⠀⠀⠈
-⠄⠠⢠⠀⠰⠀⠠⠀⠤⠦⠄⠈⠀⠀⠀⠠⠀⠁⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠄⠄⠠⠀⠀⠀⠀⠀
-⠂⠐⠀⠀⠐⡠⢐⠘⢃⠒⠂⡀⠄⠀⠀⠐⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠒⠀⢀⢀⠀⠀⣀⠀⢀
-⠈⠀⠁⠀⡀⠀⠀⠀⠈⠁⠅⠀⠁⠀⢀⠈⠄⠔⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠈
-⠣⠁⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠈⠀⠁⠁⠀⠈⡀⠀⠀⠀⠀⠀⠐⢣⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠂⠄⠤⠀⠀⠈⠂⠀⠀⠀⠀⠠⠀⠊⠒⣠⠀⠀⠀⠀⠀⠀⠀⠀⠀
+sparse([9, 51, 55, 64, 65, 34, 44, 59, 66, 64  …  20, 22, 23, 25, 16, 17, 34, 44, 57, 59], [1, 1, 1, 1, 1, 2, 2, 2, 2, 3  …  93, 93, 94, 94, 95, 95, 95, 95, 95, 95], [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0  …  1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0], 72, 95)
 Number of reactions: 95
 Number of metabolites: 72
 </pre><div class="admonition is-info"><header class="admonition-header">Note: Loading `StandardModel`s implicitly uses `convert`</header><div class="admonition-body"><p>When using <code>load_model(StandardModel, file_location)</code> the model at   <code>file_location</code> is first loaded into its inferred format and is then   converted to a <code>StandardModel</code> using the generic accessor interface.   Thus, data loss may occur. Always check your model to ensure that   nothing important has been lost.</p></div></div><h2 id="Basic-analysis"><a class="docs-heading-anchor" href="#Basic-analysis">Basic analysis</a><a id="Basic-analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-analysis" title="Permalink"></a></h2><p>As before, for optimization based analysis we need to load an optimizer. Here we will use <a href="https://github.com/ds4dm/Tulip.jl"><code>Tulip.jl</code></a> to solve the linear programs of this tutorial. Refer to the basic constraint-based analysis tutorial for more informaiton.</p><p>All the normal analysis functions work on <code>StandardModel</code>, due to it also having the same generic accessor interface as all the other model types.</p><pre><code class="language-julia">using Tulip
@@ -90,54 +75,59 @@ consuming[&quot;atp_c&quot;] # reactions consuming `atp_c`</code></pre><pre clas
   &quot;b3736&quot; =&gt; Gene(&quot;b3736&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3736&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
   &quot;b3737&quot; =&gt; Gene(&quot;b3737&quot;, Dict(&quot;original_bigg_ids&quot;=&gt;[&quot;b3737&quot;]), Dict(&quot;sbo&quot;=&gt;[&quot;…
   ⋮       =&gt; ⋮</pre><p>The <code>Gene</code> type is a struct that can be used to store information about genes in a <code>StandardModel</code>. Each <code>Gene</code> is composed of the following fields:</p><pre><code class="language-julia">fieldnames(Gene)</code></pre><pre class="documenter-example-output">(:id, :notes, :annotations)</pre><div class="admonition is-success"><header class="admonition-header">Tip: Use &lt;tab&gt; complete to explore the structure of types</header><div class="admonition-body"><p>Use &lt;tab&gt; to quickly explore the fields of a struct. For example,   Gene.&lt;tab&gt; will list all the fields shown above.</p></div></div><p>The keys used in the ordered dictionaries in <code>model.genes</code> are the ids returned using the generic accessor <code>genes</code>. <code>Gene</code>s have pretty printing, as demonstrated below for a random gene drawn from the model:</p><pre><code class="language-julia">random_gene_id = genes(model)[rand(1:n_genes(model))]
-model.genes[random_gene_id]</code></pre><pre class="documenter-example-output">Gene.id: b1779
+model.genes[random_gene_id]</code></pre><pre class="documenter-example-output">Gene.id: b3114
 Gene.notes: 
-	original_bigg_ids: [&quot;b1779&quot;]
+	original_bigg_ids: [&quot;b3114&quot;]
 Gene.annotations: 
 	sbo: [&quot;SBO:0000243&quot;]
-	uniprot: [&quot;P0A9B2&quot;]
-	ecogene: [&quot;EG10367&quot;]
-	ncbigene: [&quot;947679&quot;]
-	ncbigi: [&quot;16129733&quot;]
-	refseq_locus_tag: [&quot;b1779&quot;]
-	refseq_name: [&quot;gapA&quot;]
-	asap: [&quot;ABE-0005920&quot;]
-	refseq_synonym: [&quot;ECK1777&quot;, &quot;JW1768&quot;]
+	uniprot: [&quot;P42632&quot;]
+	ecogene: [&quot;EG12758&quot;]
+	ncbigene: [&quot;947623&quot;]
+	ncbigi: [&quot;49176316&quot;]
+	refseq_locus_tag: [&quot;b3114&quot;]
+	refseq_name: [&quot;tdcE&quot;]
+	asap: [&quot;ABE-0010242&quot;]
+	refseq_synonym: JW5522, ..., yhaS
 </pre><p>The same idea holds for both metabolites (stored as <code>Metabolite</code>s) and reactions (stored as <code>Reaction</code>s). This is demonstrated below.</p><pre><code class="language-julia">random_metabolite_id = metabolites(model)[rand(1:n_metabolites(model))]
-model.metabolites[random_metabolite_id]</code></pre><pre class="documenter-example-output">Metabolite.id: succ_e
-Metabolite.formula: C4H4O4
-Metabolite.charge: -2
-Metabolite.compartment: e
+model.metabolites[random_metabolite_id]</code></pre><pre class="documenter-example-output">Metabolite.id: nh4_c
+Metabolite.formula: N1H4
+Metabolite.charge: 1
+Metabolite.compartment: c
 Metabolite.notes: 
-	original_bigg_ids: [&quot;succ_e&quot;]
+	original_bigg_ids: [&quot;nh4_c&quot;]
 Metabolite.annotations: 
-	envipath: 4fd7f3e0-dd25-43ac-9...
-	sabiork: [&quot;1924&quot;]
-	kegg.compound: [&quot;C00042&quot;]
+	envipath: 650babc9-9d68-4b73-9...
+	kegg.drug: [&quot;D02916&quot;, &quot;D02915&quot;]
+	kegg.compound: [&quot;C00014&quot;, &quot;C01342&quot;]
 	sbo: [&quot;SBO:0000247&quot;]
-	biocyc: [&quot;META:SUC&quot;]
-	chebi: CHEBI:22941, ..., CHEBI:30031
-	metanetx.chemical: [&quot;MNXM25&quot;]
-	inchi_key: KDYFGRWQOYBRFD-UHFFF...
-	hmdb: [&quot;HMDB00254&quot;]
-	bigg.metabolite: [&quot;succ&quot;]
-	seed.compound: [&quot;cpd00036&quot;]
-	lipidmaps: [&quot;LMFA01170043&quot;]
-	reactome.compound: 389583, ..., 113536
+	sabiork: [&quot;1268&quot;, &quot;43&quot;]
+	biocyc: [&quot;META:AMMONIUM&quot;, &quot;META:AMMONIA&quot;]
+	chebi: CHEBI:44284, ..., CHEBI:13407
+	metanetx.chemical: [&quot;MNXM15&quot;]
+	inchi_key: QGZKDVFQNNGYKY-UHFFF...
+	hmdb: [&quot;HMDB00051&quot;, &quot;HMDB41827&quot;]
+	bigg.metabolite: [&quot;nh4&quot;]
+	seed.compound: [&quot;cpd19013&quot;, &quot;cpd00013&quot;]
+	reactome.compound: 5693978, ..., 113561
 </pre><pre><code class="language-julia">random_reaction_id = reactions(model)[rand(1:n_reactions(model))]
-model.reactions[random_reaction_id]</code></pre><pre class="documenter-example-output">Reaction.id: BIOMASS_Ecoli_core_w_GAM
-Reaction.metabolites: 4.9414 glu__L_c + 13.0279 nadph_c + ... + 0.2557 gln__L_c + 0.205 g6p_c →  3.547 nadh_c + 3.7478 coa_c + ... + 59.81 adp_c + 59.81 pi_c
+model.reactions[random_reaction_id]</code></pre><pre class="documenter-example-output">Reaction.id: ICL
+Reaction.metabolites: 1.0 icit_c →  1.0 succ_c + 1.0 glx_c
 Reaction.lb: 0.0
 Reaction.ub: 1000.0
-Reaction.grr: ---
-Reaction.subsystem: Biomass and maintenance functions
+Reaction.grr: (b4015)
+Reaction.subsystem: Anaplerotic reactions
 Reaction.notes: 
-	original_bigg_ids: Biomass_Ecoli_core_w...
+	original_bigg_ids: [&quot;ICL&quot;]
 Reaction.annotations: 
-	metanetx.reaction: [&quot;MNXR96280&quot;]
-	sbo: [&quot;SBO:0000629&quot;]
-	bigg.reaction: BIOMASS_Ecoli_core_w...
-Reaction.objective_coefficient: 1.0
+	bigg.reaction: [&quot;ICL&quot;]
+	sabiork: [&quot;911&quot;]
+	metanetx.reaction: [&quot;MNXR100789&quot;]
+	rhea: 13248, ..., 13247
+	sbo: [&quot;SBO:0000176&quot;]
+	seed.reaction: [&quot;rxn00336&quot;]
+	kegg.reaction: [&quot;R00479&quot;]
+	ec-code: [&quot;4.1.3.1&quot;]
+Reaction.objective_coefficient: 0.0
 </pre><p><code>StandardModel</code> can be used to build your own metabolic model or modify an existing one. One of the main use cases for <code>StandardModel</code> is that it can be used to merge multiple models or parts of multiple models together. Since the internals are uniform inside each <code>StandardModel</code>, attributes of other model types are squashed into the required format (using the generic accessors). This ensures that the internals of all <code>StandardModel</code>s are the same - allowing easy systematic evaluation.</p><div class="admonition is-warning"><header class="admonition-header">Warning: Combining models with different namespaces is tricky</header><div class="admonition-body"><p>Combining models that use different namespaces requires care.   For example, in some models the water exchange reaction is called   <code>EX_h2o_e</code>, while in others it is called <code>R_EX_h2o_s</code>. This needs to   manually addressed (for now) to prevent duplicate, e.g. reactions,   from being added.</p></div></div><h2 id="Checking-the-internals-of-StandardModels:-annotation_index"><a class="docs-heading-anchor" href="#Checking-the-internals-of-StandardModels:-annotation_index">Checking the internals of <code>StandardModel</code>s: <code>annotation_index</code></a><a id="Checking-the-internals-of-StandardModels:-annotation_index-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-the-internals-of-StandardModels:-annotation_index" title="Permalink"></a></h2><p>Often when models are automatically reconstructed duplicate genes, reactions or metabolites end up in a model. <code>COBREXA</code> exports <code>annotation_index</code> to check for cases where the id of a struct may be different, but the annotations the same (possibly suggesting a duplication). <code>annotation_index</code> builds a dictionary mapping annotation features to the ids of whatever struct you are inspecting. This makes it easy to find structs that share certain annotation features.</p><pre><code class="language-julia">rxn_annotations = annotation_index(model.reactions)</code></pre><pre class="documenter-example-output">Dict{String, Dict{String, Set{String}}} with 10 entries:
   &quot;ec-code&quot;           =&gt; Dict(&quot;3.6.3.37&quot;=&gt;Set([&quot;ATPM&quot;]), &quot;3.6.3.42&quot;=&gt;Set([&quot;ATPM…
   &quot;sabiork&quot;           =&gt; Dict(&quot;109&quot;=&gt;Set([&quot;PGL&quot;]), &quot;762&quot;=&gt;Set([&quot;GLUN&quot;]), &quot;155&quot;=…
@@ -185,4 +175,4 @@ reaction_mass_balanced(model, rxn_dict)</code></pre><pre class="documenter-examp
   &quot;C&quot; =&gt; 0.0
   &quot;P&quot; =&gt; 0.0
   &quot;H&quot; =&gt; 2.0
-  &quot;O&quot; =&gt; 1.0</pre><p>Note, since <code>pgm_duplicate</code> is not in the model, we cannot use the other variants of this function because they find the reaction equation stored inside the <code>model</code>.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2_finding_balance/">« Finding balance and variability of constraint-based models</a><a class="docs-footer-nextpage" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 29 November 2021 12:47">Monday 29 November 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;O&quot; =&gt; 1.0</pre><p>Note, since <code>pgm_duplicate</code> is not in the model, we cannot use the other variants of this function because they find the reaction equation stored inside the <code>model</code>.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2_finding_balance/">« Finding balance and variability of constraint-based models</a><a class="docs-footer-nextpage" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 1 December 2021 12:01">Wednesday 1 December 2021</span>. Using Julia version 1.7.0-rc3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

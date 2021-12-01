@@ -66,36 +66,31 @@ for i = 1:50
     m.reactions[rxn].stoi[met] = rand([-3, -2, -1, 1, 2, 3])
     m.reactions[rxn].max_rate = rand()
 end</code></pre><p>Let&#39;s see what the model looks like now:</p><pre><code class="language-julia">m</code></pre><pre class="documenter-example-output">Metabolic model of type Main.ex-8_custom_model.MyModel
-
-⠐⠀⠀⡈⠀⠀⠈⠁⠂⠀⠠⠀⠀
-⠀⠄⠀⡀⠀⠀⠁⠒⡀⠀⠐⠈⠀
-⠂⠀⠐⠀⠆⠠⠡⢀⠠⠐⡀⠀⢀
-⠀⠨⠁⡂⠀⠘⠀⠃⠀⠀⠀⠀⠀
-⠡⠉⠐⠀⢀⠀⠈⠀⢄⠈⠀⠀⡄
+sparse([1, 4, 8, 2, 5, 4, 16, 5, 15, 11  …  10, 8, 12, 6, 8, 13, 18, 18, 5, 15], [1, 1, 1, 2, 2, 3, 3, 4, 6, 7  …  19, 20, 20, 21, 22, 22, 23, 24, 26, 26], [1.0, -3.0, 1.0, -1.0, 2.0, 2.0, -2.0, -3.0, 1.0, 3.0  …  3.0, 3.0, 1.0, 2.0, 2.0, -1.0, 2.0, -1.0, 1.0, -3.0], 19, 26)
 Number of reactions: 26
-Number of metabolites: 20
+Number of metabolites: 19
 </pre><p>We can run most of the standard function on the model data right away:</p><pre><code class="language-julia">using Tulip
 m.optimization_target = &quot;Reaction A&quot;
 flux_balance_analysis_dict(m, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 26 entries:
-  &quot;Reaction E&quot; =&gt; 0.000322931
-  &quot;Reaction F&quot; =&gt; -0.0
-  &quot;Reaction T&quot; =&gt; 0.174544
+  &quot;Reaction E&quot; =&gt; -0.0
+  &quot;Reaction F&quot; =&gt; -0.422872
+  &quot;Reaction T&quot; =&gt; -0.0013608
   &quot;Reaction G&quot; =&gt; 0.0
-  &quot;Reaction B&quot; =&gt; -4.55624e-12
-  &quot;Reaction J&quot; =&gt; -0.102165
-  &quot;Reaction K&quot; =&gt; -0.0
-  &quot;Reaction P&quot; =&gt; 0.00193759
-  &quot;Reaction R&quot; =&gt; -0.102165
-  &quot;Reaction U&quot; =&gt; 0.000443018
-  &quot;Reaction Y&quot; =&gt; -1.849e-11
-  &quot;Reaction N&quot; =&gt; 0.56429
-  &quot;Reaction Z&quot; =&gt; 0.000350518
-  &quot;Reaction D&quot; =&gt; 0.0
-  &quot;Reaction W&quot; =&gt; -0.0
+  &quot;Reaction B&quot; =&gt; -0.0
+  &quot;Reaction J&quot; =&gt; 0.000486989
+  &quot;Reaction K&quot; =&gt; 0.000486989
+  &quot;Reaction P&quot; =&gt; -3.52357e-11
+  &quot;Reaction R&quot; =&gt; -0.0
+  &quot;Reaction U&quot; =&gt; 1.28067e-9
+  &quot;Reaction Y&quot; =&gt; -0.0
+  &quot;Reaction N&quot; =&gt; -0.0
+  &quot;Reaction Z&quot; =&gt; -0.14112
+  &quot;Reaction D&quot; =&gt; -0.0470399
+  &quot;Reaction W&quot; =&gt; 0.000120942
   &quot;Reaction M&quot; =&gt; -0.0
-  &quot;Reaction X&quot; =&gt; 0.0
-  &quot;Reaction C&quot; =&gt; 0.0
-  &quot;Reaction A&quot; =&gt; 0.30446
+  &quot;Reaction X&quot; =&gt; 0.000241884
+  &quot;Reaction C&quot; =&gt; 1.10241e-10
+  &quot;Reaction A&quot; =&gt; 1.38911e-11
   ⋮            =&gt; ⋮</pre><p>To be able to use the model conveniently in functions such as <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a>, you usually want to be able to easily specify the modifications. In this example, we enable use of <a href="../../functions/reconstruction/#COBREXA.with_removed_reactions-Tuple"><code>with_removed_reactions</code></a> by overloading the internal <a href="../../functions/utils/#COBREXA.remove_reactions-Tuple{CoreModel, AbstractVector{Int64}}"><code>remove_reactions</code></a> for this specific model type:</p><p>We need to make an as-shallow-as-possible copy of the model that allows us to remove the reactions without breaking the original model.</p><pre><code class="language-julia">function COBREXA.remove_reactions(m::MyModel, rxns::AbstractVector{String})
     m = MyModel(m.optimization_target, copy(m.reactions))
     delete!.(Ref(m.reactions), rxns)
@@ -107,23 +102,23 @@ reactions_to_remove .=&gt; screen_variants(
     [[with_removed_reactions([r])] for r in reactions_to_remove],
     m -&gt; flux_balance_analysis_dict(m, Tulip.Optimizer)[&quot;Reaction A&quot;],
 )</code></pre><pre class="documenter-example-output">25-element Vector{Pair{String, Float64}}:
- &quot;Reaction B&quot; =&gt; 0.3044596278261141
- &quot;Reaction C&quot; =&gt; 0.3044596423819445
- &quot;Reaction D&quot; =&gt; 0.3044596423819445
- &quot;Reaction E&quot; =&gt; 0.303975242543509
- &quot;Reaction F&quot; =&gt; 0.3044596423819445
- &quot;Reaction G&quot; =&gt; 0.3044596424143211
- &quot;Reaction H&quot; =&gt; 0.04135032969093828
- &quot;Reaction I&quot; =&gt; 0.03084320823855454
- &quot;Reaction J&quot; =&gt; 0.26359370990717723
- &quot;Reaction K&quot; =&gt; 0.3044596423819445
+ &quot;Reaction B&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction C&quot; =&gt; -6.053049545510096e-11
+ &quot;Reaction D&quot; =&gt; 1.2248420082882448e-11
+ &quot;Reaction E&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction F&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction G&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction H&quot; =&gt; 1.6597522344141004e-11
+ &quot;Reaction I&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction J&quot; =&gt; 1.7764900680738363e-11
+ &quot;Reaction K&quot; =&gt; 1.3247412533182346e-11
               ⋮
- &quot;Reaction R&quot; =&gt; 0.263593709330887
- &quot;Reaction S&quot; =&gt; 0.3044596423819445
- &quot;Reaction T&quot; =&gt; 0.10281069417903423
- &quot;Reaction U&quot; =&gt; 0.3044596424137387
- &quot;Reaction V&quot; =&gt; 0.3044596423819445
- &quot;Reaction W&quot; =&gt; 0.3044596423819445
- &quot;Reaction X&quot; =&gt; 0.3044596423819445
- &quot;Reaction Y&quot; =&gt; 0.3044596260552588
- &quot;Reaction Z&quot; =&gt; 0.3044596424137387</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../7_community_model/">« Building and analysing a small community model</a><a class="docs-footer-nextpage" href="../9_max_min_driving_force_analysis/">Maximum-minimum driving force analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 29 November 2021 12:47">Monday 29 November 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ &quot;Reaction R&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction S&quot; =&gt; 5.991945842008422e-10
+ &quot;Reaction T&quot; =&gt; 1.3686861323282557e-11
+ &quot;Reaction U&quot; =&gt; 1.2424891707562945e-9
+ &quot;Reaction V&quot; =&gt; 1.6597522344141004e-11
+ &quot;Reaction W&quot; =&gt; 1.3595610516296605e-11
+ &quot;Reaction X&quot; =&gt; 8.980140092800575e-12
+ &quot;Reaction Y&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction Z&quot; =&gt; 1.3891081053642988e-11</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../7_community_model/">« Building and analysing a small community model</a><a class="docs-footer-nextpage" href="../9_max_min_driving_force_analysis/">Maximum-minimum driving force analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 1 December 2021 12:01">Wednesday 1 December 2021</span>. Using Julia version 1.7.0-rc3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
