@@ -4,7 +4,6 @@ authors = ["The developers of COBREXA.jl"]
 version = "1.1"
 
 [deps]
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 DistributedData = "f6a0035f-c5ac-4ad0-b410-ad102ced35df"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
@@ -32,7 +31,7 @@ OrderedCollections = "1.4"
 SBML = "0.7, 0.8.2"
 StableRNGs = "1.0"
 Tulip = "0.7"
-julia = "1"
+julia = "1.5, 1.6, 1.7"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"

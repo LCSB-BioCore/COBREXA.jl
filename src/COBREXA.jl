@@ -1,6 +1,5 @@
 module COBREXA
 
-using Dates
 using Distributed
 using DistributedData
 using JSON
