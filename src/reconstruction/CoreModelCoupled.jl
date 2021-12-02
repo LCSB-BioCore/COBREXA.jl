@@ -440,9 +440,3 @@ end
 change_objective!(model::CoreModelCoupled, rxn_xid::Int) =
     change_objective!(model.lm, [rxn_xid])
 
-function change_objective!(model::CoreModelCoupled, args...; kwargs...)
-    change_objective!(model.lm, args...; kwargs...)
-end
-
-change_objective!(model::CoreModelCoupled, rxn_id::String) =
-    change_objective!(model, [rxn_id])
