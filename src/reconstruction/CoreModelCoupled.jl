@@ -440,3 +440,5 @@ end
 change_objective!(model::CoreModelCoupled, rxn_xid::Int) =
     change_objective!(model.lm, [rxn_xid])
 
+change_objective!(model::CoreModelCoupled, rxn_id::String) =
+    change_objective!(model, [rxn_id])
