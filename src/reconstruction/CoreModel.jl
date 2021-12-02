@@ -444,9 +444,8 @@ end
         weights = ones(length(rxn_idxs)),
     )
 
-Change the objective for `model` to reaction(s) with indices `rxn_idxs`, optionally
-specifying their `weights`. By default, assume equal weights. If no objective exists in
-model, sets objective. Note, also accepts `String` or `Vector{String}` of reaction ids.
+Change the objective to reactions at given indexes, optionally specifying their
+`weights` in the same order. By default, all set weights are 1.
 """
 function change_objective!(
     model::CoreModel,
@@ -458,8 +457,24 @@ function change_objective!(
     nothing
 end
 
+"""
+    change_objective!(model::CoreModel, rxn_idx::Int)
+
+Change objective function of a CoreModel to a single `1` at reaction index
+`rxn_idx`.
+"""
 change_objective!(model::CoreModel, rxn_idx::Int) = change_objective!(model, [rxn_idx])
 
+"""
+    change_objective!(
+        model::CoreModel,
+        rxn_ids::Vector{String};
+        weights = ones(length(rxn_ids)),
+    )
+
+Change objective of given reaction IDs, optionally specifying objective
+`weights` in the same order as `rxn_ids`. By default, all set weights are 1.
+"""
 function change_objective!(
     model::CoreModel,
     rxn_ids::Vector{String};
@@ -467,8 +482,14 @@ function change_objective!(
 )
     idxs = indexin(rxn_ids, reactions(model))
     any(isnothing(idx) for idx in idxs) &&
-        throw(DomainError(rxn_ids, "Some reaction ids were not found in model."))
+        throw(DomainError(rxn_ids, "Some reaction ids not found in the model"))
     change_objective!(model, Int.(idxs); weights)
 end
 
+"""
+    change_objective!(model::CoreModel, rxn_id::String)
+
+Change objective function of a CoreModel to a single `1` at the given reaction
+ID.
+"""
 change_objective!(model::CoreModel, rxn_id::String) = change_objective!(model, [rxn_id])
