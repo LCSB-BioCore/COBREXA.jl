@@ -221,6 +221,7 @@ documentation-assets:gource:
     - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
+    expire_in: 1 year
   <<: *global_trigger_build_doc
 
 #
