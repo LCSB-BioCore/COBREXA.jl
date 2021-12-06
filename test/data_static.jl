@@ -74,6 +74,7 @@ test_toyModel() = CoreModel(
 )
 
 const reaction_standard_gibbs_free_energies = Dict(
+    # data from Equilibrator using the E. coli core model's reactions
     "ACALD" => -21.268198981756314,
     "PTAr" => 8.651025243027988,
     "ALCD2x" => 17.47260052762408,
