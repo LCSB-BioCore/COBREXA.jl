@@ -74,6 +74,12 @@ test_toyModel() = CoreModel(
 )
 
 const reaction_standard_gibbs_free_energies = Dict(
+    #=
+    ΔᵣG⁰ data from Equilibrator using the E. coli core model's reactions
+    To generate this data manually, go to https://equilibrator.weizmann.ac.il/ and
+    enter each reaction into the search bar, fill in the ΔG⁰ below from there. To generate
+    automatically, use the eQuilibrator.jl package.
+    =#
     "ACALD" => -21.268198981756314,
     "PTAr" => 8.651025243027988,
     "ALCD2x" => 17.47260052762408,
