@@ -146,12 +146,8 @@ Get the bounds for reactions, assuming the information is stored in
 `.lower_bound` and `.upper_bound`.
 """
 bounds(model::JSONModel) = (
-    sparse([
-        get(rxn, "lower_bound", -_constants.default_reaction_bound) for rxn in model.rxns
-    ]),
-    sparse([
-        get(rxn, "upper_bound", _constants.default_reaction_bound) for rxn in model.rxns
-    ]),
+    [get(rxn, "lower_bound", -_constants.default_reaction_bound) for rxn in model.rxns],
+    [get(rxn, "upper_bound", _constants.default_reaction_bound) for rxn in model.rxns],
 )
 
 """

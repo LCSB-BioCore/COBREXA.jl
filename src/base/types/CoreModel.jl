@@ -14,28 +14,33 @@ mutable struct CoreModel <: MetabolicModel
     S::SparseMat
     b::SparseVec
     c::SparseVec
-    xl::SparseVec
-    xu::SparseVec
+    xl::Vector{Float64}
+    xu::Vector{Float64}
     rxns::Vector{String}
     mets::Vector{String}
+    grrs::Vector{Maybe{GeneAssociation}}
 
     function CoreModel(
-        S::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K,
-    ) where {V<:VecType,M<:MatType,K<:StringVecType}
-
+        S::MatType,
+        b::VecType,
+        c::VecType,
+        xl::VecType,
+        xu::VecType,
+        rxns::StringVecType,
+        mets::StringVecType,
+        grrs::Vector{Maybe{GeneAssociation}} = Vector{Maybe{GeneAssociation}}(
+            nothing,
+            length(rxns),
+        ),
+    )
         all([length(b), length(mets)] .== size(S, 1)) ||
             throw(DimensionMismatch("inconsistent number of metabolites"))
 
-        all([length(c), length(xl), length(xu), length(rxns)] .== size(S, 2)) ||
-            throw(DimensionMismatch("inconsistent number of reactions"))
+        all(
+            [length(c), length(xl), length(xu), length(rxns), length(grrs)] .== size(S, 2),
+        ) || throw(DimensionMismatch("inconsistent number of reactions"))
 
-        new(sparse(S), sparse(b), sparse(c), sparse(xl), sparse(xu), rxns, mets)
+        new(sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets, grrs)
     end
 end
 
@@ -61,11 +66,11 @@ metabolites(a::CoreModel)::Vector{String} = a.mets
 stoichiometry(a::CoreModel)::SparseMat = a.S
 
 """
-    bounds(a::CoreModel)::Tuple{SparseVec,SparseVec}
+    bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}}
 
 `CoreModel` flux bounds.
 """
-bounds(a::CoreModel)::Tuple{SparseVec,SparseVec} = (a.xl, a.xu)
+bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
 
 """
     balance(a::CoreModel)::SparseVec
@@ -98,6 +103,31 @@ reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
+    reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}}
+
+Retrieve a vector of all gene associations in a [`CoreModel`](@ref), in the
+same order as `reactions(model)`.
+"""
+reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}} = model.grrs
+
+"""
+    reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction
+index.
+"""
+reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation} =
+    model.grrs[ridx]
+
+"""
+    reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation}
+
+Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction ID.
+"""
+reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation} =
+    model.grrs[first(indexin([rid], model.rxns))]
+
+"""
     Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
 
 Make a `CoreModel` out of any compatible model type.
@@ -116,5 +146,8 @@ function Base.convert(::Type{CoreModel}, m::M) where {M<:MetabolicModel}
         xu,
         reactions(m),
         metabolites(m),
+        Vector{Maybe{GeneAssociation}}([
+            reaction_gene_association(m, id) for id in reactions(m)
+        ]),
     )
 end

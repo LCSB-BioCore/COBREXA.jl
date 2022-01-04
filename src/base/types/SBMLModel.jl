@@ -47,12 +47,12 @@ function stoichiometry(model::SBMLModel)::SparseMat
 end
 
 """
-    bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
+    bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
 
 Get the lower and upper flux bounds of model [`SBMLModel`](@ref). Throws `DomainError` in
 case if the SBML contains mismatching units.
 """
-function bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
+function bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
     lbu, ubu = SBML.flux_bounds(model.sbml)
 
     unit = lbu[1][2]
@@ -67,7 +67,7 @@ function bounds(model::SBMLModel)::Tuple{SparseVec,SparseVec}
         ),
     )
 
-    return sparse.((getvalue.(lbu), getvalue.(ubu)))
+    return (getvalue.(lbu), getvalue.(ubu))
 end
 
 """
