@@ -133,6 +133,7 @@ windows10:julia1.7:
 
 mac:julia1.7:
   stage: test-compat
+  allow_failure: true
   <<: *global_trigger_compat_tests
   <<: *global_julia17
   <<: *global_env_mac
@@ -151,6 +152,7 @@ windows10:julia1.6:
 
 mac:julia1.6:
   stage: test-compat
+  allow_failure: true
   <<: *global_trigger_compat_tests
   <<: *global_julia16
   <<: *global_env_mac
