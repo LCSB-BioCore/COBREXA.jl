@@ -165,54 +165,65 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
     rxns = reactions(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = bounds(mm)
+    ocs = objective(mm)
     comps = _default.("", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 
     return SBMLModel(
         SBML.Model(
-            units = Dict("" => []), # units
-            compartments = Dict(comp => SBML.Compartment() for comp in compss),
-            species = Dict(
+            Dict(), # parameters
+            Dict("" => 1), # units
+            Dict(
+                comp =>
+                    SBML.Compartment(nothing, nothing, nothing, nothing, nothing, nothing)
+                for comp in compss
+            ),
+            Dict(
                 mid => SBML.Species(
-                    compartment = _default("", comps[mi]), # compartment
-                    formula = metabolite_formula(mm, mid),
-                    charge = metabolite_charge(mm, mid),
-                    notes = _sbml_export_notes(metabolite_notes(mm, mid)),
-                    annotation = _sbml_export_annotation(metabolite_annotations(mm, mid)),
+                    nothing, # name
+                    _default("", comps[mi]), # compartment
+                    nothing, # no information about boundary conditions
+                    metabolite_formula(mm, mid),
+                    metabolite_charge(mm, mid),
+                    nothing, # initial amount
+                    nothing, # initial concentration
+                    nothing, # only substance unit flags
+                    _sbml_export_notes(metabolite_notes(mm, mid)),
+                    _sbml_export_annotation(metabolite_annotations(mm, mid)),
                 ) for (mi, mid) in enumerate(mets)
             ),
-            reactions = Dict(
+            Dict(
                 rid => SBML.Reaction(
-                    reactants = Dict(
+                    Dict(
                         mets[i] => -stoi[i, ri] for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] <= 0
                     ),
-                    products = Dict(
+                    Dict(
                         mets[i] => stoi[i, ri] for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] > 0
                     ),
-                    kinetic_parameters = Dict(
-                        "LOWER_BOUND" => (lbs[ri], ""),
-                        "UPPER_BOUND" => (ubs[ri], ""),
-                    ),
-                    gene_product_association = _maybemap(
+                    (lbs[ri], ""),
+                    (ubs[ri], ""),
+                    ocs[ri],
+                    _maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
                         reaction_gene_association(mm, rid),
                     ),
-                    reversible = true,
-                    notes = _sbml_export_notes(reaction_notes(mm, rid)),
-                    annotation = _sbml_export_annotation(reaction_annotations(mm, rid)),
+                    nothing, # no kinetic math
+                    true, # reversible by default
+                    _sbml_export_notes(reaction_notes(mm, rid)),
+                    _sbml_export_annotation(reaction_annotations(mm, rid)),
                 ) for (ri, rid) in enumerate(rxns)
             ),
-            gene_products = Dict(
+            Dict(
                 gid => SBML.GeneProduct(
-                    notes = _sbml_export_notes(gene_notes(mm, gid)),
-                    annotation = _sbml_export_annotation(gene_annotations(mm, gid)),
+                    nothing,
+                    nothing,
+                    _sbml_export_notes(gene_notes(mm, gid)),
+                    _sbml_export_annotation(gene_annotations(mm, gid)),
                 ) for gid in genes(mm)
             ),
-            objective = Dict(
-                rid => oc for (rid, oc) in zip(rxns, objective(mm)) if oc != 0
-            ),
+            Dict(), # function definitions
         ),
     )
 end
