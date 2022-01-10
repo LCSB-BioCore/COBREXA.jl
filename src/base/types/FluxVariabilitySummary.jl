@@ -4,8 +4,8 @@
 Stores summary information about the result of a flux variability analysis.
 """
 struct FluxVariabilitySummary
-    biomass_fluxes::Dict{String,Vector{Union{Float64,Nothing}}}
-    exchange_fluxes::Dict{String,Vector{Union{Float64,Nothing}}}
+    biomass_fluxes::Dict{String,Vector{Maybe{Float64}}}
+    exchange_fluxes::Dict{String,Vector{Maybe{Float64}}}
 end
 
 """
@@ -15,8 +15,8 @@ A default empty constructor for [`FluxVariabilitySummary`](@ref).
 """
 function FluxVariabilitySummary()
     FluxVariabilitySummary(
-        Dict{String,Vector{Union{Float64,Nothing}}}(),
-        Dict{String,Vector{Union{Float64,Nothing}}}(),
+        Dict{String,Vector{Maybe{Float64}}}(),
+        Dict{String,Vector{Maybe{Float64}}}(),
     )
 end
 
@@ -84,14 +84,14 @@ function flux_variability_summary(
         rxn_ids,
     )
 
-    biomass_fluxes = Dict{String,Vector{Union{Float64,Nothing}}}()
+    biomass_fluxes = Dict{String,Vector{Maybe{Float64}}}()
     for rxn_id in bmasses
         lb = isnothing(flux_result[1][rxn_id]) ? nothing : flux_result[1][rxn_id][rxn_id]
         ub = isnothing(flux_result[2][rxn_id]) ? nothing : flux_result[2][rxn_id][rxn_id]
         biomass_fluxes[rxn_id] = [lb, ub]
     end
 
-    ex_rxn_fluxes = Dict{String,Vector{Union{Float64,Nothing}}}()
+    ex_rxn_fluxes = Dict{String,Vector{Maybe{Float64}}}()
     for rxn_id in ex_rxns
         lb = isnothing(flux_result[1][rxn_id]) ? nothing : flux_result[1][rxn_id][rxn_id]
         ub = isnothing(flux_result[2][rxn_id]) ? nothing : flux_result[2][rxn_id][rxn_id]
