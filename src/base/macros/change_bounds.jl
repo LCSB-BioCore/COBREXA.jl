@@ -1,3 +1,9 @@
+"""
+    @_change_bounds_fn ModelType IdxType [plural] [inplace] begin ... end
+
+A helper for creating simple bounds-changing function similar to
+[`change_bounds`](@ref).
+"""
 macro _change_bounds_fn(model_type, idx_type, args...)
     body = last(args)
     typeof(body) == Expr || throw(DomainError(body, "missing function body"))
@@ -41,10 +47,18 @@ macro _change_bounds_fn(model_type, idx_type, args...)
     ```
     """
 
-    return :(@doc $docstring $fname(
-        model::$model_type,
-        $idx_var::$idx_type;
-        lower = $missing_default,
-        upper = $missing_default,
-    ) = $body)
+    Expr(
+        :macrocall,
+        Symbol("@doc"),
+        __source__,
+        docstring,
+        :(
+            $fname(
+                model::$model_type,
+                $idx_var::$idx_type;
+                lower = $missing_default,
+                upper = $missing_default,
+            ) = $body
+        ),
+    )
 end
