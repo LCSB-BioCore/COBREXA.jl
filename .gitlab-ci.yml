@@ -162,11 +162,11 @@ mac:julia1.6:
 
 format:
   stage: test
-  image: docker:19.03.13
+  image: docker:20.10.12
   tags:
     - privileged
   services:
-    - name: docker:19.03.13-dind
+    - name: docker:20.10.12-dind
       command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
@@ -210,11 +210,11 @@ format:
 documentation-assets:gource:
   stage: documentation-assets
   needs: [] # allow faster start
-  image: docker:19.03.13
+  image: docker:20.10.12
   tags:
     - privileged
   services:
-    - name: docker:19.03.13-dind
+    - name: docker:20.10.12-dind
       command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
