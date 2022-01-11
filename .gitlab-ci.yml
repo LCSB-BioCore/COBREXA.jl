@@ -24,6 +24,7 @@ variables:
 
 .global_trigger_build_doc: &global_trigger_build_doc
   rules:
+    - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == "develop"
