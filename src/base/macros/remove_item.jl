@@ -1,3 +1,10 @@
+
+"""
+    @ _remove_fn objname ModelType IndexType [plural] [inplace] begin ... end
+
+A helper for creating functions that follow the `remove_objname` template, such
+as [`remove_metabolites`](@ref) and [`remove_reaction`](@ref).
+"""
 macro _remove_fn(objname, model_type, idx_type, args...)
     body = last(args)
     typeof(body) == Expr || throw(DomainError(body, "missing function body"))
@@ -24,5 +31,11 @@ macro _remove_fn(objname, model_type, idx_type, args...)
     $(inplace ? "in-place" : "and return the modified model").
     """
 
-    return :(@doc $docstring $fname(model::$model_type, $idx_var::$idx_type) = $body)
+    Expr(
+        :macrocall,
+        Symbol("@doc"),
+        __source__,
+        docstring,
+        :($fname(model::$model_type, $idx_var::$idx_type) = $body),
+    )
 end
