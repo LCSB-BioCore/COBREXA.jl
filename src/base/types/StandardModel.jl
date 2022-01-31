@@ -291,6 +291,27 @@ reaction_stoichiometry(m::StandardModel, rid::String)::Dict{String,Float64} =
     m.reactions[rid].metabolites
 
 """
+    reaction_name(m::StandardModel, rid::String)
+
+Return the name of reaction with ID `id`.
+"""
+reaction_name(m::StandardModel, rid::String) = m.reactions[rid].name
+
+"""
+    metabolite_name(m::StandardModel, mid::String)
+
+Return the name of metabolite with ID `id`.
+"""
+metabolite_name(m::StandardModel, mid::String) = m.metabolites[mid].name
+
+"""
+    gene_name(m::StandardModel, gid::String)
+
+Return the name of gene with ID `id`.
+"""
+gene_name(m::StandardModel, gid::String) = m.genes[gid].name
+
+"""
 Base.convert(::Type{StandardModel}, model::MetabolicModel)
 
 Convert any `MetabolicModel` into a `StandardModel`.
@@ -314,6 +335,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     for gid in gids
         modelgenes[gid] = Gene(
             gid;
+            name = gene_name(model, gid),
             notes = gene_notes(model, gid),
             annotations = gene_annotations(model, gid),
         )
@@ -322,6 +344,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
     for mid in metids
         modelmetabolites[mid] = Metabolite(
             mid;
+            name = metabolite_name(model, mid),
             charge = metabolite_charge(model, mid),
             formula = _maybemap(_unparse_formula, metabolite_formula(model, mid)),
             compartment = metabolite_compartment(model, mid),
@@ -340,6 +363,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         end
         modelreactions[rid] = Reaction(
             rid;
+            name = reaction_name(model, rid),
             metabolites = rmets,
             lb = lbs[i],
             ub = ubs[i],
