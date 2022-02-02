@@ -262,27 +262,29 @@ Return the stoichiometry of reaction with ID `rid`.
 reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]
 
+"""
+    reaction_name(model::JSONModel, rid::String)
+
+Return the name of reaction with ID `rid`.
+"""
+reaction_name(model::JSONModel, rid::String) =
+    get(model.rxns[model.rxn_index[rid]], "name", nothing)
 
 """
-    reaction_name(m::JSONModel, rid::String)
+    metabolite_name(model::JSONModel, mid::String)
 
-Return the name of reaction with ID `id`.
+Return the name of metabolite with ID `mid`.
 """
-reaction_name(m::JSONModel, rid::String) = get(m.reactions[model.rxn_index[rid]], "name", nothing)
-
-"""
-    metabolite_name(m::JSONModel, mid::String)
-
-Return the name of metabolite with ID `id`.
-"""
-metabolite_name(m::JSONModel, mid::String) = get(m.metabolites[model.met_index[mid]], "name", nothing)
+metabolite_name(model::JSONModel, mid::String) =
+    get(model.mets[model.met_index[mid]], "name", nothing)
 
 """
-    gene_name(m::JSONModel, gid::String)
+    gene_name(model::JSONModel, gid::String)
 
-Return the name of gene with ID `id`.
+Return the name of gene with ID `gid`.
 """
-gene_name(m::JSONModel, gid::String) = get(m.genes[model.gene_index[gid]], "name", nothing)
+gene_name(model::JSONModel, gid::String) =
+    get(model.genes[model.gene_index[gid]], "name", nothing)
 
 """
     Base.convert(::Type{JSONModel}, mm::MetabolicModel)
@@ -303,8 +305,6 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
 
     json = Dict{String,Any}()
     json["id"] = "model" # default
-
-    #TODO: add notes, names and similar fun stuff when they are available
 
     json[first(_constants.keynames.genes)] = [
         Dict([
