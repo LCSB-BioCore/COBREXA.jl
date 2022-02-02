@@ -156,21 +156,21 @@ end
 
 Return the name of reaction with ID `rid`.
 """
-reaction_name(model::SBMLModel, rid::String) = model.reactions[rid].name
+reaction_name(model::SBMLModel, rid::String) = model.sbml.reactions[rid].name
 
 """
     metabolite_name(model::SBMLModel, mid::String)
 
 Return the name of metabolite with ID `mid`.
 """
-metabolite_name(model::SBMLModel, mid::String) = model.species[mid].name
+metabolite_name(model::SBMLModel, mid::String) = model.sbml.species[mid].name
 
 """
     gene_name(model::SBMLModel, gid::String)
 
 Return the name of gene with ID `gid`.
 """
-gene_name(model::SBMLModel, gid::String) = model.gene_products[gid].name
+gene_name(model::SBMLModel, gid::String) = model.sbml.gene_products[gid].name
 
 """
     Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
