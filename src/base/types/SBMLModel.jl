@@ -191,11 +191,12 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
 
     return SBMLModel(
         SBML.Model(
-            units = Dict("" => []), # units
+            units = Dict("" => []),
             compartments = Dict(comp => SBML.Compartment() for comp in compss),
             species = Dict(
                 mid => SBML.Species(
-                    compartment = _default("", comps[mi]), # compartment
+                    name = metabolite_name(mm, mid),
+                    compartment = _default("", comps[mi]),
                     formula = metabolite_formula(mm, mid),
                     charge = metabolite_charge(mm, mid),
                     notes = _sbml_export_notes(metabolite_notes(mm, mid)),
@@ -204,6 +205,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             ),
             reactions = Dict(
                 rid => SBML.Reaction(
+                    name = reaction_name(mm, rid),
                     reactants = Dict(
                         mets[i] => -stoi[i, ri] for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] <= 0
@@ -227,6 +229,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             ),
             gene_products = Dict(
                 gid => SBML.GeneProduct(
+                    name = gene_name(mm, gid),
                     notes = _sbml_export_notes(gene_notes(mm, gid)),
                     annotation = _sbml_export_annotation(gene_annotations(mm, gid)),
                 ) for gid in genes(mm)
