@@ -191,7 +191,6 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
 
     return SBMLModel(
         SBML.Model(
-            units = Dict("" => []),
             compartments = Dict(comp => SBML.Compartment() for comp in compss),
             species = Dict(
                 mid => SBML.Species(
@@ -215,8 +214,8 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] > 0
                     ),
                     kinetic_parameters = Dict(
-                        "LOWER_BOUND" => (lbs[ri], ""),
-                        "UPPER_BOUND" => (ubs[ri], ""),
+                        "LOWER_BOUND" => SBML.Parameter(value = lbs[ri]),
+                        "UPPER_BOUND" => SBML.Parameter(value = ubs[ri]),
                     ),
                     gene_product_association = _maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
