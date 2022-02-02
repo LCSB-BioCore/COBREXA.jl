@@ -152,6 +152,27 @@ function reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
 end
 
 """
+    reaction_name(model::SBMLModel, rid::String)
+
+Return the name of reaction with ID `id`.
+"""
+reaction_name(model::SBMLModel, rid::String) = model.reactions[rid].name
+
+"""
+    metabolite_name(model::SBMLModel, mid::String)
+
+Return the name of metabolite with ID `id`.
+"""
+metabolite_name(model::SBMLModel, mid::String) = model.species[mid].name
+
+"""
+    gene_name(model::SBMLModel, gid::String)
+
+Return the name of gene with ID `id`.
+"""
+gene_name(model::SBMLModel, gid::String) = model.gene_products[gid].name
+
+"""
     Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
 
 Convert any metabolic model to [`SBMLModel`](@ref).
