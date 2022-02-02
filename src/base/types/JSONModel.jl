@@ -262,7 +262,6 @@ Return the stoichiometry of reaction with ID `rid`.
 reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]
 
-
 """
     reaction_name(model::JSONModel, rid::String)
 
