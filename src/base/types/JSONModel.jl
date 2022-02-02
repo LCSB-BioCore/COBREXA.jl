@@ -306,8 +306,6 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     json = Dict{String,Any}()
     json["id"] = "model" # default
 
-    #TODO: add notes, names and similar fun stuff when they are available
-
     json[first(_constants.keynames.genes)] = [
         Dict([
             "id" => gid,
