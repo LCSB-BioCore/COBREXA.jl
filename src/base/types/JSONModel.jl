@@ -265,7 +265,7 @@ reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
 """
     reaction_name(model::JSONModel, rid::String)
 
-Return the name of reaction with ID `id`.
+Return the name of reaction with ID `rid`.
 """
 reaction_name(model::JSONModel, rid::String) =
     get(model.rxns[model.rxn_index[rid]], "name", nothing)
@@ -273,7 +273,7 @@ reaction_name(model::JSONModel, rid::String) =
 """
     metabolite_name(model::JSONModel, mid::String)
 
-Return the name of metabolite with ID `id`.
+Return the name of metabolite with ID `mid`.
 """
 metabolite_name(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "name", nothing)
@@ -281,7 +281,7 @@ metabolite_name(model::JSONModel, mid::String) =
 """
     gene_name(model::JSONModel, gid::String)
 
-Return the name of gene with ID `id`.
+Return the name of gene with ID `gid`.
 """
 gene_name(model::JSONModel, gid::String) =
     get(model.genes[model.gene_index[gid]], "name", nothing)
