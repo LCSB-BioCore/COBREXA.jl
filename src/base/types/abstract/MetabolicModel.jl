@@ -321,6 +321,27 @@ function reaction_stoichiometry(m::MetabolicModel, rid::String)::Dict{String,Flo
 end
 
 """
+    reaction_name(model::MetabolicModel, rid::String)
+
+Return the name of reaction with ID `rid`.
+"""
+reaction_name(model::MetabolicModel, rid::String) = nothing
+
+"""
+    metabolite_name(model::MetabolicModel, mid::String)
+
+Return the name of metabolite with ID `mid`.
+"""
+metabolite_name(model::MetabolicModel, mid::String) = nothing
+
+"""
+    gene_name(model::MetabolicModel, gid::String)
+
+Return the name of gene with ID `gid`.
+"""
+gene_name(model::MetabolicModel, gid::String) = nothing
+
+"""
     precache!(a::MetabolicModel)::Nothing
 
 Do whatever is feasible to get the model into a state that can be read from
