@@ -263,6 +263,30 @@ reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]
 
 """
+    reaction_name(model::JSONModel, rid::String)
+
+Return the name of reaction with ID `rid`.
+"""
+reaction_name(model::JSONModel, rid::String) =
+    get(model.rxns[model.rxn_index[rid]], "name", nothing)
+
+"""
+    metabolite_name(model::JSONModel, mid::String)
+
+Return the name of metabolite with ID `mid`.
+"""
+metabolite_name(model::JSONModel, mid::String) =
+    get(model.mets[model.met_index[mid]], "name", nothing)
+
+"""
+    gene_name(model::JSONModel, gid::String)
+
+Return the name of gene with ID `gid`.
+"""
+gene_name(model::JSONModel, gid::String) =
+    get(model.genes[model.gene_index[gid]], "name", nothing)
+
+"""
     Base.convert(::Type{JSONModel}, mm::MetabolicModel)
 
 Convert any [`MetabolicModel`](@ref) to [`JSONModel`](@ref).
@@ -282,11 +306,10 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     json = Dict{String,Any}()
     json["id"] = "model" # default
 
-    #TODO: add notes, names and similar fun stuff when they are available
-
     json[first(_constants.keynames.genes)] = [
         Dict([
             "id" => gid,
+            "name" => gene_name(mm, gid),
             "annotation" => gene_annotations(mm, gid),
             "notes" => gene_notes(mm, gid),
         ],) for gid in gene_ids
@@ -295,6 +318,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     json[first(_constants.keynames.mets)] = [
         Dict([
             "id" => mid,
+            "name" => metabolite_name(mm, mid),
             "formula" => _maybemap(_unparse_formula, metabolite_formula(mm, mid)),
             "charge" => metabolite_charge(mm, mid),
             "compartment" => metabolite_compartment(mm, mid),
@@ -307,6 +331,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         begin
             res = Dict{String,Any}()
             res["id"] = rid
+            res["name"] = reaction_name(mm, rid)
             res["subsystem"] = reaction_subsystem(mm, rid)
             res["annotation"] = reaction_annotations(mm, rid)
             res["notes"] = reaction_notes(mm, rid)
