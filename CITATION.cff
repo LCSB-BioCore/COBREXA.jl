@@ -1,0 +1,97 @@
+cff-version: 1.2.0
+title: COBREXA.jl
+message: >-
+  If you use COBREXA.jl and want to refer to it in
+  your work, use this citation.
+type: software
+authors:
+  - given-names: Miroslav
+    family-names: Kratochvíl
+    orcid: https://orcid.org/0000-0001-7356-4075
+  - given-names: Laurent
+    family-names: Heirendt
+    orcid: https://orcid.org/0000-0003-1861-0037
+  - given-names: St Elmo
+    family-names: Wilken
+    orcid: https://orcid.org/0000-0002-4113-2590
+  - given-names: Taneli
+    family-names: Pusa
+    orcid:  https://orcid.org/0000-0003-2183-8876
+  - given-names: Sylvain
+    family-names: Arreckx
+    orcid: https://orcid.org/0000-0002-8112-2135
+  - given-names: Alberto
+    family-names: Noronha
+    orcid: https://orcid.org/0000-0002-0935-4599
+  - given-names: Marvin
+    family-names: van Aalst
+    orcid: https://orcid.org/0000-0002-7434-0249
+  - given-names: Venkata P
+    family-names: Satagopam
+    orcid: https://orcid.org/0000-0002-6532-5880
+  - given-names: Oliver
+    family-names: Ebenhöh
+    orcid: https://orcid.org/0000-0002-7229-7398
+  - given-names: Reinhard
+    family-names: Schneider
+    orcid: https://orcid.org/0000-0002-8278-1618
+  - given-names: Christophe
+    family-names: Trefois
+    orcid: https://orcid.org/0000-0002-8991-6810
+  - given-names: Wei
+    family-names: Gu
+    orcid: https://orcid.org/0000-0003-3951-6680
+repository-code: 'https://github.com/LCSB-BioCore/COBREXA.jl'
+date-released: 2021-05-16
+
+preferred-citation:
+  type: article
+  title: >-
+    COBREXA.jl: constraint-based reconstruction and
+    exascale analysis
+  authors:
+    - given-names: Miroslav
+      family-names: Kratochvíl
+      orcid: https://orcid.org/0000-0001-7356-4075
+    - given-names: Laurent
+      family-names: Heirendt
+      orcid: https://orcid.org/0000-0003-1861-0037
+    - given-names: St Elmo
+      family-names: Wilken
+      orcid: https://orcid.org/0000-0002-4113-2590
+    - given-names: Taneli
+      family-names: Pusa
+      orcid:  https://orcid.org/0000-0003-2183-8876
+    - given-names: Sylvain
+      family-names: Arreckx
+      orcid: https://orcid.org/0000-0002-8112-2135
+    - given-names: Alberto
+      family-names: Noronha
+      orcid: https://orcid.org/0000-0002-0935-4599
+    - given-names: Marvin
+      family-names: van Aalst
+      orcid: https://orcid.org/0000-0002-7434-0249
+    - given-names: Venkata P
+      family-names: Satagopam
+      orcid: https://orcid.org/0000-0002-6532-5880
+    - given-names: Oliver
+      family-names: Ebenhöh
+      orcid: https://orcid.org/0000-0002-7229-7398
+    - given-names: Reinhard
+      family-names: Schneider
+      orcid: https://orcid.org/0000-0002-8278-1618
+    - given-names: Christophe
+      family-names: Trefois
+      orcid: https://orcid.org/0000-0002-8991-6810
+    - given-names: Wei
+      family-names: Gu
+      orcid: https://orcid.org/0000-0003-3951-6680
+  doi: "10.1093/bioinformatics/btab782"
+  journal: "Bioinformatics"
+  volume: 38
+  issue: 4
+  year: 2021
+  month: 11
+  issn: "1367-4803"
+  url: "https://doi.org/10.1093/bioinformatics/btab782"
+  abstract: "COBREXA.jl is a Julia package for scalable, high-performance constraint-based reconstruction and analysis of very large-scale biological models. Its primary purpose is to facilitate the integration of modern high performance computing environments with the processing and analysis of large-scale metabolic models of challenging complexity. We report the architecture of the package, and demonstrate how the design promotes analysis scalability on several use-cases with multi-organism community models.https://doi.org/10.17881/ZKCR-BT30.Supplementary data are available at Bioinformatics online."
