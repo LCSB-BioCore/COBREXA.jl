@@ -1,4 +1,4 @@
-BootStrap: library
+Bootstrap: library
 From: cylon-x/lcsb-biocore/julia-base:latest
 
 %setup
