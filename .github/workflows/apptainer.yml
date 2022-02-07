@@ -9,8 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     container:
-      image: sysmso/singularity-ci
-      options: --privileged
+      image: quay.io/singularity/singularity:v3.9.4
+      options: --privileged --entrypoint /bin/sh
     steps:
     - name: check out code
       uses: actions/checkout@v1
