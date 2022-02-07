@@ -2,10 +2,7 @@ Bootstrap: library
 From: cylon-x/lcsb-biocore/julia-base:latest
 
 %setup
-    dir=`pwd`
-    git clone \
-    "file://$dir" \
-    ${SINGULARITY_ROOTFS}/project --branch master --single-branch
+    cp -a `pwd` ${SINGULARITY_ROOTFS}/project/
 
 %post
     export JULIA_DEPOT_PATH=/user/.julia
