@@ -26,3 +26,5 @@ jobs:
         uses: macbre/push-to-ghcr@master
         with:
           image_name: ${{ env.DOCKER_IMAGE_NAME }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_io_token: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
