@@ -238,6 +238,7 @@ gource:
 apptainer-test:
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "mk-singularity"
   artifacts:
     paths: cobrexa.sif
     expire_in: 1 week
