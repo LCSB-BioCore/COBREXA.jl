@@ -7,49 +7,24 @@ on:
 
 jobs:
   build:
-    name: build
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        singularity_version:
-          - '3.5.3'
+    runs-on: ubuntu-20.04
     container:
-      image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
+      image: sysmso/singularity-ci
       options: --privileged
     steps:
-    - name: Check out code for the container build
+    - name: check out code
       uses: actions/checkout@v1
 
-    - name: Build Container
+    - name: build .sif file
       run: |
-        ls
         alias apptainer=singularity
         apptainer build cobrexa.sif cobrexa.def
 
-  deploy:
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        singularity_version:
-          - '3.5.3'
-    container:
-      image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
-      options: --privileged
-    steps:
-    - name: Install sregistry dependencies
+    - name: push to registry
+      env:
+        SYLABS_IO_TOKEN: ${{ secrets.SYLABS_IO_TOKEN }}
       run: |
-        sudo apt-get update && sudo apt-get install -y \
-          build-essential \
-          libssl-dev \
-          uuid-dev \
-          libgpgme11-dev \
-          squashfs-tools \
-          libseccomp-dev \
-          pkg-config \
-          python-dev python python3-pip
-
-    - name: Deploy Container
-      run: |
-        sudo pip3 install sregistry
-        alias aregistry=sregistry
-        SREGISTRY_CLIENT=registry aregistry push --name cylon-x/lcsb-biocore cobrexa.sif
+        alias apptainer=singularity
+        echo "$SREGISTRY_TOKEN" > apptainer-token
+        apptainer remote login --tokenfile apptainer-token
+        apptainer push cobrexa.sif library://cylon-x/lcsb-biocore/cobrexa:latest
