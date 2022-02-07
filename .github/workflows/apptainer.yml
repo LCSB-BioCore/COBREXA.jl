@@ -26,6 +26,16 @@ jobs:
         alias apptainer=singularity
         apptainer build cobrexa.sif cobrexa.def
 
+  deploy:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        singularity_version:
+          - '3.5.3'
+    container:
+      image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
+      options: --privileged
+    steps:
     - name: Install sregistry dependencies
       run: |
         sudo apt-get update && sudo apt-get install -y \
