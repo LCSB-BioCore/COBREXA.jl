@@ -15,20 +15,14 @@ jobs:
     name: Push Docker image to GitHub Packages
     runs-on: "ubuntu-20.04"
     steps:
-      - name: Check out the repo
+      - name: Decapitalize the repo name
+        run: |
+          echo "DOCKER_IMAGE_NAME=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
+      - name: Check out the repo of ${{ github.repository }}
         uses: actions/checkout@v2
 
-      - name: Build and publish a Docker image for ${{ github.repository }}
+      - name: Build and publish ${{ env.DOCKER_IMAGE_NAME }}
         uses: macbre/push-to-ghcr@master
         with:
-          image_name: lcsb-biocore/cobrexa.jl
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      #- name: Push to GitHub Registry
-        #uses: mr-smithers-excellent/docker-build-push@v5
-        #with:
-          #image: cobrexa.jl
-          #tags: latest
-          #registry: ghcr.io
-          #username: cylon-x
-          #password: ${{ secrets.docker_pwd }}
+          image_name: ${{ env.DOCKER_IMAGE_NAME }}
