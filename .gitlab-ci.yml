@@ -85,9 +85,7 @@ variables:
   image: quay.io/singularity/singularity:v3.9.4
   tags:
     - privileged
-  script: |
-    alias apptainer=singularity
-    apptainer build cobrexa.sif cobrexa.def
+  script: build cobrexa.sif cobrexa.def
 
 #
 # TESTS
@@ -237,7 +235,9 @@ gource:
 
 apptainer-test:
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
+    #- if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+      #when: never
+    #- if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_BRANCH == "mk-singularity"
   artifacts:
     paths:
