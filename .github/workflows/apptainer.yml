@@ -26,23 +26,17 @@ jobs:
         alias apptainer=singularity
         apptainer build cobrexa.sif ./cobrexa.def
 
-    - name: debug find all executables
+    - name: Install sregistry dependencies
       run: |
-        ls /bin
-        ls /usr/bin
-        ls /sbin
-        ls /usr/sbin
-    #- name: Install sregistry dependencies
-      #run: |
-        #sudo apt-get update && sudo apt-get install -y \
-          #build-essential \
-          #libssl-dev \
-          #uuid-dev \
-          #libgpgme11-dev \
-          #squashfs-tools \
-          #libseccomp-dev \
-          #pkg-config \
-          #python-dev python python3-pip
+        sudo apt-get update && sudo apt-get install -y \
+          build-essential \
+          libssl-dev \
+          uuid-dev \
+          libgpgme11-dev \
+          squashfs-tools \
+          libseccomp-dev \
+          pkg-config \
+          python-dev python python3-pip
 
     - name: Deploy Container
       run: |
