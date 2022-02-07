@@ -82,8 +82,6 @@ variables:
 
 .global_build_apptainer:
   stage: assets
-  rules:
-    - if:
   image: quay.io/singularity/singularity:v3.9.4
   tags:
     - privileged
