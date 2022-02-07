@@ -14,10 +14,6 @@ jobs:
     name: Push Docker image to GitHub Packages
     runs-on: "ubuntu-20.04"
     steps:
-      - name: Decapitalize the repo name
-        run: |
-          echo "DOCKER_IMAGE_NAME=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
       - name: Check out the repo of ${{ github.repository }}
         uses: actions/checkout@v2
 
