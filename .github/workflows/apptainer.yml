@@ -33,29 +33,17 @@ jobs:
            echo "Present working directory: $PWD"
            ls
        fi
-
-  publish:
-    name: publish
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        singularity_version:
-          - '3.8.1'
-    container:
-      image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
-      options: --privileged
-    steps:
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y \
-          build-essential \
-          libssl-dev \
-          uuid-dev \
-          libgpgme11-dev \
-          squashfs-tools \
-          libseccomp-dev \
-          pkg-config \
-          python-dev python python3-pip
+    #- name: Install sregistry dependencies
+      #run: |
+        #sudo apt-get update && sudo apt-get install -y \
+          #build-essential \
+          #libssl-dev \
+          #uuid-dev \
+          #libgpgme11-dev \
+          #squashfs-tools \
+          #libseccomp-dev \
+          #pkg-config \
+          #python-dev python python3-pip
 
     - name: Deploy Container
       run: |
