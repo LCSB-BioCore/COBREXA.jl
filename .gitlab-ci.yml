@@ -240,7 +240,8 @@ apptainer-test:
     - if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_BRANCH == "mk-singularity"
   artifacts:
-    paths: cobrexa.sif
+    paths:
+      - cobrexa.sif
     expire_in: 1 week
   <<: *global_build_apptainer
 
@@ -248,7 +249,8 @@ apptainer-release:
   rules:
     - if: $CI_COMMIT_TAG =~ /^v/
   artifacts:
-    paths: cobrexa.sif
+    paths:
+      - cobrexa.sif
     expire_in: never
   <<: *global_build_apptainer
 
