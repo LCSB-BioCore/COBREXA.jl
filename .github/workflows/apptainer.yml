@@ -22,7 +22,7 @@ jobs:
 
     - name: push to registry
       env:
-        SYLABS_IO_TOKEN: ${{ secrets.SYLABS_IO_TOKEN }}
+        REGISTRY_TOKEN: ${{ secrets.SYLABS_IO_TOKEN }}
       run: |
         alias apptainer=singularity
         echo "$SREGISTRY_TOKEN" > apptainer-token
