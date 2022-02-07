@@ -1,5 +1,5 @@
-BootStrap: library
-From: cylon-x/lcsb-biocore/julia-base:latest
+BootStrap: docker
+From: julia
 
 %setup
     export GIT_WORK_TREE="${SINGULARITY_ROOTFS}/project/"
