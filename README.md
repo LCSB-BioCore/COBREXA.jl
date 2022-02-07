@@ -11,6 +11,9 @@
 [docs-img-dev]: https://img.shields.io/badge/docs-latest-0af.svg
 [docs-url-dev]: https://lcsb-biocore.github.io/COBREXA.jl/dev/
 
+[docker-url]: https://hub.docker.com/r/lcsbbiocore/cobrexa.jl
+[docker-img]: https://img.shields.io/docker/image-size/lcsbbiocore/cobrexa.jl
+
 [ci-img]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master
 [ci-url]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml
 
@@ -23,9 +26,9 @@
 [repostatus-url]: https://www.repostatus.org/#active
 [repostatus-img]: https://www.repostatus.org/badges/latest/active.svg
 
-| **Documentation** | **Tests** | **Coverage** | **How to contribute?** | **Project status** |
-|:--------------:|:-------:|:---------:|:---------:|:---------:|
-| [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] | [![repostatus-img]][repostatus-url] |
+| **Documentation** | **Docker** | **Tests** | **Coverage** | **How to contribute?** | **Project status** |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![docker][docker-img]][docker-url] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] | [![repostatus-img]][repostatus-url] |
 
 This package provides constraint-based reconstruction and analysis tools for
 exa-scale metabolic modeling in Julia.
