@@ -9,6 +9,7 @@ variables:
   GIT_STRATEGY: clone
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
+  APPTAINER_DOCKER_TAG: "v3.9.4"
 
 #
 # Predefined conditions for triggering jobs
@@ -83,7 +84,7 @@ variables:
 .global_build_apptainer: &global_build_apptainer
   stage: assets
   image:
-    name: "quay.io/singularity/singularity:v3.9.4"
+    name: "quay.io/singularity/singularity:$APPTAINER_DOCKER_TAG"
     # the image entrypoint is the singularity binary by default
     entrypoint: ["/bin/sh", "-c"]
   tags:
