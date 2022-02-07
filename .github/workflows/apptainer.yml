@@ -22,8 +22,9 @@ jobs:
 
     - name: Build Container
       run: |
+        ls
         alias apptainer=singularity
-        apptainer build cobrexa.sif cobrexa
+        apptainer build cobrexa.sif ./cobrexa.def
 
     - name: debug find all executables
       run: |
