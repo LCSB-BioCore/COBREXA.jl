@@ -21,18 +21,14 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Build Container
-      env:
-        SINGULARITY_RECIPE: cobrexa
-        OUTPUT_CONTAINER: cobrexa.sif
+      run: singularity build cobrexa.sif cobrexa.def
+
+    - name: debug find all executables
       run: |
-       ls
-       if [ -f "${SINGULARITY_RECIPE}" ]; then
-           singularity build ${OUTPUT_CONTAINER} ${SINGULARITY_RECIPE}
-       else
-           echo "${SINGULARITY_RECIPE} is not found."
-           echo "Present working directory: $PWD"
-           ls
-       fi
+        ls /bin
+        ls /usr/bin
+        ls /sbin
+        ls /usr/sbin
     #- name: Install sregistry dependencies
       #run: |
         #sudo apt-get update && sudo apt-get install -y \
