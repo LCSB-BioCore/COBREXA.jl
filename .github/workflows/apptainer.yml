@@ -21,7 +21,9 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Build Container
-      run: singularity build cobrexa.sif cobrexa.def
+      run: |
+        alias apptainer=singularity
+        apptainer build cobrexa.sif cobrexa
 
     - name: debug find all executables
       run: |
