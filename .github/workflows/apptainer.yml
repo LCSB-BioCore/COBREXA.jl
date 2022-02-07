@@ -1,4 +1,4 @@
-name: Build and publish apptainer image
+name: Build apptainer image
 
 on:
   push:
@@ -20,16 +20,8 @@ jobs:
         alias apptainer=singularity
         apptainer build cobrexa.sif cobrexa.def
 
-    - name: login to registry
-      env:
-        REGISTRY_TOKEN: ${{ secrets.SYLABS_IO_TOKEN }}
-      run: |
-        alias apptainer=singularity
-        echo "$SREGISTRY_TOKEN" > .apptainer-token
-        apptainer remote login --tokenfile .apptainer-token
-        rm .apptainer-token
-
-    - name: push to registry
-      run: |
-        alias apptainer=singularity
-        apptainer push cobrexa.sif library://cylon-x/lcsb-biocore/cobrexa:latest
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: COBREXA.jl apptainer
+	path: cobrexa.sif
