@@ -7,6 +7,7 @@ From: cylon-x/lcsb-biocore/julia-base:latest
     #mkdir -p "${GIT_WORK_TREE}"
     #git checkout -f
     cp -a "`pwd`" "${SINGULARITY_ROOTFS}/project/"
+    rm -fr "${SINGULARITY_ROOTFS}/project/.git/"
 
 %post
     export JULIA_DEPOT_PATH=/user/.julia
