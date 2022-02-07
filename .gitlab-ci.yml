@@ -82,10 +82,13 @@ variables:
 
 .global_build_apptainer: &global_build_apptainer
   stage: assets
-  image: quay.io/singularity/singularity:v3.9.4
+  image:
+    name: "quay.io/singularity/singularity:v3.9.4"
+    # the image entrypoint is the singularity binary by default
+    entrypoint: ["/bin/sh", "-c"]
   tags:
     - privileged
-  script: build cobrexa.sif cobrexa.def
+  script: singularity build cobrexa.sif cobrexa.def
 
 #
 # TESTS
