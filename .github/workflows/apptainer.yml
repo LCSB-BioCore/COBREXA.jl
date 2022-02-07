@@ -25,6 +25,6 @@ jobs:
         REGISTRY_TOKEN: ${{ secrets.SYLABS_IO_TOKEN }}
       run: |
         alias apptainer=singularity
-        echo "$SREGISTRY_TOKEN" > apptainer-token
-        apptainer remote login --tokenfile apptainer-token
+        echo "$SREGISTRY_TOKEN" > .apptainer-token
+        apptainer remote login --tokenfile .apptainer-token
         apptainer push cobrexa.sif library://cylon-x/lcsb-biocore/cobrexa:latest
