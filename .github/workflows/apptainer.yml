@@ -1,19 +1,18 @@
-name: Publish Singularity image
+name: Build and publish apptainer image
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  create:
+  push:
+    branches:
+      - mk-singularity
 
 jobs:
   build:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-    name: Build
-    runs-on: ubuntu-18.04
+    name: build
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         singularity_version:
-          - '3.5.3'
+          - '3.8.1'
     container:
       image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
       options: --privileged
@@ -35,14 +34,13 @@ jobs:
            ls
        fi
 
-  deploy:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-    name: Deploy
-    runs-on: ubuntu-18.04
+  publish:
+    name: publish
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         singularity_version:
-          - '3.5.3'
+          - '3.8.1'
     container:
       image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
       options: --privileged
