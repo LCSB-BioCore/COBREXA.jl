@@ -38,8 +38,16 @@ jobs:
           push: true
           tags: lcsbbiocore/cobrexa.jl:latest
 
-      - name: Build and push to GHCR
-        uses: macbre/push-to-ghcr@master
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
         with:
-          image_name: ${{ env.DOCKER_IMAGE_NAME }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:latest
