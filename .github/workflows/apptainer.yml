@@ -8,11 +8,11 @@ on:
 jobs:
   build:
     name: build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         singularity_version:
-          - '3.8.1'
+          - '3.5.3'
     container:
       image: quay.io/singularity/singularity:v${{ matrix.singularity_version }}
       options: --privileged
@@ -24,7 +24,7 @@ jobs:
       run: |
         ls
         alias apptainer=singularity
-        apptainer build cobrexa.sif ./cobrexa.def
+        apptainer build cobrexa.sif cobrexa.def
 
     - name: Install sregistry dependencies
       run: |
@@ -41,4 +41,5 @@ jobs:
     - name: Deploy Container
       run: |
         sudo pip3 install sregistry
-        SREGISTRY_CLIENT=registry sregistry push --name cylon-x/lcsb-biocore cobrexa.sif
+        alias aregistry=sregistry
+        SREGISTRY_CLIENT=registry aregistry push --name cylon-x/lcsb-biocore cobrexa.sif
