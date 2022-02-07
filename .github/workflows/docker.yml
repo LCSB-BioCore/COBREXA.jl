@@ -13,15 +13,22 @@ jobs:
   push_to_registry:
     #if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     name: Push Docker image to GitHub Packages
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-20.04"
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-      - name: Push to GitHub Registry
-        uses: mr-smithers-excellent/docker-build-push@v5
+
+      - name: Build and publish a Docker image for ${{ github.repository }}
+        uses: macbre/push-to-ghcr@master
         with:
-          image: cobrexa.jl
-          tags: latest
-          registry: ghcr.io
-          username: cylon-x
-          password: ${{ secrets.docker_pwd }}
+          image_name: ${{ github.repository }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      #- name: Push to GitHub Registry
+        #uses: mr-smithers-excellent/docker-build-push@v5
+        #with:
+          #image: cobrexa.jl
+          #tags: latest
+          #registry: ghcr.io
+          #username: cylon-x
+          #password: ${{ secrets.docker_pwd }}
