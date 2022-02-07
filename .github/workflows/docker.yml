@@ -21,7 +21,7 @@ jobs:
       - name: Build and publish a Docker image for ${{ github.repository }}
         uses: macbre/push-to-ghcr@master
         with:
-          image_name: ${{ github.repository }}
+          image_name: lcsb-biocore/cobrexa.jl
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: Push to GitHub Registry
