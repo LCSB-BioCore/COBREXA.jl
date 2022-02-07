@@ -5,7 +5,7 @@
 
 # COnstraint-Based Reconstruction and EXascale Analysis
 
-[docs-img-stable]: https://img.shields.io/badge/docs-stable-blue.svg
+[docs-img-stable]: https://img.shields.io/badge/docs-stable-86f.svg
 [docs-url-stable]: https://lcsb-biocore.github.io/COBREXA.jl
 
 [docs-img-dev]: https://img.shields.io/badge/docs-latest-0af.svg
