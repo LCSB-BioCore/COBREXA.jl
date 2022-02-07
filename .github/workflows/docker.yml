@@ -28,7 +28,7 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: lcsbbiocore
+          username: ${{ secrets.DOCKER_IO_USER }}
           password: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
 
       - name: Build and push to DockerHub
@@ -36,7 +36,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: lcsbbiocore/cobrexa.jl:latest
+          tags: ${{ secrets.DOCKER_IO_USER }}/cobrexa.jl:latest
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v1
@@ -51,3 +52,4 @@ jobs:
           context: .
           push: true
           tags: ${{ env.DOCKER_IMAGE_NAME }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
