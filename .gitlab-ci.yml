@@ -80,7 +80,7 @@ variables:
   script:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
-.global_build_apptainer:
+.global_build_apptainer: &global_build_apptainer
   stage: assets
   image: quay.io/singularity/singularity:v3.9.4
   tags:
