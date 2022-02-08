@@ -11,6 +11,9 @@
 [docs-img-dev]: https://img.shields.io/badge/docs-latest-0af.svg
 [docs-url-dev]: https://lcsb-biocore.github.io/COBREXA.jl/dev/
 
+[docker-url]: https://hub.docker.com/r/lcsbbiocore/cobrexa.jl
+[docker-img]: https://img.shields.io/docker/image-size/lcsbbiocore/cobrexa.jl
+
 [ci-img]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml/badge.svg?branch=master
 [ci-url]: https://github.com/LCSB-BioCore/COBREXA.jl/actions/workflows/ci.yml
 
@@ -24,7 +27,7 @@
 [repostatus-img]: https://www.repostatus.org/badges/latest/active.svg
 
 | **Documentation** | **Tests** | **Coverage** | **How to contribute?** | **Project status** |
-|:--------------:|:-------:|:---------:|:---------:|:---------:|
+|:---:|:---:|:---:|:---:|:---:|
 | [![docs-img-stable]][docs-url-stable] [![docs-img-dev]][docs-url-dev] | [![CI][ci-img]][ci-url] | [![codecov][cov-img]][cov-url] | [![contrib][contrib-img]][contrib-url] | [![repostatus-img]][repostatus-url] |
 
 This package provides constraint-based reconstruction and analysis tools for
@@ -77,6 +80,8 @@ e.g.:
 ```
 add Tulip
 ```
+
+Alternatively, you may use [prebuilt Docker and Apptainer images](#prebuilt-images).
 
 When the packages are installed, switch back to the "normal" julia shell by
 pressing Backspace (the prompt should change color back to green). After that,
@@ -217,6 +222,30 @@ the test suite to ensure that everything works as expected:
 ```julia
 ] test COBREXA
 ```
+
+### Prebuilt images [![docker][docker-img]][docker-url]
+
+Docker image is available from the docker hub as
+[lcsbbiocore/cobrexa.jl][docker-url]. Download and use it as usual with docker:
+
+```sh
+docker pull lcsbbiocore/cobrexa.jl
+docker run -ti --rm lcsbbiocore/cobrexa.jl
+```
+
+In the container, you should get a `julia` shell with the important packages
+already installed, you may continue the above tutorial from `using COBREXA`.
+
+Apptainer (formerly Singularity) images are available from [LCSB
+GitLab](https://gitlab.lcsb.uni.lu/lcsb-biocore/COBREXA.jl) as artifacts at
+release tags, starting after COBREXA.jl version `1.2.1`. To download the image,
+open [the repository tag
+listing](https://gitlab.lcsb.uni.lu/lcsb-biocore/COBREXA.jl/-/tags), and use
+the button on the right to get the `cobrexa.sif` image. After that, run:
+```sh
+singularity run cobrexa.sif
+```
+...which gives you a running Julia session with COBREXA.jl loaded.
 
 <!--acknowledgements_begin-->
 ## Acknowledgements
