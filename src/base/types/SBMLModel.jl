@@ -152,6 +152,27 @@ function reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
 end
 
 """
+    reaction_name(model::SBMLModel, rid::String)
+
+Return the name of reaction with ID `rid`.
+"""
+reaction_name(model::SBMLModel, rid::String) = model.sbml.reactions[rid].name
+
+"""
+    metabolite_name(model::SBMLModel, mid::String)
+
+Return the name of metabolite with ID `mid`.
+"""
+metabolite_name(model::SBMLModel, mid::String) = model.sbml.species[mid].name
+
+"""
+    gene_name(model::SBMLModel, gid::String)
+
+Return the name of gene with ID `gid`.
+"""
+gene_name(model::SBMLModel, gid::String) = model.sbml.gene_products[gid].name
+
+"""
     Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
 
 Convert any metabolic model to [`SBMLModel`](@ref).
@@ -170,11 +191,11 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
 
     return SBMLModel(
         SBML.Model(
-            units = Dict("" => []), # units
             compartments = Dict(comp => SBML.Compartment() for comp in compss),
             species = Dict(
                 mid => SBML.Species(
-                    compartment = _default("", comps[mi]), # compartment
+                    name = metabolite_name(mm, mid),
+                    compartment = _default("", comps[mi]),
                     formula = metabolite_formula(mm, mid),
                     charge = metabolite_charge(mm, mid),
                     notes = _sbml_export_notes(metabolite_notes(mm, mid)),
@@ -183,6 +204,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             ),
             reactions = Dict(
                 rid => SBML.Reaction(
+                    name = reaction_name(mm, rid),
                     reactants = Dict(
                         mets[i] => -stoi[i, ri] for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] <= 0
@@ -192,8 +214,8 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] > 0
                     ),
                     kinetic_parameters = Dict(
-                        "LOWER_BOUND" => (lbs[ri], ""),
-                        "UPPER_BOUND" => (ubs[ri], ""),
+                        "LOWER_BOUND" => SBML.Parameter(value = lbs[ri]),
+                        "UPPER_BOUND" => SBML.Parameter(value = ubs[ri]),
                     ),
                     gene_product_association = _maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
@@ -206,6 +228,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             ),
             gene_products = Dict(
                 gid => SBML.GeneProduct(
+                    name = gene_name(mm, gid),
                     notes = _sbml_export_notes(gene_notes(mm, gid)),
                     annotation = _sbml_export_annotation(gene_annotations(mm, gid)),
                 ) for gid in genes(mm)

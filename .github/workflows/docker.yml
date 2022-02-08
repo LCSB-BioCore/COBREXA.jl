@@ -1,23 +1,64 @@
 name: Publish Docker image
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  create:
+  push:
+    branches:
+      - develop
+    tags:
+      - "v*"
+
+env:
+  DOCKER_CONTAINER_NAME: "cobrexa.jl"
 
 jobs:
-  push_to_registry:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+  build_and_publish:
+    # Reference: https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out the repo of ${{ github.repository }}
         uses: actions/checkout@v2
-      - name: Push to GitHub Registry
-        uses: mr-smithers-excellent/docker-build-push@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
-          image: cobrexa.jl
-          tags: latest
+          username: ${{ secrets.DOCKER_IO_USER }}
+          password: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
+
+      - name: Extract metadata for DockerHub
+        id: dockermeta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ secrets.DOCKER_IO_USER }}/${{ env.DOCKER_CONTAINER_NAME }}
+
+      - name: Build and push to DockerHub
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.dockermeta.outputs.tags }}
+          labels: ${{ steps.dockermeta.outputs.labels }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v1
+        with:
           registry: ghcr.io
-          username: cylon-x
-          password: ${{ secrets.docker_pwd }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for GHCR
+        id: ghcrmeta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build and push to GHCR
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.ghcrmeta.outputs.tags }}
+          labels: ${{ steps.ghcrmeta.outputs.labels }}

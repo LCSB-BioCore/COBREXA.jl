@@ -62,7 +62,7 @@ function _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
     toks = String[]
     m = Nothing
     while !isnothing(begin
-        m = match(r"( +|[a-zA-Z0-9]+|[^ a-zA-Z0-9()]+|[(]|[)])(.*)", s)
+        m = match(r"( +|[a-zA-Z0-9_]+|[^ a-zA-Z0-9_()]+|[(]|[)])(.*)", s)
     end)
         tok = strip(m.captures[1])
         !isempty(tok) && push!(toks, tok)

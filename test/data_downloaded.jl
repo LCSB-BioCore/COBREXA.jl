@@ -63,4 +63,9 @@ model_paths = Dict{String,String}(
         df("iJR904.mat"),
         "d17be86293d4caafc32b829da4e2d0d76eb45e1bb837e0138327043a83e20c6e",
     ),
+    "Recon3D.json" => download_data_file(
+        "http://bigg.ucsd.edu/static/models/Recon3D.json",
+        df("Recon3D.json"),
+        "aba925f17547a42f9fdb4c1f685d89364cbf4979bbe7862e9f793af7169b26d5",
+    ),
 )

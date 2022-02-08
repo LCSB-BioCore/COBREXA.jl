@@ -1,7 +1,7 @@
 name = "COBREXA"
 uuid = "babc4406-5200-4a30-9033-bf5ae714c842"
 authors = ["The developers of COBREXA.jl"]
-version = "1.2.1"
+version = "1.2.2"
 
 [deps]
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
@@ -23,14 +23,14 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 [compat]
 DistributedData = "0.1.4"
 JSON = "0.21"
-JuMP = "0.21"
+JuMP = "0.21.0, 0.22.0"
 MAT = "0.10"
 MacroTools = "0.5.6"
 OSQP = "0.6"
 OrderedCollections = "1.4"
-SBML = "0.9.1"
+SBML = "0.10.0"
 StableRNGs = "1.0"
-Tulip = "0.7"
+Tulip = "0.7.0, 0.8.0, 0.9.2"
 julia = "1.5"
 
 [extras]
