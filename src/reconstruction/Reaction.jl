@@ -1,175 +1,50 @@
+
+"""
+A small helper type for constructing reactions inline
+"""
 struct MetaboliteWithCoefficient
     coeff::Float64
     metabolite::Metabolite
-    MetaboliteWithCoefficient(c, m) = new(float(c), m)
 end
 
-function Base.:*(coeff::Real, met::Metabolite)
-    return MetaboliteWithCoefficient(coeff, met)
-end
+const _Stoichiometry = Vector{MetaboliteWithCoefficient}
+const _Stoichiometrizable = Union{Metabolite,Vector{MetaboliteWithCoefficient}}
 
-function Base.:+(
-    m1::Union{Metabolite,MetaboliteWithCoefficient},
-    m2::Union{Metabolite,MetaboliteWithCoefficient},
+Base.convert(::Type{_Stoichiometry}, x::Metabolite) = [MetaboliteWithCoefficient(1.0, x)]
+
+Base.:*(a::Real, m::Metabolite) = [MetaboliteWithCoefficient(float(a), m)]
+
+Base.:+(a::_Stoichiometrizable, b::_Stoichiometrizable) =
+    vcat(convert(_Stoichiometry, a), convert(_Stoichiometry, b))
+
+_make_reaction_dict(l, r) = Dict{String,Float64}(
+    vcat(
+        [mc.metabolite.id => -mc.coeff for mc in convert(_Stoichiometry, l)],
+        [mc.metabolite.id => mc.coeff for mc in convert(_Stoichiometry, l)],
+    ),
 )
-    if typeof(m1) == Metabolite
-        m1 = MetaboliteWithCoefficient(1.0, m1)
-    end
-    if typeof(m2) == Metabolite
-        m2 = MetaboliteWithCoefficient(1.0, m2)
-    end
-    return MetaboliteWithCoefficient[m1, m2]
-end
-
-function Base.:+(
-    m1::Vector{MetaboliteWithCoefficient},
-    m2::Union{Metabolite,MetaboliteWithCoefficient},
-)
-    if typeof(m2) == Metabolite
-        m2 = MetaboliteWithCoefficient(1.0, m2)
-    end
-    return push!(m1, m2)
-end
-
-function _mkrxn(substrates, products)
-    metdict = Dict{String,Float64}()
-
-    if typeof(substrates) == Metabolite
-        metdict[substrates.id] = get(metdict, substrates.id, 0.0) - 1.0
-    elseif typeof(substrates) == MetaboliteWithCoefficient
-        metdict[substrates.metabolite.id] =
-            get(metdict, substrates.metabolite.id, 0.0) - 1.0 * abs(substrates.coeff)
-    elseif typeof(substrates) == Vector{MetaboliteWithCoefficient}
-        for mwc in substrates
-            metdict[mwc.metabolite.id] =
-                get(metdict, mwc.metabolite.id, 0.0) - 1.0 * abs(mwc.coeff)
-        end
-    else
-        throw(DomainError(substrates, "unsupported substrates type"))
-    end
-
-    if typeof(products) == Metabolite
-        metdict[products.id] = get(metdict, products.id, 0.0) + 1.0
-    elseif typeof(products) == MetaboliteWithCoefficient
-        metdict[products.metabolite.id] =
-            get(metdict, products.metabolite.id, 0.0) + abs(products.coeff)
-    elseif typeof(products) == Vector{MetaboliteWithCoefficient}
-        for mwc in products
-            metdict[mwc.metabolite.id] =
-                get(metdict, mwc.metabolite.id, 0.0) + 1.0 * abs(mwc.coeff)
-        end
-    else
-        throw(DomainError(substrates, "unsupported products type"))
-    end
-
-    return metdict
-end
 
 """
-    →(
-        substrates::Union{
-            Nothing,
-            Metabolite,
-            MetaboliteWithCoefficient,
-            Vector{MetaboliteWithCoefficient},
-        },
-        products::Union{
-            Nothing,
-            Metabolite,
-            MetaboliteWithCoefficient,
-            Vector{MetaboliteWithCoefficient}
-        },
-    )
+    substrates → products
 
 Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
 """
-function →(
-    substrates::Union{
-        Nothing,
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient},
-    },
-    products::Union{
-        Nothing,
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient},
-    },
-)
-    metdict = _mkrxn(substrates, products)
-    return Reaction("", metdict, :forward)
-end
+→(substrates::_Stoichiometrizable, products::_Stoichiometrizable) =
+    Reaction("", _make_reaction_dict(substrates, products), :forward)
 
 """
-    ←(
-        substrates::Union{
-            Nothing,
-            Metabolite,
-            MetaboliteWithCoefficient,
-            Vector{MetaboliteWithCoefficient},
-        },
-        products::Union{
-            Nothing,
-            Metabolite,
-            MetaboliteWithCoefficient,
-            Vector{MetaboliteWithCoefficient}
-        },
-    )
+    substrates ← products
 
 Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
 """
-function ←(
-    substrates::Union{
-        Nothing,
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient},
-    },
-    products::Union{
-        Nothing,
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient},
-    },
-)
-    metdict = _mkrxn(substrates, products)
-    return Reaction("", metdict, :reverse)
-end
+←(substrates::_Stoichiometrizable, products::_Stoichiometrizable) =
+    Reaction("", _make_reaction_dict(substrates, products), :reverse)
 
 """
-    ↔(
-        substrates::Union{
-            Nothing,
-            Metabolite,
-            MetaboliteWithCoefficient,
-            Vector{MetaboliteWithCoefficient},
-        },
-        products::Union{
-            Nothing,
-            Metabolite,
-            MetaboliteWithCoefficient,
-            Vector{MetaboliteWithCoefficient}
-        },
-    )
+    substrates ↔ products
 
 Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and
 `products`.
 """
-function ↔(
-    substrates::Union{
-        Nothing,
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient},
-    },
-    products::Union{
-        Nothing,
-        Metabolite,
-        MetaboliteWithCoefficient,
-        Vector{MetaboliteWithCoefficient},
-    },
-)
-    metdict = _mkrxn(substrates, products)
-    return Reaction("", metdict, :bidirectional)
-end
+↔(substrates::_Stoichiometrizable, products::_Stoichiometrizable) =
+    Reaction("", _make_reaction_dict(substrates, products), :bidirectional)
