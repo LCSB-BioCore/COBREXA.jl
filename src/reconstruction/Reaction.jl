@@ -39,7 +39,7 @@ function _mkrxn(substrates, products)
     elseif typeof(substrates) == MetaboliteWithCoefficient
         metdict[substrates.metabolite.id] =
             get(metdict, substrates.metabolite.id, 0.0) - 1.0 * abs(substrates.coeff)
-    elseif typeof(products) == Vector{MetaboliteWithCoefficient}
+    elseif typeof(substrates) == Vector{MetaboliteWithCoefficient}
         for mwc in substrates
             metdict[mwc.metabolite.id] =
                 get(metdict, mwc.metabolite.id, 0.0) - 1.0 * abs(mwc.coeff)
