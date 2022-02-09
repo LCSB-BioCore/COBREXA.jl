@@ -44,6 +44,8 @@ function _mkrxn(substrates, products)
             metdict[mwc.metabolite.id] =
                 get(metdict, mwc.metabolite.id, 0.0) - 1.0 * abs(mwc.coeff)
         end
+    else
+        throw(DomainError(substrates, "unsupported substrates type"))
     end
 
     if typeof(products) == Metabolite
@@ -56,6 +58,8 @@ function _mkrxn(substrates, products)
             metdict[mwc.metabolite.id] =
                 get(metdict, mwc.metabolite.id, 0.0) + 1.0 * abs(mwc.coeff)
         end
+    else
+        throw(DomainError(substrates, "unsupported products type"))
     end
 
     return metdict
