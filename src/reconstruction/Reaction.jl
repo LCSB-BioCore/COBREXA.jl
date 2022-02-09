@@ -2,34 +2,48 @@
 """
 A small helper type for constructing reactions inline
 """
-struct MetaboliteWithCoefficient
-    coeff::Float64
-    metabolite::Metabolite
+struct _Stoichiometry
+    s::Dict{String,Float64}
 end
 
-const _Stoichiometry = Vector{MetaboliteWithCoefficient}
-const _Stoichiometrizable = Union{Metabolite,Vector{MetaboliteWithCoefficient}}
+const _Stoichiometrizable = Union{Metabolite,_Stoichiometry}
 
-Base.convert(::Type{_Stoichiometry}, x::Metabolite) = [MetaboliteWithCoefficient(1.0, x)]
+Base.convert(::Type{_Stoichiometry}, ::Nothing) = _Stoichiometry(Dict())
+Base.convert(::Type{_Stoichiometry}, m::Metabolite) = _Stoichiometry(Dict(m.id => 1.0))
 
-Base.:*(a::Real, m::Metabolite) = [MetaboliteWithCoefficient(float(a), m)]
+Base.:*(a::Real, m::Metabolite) = _Stoichiometry(Dict(m.id => a))
 
-Base.:+(a::_Stoichiometrizable, b::_Stoichiometrizable) =
-    vcat(convert(_Stoichiometry, a), convert(_Stoichiometry, b))
+"""
+    metabolite1 + metabolite2
 
-_make_reaction_dict(l, r) = Dict{String,Float64}(
-    vcat(
-        [mc.metabolite.id => -mc.coeff for mc in convert(_Stoichiometry, l)],
-        [mc.metabolite.id => mc.coeff for mc in convert(_Stoichiometry, l)],
-    ),
-)
+Add 2 groups of [`Metabolite`](@ref)s together to form reactions inline. Use
+with `+`, `*`, [`→`](@ref) and similar operators.
+"""
+function Base.:+(a::_Stoichiometrizable, b::_Stoichiometrizable)
+    ad = convert(_Stoichiometry, a).s
+    bd = convert(_Stoichiometry, b).s
+    _Stoichiometry(
+        Dict(
+            mid => get(ad, mid, 0.0) + get(bd, mid, 0.0) for
+            mid in union(keys(ad), keys(bd))
+        ),
+    )
+end
+
+function _make_reaction_dict(r, p)
+    rd = convert(_Stoichiometry, r).s
+    pd = convert(_Stoichiometry, p).s
+    return Dict{String,Float64}(
+        mid => get(pd, mid, 0.0) - get(rd, mid, 0.0) for mid in union(keys(rd), keys(pd))
+    )
+end
 
 """
     substrates → products
 
 Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
 """
-→(substrates::_Stoichiometrizable, products::_Stoichiometrizable) =
+→(substrates::Maybe{_Stoichiometrizable}, products::Maybe{_Stoichiometrizable}) =
     Reaction("", _make_reaction_dict(substrates, products), :forward)
 
 """
@@ -37,7 +51,7 @@ Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
 
 Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
 """
-←(substrates::_Stoichiometrizable, products::_Stoichiometrizable) =
+←(substrates::Maybe{_Stoichiometrizable}, products::Maybe{_Stoichiometrizable}) =
     Reaction("", _make_reaction_dict(substrates, products), :reverse)
 
 """
@@ -46,5 +60,5 @@ Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
 Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and
 `products`.
 """
-↔(substrates::_Stoichiometrizable, products::_Stoichiometrizable) =
+↔(substrates::Maybe{_Stoichiometrizable}, products::Maybe{_Stoichiometrizable}) =
     Reaction("", _make_reaction_dict(substrates, products), :bidirectional)

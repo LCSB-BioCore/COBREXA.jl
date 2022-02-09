@@ -33,9 +33,4 @@
 
     rxn = nadh + 4.0 * h_c + 1.0 * q8 → 1.0 * q8h2 + 1.0 * nad + 3.0 * h_p
     @test rxn.lb == 0.0 && rxn.ub > 0.0
-
-    @test length(h_p + h_p) == 2
-    @test length(h_p + h_p + h_p) == 3
-
-    @test length(+([2.0q8, 1.0nad], nadh)) == 3
 end
