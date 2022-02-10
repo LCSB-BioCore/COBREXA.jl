@@ -103,14 +103,12 @@ variables:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
 .global_build_apptainer: &global_build_apptainer
-  stage: assets
   image:
     name: "quay.io/singularity/singularity:$APPTAINER_DOCKER_TAG"
     # the image entrypoint is the singularity binary by default
     entrypoint: ["/bin/sh", "-c"]
   tags:
     - privileged
-  script: singularity build cobrexa.sif cobrexa.def
 
 #
 # TESTS
@@ -245,36 +243,45 @@ gource:
   <<: *global_dind
 
 apptainer-test:
-  artifacts:
-    paths:
-      - cobrexa.sif
-    expire_in: 1 week
+  stage: assets
+  script: |
+    alias apptainer=singularity
+    apptainer build cobrexa-test.sif cobrexa.def
   <<: *global_build_apptainer
   <<: *global_trigger_test_containers
 
 apptainer-release:
-  artifacts:
-    paths:
-      - cobrexa.sif
-    expire_in: never
+  stage: assets
+  script:
+    - |
+      alias apptainer=singularity
+      apptainer build cobrexa.sif cobrexa.def
+    - |
+      export SINGULARITY_DOCKER_USERNAME=$GITHUB_ACCESS_USER
+      export SINGULARITY_DOCKER_PASSWORD=$GITHUB_ACCESS_TOKEN
+      alias apptainer=singularity
+      apptainer push cobrexa.sif oras://ghcr.io/lcsb-biocore/cobrexa.jl:latest
+      apptainer push cobrexa.sif oras://ghcr.io/lcsb-biocore/cobrexa.jl:v1.2.2d1
   <<: *global_build_apptainer
-  <<: *global_trigger_release_containers
+  #<<: *global_trigger_release_containers # TODO re-enable, #TODO fix tag above
 
 docker-test:
+  stage: assets
   script:
     - docker build -t "$DOCKER_TAG:testing" .
-  <<: *global_trigger_test_containers
   <<: *global_dind
+  <<: *global_trigger_test_containers
 
 docker-release:
+  stage: assets
   script:
     - docker build -t "$DOCKER_TAG:latest" .
     - docker tag "$DOCKER_TAG:latest" "$DOCKER_TAG:$CI_COMMIT_TAG"
     - echo "$DOCKER_IO_ACCESS_TOKEN" | docker login --username "$DOCKER_IO_USER" --password-stdin
     - docker push "$DOCKER_TAG:latest"
     - docker push "$DOCKER_TAG:$CI_COMMIT_TAG"
-  <<: *global_trigger_release_containers
   <<: *global_dind
+  <<: *global_trigger_release_containers
 
 #
 # DOCUMENTATION TESTS
