@@ -10,6 +10,7 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
   APPTAINER_DOCKER_TAG: "v3.9.4"
+  DOCKER_TAG: "lcsbbiocore/cobrexa.jl"
 
 #
 # Predefined conditions for triggering jobs
@@ -258,6 +259,12 @@ apptainer-release:
     expire_in: never
   <<: *global_build_apptainer
   <<: *global_trigger_release_containers
+
+docker-test:
+  script:
+    - docker build -t "$DOCKER_TAG":testing .
+  #<<: *global_trigger_test_containers #TODO enable later
+  <<: *global_dind
 
 #
 # DOCUMENTATION TESTS
