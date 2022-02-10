@@ -270,7 +270,7 @@ docker-release:
   script:
     - docker build -t "$DOCKER_TAG:latest" .
     - docker tag "$DOCKER_TAG:latest" "$DOCKER_TAG:v1.2.2.d1" #TODO change to $CI_COMMIT_TAG later
-    - docker login -u $DOCKER_IO_USER -p $DOCKER_IO_ACCESS_TOKEN
+    - echo "$DOCKER_IO_ACCESS_TOKEN" | docker login --username "$DOCKER_IO_USER" --password-stdin
     - docker push "$DOCKER_TAG:latest"
     - docker push "$DOCKER_TAG:v1.2.2.d1" #TODO
   #<<: *global_trigger_release_containers
