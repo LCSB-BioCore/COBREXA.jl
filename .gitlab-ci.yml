@@ -251,19 +251,19 @@ apptainer-test:
   <<: *global_trigger_test_containers
 
 apptainer-release:
-  #stage: assets #TODO
+  stage: assets
   script:
     - |
       alias apptainer=singularity
       apptainer build cobrexa.sif cobrexa.def
     - |
-      export SINGULARITY_DOCKER_USERNAME=$GITHUB_ACCESS_USERNAME
-      export SINGULARITY_DOCKER_PASSWORD=$GITHUB_ACCESS_TOKEN
       alias apptainer=singularity
-      apptainer push cobrexa.sif oras://ghcr.io/lcsb-biocore/cobrexa.jl:latest
-      apptainer push cobrexa.sif oras://ghcr.io/lcsb-biocore/cobrexa.jl:v1.2.2d1
+      export SINGULARITY_DOCKER_USERNAME="$GITHUB_ACCESS_USERNAME"
+      export SINGULARITY_DOCKER_PASSWORD="$GITHUB_ACCESS_TOKEN"
+      apptainer push cobrexa.sif "oras://ghcr.io/lcsb-biocore/cobrexa.jl:latest"
+      apptainer push cobrexa.sif "oras://ghcr.io/lcsb-biocore/cobrexa.jl:$CI_COMMIT_TAG"
   <<: *global_build_apptainer
-  #<<: *global_trigger_release_containers # TODO re-enable, #TODO fix tag above
+  <<: *global_trigger_release_containers
 
 docker-test:
   stage: assets
