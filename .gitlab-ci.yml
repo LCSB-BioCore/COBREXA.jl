@@ -43,9 +43,29 @@ variables:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
 
+.global_trigger_test_containers: &global_trigger_test_containers
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+.global_trigger_release_containers: &global_trigger_release_containers
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v/
+
 #
 # Test environment & platform settings
 #
+
+.global_dind: &global_dind
+  image: docker:20.10.12
+  tags:
+    - privileged
+  services:
+    - name: docker:20.10.12-dind
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+  before_script:
+    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
 
 .global_julia17: &global_julia17
   variables:
@@ -174,14 +194,6 @@ mac:julia1.6:
 
 format:
   stage: test
-  image: docker:20.10.12
-  tags:
-    - privileged
-  services:
-    - name: docker:20.10.12-dind
-      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
-  before_script:
-    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - |
       docker run -v "$PWD":/project $CI_REGISTRY/r3/docker/julia-custom julia -e 'using JuliaFormatter; format("/project", verbose=true);'
@@ -211,51 +223,41 @@ format:
             -e GITHUB_COMMENT_FORMAT \
             -e GITHUB_COMMENT \
             cloudposse/github-commenter
+  <<: *global_dind
   <<: *global_trigger_pull_request
 
 #
 # ASSETS
 #
-# This builds the development history gif using gource.
+# This builds the development history gif using gource, and some containers.
 #
 
 gource:
   stage: assets
   needs: [] # allow faster start
-  image: docker:20.10.12
-  tags:
-    - privileged
-  services:
-    - name: docker:20.10.12-dind
-      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
-  before_script:
-    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
     expire_in: 1 year
   <<: *global_trigger_build_doc
+  <<: *global_dind
 
 apptainer-test:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "develop"
   artifacts:
     paths:
       - cobrexa.sif
     expire_in: 1 week
   <<: *global_build_apptainer
+  <<: *global_trigger_test_containers
 
 apptainer-release:
-  rules:
-    - if: $CI_COMMIT_TAG =~ /^v/
   artifacts:
     paths:
       - cobrexa.sif
     expire_in: never
   <<: *global_build_apptainer
+  <<: *global_trigger_release_containers
 
 #
 # DOCUMENTATION TESTS
