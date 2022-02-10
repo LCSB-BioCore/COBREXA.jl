@@ -251,7 +251,7 @@ apptainer-test:
   <<: *global_trigger_test_containers
 
 apptainer-release:
-  stage: assets
+  #stage: assets #TODO
   script:
     - |
       alias apptainer=singularity
