@@ -6,7 +6,7 @@ on:
     tags: '*'
 jobs:
   test:
-    name: docker
+    name: run tests on github CI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
