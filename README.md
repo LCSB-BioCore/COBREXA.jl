@@ -226,26 +226,29 @@ the test suite to ensure that everything works as expected:
 ### Prebuilt images [![docker][docker-img]][docker-url]
 
 Docker image is available from the docker hub as
-[lcsbbiocore/cobrexa.jl][docker-url]. Download and use it as usual with docker:
+[lcsbbiocore/cobrexa.jl][docker-url], and from GitHub container repository.
+Download and use them as usual with docker:
 
 ```sh
-docker pull lcsbbiocore/cobrexa.jl
-docker run -ti --rm lcsbbiocore/cobrexa.jl
+docker run -ti --rm lcsbbiocore/cobrexa.jl:latest
+
+# or alternatively from ghcr.io
+docker run -ti --rm ghcr.io/lcsb-biocore/docker/cobrexa.jl:latest
 ```
 
 In the container, you should get a `julia` shell with the important packages
-already installed, you may continue the above tutorial from `using COBREXA`.
+already installed, and you may immediately continue the above tutorial from
+`using COBREXA`.
 
-Apptainer (formerly Singularity) images are available from [LCSB
-GitLab](https://gitlab.lcsb.uni.lu/lcsb-biocore/COBREXA.jl) as artifacts at
-release tags, starting after COBREXA.jl version `1.2.1`. To download the image,
-open [the repository tag
-listing](https://gitlab.lcsb.uni.lu/lcsb-biocore/COBREXA.jl/-/tags), and use
-the button on the right to get the `cobrexa.sif` image. After that, run:
+Apptainer (aka Singularity) images are available from GitHub container
+repository. To start one, run:
 ```sh
-singularity run cobrexa.sif
+singularity run oras://ghcr.io/lcsb-biocore/apptainer/cobrexa.jl:latest
 ```
 ...which gives you a running Julia session with COBREXA.jl loaded.
+
+If you require precise reproducibility, use a tag like `v1.2.2` instead of
+`latest` (all releases since 1.2.2 are tagged this way).
 
 <!--acknowledgements_begin-->
 ## Acknowledgements
