@@ -11,7 +11,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   APPTAINER_DOCKER_TAG: "v3.9.4"
   DOCKER_HUB_TAG: "lcsbbiocore/cobrexa.jl"
-  DOCKER_GHCR_TAG: "lcsb-biocore/docker/cobrexa.jl"
+  DOCKER_GHCR_TAG: "ghcr.io/lcsb-biocore/docker/cobrexa.jl"
   APPTAINER_GHCR_TAG: "lcsb-biocore/apptainer/cobrexa.jl"
 
 #
