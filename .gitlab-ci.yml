@@ -10,6 +10,9 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
   APPTAINER_DOCKER_TAG: "v3.9.4"
+  DOCKER_HUB_TAG: "lcsbbiocore/cobrexa.jl"
+  DOCKER_GHCR_TAG: "ghcr.io/lcsb-biocore/docker/cobrexa.jl"
+  APPTAINER_GHCR_TAG: "lcsb-biocore/apptainer/cobrexa.jl"
 
 #
 # Predefined conditions for triggering jobs
@@ -43,9 +46,29 @@ variables:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
 
+.global_trigger_test_containers: &global_trigger_test_containers
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+.global_trigger_release_containers: &global_trigger_release_containers
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v/
+
 #
 # Test environment & platform settings
 #
+
+.global_dind: &global_dind
+  image: docker:20.10.12
+  tags:
+    - privileged
+  services:
+    - name: docker:20.10.12-dind
+      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
+  before_script:
+    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
 
 .global_julia17: &global_julia17
   variables:
@@ -82,14 +105,12 @@ variables:
     - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
 .global_build_apptainer: &global_build_apptainer
-  stage: assets
   image:
     name: "quay.io/singularity/singularity:$APPTAINER_DOCKER_TAG"
     # the image entrypoint is the singularity binary by default
     entrypoint: ["/bin/sh", "-c"]
   tags:
     - privileged
-  script: singularity build cobrexa.sif cobrexa.def
 
 #
 # TESTS
@@ -174,14 +195,6 @@ mac:julia1.6:
 
 format:
   stage: test
-  image: docker:20.10.12
-  tags:
-    - privileged
-  services:
-    - name: docker:20.10.12-dind
-      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
-  before_script:
-    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - |
       docker run -v "$PWD":/project $CI_REGISTRY/r3/docker/julia-custom julia -e 'using JuliaFormatter; format("/project", verbose=true);'
@@ -211,51 +224,75 @@ format:
             -e GITHUB_COMMENT_FORMAT \
             -e GITHUB_COMMENT \
             cloudposse/github-commenter
+  <<: *global_dind
   <<: *global_trigger_pull_request
 
 #
 # ASSETS
 #
-# This builds the development history gif using gource.
+# This builds the development history gif using gource, and some containers.
 #
 
 gource:
   stage: assets
   needs: [] # allow faster start
-  image: docker:20.10.12
-  tags:
-    - privileged
-  services:
-    - name: docker:20.10.12-dind
-      command: ["--tls=false", "--mtu=1458", "--registry-mirror", "https://docker-registry.lcsb.uni.lu"]
-  before_script:
-    - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
   script:
     - docker run -v "$PWD":/visualization $CI_REGISTRY/r3/docker/gource
   artifacts:
     paths: ['output.gif']
     expire_in: 1 year
   <<: *global_trigger_build_doc
+  <<: *global_dind
 
 apptainer-test:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "develop"
-  artifacts:
-    paths:
-      - cobrexa.sif
-    expire_in: 1 week
+  stage: assets
+  script: |
+    alias apptainer=singularity
+    apptainer build cobrexa-test.sif cobrexa.def
   <<: *global_build_apptainer
+  <<: *global_trigger_test_containers
 
 apptainer-release:
-  rules:
-    - if: $CI_COMMIT_TAG =~ /^v/
-  artifacts:
-    paths:
-      - cobrexa.sif
-    expire_in: never
+  stage: assets
+  script:
+    - |
+      # build the container
+      alias apptainer=singularity
+      apptainer build cobrexa.sif cobrexa.def
+    - |
+      # push to GHCR
+      alias apptainer=singularity
+      export SINGULARITY_DOCKER_USERNAME="$GITHUB_ACCESS_USERNAME"
+      export SINGULARITY_DOCKER_PASSWORD="$GITHUB_ACCESS_TOKEN"
+      apptainer push cobrexa.sif "oras://ghcr.io/$APPTAINER_GHCR_TAG:latest"
+      apptainer push cobrexa.sif "oras://ghcr.io/$APPTAINER_GHCR_TAG:$CI_COMMIT_TAG"
   <<: *global_build_apptainer
+  <<: *global_trigger_release_containers
+
+docker-test:
+  stage: assets
+  script:
+    - docker build -t "$DOCKER_HUB_TAG:testing" .
+  <<: *global_dind
+  <<: *global_trigger_test_containers
+
+docker-release:
+  stage: assets
+  script:
+    - docker build -t "$DOCKER_HUB_TAG:latest" .
+      # alias and push to docker hub
+    - docker tag "$DOCKER_HUB_TAG:latest" "$DOCKER_HUB_TAG:$CI_COMMIT_TAG"
+    - echo "$DOCKER_IO_ACCESS_TOKEN" | docker login --username "$DOCKER_IO_USER" --password-stdin
+    - docker push "$DOCKER_HUB_TAG:latest"
+    - docker push "$DOCKER_HUB_TAG:$CI_COMMIT_TAG"
+      # make 2 extra aliases and push to GHCR
+    - docker tag "$DOCKER_HUB_TAG:latest" "$DOCKER_GHCR_TAG:latest"
+    - docker tag "$DOCKER_HUB_TAG:latest" "$DOCKER_GHCR_TAG:$CI_COMMIT_TAG"
+    - echo "$GITHUB_ACCESS_TOKEN" | docker login ghcr.io --username "$GITHUB_ACCESS_USERNAME" --password-stdin
+    - docker push "$DOCKER_GHCR_TAG:latest"
+    - docker push "$DOCKER_GHCR_TAG:$CI_COMMIT_TAG"
+  <<: *global_dind
+  <<: *global_trigger_release_containers
 
 #
 # DOCUMENTATION TESTS

@@ -99,9 +99,11 @@ function Reaction(
     elseif dir == :reverse
         lb = -default_bound
         ub = 0.0
-    else
+    elseif dir == :bidirectional
         lb = -default_bound
         ub = default_bound
+    else
+        throw(DomainError(dir, "unsupported direction"))
     end
     Reaction(id; metabolites = metabolites, lb = lb, ub = ub)
 end
