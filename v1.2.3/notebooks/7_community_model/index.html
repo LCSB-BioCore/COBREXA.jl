@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Building and analysing a small community model · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><input class="collapse-toggle" id="menuitem-2-1" type="checkbox"/><label class="tocitem" for="menuitem-2-1"><span class="docs-label">Quickstart tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../tutorials/">All tutorials</a></li><li><a class="tocitem" href="../../tutorials/1_loading/">Loading and converting model data</a></li><li><a class="tocitem" href="../../tutorials/2_analysis/">Basic analysis of constraint-based models</a></li><li><a class="tocitem" href="../../tutorials/3_hpc/">Distributed processing and HPC environments</a></li><li><a class="tocitem" href="../../tutorials/4_modifying/">Modifying and saving the models</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-2" type="checkbox"/><label class="tocitem" for="menuitem-2-2"><span class="docs-label">Advanced tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../advanced/">All advanced tutorials</a></li><li><a class="tocitem" href="../../advanced/1_variants/">Exploring many model variants</a></li><li><a class="tocitem" href="../../advanced/2_custom_model/">Working with custom models</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-3" type="checkbox" checked/><label class="tocitem" for="menuitem-2-3"><span class="docs-label">Examples and notebooks</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../">All notebooks</a></li><li><a class="tocitem" href="../1_loading_converting_saving/">Loading, converting, and saving models</a></li><li><a class="tocitem" href="../2_finding_balance/">Finding balance and variability of constraint-based models</a></li><li><a class="tocitem" href="../3_basic_stdmodel_usage/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code></a></li><li><a class="tocitem" href="../5_basic_stdmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../6_screening/">Exploring model variants with <code>screen</code></a></li><li class="is-active"><a class="tocitem" href>Building and analysing a small community model</a><ul class="internal"><li><a class="tocitem" href="#Load-the-base-model"><span>Load the base model</span></a></li><li><a class="tocitem" href="#Load-the-models-and-inspect-fba-solutions"><span>Load the models and inspect fba solutions</span></a></li><li><a class="tocitem" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models"><span>Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models</span></a></li><li><a class="tocitem" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models"><span>Set exchange reaction bounds of community model based on the bounds of the individual models</span></a></li><li><a class="tocitem" href="#Add-objective-function-to-community-model"><span>Add objective function to community model`</span></a></li><li><a class="tocitem" href="#Perform-community-FBA"><span>Perform community FBA</span></a></li><li><a class="tocitem" href="#Add-the-enolase-knockout-to-the-community-model"><span>Add the enolase knockout to the community model</span></a></li><li><a class="tocitem" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate"><span>Allow the mutants to rescue each other by sharing pyruvate</span></a></li></ul></li><li><a class="tocitem" href="../8_custom_model/">Using a custom model data structure</a></li><li><a class="tocitem" href="../9_max_min_driving_force_analysis/">Maximum-minimum driving force analysis</a></li></ul></li></ul></li><li><span class="tocitem">Types and functions</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li><a class="is-disabled">Examples and notebooks</a></li><li class="is-active"><a href>Building and analysing a small community model</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Building and analysing a small community model</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/notebooks/7_community_model.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Building-and-analysing-a-small-community-model"><a class="docs-heading-anchor" href="#Building-and-analysing-a-small-community-model">Building and analysing a small community model</a><a id="Building-and-analysing-a-small-community-model-1"></a><a class="docs-heading-anchor-permalink" href="#Building-and-analysing-a-small-community-model" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/lcsb-biocore/COBREXA.jl/gh-pages?filepath=dev/notebooks/7_community_model.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/lcsb-biocore/COBREXA.jl/blob/gh-pages/dev/notebooks/7_community_model.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><p>Here we will use <code>COBREXA</code> to build and analyze a small community model consisting of three <em>E. coli</em> mutants using the <code>CoreModel</code>. We will use an objective function that enforces equal growth rates.</p><p>We will first construct a community of only two mutants to illustrate the effect of the community biomass objective function. Then we will add a third member that has a lethal knockout. Due to the bounds on the exchange reactions these three models are incapable of sharing resources - hence the maximum growth rate will be zero. By changing the bounds we can allow resource sharing, &quot;saving&quot; the community.</p><h2 id="Load-the-base-model"><a class="docs-heading-anchor" href="#Load-the-base-model">Load the base model</a><a id="Load-the-base-model-1"></a><a class="docs-heading-anchor-permalink" href="#Load-the-base-model" title="Permalink"></a></h2><pre><code class="language-julia">!isfile(&quot;e_coli_core.json&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.json&quot;, &quot;e_coli_core.json&quot;);
+
+using COBREXA
+using Tulip</code></pre><h2 id="Load-the-models-and-inspect-fba-solutions"><a class="docs-heading-anchor" href="#Load-the-models-and-inspect-fba-solutions">Load the models and inspect fba solutions</a><a id="Load-the-models-and-inspect-fba-solutions-1"></a><a class="docs-heading-anchor-permalink" href="#Load-the-models-and-inspect-fba-solutions" title="Permalink"></a></h2><pre><code class="language-julia">base_model = load_model(CoreModel, &quot;e_coli_core.json&quot;) # base from from which the knockouts will be constructed
+
+cytbd_knockout_model = remove_reaction(base_model, &quot;CYTBD&quot;) # knockout the CYTBD (cytochrome oxidase) reaction
+sol = flux_balance_analysis_dict(cytbd_knockout_model, Tulip.Optimizer)
+sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # Cytochrome oxidase knockout μ (growth rate)</code></pre><pre class="documenter-example-output">0.21166294865467686</pre><pre><code class="language-julia">atps4r_knockout_model = remove_reaction(base_model, &quot;ATPS4r&quot;) # knockout the ATP synthase reaction
+sol = flux_balance_analysis_dict(atps4r_knockout_model, Tulip.Optimizer)
+sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # ATP synthase knockout μ</code></pre><pre class="documenter-example-output">0.37422987390664064</pre><pre><code class="language-julia">eno_knockout_model = remove_reaction(base_model, &quot;ENO&quot;) # knockout the enolase reaction
+sol = flux_balance_analysis_dict(eno_knockout_model, Tulip.Optimizer)
+sol[&quot;BIOMASS_Ecoli_core_w_GAM&quot;] # Enolase knockout μ, cannot grow by itself</code></pre><pre class="documenter-example-output">9.545439179585187e-16</pre><h2 id="Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models"><a class="docs-heading-anchor" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models">Build a community model of the cytochrome oxidase knockout and the ATP synthase knockout models</a><a id="Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models-1"></a><a class="docs-heading-anchor-permalink" href="#Build-a-community-model-of-the-cytochrome-oxidase-knockout-and-the-ATP-synthase-knockout-models" title="Permalink"></a></h2><pre><code class="language-julia">ex_rxn_mets = Dict(
+    ex_rxn =&gt; first(keys(reaction_stoichiometry(base_model, ex_rxn))) for
+    ex_rxn in filter(looks_like_exchange_reaction, reactions(base_model))
+) # identify exchange reactions heuristically</code></pre><pre class="documenter-example-output">Dict{String, String} with 20 entries:
+  &quot;EX_for_e&quot;    =&gt; &quot;for_e&quot;
+  &quot;EX_nh4_e&quot;    =&gt; &quot;nh4_e&quot;
+  &quot;EX_pyr_e&quot;    =&gt; &quot;pyr_e&quot;
+  &quot;EX_co2_e&quot;    =&gt; &quot;co2_e&quot;
+  &quot;EX_ac_e&quot;     =&gt; &quot;ac_e&quot;
+  &quot;EX_h2o_e&quot;    =&gt; &quot;h2o_e&quot;
+  &quot;EX_succ_e&quot;   =&gt; &quot;succ_e&quot;
+  &quot;EX_akg_e&quot;    =&gt; &quot;akg_e&quot;
+  &quot;EX_fru_e&quot;    =&gt; &quot;fru_e&quot;
+  &quot;EX_acald_e&quot;  =&gt; &quot;acald_e&quot;
+  &quot;EX_fum_e&quot;    =&gt; &quot;fum_e&quot;
+  &quot;EX_mal__L_e&quot; =&gt; &quot;mal__L_e&quot;
+  &quot;EX_h_e&quot;      =&gt; &quot;h_e&quot;
+  &quot;EX_pi_e&quot;     =&gt; &quot;pi_e&quot;
+  &quot;EX_lac__D_e&quot; =&gt; &quot;lac__D_e&quot;
+  &quot;EX_glu__L_e&quot; =&gt; &quot;glu__L_e&quot;
+  &quot;EX_o2_e&quot;     =&gt; &quot;o2_e&quot;
+  &quot;EX_gln__L_e&quot; =&gt; &quot;gln__L_e&quot;
+  &quot;EX_glc__D_e&quot; =&gt; &quot;glc__D_e&quot;
+  &quot;EX_etoh_e&quot;   =&gt; &quot;etoh_e&quot;</pre><pre><code class="language-julia">model_names = [&quot;cytbd_ko&quot;, &quot;atps4r_ko&quot;]
+community_model = join_with_exchanges(
+    CoreModel,
+    [cytbd_knockout_model, atps4r_knockout_model],
+    ex_rxn_mets;
+    biomass_ids = [&quot;BIOMASS_Ecoli_core_w_GAM&quot;, &quot;BIOMASS_Ecoli_core_w_GAM&quot;],
+    model_names = model_names,
+)</code></pre><pre class="documenter-example-output">Metabolic model of type CoreModel
+sparse([9, 51, 55, 64, 65, 34, 44, 59, 66, 64  …  155, 156, 157, 158, 159, 160, 161, 162, 163, 164], [1, 1, 1, 1, 1, 2, 2, 2, 2, 3  …  199, 200, 201, 202, 203, 204, 205, 206, 207, 208], [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0  …  -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0], 166, 209)
+Number of reactions: 209
+Number of metabolites: 166
+</pre><h2 id="Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models"><a class="docs-heading-anchor" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models">Set exchange reaction bounds of community model based on the bounds of the individual models</a><a id="Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models-1"></a><a class="docs-heading-anchor-permalink" href="#Set-exchange-reaction-bounds-of-community-model-based-on-the-bounds-of-the-individual-models" title="Permalink"></a></h2><pre><code class="language-julia">env_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(community_model)) # identify the global (environmental exchange reactions)
+cytbd_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(cytbd_knockout_model)) # identify the indices of the corresponding exchange reactions in the original models
+atps4r_ex_rxn_idxs = indexin(keys(ex_rxn_mets), reactions(atps4r_knockout_model))</code></pre><pre class="documenter-example-output">20-element Vector{Union{Nothing, Int64}}:
+ 48
+ 58
+ 61
+ 46
+ 43
+ 55
+ 62
+ 45
+ 49
+ 44
+ 50
+ 57
+ 54
+ 60
+ 56
+ 53
+ 59
+ 52
+ 51
+ 47</pre><p>In case some exchange reactions are not present in both models, set environmental exchange bound to the sum of the individual exchange bounds</p><pre><code class="language-julia">for (env_ex, m2_ex, m1_ex) in zip(env_ex_rxn_idxs, cytbd_ex_rxn_idxs, atps4r_ex_rxn_idxs)
+    m2lb = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xl[m2_ex]
+    m2ub = isnothing(m2_ex) ? 0.0 : atps4r_knockout_model.xu[m2_ex]
+    m1lb = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xl[m1_ex]
+    m1ub = isnothing(m1_ex) ? 0.0 : cytbd_knockout_model.xu[m1_ex]
+    change_bounds!(community_model, [env_ex]; lower = [m1lb + m2lb], upper = [m1ub + m2ub])
+end</code></pre><h2 id="Add-objective-function-to-community-model"><a class="docs-heading-anchor" href="#Add-objective-function-to-community-model">Add objective function to community model`</a><a id="Add-objective-function-to-community-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-objective-function-to-community-model" title="Permalink"></a></h2><pre><code class="language-julia">biomass_ids_weights = Dict(model_names .* &quot;_BIOMASS_Ecoli_core_w_GAM&quot; .=&gt; 1.0)
+update_community_objective!(community_model, &quot;community_biomass&quot;, biomass_ids_weights)</code></pre><h2 id="Perform-community-FBA"><a class="docs-heading-anchor" href="#Perform-community-FBA">Perform community FBA</a><a id="Perform-community-FBA-1"></a><a class="docs-heading-anchor-permalink" href="#Perform-community-FBA" title="Permalink"></a></h2><pre><code class="language-julia">d = flux_balance_analysis_dict(
+    community_model,
+    Tulip.Optimizer;
+    modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
+)
+d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.21166294961691232</pre><p>Notice, the growth rate is limited to the slowest organism as per the objective function</p><h2 id="Add-the-enolase-knockout-to-the-community-model"><a class="docs-heading-anchor" href="#Add-the-enolase-knockout-to-the-community-model">Add the enolase knockout to the community model</a><a id="Add-the-enolase-knockout-to-the-community-model-1"></a><a class="docs-heading-anchor-permalink" href="#Add-the-enolase-knockout-to-the-community-model" title="Permalink"></a></h2><pre><code class="language-julia">community_model = add_model_with_exchanges(
+    community_model,
+    eno_knockout_model,
+    ex_rxn_mets;
+    model_name = &quot;eno_ko&quot;,
+    biomass_id = &quot;BIOMASS_Ecoli_core_w_GAM&quot;,
+)
+
+push!(model_names, &quot;eno_ko&quot;)
+biomass_ids_weights = Dict(model_names .* &quot;_BIOMASS_Ecoli_core_w_GAM&quot; .=&gt; 1.0)
+update_community_objective!(community_model, &quot;community_biomass&quot;, biomass_ids_weights)
+
+d = flux_balance_analysis_dict(
+    community_model,
+    Tulip.Optimizer;
+    modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
+)
+println(&quot;Community μ = &quot;, d[&quot;community_biomass&quot;])</code></pre><pre class="documenter-example-output">Community μ = 1.6243153515245851e-15</pre><p>Notice that the high communal growth rate is 0, due to the enolase knockout. The reason for this behaviour: enolase is a central reaction in glycolysis - without it the organism cannot access the lower glycolysis pathways or the TCA cycle, hence the model predicts no growth for the knockout, and hence no growth for the system since they all have to have the same growth rate.</p><h2 id="Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate"><a class="docs-heading-anchor" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate">Allow the mutants to rescue each other by sharing pyruvate</a><a id="Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate-1"></a><a class="docs-heading-anchor-permalink" href="#Allow-the-mutants-to-rescue-each-other-by-sharing-pyruvate" title="Permalink"></a></h2><pre><code class="language-julia">pyr_exs = model_names .* &quot;_EX_pyr_e&quot;
+change_bounds!(community_model, pyr_exs; lower = fill(-1000.0, 3), upper = fill(1000.0, 3))
+
+d = flux_balance_analysis_dict(
+    community_model,
+    Tulip.Optimizer;
+    modifications = [change_optimizer_attribute(&quot;IPM_IterationsLimit&quot;, 1000)],
+)
+d[&quot;community_biomass&quot;] # community μ</code></pre><pre class="documenter-example-output">0.2360711079620927</pre><p>Notice that the growth rate is now above 0! Nutrient sharing saved the day!</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../6_screening/">« Exploring model variants with <code>screen</code></a><a class="docs-footer-nextpage" href="../8_custom_model/">Using a custom model data structure »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 15 February 2022 13:44">Tuesday 15 February 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Using a custom model data structure · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><input class="collapse-toggle" id="menuitem-2-1" type="checkbox"/><label class="tocitem" for="menuitem-2-1"><span class="docs-label">Quickstart tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../tutorials/">All tutorials</a></li><li><a class="tocitem" href="../../tutorials/1_loading/">Loading and converting model data</a></li><li><a class="tocitem" href="../../tutorials/2_analysis/">Basic analysis of constraint-based models</a></li><li><a class="tocitem" href="../../tutorials/3_hpc/">Distributed processing and HPC environments</a></li><li><a class="tocitem" href="../../tutorials/4_modifying/">Modifying and saving the models</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-2" type="checkbox"/><label class="tocitem" for="menuitem-2-2"><span class="docs-label">Advanced tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../advanced/">All advanced tutorials</a></li><li><a class="tocitem" href="../../advanced/1_variants/">Exploring many model variants</a></li><li><a class="tocitem" href="../../advanced/2_custom_model/">Working with custom models</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-3" type="checkbox" checked/><label class="tocitem" for="menuitem-2-3"><span class="docs-label">Examples and notebooks</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../">All notebooks</a></li><li><a class="tocitem" href="../1_loading_converting_saving/">Loading, converting, and saving models</a></li><li><a class="tocitem" href="../2_finding_balance/">Finding balance and variability of constraint-based models</a></li><li><a class="tocitem" href="../3_basic_stdmodel_usage/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code></a></li><li><a class="tocitem" href="../5_basic_stdmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../6_screening/">Exploring model variants with <code>screen</code></a></li><li><a class="tocitem" href="../7_community_model/">Building and analysing a small community model</a></li><li class="is-active"><a class="tocitem" href>Using a custom model data structure</a></li><li><a class="tocitem" href="../9_max_min_driving_force_analysis/">Maximum-minimum driving force analysis</a></li></ul></li></ul></li><li><span class="tocitem">Types and functions</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li><a class="is-disabled">Examples and notebooks</a></li><li class="is-active"><a href>Using a custom model data structure</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Using a custom model data structure</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/notebooks/8_custom_model.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-a-custom-model-data-structure"><a class="docs-heading-anchor" href="#Using-a-custom-model-data-structure">Using a custom model data structure</a><a id="Using-a-custom-model-data-structure-1"></a><a class="docs-heading-anchor-permalink" href="#Using-a-custom-model-data-structure" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/lcsb-biocore/COBREXA.jl/gh-pages?filepath=dev/notebooks/8_custom_model.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/lcsb-biocore/COBREXA.jl/blob/gh-pages/dev/notebooks/8_custom_model.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><p>This notebooks shows how to utilize the generic accessors and modification functions in COBREXA.jl to run the analysis on any custom model type. We will create a simple dictionary-style structure that describes the model, allow COBREXA to run a FVA on it, and create a simple reaction-removing modification.</p><p>First, let&#39;s define a very simple stoichiometry-only structure for the model:</p><pre><code class="language-julia">using COBREXA
+
+mutable struct MyReaction
+    max_rate::Float64 # maximum absolute conversion rate
+    stoi::Dict{String,Float64} # stoichimetry of the reaction
+
+    MyReaction() = new(0.0, Dict{String,Float64}())
+end
+
+mutable struct MyModel &lt;: MetabolicModel
+    optimization_target::String # the &quot;objective&quot; reaction name
+    reactions::Dict{String,MyReaction} # dictionary of reactions
+
+    MyModel() = new(&quot;&quot;, Dict{String,MyReaction}())
+    MyModel(o, r) = new(o, r)
+end</code></pre><p>With this, we can start defining the accessors:</p><pre><code class="language-julia">COBREXA.n_reactions(m::MyModel) = length(m.reactions)
+COBREXA.reactions(m::MyModel) = sort(collect(keys(m.reactions)))</code></pre><p>Metabolites are defined only very implicitly, so let&#39;s just make a function that collects all names. <a href="../../functions/types/#COBREXA.n_metabolites-Tuple{MetabolicModel}"><code>n_metabolites</code></a> can be left at the default definition that just measures the output of <a href="../../functions/types/#COBREXA.metabolites-Tuple{MetabolicModel}"><code>metabolites</code></a>.</p><pre><code class="language-julia">function COBREXA.metabolites(m::MyModel)
+    mets = Set{String}()
+    for (_, r) in m.reactions
+        for (m, _) in r.stoi
+            push!(mets, m)
+        end
+    end
+    return sort(collect(mets))
+end</code></pre><p>Now, the extraction of the linear model. Remember the order of element in the vectors must match the order in the output of <a href="../../functions/types/#COBREXA.reactions-Tuple{MetabolicModel}"><code>reactions</code></a> and <a href="../../functions/types/#COBREXA.metabolites-Tuple{MetabolicModel}"><code>metabolites</code></a>.</p><pre><code class="language-julia">using SparseArrays
+
+function COBREXA.bounds(m::MyModel)
+    max_rates = [m.reactions[r].max_rate for r in reactions(m)]
+    (sparse(-max_rates), sparse(max_rates))
+end
+
+function COBREXA.objective(m::MyModel)
+    if m.optimization_target in keys(m.reactions)
+        c = spzeros(n_reactions(m))
+        c[first(indexin([m.optimization_target], reactions(m)))] = 1.0
+        c
+    else
+        throw(
+            DomainError(
+                m.optimization_target,
+                &quot;The target reaction for flux optimization not found&quot;,
+            ),
+        )
+    end
+end
+
+function COBREXA.stoichiometry(m::MyModel)
+    sparse([
+        get(m.reactions[rxn].stoi, met, 0.0) for met in metabolites(m), rxn in reactions(m)
+    ])
+end</code></pre><p>Now the model is complete! We can generate a random one and see how it performs</p><pre><code class="language-julia">import Random
+Random.seed!(123)
+
+rxn_names = [&quot;Reaction $i&quot; for i = &#39;A&#39;:&#39;Z&#39;];
+metabolite_names = [&quot;Metabolite $i&quot; for i = 1:20];
+
+m = MyModel();
+for i in rxn_names
+    m.reactions[i] = MyReaction()
+end
+
+for i = 1:50
+    rxn = rand(rxn_names)
+    met = rand(metabolite_names)
+    m.reactions[rxn].stoi[met] = rand([-3, -2, -1, 1, 2, 3])
+    m.reactions[rxn].max_rate = rand()
+end</code></pre><p>Let&#39;s see what the model looks like now:</p><pre><code class="language-julia">m</code></pre><pre class="documenter-example-output">Metabolic model of type Main.ex-8_custom_model.MyModel
+sparse([1, 4, 8, 2, 5, 4, 16, 5, 15, 11  …  10, 8, 12, 6, 8, 13, 18, 18, 5, 15], [1, 1, 1, 2, 2, 3, 3, 4, 6, 7  …  19, 20, 20, 21, 22, 22, 23, 24, 26, 26], [1.0, -3.0, 1.0, -1.0, 2.0, 2.0, -2.0, -3.0, 1.0, 3.0  …  3.0, 3.0, 1.0, 2.0, 2.0, -1.0, 2.0, -1.0, 1.0, -3.0], 19, 26)
+Number of reactions: 26
+Number of metabolites: 19
+</pre><p>We can run most of the standard function on the model data right away:</p><pre><code class="language-julia">using Tulip
+m.optimization_target = &quot;Reaction A&quot;
+flux_balance_analysis_dict(m, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 26 entries:
+  &quot;Reaction E&quot; =&gt; -0.0
+  &quot;Reaction F&quot; =&gt; -0.422872
+  &quot;Reaction T&quot; =&gt; -0.0013608
+  &quot;Reaction G&quot; =&gt; 0.0
+  &quot;Reaction B&quot; =&gt; -0.0
+  &quot;Reaction J&quot; =&gt; 0.000486989
+  &quot;Reaction K&quot; =&gt; 0.000486989
+  &quot;Reaction P&quot; =&gt; -3.52357e-11
+  &quot;Reaction R&quot; =&gt; -0.0
+  &quot;Reaction U&quot; =&gt; 1.28067e-9
+  &quot;Reaction Y&quot; =&gt; -0.0
+  &quot;Reaction N&quot; =&gt; -0.0
+  &quot;Reaction Z&quot; =&gt; -0.14112
+  &quot;Reaction D&quot; =&gt; -0.0470399
+  &quot;Reaction W&quot; =&gt; 0.000120942
+  &quot;Reaction M&quot; =&gt; -0.0
+  &quot;Reaction X&quot; =&gt; 0.000241884
+  &quot;Reaction C&quot; =&gt; 1.10241e-10
+  &quot;Reaction A&quot; =&gt; 1.38911e-11
+  ⋮            =&gt; ⋮</pre><p>To be able to use the model conveniently in functions such as <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a>, you usually want to be able to easily specify the modifications. In this example, we enable use of <a href="../../functions/reconstruction/#COBREXA.with_removed_reactions-Tuple"><code>with_removed_reactions</code></a> by overloading the internal <a href="../../functions/reconstruction/#COBREXA.remove_reactions-Tuple{CoreModel, AbstractVector{Int64}}"><code>remove_reactions</code></a> for this specific model type:</p><p>We need to make an as-shallow-as-possible copy of the model that allows us to remove the reactions without breaking the original model.</p><pre><code class="language-julia">function COBREXA.remove_reactions(m::MyModel, rxns::AbstractVector{String})
+    m = MyModel(m.optimization_target, copy(m.reactions))
+    delete!.(Ref(m.reactions), rxns)
+    return m
+end</code></pre><p>The screening is ready now!</p><pre><code class="language-julia">reactions_to_remove = (&quot;Reaction $i&quot; for i = &#39;B&#39;:&#39;Z&#39;)
+
+reactions_to_remove .=&gt; screen_variants(
+    m,
+    [[with_removed_reactions([r])] for r in reactions_to_remove],
+    m -&gt; flux_balance_analysis_dict(m, Tulip.Optimizer)[&quot;Reaction A&quot;],
+)</code></pre><pre class="documenter-example-output">25-element Vector{Pair{String, Float64}}:
+ &quot;Reaction B&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction C&quot; =&gt; -6.053049545510096e-11
+ &quot;Reaction D&quot; =&gt; 1.2248420082882448e-11
+ &quot;Reaction E&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction F&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction G&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction H&quot; =&gt; 1.6597522344141004e-11
+ &quot;Reaction I&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction J&quot; =&gt; 1.7764900680738363e-11
+ &quot;Reaction K&quot; =&gt; 1.3247412533182346e-11
+              ⋮
+ &quot;Reaction R&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction S&quot; =&gt; 5.991945842008422e-10
+ &quot;Reaction T&quot; =&gt; 1.3686861323282557e-11
+ &quot;Reaction U&quot; =&gt; 1.2424891707562945e-9
+ &quot;Reaction V&quot; =&gt; 1.6597522344141004e-11
+ &quot;Reaction W&quot; =&gt; 1.3595610516296605e-11
+ &quot;Reaction X&quot; =&gt; 8.980140092800575e-12
+ &quot;Reaction Y&quot; =&gt; 1.3891081053642988e-11
+ &quot;Reaction Z&quot; =&gt; 1.3891081053642988e-11</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../7_community_model/">« Building and analysing a small community model</a><a class="docs-footer-nextpage" href="../9_max_min_driving_force_analysis/">Maximum-minimum driving force analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 15 February 2022 13:44">Tuesday 15 February 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
