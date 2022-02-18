@@ -20,10 +20,6 @@ import SBML # conflict with Reaction struct name
 
 include("banner.jl")
 
-function __init__()
-    _print_banner()
-end
-
 # autoloading
 const _inc(path...) = include(joinpath(path...))
 const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
