@@ -388,6 +388,6 @@ function remove_slow_isozymes!(
     end
     rm_gids = setdiff(genes(model), curated_gids)
     delete!(model.genes, rm_gids) # remove genes that were deleted
-    
+
     return nothing
 end

@@ -14,10 +14,12 @@
         ub_flux_measurements = Dict("GLCpts" => 12.0),
         total_protein_mass,
         sense = COBREXA.MOI.MAX_SENSE,
-        modifications = [
-            change_optimizer_attribute("IPM_IterationsLimit", 1000),
-        ]
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    @test isapprox(rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"], 0.8907273630431708, atol = TEST_TOLERANCE)
+    @test isapprox(
+        rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
+        0.8907273630431708,
+        atol = TEST_TOLERANCE,
+    )
 end

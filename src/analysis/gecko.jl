@@ -97,7 +97,7 @@ function gecko(
     for mod in modifications
         mod(nothing, opt_model)
     end
-    
+
     optimize!(opt_model)
 
     _map_irrev_to_rev_ids(reaction_map, value.(x); protein_ids)
