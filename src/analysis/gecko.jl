@@ -23,10 +23,10 @@ Total enzyme capacity (sum of all enzyme concentrations multiplied by their
 molar mass) is constrained by `total_protein_mass`, a unitless mass fraction of
 enzyme mass to cell dry mass. The reaction fluxes and protein concentrations can
 be bounded by `lb_flux_measurements`, `ub_flux_measurements`,
-`lb_protein_measurements`, and `ub_protein_measurements` respectively. The
-reaction to be optimized is specified by `objective_id`. Both lower and upper
-bounds need to be supplied if a reaction flux is to be bounded, likewise with
-protein concentration bounds. Note, since the model uses irreversible reactions
+`lb_protein_measurements`, and `ub_protein_measurements` respectively. Both
+lower and upper bounds need to be supplied if a reaction flux is to be bounded,
+likewise with protein concentration bounds. The reaction to be optimized is
+specified by `objective_id`. Note, since the model uses irreversible reactions
 internally, you should append `"§FOR"` for the forward direction and `"§REV"`
 for the reverse direction in which ever reaction you want to optimize; this is
     not necesarry for the bound constraints. To optimize anything else, use the
@@ -124,12 +124,16 @@ s.t.    E * x = d
         M * x ≤ h
 ```
 Returns `c, E, d, M, h, reaction_map, metabolite_map, protein_ids`, where 
-`reaction_map` 
+`reaction_map` shows the order of the columns (reactions) in `E`. Proteins 
+are ordered according to `protein_ids`, and follow after reactions. Use 
+[`_map_irrev_to_rev_ids`](@ref) to map the solution of an optimization 
+problem back to the original model's name space.
 
 Format of arguments are always in order of grr for each reaction `rxn_id`:
-1) protein_stoichiometry: `Dict[rxn_id] = [[1,2,1,1],...]` 
-2) protein_masses: `Dict[p_id] = [mm, ...]` in units of kDa
-3) reaction_kcat: `Dict[rxn_id] = [[kcat_for, kcat_rev],...]` for each complex
+1) protein_stoichiometry: `Dict(rxn_id => [[1,2,1,1]])` 
+2) protein_masses: `Dict(p_id => [mm, ...])` in units of kDa
+3) reaction_kcat: `Dict(rxn_id => [[kcat_for, kcat_rev]])` for each complex
+    
 
 Assumptions:
 1) Each isozyme has a kcat (forward and reverse) for each reaction it catalyzes

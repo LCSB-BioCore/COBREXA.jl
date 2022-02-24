@@ -1,38 +1,23 @@
-using COBREXA,
-    Tulip,
-    JSON,
-    JuMP,
-    Statistics,
-    TerminalPager,
-    LinearAlgebra,
-    ForwardDiff,
-    CairoMakie,
-    SparseArrays
+@testset "SMOMENT" begin
+    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model.reactions["EX_glc__D_e"].lb = -1000.0 # unconstraint because enzyme constraints take over
+    total_protein_mass = 100 # mg/gdW
 
+    rxn_fluxes = smoment(
+        model,
+        Tulip.Optimizer;
+        objective_id = "BIOMASS_Ecoli_core_w_GAM§FOR",
+        protein_stoichiometry = ecoli_core_protein_stoichiometry,
+        protein_masses = ecoli_core_protein_masses,
+        reaction_kcats = ecoli_core_reaction_kcats,
+        lb_flux_measurements = Dict("GLCpts" => -1.0),
+        ub_flux_measurements = Dict("GLCpts" => 12.0),
+        total_protein_mass,
+        sense = COBREXA.MOI.MAX_SENSE,
+        modifications = [
+            change_optimizer_attribute("IPM_IterationsLimit", 1000),
+        ]
+    )
 
-#! remove isozymes with lower effectivity (kcat/total_mass), only one enzyme per reaction
-remove_slow_isozymes!(model, reaction_kcats, protein_stoichiometry, protein_masses)
-
-#: SMOMENT
-total_protein_mass = 200.0 # mg/gDW
-model.reactions["EX_glc__D_e"].lb = -1000.0 #! unconstrain otherwise bound will be hit
-obj_id = "BIOMASS_Ecoli_core_w_GAM§FOR"
-
-c, E, d, M, h, reaction_map, metabolite_map = smoment(
-    model,
-    protein_stoichiometry,
-    protein_masses,
-    reaction_kcats;
-    total_protein_mass,
-);
-
-m = Model(Gurobi.Optimizer);
-@variable(m, x[1:size(E, 2)]);
-bid = reaction_map[obj_id]
-@objective(m, Max, x[bid]);
-@constraint(m, E * x .== d);
-@constraint(m, M * x .<= h);
-optimize!(m)
-
-reaction_fluxes_pre = map_ids_to_sols(reaction_map, value.(x));
-plot_flux_summary(reaction_fluxes_pre)
+    @test isapprox(rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"], 0.8907273630431708, atol = TEST_TOLERANCE)
+end
