@@ -111,9 +111,9 @@ end
 """
     smoment_opt_problem(
         model::StandardModel;
-        protein_stoichiometry,
-        protein_masses,
-        reaction_kcats,
+        protein_stoichiometry = Dict(),
+        protein_masses = Dict(),
+        reaction_kcats = Dict(),
         lb_flux_measurements = Dict(),
         ub_flux_measurements = Dict(),
         total_protein_mass = 0.0,
@@ -152,9 +152,9 @@ Notes:
 """
 function smoment_opt_problem(
     model::StandardModel;
-    protein_stoichiometry,
-    protein_masses,
-    reaction_kcats,
+    protein_stoichiometry = Dict(),
+    protein_masses = Dict(),
+    reaction_kcats = Dict(),
     lb_flux_measurements = Dict(),
     ub_flux_measurements = Dict(),
     total_protein_mass = 0.0,
