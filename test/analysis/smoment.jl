@@ -5,9 +5,9 @@
 
     remove_slow_isozymes!(
         model;
-        reaction_kcats,
-        protein_stoichiometry,
-        protein_masses,
+        protein_stoichiometry = ecoli_core_protein_stoichiometry,
+        protein_masses = ecoli_core_protein_masses,
+        reaction_kcats = ecoli_core_reaction_kcats,
     )
 
     rxn_fluxes = smoment(
