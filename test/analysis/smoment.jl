@@ -3,6 +3,13 @@
     model.reactions["EX_glc__D_e"].lb = -1000.0 # unconstraint because enzyme constraints take over
     total_protein_mass = 100 # mg/gdW
 
+    remove_slow_isozymes!(
+        model;
+        reaction_kcats,
+        protein_stoichiometry,
+        protein_masses,
+    )
+
     rxn_fluxes = smoment(
         model,
         Tulip.Optimizer;

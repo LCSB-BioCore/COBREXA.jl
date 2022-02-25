@@ -30,9 +30,10 @@ forward direction and `"§REV"` for the reverse direction in which ever reaction
 you want to optimize; this is not necesarry for the bound constraints. To
 optimize anything else, use the lower level [`smoment_opt_problem`](@ref).
 Futhermore, `"§"` is reserved for internal use as a delimiter, no reaction id
-should contain that character. Also note, internally only the fastest isozyme per GRR 
-is used to enforce enzyme constraints, i.e. [`remove_slow_isozymes!`](@ref) is 
-called on `model`. 
+should contain that character. Also note, SMOMENT assumes that each reaction only has 
+a single enzyme (one GRR) associated with it. It is required that a model be modified to
+ensure that this condition is met. For ease-of-use, [`remove_slow_isozymes!`](@ref) is 
+supplied to effect this. 
     
 The protein masses (in molar mass units) for each gene in the model should also
 be supplied through `protein_masses`. The format is a dictionary of gene ids
@@ -71,17 +72,9 @@ function smoment(
     sense = MOI.MAX_SENSE,
     modifications = [],
 )
-    pruned_model = deepcopy(model) # copy model so that original model is not modified
-
-    remove_slow_isozymes!(
-        pruned_model;
-        reaction_kcats,
-        protein_stoichiometry,
-        protein_masses,
-    )
 
     _, E, d, M, h, reaction_map, _ = smoment_opt_problem(
-        pruned_model;
+        model;
         protein_stoichiometry,
         protein_masses,
         reaction_kcats,
