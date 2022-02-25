@@ -325,7 +325,7 @@ function _gecko_build_inequality_constraints(
         pid in protein_ids
     ]
     ub_proteins = [
-        haskey(ub_protein_measurements, pid) ? ub_protein_measurements[pid] : 10_000.0
+        haskey(ub_protein_measurements, pid) ? ub_protein_measurements[pid] : 1000.0
         for pid in protein_ids
     ]
 
