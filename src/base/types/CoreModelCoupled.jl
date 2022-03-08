@@ -23,53 +23,7 @@ mutable struct CoreModelCoupled <: MetabolicModel
     end
 end
 
-"""
-    reactions(a::CoreModelCoupled)
-
-Extract reactions from [`CoreModelCoupled`](@ref) (uses the internal
-[`CoreModel`](@ref)).
-"""
-reactions(a::CoreModelCoupled) = reactions(a.lm)
-
-"""
-    metabolites(a::CoreModelCoupled)
-
-Extract metabolites from [`CoreModelCoupled`](@ref) (uses the internal
-[`CoreModel`](@ref)).
-"""
-metabolites(a::CoreModelCoupled) = metabolites(a.lm)
-
-"""
-    stoichiometry(a::CoreModelCoupled)
-
-Extract stoichiometry from [`CoreModelCoupled`](@ref) (uses the internal
-[`CoreModel`](@ref)).
-"""
-stoichiometry(a::CoreModelCoupled) = stoichiometry(a.lm)
-
-"""
-    bounds(a::CoreModelCoupled)
-
-Extract bounds from [`CoreModelCoupled`](@ref) (uses the internal
-[`CoreModel`](@ref)).
-"""
-bounds(a::CoreModelCoupled) = bounds(a.lm)
-
-"""
-    balance(a::CoreModelCoupled)
-
-Extract balance from [`CoreModelCoupled`](@ref) (uses the internal
-[`CoreModel`](@ref)).
-"""
-balance(a::CoreModelCoupled) = balance(a.lm)
-
-"""
-    objective(a::CoreModelCoupled)
-
-Extract objective from [`CoreModelCoupled`](@ref) (uses the internal
-[`CoreModel`](@ref)).
-"""
-objective(a::CoreModelCoupled) = objective(a.lm)
+@_inherit_model_methods CoreModelCoupled () lm () reactions metabolites stoichiometry bounds balance objective
 
 """
     coupling(a::CoreModelCoupled)::SparseMat
@@ -92,21 +46,8 @@ Coupling bounds for a `CoreModelCoupled`.
 """
 coupling_bounds(a::CoreModelCoupled)::Tuple{Vector{Float64},Vector{Float64}} = (a.cl, a.cu)
 
-"""
-    reaction_stoichiometry(model::CoreModelCoupled, rid::String)::Dict{String, Float64}
-
-Return the stoichiometry of reaction with ID `rid`.
-"""
-reaction_stoichiometry(m::CoreModelCoupled, rid::String) = reaction_stoichiometry(m.lm, rid)
-
-"""
-    reaction_stoichiometry(model::CoreModelCoupled, ridx)::Dict{String, Float64}
-
-Return the stoichiometry of reaction at index `ridx`.
-"""
-function reaction_stoichiometry(m::CoreModelCoupled, ridx)::Dict{String,Float64}
-    reaction_stoichiometry(m.lm, ridx)
-end
+@_inherit_model_methods CoreModelCoupled (rid::String,) lm (rid,) reaction_stoichiometry reaction_gene_association
+@_inherit_model_methods CoreModelCoupled (ridx::Int,) lm (ridx,) reaction_stoichiometry
 
 """
     reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
@@ -116,23 +57,6 @@ same order as `reactions(model)`.
 """
 reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} =
     reaction_gene_association_vec(model.lm)
-
-"""
-    reaction_gene_association(model::CoreModelCoupled, ridx::Int)::Maybe{GeneAssociation}
-
-Retrieve the [`GeneAssociation`](@ref) from [`CoreModelCoupled`](@ref) by reaction
-index.
-"""
-reaction_gene_association(model::CoreModelCoupled, ridx::Int)::Maybe{GeneAssociation} =
-    reaction_gene_association(model.lm, ridx)
-
-"""
-    reaction_gene_association(model::CoreModelCoupled, rid::String)::Maybe{GeneAssociation}
-
-Retrieve the [`GeneAssociation`](@ref) from [`CoreModelCoupled`](@ref) by reaction ID.
-"""
-reaction_gene_association(model::CoreModelCoupled, rid::String)::Maybe{GeneAssociation} =
-    reaction_gene_association(model.lm, rid)
 
 """
     Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
