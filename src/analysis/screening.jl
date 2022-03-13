@@ -75,7 +75,7 @@ from pure Julia structures, because they may be transferred over the network
 between the computation nodes. For that reason, functions that return whole
 JuMP models that contain pointers to allocated C structures (such as
 [`flux_balance_analysis`](@ref) used with `GLPK` or `Gurobi` otimizers) will
-generally not in this context.
+generally not work in this context.
 
 Note: this function is a thin argument-handling wrapper around
 [`_screen_impl`](@ref).
