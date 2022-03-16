@@ -2,8 +2,8 @@
     @_serialized_change_unwrap function
 
 Creates a simple wrapper structure that calls the `function` transparently on
-the internal precached model. Internal type is returned (because this would
-break the consistency of serialization).
+the internal precached model. The internal type is returned (otherwise this
+would break the consistency of serialization).
 """
 macro _serialized_change_unwrap(fn::Symbol)
     docstring = """
