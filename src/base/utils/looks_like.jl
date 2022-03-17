@@ -101,7 +101,7 @@ find_biomass_reaction_ids(m::MetabolicModel; kwargs...) =
 """
     looks_like_extracellular_metabolite(rxn_id::String;
         extracellular_suffixes = _constants.extracellular_suffixes,
-        )::Bool
+    )::Bool
 
 A predicate that matches metabolite identifiers that look like they are extracellular
 metabolites. Extracellular metabolites are identified by `extracellular_suffixes` at the end of the
