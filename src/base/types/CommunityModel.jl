@@ -27,7 +27,25 @@ model_names :: Array{String}
 
 # Example
 ```
-
+m1 = load_model("e_coli_core.json")
+m2 = deepcopy(m1)
+exchange_rxn_mets = Dict(
+    ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
+    ex_rxn in reactions(m2) if looks_like_exchange_reaction(ex_rxn)
+)
+biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
+community_model = CommunityModel(
+    join_with_exchanges(
+        CoreModel,
+        [m1, m2],
+        exchange_rxn_mets;
+        biomass_ids = biomass_ids,
+        model_names = ["m1", "m2"],
+    ),
+    exchange_rxn_mets = exchange_rxn_mets,
+    biomass_rxn = "community_biomass",
+    model_names = ["m1", "m2"]
+)
 ```
 """
 mutable struct CommunityModel{M} <: MetabolicModel where {M<:MetabolicModel}
