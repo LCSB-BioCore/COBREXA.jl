@@ -45,37 +45,4 @@ mutable struct CommunityModel{M} <: MetabolicModel where {M<:MetabolicModel}
         new{M}(metabolicModel, exchange_rxn_mets, biomass_rxn, model_names)
 end
 
-"""
-    reactions(cm::CommunityModel)
-
-Get the reactions from the `MetabolicModel` in a `CommunityModel`.
-"""
-reactions(cm::CommunityModel) = reactions(cm.metabolicModel)
-
-"""
-    metabolites(cm::CommunityModel)
-
-Get the metabolites from the `MetabolicModel` in a `CommunityModel`.
-"""
-metabolites(cm::CommunityModel) = metabolites(cm.metabolicModel)
-
-"""
-    stoichiometry(cm::CommunityModel)
-
-Get the stoichiometry of the underlying `MetabolicModel`.
-"""
-stoichiometry(cm::CommunityModel) = stoichiometry(cm.metabolicModel)
-
-"""
-    bounds(cm::CommunityModel)
-
-Get the flux bounds of the underlying `MetabolicModel`.
-"""
-bounds(cm::CommunityModel) = bounds(cm.metabolicModel)
-
-"""
-    objective(cm::CommunityModel)
-
-Get the objective vector of the underlying `MetabolicModel`.
-"""
-objective(cm::CommunityModel) = objective(cm.metabolicModel)
+@_inherit_model_methods CommunityModel () metabolicModel () reactions metabolites stoichiometry bounds balance objective
