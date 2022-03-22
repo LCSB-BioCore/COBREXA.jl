@@ -30,18 +30,19 @@ model_names :: Array{String}
 
 ```
 """
-mutable struct CommunityModel <: MetabolicModel
-    metabolicModel::Any
+mutable struct CommunityModel{M} <: MetabolicModel where {M<:MetabolicModel}
+    metabolicModel::M
     exchange_rxn_mets::Dict{String,String}
     biomass_rxn::Maybe{String}
     model_names::Array{String}
 
     CommunityModel(
-        metabolicModel = StandardModel();
+        metabolicModel::M = StandardModel();
         exchange_rxn_mets = Dict{String,String}(),
         biomass_rxn = nothing,
         model_names = String[],
-    ) = new(metabolicModel, exchange_rxn_mets, biomass_rxn, model_names)
+    ) where {M<:MetabolicModel} =
+        new{M}(metabolicModel, exchange_rxn_mets, biomass_rxn, model_names)
 end
 
 """
