@@ -23,7 +23,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 [compat]
 DistributedData = "0.1.4, 0.2"
 JSON = "0.21"
-JuMP = "0.21.0, 0.22.0, 0.23"
+JuMP = "0.21.0, 0.22.0, 0.23, 1"
 MAT = "0.10"
 MacroTools = "0.5.6"
 OSQP = "0.6"
