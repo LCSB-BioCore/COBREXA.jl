@@ -153,7 +153,7 @@ function plot_flux_summary(flux_result::Dict{String,Float64}; kwargs...)
     println(p1)
     println(p2)
     !isnothing(p3) && println(p3)
-    
+
     return nothing
 end
 
