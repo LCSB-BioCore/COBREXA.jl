@@ -140,3 +140,84 @@ function flux_summary(
         )
     end
 end
+
+
+"""
+    plot_flux_summary(flux_result::Dict{String,Float64}; kwargs...)
+
+Display bar plots showing flux summary. Forward keyword arguments to 
+`COBREXA.flux_summary`.
+"""
+function plot_flux_summary(flux_result::Dict{String,Float64}; kwargs...)
+    p1, p2, p3 = _plot_flux_summary(flux_result; kwargs...)
+    println(p1)
+    println(p2)
+    !isnothing(p3) && println(p3)
+    
+    return nothing
+end
+
+"""
+    _plot_flux_summary(flux_result::Dict{String,Float64}; kwargs...)
+
+Construct UnicodePlots objects from `flux_result`. 
+"""
+function _plot_flux_summary(flux_result::Dict{String,Float64}; kwargs...)
+    flux_res = flux_summary(flux_result; kwargs...)
+
+    longest_biomass_len =
+        maximum(length(k) for k in keys(flux_res.biomass_fluxes); init = 0)
+
+    for (k, v) in flux_res.biomass_fluxes
+        v == 0.0 && continue
+        println(k, ":", COBREXA._pad_spaces(k, longest_biomass_len), round(v, digits = 4))
+    end
+
+    longest_import_len = maximum(length(k) for k in keys(flux_res.import_fluxes); init = 0)
+    longest_export_len = maximum(length(k) for k in keys(flux_res.export_fluxes); init = 0)
+    if !isempty(flux_res.unbounded_fluxes)
+        longest_unbounded_len =
+            maximum([length(k) for k in keys(flux_res.unbounded_fluxes)])
+        word_pad = max(longest_export_len, longest_import_len, longest_unbounded_len)
+    else
+        word_pad = max(longest_export_len, longest_import_len)
+    end
+
+    import_fluxes = collect(round.(abs.(values(flux_res.import_fluxes)), digits = 4))
+    export_fluxes = collect(round.(abs.(values(flux_res.export_fluxes)), digits = 4))
+    unbounded_fluxes = collect(round.(abs.(values(flux_res.unbounded_fluxes)), digits = 4))
+    max_flux = maximum([import_fluxes; export_fluxes; unbounded_fluxes])
+
+    p1 = UnicodePlots.barplot(
+        [COBREXA._pad_spaces(k, word_pad) * k for k in keys(flux_res.import_fluxes)],
+        import_fluxes,
+        title = "Import",
+        color = :green,
+        xlim = (0, max_flux),
+        ylim = (0, max_flux),
+    )
+
+    p2 = UnicodePlots.barplot(
+        [COBREXA._pad_spaces(k, word_pad) * k for k in keys(flux_res.export_fluxes)],
+        export_fluxes,
+        color = :red,
+        title = "Export",
+        xlim = (0, max_flux),
+        ylim = (0, max_flux),
+    )
+
+    if !isempty(flux_res.unbounded_fluxes)
+        p3 = UnicodePlots.barplot(
+            [COBREXA._pad_spaces(k, word_pad) * k for k in keys(flux_res.unbounded_fluxes)],
+            unbounded_fluxes,
+            color = :yellow,
+            title = "Unbounded",
+            xlim = (0, max_flux),
+            ylim = (0, max_flux),
+        )
+    else
+        p3 = nothing
+    end
+
+    return p1, p2, p3
+end
