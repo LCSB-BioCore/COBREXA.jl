@@ -315,6 +315,17 @@ function gene_notes(model::MetabolicModel, gene_id::String)::Notes
 end
 
 """
+    enzyme_capacity(model::MetabolicModel)
+
+Return enzyme capacity inequality constraint vector and bound, or nothing 
+if it doesn't exist in the model.
+"""
+function enzyme_capacity(model::MetabolicModel)
+    #TODO this needs a type
+    nothing, nothing
+end
+
+"""
     reaction_name(model::MetabolicModel, rid::String)
 
 Return the name of reaction with ID `rid`.

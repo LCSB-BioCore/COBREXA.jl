@@ -70,15 +70,15 @@ biomass_reaction_id = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 modified_solution = flux_balance_analysis(model, GLPK.optimizer;
     modifications=[change_objective(biomass_reaction_id)])
 ```
-
 """
 function flux_balance_analysis(
     model::M,
     optimizer;
     modifications = [],
+    kwargs...,
 ) where {M<:MetabolicModel}
 
-    opt_model = make_optimization_model(model, optimizer)
+    opt_model = make_optimization_model(model, optimizer; kwargs...)
 
     for mod in modifications
         mod(model, opt_model)

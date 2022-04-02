@@ -382,3 +382,85 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
         genes = modelgenes,
     )
 end
+
+#TODO generalize these to other model types
+
+"""
+    reaction_bounds(model::StandardModel, rid::String)
+
+Return lower and upper bounds for `rid` in `model`.
+"""
+function reaction_bounds(model::StandardModel, rid::String)
+    model.reactions[rid].lb, model.reactions[rid].ub
+end
+
+"""
+    is_reaction_reversible(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` is reversible.
+"""
+function is_reaction_reversible(model::StandardModel, rid::String)
+    lb, ub = reaction_bounds(model, rid)
+    lb < 0 && ub > 0
+end
+
+"""
+    is_reaction_forward_only(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` is forward only.
+"""
+function is_reaction_forward_only(model::StandardModel, rid::String)
+    lb, ub = reaction_bounds(model, rid)
+    lb >= 0 && ub > 0
+end
+
+"""
+    is_reaction_backward_only(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` is backward only.
+"""
+function is_reaction_backward_only(model::StandardModel, rid::String)
+    lb, ub = reaction_bounds(model, rid)
+    lb < 0 && ub <= 0
+end
+
+"""
+    is_reaction_unidirectional(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` is unidirectional.
+"""
+function is_reaction_unidirectional(model::StandardModel, rid::String)
+    is_reaction_forward_only(model, rid) || is_reaction_backward_only(model, rid)
+end
+
+"""
+    is_reaction_blocked(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` is blocked.
+"""
+function is_reaction_blocked(model::StandardModel, rid::String)
+    lb, ub = reaction_bounds(model, rid)
+    lb == ub == 0
+end
+
+"""
+    has_reaction_isozymes(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` is catalyzed by multiple enzymes, 
+i.e. it has isozymes according to the gene reaction rules.
+"""
+function has_reaction_isozymes(model::StandardModel, rid::String)
+    length(reaction_gene_association(model, rid)) > 1
+end
+
+"""
+    reaction_has_grr(model::StandardModel, rid::String)
+
+Check if reaction `rid` in `model` has a gene reaction rule entry.
+"""
+function has_reaction_grr(model::StandardModel, rid::String)
+    #TODO simplify this once COBREXA enforces universal rules for GRR representation
+    !isnothing(reaction_gene_association(model, rid)) &&
+        reaction_gene_association(model, rid) != [[]] &&
+        !isempty(first(reaction_gene_association(model, rid)))
+end
