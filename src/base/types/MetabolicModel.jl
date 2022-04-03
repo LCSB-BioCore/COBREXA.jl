@@ -46,7 +46,13 @@ end
 """
     stoichiometry(a::MetabolicModel)::SparseMat
 
-Get the sparse stoichiometry matrix of a model.
+Get the sparse stoichiometry matrix of a model. A feasible solution `x` of a
+model `m` is defined as satisfying the equations:
+
+- `stoichiometry(m) * x .== balance(m)`
+- `x .>= lbs`
+- `y .<= ubs`
+- `(lbs, ubs) == bounds(m)
 """
 function stoichiometry(a::MetabolicModel)::SparseMat
     _missing_impl_error(stoichiometry, (a,))
@@ -55,7 +61,7 @@ end
 """
     bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
 
-Get the lower and upper flux bounds of a model.
+Get the lower and upper solution bounds of a model.
 """
 function bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     _missing_impl_error(bounds, (a,))
@@ -64,7 +70,7 @@ end
 """
     balance(a::MetabolicModel)::SparseVec
 
-Get the sparse balance vector of a model (ie. the `b` from `S x = b`).
+Get the sparse balance vector of a model.
 """
 function balance(a::MetabolicModel)::SparseVec
     return spzeros(n_metabolites(a))
@@ -73,10 +79,22 @@ end
 """
     objective(a::MetabolicModel)::SparseVec
 
-Get the objective vector of a model.
+Get the objective vector of the model. Analysis functions, such as
+[`flux_balance_analysis`](@ref), are supposed to maximize `dot(objective, x)`
+where `x` is a feasible solution of the model.
 """
 function objective(a::MetabolicModel)::SparseVec
     _missing_impl_error(objective, (a,))
+end
+
+"""
+    solution_flux(a::MetabolicModel, solution::Vector{Float64})::Vector{Float64}
+
+Retrieve a vector of reaction fluxes (corresponding to `reactions(a)`) from a
+feasible solution of the optimization problem.
+"""
+function solution_flux(a::MetabolicModel, solution::Vector{Float64})::Vector{Float64}
+    solution
 end
 
 """
@@ -86,6 +104,7 @@ Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
 function coupling(a::MetabolicModel)::SparseMat
+    # TODO make this an extension of stoichiometry
     return spzeros(0, n_reactions(a))
 end
 
