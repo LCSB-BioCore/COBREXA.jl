@@ -158,7 +158,9 @@ const reaction_standard_gibbs_free_energies = Dict(
 const ecoli_core_protein_masses = Dict(
     #=
     Data downloaded from Uniprot for E. coli K12, 
-    gene mass in kDa.
+    gene mass in kDa. To obtain these data yourself, go to 
+    Uniprot: https://www.uniprot.org/
+    and search using these terms: <reviewed:yes AND organism:"Escherichia coli (strain K12) [83333]">
     =#
     "b4301" => 23.214,
     "b1602" => 48.723,
