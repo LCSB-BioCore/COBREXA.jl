@@ -23,7 +23,7 @@ protein_dict(model::GeckoModel, opt_model) =
     )
 
 Remove all but the fastest isozyme from each reaction in `model`.
-Use the largest kcat (for, rev) for these calculations. Modifies all 
+Use the largest kcat (for, rev) for these calculations. Modifies all
 the arguments in place.
 """
 function remove_slow_isozymes!(

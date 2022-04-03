@@ -317,7 +317,7 @@ end
 """
     enzyme_capacity(model::MetabolicModel)
 
-Return enzyme capacity inequality constraint vector and bound, or nothing 
+Return enzyme capacity inequality constraint vector and bound, or nothing
 if it doesn't exist in the model.
 """
 function enzyme_capacity(model::MetabolicModel)

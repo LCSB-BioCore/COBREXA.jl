@@ -157,8 +157,8 @@ const reaction_standard_gibbs_free_energies = Dict(
 
 const ecoli_core_protein_masses = Dict(
     #=
-    Data downloaded from Uniprot for E. coli K12, 
-    gene mass in kDa. To obtain these data yourself, go to 
+    Data downloaded from Uniprot for E. coli K12,
+    gene mass in kDa. To obtain these data yourself, go to
     Uniprot: https://www.uniprot.org/
     and search using these terms: <reviewed:yes AND organism:"Escherichia coli (strain K12) [83333]">
     =#
@@ -302,7 +302,7 @@ const ecoli_core_protein_masses = Dict(
 
 const ecoli_core_protein_stoichiometry = Dict(
     #=
-    Data made up, each isozyme is assumed to be composed of 
+    Data made up, each isozyme is assumed to be composed of
     only one subunit each.
     =#
     "ACALD" => [[1.0], [1.0]],
@@ -383,9 +383,9 @@ const ecoli_core_protein_stoichiometry = Dict(
 
 const ecoli_core_reaction_kcats = Dict(
     #=
-    Data taken from Heckmann, David, et al. "Machine learning applied to enzyme 
-    turnover numbers reveals protein structural correlates and improves metabolic 
-    models." Nature communications 9.1 (2018): 1-10. Assume forward and reverse 
+    Data taken from Heckmann, David, et al. "Machine learning applied to enzyme
+    turnover numbers reveals protein structural correlates and improves metabolic
+    models." Nature communications 9.1 (2018): 1-10. Assume forward and reverse
     kcats are the same, and each isozyme has the same kcat.
     =#
     "ACALD" =>

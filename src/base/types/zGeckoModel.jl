@@ -1,8 +1,8 @@
 """
-    mutable struct EnzymeData 
+    mutable struct EnzymeData
 
-Holds data relevant for enzyme constrained metabolic models. 
-    
+Holds data relevant for enzyme constrained metabolic models.
+
 Reaction turnover numbers (catalytic constants, kcats) are supplied through
 `reaction_kcats`, which is a dictionary mapping reaction ids to kcats of each
 isozyme. Each isozyme should have both a forward and reverse kcat, so
@@ -17,17 +17,17 @@ order of each entry in `reaction_kcats` and `reaction_protein_stoichiometry` is
 taken to be the same as the order returned when calling
 [`reaction_gene_association`](@ref) on the model. The protein masses (in molar
 mass units) for each gene in the model should be supplied through
-`protein_masses`. The format is a dictionary of gene ids mapped to molar masses. 
+`protein_masses`. The format is a dictionary of gene ids mapped to molar masses.
 
 Total enzyme capacity (sum of all enzyme concentrations multiplied by their
 molar mass) is constrained by `total_protein_mass`, a unitless mass fraction of
 enzyme mass to cell dry mass. The reaction fluxes and protein concentrations can
 be bounded by `flux_measurements` and `protein_measurements` respectively. Both
 lower and upper bounds need to be supplied (as a tuple) if a reaction flux is to
-be bounded, likewise with protein concentration bounds. 
+be bounded, likewise with protein concentration bounds.
 
 # Fields
-```    
+```
 reaction_kcats::Dict{String,Vector{Vector{Float64}}} # rid => [[for, rev], ...]
 reaction_protein_stoichiometry::Dict{String,Vector{Vector{Float64}}} # rid => [[stoich, stoich,...], ...]
 protein_masses::Dict{String,Float64}
@@ -79,7 +79,7 @@ EnzymeData(
 Holds the already constructed GECKO problem.
 
 # Fields
-```    
+```
 c::SparseVector{Float64, Int64}
 E::SparseMatrixCSC{Float64, Int64}
 d::SparseVector{Float64, Int64}
@@ -136,7 +136,7 @@ will have enzyme bounds associated with them, but all isozymes are assumed to
 have data if data is supplied. Currently only `modifications` that change
 attributes of the `optimizer` are supported.
 
-To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel` 
+To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel`
 to run an analysis on it.
 
 See also: [`StandardModel`](@ref)
@@ -165,7 +165,7 @@ end
         protein_measurements = Dict{String,Tuple{Float64,Float64}}(),
     )
 
-Constructor for `GeckoModel`. 
+Constructor for `GeckoModel`.
 """
 function GeckoModel(
     model::MetabolicModel;
@@ -247,7 +247,7 @@ genes(model::GeckoModel) = model.geckodata.protein_ids
     _order_id_to_idx_dict(id_to_idx_dict)
 
 Return the keys of `id_to_idx_dict` sorted by the values, which
-are taken to be the indices. This is a helper function for 
+are taken to be the indices. This is a helper function for
 [`reactions`](@ref) and [`metabolites`](@ref).
 """
 function _order_id_to_idx_dict(dmap)
@@ -275,7 +275,7 @@ end
 """
     enzyme_capacity(model::GeckoModel)
 
-Return enzyme capacity inequality constraint vector and bound, or nothing 
+Return enzyme capacity inequality constraint vector and bound, or nothing
 if it doesn't exist in the model.
 """
 enzyme_capacity(model::GeckoModel) = (model.geckodata.M[end, :], model.geckodata.h[end])
@@ -287,14 +287,14 @@ Lower level function that updates the matrix form of a model with enzyme
 capacity constraints, in GECKO format.
 
 Specifically, updates `model.geckodata` with the vector and matrix coefficients `c,
-E, d, M, h` satisfying 
+E, d, M, h` satisfying
 ```
 opt cᵀ * x
-s.t.    E * x = d 
+s.t.    E * x = d
         M * x ≤ h
 ```
-as well as `reaction_map, metabolite_map, protein_ids`, where 
-`reaction_map` shows the order of the columns (reactions) in `E`. Proteins 
+as well as `reaction_map, metabolite_map, protein_ids`, where
+`reaction_map` shows the order of the columns (reactions) in `E`. Proteins
 are ordered according to `protein_ids`, and follow after reactions.
 """
 function build_geckomodel_internals!(model::GeckoModel)
@@ -487,7 +487,7 @@ end
 """
     _build_irreversible_stoichiometric_matrix(model::StandardModel)
 
-Return the stoichiometric matrix. All reactions are forward only i.e. only 
+Return the stoichiometric matrix. All reactions are forward only i.e. only
 positive fluxes are allowed. Include arm reactions.
 """
 function _build_irreversible_stoichiometric_matrix(model::StandardModel)
@@ -508,7 +508,7 @@ function _build_irreversible_stoichiometric_matrix(model::StandardModel)
         max_met_idx = [1], #TODO maybe fix, this is a dodgy way of adding a counter to a named tuple
         pseudo_met_idx = [1], #TODO maybe fix, this is a dodgy way of adding a counter to a named tuple
     )
-    #TODO for the counter thing, basically I wanted e.g. max_rxn_idx = 1 and then update it, 
+    #TODO for the counter thing, basically I wanted e.g. max_rxn_idx = 1 and then update it,
     #TODO but named tuples are immutable... :(
 
     # fill the matrix entries

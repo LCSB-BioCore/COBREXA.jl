@@ -131,8 +131,8 @@ flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
 """
     flux_dict(model::GeckoModel, opt_model)
 
-Specialization to format solved data for `GeckoModel`s but maps 
-the solution back into the namespace of the underlying model (the 
+Specialization to format solved data for `GeckoModel`s but maps
+the solution back into the namespace of the underlying model (the
 original ids).
 """
 flux_dict(model::GeckoModel, opt_model) =
@@ -143,8 +143,8 @@ flux_dict(model::GeckoModel, opt_model) =
 """
     flux_dict(model::SMomentModel, opt_model)
 
-Specialization to format solved data for `SMomentModel`s but maps 
-the solution back into the namespace of the underlying model (the 
+Specialization to format solved data for `SMomentModel`s but maps
+the solution back into the namespace of the underlying model (the
 original ids).
 """
 flux_dict(model::SMomentModel, opt_model) =
@@ -154,8 +154,8 @@ flux_dict(model::SMomentModel, opt_model) =
 """
     _map_irrev_to_rev_ids(reaction_map, protein_ids, solution)
 
-Return dictionaries of reaction ids mapped to fluxes, 
-and protein ids mapped to concentrations using `reaction_map` to 
+Return dictionaries of reaction ids mapped to fluxes,
+and protein ids mapped to concentrations using `reaction_map` to
 determine the ids of fluxes and `protein_ids` for the gene ids.
 The solution in `solution` is used to fill the dictionaries.
 """

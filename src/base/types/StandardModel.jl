@@ -446,7 +446,7 @@ end
 """
     has_reaction_isozymes(model::StandardModel, rid::String)
 
-Check if reaction `rid` in `model` is catalyzed by multiple enzymes, 
+Check if reaction `rid` in `model` is catalyzed by multiple enzymes,
 i.e. it has isozymes according to the gene reaction rules.
 """
 function has_reaction_isozymes(model::StandardModel, rid::String)

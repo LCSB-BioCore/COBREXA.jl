@@ -4,7 +4,7 @@
 Holds the already constructed SMOMENT problem.
 
 # Fields
-```    
+```
 c::SparseVector{Float64, Int64}
 E::SparseMatrixCSC{Float64, Int64}
 d::SparseVector{Float64, Int64}
@@ -44,14 +44,14 @@ SMomentData() = SMomentData(
 
 Construct an enzyme capacity constrained model see `Bekiaris, Pavlos Stephanos,
 and Steffen Klamt. "Automatic construction of metabolic models with enzyme
-constraints." BMC bioinformatics, 2020.` for implementation details. 
+constraints." BMC bioinformatics, 2020.` for implementation details.
 
 Note, `"§"` is reserved for internal use as a delimiter, no reaction id should
 contain that character. Also note, SMOMENT assumes that each reaction only has a
 single enzyme (one GRR) associated with it. It is required that a model be
 modified to ensure that this condition is met. For ease-of-use,
 [`remove_slow_isozymes!`](@ref) is supplied to effect this. Currently only
-`modifications` that change attributes of the `optimizer` are supported. 
+`modifications` that change attributes of the `optimizer` are supported.
 """
 mutable struct SMomentModel <: MetabolicModel
     smodel::StandardModel
@@ -167,7 +167,7 @@ end
 """
     build_smomentmodel_internals!(model::SMomentModel)
 
-Build internal data structures used to solve SMOMENT type flux 
+Build internal data structures used to solve SMOMENT type flux
 balance analysis problems.
 """
 function build_smomentmodel_internals!(model::SMomentModel)
@@ -247,7 +247,7 @@ end
         reaction_map,
     )
 
-Helper function to return functions describing the inequality 
+Helper function to return functions describing the inequality
 constraints for smoment.
 """
 function _smoment_build_inequality_constraints(
