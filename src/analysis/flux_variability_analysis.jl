@@ -64,6 +64,7 @@ function flux_variability_analysis(
     bounds = z -> (z, Inf),
     ret = objective_value,
 )
+    #TODO this breaks if the flux doesn't correspond to the solution
     if any(reactions .< 1) || any(reactions .> n_reactions(model))
         throw(DomainError(reactions, "Index exceeds number of reactions."))
     end
@@ -140,7 +141,12 @@ mins, maxs = flux_variability_analysis_dict(
 ```
 """
 function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs...)
-    fluxes = flux_variability_analysis(model, optimizer; kwargs..., ret = flux_vector)
+    fluxes = flux_variability_analysis(
+        model,
+        optimizer;
+        kwargs...,
+        ret = sol -> flux_vector(model, sol),
+    )
     rxns = reactions(model)
     dicts = zip.(Ref(rxns), fluxes)
 
