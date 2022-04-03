@@ -5,7 +5,13 @@ Return a dictionary mapping protein concentrations to their ids.
 """
 protein_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
-    last(_map_irrev_to_rev_ids(model.geckodata.reaction_map, value.(opt_model[:x]); protein_ids=model.geckodata.protein_ids)) : nothing
+    last(
+        _map_irrev_to_rev_ids(
+            model.geckodata.reaction_map,
+            value.(opt_model[:x]);
+            protein_ids = model.geckodata.protein_ids,
+        ),
+    ) : nothing
 
 
 """

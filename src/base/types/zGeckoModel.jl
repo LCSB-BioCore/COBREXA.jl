@@ -36,7 +36,7 @@ flux_measurements::Dict{String,Tuple{Float64,Float64}} # rid => (lb, ub)
 protein_measurements::Dict{String,Tuple{Float64,Float64}} # pid => (lb, ub)
 ```
 """
-mutable struct EnzymeData 
+mutable struct EnzymeData
     reaction_kcats::Dict{String,Vector{Vector{Float64}}} # rid => [[for, rev], ...]
     reaction_protein_stoichiometry::Dict{String,Vector{Vector{Float64}}} # rid => [[stoich, stoich,...], ...]
     protein_masses::Dict{String,Float64}
@@ -265,7 +265,10 @@ function bounds(model::GeckoModel)
     n_rxns = length(model.geckodata.reaction_map)
     n_prots = length(model.geckodata.protein_ids)
     lbs = [-model.geckodata.h[1:n_rxns]; -model.geckodata.h[2*n_rxns.+(1:n_prots)]]
-    ubs = [model.geckodata.h[n_rxns.+(1:n_rxns)]; model.geckodata.h[2*n_rxns+n_prots.+(1:n_prots)]]
+    ubs = [
+        model.geckodata.h[n_rxns.+(1:n_rxns)]
+        model.geckodata.h[2*n_rxns+n_prots.+(1:n_prots)]
+    ]
     return lbs, ubs
 end
 
@@ -460,14 +463,23 @@ function _gecko_build_inequality_constraints(
     end
 
     lb_proteins = [
-        haskey(model.enzymedata.protein_measurements, pid) ? model.enzymedata.protein_measurements[pid][1] : 0.0 for pid in protein_ids
+        haskey(model.enzymedata.protein_measurements, pid) ?
+        model.enzymedata.protein_measurements[pid][1] : 0.0 for pid in protein_ids
     ]
     ub_proteins = [
-        haskey(model.enzymedata.protein_measurements, pid) ? model.enzymedata.protein_measurements[pid][2] :
-        1000.0 for pid in protein_ids
+        haskey(model.enzymedata.protein_measurements, pid) ?
+        model.enzymedata.protein_measurements[pid][2] : 1000.0 for pid in protein_ids
     ]
 
-    h = Array([-lb_fluxes; ub_fluxes; -lb_proteins; ub_proteins; model.enzymedata.total_protein_mass])
+    h = Array(
+        [
+            -lb_fluxes
+            ub_fluxes
+            -lb_proteins
+            ub_proteins
+            model.enzymedata.total_protein_mass
+        ],
+    )
 
     return M, h
 end
@@ -688,7 +700,8 @@ function _get_proteins_with_kcats(model::GeckoModel)
             vcat(
                 [
                     reaction_gene_association(model.smodel, rid) for
-                    rid in reactions(model.smodel) if haskey(model.enzymedata.reaction_kcats, rid)
+                    rid in reactions(model.smodel) if
+                    haskey(model.enzymedata.reaction_kcats, rid)
                 ]...,
             )...,
         ),

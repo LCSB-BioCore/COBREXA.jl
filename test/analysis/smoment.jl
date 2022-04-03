@@ -23,9 +23,7 @@
     opt_model = flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        modifications = [
-            change_optimizer_attribute("IPM_IterationsLimit", 1000),
-            ],
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
         sense = COBREXA.MOI.MAX_SENSE,
     )
 

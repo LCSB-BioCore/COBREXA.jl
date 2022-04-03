@@ -18,9 +18,7 @@
     opt_model = flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        modifications = [
-            change_optimizer_attribute("IPM_IterationsLimit", 1000),
-            ],
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
         sense = COBREXA.MOI.MAX_SENSE,
     )
 
@@ -34,6 +32,6 @@
     )
 
     prot_mass = sum(ecoli_core_protein_masses[gid] * c for (gid, c) in prot_concens)
-    
+
     @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
 end

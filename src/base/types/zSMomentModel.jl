@@ -14,7 +14,7 @@ reaction_map::Dict{String,Int}
 metabolite_map::Dict{String,Int}
 ```
 """
-mutable struct SMomentData 
+mutable struct SMomentData
     c::SparseVector{Float64,Int64}
     E::SparseMatrixCSC{Float64,Int64}
     d::SparseVector{Float64,Int64}
@@ -82,9 +82,14 @@ function SMomentModel(
 )
     sm = convert(StandardModel, model)
     # check that input data is in correct format for smoment
-    if any(length(v) > 1 for (rid, v) in reaction_kcats if has_reaction_grr(sm, rid)) || 
-        any(length(v) > 1 for (rid, v) in reaction_protein_stoichiometry if haskey(reaction_kcats, rid) && has_reaction_grr(sm, rid))
-        @warn("For SMOMENT to work correctly, no isozymes are allowed. Call `remove_slow_isozymes!` to fix the input data.")
+    if any(length(v) > 1 for (rid, v) in reaction_kcats if has_reaction_grr(sm, rid)) ||
+       any(
+        length(v) > 1 for (rid, v) in reaction_protein_stoichiometry if
+        haskey(reaction_kcats, rid) && has_reaction_grr(sm, rid)
+    )
+        @warn(
+            "For SMOMENT to work correctly, no isozymes are allowed. Call `remove_slow_isozymes!` to fix the input data."
+        )
     end
 
     smm = SMomentModel(
@@ -188,7 +193,8 @@ function build_smomentmodel_internals!(model::SMomentModel)
         pstoich = first(model.enzymedata.reaction_protein_stoichiometry[original_rid])
         mw = dot(pstoich, [model.enzymedata.protein_masses[gid] for gid in grr])
         kcat =
-            contains(rid, "§FOR") ? first(model.enzymedata.reaction_kcats[original_rid])[1] :
+            contains(rid, "§FOR") ?
+            first(model.enzymedata.reaction_kcats[original_rid])[1] :
             first(model.enzymedata.reaction_kcats[original_rid])[2]
         Se[1, col_idx] = -mw / kcat
     end
@@ -211,7 +217,7 @@ function build_smomentmodel_internals!(model::SMomentModel)
 
     #: inequality constraints
     M, h = _smoment_build_inequality_constraints(
-        model,    
+        model,
         n_reactions,
         lb_fluxes,
         ub_fluxes,
@@ -251,7 +257,7 @@ function _smoment_build_inequality_constraints(
     ub_fluxes,
     reaction_map,
 )
- 
+
     #: inequality lhs
     M = Array(
         [
