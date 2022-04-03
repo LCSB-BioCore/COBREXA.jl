@@ -1,28 +1,35 @@
 @testset "SMOMENT" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
-    model.reactions["EX_glc__D_e"].lb = -1000.0 # unconstraint because enzyme constraints take over
+    smodel = load_model(StandardModel, model_paths["e_coli_core.json"])
+    smodel.reactions["EX_glc__D_e"].lb = -1000.0 # unconstrain because enzyme constraints take over
+    flux_measurements = Dict("GLCpts" => (-1.0, 12.0))
     total_protein_mass = 100 # mg/gdW
 
     remove_slow_isozymes!(
-        model;
-        protein_stoichiometry = ecoli_core_protein_stoichiometry,
+        smodel;
+        reaction_protein_stoichiometry = ecoli_core_protein_stoichiometry,
         protein_masses = ecoli_core_protein_masses,
         reaction_kcats = ecoli_core_reaction_kcats,
     )
 
-    rxn_fluxes = smoment(
+    model = SMomentModel(
+        smodel;
+        reaction_kcats = ecoli_core_reaction_kcats,
+        reaction_protein_stoichiometry = ecoli_core_protein_stoichiometry,
+        protein_masses = ecoli_core_protein_masses,
+        total_protein = total_protein_mass, # mg/gdW
+        flux_measurements,
+    )
+
+    opt_model = flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        objective_id = "BIOMASS_Ecoli_core_w_GAM§FOR",
-        protein_stoichiometry = ecoli_core_protein_stoichiometry,
-        protein_masses = ecoli_core_protein_masses,
-        reaction_kcats = ecoli_core_reaction_kcats,
-        lb_flux_measurements = Dict("GLCpts" => -1.0),
-        ub_flux_measurements = Dict("GLCpts" => 12.0),
-        total_protein_mass,
+        modifications = [
+            change_optimizer_attribute("IPM_IterationsLimit", 1000),
+            ],
         sense = COBREXA.MOI.MAX_SENSE,
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
+
+    rxn_fluxes = flux_dict(model, opt_model)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],

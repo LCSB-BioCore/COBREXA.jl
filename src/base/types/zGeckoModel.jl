@@ -1,8 +1,82 @@
 """
+    mutable struct EnzymeData 
+
+Holds data relevant for enzyme constrained metabolic models. 
+    
+Reaction turnover numbers (catalytic constants, kcats) are supplied through
+`reaction_kcats`, which is a dictionary mapping reaction ids to kcats of each
+isozyme. Each isozyme should have both a forward and reverse kcat, so
+`reaction_kcats = Dict(rid => [[k1f, k1r], [k2f, k2r]], ...)` for `rid` with two
+isozymes. The stoichiometry of each isozyme needs to be supplied by
+`protein_stoichiometry`. The format is also a dictionary mapping gene ids to
+their stoichiometry, e.g. `protein_stoichiometry = Dict(rid =>
+[[1,1],[1,2]],...)` implies that the first isozyme of `rid` is composed of two
+subunits, each present once in the protein, while the second isozyme is composed
+of two subunits, but the second subunit is present twice in the isozyme. The
+order of each entry in `reaction_kcats` and `reaction_protein_stoichiometry` is
+taken to be the same as the order returned when calling
+[`reaction_gene_association`](@ref) on the model. The protein masses (in molar
+mass units) for each gene in the model should be supplied through
+`protein_masses`. The format is a dictionary of gene ids mapped to molar masses. 
+
+Total enzyme capacity (sum of all enzyme concentrations multiplied by their
+molar mass) is constrained by `total_protein_mass`, a unitless mass fraction of
+enzyme mass to cell dry mass. The reaction fluxes and protein concentrations can
+be bounded by `flux_measurements` and `protein_measurements` respectively. Both
+lower and upper bounds need to be supplied (as a tuple) if a reaction flux is to
+be bounded, likewise with protein concentration bounds. 
+
+# Fields
+```    
+reaction_kcats::Dict{String,Vector{Vector{Float64}}} # rid => [[for, rev], ...]
+reaction_protein_stoichiometry::Dict{String,Vector{Vector{Float64}}} # rid => [[stoich, stoich,...], ...]
+protein_masses::Dict{String,Float64}
+total_protein_mass::Float64
+flux_measurements::Dict{String,Tuple{Float64,Float64}} # rid => (lb, ub)
+protein_measurements::Dict{String,Tuple{Float64,Float64}} # pid => (lb, ub)
+```
+"""
+mutable struct EnzymeData 
+    reaction_kcats::Dict{String,Vector{Vector{Float64}}} # rid => [[for, rev], ...]
+    reaction_protein_stoichiometry::Dict{String,Vector{Vector{Float64}}} # rid => [[stoich, stoich,...], ...]
+    protein_masses::Dict{String,Float64}
+    total_protein_mass::Float64
+    flux_measurements::Dict{String,Tuple{Float64,Float64}} # rid => (lb, ub)
+    protein_measurements::Dict{String,Tuple{Float64,Float64}} # pid => (lb, ub)
+end
+
+"""
+    EnzymeData(
+        reaction_kcats,
+        reaction_protein_stoichiometry,
+        protein_masses,
+        total_protein;
+        flux_measurements = Dict{String,Tuple{Float64,Float64}}(),
+        protein_measurements = Dict{String,Tuple{Float64,Float64}}(),
+    )
+
+Constructor for `EnzymeData`.
+"""
+EnzymeData(
+    reaction_kcats,
+    reaction_protein_stoichiometry,
+    protein_masses,
+    total_protein;
+    flux_measurements = Dict{String,Tuple{Float64,Float64}}(),
+    protein_measurements = Dict{String,Tuple{Float64,Float64}}(),
+) = EnzymeData(
+    reaction_kcats,
+    reaction_protein_stoichiometry,
+    protein_masses,
+    total_protein,
+    flux_measurements,
+    protein_measurements,
+)
+
+"""
     mutable struct GeckoData
 
-Holds the already constructed GECKO problem. This is more efficient 
-than construct the matrices from scratch each time the model is run.
+Holds the already constructed GECKO problem.
 
 # Fields
 ```    
@@ -51,41 +125,16 @@ formulation. See `Sánchez, Benjamín J., et al. "Improving the phenotype
 predictions of a yeast genome‐scale metabolic model by incorporating enzymatic
 constraints." Molecular systems biology, 2017.` for implementation details.
 
-Total enzyme capacity (sum of all enzyme concentrations multiplied by their
-molar mass) is constrained by `total_protein_mass`, a unitless mass fraction of
-enzyme mass to cell dry mass. The reaction fluxes and protein concentrations can
-be bounded by `flux_measurements` and `protein_measurements` respectively. Both
-lower and upper bounds need to be supplied (as a tuple) if a reaction flux is to
-be bounded, likewise with protein concentration bounds. 
-
 Note, since the model uses irreversible reactions internally, `"§FOR"` (for the
 forward direction) and `"§REV"` (for the reverse direction) is appended to each
 reaction internally. Futhermore, `"§"` is reserved for internal use as a
-delimiter, no reaction id should contain that character. 
-    
-The protein masses (in molar mass units) for each gene in the model should also
-be supplied through `protein_masses`. The format is a dictionary of gene ids
-mapped to molar masses. Additionally, the reaction turnover numbers (catalytic
-constants, kcats) are supplied through `reaction_kcats`, which is also a
-dictionary mapping reaction ids to kcats of each isozyme encoded by the
-reaction's gene reaction rule. Each isozyme should have both a forward and
-reverse kcat, so `reaction_kcats = Dict(rid => [[k1f, k1r], [k2f, k2r]], ...)`
-for `rid` with two isozymes. Finally, the stoichiometry of each isozyme needs to
-be supplied by `protein_stoichiometry`. The format is also a dictionary mapping
-gene ids returned by [`reaction_gene_association`](@ref) to their stoichiometry,
-e.g. `protein_stoichiometry = Dict(rid => [[1,1],[1,2]],...)` implies that the
-first isozyme of `rid` is composed of two subunits, each present once in the
-protein, while the second isozyme is composed of two subunits, but the second
-subunit is present twice in the isozyme.
-
-Note, the units depend on those used in `reaction_kcats` and `protein_masses`.
-Only the protein and reaction flux bounds are optional parameters, all other
-parameters must be supplied. Only reactions with kcats will have enzyme bounds
-associated with them, but all isozymes are assumed to have data if data is
-supplied.
-
-Currently only `modifications` that change attributes of the `optimizer` are 
-supported.
+delimiter, no reaction id should contain that character. The units depend on
+those used in `enzymedata.reaction_kcats` and `enzymedata.protein_masses`. Only
+the protein and reaction flux bounds are optional parameters, all other
+parameters must be supplied to the `enzymedata` field. Only reactions with kcats
+will have enzyme bounds associated with them, but all isozymes are assumed to
+have data if data is supplied. Currently only `modifications` that change
+attributes of the `optimizer` are supported.
 
 To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel` 
 to run an analysis on it.
@@ -95,24 +144,14 @@ See also: [`StandardModel`](@ref)
 # Fields
 ```
 smodel::StandardModel
-data::GeckoData
-reaction_kcats::Dict{String,Vector{Vector{Float64}}} # rid => [[for, rev], ...]
-reaction_protein_stoichiometry::Dict{String,Vector{Vector{Float64}}} # rid => [[stoich, stoich,...], ...]
-protein_masses::Dict{String,Float64}
-total_protein_mass::Float64
-flux_measurements::Dict{String,Tuple{Float64,Float64}} # rid => (lb, ub)
-protein_measurements::Dict{String,Tuple{Float64,Float64}} # pid => (lb, ub)
+geckodata::GeckoData
+enzymedata::EnzymeData
 ```
 """
 mutable struct GeckoModel <: MetabolicModel
     smodel::StandardModel
-    data::GeckoData
-    reaction_kcats::Dict{String,Vector{Vector{Float64}}} # rid => [[for, rev], ...]
-    reaction_protein_stoichiometry::Dict{String,Vector{Vector{Float64}}} # rid => [[stoich, stoich,...], ...]
-    protein_masses::Dict{String,Float64}
-    total_protein_mass::Float64
-    flux_measurements::Dict{String,Tuple{Float64,Float64}} # rid => (lb, ub)
-    protein_measurements::Dict{String,Tuple{Float64,Float64}} # pid => (lb, ub)
+    geckodata::GeckoData
+    enzymedata::EnzymeData
 end
 
 """
@@ -140,12 +179,14 @@ function GeckoModel(
     gm = GeckoModel(
         convert(StandardModel, model),
         GeckoData(), # empty
-        reaction_kcats,
-        reaction_protein_stoichiometry,
-        protein_masses,
-        total_protein,
-        flux_measurements,
-        protein_measurements,
+        EnzymeData(
+            reaction_kcats,
+            reaction_protein_stoichiometry,
+            protein_masses,
+            total_protein;
+            flux_measurements,
+            protein_measurements,
+        ),
     )
 
     # build data in GeckoModel
@@ -159,21 +200,24 @@ end
 
 Return stoichiometry matrix that includes enzymes as metabolites.
 """
-stoichiometry(model::GeckoModel) = model.data.E
+function stoichiometry(model::GeckoModel)
+    build_geckomodel_internals!(model)
+    return model.geckodata.E
+end
 
 """
     balance(model::GeckoModel)
 
 Return stoichiometric balance.
 """
-balance(model::GeckoModel) = model.data.d
+balance(model::GeckoModel) = model.geckodata.d
 
 """
     objective(model::GeckoModel)
 
 Return objective of `model`.
 """
-objective(model::GeckoModel) = model.data.c
+objective(model::GeckoModel) = model.geckodata.c
 
 @_inherit_model_methods GeckoModel (rid::String,) smodel (rid,) reaction_gene_association reaction_stoichiometry reaction_bounds is_reaction_reversible is_reaction_forward_only is_reaction_backward_only is_reaction_unidirectional is_reaction_blocked has_reaction_isozymes has_reaction_grr
 
@@ -183,21 +227,21 @@ objective(model::GeckoModel) = model.data.c
 Returns reactions order according to stoichiometric matrix. Note, call [`genes`](@ref)
 to get the order of the remaining variables.
 """
-reactions(model::GeckoModel) = _order_id_to_idx_dict(model.data.reaction_map)
+reactions(model::GeckoModel) = _order_id_to_idx_dict(model.geckodata.reaction_map)
 
 """
     metabolites(model::GeckoModel)
 
 Returns the metabolites ordered according to the stoichiometric matrix.
 """
-metabolites(model::GeckoModel) = _order_id_to_idx_dict(model.data.metabolite_map)
+metabolites(model::GeckoModel) = _order_id_to_idx_dict(model.geckodata.metabolite_map)
 
 """
     genes(model::GeckoModel)
 
 Returns the genes (proteins) in the order as they appear as variables in the model.
 """
-genes(model::GeckoModel) = model.data.protein_ids
+genes(model::GeckoModel) = model.geckodata.protein_ids
 
 """
     _order_id_to_idx_dict(id_to_idx_dict)
@@ -218,10 +262,10 @@ end
 Return variable bounds for `GeckoModel`.
 """
 function bounds(model::GeckoModel)
-    n_rxns = length(model.data.reaction_map)
-    n_prots = length(model.data.protein_ids)
-    lbs = [-model.data.h[1:n_rxns]; -model.data.h[2*n_rxns.+(1:n_prots)]]
-    ubs = [model.data.h[n_rxns.+(1:n_rxns)]; model.data.h[2*n_rxns+n_prots.+(1:n_prots)]]
+    n_rxns = length(model.geckodata.reaction_map)
+    n_prots = length(model.geckodata.protein_ids)
+    lbs = [-model.geckodata.h[1:n_rxns]; -model.geckodata.h[2*n_rxns.+(1:n_prots)]]
+    ubs = [model.geckodata.h[n_rxns.+(1:n_rxns)]; model.geckodata.h[2*n_rxns+n_prots.+(1:n_prots)]]
     return lbs, ubs
 end
 
@@ -231,7 +275,7 @@ end
 Return enzyme capacity inequality constraint vector and bound, or nothing 
 if it doesn't exist in the model.
 """
-enzyme_capacity(model::GeckoModel) = (model.data.M[end, :], model.data.h[end])
+enzyme_capacity(model::GeckoModel) = (model.geckodata.M[end, :], model.geckodata.h[end])
 
 """
     build_geckomodel_internals!(model::GeckoModel)
@@ -239,7 +283,7 @@ enzyme_capacity(model::GeckoModel) = (model.data.M[end, :], model.data.h[end])
 Lower level function that updates the matrix form of a model with enzyme
 capacity constraints, in GECKO format.
 
-Specifically, updates `model.data` with the vector and matrix coefficients `c,
+Specifically, updates `model.geckodata` with the vector and matrix coefficients `c,
 E, d, M, h` satisfying 
 ```
 opt cᵀ * x
@@ -275,7 +319,7 @@ function build_geckomodel_internals!(model::GeckoModel)
 
         # skip these entries
         contains(rid, "§ARM") && continue
-        !haskey(model.reaction_kcats, original_rid) && continue
+        !haskey(model.enzymedata.reaction_kcats, original_rid) && continue
 
         # these entries have kcats
         if contains(rid, "§ISO")
@@ -338,7 +382,7 @@ function build_geckomodel_internals!(model::GeckoModel)
     )
 
     #: overwrite geckomodel data
-    model.data = GeckoData(
+    model.geckodata = GeckoData(
         sparse(c),
         sparse(E),
         sparse(d),
@@ -375,7 +419,7 @@ function _gecko_build_inequality_constraints(
     reaction_map,
 )
     #: inequality lhs
-    mw_proteins = [model.protein_masses[pid] for pid in protein_ids]
+    mw_proteins = [model.enzymedata.protein_masses[pid] for pid in protein_ids]
     M = Array(
         [
             -I(n_reactions) zeros(n_reactions, n_proteins)
@@ -387,9 +431,9 @@ function _gecko_build_inequality_constraints(
     )
 
     #: inequality rhs
-    for original_rid in keys(model.flux_measurements) # only constrain if measurement available
-        lb = model.flux_measurements[original_rid][1]
-        ub = model.flux_measurements[original_rid][2]
+    for original_rid in keys(model.enzymedata.flux_measurements) # only constrain if measurement available
+        lb = model.enzymedata.flux_measurements[original_rid][1]
+        ub = model.enzymedata.flux_measurements[original_rid][2]
         rids = [rid for rid in keys(reaction_map) if startswith(rid, original_rid)]
         filter!(x -> !contains(x, "§ISO"), rids) # remove isozyme partial reactions (ARM reactions take care of these)
 
@@ -416,14 +460,14 @@ function _gecko_build_inequality_constraints(
     end
 
     lb_proteins = [
-        haskey(model.protein_measurements, pid) ? model.protein_measurements[pid][1] : 0.0 for pid in protein_ids
+        haskey(model.enzymedata.protein_measurements, pid) ? model.enzymedata.protein_measurements[pid][1] : 0.0 for pid in protein_ids
     ]
     ub_proteins = [
-        haskey(model.protein_measurements, pid) ? model.protein_measurements[pid][2] :
+        haskey(model.enzymedata.protein_measurements, pid) ? model.enzymedata.protein_measurements[pid][2] :
         1000.0 for pid in protein_ids
     ]
 
-    h = Array([-lb_fluxes; ub_fluxes; -lb_proteins; ub_proteins; model.total_protein_mass])
+    h = Array([-lb_fluxes; ub_fluxes; -lb_proteins; ub_proteins; model.enzymedata.total_protein_mass])
 
     return M, h
 end
@@ -491,7 +535,6 @@ function _build_irreversible_stoichiometric_matrix(model::StandardModel)
 
     return S, S_components.lbs, S_components.ubs, idxs.rxn_idxs, idxs.met_idxs
 end
-
 
 """
     _add_enzyme_to_irrev_stoich_mat(model, rid, idxs, S_components, dir)
@@ -622,10 +665,10 @@ function _add_enzyme_variable(
     protein_ids,
 )
     grr = reaction_gene_association(model, original_rid)[iso_num]
-    pstoich = model.reaction_protein_stoichiometry[original_rid][iso_num]
+    pstoich = model.enzymedata.reaction_protein_stoichiometry[original_rid][iso_num]
     kcat =
-        contains(rid, "§FOR") ? model.reaction_kcats[original_rid][iso_num][1] :
-        model.reaction_kcats[original_rid][iso_num][2]
+        contains(rid, "§FOR") ? model.enzymedata.reaction_kcats[original_rid][iso_num][1] :
+        model.enzymedata.reaction_kcats[original_rid][iso_num][2]
     for (idx, pid) in enumerate(grr)
         push!(E_components.row_idxs, first(indexin([pid], protein_ids)))
         push!(E_components.col_idxs, col_idx)
@@ -645,7 +688,7 @@ function _get_proteins_with_kcats(model::GeckoModel)
             vcat(
                 [
                     reaction_gene_association(model.smodel, rid) for
-                    rid in reactions(model.smodel) if haskey(model.reaction_kcats, rid)
+                    rid in reactions(model.smodel) if haskey(model.enzymedata.reaction_kcats, rid)
                 ]...,
             )...,
         ),

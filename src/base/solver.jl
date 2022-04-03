@@ -29,7 +29,7 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
     isempty(C) || @constraint(optimization_model, c_ubs, coupling(model) * x .<= cu) # coupling upper bounds
 
     enzyme_vec, enzyme_mass = enzyme_capacity(model) # nothing if not present
-    !isnothing(enzyme_capacity) &&
+    !isnothing(enzyme_vec) &&
         @constraint(optimization_model, enz_cap, dot(enzyme_vec, x) <= enzyme_mass)
 
     return optimization_model
@@ -137,7 +137,19 @@ original ids).
 """
 flux_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
-    _map_irrev_to_rev_ids(model.data.reaction_map, value.(opt_model[:x])) : nothing
+    _map_irrev_to_rev_ids(model.geckodata.reaction_map, value.(opt_model[:x])) : nothing
+
+
+"""
+    flux_dict(model::SMomentModel, opt_model)
+
+Specialization to format solved data for `SMomentModel`s but maps 
+the solution back into the namespace of the underlying model (the 
+original ids).
+"""
+flux_dict(model::SMomentModel, opt_model) =
+    is_solved(opt_model) ?
+    _map_irrev_to_rev_ids(model.smomentdata.reaction_map, value.(opt_model[:x])) : nothing
 
 """
     _map_irrev_to_rev_ids(reaction_map, protein_ids, solution)
