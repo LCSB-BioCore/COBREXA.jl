@@ -87,6 +87,24 @@ balance(a::CoreModel)::SparseVec = a.b
 objective(a::CoreModel)::SparseVec = a.c
 
 """
+    genes(a::CoreModel)::Vector{String}
+
+Collect all genes contained in the [`CoreModel`](@ref). The call is expensive
+for large models, because the vector is not stored and instead gets rebuilt
+each time this function is called.
+"""
+function genes(a::MetabolicModel)::Vector{String}
+    res = Set{String}()
+    for grr in a.grrs
+        isnothing(grr) && continue
+        for gs in grr
+            push!(res, gs)
+        end
+    end
+    sort(collect(res))
+end
+
+"""
     reaction_stoichiometry(model::CoreModel, rid::String)::Dict{String, Float64}
 
 Return the stoichiometry of reaction with ID `rid`.

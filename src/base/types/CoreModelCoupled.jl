@@ -7,7 +7,7 @@ The linear model with additional coupling constraints in the form
     cₗ ≤ C x ≤ cᵤ
 ```
 """
-mutable struct CoreModelCoupled <: MetabolicModel
+mutable struct CoreModelCoupled <: ModelWrapper
     lm::CoreModel
     C::SparseMat
     cl::Vector{Float64}
@@ -23,7 +23,12 @@ mutable struct CoreModelCoupled <: MetabolicModel
     end
 end
 
-@_inherit_model_methods CoreModelCoupled () lm () reactions metabolites stoichiometry bounds balance objective
+"""
+    unwrap_model(a::CoreModelCoupled)
+
+Get the internal [`CoreModel`](@ref) out of [`CoreModelCoupled`](@ref).
+"""
+unwrap_model(a::CoreModelCoupled) = a.lm
 
 """
     coupling(a::CoreModelCoupled)::SparseMat
@@ -46,17 +51,9 @@ Coupling bounds for a `CoreModelCoupled`.
 """
 coupling_bounds(a::CoreModelCoupled)::Tuple{Vector{Float64},Vector{Float64}} = (a.cl, a.cu)
 
-@_inherit_model_methods CoreModelCoupled (rid::String,) lm (rid,) reaction_stoichiometry reaction_gene_association
+# these are special for CoreModel-ish models
+@_inherit_model_methods CoreModelCoupled () lm () reaction_gene_association_vec
 @_inherit_model_methods CoreModelCoupled (ridx::Int,) lm (ridx,) reaction_stoichiometry
-
-"""
-    reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
-
-Retrieve a vector of gene associations in a [`CoreModelCoupled`](@ref), in the
-same order as `reactions(model)`.
-"""
-reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} =
-    reaction_gene_association_vec(model.lm)
 
 """
     Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
@@ -64,6 +61,9 @@ reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssocia
 Make a `CoreModelCoupled` out of any compatible model type.
 """
 function Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
+    # TODO this might need a bit of rethinking and might be deprecated soon.
+    # Eventually it seems to me that the coupling should be added as a
+    # completely generic wrapper.
     if typeof(mm) == CoreModelCoupled
         return mm
     end
