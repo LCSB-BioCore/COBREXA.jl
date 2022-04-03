@@ -23,7 +23,7 @@ mutable struct CoreModelCoupled <: MetabolicModel
     end
 end
 
-@_inherit_model_methods CoreModelCoupled () lm () reactions metabolites stoichiometry bounds balance objective
+@_inherit_model_methods CoreModelCoupled () lm () reactions n_reactions metabolites n_metabolites stoichiometry bounds balance objective genes n_genes reaction_gene_association_vec
 
 """
     coupling(a::CoreModelCoupled)::SparseMat
@@ -48,15 +48,6 @@ coupling_bounds(a::CoreModelCoupled)::Tuple{Vector{Float64},Vector{Float64}} = (
 
 @_inherit_model_methods CoreModelCoupled (rid::String,) lm (rid,) reaction_stoichiometry reaction_gene_association
 @_inherit_model_methods CoreModelCoupled (ridx::Int,) lm (ridx,) reaction_stoichiometry
-
-"""
-    reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}}
-
-Retrieve a vector of gene associations in a [`CoreModelCoupled`](@ref), in the
-same order as `reactions(model)`.
-"""
-reaction_gene_association_vec(model::CoreModelCoupled)::Vector{Maybe{GeneAssociation}} =
-    reaction_gene_association_vec(model.lm)
 
 """
     Base.convert(::Type{CoreModelCoupled}, mm::MetabolicModel)
