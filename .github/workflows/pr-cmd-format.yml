@@ -1,0 +1,48 @@
+
+on:
+  issue_comment:
+    types: [created]
+
+name: Formatting command
+
+jobs:
+  format:
+    if: ${{ github.event.issue.pull_request && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') && startsWith(github.event.comment.body, '/format') }}
+    name: format-code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v2
+      - name: Checkout the pull request code
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.issue.number }}
+      - name: Install JuliaFormatter and format
+        run: |
+          julia -e 'import Pkg; Pkg.add("JuliaFormatter")'
+          julia -e 'using JuliaFormatter; format(".")'
+      - name: Remove trailing whitespace
+        run: |
+          find -name '*.jl' -or -name '*.md' | while read filename ; do
+            # remove any trailing spaces
+            sed --in-place -e 's/\s*$//' "$filename"
+            # add a final newline if missing
+            if [[ -s "$filename" && $(tail -c 1 "$filename" |wc -l) -eq 0 ]] ; then
+              echo >> "$filename"
+            fi
+            # squash superfluous final newlines
+            sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "$filename"
+          done
+      - name: Commit and push the changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ `git status -s | wc -l` -ne 0 ] ; then
+            git config --local user.name "${{ github.event.comment.actor.display_login }}"
+            git config --local user.email "${{ github.event.comment.actor.login }}@users.noreply.github.com"
+            git commit -a -m "automatic formatting" -m "triggered by ${{ github.event.comment.actor.display_login }} (@${{ github.event.comment.actor.login }}) on #${{ github.event.issue.number }}"
+            git push || echo "Push failed, perhaps someone committed in the meantime?"
+          else
+            echo "No changes, all good!"
+          fi
