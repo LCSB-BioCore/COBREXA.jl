@@ -77,7 +77,7 @@ function SMomentModel(
     reaction_kcats = Dict{String,Vector{Vector{Float64}}}(),
     reaction_protein_stoichiometry = Dict{String,Vector{Vector{Float64}}}(),
     protein_masses = Dict{String,Float64}(),
-    total_protein = 0.0,
+    total_protein_mass = 0.0,
     flux_measurements = Dict{String,Tuple{Float64,Float64}}(),
 )
     sm = convert(StandardModel, model)
@@ -99,7 +99,7 @@ function SMomentModel(
             reaction_kcats,
             reaction_protein_stoichiometry,
             protein_masses,
-            total_protein;
+            total_protein_mass;
             flux_measurements,
         ),
     )
