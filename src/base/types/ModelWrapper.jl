@@ -14,11 +14,7 @@ end
 # The list of inherited functions must be synced with the methods available for [`MetabolicModel`](@ref).
 #
 
-@_inherit_model_methods_fn ModelWrapper () unwrap_model () reactions metabolites stoichiometry bounds balance objective coupling n_coupling_constraints coupling_bounds genes n_genes precache!
-
-@_inherit_model_methods_fn ModelWrapper (solution::Vector{Float64},) unwrap_model (
-    solution,
-) solution_flux
+@_inherit_model_methods_fn ModelWrapper () unwrap_model () reactions metabolites stoichiometry bounds balance objective fluxes n_fluxes reaction_flux coupling n_coupling_constraints coupling_bounds genes n_genes precache!
 
 @_inherit_model_methods_fn ModelWrapper (rid::String,) unwrap_model (rid,) reaction_gene_association reaction_subsystem reaction_stoichiometry reaction_annotations reaction_notes
 
