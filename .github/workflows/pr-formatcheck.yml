@@ -39,3 +39,13 @@ jobs:
           else gh pr comment ${{ github.event.number }} --body \
           ":green_circle: &nbsp;Commit ${{ github.event.pull_request.head.sha }} is formatted properly."
           fi
+      - name: Commit and push the changes
+        run: |
+          if [ `git status -s | wc -l` -ne 0 ] ; then
+            git config --local user.name "$GITHUB_ACTOR"
+            git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+            git commit -a -m "automatic formatting" -m "triggered on #${{ github.event.number }}"
+            git push || echo "Push failed, perhaps someone committed in the meantime?"
+          else
+            echo "No changes, all good!"
+          fi
