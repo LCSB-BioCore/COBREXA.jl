@@ -17,16 +17,16 @@ function _print_banner()
 
     println(
         "
-                   $(y)//   $(n) |
-        \\\\\\\\\\  // $(y)//    $(n) | $(c[:bold])COBREXA.jl $(c[:normal]) v$(COBREXA_VERSION)
-         \\\\ \\\\// $(y)//     $(n) |
-          \\\\ \\/ $(y)//      $(n) | $(c[:bold])CO$(c[:normal])nstraint-$(c[:bold])B$(c[:normal])ased $(c[:bold])R$(c[:normal])econstruction
-           \\\\  $(y)//       $(n) | and $(c[:bold])EX$(c[:normal])ascale $(c[:bold])A$(c[:normal])nalysis in Julia
-           //  $(y)\\\\       $(n) |
-          // $(y)/\\ \\\\      $(n) | See documentation and examples at:
-         // $(y)//\\\\ \\\\      $(n)| https://lcsb-biocore.github.io/COBREXA.jl
-        // $(y)//  \\\\\\\\\\     $(n)|
-       //                $(n)|
+                   $(y)//$(n)    |
+        \\\\\\\\\\  // $(y)//$(n)     | $(c[:bold])COBREXA.jl $(c[:normal]) v$(COBREXA_VERSION)
+         \\\\ \\\\// $(y)//$(n)      |
+          \\\\ \\/ $(y)//$(n)       | $(c[:bold])CO$(c[:normal])nstraint-$(c[:bold])B$(c[:normal])ased $(c[:bold])R$(c[:normal])econstruction
+           \\\\  $(y)//$(n)        | and $(c[:bold])EX$(c[:normal])ascale $(c[:bold])A$(c[:normal])nalysis in Julia
+           //  $(y)\\\\$(n)        |
+          // $(y)/\\ \\\\$(n)       | See documentation and examples at:
+         // $(y)//\\\\ \\\\$(n)      | https://lcsb-biocore.github.io/COBREXA.jl
+        // $(y)//  \\\\\\\\\\$(n)     |
+       //                |
         ",
     )
 end
