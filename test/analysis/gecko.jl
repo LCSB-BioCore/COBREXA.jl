@@ -10,7 +10,7 @@
         reaction_kcats = ecoli_core_reaction_kcats,
         reaction_protein_stoichiometry = ecoli_core_protein_stoichiometry,
         protein_masses = ecoli_core_protein_masses,
-        total_protein = total_protein_mass, # mg/gdW
+        total_protein_mass = total_protein_mass, # mg/gdW
         flux_measurements,
         protein_measurements,
     )
