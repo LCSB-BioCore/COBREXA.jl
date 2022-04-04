@@ -66,3 +66,63 @@ function remove_slow_isozymes!(
 
     return nothing
 end
+
+"""
+    remove_low_expressed_isozymes!(
+        model::StandardModel;
+        reaction_kcats = Dict(),
+        protein_stoichiometry = Dict(),
+        protein_masses = Dict(),
+        gid_measurements = Dict(),
+    )
+
+Remove isozymes that are not expressed. If multiple isozymes are expressed, pick
+one that has the highest expression.
+"""
+function remove_low_expressed_isozymes!(
+    model::StandardModel;
+    reaction_kcats = Dict(),
+    protein_stoichiometry = Dict(),
+    protein_masses = Dict(),
+    gid_measurements = Dict(),
+)
+
+    for rid in reactions(model)
+        if COBREXA._has_grr(model, rid)
+            measured_proteins = Float64[]
+            grrs = reaction_gene_association(model, rid)
+            for (i, grr) in enumerate(grrs)
+
+                push!(
+                    measured_proteins,
+                    sum(
+                        map(
+                            *,
+                            protein_stoichiometry[rid][i],
+                            [get(gid_measurements, gid, 0.0) for gid in grr],
+                            [protein_masses[gid] for gid in grr],
+                        ),
+                    ),
+                )
+            end
+            idx = argmax(measured_proteins)
+
+            model.reactions[rid].grr = [grrs[idx]]
+            reaction_kcats[rid] = [reaction_kcats[rid][idx]]
+            protein_stoichiometry[rid] = [protein_stoichiometry[rid][idx]]
+        end
+    end
+
+    curated_gids = String[]
+    for rid in reactions(model)
+        if COBREXA._has_grr(model, rid)
+            for grr in reaction_gene_association(model, rid)
+                append!(curated_gids, grr)
+            end
+        end
+    end
+    rm_gids = setdiff(genes(model), curated_gids)
+    delete!(model.genes, rm_gids) # remove genes that were deleted
+    
+    return nothing
+end
