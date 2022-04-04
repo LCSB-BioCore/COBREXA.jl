@@ -61,14 +61,14 @@ EnzymeData(
     reaction_kcats,
     reaction_protein_stoichiometry,
     protein_masses,
-    total_protein;
+    total_protein_mass;
     flux_measurements = Dict{String,Tuple{Float64,Float64}}(),
     protein_measurements = Dict{String,Tuple{Float64,Float64}}(),
 ) = EnzymeData(
     reaction_kcats,
     reaction_protein_stoichiometry,
     protein_masses,
-    total_protein,
+    total_protein_mass,
     flux_measurements,
     protein_measurements,
 )
