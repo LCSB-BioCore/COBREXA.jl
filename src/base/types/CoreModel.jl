@@ -98,7 +98,9 @@ function genes(a::CoreModel)::Vector{String}
     for grr in a.grrs
         isnothing(grr) && continue
         for gs in grr
-            push!(res, gs)
+            for g in gs
+                push!(res, g)
+            end
         end
     end
     sort(collect(res))
