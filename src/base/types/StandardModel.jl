@@ -460,7 +460,8 @@ Check if reaction `rid` in `model` has a gene reaction rule entry.
 """
 function has_reaction_grr(model::StandardModel, rid::String)
     #TODO simplify this once COBREXA enforces universal rules for GRR representation
-    !isnothing(reaction_gene_association(model, rid)) &&
+    haskey(model.reactions, rid) &&
+        !isnothing(reaction_gene_association(model, rid)) &&
         reaction_gene_association(model, rid) != [[]] &&
         !isempty(first(reaction_gene_association(model, rid)))
 end
