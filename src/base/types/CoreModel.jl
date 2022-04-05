@@ -93,7 +93,7 @@ Collect all genes contained in the [`CoreModel`](@ref). The call is expensive
 for large models, because the vector is not stored and instead gets rebuilt
 each time this function is called.
 """
-function genes(a::MetabolicModel)::Vector{String}
+function genes(a::CoreModel)::Vector{String}
     res = Set{String}()
     for grr in a.grrs
         isnothing(grr) && continue
