@@ -7,6 +7,8 @@
 # automatically derived methods for [`ModelWrapper`](@ref).
 #
 
+_missing_impl_error(m, a) = throw(MethodError(m, a))
+
 """
     reactions(a::MetabolicModel)::Vector{String}
 
@@ -130,7 +132,6 @@ Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
 function coupling(a::MetabolicModel)::SparseMat
-    # TODO make this an extension of stoichiometry
     return spzeros(0, n_reactions(a))
 end
 
