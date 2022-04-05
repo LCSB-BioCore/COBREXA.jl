@@ -20,4 +20,4 @@ end
 
 @_inherit_model_methods_fn ModelWrapper (mid::String,) unwrap_model (mid,) metabolite_formula metabolite_charge metabolite_compartment metabolite_annotations metabolite_notes
 
-@_inherit_model_methods_fn ModelWrapper (gid::String,) unwrap_model (mid,) gene_annotations gene_notes
+@_inherit_model_methods_fn ModelWrapper (gid::String,) unwrap_model (gid,) gene_annotations gene_notes
