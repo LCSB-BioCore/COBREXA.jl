@@ -17,7 +17,7 @@ dict_sol = flux_balance_analysis_dict(
         change_constraint(&quot;R_EX_o2_e&quot;; lb = 0, ub = 0),
     ],
 )</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
-  &quot;R_EX_fum_e&quot;    =&gt; -0.0
+  &quot;R_EX_fum_e&quot;    =&gt; 0.0
   &quot;R_ACONTb&quot;      =&gt; 0.294088
   &quot;R_TPI&quot;         =&gt; 11.7289
   &quot;R_SUCOAS&quot;      =&gt; -5.31298e-11
@@ -31,11 +31,11 @@ dict_sol = flux_balance_analysis_dict(
   &quot;R_EX_lac__D_e&quot; =&gt; 1.86329e-10
   &quot;R_PGL&quot;         =&gt; 4.23161e-9
   &quot;R_H2Ot&quot;        =&gt; 8.2857
-  &quot;R_GLNabc&quot;      =&gt; -0.0
+  &quot;R_GLNabc&quot;      =&gt; 0.0
   &quot;R_EX_co2_e&quot;    =&gt; -0.487021
-  &quot;R_EX_gln__L_e&quot; =&gt; -0.0
+  &quot;R_EX_gln__L_e&quot; =&gt; 0.0
   &quot;R_EX_nh4_e&quot;    =&gt; -1.48633
-  &quot;R_MALt2_2&quot;     =&gt; -0.0
+  &quot;R_MALt2_2&quot;     =&gt; 0.0
   ⋮               =&gt; ⋮</pre><h2 id="Structure-of-CoreModel"><a class="docs-heading-anchor" href="#Structure-of-CoreModel">Structure of <code>CoreModel</code></a><a id="Structure-of-CoreModel-1"></a><a class="docs-heading-anchor-permalink" href="#Structure-of-CoreModel" title="Permalink"></a></h2><p><code>CoreModel</code> is a special <code>COBREXA</code> type that is optimized for large scale analysis of large models. It stores data in a sparse format where possible.</p><pre><code class="language-julia">fieldnames(CoreModel)</code></pre><pre class="documenter-example-output">(:S, :b, :c, :xl, :xu, :rxns, :mets, :grrs)</pre><pre><code class="language-julia">model.S</code></pre><pre class="documenter-example-output">72×95 SparseArrays.SparseMatrixCSC{Float64, Int64} with 360 stored entries:
 ⠀⠈⢀⠀⡀⠀⠀⠀⠀⡠⠂⠀⠀⠀⠀⠈⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⢀⠐⡀⠀⠀⠀⠀⠄
 ⠀⠐⠀⠀⠀⠀⠀⠀⡠⠂⠀⠀⠀⠀⢰⠱⣀⠀⡄⢐⠀⠀⢀⠀⠀⠀⡂⠄⠔⠁⠰⠀⠠⠀⣆⠀⠄⢠⢀⠄
@@ -75,4 +75,4 @@ Number of reactions: 95
 Number of metabolites: 72
 </pre><pre><code class="language-julia">d = flux_balance_analysis_dict(model, Tulip.Optimizer)
 d[&quot;R_BIOMASS_Ecoli_core_w_GAM&quot;]</code></pre><pre class="documenter-example-output">0.8739215022661532</pre><pre><code class="language-julia">dc = flux_balance_analysis_dict(cmodel, Tulip.Optimizer)
-dc[&quot;R_BIOMASS_Ecoli_core_w_GAM&quot;]</code></pre><pre class="documenter-example-output">0.6655856992982556</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../3_basic_stdmodel_usage/">« Basic usage of <code>StandardModel</code></a><a class="docs-footer-nextpage" href="../5_basic_stdmodel_construction/">Model construction and modification »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 3 April 2022 13:21">Sunday 3 April 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+dc[&quot;R_BIOMASS_Ecoli_core_w_GAM&quot;]</code></pre><pre class="documenter-example-output">0.6655856992982556</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../3_basic_stdmodel_usage/">« Basic usage of <code>StandardModel</code></a><a class="docs-footer-nextpage" href="../5_basic_stdmodel_construction/">Model construction and modification »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 6 April 2022 09:42">Wednesday 6 April 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

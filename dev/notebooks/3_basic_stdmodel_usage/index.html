@@ -24,18 +24,18 @@ fluxes = flux_balance_analysis_dict(
   &quot;PYK&quot;         =&gt; 9.94501
   &quot;CO2t&quot;        =&gt; 0.487021
   &quot;EX_nh4_e&quot;    =&gt; -1.48633
-  &quot;MALt2_2&quot;     =&gt; -0.0
+  &quot;MALt2_2&quot;     =&gt; 0.0
   &quot;CS&quot;          =&gt; 0.294088
   &quot;PGM&quot;         =&gt; -22.8676
   &quot;TKT1&quot;        =&gt; -0.0487648
-  &quot;EX_mal__L_e&quot; =&gt; -0.0
+  &quot;EX_mal__L_e&quot; =&gt; 0.0
   &quot;ACONTa&quot;      =&gt; 0.294088
   &quot;EX_pi_e&quot;     =&gt; -1.00274
   &quot;GLNS&quot;        =&gt; 0.069699
   &quot;ICL&quot;         =&gt; 5.34932e-11
-  &quot;EX_o2_e&quot;     =&gt; -0.0
+  &quot;EX_o2_e&quot;     =&gt; 0.0
   &quot;FBA&quot;         =&gt; 11.7289
-  &quot;EX_gln__L_e&quot; =&gt; -0.0
+  &quot;EX_gln__L_e&quot; =&gt; 0.0
   ⋮             =&gt; ⋮</pre><p>This is not very exciting yet, since every other model type can also do this. However, deeper inspection of flux results is possible when using <code>StandardModel</code>.</p><h2 id="Inspecting-the-flux-solution:-atom_fluxes"><a class="docs-heading-anchor" href="#Inspecting-the-flux-solution:-atom_fluxes">Inspecting the flux solution: <code>atom_fluxes</code></a><a id="Inspecting-the-flux-solution:-atom_fluxes-1"></a><a class="docs-heading-anchor-permalink" href="#Inspecting-the-flux-solution:-atom_fluxes" title="Permalink"></a></h2><p>It is sometimes interesting to keep track of the atoms entering and leaving the system through boundary reactions. This can be inspected by calling <a href="../../functions/utils/#COBREXA.atom_fluxes-Tuple{MetabolicModel, Dict{String, Float64}}"><code>atom_fluxes</code></a>. That gives you the flux of individual atoms getting consumed and produced by all reactions, based on <code>fluxes</code>. We erase the reaction that consumes the atoms for creating biomass, to see how much mass the &quot;rest&quot; of the reaction produces for it:</p><pre><code class="language-julia">fluxes_without_biomass = copy(fluxes);
 delete!(fluxes_without_biomass, &quot;BIOMASS_Ecoli_core_w_GAM&quot;);
 atom_fluxes(model, fluxes_without_biomass)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 6 entries:
@@ -179,4 +179,4 @@ reaction_mass_balanced(model, rxn_dict)</code></pre><pre class="documenter-examp
   &quot;C&quot; =&gt; 0.0
   &quot;P&quot; =&gt; 0.0
   &quot;H&quot; =&gt; 2.0
-  &quot;O&quot; =&gt; 1.0</pre><p>Note, since <code>pgm_duplicate</code> is not in the model, we cannot use the other variants of this function because they find the reaction equation stored inside the <code>model</code>.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2_finding_balance/">« Finding balance and variability of constraint-based models</a><a class="docs-footer-nextpage" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 3 April 2022 13:21">Sunday 3 April 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;O&quot; =&gt; 1.0</pre><p>Note, since <code>pgm_duplicate</code> is not in the model, we cannot use the other variants of this function because they find the reaction equation stored inside the <code>model</code>.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2_finding_balance/">« Finding balance and variability of constraint-based models</a><a class="docs-footer-nextpage" href="../4_basic_core_coupled_usage/">Basic usage of <code>CoreModel</code> and <code>CoreModelCoupled</code> »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 6 April 2022 09:42">Wednesday 6 April 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
