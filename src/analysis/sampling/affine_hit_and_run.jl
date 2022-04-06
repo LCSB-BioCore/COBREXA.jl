@@ -11,9 +11,9 @@
 
 Run a hit-and-run style sampling that starts from `warmup_points` and uses
 their affine combinations for generating the run directions to sample the space
-delimited by `lbs` and `ubs`.  The points that represent fluxes in
-`warmup_points` should be organized in columns, i.e. `warmup_points[:,1]` is
-the first warmup flux.
+delimited by `lbs` and `ubs`.  The reaction rate vectors in `warmup_points`
+should be organized in columns, i.e. `warmup_points[:,1]` is the first set of
+reaction rates.
 
 There are total `chains` of hit-and-run runs, each on a batch of
 `size(warmup_points, 2)` points. The runs are scheduled on `workers`, for good
@@ -25,9 +25,9 @@ points is collected for output. For example, `sample_iters=[1,4,5]` causes the
 process run for 5 iterations, returning the sample batch that was produced by
 1st, 4th and last (5th) iteration.
 
-Returns a matrix of sampled fluxes (in columns), with all collected samples
-horizontally concatenated. The total number of samples (columns) will be
-`size(warmup_points,2) * chains * length(sample_iters)`.
+Returns a matrix of sampled reaction rates (in columns), with all collected
+samples horizontally concatenated. The total number of samples (columns) will
+be `size(warmup_points,2) * chains * length(sample_iters)`.
 
 # Example
 ```
@@ -38,6 +38,9 @@ model = load_model(StandardModel, model_path)
 
 warmup, lbs, ubs = warmup_from_variability(model, Tulip.Optimizer, 100)
 samples = affine_hit_and_run(warmup, lbs, ubs, sample_iters = 1:3)
+
+# convert the result to flux (for models where the distinction matters):
+fluxes = reaction_flux(model)' * samples
 ```
 """
 function affine_hit_and_run(

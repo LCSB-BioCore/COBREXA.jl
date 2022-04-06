@@ -7,6 +7,8 @@
 # automatically derived methods for [`ModelWrapper`](@ref).
 #
 
+_missing_impl_error(m, a) = throw(MethodError(m, a))
+
 """
     reactions(a::MetabolicModel)::Vector{String}
 
@@ -46,7 +48,13 @@ end
 """
     stoichiometry(a::MetabolicModel)::SparseMat
 
-Get the sparse stoichiometry matrix of a model.
+Get the sparse stoichiometry matrix of a model. A feasible solution `x` of a
+model `m` is defined as satisfying the equations:
+
+- `stoichiometry(m) * x .== balance(m)`
+- `x .>= lbs`
+- `y .<= ubs`
+- `(lbs, ubs) == bounds(m)
 """
 function stoichiometry(a::MetabolicModel)::SparseMat
     _missing_impl_error(stoichiometry, (a,))
@@ -55,7 +63,7 @@ end
 """
     bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
 
-Get the lower and upper flux bounds of a model.
+Get the lower and upper solution bounds of a model.
 """
 function bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     _missing_impl_error(bounds, (a,))
@@ -64,7 +72,7 @@ end
 """
     balance(a::MetabolicModel)::SparseVec
 
-Get the sparse balance vector of a model (ie. the `b` from `S x = b`).
+Get the sparse balance vector of a model.
 """
 function balance(a::MetabolicModel)::SparseVec
     return spzeros(n_metabolites(a))
@@ -73,10 +81,48 @@ end
 """
     objective(a::MetabolicModel)::SparseVec
 
-Get the objective vector of a model.
+Get the objective vector of the model. Analysis functions, such as
+[`flux_balance_analysis`](@ref), are supposed to maximize `dot(objective, x)`
+where `x` is a feasible solution of the model.
 """
 function objective(a::MetabolicModel)::SparseVec
     _missing_impl_error(objective, (a,))
+end
+
+
+"""
+    fluxes(a::MetabolicModel)::Vector{String}
+
+In some models, the [`reactions`](@ref) that correspond to the columns of
+[`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
+the model; for example, fluxes may be split into forward and reverse reactions,
+reactions catalyzed by distinct enzymes, etc. Together with
+[`reaction_flux`](@ref) (and [`n_fluxes`](@ref)) this specifies how the
+flux is decomposed into individual reactions.
+
+By default (and in most models), fluxes and reactions perfectly correspond.
+"""
+function fluxes(a::MetabolicModel)::Vector{String}
+    reactions(a)
+end
+
+function n_fluxes(a::MetabolicModel)::Int
+    n_reactions(a)
+end
+
+"""
+    reaction_flux(a::MetabolicModel)::SparseMat
+
+Retrieve a sparse matrix that describes the correspondence of a solution of the
+linear system to the fluxes (see [`fluxes`](@ref) for rationale). Returns a
+sparse matrix of size `(n_reactions(a), n_fluxes(a))`. For most models, this is
+an identity matrix.
+"""
+function reaction_flux(a::MetabolicModel)::SparseMat
+    nr = n_reactions(a)
+    nf = n_fluxes(a)
+    nr == nf || _missing_impl_error(reaction_flux, (a,))
+    spdiagm(fill(1, nr))
 end
 
 """

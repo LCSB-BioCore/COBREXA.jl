@@ -94,7 +94,7 @@ function parsimonious_flux_balance_analysis(
 end
 
 """
-    parsimonious_flux_balance_analysis_vec(args...; kwargs...)
+    parsimonious_flux_balance_analysis_vec(model::MetabolicModel, args...; kwargs...)
 
 Perform parsimonious flux balance analysis on `model` using `optimizer`.
 Returns a vector of fluxes in the same order as the reactions in `model`.
@@ -104,8 +104,8 @@ internally.
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-parsimonious_flux_balance_analysis_vec(args...; kwargs...) =
-    flux_vector(parsimonious_flux_balance_analysis(args...; kwargs...))
+parsimonious_flux_balance_analysis_vec(model::MetabolicModel, args...; kwargs...) =
+    flux_vector(model, parsimonious_flux_balance_analysis(model, args...; kwargs...))
 
 """
     parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...)
