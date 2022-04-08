@@ -252,13 +252,17 @@ end
 
 Extract reaction name from `rxnNames`.
 """
-reaction_name(m::MATModel, rid::String) =
-    _maybemap(x -> x[findfirst(==(rid), reactions(m))], gets(m.mat, nothing, _constants.keynames.rxnnames))
+reaction_name(m::MATModel, rid::String) = _maybemap(
+    x -> x[findfirst(==(rid), reactions(m))],
+    gets(m.mat, nothing, _constants.keynames.rxnnames),
+)
 
 """
     metabolite_name(m::MATModel, mid::String)
 
 Extract metabolite name from `metNames`.
 """
-metabolite_name(m::MATModel, mid::String) =
-    _maybemap(x -> x[findfirst(==(mid), metabolites(m))], gets(m.mat, nothing, _constants.keynames.metnames))
+metabolite_name(m::MATModel, mid::String) = _maybemap(
+    x -> x[findfirst(==(mid), metabolites(m))],
+    gets(m.mat, nothing, _constants.keynames.metnames),
+)

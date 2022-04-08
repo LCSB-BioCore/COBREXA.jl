@@ -27,9 +27,8 @@ const _constants = (
         metformulas = ["metFormula", "metFormulas"],
         metcharges = ["metCharge", "metCharges"],
         metcompartments = ["metCompartment", "metCompartments"],
-        rxnnames = ["rxnNames",],
-        metnames = ["metNames",],
-
+        rxnnames = ["rxnNames"],
+        metnames = ["metNames"],
     ),
     gene_annotation_checks = (
         "ncbigene",
