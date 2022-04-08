@@ -144,7 +144,7 @@ Extract metabolite formula from key `metFormula` or `metFormulas`.
 """
 metabolite_formula(m::MATModel, mid::String) = _maybemap(
     x -> _parse_formula(x[findfirst(==(mid), metabolites(m))]),
-    get(m.mat, "metFormula", get(m.mat, "metFormulas", nothing)),
+    gets(m.mat, nothing, _constants.keynames.metformulas),
 )
 
 """
@@ -155,7 +155,7 @@ Extract metabolite charge from `metCharge` or `metCharges`.
 function metabolite_charge(m::MATModel, mid::String)
     met_charge = _maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
-        get(m.mat, "metCharge", get(m.mat, "metCharges", nothing)),
+        gets(m.mat, nothing, _constants.keynames.metcharges),
     )
     isnan(met_charge) ? 0 : met_charge
 end
@@ -167,9 +167,8 @@ Extract metabolite compartment from `metCompartment` or `metCompartments`.
 """
 metabolite_compartment(m::MATModel, mid::String) = _maybemap(
     x -> x[findfirst(==(mid), metabolites(m))],
-    get(m.mat, "metCompartment", get(m.mat, "metCompartments", nothing)),
+    gets(m.mat, nothing, _constants.keynames.metcompartments),
 )
-
 
 """
     reaction_stoichiometry(model::MATModel, rid::String)::Dict{String, Float64}
@@ -251,15 +250,15 @@ end
 """
     reaction_name(m::MATModel, mid::String)
 
-Extract metabolite compartment from `rxnNames`.
+Extract reaction name from `rxnNames`.
 """
 reaction_name(m::MATModel, rid::String) =
-    _maybemap(x -> x[findfirst(==(rid), reactions(m))], get(m.mat, "rxnNames", nothing))
+    _maybemap(x -> x[findfirst(==(rid), reactions(m))], gets(m.mat, nothing, _constants.keynames.rxnnames))
 
 """
     metabolite_name(m::MATModel, mid::String)
 
-Extract metabolite compartment from `metNames`.
+Extract metabolite name from `metNames`.
 """
 metabolite_name(m::MATModel, mid::String) =
-    _maybemap(x -> x[findfirst(==(mid), metabolites(m))], get(m.mat, "metNames", nothing))
+    _maybemap(x -> x[findfirst(==(mid), metabolites(m))], gets(m.mat, nothing, _constants.keynames.metnames))
