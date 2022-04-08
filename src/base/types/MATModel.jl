@@ -152,10 +152,13 @@ metabolite_formula(m::MATModel, mid::String) = _maybemap(
 
 Extract metabolite charge from `metCharge` or `metCharges`.
 """
-metabolite_charge(m::MATModel, mid::String) = _maybemap(
-    x -> x[findfirst(==(mid), metabolites(m))],
-    get(m.mat, "metCharge", get(m.mat, "metCharges", nothing)),
-)
+function metabolite_charge(m::MATModel, mid::String)
+    met_charge = _maybemap(
+        x -> x[findfirst(==(mid), metabolites(m))],
+        get(m.mat, "metCharge", get(m.mat, "metCharges", nothing)),
+    )
+    isnan(met_charge) ? 0 : met_charge
+end
 
 """
     metabolite_compartment(m::MATModel, mid::String)
@@ -244,3 +247,19 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
         ),
     )
 end
+
+"""
+    reaction_name(m::MATModel, mid::String)
+
+Extract metabolite compartment from `rxnNames`.
+"""
+reaction_name(m::MATModel, rid::String) =
+    _maybemap(x -> x[findfirst(==(rid), reactions(m))], get(m.mat, "rxnNames", nothing))
+
+"""
+    metabolite_name(m::MATModel, mid::String)
+
+Extract metabolite compartment from `metNames`.
+"""
+metabolite_name(m::MATModel, mid::String) =
+    _maybemap(x -> x[findfirst(==(mid), metabolites(m))], get(m.mat, "metNames", nothing))
