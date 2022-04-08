@@ -8,6 +8,8 @@
 
 Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
 constraint.
+
+Here coupling means inequality constraints coupling multiple variables together.
 """
 function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.MAX_SENSE)
 
@@ -25,12 +27,8 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
 
     C = coupling(model) # empty if no coupling
     cl, cu = coupling_bounds(model)
-    isempty(C) || @constraint(optimization_model, c_lbs, cl .<= coupling(model) * x) # coupling lower bounds
-    isempty(C) || @constraint(optimization_model, c_ubs, coupling(model) * x .<= cu) # coupling upper bounds
-
-    enzyme_vec, enzyme_mass = enzyme_capacity(model) # nothing if not present
-    !isnothing(enzyme_vec) &&
-        @constraint(optimization_model, enz_cap, dot(enzyme_vec, x) <= enzyme_mass)
+    isempty(C) || @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
+    isempty(C) || @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
 
     return optimization_model
 end
@@ -87,7 +85,6 @@ function set_optmodel_bound!(
     isnothing(ub) || set_normalized_rhs(opt_model[:ubs][vidx], ub)
 end
 
-
 """
     solved_objective_value(opt_model)::Maybe{Float64}
 
@@ -127,55 +124,3 @@ flux_dict(model, flux_balance_analysis(model, ...))
 flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
     is_solved(opt_model) ?
     Dict(reactions(model) .=> reaction_flux(model)' * value.(opt_model[:x])) : nothing
-
-"""
-    flux_dict(model::GeckoModel, opt_model)
-
-Specialization to format solved data for `GeckoModel`s but maps
-the solution back into the namespace of the underlying model (the
-original ids).
-"""
-flux_dict(model::GeckoModel, opt_model) =
-    is_solved(opt_model) ?
-    _map_irrev_to_rev_ids(model.geckodata.reaction_map, value.(opt_model[:x])) : nothing
-
-
-"""
-    flux_dict(model::SMomentModel, opt_model)
-
-Specialization to format solved data for `SMomentModel`s but maps
-the solution back into the namespace of the underlying model (the
-original ids).
-"""
-flux_dict(model::SMomentModel, opt_model) =
-    is_solved(opt_model) ?
-    _map_irrev_to_rev_ids(model.smomentdata.reaction_map, value.(opt_model[:x])) : nothing
-
-"""
-    _map_irrev_to_rev_ids(reaction_map, protein_ids, solution)
-
-Return dictionaries of reaction ids mapped to fluxes,
-and protein ids mapped to concentrations using `reaction_map` to
-determine the ids of fluxes and `protein_ids` for the gene ids.
-The solution in `solution` is used to fill the dictionaries.
-"""
-function _map_irrev_to_rev_ids(reaction_map, solution; protein_ids = [])
-    reaction_flux = Dict{String,Float64}()
-    for (k, i) in reaction_map
-        contains(k, "§ISO") && continue # §ISO§FOR and §ISO§REV need to be ignored
-        rid = split(k, "§")[1]
-        v = contains(k, "§FOR") ? solution[i] : -solution[i]
-        reaction_flux[rid] = get(reaction_flux, rid, 0) + v
-    end
-
-    if isempty(protein_ids)
-        return reaction_flux
-    else
-        n_reactions = length(reaction_map)
-        protein_flux = Dict{String,Float64}()
-        for (i, pid) in enumerate(protein_ids)
-            protein_flux[pid] = solution[n_reactions+i]
-        end
-        return reaction_flux, protein_flux
-    end
-end

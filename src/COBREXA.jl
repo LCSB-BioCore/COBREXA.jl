@@ -32,6 +32,7 @@ _inc_all.(
             joinpath("base", "logging"),
             joinpath("base", "macros"),
             joinpath("base", "types"),
+            joinpath("base", "types", "derivedmodels"),
             "base",
             "io",
             joinpath("io", "show"),

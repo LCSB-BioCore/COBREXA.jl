@@ -89,7 +89,6 @@ function objective(a::MetabolicModel)::SparseVec
     _missing_impl_error(objective, (a,))
 end
 
-
 """
     fluxes(a::MetabolicModel)::Vector{String}
 

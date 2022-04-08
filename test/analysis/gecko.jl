@@ -1,29 +1,45 @@
 @testset "GECKO" begin
-    smodel = load_model(StandardModel, model_paths["e_coli_core.json"])
-    smodel.reactions["EX_glc__D_e"].lb = -1000.0 # unconstrain because enzyme constraints take over
-    protein_measurements = Dict("b2779" => (0.01, 0.06))
-    flux_measurements = Dict("GLCpts" => (-1.0, 12.0))
+    model = load_model(StandardModel, model_paths["e_coli_core.json"])
     total_protein_mass = 100 # mg/gdW
 
-    model = GeckoModel(
-        smodel;
-        reaction_kcats = ecoli_core_reaction_kcats,
-        reaction_protein_stoichiometry = ecoli_core_protein_stoichiometry,
-        protein_masses = ecoli_core_protein_masses,
-        total_protein_mass = total_protein_mass, # mg/gdW
-        flux_measurements,
-        protein_measurements,
+    #: construct isozymes from model
+    rid_isozymes = Dict{String,Vector{Isozyme}}()
+    for (rid, kcats) in ecoli_core_reaction_kcats
+        grrs = reaction_gene_association(model, rid)
+        rid_isozymes[rid] = [
+            Isozyme(
+                Dict(grrs[i] .=> ecoli_core_protein_stoichiometry[rid][i]),
+                (kcats[i][1], kcats[i][2]),
+            ) for i = 1:length(grrs)
+        ]
+    end
+
+    #: add molar mass to genes in model
+    for (gid, g) in model.genes
+        model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
+    end
+
+    gm = GeckoModel(
+        model;
+        rid_isozymes,
+        enzyme_capacities = [(get_genes_with_kcats(rid_isozymes), total_protein_mass)],
+    )
+    change_bounds(
+        gm,
+        ["EX_glc__D_e", "b2779", "GLCpts"];
+        lbs = [-1000.0, 0.01, -1.0],
+        ubs = [nothing, 0.06, 12.0],
     )
 
     opt_model = flux_balance_analysis(
-        model,
+        gm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
         sense = COBREXA.MOI.MAX_SENSE,
     )
 
-    rxn_fluxes = flux_dict(model, opt_model)
-    prot_concens = protein_dict(model, opt_model)
+    rxn_fluxes = flux_dict(gm, opt_model)
+    prot_concens = protein_dict(gm, opt_model)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
@@ -35,3 +51,4 @@
 
     @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
 end
+
