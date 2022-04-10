@@ -1,260 +1,259 @@
-# """
-#     mutable struct SMomentModel <: MetabolicModel
+"""
+    mutable struct SMomentModel <: MetabolicModel
 
-# Construct an enzyme capacity constrained model see `Bekiaris, Pavlos Stephanos,
-# and Steffen Klamt. "Automatic construction of metabolic models with enzyme
-# constraints." BMC bioinformatics, 2020.` for implementation details.
+Construct an enzyme capacity constrained model see `Bekiaris, Pavlos Stephanos,
+and Steffen Klamt. "Automatic construction of metabolic models with enzyme
+constraints." BMC bioinformatics, 2020.` for implementation details.
 
-# Note, `"§"` is reserved for internal use as a delimiter, no reaction id should
-# contain that character. Also note, SMOMENT assumes that each reaction only has a
-# single enzyme (one GRR) associated with it. It is required that a model be
-# modified to ensure that this condition is met. For ease-of-use,
-# [`remove_slow_isozymes!`](@ref) is supplied to effect this. Currently only
-# `modifications` that change attributes of the `optimizer` are supported.
-# """
-# mutable struct SMomentModel <: MetabolicModel
-#     smodel::StandardModel
-#     smomentdata::SMomentData
-#     enzymedata::EnzymeData
-# end
+Note, `"§"` is reserved for internal use as a delimiter, no reaction id should
+contain that character. Also note, SMOMENT assumes that each reaction only has a
+single enzyme (one GRR) associated with it. It is required that a model be
+modified to ensure that this condition is met. For ease-of-use,
+[`remove_slow_isozymes!`](@ref) is supplied to effect this. Currently only
+`modifications` that change attributes of the `optimizer` are supported.
 
-# """
-#     SMomentModel(
-#         model::MetabolicModel;
-#         reaction_kcats = Dict{String,Vector{Vector{Float64}}}(),
-#         reaction_protein_stoichiometry = Dict{String,Vector{Vector{Float64}}}(),
-#         protein_masses = Dict{String,Float64}(),
-#         total_protein = 0.0,
-#         flux_measurements = Dict{String,Tuple{Float64,Float64}}(),
-#     )
+# Fields
+```
+reaction_ids::Vector{String}
+irrev_reaction_ids::Vector{String}
+metabolites::Vector{String}
+c::SparseVec
+S::SparseMat
+b::SparseVec
+xl::SparseVec
+xu::SparseVec
+C::SparseMat
+cl::Vector{Float64}
+cu::Vector{Float64}
+```
+"""
+mutable struct SMomentModel <: MetabolicModel
+    reaction_ids::Vector{String}
+    irrev_reaction_ids::Vector{String}
+    metabolites::Vector{String}
+    c::SparseVec
+    S::SparseMat
+    b::SparseVec
+    xl::SparseVec
+    xu::SparseVec
+end
 
-# Construct an `SMomentModel`.
+"""
+    stoichiometry(model::SMomentModel)
 
-# """
-# function SMomentModel(
-#     model::MetabolicModel;
-#     reaction_kcats = Dict{String,Vector{Vector{Float64}}}(),
-#     reaction_protein_stoichiometry = Dict{String,Vector{Vector{Float64}}}(),
-#     protein_masses = Dict{String,Float64}(),
-#     total_protein_mass = 0.0,
-#     flux_measurements = Dict{String,Tuple{Float64,Float64}}(),
-# )
-#     sm = convert(StandardModel, model)
-#     # check that input data is in correct format for smoment
-#     if any(length(v) > 1 for (rid, v) in reaction_kcats if has_reaction_grr(sm, rid)) ||
-#        any(
-#         length(v) > 1 for (rid, v) in reaction_protein_stoichiometry if
-#         haskey(reaction_kcats, rid) && has_reaction_grr(sm, rid)
-#     )
-#         @warn(
-#             "For SMOMENT to work correctly, no isozymes are allowed. Call `remove_slow_isozymes!` to fix the input data."
-#         )
-#     end
+Return stoichiometry matrix that includes enzymes as metabolites.
+"""
+stoichiometry(model::SMomentModel) = model.S
 
-#     smm = SMomentModel(
-#         sm,
-#         SMomentData(), # empty
-#         EnzymeData(
-#             reaction_kcats,
-#             reaction_protein_stoichiometry,
-#             protein_masses,
-#             total_protein_mass;
-#             flux_measurements,
-#         ),
-#     )
+"""
+    balance(model::SMomentModel)
 
-#     # build data in SMomentModel
-#     build_smomentmodel_internals!(smm)
+Return stoichiometric balance.
+"""
+balance(model::SMomentModel) = model.b
 
-#     return smm
-# end
+"""
+    objective(model::SMomentModel)
 
-# """
-#     stoichiometry(model::SMomentModel)
+Return objective of `model`.
+"""
+objective(model::SMomentModel) = model.c
 
-# Return stoichiometry matrix that includes enzymes as metabolites.
-# """
-# function stoichiometry(model::SMomentModel)
-#     build_smomentmodel_internals!(model)
-#     return model.smomentdata.E
-# end
+"""
+    reactions(model::SMomentModel)
 
-# """
-#     balance(model::SMomentModel)
+Returns the reversible reactions in `model`. For 
+the irreversible reactions, use [`irreversible_reactions`][@ref].
+"""
+reactions(model::SMomentModel) = model.reaction_ids
 
-# Return stoichiometric balance.
-# """
-# balance(model::SMomentModel) = model.smomentdata.d
+"""
+    n_reactions(model::SMomentModel)
 
-# """
-#     objective(model::SMomentModel)
+Returns the number of reactions in the model.
+"""
+n_reactions(model::SMomentModel) = length(model.reaction_ids)
 
-# Return objective of `model`.
-# """
-# objective(model::SMomentModel) = model.smomentdata.c
+"""
+    irreversible_reactions(model::SMomentModel)
 
-# @_inherit_model_methods SMomentModel () smodel () genes
-# @_inherit_model_methods SMomentModel (rid::String,) smodel (rid,) reaction_gene_association reaction_stoichiometry reaction_bounds is_reaction_reversible is_reaction_forward_only is_reaction_backward_only is_reaction_unidirectional is_reaction_blocked has_reaction_isozymes has_reaction_grr
+Returns the irreversible reactions in `model`.
+"""
+irreversible_reactions(model::SMomentModel) = model.irrev_reaction_ids
 
-# """
-#     reactions(model::SMomentModel)
+"""
+    metabolites(model::SMomentModel)
 
-# Returns reactions order according to stoichiometric matrix. Note, call [`genes`](@ref)
-# to get the order of the remaining variables.
-# """
-# reactions(model::SMomentModel) = _order_id_to_idx_dict(model.smomentdata.reaction_map)
+Return the metabolites in `model`.
+"""
+metabolites(model::SMomentModel) = model.metabolites
 
-# """
-#     metabolites(model::SMomentModel)
+"""
+    n_metabolites(model::SMomentModel) = 
 
-# Returns the metabolites ordered according to the stoichiometric matrix.
-# """
-# metabolites(model::SMomentModel) = _order_id_to_idx_dict(model.smomentdata.metabolite_map)
+Return the number of metabolites in `model`.
+"""
+n_metabolites(model::SMomentModel) = length(metabolites(model))
 
-# """
-#     bounds(model::SMomentModel)
+"""
+    bounds(model::SMomentModel)
 
-# Return variable bounds for `SMomentModel`.
-# """
-# function bounds(model::SMomentModel)
-#     n_rxns = length(model.smomentdata.reaction_map)
-#     lbs = [-model.smomentdata.h[1:n_rxns]; 0]
-#     ubs = [model.smomentdata.h[n_rxns.+(1:n_rxns)]; model.smomentdata.h[end]]
-#     return lbs, ubs
-# end
+Return variable bounds for `SMomentModel`.
+"""
+bounds(model::SMomentModel) = (model.xl, model.xu)
 
-# """
-#     build_smomentmodel_internals!(model::SMomentModel)
+"""
+    reaction_flux(model::MetabolicModel)
 
-# Build internal data structures used to solve SMOMENT type flux
-# balance analysis problems.
-# """
-# function build_smomentmodel_internals!(model::SMomentModel)
+Helper function to get fluxes from optimization problem.
+"""
+function reaction_flux(model::SMomentModel)
+    R = spzeros(n_reactions(model), length(model.irrev_reaction_ids) + 1)
+    for (i, rid) in enumerate(reactions(model))
+        for_idx = findfirst(x -> x == rid*"§ARM§FOR" || x == rid*"§FOR", model.irrev_reaction_ids)
+        rev_idx = findfirst(x -> x == rid*"§ARM§REV" || x == rid*"§REV", model.irrev_reaction_ids)
+        !isnothing(for_idx) && (R[i, for_idx] = 1.0)
+        !isnothing(rev_idx) && (R[i, rev_idx] = -1.0)
+    end
+    return R'
+end
 
-#     S, lb_fluxes, ub_fluxes, reaction_map, metabolite_map =
-#         _build_irreversible_stoichiometric_matrix(model.smodel)
+"""
+    SMomentModel(
+        model::StandardModel;
+        rid_isozymes = Dict{String, Vector{Isozyme}}(),
+    )
 
-#     #: size of resultant model
-#     n_reactions = size(S, 2)
-#     n_metabolites = size(S, 1)
-#     n_vars = n_reactions + 1
+Construct an `SMomentModel`.
 
-#     #: equality lhs
-#     Se = zeros(1, n_reactions)
+"""
+function SMomentModel(
+    model::StandardModel;
+    rid_isozymes = Dict{String, Vector{Isozyme}}(),
+    enzyme_capacity = 0.0,
+)
 
-#     for (rid, col_idx) in reaction_map
-#         original_rid = string(split(rid, "§")[1])
+    # check that input data is in correct format for smoment
+    if any(length(v) > 1 for v in values(rid_isozymes))
+        @warn(
+            "For SMOMENT to work correctly, no isozymes are allowed. Call `remove_slow_isozymes!` to fix the input data."
+        )
+    end
 
-#         # skip these entries
-#         !haskey(model.enzymedata.reaction_kcats, original_rid) && continue
-#         # these entries have kcats, only one GRR by assumption
-#         grr = first(reaction_gene_association(model, original_rid))
-#         pstoich = first(model.enzymedata.reaction_protein_stoichiometry[original_rid])
-#         mw = dot(pstoich, [model.enzymedata.protein_masses[gid] for gid in grr])
-#         kcat =
-#             contains(rid, "§FOR") ?
-#             first(model.enzymedata.reaction_kcats[original_rid])[1] :
-#             first(model.enzymedata.reaction_kcats[original_rid])[2]
-#         Se[1, col_idx] = -mw / kcat
-#     end
+    irrevS, lb_fluxes, ub_fluxes, reaction_map, metabolite_map =
+        _build_irreversible_stoichiometric_matrix(model)
 
-#     E = [
-#         S zeros(n_metabolites, 1)
-#         Se 1.0
-#     ]
+    #: size of resultant model
+    num_reactions = size(irrevS, 2)
+    num_metabolites = size(irrevS, 1)
+    num_vars = num_reactions + 1
 
-#     #: equality rhs
-#     d = zeros(n_metabolites + 1)
+    #: equality lhs
+    Se = zeros(1, num_reactions)
 
-#     #: find objective
-#     obj_idx_orig = first(findnz(objective(model.smodel))[1])
-#     obj_id_orig = reactions(model.smodel)[obj_idx_orig]
-#     obj_id = obj_id_orig * "§FOR" # assume forward reaction is objective
-#     c = zeros(n_vars)
-#     obj_idx = reaction_map[obj_id]
-#     c[obj_idx] = 1.0
+    for (rid, col_idx) in reaction_map
+        original_rid = string(split(rid, "§")[1])
 
-#     #: inequality constraints
-#     M, h = _smoment_build_inequality_constraints(
-#         model,
-#         n_reactions,
-#         lb_fluxes,
-#         ub_fluxes,
-#         reaction_map,
-#     )
+        # skip these entries
+        !haskey(rid_isozymes, original_rid) && continue
+        # these entries have kcats, only one GRR by assumption
+        isozyme = first(rid_isozymes[original_rid])
+        mw = sum([model.genes[gid].molar_mass * ps for (gid, ps) in isozyme.stoichiometry])
+        kcat = contains(rid, "§FOR") ? first(isozyme.kcats) : last(isozyme.kcats)
+        Se[1, col_idx] = -mw / kcat
+    end
 
-#     #: overwrite geckomodel data
-#     model.smomentdata = SMomentData(
-#         sparse(c),
-#         sparse(E),
-#         sparse(d),
-#         sparse(M),
-#         sparse(h),
-#         reaction_map,
-#         metabolite_map,
-#     )
+    S = [
+        irrevS zeros(num_metabolites, 1)
+        Se 1.0
+    ]
 
-#     return nothing
-# end
+    #: equality rhs
+    b = zeros(num_metabolites + 1)
 
-# """
-#     _smoment_build_inequality_constraints(
-#         model::SMomentModel,
-#         n_reactions,
-#         lb_fluxes,
-#         ub_fluxes,
-#         reaction_map,
-#     )
+    #: find objective
+    obj_idx_orig = first(findnz(objective(model))[1])
+    obj_id_orig = reactions(model)[obj_idx_orig]
+    obj_id = obj_id_orig * "§FOR" # assume forward reaction is objective
+    c = spzeros(num_vars)
+    obj_idx = reaction_map[obj_id]
+    c[obj_idx] = 1.0
 
-# Helper function to return functions describing the inequality
-# constraints for smoment.
-# """
-# function _smoment_build_inequality_constraints(
-#     model::SMomentModel,
-#     n_reactions,
-#     lb_fluxes,
-#     ub_fluxes,
-#     reaction_map,
-# )
+    #: bounds
+    xl = sparse([lb_fluxes; 0.0])
+    xu = sparse([ub_fluxes; enzyme_capacity])
 
-#     #: inequality lhs
-#     M = Array(
-#         [
-#             -I(n_reactions) zeros(n_reactions, 1)
-#             I(n_reactions) zeros(n_reactions, 1)
-#             zeros(1, n_reactions) 1
-#         ],
-#     )
+    return SMomentModel(
+        reactions(model),
+        _order_id_to_idx_dict(reaction_map),
+        _order_id_to_idx_dict(metabolite_map),
+        c,
+        S,
+        b,
+        xl,
+        xu,
+    )
+end
 
-#     #: inequality rhs
-#     for original_rid in keys(model.enzymedata.flux_measurements) # only constrain if measurement available
-#         lb = model.enzymedata.flux_measurements[original_rid][1]
-#         ub = model.enzymedata.flux_measurements[original_rid][2]
-#         rids = [rid for rid in keys(reaction_map) if startswith(rid, original_rid)]
+"""
+    change_bound(model::SMomentModel, id; lb=nothing, ub=nothing)
 
-#         if lb > 0 # forward only
-#             for rid in rids
-#                 contains(rid, "§REV") && (ub_fluxes[reaction_map[rid]] = 0.0)
-#                 contains(rid, "§FOR") &&
-#                     (ub_fluxes[reaction_map[rid]] = ub; lb_fluxes[reaction_map[rid]] = lb)
-#             end
-#         elseif ub < 0 # reverse only
-#             for rid in rids
-#                 contains(rid, "§FOR") && (ub_fluxes[reaction_map[rid]] = 0.0)
-#                 contains(rid, "§REV") &&
-#                     (ub_fluxes[reaction_map[rid]] = -lb; lb_fluxes[reaction_map[rid]] = -ub)
-#             end
-#         else # measurement does not rule our reversibility
-#             for rid in rids
-#                 contains(rid, "§FOR") &&
-#                     (ub_fluxes[reaction_map[rid]] = ub; lb_fluxes[reaction_map[rid]] = 0)
-#                 contains(rid, "§REV") &&
-#                     (ub_fluxes[reaction_map[rid]] = -lb; lb_fluxes[reaction_map[rid]] = 0)
-#             end
-#         end
-#     end
+Change the bound of variable in `model`. Does not change the bound if respective
+bound is `nothing`. Note, for `SMomentModel`s, if the model used to construct the
+`SMomentModel` has irreversible reactions, then these reactions will be
+permanently irreversible in the model, i.e. changing their bounds to make them
+reversible will have no effect.
+"""
+function change_bound(model::SMomentModel, id; lb=nothing, ub=nothing)
 
-#     h = Array([-lb_fluxes; ub_fluxes; model.enzymedata.total_protein_mass])
+    
+    flux_for_idx = findfirst(x -> x == id*"§ARM§FOR" || x == id*"§FOR", model.irrev_reaction_ids)
+    if !isnothing(flux_for_idx)
+        if !isnothing(lb)
+            if lb <= 0 
+                model.xl[flux_for_idx] = 0
+            else
+                model.xl[flux_for_idx] = lb
+            end
+        end
+        if !isnothing(ub)
+            if ub <= 0 
+                model.xu[flux_for_idx] = 0
+            else
+                model.xu[flux_for_idx] = ub
+            end
+        end
+    end
+    
+    flux_rev_idx = findfirst(x -> x == id*"§ARM§REV" || x == id*"§REV", model.irrev_reaction_ids)
+    if !isnothing(flux_rev_idx)
+        if !isnothing(lb)
+            if lb >= 0 
+                model.xu[flux_rev_idx] = 0
+            else
+                model.xu[flux_rev_idx] = -lb
+            end
+            if !isnothing(ub)
+                if ub >= 0 
+                    model.xl[flux_rev_idx] = 0
+                else
+                    model.xl[flux_rev_idx] = -ub
+                end
+            end
+        end    
+    end
+    
+    return nothing
+end
 
-#     return M, h
-# end
+"""
+    change_bounds(model::SMomentModel, ids; lbs=fill(nothing, length(ids)), ubs=fill(nothing, length(ids)))
+
+Change the bounds of multiple variables in `model` simultaneously. See 
+[`change_bound`](@ref) for details.
+"""
+function change_bounds(model::SMomentModel, ids; lbs=fill(nothing, length(ids)), ubs=fill(nothing, length(ids)))
+    for (id, lb, ub) in zip(ids, lbs, ubs) 
+        change_bound(model, id; lb=lb, ub=ub)
+    end
+end

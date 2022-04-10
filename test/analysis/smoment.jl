@@ -1,37 +1,46 @@
-# @testset "SMOMENT" begin
-#     smodel = load_model(StandardModel, model_paths["e_coli_core.json"])
-#     smodel.reactions["EX_glc__D_e"].lb = -1000.0 # unconstrain because enzyme constraints take over
-#     flux_measurements = Dict("GLCpts" => (-1.0, 12.0))
-#     total_protein_mass = 100 # mg/gdW
+@testset "SMOMENT" begin
+    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    total_protein_mass = 100 # mg/gdW
 
-#     remove_slow_isozymes!(
-#         smodel;
-#         reaction_protein_stoichiometry = ecoli_core_protein_stoichiometry,
-#         protein_masses = ecoli_core_protein_masses,
-#         reaction_kcats = ecoli_core_reaction_kcats,
-#     )
+    #: construct isozymes from model
+    rid_isozymes = Dict{String,Vector{Isozyme}}()
+    for (rid, kcats) in ecoli_core_reaction_kcats
+        grrs = reaction_gene_association(model, rid)
+        rid_isozymes[rid] = [
+            Isozyme(
+                Dict(grrs[i] .=> ecoli_core_protein_stoichiometry[rid][i]),
+                (kcats[i][1], kcats[i][2]),
+            ) for i = 1:length(grrs)
+        ]
+    end
 
-#     model = SMomentModel(
-#         smodel;
-#         reaction_kcats = ecoli_core_reaction_kcats,
-#         reaction_protein_stoichiometry = ecoli_core_protein_stoichiometry,
-#         protein_masses = ecoli_core_protein_masses,
-#         total_protein_mass = total_protein_mass, # mg/gdW
-#         flux_measurements,
-#     )
+    #: add molar mass to genes in model
+    for (gid, g) in model.genes
+        model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
+    end
 
-#     opt_model = flux_balance_analysis(
-#         model,
-#         Tulip.Optimizer;
-#         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-#         sense = COBREXA.MOI.MAX_SENSE,
-#     )
+    remove_slow_isozymes!(
+        model,
+        rid_isozymes
+    )
 
-#     rxn_fluxes = flux_dict(model, opt_model)
+    smm = SMomentModel(
+        model;
+        rid_isozymes,
+        enzyme_capacity = total_protein_mass
+    )
 
-#     @test isapprox(
-#         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
-#         0.8907273630431708,
-#         atol = TEST_TOLERANCE,
-#     )
-# end
+    change_bounds(smm, ["EX_glc__D_e", "GLCpts"]; lbs=[-1000.0, -1.0], ubs=[nothing, 12.0])
+    
+    rxn_fluxes = flux_balance_analysis_dict(
+        smm,
+        Tulip.Optimizer;
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    )
+
+    @test isapprox(
+        rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
+        0.8907273630431708,
+        atol = TEST_TOLERANCE,
+    )
+end

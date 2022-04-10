@@ -11,8 +11,7 @@ forward direction) and `"§REV"` (for the reverse direction) is appended to each
 reaction internally. Hence, `"§"` is reserved for internal use as a delimiter,
 no reaction id should contain this character. 
 
-To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel`
-to run an analysis on it.
+To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel`.
 
 # Fields
 ```
@@ -73,7 +72,8 @@ objective(model::GeckoModel) = model.c
 """
     reactions(model::GeckoModel)
 
-Returns reactions order according to stoichiometric matrix.
+Returns the reversible reactions in `model`. For 
+the irreversible reactions, use [`irreversible_reactions`][@ref].
 """
 reactions(model::GeckoModel) = model.reaction_ids
 
@@ -83,6 +83,13 @@ reactions(model::GeckoModel) = model.reaction_ids
 Returns the number of reactions in the model.
 """
 n_reactions(model::GeckoModel) = length(model.reaction_ids)
+
+"""
+    irreversible_reactions(model::GeckoModel)
+
+Returns the irreversible reactions in `model`.
+"""
+irreversible_reactions(model::GeckoModel) = model.irrev_reaction_ids
 
 """
     genes(model::GeckoModel)
@@ -190,7 +197,7 @@ function GeckoModel(
     enzyme_capacities = [(),],
 )
     S, lb_fluxes, ub_fluxes, reaction_map, metabolite_map =
-        _build_irreversible_stoichiometric_matrix(model)
+        _build_irreversible_stoichiometric_matrix(model, rid_isozymes)
 
     #: find all gene products that have kcats associated with them
     gene_ids = get_genes_with_kcats(rid_isozymes)
@@ -329,35 +336,6 @@ function _add_enzyme_variable(
         push!(E_components.col_idxs, col_idx)
         push!(E_components.coeffs, -pst / kcat)
     end
-end
-
-"""
-    get_genes_with_kcats(rid_isozymes::Dict{String, Vector{Isozyme}})
-
-Return all protein (gene ids) that have a kcat from `model` based on `reaction_kcats` field.
-Assume that if a reaction has a kcat then each isozyme has a kcat.
-"""
-function get_genes_with_kcats(rid_isozymes::Dict{String, Vector{Isozyme}})
-    gids = String[]
-    for isozymes in values(rid_isozymes)
-        for isozyme in isozymes
-            append!(gids, collect(keys(isozyme.stoichiometry)))
-        end
-    end
-    return unique(gids)
-end
-
-"""
-    _order_id_to_idx_dict(id_to_idx_dict)
-
-Return the keys of `id_to_idx_dict` sorted by the values, which
-are taken to be the indices. This is a helper function for
-[`reactions`](@ref) and [`metabolites`](@ref).
-"""
-function _order_id_to_idx_dict(dmap)
-    ks = collect(keys(dmap))
-    vs = collect(values(dmap))
-    return ks[sortperm(vs)]
 end
 
 """

@@ -3,9 +3,15 @@
 
 Return a stoichiometric matrix where all reactions are forward only i.e. only
 positive fluxes are allowed. To accomplish this for models with isozymes,
-so-called arm reactions are included.
+so-called arm reactions are included. Note, reactions that are irreversible 
+in the original model will be irreversible in this model. E.g., if a reaction
+is forward only in the original model, then there will be no reverse component 
+for this reaction in the irreversible stoichiometric matrix.
 """
-function _build_irreversible_stoichiometric_matrix(model::StandardModel)
+function _build_irreversible_stoichiometric_matrix(
+    model::StandardModel, 
+    rid_isozymes = Dict{String, Vector{Isozyme}}(),
+)
     # components used to build stoichiometric matrix
     S_components = ( #TODO add size hints if possible
         row_idxs = Vector{Int}(),
@@ -29,13 +35,13 @@ function _build_irreversible_stoichiometric_matrix(model::StandardModel)
     # fill the matrix entries
     #: blocked treated as reversible because unclear what direction the reaction would go
     for rid in reactions(model)
-        if has_reaction_grr(model, rid) && has_reaction_isozymes(model, rid)
+        if haskey(rid_isozymes, rid) && length(rid_isozymes[rid]) > 1
             if is_reaction_unidirectional(model, rid)
                 dir = is_reaction_forward_only(model, rid) ? "§FOR" : "§REV"
-                _add_isozyme_to_irrev_stoich_mat(model, rid, idxs, S_components, dir)
+                _add_isozyme_to_irrev_stoich_mat(model, rid_isozymes, rid, idxs, S_components, dir)
             elseif is_reaction_reversible(model, rid) || is_reaction_blocked(model, rid)
-                _add_isozyme_to_irrev_stoich_mat(model, rid, idxs, S_components, "§FOR")
-                _add_isozyme_to_irrev_stoich_mat(model, rid, idxs, S_components, "§REV")
+                _add_isozyme_to_irrev_stoich_mat(model, rid_isozymes, rid, idxs, S_components, "§FOR")
+                _add_isozyme_to_irrev_stoich_mat(model, rid_isozymes, rid, idxs, S_components, "§REV")
             else
                 @warn "Unhandled bound type for $rid"
             end
@@ -108,6 +114,7 @@ Complex variant that deals with isozymes and arm reactions.
 """
 function _add_isozyme_to_irrev_stoich_mat(
     model::StandardModel,
+    rid_isoyzmes,
     rid,
     idxs,
     S_components,
@@ -159,7 +166,7 @@ function _add_isozyme_to_irrev_stoich_mat(
         push!(S_components.ubs, lb)
     end
     # add isozyme reactions
-    for (i, _) in enumerate(reaction_gene_association(model, rid))
+    for (i, _) in enumerate(rid_isoyzmes[rid])
         iso_rid = rid * "§ISO$i" * dir
         idxs.rxn_idxs[iso_rid] = idxs.max_rxn_idx[1]
         idxs.max_rxn_idx[1] += 1
@@ -179,4 +186,17 @@ function _add_isozyme_to_irrev_stoich_mat(
             push!(S_components.ubs, 1000) # arbitrary upper bound
         end
     end
+end
+
+"""
+    _order_id_to_idx_dict(id_to_idx_dict)
+
+Return the keys of `id_to_idx_dict` sorted by the values, which
+are taken to be the indices. This is a helper function for
+[`reactions`](@ref) and [`metabolites`](@ref).
+"""
+function _order_id_to_idx_dict(dmap)
+    ks = collect(keys(dmap))
+    vs = collect(values(dmap))
+    return ks[sortperm(vs)]
 end
