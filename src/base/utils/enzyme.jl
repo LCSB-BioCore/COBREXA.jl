@@ -4,7 +4,10 @@
 Return a dictionary mapping protein concentrations to their ids.
 """
 protein_dict(model::GeckoModel, opt_model) =
-    is_solved(opt_model) ? Dict(model.gene_ids .=> value.(opt_model[:x][(length(model.irrev_reaction_ids)+1):end])) : nothing
+    is_solved(opt_model) ?
+    Dict(
+        model.gene_ids .=> value.(opt_model[:x][(length(model.irrev_reaction_ids)+1):end]),
+    ) : nothing
 
 """
     get_genes_with_kcats(rid_isozymes::Dict{String, Vector{Isozyme}})
@@ -12,7 +15,7 @@ protein_dict(model::GeckoModel, opt_model) =
 Return all protein (gene ids) that have a kcat from `model` based on `reaction_kcats` field.
 Assume that if a reaction has a kcat then each isozyme has a kcat.
 """
-function get_genes_with_kcats(rid_isozymes::Dict{String, Vector{Isozyme}})
+function get_genes_with_kcats(rid_isozymes::Dict{String,Vector{Isozyme}})
     gids = String[]
     for isozymes in values(rid_isozymes)
         for isozyme in isozymes
@@ -33,7 +36,7 @@ Remove all but the fastest isozymes from `rid_isozymes`. Use the largest kcat
 """
 function remove_slow_isozymes!(
     model::StandardModel,
-    rid_isozymes = Dict{String, Vector{Isozyme}}(),
+    rid_isozymes = Dict{String,Vector{Isozyme}}(),
 )
     for (rid, isozymes) in rid_isozymes
         kcat_effs = Float64[]
@@ -66,7 +69,7 @@ Modify `rid_isozymes` in place by keeping only the highest expressed isozyme.
 """
 function remove_low_expressed_isozymes!(
     model::StandardModel,
-    rid_isozymes =  Dict{String, Vector{Isozyme}}(),
+    rid_isozymes = Dict{String,Vector{Isozyme}}(),
     gid_measurements = Dict(),
 )
 

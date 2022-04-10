@@ -12,6 +12,6 @@ kcats :: Tuple{Float64, Float64}
 ````
 """
 mutable struct Isozyme
-    stoichiometry :: Dict{String, Int}
-    kcats :: Tuple{Float64, Float64}
+    stoichiometry::Dict{String,Int}
+    kcats::Tuple{Float64,Float64}
 end

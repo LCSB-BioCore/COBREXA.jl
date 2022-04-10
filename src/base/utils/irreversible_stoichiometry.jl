@@ -9,8 +9,8 @@ is forward only in the original model, then there will be no reverse component
 for this reaction in the irreversible stoichiometric matrix.
 """
 function _build_irreversible_stoichiometric_matrix(
-    model::StandardModel, 
-    rid_isozymes = Dict{String, Vector{Isozyme}}(),
+    model::StandardModel,
+    rid_isozymes = Dict{String,Vector{Isozyme}}(),
 )
     # components used to build stoichiometric matrix
     S_components = ( #TODO add size hints if possible
@@ -38,10 +38,31 @@ function _build_irreversible_stoichiometric_matrix(
         if haskey(rid_isozymes, rid) && length(rid_isozymes[rid]) > 1
             if is_reaction_unidirectional(model, rid)
                 dir = is_reaction_forward_only(model, rid) ? "§FOR" : "§REV"
-                _add_isozyme_to_irrev_stoich_mat(model, rid_isozymes, rid, idxs, S_components, dir)
+                _add_isozyme_to_irrev_stoich_mat(
+                    model,
+                    rid_isozymes,
+                    rid,
+                    idxs,
+                    S_components,
+                    dir,
+                )
             elseif is_reaction_reversible(model, rid) || is_reaction_blocked(model, rid)
-                _add_isozyme_to_irrev_stoich_mat(model, rid_isozymes, rid, idxs, S_components, "§FOR")
-                _add_isozyme_to_irrev_stoich_mat(model, rid_isozymes, rid, idxs, S_components, "§REV")
+                _add_isozyme_to_irrev_stoich_mat(
+                    model,
+                    rid_isozymes,
+                    rid,
+                    idxs,
+                    S_components,
+                    "§FOR",
+                )
+                _add_isozyme_to_irrev_stoich_mat(
+                    model,
+                    rid_isozymes,
+                    rid,
+                    idxs,
+                    S_components,
+                    "§REV",
+                )
             else
                 @warn "Unhandled bound type for $rid"
             end

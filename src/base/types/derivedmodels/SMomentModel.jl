@@ -110,8 +110,14 @@ Helper function to get fluxes from optimization problem.
 function reaction_flux(model::SMomentModel)
     R = spzeros(n_reactions(model), length(model.irrev_reaction_ids) + 1)
     for (i, rid) in enumerate(reactions(model))
-        for_idx = findfirst(x -> x == rid*"§ARM§FOR" || x == rid*"§FOR", model.irrev_reaction_ids)
-        rev_idx = findfirst(x -> x == rid*"§ARM§REV" || x == rid*"§REV", model.irrev_reaction_ids)
+        for_idx = findfirst(
+            x -> x == rid * "§ARM§FOR" || x == rid * "§FOR",
+            model.irrev_reaction_ids,
+        )
+        rev_idx = findfirst(
+            x -> x == rid * "§ARM§REV" || x == rid * "§REV",
+            model.irrev_reaction_ids,
+        )
         !isnothing(for_idx) && (R[i, for_idx] = 1.0)
         !isnothing(rev_idx) && (R[i, rev_idx] = -1.0)
     end
@@ -129,7 +135,7 @@ Construct an `SMomentModel`.
 """
 function SMomentModel(
     model::StandardModel;
-    rid_isozymes = Dict{String, Vector{Isozyme}}(),
+    rid_isozymes = Dict{String,Vector{Isozyme}}(),
     enzyme_capacity = 0.0,
 )
 
@@ -204,45 +210,47 @@ bound is `nothing`. Note, for `SMomentModel`s, if the model used to construct th
 permanently irreversible in the model, i.e. changing their bounds to make them
 reversible will have no effect.
 """
-function change_bound(model::SMomentModel, id; lb=nothing, ub=nothing)
+function change_bound(model::SMomentModel, id; lb = nothing, ub = nothing)
 
-    
-    flux_for_idx = findfirst(x -> x == id*"§ARM§FOR" || x == id*"§FOR", model.irrev_reaction_ids)
+
+    flux_for_idx =
+        findfirst(x -> x == id * "§ARM§FOR" || x == id * "§FOR", model.irrev_reaction_ids)
     if !isnothing(flux_for_idx)
         if !isnothing(lb)
-            if lb <= 0 
+            if lb <= 0
                 model.xl[flux_for_idx] = 0
             else
                 model.xl[flux_for_idx] = lb
             end
         end
         if !isnothing(ub)
-            if ub <= 0 
+            if ub <= 0
                 model.xu[flux_for_idx] = 0
             else
                 model.xu[flux_for_idx] = ub
             end
         end
     end
-    
-    flux_rev_idx = findfirst(x -> x == id*"§ARM§REV" || x == id*"§REV", model.irrev_reaction_ids)
+
+    flux_rev_idx =
+        findfirst(x -> x == id * "§ARM§REV" || x == id * "§REV", model.irrev_reaction_ids)
     if !isnothing(flux_rev_idx)
         if !isnothing(lb)
-            if lb >= 0 
+            if lb >= 0
                 model.xu[flux_rev_idx] = 0
             else
                 model.xu[flux_rev_idx] = -lb
             end
             if !isnothing(ub)
-                if ub >= 0 
+                if ub >= 0
                     model.xl[flux_rev_idx] = 0
                 else
                     model.xl[flux_rev_idx] = -ub
                 end
             end
-        end    
+        end
     end
-    
+
     return nothing
 end
 
@@ -252,8 +260,13 @@ end
 Change the bounds of multiple variables in `model` simultaneously. See 
 [`change_bound`](@ref) for details.
 """
-function change_bounds(model::SMomentModel, ids; lbs=fill(nothing, length(ids)), ubs=fill(nothing, length(ids)))
-    for (id, lb, ub) in zip(ids, lbs, ubs) 
-        change_bound(model, id; lb=lb, ub=ub)
+function change_bounds(
+    model::SMomentModel,
+    ids;
+    lbs = fill(nothing, length(ids)),
+    ubs = fill(nothing, length(ids)),
+)
+    for (id, lb, ub) in zip(ids, lbs, ubs)
+        change_bound(model, id; lb = lb, ub = ub)
     end
 end

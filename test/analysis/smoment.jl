@@ -19,19 +19,17 @@
         model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
     end
 
-    remove_slow_isozymes!(
-        model,
-        rid_isozymes
+    remove_slow_isozymes!(model, rid_isozymes)
+
+    smm = SMomentModel(model; rid_isozymes, enzyme_capacity = total_protein_mass)
+
+    change_bounds(
+        smm,
+        ["EX_glc__D_e", "GLCpts"];
+        lbs = [-1000.0, -1.0],
+        ubs = [nothing, 12.0],
     )
 
-    smm = SMomentModel(
-        model;
-        rid_isozymes,
-        enzyme_capacity = total_protein_mass
-    )
-
-    change_bounds(smm, ["EX_glc__D_e", "GLCpts"]; lbs=[-1000.0, -1.0], ubs=[nothing, 12.0])
-    
     rxn_fluxes = flux_balance_analysis_dict(
         smm,
         Tulip.Optimizer;

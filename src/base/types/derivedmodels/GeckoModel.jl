@@ -149,8 +149,14 @@ Helper function to get fluxes from optimization problem.
 function reaction_flux(model::GeckoModel)
     R = spzeros(n_reactions(model), n_genes(model) + length(model.irrev_reaction_ids))
     for (i, rid) in enumerate(reactions(model))
-        for_idx = findfirst(x -> x == rid*"§ARM§FOR" || x == rid*"§FOR", model.irrev_reaction_ids)
-        rev_idx = findfirst(x -> x == rid*"§ARM§REV" || x == rid*"§REV", model.irrev_reaction_ids)
+        for_idx = findfirst(
+            x -> x == rid * "§ARM§FOR" || x == rid * "§FOR",
+            model.irrev_reaction_ids,
+        )
+        rev_idx = findfirst(
+            x -> x == rid * "§ARM§REV" || x == rid * "§REV",
+            model.irrev_reaction_ids,
+        )
         !isnothing(for_idx) && (R[i, for_idx] = 1.0)
         !isnothing(rev_idx) && (R[i, rev_idx] = -1.0)
     end
@@ -193,8 +199,8 @@ prot_concens = protein_dict(gm, opt_model)
 """
 function GeckoModel(
     model::StandardModel;
-    rid_isozymes = Dict{String, Vector{Isozyme}}(),
-    enzyme_capacities = [(),],
+    rid_isozymes = Dict{String,Vector{Isozyme}}(),
+    enzyme_capacities = [()],
 )
     S, lb_fluxes, ub_fluxes, reaction_map, metabolite_map =
         _build_irreversible_stoichiometric_matrix(model, rid_isozymes)
@@ -255,12 +261,10 @@ function GeckoModel(
         num_reactions,
     )
 
-    stoich_mat = sparse(
-        [
-            S zeros(num_metabolites, num_genes)
-            Se I(num_genes)
-        ]
-    )
+    stoich_mat = sparse([
+        S zeros(num_metabolites, num_genes)
+        Se I(num_genes)
+    ])
 
     #: equality rhs
     b = spzeros(num_metabolites + num_genes)
@@ -285,7 +289,7 @@ function GeckoModel(
 
     for (i, enz_cap) in enumerate(enzyme_capacities)
         enz_idxs = indexin(first(enz_cap), gene_ids)
-        C[i, num_reactions .+ enz_idxs] .= mw_proteins[enz_idxs]
+        C[i, num_reactions.+enz_idxs] .= mw_proteins[enz_idxs]
         cu[i] = last(enz_cap)
     end
 
@@ -294,13 +298,13 @@ function GeckoModel(
         _order_id_to_idx_dict(reaction_map),
         _order_id_to_idx_dict(metabolite_map),
         gene_ids,
-        c, 
-        stoich_mat, 
-        b, 
-        xl, 
+        c,
+        stoich_mat,
+        b,
+        xl,
         xu,
-        C, 
-        cl, 
+        C,
+        cl,
         cu,
     )
 end
@@ -347,51 +351,57 @@ bound is `nothing`. Note, for `GeckoModel`s, if the model used to construct the
 permanently irreversible in the model, i.e. changing their bounds to make them
 reversible will have no effect.
 """
-function change_bound(model::GeckoModel, id; lb=nothing, ub=nothing)
+function change_bound(model::GeckoModel, id; lb = nothing, ub = nothing)
     gene_idx = first(indexin([id], model.gene_ids))
-    
+
     if isnothing(gene_idx)
-        flux_for_idx = findfirst(x -> x == id*"§ARM§FOR" || x == id*"§FOR", model.irrev_reaction_ids)
+        flux_for_idx = findfirst(
+            x -> x == id * "§ARM§FOR" || x == id * "§FOR",
+            model.irrev_reaction_ids,
+        )
         if !isnothing(flux_for_idx)
             if !isnothing(lb)
-                if lb <= 0 
+                if lb <= 0
                     model.xl[flux_for_idx] = 0
                 else
                     model.xl[flux_for_idx] = lb
                 end
             end
             if !isnothing(ub)
-                if ub <= 0 
+                if ub <= 0
                     model.xu[flux_for_idx] = 0
                 else
                     model.xu[flux_for_idx] = ub
                 end
             end
         end
-        
-        flux_rev_idx = findfirst(x -> x == id*"§ARM§REV" || x == id*"§REV", model.irrev_reaction_ids)
+
+        flux_rev_idx = findfirst(
+            x -> x == id * "§ARM§REV" || x == id * "§REV",
+            model.irrev_reaction_ids,
+        )
         if !isnothing(flux_rev_idx)
             if !isnothing(lb)
-                if lb >= 0 
+                if lb >= 0
                     model.xu[flux_rev_idx] = 0
                 else
                     model.xu[flux_rev_idx] = -lb
                 end
                 if !isnothing(ub)
-                    if ub >= 0 
+                    if ub >= 0
                         model.xl[flux_rev_idx] = 0
                     else
                         model.xl[flux_rev_idx] = -ub
                     end
                 end
-            end    
+            end
         end
     else
         n = length(model.irrev_reaction_ids)
-        !isnothing(lb) && (model.xl[n + gene_idx] = lb)
-        !isnothing(ub) && (model.xu[n + gene_idx] = ub) 
+        !isnothing(lb) && (model.xl[n+gene_idx] = lb)
+        !isnothing(ub) && (model.xu[n+gene_idx] = ub)
     end
-    
+
     return nothing
 end
 
@@ -401,8 +411,13 @@ end
 Change the bounds of multiple variables in `model` simultaneously. See 
 [`change_bound`](@ref) for details.
 """
-function change_bounds(model::GeckoModel, ids; lbs=fill(nothing, length(ids)), ubs=fill(nothing, length(ids)))
-    for (id, lb, ub) in zip(ids, lbs, ubs) 
-        change_bound(model, id; lb=lb, ub=ub)
+function change_bounds(
+    model::GeckoModel,
+    ids;
+    lbs = fill(nothing, length(ids)),
+    ubs = fill(nothing, length(ids)),
+)
+    for (id, lb, ub) in zip(ids, lbs, ubs)
+        change_bound(model, id; lb = lb, ub = ub)
     end
 end
