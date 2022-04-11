@@ -26,8 +26,8 @@
     change_bounds(
         smm,
         ["EX_glc__D_e", "GLCpts"];
-        lbs = [-1000.0, -1.0],
-        ubs = [nothing, 12.0],
+        lower = [-1000.0, -1.0],
+        upper = [nothing, 12.0],
     )
 
     rxn_fluxes = flux_balance_analysis_dict(

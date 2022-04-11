@@ -27,8 +27,8 @@
     change_bounds(
         gm,
         ["EX_glc__D_e", "b2779", "GLCpts"];
-        lbs = [-1000.0, 0.01, -1.0],
-        ubs = [nothing, 0.06, 12.0],
+        lower = [-1000.0, 0.01, -1.0],
+        upper = [nothing, 0.06, 12.0],
     )
 
     opt_model = flux_balance_analysis(
