@@ -23,7 +23,7 @@
 
     smm = SMomentModel(model; rid_isozymes, enzyme_capacity = total_protein_mass)
 
-    change_bounds(
+    change_bounds!(
         smm,
         ["EX_glc__D_e", "GLCpts"];
         lower = [-1000.0, -1.0],

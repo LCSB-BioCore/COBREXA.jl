@@ -24,7 +24,7 @@
         rid_isozymes,
         enzyme_capacities = [(get_genes_with_kcats(rid_isozymes), total_protein_mass)],
     )
-    change_bounds(
+    change_bounds!(
         gm,
         ["EX_glc__D_e", "b2779", "GLCpts"];
         lower = [-1000.0, 0.01, -1.0],

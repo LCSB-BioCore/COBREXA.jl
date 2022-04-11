@@ -202,7 +202,7 @@ function SMomentModel(
 end
 
 """
-    change_bound(model::SMomentModel, id; lb=nothing, ub=nothing)
+    change_bound!(model::SMomentModel, id; lb=nothing, ub=nothing)
 
 Change the bound of variable in `model`. Does not change the bound if respective
 bound is `nothing`. Note, for `SMomentModel`s, if the model used to construct the
@@ -210,7 +210,7 @@ bound is `nothing`. Note, for `SMomentModel`s, if the model used to construct th
 permanently irreversible in the model, i.e. changing their bounds to make them
 reversible will have no effect.
 """
-function change_bound(model::SMomentModel, id; lb = nothing, ub = nothing)
+function change_bound!(model::SMomentModel, id; lb = nothing, ub = nothing)
 
 
     flux_for_idx =
@@ -255,18 +255,18 @@ function change_bound(model::SMomentModel, id; lb = nothing, ub = nothing)
 end
 
 """
-    change_bounds(model::SMomentModel, ids; lbs=fill(nothing, length(ids)), ubs=fill(nothing, length(ids)))
+    change_bounds!(model::SMomentModel, ids; lbs=fill(nothing, length(ids)), ubs=fill(nothing, length(ids)))
 
 Change the bounds of multiple variables in `model` simultaneously. See 
 [`change_bound`](@ref) for details.
 """
-function change_bounds(
+function change_bounds!(
     model::SMomentModel,
     ids;
     lbs = fill(nothing, length(ids)),
     ubs = fill(nothing, length(ids)),
 )
     for (id, lb, ub) in zip(ids, lbs, ubs)
-        change_bound(model, id; lb = lb, ub = ub)
+        change_bound!(model, id; lb = lb, ub = ub)
     end
 end

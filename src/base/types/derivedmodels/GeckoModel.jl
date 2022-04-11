@@ -343,7 +343,7 @@ function _add_enzyme_variable(
 end
 
 """
-    change_bound(model::GeckoModel, id; lower=nothing, upper=nothing)
+    change_bound!(model::GeckoModel, id; lower=nothing, upper=nothing)
 
 Change the bound of variable in `model`. Does not change the bound if respective
 bound is `nothing`. Note, for `GeckoModel`s, if the model used to construct the
@@ -351,7 +351,7 @@ bound is `nothing`. Note, for `GeckoModel`s, if the model used to construct the
 permanently irreversible in the model, i.e. changing their bounds to make them
 reversible will have no effect.
 """
-function change_bound(model::GeckoModel, id; lower = nothing, upper = nothing)
+function change_bound!(model::GeckoModel, id; lower = nothing, upper = nothing)
     gene_idx = first(indexin([id], model.gene_ids))
 
     if isnothing(gene_idx)
@@ -406,12 +406,12 @@ function change_bound(model::GeckoModel, id; lower = nothing, upper = nothing)
 end
 
 """
-    change_bounds(model::GeckoModel, ids; lower=fill(nothing, length(ids)), upper=fill(nothing, length(ids)))
+    change_bounds!(model::GeckoModel, ids; lower=fill(nothing, length(ids)), upper=fill(nothing, length(ids)))
 
 Change the bounds of multiple variables in `model` simultaneously. See 
 [`change_bound`](@ref) for details.
 """
-function change_bounds(
+function change_bounds!(
     model::GeckoModel,
     ids;
     lower = fill(nothing, length(ids)),
