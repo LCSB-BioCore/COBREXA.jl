@@ -38,7 +38,7 @@ function make_smomentmodel(
         # these entries have kcats, only one GRR by assumption
         isozyme = first(rid_isozymes[original_rid])
         mw = sum([model.genes[gid].molar_mass * ps for (gid, ps) in isozyme.stoichiometry])
-        kcat = contains(rid, "§FOR") ? first(isozyme.kcats) : last(isozyme.kcats)
+        kcat = contains(rid, "§FOR") ? isozyme.kcat_forward : isozyme.kcat_reverse
         Se[1, col_idx] = -mw / kcat
     end
 
