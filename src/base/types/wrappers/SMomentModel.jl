@@ -121,10 +121,8 @@ n_coupling_constraints(model::SMomentModel) =
 The coupling bounds for [`SMomentModel`](@ref) (refer to [`coupling`](@ref) for
 details).
 """
-coupling_bounds(model::SMomentModel) =
-    let
-        (ilb, iub) =
-            n_coupling_constraints(model.inner), (rlb, rub) =
-                _smoment_reaction_coupling_bounds(model)
-        (vcat(ilb, rlb, 0), vcat(iub, rub, model.total_enzyme_capacity))
-    end
+function coupling_bounds(model::SMomentModel)
+    (ilb, iub) = n_coupling_constraints(model.inner)
+    (rlb, rub) = _smoment_reaction_coupling_bounds(model)
+    return (vcat(ilb, rlb, 0), vcat(iub, rub, model.total_enzyme_capacity))
+end
