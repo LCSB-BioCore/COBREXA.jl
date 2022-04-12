@@ -2,9 +2,9 @@
 """
     make_smoment_model(
         model::MetabolicModel;
-        reaction_isozymes,
-        gene_product_capacity_required,
-        total_enzyme_capacity = 0.0,
+        reaction_isozymes::Function,
+        gene_product_capacity_required::Function,
+        total_enzyme_capacity,
     )
 
 Construct an [`SMomentModel`](@ref) model using the inner `model` and a map of
@@ -12,8 +12,8 @@ isozymes.
 """
 function make_smoment_model(
     model::MetabolicModel;
-    reaction_isozymes,
-    gene_product_molar_mass,
+    reaction_isozymes::Function,
+    gene_product_molar_mass::Function,
     total_enzyme_capacity::Float64,
 )
     columns = Vector{_smoment_column}()
