@@ -55,9 +55,11 @@ Reconstruct an objective of the [`SMomentModel`](@ref).
 objective(model::SMomentModel) = _smoment_column_reactions(model)' * objective(model.inner)
 
 """
-    irreversible_reactions(model::SMomentModel)
+    reactions(model::SMomentModel)
 
-Returns the irreversible reactions in `model`.
+Returns the internal reactions in a [`SMomentModel`](@ref) (these may be split
+to forward- and reverse-only parts; reactions IDs mangled accordingly with
+suffixes).
 """
 reactions(model::SMomentModel) =
     let inner_reactions = reactions(model.inner)
