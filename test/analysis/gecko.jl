@@ -51,4 +51,3 @@
 
     @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
 end
-
