@@ -19,7 +19,7 @@
         model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
     end
 
-    gm = GeckoModel(
+    gm = make_geckomodel(
         model;
         rid_isozymes,
         enzyme_capacities = [(get_genes_with_kcats(rid_isozymes), total_protein_mass)],

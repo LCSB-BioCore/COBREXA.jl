@@ -21,7 +21,7 @@
 
     remove_slow_isozymes!(model, rid_isozymes)
 
-    smm = SMomentModel(model; rid_isozymes, enzyme_capacity = total_protein_mass)
+    smm = make_smomentmodel(model; rid_isozymes, enzyme_capacity = total_protein_mass)
 
     change_bounds!(
         smm,
