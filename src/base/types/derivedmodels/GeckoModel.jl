@@ -418,6 +418,6 @@ function change_bounds!(
     upper = fill(nothing, length(ids)),
 )
     for (id, lower, upper) in zip(ids, lower, upper)
-        change_bound(model, id; lower = lower, upper = upper)
+        change_bound!(model, id; lower = lower, upper = upper)
     end
 end
