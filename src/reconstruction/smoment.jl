@@ -54,7 +54,7 @@ end
 """
     change_bounds!(model::SMomentModel, ids; lower=fill(nothing, length(ids)), upper=fill(nothing, length(ids)))
 
-Change the bounds of multiple variables in `model` simultaneously. See 
+Change the bounds of multiple variables in `model` simultaneously. See
 [`change_bound`](@ref) for details.
 """
 function change_bounds!(

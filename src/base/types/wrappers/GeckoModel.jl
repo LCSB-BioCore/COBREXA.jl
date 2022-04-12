@@ -9,7 +9,7 @@ constraints." Molecular systems biology, 2017.` for implementation details.
 Note, since the model uses irreversible reactions internally, `"§FOR"` (for the
 forward direction) and `"§REV"` (for the reverse direction) is appended to each
 reaction internally. Hence, `"§"` is reserved for internal use as a delimiter,
-no reaction id should contain this character. 
+no reaction id should contain this character.
 
 To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel`.
 
@@ -35,7 +35,7 @@ mutable struct GeckoModel <: MetabolicModel
     metabolites::Vector{String}
     gene_ids::Vector{String}
 
-    # gecko  
+    # gecko
     c::SparseVec
     S::SparseMat
     b::SparseVec
@@ -72,7 +72,7 @@ objective(model::GeckoModel) = model.c
 """
     fluxes(model::GeckoModel)
 
-Returns the reversible reactions in `model`. For 
+Returns the reversible reactions in `model`. For
 the irreversible reactions, use [`reactions`][@ref].
 """
 fluxes(model::GeckoModel) = model.reaction_ids
@@ -121,7 +121,7 @@ Return the metabolites in `model`.
 metabolites(model::GeckoModel) = model.metabolites
 
 """
-    n_metabolites(model::GeckoModel) = 
+    n_metabolites(model::GeckoModel) =
 
 Return the number of metabolites in `model`.
 """

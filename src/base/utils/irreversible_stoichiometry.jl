@@ -3,9 +3,9 @@
 
 Return a stoichiometric matrix where all reactions are forward only i.e. only
 positive fluxes are allowed. To accomplish this for models with isozymes,
-so-called arm reactions are included. Note, reactions that are irreversible 
+so-called arm reactions are included. Note, reactions that are irreversible
 in the original model will be irreversible in this model. E.g., if a reaction
-is forward only in the original model, then there will be no reverse component 
+is forward only in the original model, then there will be no reverse component
 for this reaction in the irreversible stoichiometric matrix.
 """
 function _build_irreversible_stoichiometric_matrix(

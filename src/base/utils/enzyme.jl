@@ -74,7 +74,7 @@ end
         gid_measurements = Dict(),
     )
 
-Modify `rid_isozymes` in place by keeping only the highest expressed isozyme. 
+Modify `rid_isozymes` in place by keeping only the highest expressed isozyme.
 """
 function remove_low_expressed_isozymes!(
     model::StandardModel,

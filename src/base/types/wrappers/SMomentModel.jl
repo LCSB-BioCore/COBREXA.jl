@@ -62,7 +62,7 @@ objective(model::SMomentModel) = model.c
 """
     fluxes(model::SMomentModel)
 
-Returns the reversible reactions in `model`. For 
+Returns the reversible reactions in `model`. For
 the irreversible reactions, use [`reactions`][@ref].
 """
 fluxes(model::SMomentModel) = model.reaction_ids
@@ -96,7 +96,7 @@ Return the metabolites in `model`.
 metabolites(model::SMomentModel) = model.metabolites
 
 """
-    n_metabolites(model::SMomentModel) = 
+    n_metabolites(model::SMomentModel) =
 
 Return the number of metabolites in `model`.
 """

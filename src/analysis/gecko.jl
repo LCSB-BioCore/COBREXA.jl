@@ -3,12 +3,12 @@
         model::StandardModel;
         rid_isozymes = Dict{String, Vector{Isozyme}}(),
         enzyme_capacities = [(),],
-    ) 
+    )
 
-Construct a `GeckoModel` based on `model` using the kinetic data encoded by 
+Construct a `GeckoModel` based on `model` using the kinetic data encoded by
 `rid_isozymes`. Enzyme capacity constraints can be added through `enzyme_capacities`,
 which is a vector of tuples. In the first position of the tuple is a list of gene ids,
-and the second position is mass upperbound of the sum of these gene ids. 
+and the second position is mass upperbound of the sum of these gene ids.
 
 The units of the fluxes and protein concentration depend on those used in
 `rid_isozymes` for the kcats and the molar masses encoded in  the genes of

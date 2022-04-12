@@ -25,7 +25,7 @@ end
     gets(collection, fail, keys)
 
 Return `fail` if key in `keys` is not in `collection`, otherwise
-return `collection[key]`. Useful if may different keys need to be 
+return `collection[key]`. Useful if may different keys need to be
 tried due to non-standardized model formats.
 """
 function gets(collection, fail, keys)
