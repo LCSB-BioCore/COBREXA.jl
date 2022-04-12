@@ -1,13 +1,22 @@
 """
     protein_dict(model::GeckoModel, opt_model)
 
-Return a dictionary mapping protein concentrations to their ids.
+Return a dictionary mapping protein concentrations to their ids. The argument
+`opt_model` is a solved optimization problem, typically returned by
+[`flux_balance_analysis`](@ref).
 """
 protein_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
         model.gene_ids .=> value.(opt_model[:x][(length(model.irrev_reaction_ids)+1):end]),
     ) : nothing
+
+"""
+    protein_dict(model::GeckoModel)
+
+A pipe-able variant of `protein_dict`.
+"""
+protein_dict(model::GeckoModel) = x -> protein_dict(model, x)
 
 """
     get_genes_with_kcats(rid_isozymes::Dict{String, Vector{Isozyme}})

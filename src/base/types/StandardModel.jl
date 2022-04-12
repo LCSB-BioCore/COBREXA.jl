@@ -444,21 +444,21 @@ function is_reaction_blocked(model::StandardModel, rid::String)
 end
 
 """
-    has_reaction_isozymes(model::StandardModel, rid::String)
+    reaction_has_multiple_isozymes(model::StandardModel, rid::String)
 
 Check if reaction `rid` in `model` is catalyzed by multiple enzymes,
 i.e. it has isozymes according to the gene reaction rules.
 """
-function has_reaction_isozymes(model::StandardModel, rid::String)
+function reaction_has_multiple_isozymes(model::StandardModel, rid::String)
     length(reaction_gene_association(model, rid)) > 1
 end
 
 """
-    reaction_has_grr(model::StandardModel, rid::String)
+    reaction_has_valid_gene_association(model::StandardModel, rid::String)
 
 Check if reaction `rid` in `model` has a gene reaction rule entry.
 """
-function has_reaction_grr(model::StandardModel, rid::String)
+function reaction_has_valid_gene_association(model::StandardModel, rid::String)
     #TODO simplify this once COBREXA enforces universal rules for GRR representation
     haskey(model.reactions, rid) &&
         !isnothing(reaction_gene_association(model, rid)) &&

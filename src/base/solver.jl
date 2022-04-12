@@ -124,3 +124,10 @@ flux_dict(model, flux_balance_analysis(model, ...))
 flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
     is_solved(opt_model) ?
     Dict(reactions(model) .=> reaction_flux(model)' * value.(opt_model[:x])) : nothing
+
+"""
+    flux_dict(model::MetabolicModel)
+
+A pipeable variant of `flux_dict`
+"""
+flux_dict(model::MetabolicModel) = x -> flux_dict(model, x)

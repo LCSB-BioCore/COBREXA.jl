@@ -1,9 +1,9 @@
 """
     mutable struct Isozyme
 
-Struct containing isozyme information. Here, `stoichiometry` is a 
-dictionary of gene ids to their stoichiometry in the isozyme complex,
-and `kcats` is a tuple of the forward and reverse kcats of the isozyme.
+Struct containing isozyme information. Here, `stoichiometry` is a dictionary of
+gene ids to their stoichiometry in the isozyme complex, and `kcats` is a tuple
+of the forward and reverse turnover numbers of the isozyme.
 
 # Fields
 ````
