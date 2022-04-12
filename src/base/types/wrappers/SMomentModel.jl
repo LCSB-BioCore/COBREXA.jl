@@ -119,8 +119,7 @@ Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
 fluxes in the wrapped model.
 """
 reaction_flux(model::SMomentModel) =
-    reaction_flux(model.inner) * _smoment_column_reactions(model)
-
+    _smoment_column_reactions(model)' * reaction_flux(model.inner)
 """
     coupling(model::SMomentModel)
 
