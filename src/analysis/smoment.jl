@@ -3,12 +3,24 @@
     make_smoment_model(
         model::MetabolicModel;
         reaction_isozymes::Function,
-        gene_product_capacity_required::Function,
-        total_enzyme_capacity,
+        gene_product_molar_mass::Function,
+        total_enzyme_capacity::Float64,
     )
 
-Construct an [`SMomentModel`](@ref) model using the inner `model` and a map of
-isozymes.
+Construct a model with a structure given by sMOMENT algorithm; returns a
+[`SMomentModel`](@ref) (see the documentation for details.
+
+`reaction_isozymes` parameter is a function that returns a single isozyme for
+each reaction, or `nothing` if the reaction is not enzymatic. If the reaction
+has multiple isozymes, use [`smoment_isozyme_score`](@ref) to select the "best"
+one, as recommended by the sMOMENT approach.
+
+`gene_product_molar_mass` parameter is a function that returns a molar mass of
+each gene product (relative to `total_enzyme_capacity` and the specified
+kcats), as specified by sMOMENT.
+
+`total_enzyme_capacity` is the maximum "enzyme capacity" consumption of the
+model.
 """
 function make_smoment_model(
     model::MetabolicModel;
