@@ -33,7 +33,8 @@ function make_smoment_model(
             push!(coupling_row_reaction, i)
 
             mw = sum(
-                gene_product_molar_mass(gid) * ps for (gid, ps) in isozyme.stoichiometry
+                gene_product_molar_mass(gid) * ps for
+                (gid, ps) in isozyme.gene_product_count
             )
 
             if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
@@ -51,7 +52,7 @@ function make_smoment_model(
                 )
             end
 
-            if min(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
+            if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
                 # reaction can run forward
                 push!(
                     columns,

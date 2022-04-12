@@ -35,39 +35,6 @@ function get_genes_with_kcats(rid_isozymes::Dict{String,Vector{Isozyme}})
 end
 
 """
-    remove_slow_isozymes!(
-        model::StandardModel,
-        rid_isozymes = Dict{String, Vector{Isozyme}}(),
-    )
-
-Remove all but the fastest isozymes from `rid_isozymes`. Use the largest kcat
-(for, rev) for these calculations. Modifies `rid_isozymes` in place.
-"""
-function remove_slow_isozymes!(
-    model::StandardModel,
-    rid_isozymes = Dict{String,Vector{Isozyme}}(),
-)
-    for (rid, isozymes) in rid_isozymes
-        kcat_effs = Float64[]
-        for isozyme in isozymes
-            gid_stoich = isozyme.stoichiometry
-            kcats = isozyme.kcats
-            push!(
-                kcat_effs,
-                dot(
-                    [stoich for stoich in values(gid_stoich)],
-                    [model.genes[gid].molar_mass for gid in keys(gid_stoich)],
-                ) / maximum(kcats),
-            )
-        end
-        idx = argmin(kcat_effs)
-        rid_isozymes[rid] = [rid_isozymes[rid][idx]]
-    end
-
-    return nothing
-end
-
-"""
     remove_low_expressed_isozymes!(
         model::StandardModel,
         rid_isozymes =  Dict{String, Vector{Isozyme}}()

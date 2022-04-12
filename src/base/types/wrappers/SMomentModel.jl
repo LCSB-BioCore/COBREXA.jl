@@ -15,20 +15,48 @@ end
 
 # TODO fix the docstring
 """
-    mutable struct SMomentModel <: ModelWrapper
+    struct SMomentModel <: ModelWrapper
 
-Construct an enzyme capacity constrained model see `Bekiaris, Pavlos Stephanos,
-and Steffen Klamt. "Automatic construction of metabolic models with enzyme
-constraints." BMC bioinformatics, 2020.` for implementation details.
+Construct an enzyme-capacity constrained model using sMOMENT algorithm, as
+described by *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic
+construction of metabolic models with enzyme constraints" BMC bioinformatics,
+2020*.
 
-Note, `"§"` is reserved for internal use as a delimiter, no reaction id should
-contain that character. Also note, SMOMENT assumes that each reaction only has a
-single enzyme (one GRR) associated with it. It is required that a model be
-modified to ensure that this condition is met. For ease-of-use,
-[`remove_slow_isozymes!`](@ref) is supplied to effect this. Currently only
-`modifications` that change attributes of the `optimizer` are supported.
+Use [`make_smoment_model`](@ref) or [`with_smoment`](@ref) to construct the
+models.
+
+The model is constructed as follows:
+- stoichiometry of the original model is retained as much as possible, but
+  enzymatic reations are split into forward and reverse parts (marked by a
+  suffix like `...#forward` and `...#reverse`),
+- sums of forward and reverse reaction pair fluxes are constrained accordingly
+  to the original model,
+- stoichiometry is expanded by a virtual metabolite "enzyme capacity" which is
+  consumed by all enzymatic reactions at a rate given by enzyme mass divided by
+  the corresponding kcat,
+- the total consumption of the enzyme capacity is constrained by a fixed
+  maximum.
+
+The `SMomentModel` structure contains a worked-out representation of the
+optimization problem atop a wrapped [`MetabolicModel`](@ref), in particular the
+separation of certain reactions into unidirectional forward and reverse parts,
+the grouping of these reactions together into virtual "arm" reactions constrained
+by bounds from the inner model, an "enzyme capacity" required for each
+reaction, and the value of the maximum capacity constraint.
+
+In the structure, field `columns` describes the correspondence of stoichiometry
+columns to the stoichiometry and data of the internal wrapped model; field
+`coupling_row_reaction` maps the generated coupling constraints to reaction
+indexes in the wrapped model, and `total_enzyme_capacity` is the total bound on
+the enzyme capacity consumption as specified in sMOMENT algorithm.
+
+This implementation allows easy access to fluxes from the split reactions
+(available in `reactions(model)`), while the original "simple" reactions from
+the wrapped model are retained as [`fluxes`](@ref). All additional constraints
+are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
+Original coupling is retained.
 """
-mutable struct SMomentModel <: ModelWrapper
+struct SMomentModel <: ModelWrapper
     columns::Vector{_smoment_column}
     coupling_row_reaction::Vector{Int}
     total_enzyme_capacity::Float64
@@ -91,7 +119,7 @@ Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
 fluxes in the wrapped model.
 """
 reaction_flux(model::SMomentModel) =
-    reaction_flux(model.inner)' * _smoment_column_reactions(model)
+    reaction_flux(model.inner) * _smoment_column_reactions(model)
 
 """
     coupling(model::SMomentModel)
@@ -101,7 +129,7 @@ the wrapped model, coupling for split reactions, and the coupling for the total
 enzyme capacity.
 """
 coupling(model::SMomentModel) = vcat(
-    coupling(model.inner),
+    coupling(model.inner) * _smoment_column_reactions(model),
     _smoment_reaction_coupling(model),
     [col.capacity_required for col in model.columns]',
 )
@@ -122,7 +150,7 @@ The coupling bounds for [`SMomentModel`](@ref) (refer to [`coupling`](@ref) for
 details).
 """
 function coupling_bounds(model::SMomentModel)
-    (ilb, iub) = n_coupling_constraints(model.inner)
+    (ilb, iub) = coupling_bounds(model.inner)
     (rlb, rub) = _smoment_reaction_coupling_bounds(model)
-    return (vcat(ilb, rlb, 0), vcat(iub, rub, model.total_enzyme_capacity))
+    return (vcat(ilb, rlb, [0.0]), vcat(iub, rub, [model.total_enzyme_capacity]))
 end

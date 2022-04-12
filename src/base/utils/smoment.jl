@@ -42,8 +42,7 @@ _smoment_reaction_coupling(model::SMomentModel) = sparse(
 Internal helper for determining the number of required couplings to account for
 "arm" reactions.
 """
-_smoment_n_reaction_couplings(model::SMomentModel) =
-    length(model.coupling_row_reaction)
+_smoment_n_reaction_couplings(model::SMomentModel) = length(model.coupling_row_reaction)
 
 """
     _smoment_reaction_coupling_bounds(model::SMomentModel)
@@ -53,5 +52,37 @@ values are taken from the "original" inner model.
 """
 _smoment_reaction_coupling_bounds(model::SMomentModel) =
     let (lbs, ubs) = bounds(model.inner)
-        (lbs[coupling_row_reaction], ubs[coupling_row_reaction])
+        (lbs[model.coupling_row_reaction], ubs[model.coupling_row_reaction])
     end
+
+"""
+    smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass)
+
+Compute a "score" for picking the most viable isozyme for
+[`make_smoment_model`](@ref), based on maximum kcat divided by relative mass of
+the isozyme. This is used because sMOMENT algorithm can not handle multiple
+isozymes for one reaction.
+"""
+smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass) =
+    max(isozyme.kcat_forward, isozyme.kcat_reverse) / sum(
+        count * gene_product_molar_mass(gene) for
+        (gene, count) in isozyme.gene_product_count
+    )
+
+"""
+    smoment_isozyme_speed(gene_product_molar_mass::Function)
+
+A piping- and argmax-friendly overload of [`smoment_isozyme_speed`](@ref).
+
+# Example
+```
+gene_mass_function = gid -> 1.234
+
+best_isozyme_for_smoment = argmax(
+    smoment_isozyme_speed(gene_mass_function),
+    my_isozyme_vector,
+)
+```
+"""
+smoment_isozyme_speed(gene_product_molar_mass::Function) =
+    isozyme -> smoment_isozyme_speed(isozyme, gene_product_molar_mass)
