@@ -128,6 +128,11 @@ flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
 """
     flux_dict(model::MetabolicModel)
 
-A pipeable variant of `flux_dict`
+A pipeable variant of `flux_dict`.
+
+# Example
+```
+flux_balance_analysis(model, ...) |> flux_dict(model)
+```
 """
 flux_dict(model::MetabolicModel) = x -> flux_dict(model, x)
