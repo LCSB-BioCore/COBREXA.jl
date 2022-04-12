@@ -43,7 +43,7 @@ Internal helper for determining the number of required couplings to account for
 "arm" reactions.
 """
 _smoment_n_reaction_couplings(model::SMomentModel) =
-    isempty(model.columns) ? 0 : maximum(col.coupling_row for col in model.columns)
+    length(model.coupling_row_reaction)
 
 """
     _smoment_reaction_coupling_bounds(model::SMomentModel)
