@@ -16,9 +16,9 @@
             haskey(ecoli_core_protein_stoichiometry, rid) ?
             [
                 sum(
-                    values(counts) .*
-                    get.(Ref(ecoli_core_protein_masses), keys(counts), 0.0),
-                ) for (iidx, counts) in enumerate(ecoli_core_protein_stoichiometry[rid])
+                    counts .*
+                    get.(Ref(ecoli_core_protein_masses), gids, 0.0),
+                ) for (gids, counts) in zip(reaction_gene_association(model, rid), ecoli_core_protein_stoichiometry[rid])
             ] : []
 
     total_protein_mass = 100.0
@@ -26,14 +26,14 @@
     gm =
         model |>
         with_changed_bounds(
-            ["EX_glc__D_e", "b2779", "GLCpts"];
-            lower = [-1000.0, 0.01, -1.0],
-            upper = [nothing, 0.06, 12.0],
+            ["EX_glc__D_e", "GLCpts"];
+            lower = [-1000.0, -1.0],
+            upper = [nothing, 12.0],
         ) |>
         with_gecko(
             reaction_isozymes = get_reaction_isozymes,
-            reaction_isozyme_masses = get_reaction_oisozyme_masses,
-            gene_product_limit = _ -> 1.0,
+            reaction_isozyme_masses = get_reaction_isozyme_masses,
+            gene_product_limit = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
             mass_fraction_limit = _ -> total_protein_mass,
         )
 

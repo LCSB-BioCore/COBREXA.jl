@@ -22,14 +22,14 @@ function make_gecko_model(
     for i = 1:n_reactions(model)
         isozymes = reaction_isozymes(rids[i])
         if isempty(isozymes)
-            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], 0, 0, 0, 0))
+            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], [], 0, 0))
             continue
         end
 
         group = reaction_mass_group(rids[i])
         mass_group_row =
             isnothing(group) ? 0 :
-            haskey(massgroup_lookup, group) ? mass_group_lookup[group] :
+            haskey(mass_group_lookup, group) ? mass_group_lookup[group] :
             begin
                 push!(coupling_row_mass_group, group)
                 mass_group_lookup[group] = length(coupling_row_mass_group)
@@ -38,7 +38,7 @@ function make_gecko_model(
         push!(coupling_row_reaction, i)
         reaction_coupling_row = length(coupling_row_reaction)
 
-        masses = group > 0 ? reaction_isozyme_masses(rids[i]) : zeros(length(isozymes))
+        masses = mass_group_row > 0 ? reaction_isozyme_masses(rids[i]) : zeros(length(isozymes))
 
         for (iidx, isozyme) in enumerate(isozymes)
             if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
@@ -95,9 +95,9 @@ function make_gecko_model(
         coupling_row_reaction,
         collect(
             zip(coupling_row_gene_product, gene_product_limit.(coupling_row_gene_product)),
-        )collect(
-            zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group)),
-        )model,
+        ),
+        collect( zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group))),
+        model,
     )
 end
 

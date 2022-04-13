@@ -37,16 +37,16 @@ end
 
 # set up the workers for Distributed, so that the tests that require more
 # workers do not unnecessarily load the stuff multiple times
-W = addprocs(2)
-t = @elapsed @everywhere using COBREXA, Tulip, JuMP
-print_timing("import of packages", t)
-t = @elapsed @everywhere begin
-    model = Model(Tulip.Optimizer)
-    @variable(model, 0 <= x <= 1)
-    @objective(model, Max, x)
-    optimize!(model)
-end
-print_timing("JuMP+Tulip code warmup", t)
+#W = addprocs(2)
+#t = @elapsed @everywhere using COBREXA, Tulip, JuMP
+#print_timing("import of packages", t)
+#t = @elapsed @everywhere begin
+#model = Model(Tulip.Optimizer)
+#@variable(model, 0 <= x <= 1)
+#@objective(model, Max, x)
+#optimize!(model)
+#end
+#print_timing("JuMP+Tulip code warmup", t)
 
 # make sure there's a directory for temporary data
 tmpdir = "tmpfiles"
@@ -59,16 +59,17 @@ run_test_file("data_downloaded.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    run_test_dir(joinpath("base", "types", "abstract"), "Abstract types")
-    run_test_dir(joinpath("base", "types"), "Base model types")
-    run_test_dir(joinpath("base", "logging"), "Logging")
-    run_test_dir("base", "Base functionality")
-    run_test_dir(joinpath("base", "utils"), "Utilities")
-    run_test_dir("io", "I/O functions")
-    run_test_dir("reconstruction")
-    run_test_dir("analysis")
-    run_test_dir(joinpath("analysis", "sampling"), "Sampling")
-    run_test_file("aqua.jl")
+    #run_test_dir(joinpath("base", "types", "abstract"), "Abstract types")
+    #run_test_dir(joinpath("base", "types"), "Base model types")
+    #run_test_dir(joinpath("base", "logging"), "Logging")
+    #run_test_dir("base", "Base functionality")
+    #run_test_dir(joinpath("base", "utils"), "Utilities")
+    #run_test_dir("io", "I/O functions")
+    #run_test_dir("reconstruction")
+    #run_test_dir("analysis")
+    #run_test_dir(joinpath("analysis", "sampling"), "Sampling")
+    #run_test_file("analysis/smoment.jl")
+    run_test_file("analysis/gecko.jl")
 end
 
-rmprocs(W)
+#rmprocs(W)

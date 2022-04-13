@@ -14,8 +14,8 @@ end
 struct GeckoModel <: ModelWrapper
     columns::Vector{_gecko_column}
     coupling_row_reaction::Vector{Int}
-    coupling_row_gene_product::Vector{Tuple{Int,Float64}}
-    coupling_row_mass_group::Vector{Tuple{String,Float64}} #TODO add to matrices
+    coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
+    coupling_row_mass_group::Vector{Tuple{String,Float64}}
 
     inner::MetabolicModel
 end
@@ -121,14 +121,14 @@ function coupling_bounds(model::GeckoModel)
         vcat(
             iclb,
             ilb[model.coupling_row_reaction],
-            [0.0 for _ in model.coupling_row_gene_product],
+            [lb for (_, (lb, _)) in model.coupling_row_gene_product],
             [0.0 for _ in model.coupling_row_mass_group],
         ),
         vcat(
             icub,
-            rub[model.coupling_row_reaction],
-            [c for (i, c) in model.coupling_row_gene_product],
-            [c for (i, c) in model.coupling_row_mass_group],
+            iub[model.coupling_row_reaction],
+            [ub for (_, (_, ub)) in model.coupling_row_gene_product],
+            [ub for (_, ub) in model.coupling_row_mass_group],
         ),
     )
 end
