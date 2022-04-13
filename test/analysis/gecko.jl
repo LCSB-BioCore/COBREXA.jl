@@ -1,41 +1,46 @@
 @testset "GECKO" begin
     model = load_model(StandardModel, model_paths["e_coli_core.json"])
-    total_protein_mass = 100 # mg/gdW
 
-    #: construct isozymes from model
-    rid_isozymes = Dict{String,Vector{Isozyme}}()
-    for (rid, kcats) in ecoli_core_reaction_kcats
-        grrs = reaction_gene_association(model, rid)
-        rid_isozymes[rid] = [
-            Isozyme(
-                Dict(grrs[i] .=> ecoli_core_protein_stoichiometry[rid][i]),
-                (kcats[i][1], kcats[i][2]),
-            ) for i = 1:length(grrs)
-        ]
-    end
+    get_reaction_isozymes =
+        rid ->
+            haskey(ecoli_core_reaction_kcats, rid) ?
+            collect(
+                Isozyme(
+                    Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                    ecoli_core_reaction_kcats[rid][i]...,
+                ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
+            ) : Isozyme[]
 
-    #: add molar mass to genes in model
-    for (gid, g) in model.genes
-        model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
-    end
+    get_reaction_isozyme_masses =
+        rid ->
+            haskey(ecoli_core_protein_stoichiometry, rid) ?
+            [
+                sum(
+                    values(counts) .*
+                    get.(Ref(ecoli_core_protein_masses), keys(counts), 0.0),
+                ) for (iidx, counts) in enumerate(ecoli_core_protein_stoichiometry[rid])
+            ] : []
 
-    gm = make_geckomodel(
-        model;
-        rid_isozymes,
-        enzyme_capacities = [(get_genes_with_kcats(rid_isozymes), total_protein_mass)],
-    )
-    change_bounds!(
-        gm,
-        ["EX_glc__D_e", "b2779", "GLCpts"];
-        lower = [-1000.0, 0.01, -1.0],
-        upper = [nothing, 0.06, 12.0],
-    )
+    total_protein_mass = 100.0
+
+    gm =
+        model |>
+        with_changed_bounds(
+            ["EX_glc__D_e", "b2779", "GLCpts"];
+            lower = [-1000.0, 0.01, -1.0],
+            upper = [nothing, 0.06, 12.0],
+        ) |>
+        with_gecko(
+            reaction_isozymes = get_reaction_isozymes,
+            reaction_isozyme_masses = get_reaction_oisozyme_masses,
+            gene_product_limit = _ -> 1.0,
+            mass_fraction_limit = _ -> total_protein_mass,
+        )
 
     opt_model = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-        sense = COBREXA.MOI.MAX_SENSE,
     )
 
     rxn_fluxes = flux_dict(gm, opt_model)

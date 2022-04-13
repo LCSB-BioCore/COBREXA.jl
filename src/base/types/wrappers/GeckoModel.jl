@@ -1,155 +1,136 @@
-"""
-    mutable struct GeckoModel <: MetabolicModel
 
-A model that incorporates enzyme capacity and kinetic constraints via the GECKO
-formulation. See `Sánchez, Benjamín J., et al. "Improving the phenotype
-predictions of a yeast genome‐scale metabolic model by incorporating enzymatic
-constraints." Molecular systems biology, 2017.` for implementation details.
-
-Note, since the model uses irreversible reactions internally, `"§FOR"` (for the
-forward direction) and `"§REV"` (for the reverse direction) is appended to each
-reaction internally. Hence, `"§"` is reserved for internal use as a delimiter,
-no reaction id should contain this character.
-
-To actually run GECKO, call [`flux_balance_analysis`](@ref) on a `GeckoModel`.
-
-# Fields
-```
-reaction_ids::Vector{String}
-irrev_reaction_ids::Vector{String}
-metabolites::Vector{String}
-gene_ids::Vector{String}
-c::SparseVec
-S::SparseMat
-b::SparseVec
-xl::SparseVec
-xu::SparseVec
-C::SparseMat
-cl::Vector{Float64}
-cu::Vector{Float64}
-```
-"""
-mutable struct GeckoModel <: MetabolicModel
-    reaction_ids::Vector{String}
-    irrev_reaction_ids::Vector{String}
-    metabolites::Vector{String}
-    gene_ids::Vector{String}
-
-    # gecko
-    c::SparseVec
-    S::SparseMat
-    b::SparseVec
-    xl::SparseVec
-    xu::SparseVec
-
-    # enzyme capacity constraints
-    C::SparseMat
-    cl::Vector{Float64}
-    cu::Vector{Float64}
+struct _gecko_column
+    reaction_idx::Int
+    isozyme_idx::Int
+    direction::Int
+    reaction_coupling_row::Int
+    lb::Float64
+    ub::Float64
+    gene_product_coupling::Vector{Tuple{Int,Float64}}
+    mass_group_row::Int
+    mass_required::Float64
 end
+
+struct GeckoModel <: ModelWrapper
+    columns::Vector{_gecko_column}
+    coupling_row_reaction::Vector{Int}
+    coupling_row_gene_product::Vector{Tuple{Int,Float64}}
+    coupling_row_mass_group::Vector{Tuple{String,Float64}} #TODO add to matrices
+
+    inner::MetabolicModel
+end
+
+unwrap_model(model::GeckoModel) = model.inner
 
 """
     stoichiometry(model::GeckoModel)
 
-Return stoichiometry matrix that includes enzymes as metabolites.
+Return a stoichiometry of the [`GeckoModel`](@ref). The enzymatic reactions are
+split into unidirectional forward and reverse ones, each of which may have
+multiple variants per isozyme.
 """
-stoichiometry(model::GeckoModel) = model.S
-
-"""
-    balance(model::GeckoModel)
-
-Return stoichiometric balance.
-"""
-balance(model::GeckoModel) = model.b
+stoichiometry(model::GeckoModel) =
+    stoichiometry(model.inner) * _gecko_column_reactions(model)
 
 """
     objective(model::GeckoModel)
 
-Return objective of `model`.
+Reconstruct an objective of the [`GeckoModel`](@ref), following the objective
+of the inner model.
 """
-objective(model::GeckoModel) = model.c
-
-"""
-    fluxes(model::GeckoModel)
-
-Returns the reversible reactions in `model`. For
-the irreversible reactions, use [`reactions`][@ref].
-"""
-fluxes(model::GeckoModel) = model.reaction_ids
-
-"""
-    n_reactions(model::GeckoModel)
-
-Returns the number of reversible reactions in the model.
-"""
-n_fluxes(model::GeckoModel) = length(model.reaction_ids)
+objective(model::GeckoModel) = _gecko_column_reactions(model)' * objective(model.inner)
 
 """
     reactions(model::GeckoModel)
 
-Returns the irreversible reactions in `model`.
+Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
+to forward- and reverse-only parts with different isozyme indexes; reactions
+IDs are mangled accordingly with suffixes).
 """
-reactions(model::GeckoModel) = model.irrev_reaction_ids
+reactions(model::GeckoModel) =
+    let inner_reactions = reactions(model.inner)
+        [
+            _gecko_reaction_name(
+                inner_reactions[col.reaction_idx],
+                col.direction,
+                col.isozyme_idx,
+            ) for col in model.columns
+        ]
+    end
 
 """
     reactions(model::GeckoModel)
 
 Returns the number of all irreversible reactions in `model`.
 """
-n_reactions(model::GeckoModel) = length(model.irrev_reaction_ids)
-
-"""
-    genes(model::GeckoModel)
-
-Returns the genes (proteins) in the order as they appear as variables in the
-model.
-"""
-genes(model::GeckoModel) = model.gene_ids
-
-"""
-    n_genes(model::GeckoModel)
-
-Returns the number of genes in the model.
-"""
-n_genes(model::GeckoModel) = length(model.gene_ids)
-
-"""
-    metabolites(model::GeckoModel)
-
-Return the metabolites in `model`.
-"""
-metabolites(model::GeckoModel) = model.metabolites
-
-"""
-    n_metabolites(model::GeckoModel) =
-
-Return the number of metabolites in `model`.
-"""
-n_metabolites(model::GeckoModel) = length(metabolites(model))
+n_reactions(model::GeckoModel) = length(model.columns)
 
 """
     bounds(model::GeckoModel)
 
-Return variable bounds for `GeckoModel`.
+Return variable bounds for [`GeckoModel`](@ref).
 """
-bounds(model::GeckoModel) = (model.xl, model.xu)
+bounds(model::GeckoModel) =
+    ([col.lb for col in model.columns], [col.ub for col in model.columns])
+
+"""
+    reaction_flux(model::GeckoModel)
+
+Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
+fluxes in the wrapped model.
+"""
+reaction_flux(model::GeckoModel) =
+    _gecko_column_reactions(model)' * reaction_flux(model.inner)
 
 """
     coupling(model::GeckoModel)
 
-Coupling constraint matrix for a `GeckoModel`.
+Return the coupling of [`GeckoModel`](@ref). That combines the coupling of
+the wrapped model, coupling for split reactions, and the coupling for the total
+enzyme capacity.
 """
-coupling(model::GeckoModel) = model.C
+coupling(model::GeckoModel) = vcat(
+    coupling(model.inner) * _gecko_column_reactions(model),
+    _gecko_reaction_coupling(model),
+    _gecko_gene_product_coupling(model),
+)
+
+"""
+    n_coupling_constraints(model::GeckoModel)
+
+Count the coupling constraints in [`GeckoModel`](@ref) (refer to
+[`coupling`](@ref) for details).
+"""
+n_coupling_constraints(model::GeckoModel) =
+    n_coupling_constraints(model.inner) +
+    length(model.coupling_row_reaction) +
+    length(model.coupling_row_gene_product)
 
 """
     coupling_bounds(model::GeckoModel)
 
-Coupling bounds for a `GeckoModel`.
+The coupling bounds for [`GeckoModel`](@ref) (refer to [`coupling`](@ref) for
+details).
 """
-coupling_bounds(model::GeckoModel) = (model.cl, model.cu)
+function coupling_bounds(model::GeckoModel)
+    (iclb, icub) = coupling_bounds(model.inner)
+    (ilb, iub) = bounds(model.inner)
+    return (
+        vcat(
+            iclb,
+            ilb[model.coupling_row_reaction],
+            [0.0 for _ in model.coupling_row_gene_product],
+        ),
+        vcat(
+            icub,
+            rub[model.coupling_row_reaction],
+            [c for (i, c) in model.coupling_row_gene_product],
+        ),
+    )
+end
 
 """
-    reaction_flux(model::MetabolicModel)
+    reaction_flux(model::GeckoModel)
 
 Helper function to get fluxes from optimization problem.
 """

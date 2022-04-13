@@ -1,3 +1,14 @@
+
+
+"""
+    with_gecko(; kwargs...)
+
+Specifies a model variant which adds extra semantics of the Gecko algorithm,
+giving a [`GeckoModel`](@ref). The arguments are forwarded to
+[`make_gecko_model`](@ref). Intended for usage with [`screen`](@ref).
+"""
+with_gecko(; kwargs...) = model -> make_gecko_model(model; kwargs...)
+
 """
     change_bound!(model::GeckoModel, id; lower=nothing, upper=nothing)
 

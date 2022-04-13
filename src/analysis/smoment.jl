@@ -39,45 +39,44 @@ function make_smoment_model(
         if isnothing(isozyme)
             # non-enzymatic reaction (or a totally ignored one)
             push!(columns, _smoment_column(i, 0, 0, lbs[i], ubs[i], 0))
-        else
-            # pick a new row for "arm reaction" coupling
-            coupling_row = length(coupling_row_reaction) + 1
-            push!(coupling_row_reaction, i)
+            continue
+        end
+        # pick a new row for "arm reaction" coupling
+        push!(coupling_row_reaction, i)
+        coupling_row = length(coupling_row_reaction)
 
-            mw = sum(
-                gene_product_molar_mass(gid) * ps for
-                (gid, ps) in isozyme.gene_product_count
+        mw = sum(
+            gene_product_molar_mass(gid) * ps for (gid, ps) in isozyme.gene_product_count
+        )
+
+        if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
+            # reaction can run in reverse
+            push!(
+                columns,
+                _smoment_column(
+                    i,
+                    -1,
+                    coupling_row,
+                    max(-ubs[i], 0),
+                    -lbs[i],
+                    mw / isozyme.kcat_reverse,
+                ),
             )
+        end
 
-            if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
-                # reaction can run in reverse
-                push!(
-                    columns,
-                    _smoment_column(
-                        i,
-                        -1,
-                        coupling_row,
-                        max(-ubs[i], 0),
-                        -lbs[i],
-                        mw / isozyme.kcat_reverse,
-                    ),
-                )
-            end
-
-            if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
-                # reaction can run forward
-                push!(
-                    columns,
-                    _smoment_column(
-                        i,
-                        1,
-                        coupling_row,
-                        max(lbs[i], 0),
-                        ubs[i],
-                        mw / isozyme.kcat_forward,
-                    ),
-                )
-            end
+        if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
+            # reaction can run forward
+            push!(
+                columns,
+                _smoment_column(
+                    i,
+                    1,
+                    coupling_row,
+                    max(lbs[i], 0),
+                    ubs[i],
+                    mw / isozyme.kcat_forward,
+                ),
+            )
         end
     end
 

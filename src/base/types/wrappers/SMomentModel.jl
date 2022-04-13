@@ -5,7 +5,7 @@
 A helper type that describes the contents of [`SMomentModel`](@ref)s.
 """
 struct _smoment_column
-    reaction_id::Int # number of the corresponding reaction in the inner model
+    reaction_idx::Int # number of the corresponding reaction in the inner model
     direction::Int # 0 if "as is" and unique, -1 if reverse-only part, 1 if forward-only part
     coupling_row::Int # number of row in the coupling (0 if direction==0)
     lb::Float64 # must be 0 if the reaction is unidirectional (if direction!=0)
@@ -86,13 +86,13 @@ objective(model::SMomentModel) = _smoment_column_reactions(model)' * objective(m
     reactions(model::SMomentModel)
 
 Returns the internal reactions in a [`SMomentModel`](@ref) (these may be split
-to forward- and reverse-only parts; reactions IDs mangled accordingly with
+to forward- and reverse-only parts; reactions IDs are mangled accordingly with
 suffixes).
 """
 reactions(model::SMomentModel) =
     let inner_reactions = reactions(model.inner)
         [
-            _smoment_reaction_name(inner_reactions[col.reaction_id], col.direction) for
+            _smoment_reaction_name(inner_reactions[col.reaction_idx], col.direction) for
             col in model.columns
         ]
     end
@@ -120,6 +120,7 @@ fluxes in the wrapped model.
 """
 reaction_flux(model::SMomentModel) =
     _smoment_column_reactions(model)' * reaction_flux(model.inner)
+
 """
     coupling(model::SMomentModel)
 
@@ -140,7 +141,7 @@ Count the coupling constraints in [`SMomentModel`](@ref) (refer to
 [`coupling`](@ref) for details).
 """
 n_coupling_constraints(model::SMomentModel) =
-    n_coupling_constraints(model.inner) + _smoment_n_reaction_couplings(model) + 1
+    n_coupling_constraints(model.inner) + length(model.coupling_row_reaction) + 1
 
 """
     coupling_bounds(model::SMomentModel)
@@ -149,7 +150,10 @@ The coupling bounds for [`SMomentModel`](@ref) (refer to [`coupling`](@ref) for
 details).
 """
 function coupling_bounds(model::SMomentModel)
-    (ilb, iub) = coupling_bounds(model.inner)
-    (rlb, rub) = _smoment_reaction_coupling_bounds(model)
-    return (vcat(ilb, rlb, [0.0]), vcat(iub, rub, [model.total_enzyme_capacity]))
+    (iclb, icub) = coupling_bounds(model.inner)
+    (ilb, iub) = bounds(model.inner)
+    return (
+        vcat(iclb, ilb[model.coupling_row_reaction], [0.0]),
+        vcat(icub, iub[model.coupling_row_reaction], [model.total_enzyme_capacity]),
+    )
 end

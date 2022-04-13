@@ -15,7 +15,7 @@ Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
 """
 _smoment_column_reactions(model::SMomentModel) = sparse(
-    [col.reaction_id for col in model.columns],
+    [col.reaction_idx for col in model.columns],
     1:length(model.columns),
     [col.direction >= 0 ? 1 : -1 for col in model.columns],
     n_reactions(model.inner),
@@ -32,28 +32,9 @@ _smoment_reaction_coupling(model::SMomentModel) = sparse(
     [col.coupling_row for col in model.columns if col.direction != 0],
     [i for (i, col) in enumerate(model.columns) if col.direction != 0],
     [col.direction for col in model.columns if col.direction != 0],
-    _smoment_n_reaction_couplings(model),
+    length(model.coupling_row_reaction),
     length(model.columns),
 )
-
-"""
-    _smoment_n_reaction_couplings(model::SMomentModel)
-
-Internal helper for determining the number of required couplings to account for
-"arm" reactions.
-"""
-_smoment_n_reaction_couplings(model::SMomentModel) = length(model.coupling_row_reaction)
-
-"""
-    _smoment_reaction_coupling_bounds(model::SMomentModel)
-
-Return bounds that limit the "arm" reactions in [`SMomentModel`](@ref). The
-values are taken from the "original" inner model.
-"""
-_smoment_reaction_coupling_bounds(model::SMomentModel) =
-    let (lbs, ubs) = bounds(model.inner)
-        (lbs[model.coupling_row_reaction], ubs[model.coupling_row_reaction])
-    end
 
 """
     smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass)
