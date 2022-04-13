@@ -1,9 +1,9 @@
 function make_gecko_model(
     model::StandardModel;
     reaction_isozymes::Function,
-    reaction_isozyme_masses::Function,
+    gene_product_mass::Function,
     gene_product_limit::Function,
-    reaction_mass_group::Function = _ -> "uncategorized",
+    gene_mass_group::Function = _ -> "uncategorized",
     mass_fraction_limit::Function,
 )
 
@@ -22,27 +22,15 @@ function make_gecko_model(
     for i = 1:n_reactions(model)
         isozymes = reaction_isozymes(rids[i])
         if isempty(isozymes)
-            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], [], 0, 0))
+            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], [], []))
             continue
         end
-
-        group = reaction_mass_group(rids[i])
-        mass_group_row =
-            isnothing(group) ? 0 :
-            haskey(mass_group_lookup, group) ? mass_group_lookup[group] :
-            begin
-                push!(coupling_row_mass_group, group)
-                mass_group_lookup[group] = length(coupling_row_mass_group)
-            end
 
         push!(coupling_row_reaction, i)
         reaction_coupling_row = length(coupling_row_reaction)
 
-        masses = mass_group_row > 0 ? reaction_isozyme_masses(rids[i]) : zeros(length(isozymes))
-
         for (iidx, isozyme) in enumerate(isozymes)
             if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
-                # reaction can run in reverse
                 push!(
                     columns,
                     _gecko_column(
@@ -59,13 +47,18 @@ function make_gecko_model(
                             gene_row_lookup,
                             coupling_row_gene_product,
                         ),
-                        mass_group_row,
-                        masses[iidx] / isozyme.kcat_reverse,
+                        _gecko_make_mass_group_coupling(
+                            isozyme.gene_product_count,
+                            isozyme.kcat_reverse,
+                            gene_mass_group,
+                            gene_product_mass,
+                            mass_group_lookup,
+                            coupling_row_mass_group,
+                        ),
                     ),
                 )
             end
             if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
-                # reaction can run forward
                 push!(
                     columns,
                     _gecko_column(
@@ -82,8 +75,14 @@ function make_gecko_model(
                             gene_row_lookup,
                             coupling_row_gene_product,
                         ),
-                        mass_group_row,
-                        masses[iidx] / isozyme.kcat_forward,
+                        _gecko_make_mass_group_coupling(
+                            isozyme.gene_product_count,
+                            isozyme.kcat_forward,
+                            gene_mass_group,
+                            gene_product_mass,
+                            mass_group_lookup,
+                            coupling_row_mass_group,
+                        ),
                     ),
                 )
             end
@@ -96,7 +95,9 @@ function make_gecko_model(
         collect(
             zip(coupling_row_gene_product, gene_product_limit.(coupling_row_gene_product)),
         ),
-        collect( zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group))),
+        collect(
+            zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group)),
+        ),
         model,
     )
 end
@@ -119,3 +120,34 @@ _gecko_make_gene_product_coupling(
         (row_idx, 1 / kcat)
     end for (gene, count) in gene_product_count if haskey(name_lookup, gene)
 )
+
+function _gecko_make_mass_group_coupling(
+    gene_product_count::Dict{String,Int},
+    kcat::Float64,
+    gene_row::Function,
+    gene_product_mass::Function,
+    row_lookup::Dict{String,Int},
+    rows::Vector{String},
+)
+    gp_groups = gene_row.(keys(gene_product_count))
+    gp_mass = gene_product_mass.(keys(gene_product_count))
+    groups = unique(filter(!isnothing, gp_groups))
+    group_idx = Dict(groups .=> 1:length(groups))
+    vals = [0.0 for _ in groups]
+
+    for (gpg, mass) in zip(gp_groups, gp_mass)
+        if !isnothing(gpg)
+            vals[group_idx[gpg]] += mass / kcat
+        end
+    end
+
+    collect(
+        isnothing(group) ? 0 : begin
+            if !haskey(row_lookup, group)
+                push!(rows, group)
+                row_lookup[group] = length(rows)
+            end
+            (row_lookup[group], val)
+        end for (group, val) in zip(groups, vals)
+    )
+end

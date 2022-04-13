@@ -11,15 +11,7 @@
                 ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
             ) : Isozyme[]
 
-    get_reaction_isozyme_masses =
-        rid ->
-            haskey(ecoli_core_protein_stoichiometry, rid) ?
-            [
-                sum(
-                    counts .*
-                    get.(Ref(ecoli_core_protein_masses), gids, 0.0),
-                ) for (gids, counts) in zip(reaction_gene_association(model, rid), ecoli_core_protein_stoichiometry[rid])
-            ] : []
+    get_gene_product_mass = gid -> get(ecoli_core_protein_masses, gid, 0.0)
 
     total_protein_mass = 100.0
 
@@ -32,8 +24,8 @@
         ) |>
         with_gecko(
             reaction_isozymes = get_reaction_isozymes,
-            reaction_isozyme_masses = get_reaction_isozyme_masses,
             gene_product_limit = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
+            gene_product_mass = get_gene_product_mass,
             mass_fraction_limit = _ -> total_protein_mass,
         )
 

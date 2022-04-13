@@ -68,12 +68,13 @@ _gecko_gene_product_coupling(model::GeckoModel) =
     _gecko_mass_group_coupling(model::GeckoModel)
 
 Compute the part of the coupling for [`GeckoModel`](@ref) that limits the total
-mass of enzymes available in each group of reactions.
+mass of each group of gene products.
 """
 _gecko_mass_group_coupling(model::GeckoModel) =
-    let tmp = [
-            (col.mass_group_row, i, col.mass_required) for
-            (i, col) = enumerate(model.columns) if col.direction != 0
+    let
+        tmp = [
+            (row, i, val) for (i, col) = enumerate(model.columns) if col.direction != 0
+            for (row, val) in col.mass_group_coupling
         ]
         sparse(
             [row for (row, _, _) in tmp],

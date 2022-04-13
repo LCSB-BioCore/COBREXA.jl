@@ -7,8 +7,7 @@ struct _gecko_column
     lb::Float64
     ub::Float64
     gene_product_coupling::Vector{Tuple{Int,Float64}}
-    mass_group_row::Int
-    mass_required::Float64
+    mass_group_coupling::Vector{Tuple{Int,Float64}}
 end
 
 struct GeckoModel <: ModelWrapper
