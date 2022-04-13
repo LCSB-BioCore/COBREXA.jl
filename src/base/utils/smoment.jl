@@ -28,13 +28,20 @@ _smoment_column_reactions(model::SMomentModel) = sparse(
 Compute the part of the coupling for [`SMomentModel`](@ref) that limits the
 "arm" reactions (which group the individual split unidirectional reactions).
 """
-_smoment_reaction_coupling(model::SMomentModel) = sparse(
-    [col.coupling_row for col in model.columns if col.direction != 0],
-    [i for (i, col) in enumerate(model.columns) if col.direction != 0],
-    [col.direction for col in model.columns if col.direction != 0],
-    length(model.coupling_row_reaction),
-    length(model.columns),
-)
+_smoment_reaction_coupling(model::SMomentModel) =
+    let tmp = [
+            (col.coupling_row, i, col.direction) for
+            (i, col) = enumerate(model.columns) if col.direction != 0
+        ]
+
+        sparse(
+            [row for (row, _, _) in tmp],
+            [col for (_, col, _) in tmp],
+            [val for (_, _, val) in tmp],
+            length(model.coupling_row_reaction),
+            length(model.columns),
+        )
+    end
 
 """
     smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass)

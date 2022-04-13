@@ -90,19 +90,14 @@ function make_gecko_model(
         end
     end
 
-    coupling_row_mass_group =
-        collect(zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group)))
-
-    coupling_row_gene_product = collect(
-        zip(coupling_row_gene_product, gene_product_limit.(coupling_row_gene_product)),
-    )
-
-    return GeckoModel(
+    coupling_row_mass_group = return GeckoModel(
         columns,
         coupling_row_reaction,
-        coupling_row_gene_product,
-        coupling_row_mass_group,
-        model,
+        collect(
+            zip(coupling_row_gene_product, gene_product_limit.(coupling_row_gene_product)),
+        )collect(
+            zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group)),
+        )model,
     )
 end
 

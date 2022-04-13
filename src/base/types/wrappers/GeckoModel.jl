@@ -93,6 +93,7 @@ coupling(model::GeckoModel) = vcat(
     coupling(model.inner) * _gecko_column_reactions(model),
     _gecko_reaction_coupling(model),
     _gecko_gene_product_coupling(model),
+    _gecko_mass_group_coupling(model),
 )
 
 """
@@ -104,7 +105,8 @@ Count the coupling constraints in [`GeckoModel`](@ref) (refer to
 n_coupling_constraints(model::GeckoModel) =
     n_coupling_constraints(model.inner) +
     length(model.coupling_row_reaction) +
-    length(model.coupling_row_gene_product)
+    length(model.coupling_row_gene_product) +
+    length(model.coupling_row_mass_group)
 
 """
     coupling_bounds(model::GeckoModel)
@@ -120,33 +122,13 @@ function coupling_bounds(model::GeckoModel)
             iclb,
             ilb[model.coupling_row_reaction],
             [0.0 for _ in model.coupling_row_gene_product],
+            [0.0 for _ in model.coupling_row_mass_group],
         ),
         vcat(
             icub,
             rub[model.coupling_row_reaction],
             [c for (i, c) in model.coupling_row_gene_product],
+            [c for (i, c) in model.coupling_row_mass_group],
         ),
     )
-end
-
-"""
-    reaction_flux(model::GeckoModel)
-
-Helper function to get fluxes from optimization problem.
-"""
-function reaction_flux(model::GeckoModel)
-    R = spzeros(n_fluxes(model), n_genes(model) + n_reactions(model))
-    for (i, rid) in enumerate(fluxes(model))
-        for_idx = findfirst(
-            x -> x == rid * "§ARM§FOR" || x == rid * "§FOR",
-            model.irrev_reaction_ids,
-        )
-        rev_idx = findfirst(
-            x -> x == rid * "§ARM§REV" || x == rid * "§REV",
-            model.irrev_reaction_ids,
-        )
-        !isnothing(for_idx) && (R[i, for_idx] = 1.0)
-        !isnothing(rev_idx) && (R[i, rev_idx] = -1.0)
-    end
-    return R'
 end
