@@ -39,3 +39,5 @@ protein_mass_group_dict(model::GeckoModel, opt_model) =
 A pipe-able variant of [`mass_group_dict`](@ref).
 """
 protein_mass_group_dict(model::GeckoModel) = x -> mass_group_dict(model, x)
+
+#TODO: total protein mass for sMOMENT
