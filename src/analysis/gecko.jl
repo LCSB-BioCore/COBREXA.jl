@@ -4,7 +4,7 @@ function make_gecko_model(
     reaction_isozyme_masses::Function,
     gene_product_limit::Function,
     reaction_mass_group::Function = _ -> "uncategorized",
-    mass_faction_limit::Function,
+    mass_fraction_limit::Function,
 )
 
     columns = Vector{_gecko_column}()
