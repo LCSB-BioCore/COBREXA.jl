@@ -32,7 +32,7 @@ Compute the part of the coupling for [`GeckoModel`](@ref) that limits the
 _gecko_reaction_coupling(model::GeckoModel) =
     let tmp = [
             (col.reaction_coupling_row, i, col.direction) for
-            (i, col) = enumerate(model.columns) if col.direction != 0
+            (i, col) = enumerate(model.columns) if col.reaction_coupling_row != 0
         ]
         sparse(
             [row for (row, _, _) in tmp],
@@ -52,8 +52,8 @@ kind of protein available.
 _gecko_gene_product_coupling(model::GeckoModel) =
     let
         tmp = [
-            (row, i, val) for (i, col) = enumerate(model.columns) if col.direction != 0
-            for (row, val) in col.gene_product_coupling
+            (row, i, val) for (i, col) in enumerate(model.columns) for
+            (row, val) in col.gene_product_coupling
         ]
         sparse(
             [row for (row, _, _) in tmp],
@@ -73,8 +73,8 @@ mass of each group of gene products.
 _gecko_mass_group_coupling(model::GeckoModel) =
     let
         tmp = [
-            (row, i, val) for (i, col) = enumerate(model.columns) if col.direction != 0
-            for (row, val) in col.mass_group_coupling
+            (row, i, val) for (i, col) in enumerate(model.columns) for
+            (row, val) in col.mass_group_coupling
         ]
         sparse(
             [row for (row, _, _) in tmp],

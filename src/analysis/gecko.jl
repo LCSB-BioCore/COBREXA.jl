@@ -26,65 +26,45 @@ function make_gecko_model(
             continue
         end
 
-        push!(coupling_row_reaction, i)
-        reaction_coupling_row = length(coupling_row_reaction)
+        reaction_coupling_row =
+            length(isozymes) > 1 ? begin
+                push!(coupling_row_reaction, i)
+                length(coupling_row_reaction)
+            end : 0
 
         for (iidx, isozyme) in enumerate(isozymes)
-            if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
-                push!(
-                    columns,
-                    _gecko_column(
-                        i,
-                        iidx,
-                        -1,
-                        reaction_coupling_row,
-                        max(-ubs[i], 0),
-                        -lbs[i],
-                        _gecko_make_gene_product_coupling(
-                            isozyme.gene_product_count,
-                            isozyme.kcat_reverse,
-                            gene_name_lookup,
-                            gene_row_lookup,
-                            coupling_row_gene_product,
+            for (lb, ub, kcat, dir) in [
+                (-ubs[i], -lbs[i], isozyme.kcat_reverse, -1),
+                (lbs[i], ubs[i], isozyme.kcat_forward, 1),
+            ]
+                if max(lb, ub) > 0 && kcat > _constants.tolerance
+                    push!(
+                        columns,
+                        _gecko_column(
+                            i,
+                            iidx,
+                            dir,
+                            reaction_coupling_row,
+                            max(lb, 0),
+                            ub,
+                            _gecko_make_gene_product_coupling(
+                                isozyme.gene_product_count,
+                                kcat,
+                                gene_name_lookup,
+                                gene_row_lookup,
+                                coupling_row_gene_product,
+                            ),
+                            _gecko_make_mass_group_coupling(
+                                isozyme.gene_product_count,
+                                kcat,
+                                gene_mass_group,
+                                gene_product_mass,
+                                mass_group_lookup,
+                                coupling_row_mass_group,
+                            ),
                         ),
-                        _gecko_make_mass_group_coupling(
-                            isozyme.gene_product_count,
-                            isozyme.kcat_reverse,
-                            gene_mass_group,
-                            gene_product_mass,
-                            mass_group_lookup,
-                            coupling_row_mass_group,
-                        ),
-                    ),
-                )
-            end
-            if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
-                push!(
-                    columns,
-                    _gecko_column(
-                        i,
-                        iidx,
-                        1,
-                        reaction_coupling_row,
-                        max(lbs[i], 0),
-                        ubs[i],
-                        _gecko_make_gene_product_coupling(
-                            isozyme.gene_product_count,
-                            isozyme.kcat_forward,
-                            gene_name_lookup,
-                            gene_row_lookup,
-                            coupling_row_gene_product,
-                        ),
-                        _gecko_make_mass_group_coupling(
-                            isozyme.gene_product_count,
-                            isozyme.kcat_forward,
-                            gene_mass_group,
-                            gene_product_mass,
-                            mass_group_lookup,
-                            coupling_row_mass_group,
-                        ),
-                    ),
-                )
+                    )
+                end
             end
         end
     end

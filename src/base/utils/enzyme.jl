@@ -20,7 +20,6 @@ A pipe-able variant of [`protein_dict`](@ref).
 """
 protein_dict(model::GeckoModel) = x -> protein_dict(model, x)
 
-
 """
     protein_mass_group_dict(model::GeckoModel, opt_model)
 
