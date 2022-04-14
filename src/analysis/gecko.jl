@@ -26,6 +26,9 @@ function make_gecko_model(
             continue
         end
 
+        # if the reaction has multiple isozymes, it needs extra coupling to
+        # ensure that the total rate of the reaction doesn't exceed the
+        # "global" limit
         reaction_coupling_row =
             length(isozymes) > 1 ? begin
                 push!(coupling_row_reaction, i)
@@ -33,11 +36,54 @@ function make_gecko_model(
             end : 0
 
         for (iidx, isozyme) in enumerate(isozymes)
+            # loop over both directions for all isozymes
             for (lb, ub, kcat, dir) in [
                 (-ubs[i], -lbs[i], isozyme.kcat_reverse, -1),
                 (lbs[i], ubs[i], isozyme.kcat_forward, 1),
             ]
                 if max(lb, ub) > 0 && kcat > _constants.tolerance
+                    # prepare the coupling with gene product molar
+                    gene_product_coupling = collect(
+                        begin
+                            gidx = gene_name_lookup[gene]
+                            row_idx = if haskey(gene_row_lookup, gidx)
+                                gene_row_lookup[gidx]
+                            else
+                                push!(coupling_row_gene_product, gidx)
+                                gene_row_lookup[gidx] =
+                                    length(coupling_row_gene_product)
+                            end
+                            (row_idx, 1 / kcat)
+                        end for (gene, count) in isozyme.gene_product_count if
+                        haskey(gene_name_lookup, gene)
+                    )
+
+                    # prepare the coupling with the mass groups
+                    gp_groups = gene_mass_group.(keys(isozyme.gene_product_count))
+                    gp_mass = gene_product_mass.(keys(isozyme.gene_product_count))
+                    groups = unique(filter(!isnothing, gp_groups))
+                    group_idx = Dict(groups .=> 1:length(groups))
+                    vals = [0.0 for _ in groups]
+
+                    for (gpg, mass) in zip(gp_groups, gp_mass)
+                        if !isnothing(gpg)
+                            vals[group_idx[gpg]] += mass / kcat
+                        end
+                    end
+
+                    mass_group_coupling = collect(
+                        isnothing(group) ? 0 :
+                        begin
+                            if !haskey(mass_group_lookup, group)
+                                push!(coupling_row_mass_group, group)
+                                mass_group_lookup[group] =
+                                    length(coupling_row_mass_group)
+                            end
+                            (mass_group_lookup[group], val)
+                        end for (group, val) in zip(groups, vals)
+                    )
+
+                    # make a new column
                     push!(
                         columns,
                         _gecko_column(
@@ -47,21 +93,8 @@ function make_gecko_model(
                             reaction_coupling_row,
                             max(lb, 0),
                             ub,
-                            _gecko_make_gene_product_coupling(
-                                isozyme.gene_product_count,
-                                kcat,
-                                gene_name_lookup,
-                                gene_row_lookup,
-                                coupling_row_gene_product,
-                            ),
-                            _gecko_make_mass_group_coupling(
-                                isozyme.gene_product_count,
-                                kcat,
-                                gene_mass_group,
-                                gene_product_mass,
-                                mass_group_lookup,
-                                coupling_row_mass_group,
-                            ),
+                            gene_product_coupling,
+                            mass_group_coupling,
                         ),
                     )
                 end
@@ -69,7 +102,7 @@ function make_gecko_model(
         end
     end
 
-    coupling_row_mass_group = return GeckoModel(
+    GeckoModel(
         columns,
         coupling_row_reaction,
         collect(
@@ -79,55 +112,5 @@ function make_gecko_model(
             zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group)),
         ),
         model,
-    )
-end
-
-_gecko_make_gene_product_coupling(
-    gene_product_count::Dict{String,Int},
-    kcat::Float64,
-    name_lookup::Dict{String,Int},
-    row_lookup::Dict{Int,Int},
-    rows::Vector{Int},
-) = collect(
-    begin
-        gidx = name_lookup[gene]
-        row_idx = if haskey(row_lookup, gidx)
-            row_lookup[gidx]
-        else
-            push!(rows, gidx)
-            row_lookup[gidx] = length(rows)
-        end
-        (row_idx, 1 / kcat)
-    end for (gene, count) in gene_product_count if haskey(name_lookup, gene)
-)
-
-function _gecko_make_mass_group_coupling(
-    gene_product_count::Dict{String,Int},
-    kcat::Float64,
-    gene_row::Function,
-    gene_product_mass::Function,
-    row_lookup::Dict{String,Int},
-    rows::Vector{String},
-)
-    gp_groups = gene_row.(keys(gene_product_count))
-    gp_mass = gene_product_mass.(keys(gene_product_count))
-    groups = unique(filter(!isnothing, gp_groups))
-    group_idx = Dict(groups .=> 1:length(groups))
-    vals = [0.0 for _ in groups]
-
-    for (gpg, mass) in zip(gp_groups, gp_mass)
-        if !isnothing(gpg)
-            vals[group_idx[gpg]] += mass / kcat
-        end
-    end
-
-    collect(
-        isnothing(group) ? 0 : begin
-            if !haskey(row_lookup, group)
-                push!(rows, group)
-                row_lookup[group] = length(rows)
-            end
-            (row_lookup[group], val)
-        end for (group, val) in zip(groups, vals)
     )
 end
