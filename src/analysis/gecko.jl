@@ -12,12 +12,13 @@ function make_gecko_model(
     coupling_row_gene_product = Int[]
     coupling_row_mass_group = String[]
 
-    gene_name_lookup = Dict(genes(model) .=> 1:n_genes(model))
-    gene_row_lookup = Dict{Int,Int}()
-    mass_group_lookup = Dict{String,Int}()
-
+    gids = genes(model)
     (lbs, ubs) = bounds(model)
     rids = reactions(model)
+
+    gene_name_lookup = Dict(gids .=> 1:length(gids))
+    gene_row_lookup = Dict{Int,Int}()
+    mass_group_lookup = Dict{String,Int}()
 
     for i = 1:n_reactions(model)
         isozymes = reaction_isozymes(rids[i])
@@ -106,7 +107,10 @@ function make_gecko_model(
         columns,
         coupling_row_reaction,
         collect(
-            zip(coupling_row_gene_product, gene_product_limit.(coupling_row_gene_product)),
+            zip(
+                coupling_row_gene_product,
+                gene_product_limit.(gids[coupling_row_gene_product]),
+            ),
         ),
         collect(
             zip(coupling_row_mass_group, mass_fraction_limit.(coupling_row_mass_group)),
