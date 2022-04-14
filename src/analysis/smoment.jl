@@ -29,7 +29,6 @@ function make_smoment_model(
     total_enzyme_capacity::Float64,
 )
     columns = Vector{_smoment_column}()
-    coupling_row_reaction = Int[]
 
     (lbs, ubs) = bounds(model)
     rids = reactions(model)
@@ -38,12 +37,9 @@ function make_smoment_model(
         isozyme = reaction_isozymes(rids[i])
         if isnothing(isozyme)
             # non-enzymatic reaction (or a totally ignored one)
-            push!(columns, _smoment_column(i, 0, 0, lbs[i], ubs[i], 0))
+            push!(columns, _smoment_column(i, 0, lbs[i], ubs[i], 0))
             continue
         end
-        # pick a new row for "arm reaction" coupling
-        push!(coupling_row_reaction, i)
-        coupling_row = length(coupling_row_reaction)
 
         mw = sum(
             gene_product_molar_mass(gid) * ps for (gid, ps) in isozyme.gene_product_count
@@ -53,14 +49,7 @@ function make_smoment_model(
             # reaction can run in reverse
             push!(
                 columns,
-                _smoment_column(
-                    i,
-                    -1,
-                    coupling_row,
-                    max(-ubs[i], 0),
-                    -lbs[i],
-                    mw / isozyme.kcat_reverse,
-                ),
+                _smoment_column(i, -1, max(-ubs[i], 0), -lbs[i], mw / isozyme.kcat_reverse),
             )
         end
 
@@ -68,17 +57,10 @@ function make_smoment_model(
             # reaction can run forward
             push!(
                 columns,
-                _smoment_column(
-                    i,
-                    1,
-                    coupling_row,
-                    max(lbs[i], 0),
-                    ubs[i],
-                    mw / isozyme.kcat_forward,
-                ),
+                _smoment_column(i, 1, max(lbs[i], 0), ubs[i], mw / isozyme.kcat_forward),
             )
         end
     end
 
-    return SMomentModel(columns, coupling_row_reaction, total_enzyme_capacity, model)
+    return SMomentModel(columns, total_enzyme_capacity, model)
 end
