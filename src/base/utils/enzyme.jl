@@ -39,4 +39,20 @@ A pipe-able variant of [`mass_group_dict`](@ref).
 """
 protein_mass_group_dict(model::GeckoModel) = x -> mass_group_dict(model, x)
 
-#TODO: total protein mass for sMOMENT
+
+"""
+    protein_mass(model::SMomentModel)
+
+Extract the total mass utilization in a solved [`SMomentModel`](@ref).
+"""
+protein_mass(model::SMomentModel, opt_model) =
+    is_solved(opt_model) ?
+    sum((col.capacity_required for col in model.columns) .* value.(opt_model[:x])) : nothing
+
+"""
+    protein_mass(model::SMomentModel)
+
+
+A pipe-able variant of [`protein_mass`](@ref).
+"""
+protein_mass(model::SMomentModel) = x -> protein_mass(model, x)
