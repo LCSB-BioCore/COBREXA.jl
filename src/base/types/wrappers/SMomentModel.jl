@@ -131,8 +131,7 @@ coupling(model::SMomentModel) = vcat(
 Count the coupling constraints in [`SMomentModel`](@ref) (refer to
 [`coupling`](@ref) for details).
 """
-n_coupling_constraints(model::SMomentModel) =
-    n_coupling_constraints(model.inner) + 1
+n_coupling_constraints(model::SMomentModel) = n_coupling_constraints(model.inner) + 1
 
 """
     coupling_bounds(model::SMomentModel)
@@ -140,9 +139,7 @@ n_coupling_constraints(model::SMomentModel) =
 The coupling bounds for [`SMomentModel`](@ref) (refer to [`coupling`](@ref) for
 details).
 """
-coupling_bounds(model::SMomentModel) = let (iclb, icub) = coupling_bounds(model.inner)
-    (
-        vcat(iclb, [0.0]),
-        vcat(icub, [model.total_enzyme_capacity]),
-    )
-end
+coupling_bounds(model::SMomentModel) =
+    let (iclb, icub) = coupling_bounds(model.inner)
+        (vcat(iclb, [0.0]), vcat(icub, [model.total_enzyme_capacity]))
+    end
