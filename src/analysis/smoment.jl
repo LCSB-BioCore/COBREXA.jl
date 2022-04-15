@@ -2,8 +2,8 @@
 """
     make_smoment_model(
         model::MetabolicModel;
-        reaction_isozymes::Union{Function, Dict{String, Isozyme}},
-        gene_product_molar_mass::Union{Function, Dict{String, Float64}},
+        reaction_isozymes::Union{Function,Dict{String,Isozyme}},
+        gene_product_molar_mass::Union{Function,Dict{String,Float64}},
         total_enzyme_capacity::Float64,
     )
 
@@ -29,7 +29,7 @@ provide the same data lookup.
 function make_smoment_model(
     model::MetabolicModel;
     reaction_isozymes::Union{Function,Dict{String,Isozyme}},
-    gene_product_molar_mass::::Union{Function,Dict{String,Float64}},
+    gene_product_molar_mass::Union{Function,Dict{String,Float64}},
     total_enzyme_capacity::Float64,
 )
     ris_ =
