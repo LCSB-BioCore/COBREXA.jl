@@ -15,10 +15,9 @@ end
 """
     struct SMomentModel <: ModelWrapper
 
-Construct an enzyme-capacity constrained model using sMOMENT algorithm, as
-described by *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic
-construction of metabolic models with enzyme constraints" BMC bioinformatics,
-2020*.
+An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
+*Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
+metabolic models with enzyme constraints" BMC bioinformatics, 2020*.
 
 Use [`make_smoment_model`](@ref) or [`with_smoment`](@ref) to construct the
 models.
@@ -27,10 +26,10 @@ The model is constructed as follows:
 - stoichiometry of the original model is retained as much as possible, but
   enzymatic reations are split into forward and reverse parts (marked by a
   suffix like `...#forward` and `...#reverse`),
-- stoichiometry is expanded by a virtual metabolite "enzyme capacity" which is
-  consumed by all enzymatic reactions at a rate given by enzyme mass divided by
-  the corresponding kcat,
-- the total consumption of the enzyme capacity is constrained by a fixed
+- coupling is added to simulate a virtual metabolite "enzyme capacity", which
+  is consumed by all enzymatic reactions at a rate given by enzyme mass divided
+  by the corresponding kcat,
+- the total consumption of the enzyme capacity is constrained to a fixed
   maximum.
 
 The `SMomentModel` structure contains a worked-out representation of the

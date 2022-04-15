@@ -15,18 +15,19 @@
 
     total_protein_mass = 100.0
 
-    gm =
-        model |>
-        with_changed_bounds(
+    bounded_model =
+        model |> with_changed_bounds(
             ["EX_glc__D_e", "GLCpts"];
             lower = [-1000.0, -1.0],
             upper = [nothing, 12.0],
-        ) |>
-        with_gecko(
+        )
+
+    gm =
+        bounded_model |> with_gecko(
             reaction_isozymes = get_reaction_isozymes,
             gene_product_limit = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
-            gene_product_mass = get_gene_product_mass,
-            mass_fraction_limit = _ -> total_protein_mass,
+            gene_product_molar_mass = get_gene_product_mass,
+            group_mass_limit = _ -> total_protein_mass,
         )
 
     opt_model = flux_balance_analysis(
@@ -47,4 +48,26 @@
     prot_mass = sum(ecoli_core_protein_masses[gid] * c for (gid, c) in prot_concens)
 
     @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
+
+    gm =
+        bounded_model |> with_gecko(
+            reaction_isozymes = get_reaction_isozymes,
+            gene_product_limit = _ -> (0.0, 0.05),
+            gene_product_molar_mass = get_gene_product_mass,
+            group_mass_limit = _ -> total_protein_mass,
+            relaxed_arm_reaction_bounds = true,
+        )
+
+    rxn_fluxes = flux_balance_analysis_dict(
+        gm,
+        Tulip.Optimizer;
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    )
+
+    @test isapprox(
+        rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
+        0.1877932315030117,
+        atol = TEST_TOLERANCE,
+    )
+
 end
