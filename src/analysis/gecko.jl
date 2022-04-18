@@ -1,11 +1,11 @@
 """
     make_gecko_model(
         model::MetabolicModel;
-        reaction_isozymes::Union{Function,Dict{String,Isozyme}},
-        gene_product_limit::Union{Function,Dict{String,Tuple{Float64,Float64}}},
+        reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}}
+        gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
         gene_product_molar_mass::Union{Function,Dict{String,Float64}},
         gene_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
-        group_mass_limit::Union{Function,Dict{String,Float64}},
+        gene_mass_group_bound::Union{Function,Dict{String,Float64}},
         relaxed_arm_reaction_bounds = false,
     )
 
@@ -16,7 +16,7 @@ GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
 
 - `reaction_isozymes` is a function that returns a vector of [`Isozyme`](@ref)s
   for each reaction, or empty vector if the reaction is not enzymatic.
-- `gene_product_limit` is a function that returns lower and upper bound for
+- `gene_product_bounds` is a function that returns lower and upper bound for
   concentration for a given gene product (specified by the same string gene ID as in
   `reaction_isozymes`), as `Tuple{Float64,Float64}`.
 - `gene_product_molar_mass` is a function that returns a numeric molar mass of
@@ -25,7 +25,7 @@ GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
   given gene product, again specified by string gene ID. By default, all gene
   products belong to group `"uncategorized"` which is the behavior of original
   GECKO.
-- `group_mass_limit` is a function that returns the maximum mass for a given
+- `gene_mass_group_bound` is a function that returns the maximum mass for a given
   mass group.
 - `relaxed_arm_reaction_bounds` is a boolean flag that relaxes the constraints
   on the "arm" reactions specified by GECKO. By default (value `false`), there
@@ -43,23 +43,23 @@ provide the same data lookup.
 """
 function make_gecko_model(
     model::MetabolicModel;
-    reaction_isozymes::Union{Function,Dict{String,Isozyme}},
-    gene_product_limit::Union{Function,Dict{String,Tuple{Float64,Float64}}},
+    reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}},
+    gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},
     gene_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
-    group_mass_limit::Union{Function,Dict{String,Float64}},
+    gene_mass_group_bound::Union{Function,Dict{String,Float64}},
     relaxed_arm_reaction_bounds = false,
 )
     ris_ =
-        reaction_isozymes isa Function ? reaction_isozymes : (gid -> reaction_isozymes[gid])
-    gpl_ =
-        gene_product_limit isa Function ? gene_product_limit :
-        (gid -> gene_product_limit[gid])
+        reaction_isozymes isa Function ? reaction_isozymes : (rid -> get(reaction_isozymes, rid, []))
+    gpb_ =
+        gene_product_bounds isa Function ? gene_product_bounds :
+        (gid -> gene_product_bounds[gid])
     gpmm_ =
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])
     gmg_ = gene_mass_group isa Function ? gene_mass_group : (gid -> gene_mass_group[gid])
-    gml_ = group_mass_limit isa Function ? group_mass_limit : (grp -> group_mass_limit[grp])
+    gmgb_ = gene_mass_group_bound isa Function ? gene_mass_group_bound : (grp -> gene_mass_group_bound[grp])
     # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
 
     columns = Vector{_gecko_column}()
@@ -130,8 +130,8 @@ function make_gecko_model(
                                 gene_row_lookup[gidx] =
                                     length(coupling_row_gene_product)
                             end
-                            (row_idx, 1 / kcat)
-                        end for (gene, count) in isozyme.gene_product_count if
+                            (row_idx, stoich / kcat)
+                        end for (gene, stoich) in isozyme.gene_product_count if
                         haskey(gene_name_lookup, gene)
                     )
 
@@ -182,8 +182,8 @@ function make_gecko_model(
     GeckoModel(
         columns,
         coupling_row_reaction,
-        collect(zip(coupling_row_gene_product, gpl_.(gids[coupling_row_gene_product]))),
-        collect(zip(coupling_row_mass_group, gml_.(coupling_row_mass_group))),
+        collect(zip(coupling_row_gene_product, gpb_.(gids[coupling_row_gene_product]))),
+        collect(zip(coupling_row_mass_group, gmgb_.(coupling_row_mass_group))),
         model,
     )
 end

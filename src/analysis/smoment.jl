@@ -2,7 +2,7 @@
 """
     make_smoment_model(
         model::MetabolicModel;
-        reaction_isozymes::Union{Function,Dict{String,Isozyme}},
+        reaction_isozyme::Union{Function,Dict{String,Isozyme}},
         gene_product_molar_mass::Union{Function,Dict{String,Float64}},
         total_enzyme_capacity::Float64,
     )
@@ -12,7 +12,7 @@ Construct a model with a structure given by sMOMENT algorithm; returns a
 
 # Arguments
 
-- `reaction_isozymes` parameter is a function that returns a single
+- `reaction_isozyme` parameter is a function that returns a single
   [`Isozyme`](@ref) for each reaction, or `nothing` if the reaction is not
   enzymatic. If the reaction has multiple isozymes, use
   [`smoment_isozyme_speed`](@ref) to select the fastest one, as recommended by
@@ -26,12 +26,12 @@ provide the same data lookup.
 """
 function make_smoment_model(
     model::MetabolicModel;
-    reaction_isozymes::Union{Function,Dict{String,Isozyme}},
+    reaction_isozyme::Union{Function,Dict{String,Isozyme}},
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},
     total_enzyme_capacity::Float64,
 )
     ris_ =
-        reaction_isozymes isa Function ? reaction_isozymes : (gid -> reaction_isozymes[gid])
+        reaction_isozyme isa Function ? reaction_isozyme : (rid -> get(reaction_isozyme, rid, nothing))
     gpmm_ =
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])

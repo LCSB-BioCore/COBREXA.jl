@@ -24,7 +24,7 @@ genome‐scale metabolic model by incorporating enzymatic constraints." Molecula
 systems biology 13.8 (2017): 935.*
 
 Use [`make_gecko_model`](@ref) or [`with_gecko`](@ref) to construct this kind
-of models.
+of model.
 
 The model wraps another "internal" model, and adds following modifications:
 - enzymatic reactions with known enzyme information are split into multiple
