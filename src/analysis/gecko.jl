@@ -6,7 +6,6 @@
         gene_product_molar_mass::Union{Function,Dict{String,Float64}},
         gene_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
         gene_mass_group_bound::Union{Function,Dict{String,Float64}},
-        relaxed_arm_reaction_bounds = false,
     )
 
 Wrap a model into a [`GeckoModel`](@ref), following the structure given by
@@ -27,16 +26,6 @@ GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
   GECKO.
 - `gene_mass_group_bound` is a function that returns the maximum mass for a given
   mass group.
-- `relaxed_arm_reaction_bounds` is a boolean flag that relaxes the constraints
-  on the "arm" reactions specified by GECKO. By default (value `false`), there
-  is a separate constraint that limits the total flux through forward-direction
-  reaction for all its isozymes (ensuring that the sum of forward rates is less
-  than "global" upper bound), and another separate constraint that limits the
-  total flux through reverse-direction reaction isozymes. Value `true` groups
-  both forward and reverse reactions in a single constraint, allowing the total
-  forward flux to be actually greater than the upper bound IF the reverse flux
-  can balance it to fit into the upper and lower bound constraints (in turn,
-  more enzyme can be "wasted" by a reaction that runs in both directions).
 
 Alternatively, all function arguments may be also supplied as dictionaries that
 provide the same data lookup.
@@ -50,7 +39,8 @@ function make_gecko_model(
     gene_mass_group_bound::Union{Function,Dict{String,Float64}},
 )
     ris_ =
-        reaction_isozymes isa Function ? reaction_isozymes : (rid -> get(reaction_isozymes, rid, []))
+        reaction_isozymes isa Function ? reaction_isozymes :
+        (rid -> get(reaction_isozymes, rid, []))
     gpb_ =
         gene_product_bounds isa Function ? gene_product_bounds :
         (gid -> gene_product_bounds[gid])
@@ -58,13 +48,15 @@ function make_gecko_model(
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])
     gmg_ = gene_mass_group isa Function ? gene_mass_group : (gid -> gene_mass_group[gid])
-    gmgb_ = gene_mass_group_bound isa Function ? gene_mass_group_bound : (grp -> gene_mass_group_bound[grp])
+    gmgb_ =
+        gene_mass_group_bound isa Function ? gene_mass_group_bound :
+        (grp -> gene_mass_group_bound[grp])
     # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
 
     columns = Vector{_gecko_column}()
     coupling_row_reaction = Int[]
     coupling_row_gene_product = Int[]
-    coupling_row_mass_group = String[]
+    # coupling_row_mass_group = String[]
 
     gids = genes(model)
     (lbs, ubs) = bounds(model)
@@ -72,12 +64,11 @@ function make_gecko_model(
 
     gene_name_lookup = Dict(gids .=> 1:length(gids))
     gene_row_lookup = Dict{Int,Int}()
-    mass_group_lookup = Dict{String,Int}()
 
     for i = 1:n_reactions(model)
         isozymes = ris_(rids[i])
         if isempty(isozymes)
-            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], [], []))
+            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], []))
             continue
         end
 
@@ -99,7 +90,7 @@ function make_gecko_model(
                     push!(coupling_row_reaction, i)
                     length(coupling_row_reaction)
                 end : 0
-        
+
             # all isozymes in this direction
             for (iidx, isozyme) in enumerate(isozymes)
                 kcat = kcatf(isozyme)
@@ -120,31 +111,6 @@ function make_gecko_model(
                         haskey(gene_name_lookup, gene)
                     )
 
-                    # prepare the coupling with the mass groups
-                    gp_groups = gmg_.(keys(isozyme.gene_product_count))
-                    gp_mass = gpmm_.(keys(isozyme.gene_product_count))
-                    groups = unique(filter(!isnothing, gp_groups))
-                    group_idx = Dict(groups .=> 1:length(groups))
-                    vals = [0.0 for _ in groups]
-
-                    for (gpg, mass) in zip(gp_groups, gp_mass)
-                        if !isnothing(gpg)
-                            vals[group_idx[gpg]] += mass / kcat
-                        end
-                    end
-
-                    mass_group_coupling = collect(
-                        isnothing(group) ? 0 :
-                        begin
-                            if !haskey(mass_group_lookup, group)
-                                push!(coupling_row_mass_group, group)
-                                mass_group_lookup[group] =
-                                    length(coupling_row_mass_group)
-                            end
-                            (mass_group_lookup[group], val)
-                        end for (group, val) in zip(groups, vals)
-                    )
-
                     # make a new column
                     push!(
                         columns,
@@ -156,7 +122,6 @@ function make_gecko_model(
                             max(lb, 0),
                             ub,
                             gene_product_coupling,
-                            mass_group_coupling,
                         ),
                     )
                 end
@@ -164,11 +129,37 @@ function make_gecko_model(
         end
     end
 
-    GeckoModel(
+    # prepare enzyme capacity constraints
+    mg_gid_lookup = Dict{String, Vector{String}}()
+    for gid in gids[coupling_row_gene_product]
+        mg = gmg_(gid)
+        if haskey(mg_gid_lookup, mg)
+            push!(mg_gid_lookup[mg], gid)
+        else
+            mg_gid_lookup[mg] = [gid]
+        end
+    end
+    coupling_row_mass_group = Vector{Tuple{Vector{Int}, Vector{Float64}, Float64}}()
+    for (grp, gs) in mg_gid_lookup
+        idxs = Int.(indexin(gs, gids))
+        mms = gpmm_.(gs)
+        push!(coupling_row_mass_group, (idxs, mms, gmgb_(grp)))
+    end
+
+    gm = GeckoModel(
+        spzeros(length(columns) + length(coupling_row_gene_product)),
         columns,
         coupling_row_reaction,
         collect(zip(coupling_row_gene_product, gpb_.(gids[coupling_row_gene_product]))),
-        collect(zip(coupling_row_mass_group, gmgb_.(coupling_row_mass_group))),
+        coupling_row_mass_group,
         model,
     )
+
+    # set objective (do separately because gene products can also be objectives)
+    gm.objective .= [
+        _gecko_column_reactions(gm)' * objective(gm.inner)
+        spzeros(length(coupling_row_gene_product))
+    ]
+
+    return gm
 end

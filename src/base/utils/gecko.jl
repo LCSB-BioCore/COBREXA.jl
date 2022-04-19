@@ -70,17 +70,16 @@ _gecko_gene_product_coupling(model::GeckoModel) =
 Compute the part of the coupling for [`GeckoModel`](@ref) that limits the total
 mass of each group of gene products.
 """
-_gecko_mass_group_coupling(model::GeckoModel) =
-    let
-        tmp = [
-            (row, i, val) for (i, col) in enumerate(model.columns) for
-            (row, val) in col.mass_group_coupling
-        ]
-        sparse(
-            [row for (row, _, _) in tmp],
-            [col for (_, col, _) in tmp],
-            [val for (_, _, val) in tmp],
-            length(model.coupling_row_mass_group),
-            length(model.columns),
-        )
-    end
+function _gecko_mass_group_coupling(model::GeckoModel)
+    tmp = [
+        (i, j, mm) for (i, mg) in enumerate(model.coupling_row_mass_group) for
+        (j, mm) in zip(mg[1], mg[2])
+    ]
+    sparse(
+        [i for (i, _, _) in tmp],
+        [j for (_, j, _) in tmp],
+        [mm for (_, _, mm) in tmp],
+        length(model.coupling_row_mass_group),
+        n_genes(model), 
+    )    
+end
