@@ -24,7 +24,7 @@ Extract the mass utilization in mass groups from a solved [`GeckoModel`](@ref).
 protein_mass_group_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
-        grp[1] => dot(value.(opt_model[:x])[n_reactions(model) .+ grp[2]], grp[3]) for
+        grp[1] => dot(value.(opt_model[:x])[n_reactions(model).+grp[2]], grp[3]) for
         grp in model.coupling_row_mass_group
     ) : nothing
 

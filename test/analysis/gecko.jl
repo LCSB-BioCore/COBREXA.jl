@@ -68,10 +68,10 @@ end
         "r3", m1 + m2 → m3, 0, 100
         "r4", m3 ↔ m4, -100, 100 # make reversible instead
         "r5", m2 ↔ m4, -100, 100
-        "r6", nothing → m4, 0, 100 
+        "r6", nothing → m4, 0, 100
     end
 
-    gs = [Gene("g$i") for i in 1:4]
+    gs = [Gene("g$i") for i = 1:4]
 
     m.reactions["r3"].grr = [["g1"]]
     m.reactions["r4"].grr = [["g1"], ["g2"]]
@@ -82,32 +82,10 @@ end
     add_metabolites!(m, [m1, m2, m3, m4])
 
     reaction_isozymes = Dict(
-        "r3" => [
-            Isozyme(
-                Dict("g1" => 1),
-                1.0, 
-                1.0,
-            ),
-        ],
-        "r4" => [
-            Isozyme(
-                Dict("g1" => 1),
-                2.0, 
-                2.0,
-            ),
-            Isozyme( 
-                Dict("g2" => 1),
-                3.0, 
-                3.0,
-            ),
-        ],
-        "r5" => [
-            Isozyme(
-                Dict("g3" => 1, "g4" => 2),
-                5.0, 
-                5.0,
-            ),
-        ],
+        "r3" => [Isozyme(Dict("g1" => 1), 1.0, 1.0)],
+        "r4" =>
+            [Isozyme(Dict("g1" => 1), 2.0, 2.0), Isozyme(Dict("g2" => 1), 3.0, 3.0)],
+        "r5" => [Isozyme(Dict("g3" => 1, "g4" => 2), 5.0, 5.0)],
     )
     gene_product_bounds = Dict(
         "g1" => (0.0, 10.0),
@@ -116,28 +94,17 @@ end
         "g4" => (0.0, 10.0),
     )
 
-    gene_product_molar_mass = Dict(
-        "g1" => 1.0,
-        "g2" => 2.0,
-        "g3" => 3.0,
-        "g4" => 4.0,
-    )
+    gene_product_molar_mass = Dict("g1" => 1.0, "g2" => 2.0, "g3" => 3.0, "g4" => 4.0)
 
     gene_mass_group_bound = Dict("uncategorized" => 0.5)
 
-    gm =  make_gecko_model(
+    gm = make_gecko_model(
         m;
         reaction_isozymes,
         gene_product_bounds,
         gene_product_molar_mass,
         gene_mass_group_bound,
     )
-
-    S = stoichiometry(gm)
-    l, u = bounds(gm)
-
-    coupling(gm)
-    cl, cu = coupling_bounds(gm)
 
     opt_model = flux_balance_analysis(
         gm,
