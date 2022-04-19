@@ -52,9 +52,9 @@
     gm =
         bounded_model |> with_gecko(
             reaction_isozymes = get_reaction_isozymes,
-            gene_product_limit = _ -> (0.0, 0.05),
+            gene_product_bounds = _ -> (0.0, 0.05),
             gene_product_molar_mass = get_gene_product_mass,
-            group_mass_limit = _ -> total_protein_mass,
+            gene_mass_group_bound = _ -> total_protein_mass,
             relaxed_arm_reaction_bounds = true,
         )
 

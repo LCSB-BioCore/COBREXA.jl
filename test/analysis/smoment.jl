@@ -22,7 +22,7 @@
             upper = [nothing, 12.0],
         ) |>
         with_smoment(
-            reaction_isozymes = get_reaction_isozyme,
+            reaction_isozyme = get_reaction_isozyme,
             gene_product_molar_mass = get_gene_product_mass,
             total_enzyme_capacity = 100.0,
         )
