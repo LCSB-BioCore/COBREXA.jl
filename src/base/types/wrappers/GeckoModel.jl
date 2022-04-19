@@ -162,13 +162,13 @@ function coupling_bounds(model::GeckoModel)
     return (
         vcat(
             iclb,
-            ilb[model.coupling_row_reaction],
+            ilb[model.coupling_row_reaction], #! fix bound
             [lb for (_, (lb, _)) in model.coupling_row_gene_product],
             [0.0 for _ in model.coupling_row_mass_group],
         ),
         vcat(
             icub,
-            iub[model.coupling_row_reaction],
+            iub[model.coupling_row_reaction], #! fix bound
             [ub for (_, (_, ub)) in model.coupling_row_gene_product],
             [ub for (_, ub) in model.coupling_row_mass_group],
         ),

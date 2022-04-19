@@ -25,9 +25,9 @@
     gm =
         bounded_model |> with_gecko(
             reaction_isozymes = get_reaction_isozymes,
-            gene_product_limit = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
+            gene_product_bounds = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
             gene_product_molar_mass = get_gene_product_mass,
-            group_mass_limit = _ -> total_protein_mass,
+            gene_mass_group_bound = _ -> total_protein_mass,
         )
 
     opt_model = flux_balance_analysis(
