@@ -48,26 +48,4 @@
     prot_mass = sum(ecoli_core_protein_masses[gid] * c for (gid, c) in prot_concens)
 
     @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
-
-    gm =
-        bounded_model |> with_gecko(
-            reaction_isozymes = get_reaction_isozymes,
-            gene_product_bounds = _ -> (0.0, 0.05),
-            gene_product_molar_mass = get_gene_product_mass,
-            gene_mass_group_bound = _ -> total_protein_mass,
-            relaxed_arm_reaction_bounds = true,
-        )
-
-    rxn_fluxes = flux_balance_analysis_dict(
-        gm,
-        Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-    )
-
-    @test isapprox(
-        rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
-        0.1877932315030117,
-        atol = TEST_TOLERANCE,
-    )
-
 end
