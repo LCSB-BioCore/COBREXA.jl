@@ -63,20 +63,19 @@ end
     m4 = Metabolite("m4")
 
     @add_reactions! m begin
-        "r1", nothing → m1, -100, 100
-        "r2", nothing → m2, -100, 100
+        "r1", nothing → m1, 0, 100
+        "r2", nothing → m2, 0, 100
         "r3", m1 + m2 → m3, 0, 100
-        "r4", m3 ↔ m4, -100, 100 # make reversible instead
+        "r4", m3 → m4, 0, 100
         "r5", m2 ↔ m4, -100, 100
-        "r6", nothing → m4, 0, 100
+        "r6", m4 → nothing, 0, 100
     end
 
     gs = [Gene("g$i") for i = 1:4]
 
-    m.reactions["r3"].grr = [["g1"]]
     m.reactions["r4"].grr = [["g1"], ["g2"]]
     m.reactions["r5"].grr = [["g3", "g4"]]
-    m.reactions["r4"].objective_coefficient = 1.0
+    m.reactions["r6"].objective_coefficient = 1.0
 
     add_genes!(m, gs)
     add_metabolites!(m, [m1, m2, m3, m4])
@@ -85,7 +84,7 @@ end
         "r3" => [Isozyme(Dict("g1" => 1), 1.0, 1.0)],
         "r4" =>
             [Isozyme(Dict("g1" => 1), 2.0, 2.0), Isozyme(Dict("g2" => 1), 3.0, 3.0)],
-        "r5" => [Isozyme(Dict("g3" => 1, "g4" => 2), 5.0, 5.0)],
+        "r5" => [Isozyme(Dict("g3" => 1, "g4" => 2), 70.0, 70.0)],
     )
     gene_product_bounds = Dict(
         "g1" => (0.0, 10.0),
@@ -116,7 +115,7 @@ end
     gene_products = protein_dict(gm, opt_model)
     mass_groups = protein_mass_group_dict(gm, opt_model)
 
-    @test isapprox(rxn_fluxes["r4"], 0.142857, atol = TEST_TOLERANCE)
-    @test isapprox(gene_products["g3"], 0.0285714, atol = TEST_TOLERANCE)
+    @test isapprox(rxn_fluxes["r6"], 3.181818181753438, atol = TEST_TOLERANCE)
+    @test isapprox(gene_products["g4"], 0.09090909090607537, atol = TEST_TOLERANCE)
     @test isapprox(mass_groups["uncategorized"], 0.5, atol = TEST_TOLERANCE)
 end
