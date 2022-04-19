@@ -139,11 +139,11 @@ function make_gecko_model(
             mg_gid_lookup[mg] = [gid]
         end
     end
-    coupling_row_mass_group = Vector{Tuple{Vector{Int}, Vector{Float64}, Float64}}()
+    coupling_row_mass_group = Vector{Tuple{String, Vector{Int}, Vector{Float64}, Float64}}()
     for (grp, gs) in mg_gid_lookup
-        idxs = Int.(indexin(gs, gids))
+        idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)
-        push!(coupling_row_mass_group, (idxs, mms, gmgb_(grp)))
+        push!(coupling_row_mass_group, (grp, idxs, mms, gmgb_(grp)))
     end
 
     gm = GeckoModel(

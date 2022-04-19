@@ -6,12 +6,8 @@ argument `opt_model` is a solved optimization problem, typically returned by
 [`flux_balance_analysis`](@ref).
 """
 protein_dict(model::GeckoModel, opt_model) =
-    let gids = genes(model)
-        is_solved(opt_model) ?
-        Dict(
-            [gids[gidx] for (gidx, _) in model.coupling_row_gene_product] .=> _gecko_gene_product_coupling(model) * value.(opt_model[:x]),
-        ) : nothing
-    end
+    is_solved(opt_model) ?
+    Dict(genes(model) .=> value.(opt_model[:x])[(n_reactions(model)+1):end]) : nothing
 
 """
     protein_dict(model::GeckoModel)
@@ -28,8 +24,8 @@ Extract the mass utilization in mass groups from a solved [`GeckoModel`](@ref).
 protein_mass_group_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
-        (group for (group, _) in model.coupling_row_mass_group) .=>
-            _gecko_mass_group_coupling(model) * value.(opt_model[:x]),
+        grp[1] => dot(value.(opt_model[:x])[n_reactions(model) .+ grp[2]], grp[3]) for
+        grp in model.coupling_row_mass_group
     ) : nothing
 
 """
@@ -38,7 +34,6 @@ protein_mass_group_dict(model::GeckoModel, opt_model) =
 A pipe-able variant of [`mass_group_dict`](@ref).
 """
 protein_mass_group_dict(model::GeckoModel) = x -> mass_group_dict(model, x)
-
 
 """
     protein_mass(model::SMomentModel)

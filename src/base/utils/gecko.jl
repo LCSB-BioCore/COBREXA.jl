@@ -73,7 +73,7 @@ mass of each group of gene products.
 function _gecko_mass_group_coupling(model::GeckoModel)
     tmp = [
         (i, j, mm) for (i, mg) in enumerate(model.coupling_row_mass_group) for
-        (j, mm) in zip(mg[1], mg[2])
+        (j, mm) in zip(mg[2], mg[3])
     ]
     sparse(
         [i for (i, _, _) in tmp],
@@ -83,3 +83,13 @@ function _gecko_mass_group_coupling(model::GeckoModel)
         n_genes(model), 
     )    
 end
+
+"""
+    flux_dict(model::GeckoModel, opt_model)
+
+Returns the fluxes (not gene product concentrations) of the model as a
+reaction-keyed dictionary, if solved.
+"""
+flux_dict(model::GeckoModel, opt_model) =
+    is_solved(opt_model) ?
+    Dict(fluxes(model) .=> reaction_flux(model)' * value.(opt_model[:x])[1:n_reactions(model)] ) : nothing

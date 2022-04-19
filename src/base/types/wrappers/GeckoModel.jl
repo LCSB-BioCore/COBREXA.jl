@@ -55,7 +55,7 @@ struct GeckoModel <: ModelWrapper
     columns::Vector{_gecko_column}
     coupling_row_reaction::Vector{Int}
     coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
-    coupling_row_mass_group::Vector{Tuple{Vector{Int}, Vector{Float64}, Float64}}
+    coupling_row_mass_group::Vector{Tuple{String, Vector{Int}, Vector{Float64}, Float64}}
 
     inner::MetabolicModel
 end
@@ -91,11 +91,10 @@ objective(model::GeckoModel) = model.objective
 Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
 to forward- and reverse-only parts with different isozyme indexes; reactions
 IDs are mangled accordingly with suffixes), as well as the genes associated 
-with enzymatic reactions. In the context of a GeckoModel, this is better described 
-as the variables in the problem.
+with enzymatic reactions.
 """
-function reactions(model::GeckoModel)
-    rxnnames = let inner_reactions = reactions(model.inner)
+reactions(model::GeckoModel) = 
+    let inner_reactions = reactions(model.inner)
         [
             _gecko_reaction_name(
                 inner_reactions[col.reaction_idx],
@@ -104,18 +103,14 @@ function reactions(model::GeckoModel)
             ) for col in model.columns
         ]
     end
-    [rxnnames; genes(model)]
-end
 
 """
     n_reactions(model::GeckoModel)
 
 Returns the number of all irreversible reactions in `model` as well as the number of gene products 
-that take part in enzymatic reactions. In the context of a GeckoModel, this is better described 
-as the number of variables in the problem.
+that take part in enzymatic reactions.
 """
-n_reactions(model::GeckoModel) =
-    length(model.columns) + length(model.coupling_row_gene_product)
+n_reactions(model::GeckoModel) = length(reactions(model))
 
 """
     bounds(model::GeckoModel)
@@ -140,14 +135,7 @@ end
 Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-function reaction_flux(model::GeckoModel)
-    gecko_mat = _gecko_column_reactions(model)'
-    inner_mat = reaction_flux(model.inner)
-    [
-        gecko_mat*inner_mat spzeros(size(gecko_mat, 1), n_genes(model))
-        spzeros(n_genes(model), size(inner_mat, 2)) I(n_genes(model))
-    ]
-end
+reaction_flux(model::GeckoModel) = _gecko_column_reactions(model)' * reaction_flux(model.inner) 
 
 """
     coupling(model::GeckoModel)
@@ -196,7 +184,7 @@ function coupling_bounds(model::GeckoModel)
         vcat(
             icub,
             iub[model.coupling_row_reaction],
-            [ub for (_, _, ub) in model.coupling_row_mass_group],
+            [ub for (_, _, _, ub) in model.coupling_row_mass_group],
         ),
     )
 end
@@ -214,7 +202,7 @@ balance(model::GeckoModel) = [balance(model.inner); spzeros(length(model.couplin
 
 Return the number of genes that have enzymatic constraints associated with them.
 """
-n_genes(model::GeckoModel) = length(model.coupling_row_gene_product)
+n_genes(model::GeckoModel) = length(genes(model))
 
 """
     genes(model::GeckoModel)
@@ -224,9 +212,15 @@ Return the gene ids of genes that have enzymatic constraints associated with the
 genes(model::GeckoModel) = genes(model.inner)[[idx for (idx, _) in model.coupling_row_gene_product]]
 
 """
-    fluxes(model::GeckoModel)
+    metabolites(model::GeckoModel)
 
-Return the original reaction ids and the gene ids that were variables 
-in a [`GeckoModel`](@ref).
+Return the ids of all metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
 """
-fluxes(model::GeckoModel) = [reactions(model.inner); genes(model)]
+metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model).*"#supply"]
+
+"""
+    n_metabolites(model::GeckoModel)
+
+Return the number of metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
+"""
+n_metabolites(model::GeckoModel) = length(metabolites(model))
