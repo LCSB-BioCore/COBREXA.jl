@@ -80,8 +80,8 @@ function _gecko_mass_group_coupling(model::GeckoModel)
         [j for (_, j, _) in tmp],
         [mm for (_, _, mm) in tmp],
         length(model.coupling_row_mass_group),
-        n_genes(model), 
-    )    
+        n_genes(model),
+    )
 end
 
 """
@@ -92,4 +92,7 @@ reaction-keyed dictionary, if solved.
 """
 flux_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
-    Dict(fluxes(model) .=> reaction_flux(model)' * value.(opt_model[:x])[1:n_reactions(model)] ) : nothing
+    Dict(
+        fluxes(model) .=>
+            reaction_flux(model)' * value.(opt_model[:x])[1:n_reactions(model)],
+    ) : nothing

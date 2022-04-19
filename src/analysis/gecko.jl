@@ -130,7 +130,7 @@ function make_gecko_model(
     end
 
     # prepare enzyme capacity constraints
-    mg_gid_lookup = Dict{String, Vector{String}}()
+    mg_gid_lookup = Dict{String,Vector{String}}()
     for gid in gids[coupling_row_gene_product]
         mg = gmg_(gid)
         if haskey(mg_gid_lookup, mg)
@@ -139,7 +139,7 @@ function make_gecko_model(
             mg_gid_lookup[mg] = [gid]
         end
     end
-    coupling_row_mass_group = Vector{Tuple{String, Vector{Int}, Vector{Float64}, Float64}}()
+    coupling_row_mass_group = Vector{Tuple{String,Vector{Int},Vector{Float64},Float64}}()
     for (grp, gs) in mg_gid_lookup
         idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)

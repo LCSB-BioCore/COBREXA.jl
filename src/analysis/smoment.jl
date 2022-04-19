@@ -31,7 +31,8 @@ function make_smoment_model(
     total_enzyme_capacity::Float64,
 )
     ris_ =
-        reaction_isozyme isa Function ? reaction_isozyme : (rid -> get(reaction_isozyme, rid, nothing))
+        reaction_isozyme isa Function ? reaction_isozyme :
+        (rid -> get(reaction_isozyme, rid, nothing))
     gpmm_ =
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])
