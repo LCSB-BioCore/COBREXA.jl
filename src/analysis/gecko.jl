@@ -158,7 +158,7 @@ function make_gecko_model(
     #=
     Set objective. This is a separate field because gene products can also be objectives. 
     This way they can be set as objectives by the user.
-    =# 
+    =#
     gm.objective .= [
         _gecko_column_reactions(gm)' * objective(gm.inner)
         spzeros(length(coupling_row_gene_product))
