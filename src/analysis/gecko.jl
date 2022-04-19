@@ -48,7 +48,6 @@ function make_gecko_model(
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},
     gene_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
     gene_mass_group_bound::Union{Function,Dict{String,Float64}},
-    relaxed_arm_reaction_bounds = false,
 )
     ris_ =
         reaction_isozymes isa Function ? reaction_isozymes : (rid -> get(reaction_isozymes, rid, []))
@@ -82,39 +81,25 @@ function make_gecko_model(
             continue
         end
 
-        # if the reaction has multiple isozymes, it needs extra coupling to
-        # ensure that the total rate of the reaction doesn't exceed the
-        # "global" limit
-        if relaxed_arm_reaction_bounds
-            reaction_coupling_row =
-                length(isozymes) > 1 ? begin
-                    push!(coupling_row_reaction, i)
-                    length(coupling_row_reaction)
-                end : 0
-        end
-
         # loop over both directions for all isozymes
         for (lb, ub, kcatf, dir) in [
             (-ubs[i], -lbs[i], i -> i.kcat_reverse, -1),
             (lbs[i], ubs[i], i -> i.kcat_forward, 1),
         ]
-            if !relaxed_arm_reaction_bounds
-                # In this case, the coefficients in the coupling matrix will be
-                # the same as in the combined case, only categorized in
-                # separate rows for negative and positive ones. Surprisingly,
-                # we do not need to explicitly remember the bounds, because the
-                # ones taken from the original model are perfectly okay -- the
-                # "reverse" direction is unreachable because of individual
-                # bounds on split reactions, and the "forward" direction is
-                # properly negated in the reverse case to work nicely with the
-                # global lower bound.
-                reaction_coupling_row =
-                    ub > 0 && length(isozymes) > 1 ? begin
-                        push!(coupling_row_reaction, i)
-                        length(coupling_row_reaction)
-                    end : 0
-            end
-
+            # The coefficients in the coupling matrix will be categorized in
+            # separate rows for negative and positive reactions. Surprisingly,
+            # we do not need to explicitly remember the bounds, because the
+            # ones taken from the original model are perfectly okay -- the
+            # "reverse" direction is unreachable because of individual
+            # bounds on split reactions, and the "forward" direction is
+            # properly negated in the reverse case to work nicely with the
+            # global lower bound.
+            reaction_coupling_row =
+                ub > 0 && length(isozymes) > 1 ? begin
+                    push!(coupling_row_reaction, i)
+                    length(coupling_row_reaction)
+                end : 0
+        
             # all isozymes in this direction
             for (iidx, isozyme) in enumerate(isozymes)
                 kcat = kcatf(isozyme)
