@@ -81,7 +81,11 @@ end
 """
     objective(model::GeckoModel)
 
-Reconstruct an objective of the [`GeckoModel`](@ref).
+Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
+respect to the internal variables, i.e. [`reactions(model)`](@ref) and
+[`genes(model)`](@ref). To manually set the objective, index into
+`model.objective` appropriately, and remember to set the previous coefficients
+to zero.
 """
 objective(model::GeckoModel) = model.objective
 
@@ -90,8 +94,7 @@ objective(model::GeckoModel) = model.objective
 
 Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
 to forward- and reverse-only parts with different isozyme indexes; reactions
-IDs are mangled accordingly with suffixes), as well as the genes associated 
-with enzymatic reactions.
+IDs are mangled accordingly with suffixes).
 """
 reactions(model::GeckoModel) =
     let inner_reactions = reactions(model.inner)
@@ -107,8 +110,8 @@ reactions(model::GeckoModel) =
 """
     n_reactions(model::GeckoModel)
 
-Returns the number of all irreversible reactions in `model` as well as the number of gene products 
-that take part in enzymatic reactions.
+Returns the number of all irreversible reactions in `model` as well as the
+number of gene products that take part in enzymatic reactions.
 """
 n_reactions(model::GeckoModel) = length(reactions(model))
 
@@ -193,7 +196,7 @@ end
 """
     balance(model::GeckoModel)
 
-Return the balance of the inner model, concatenated with a vector of 
+Return the balance of the reactions in the inner model, concatenated with a vector of 
 zeros representing the enzyme balance of a [`GeckoModel`](@ref).
 """
 balance(model::GeckoModel) =

@@ -3,7 +3,8 @@
 
 Return a dictionary mapping protein molar concentrations to their ids. The
 argument `opt_model` is a solved optimization problem, typically returned by
-[`flux_balance_analysis`](@ref).
+[`flux_balance_analysis`](@ref). See [`flux_dict`](@ref) for the corresponding
+function that returns a dictionary of solved fluxes.
 """
 protein_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?

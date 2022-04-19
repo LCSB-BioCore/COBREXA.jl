@@ -71,7 +71,7 @@ Compute the part of the coupling for [`GeckoModel`](@ref) that limits the total
 mass of each group of gene products.
 """
 function _gecko_mass_group_coupling(model::GeckoModel)
-    tmp = [
+    tmp = [ # mm = molar mass, mg = mass group, i = row idx, j = col idx
         (i, j, mm) for (i, mg) in enumerate(model.coupling_row_mass_group) for
         (j, mm) in zip(mg[2], mg[3])
     ]
@@ -88,7 +88,8 @@ end
     flux_dict(model::GeckoModel, opt_model)
 
 Returns the fluxes (not gene product concentrations) of the model as a
-reaction-keyed dictionary, if solved.
+reaction-keyed dictionary, if solved. See [`protein_dict`](@ref) for a 
+function to get the gene product concentrations.
 """
 flux_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
