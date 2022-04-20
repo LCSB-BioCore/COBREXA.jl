@@ -1,37 +1,34 @@
 @testset "SMOMENT" begin
     model = load_model(StandardModel, model_paths["e_coli_core.json"])
-    total_protein_mass = 100 # mg/gdW
 
-    #: construct isozymes from model
-    rid_isozymes = Dict{String,Vector{Isozyme}}()
-    for (rid, kcats) in ecoli_core_reaction_kcats
-        grrs = reaction_gene_association(model, rid)
-        rid_isozymes[rid] = [
-            Isozyme(
-                Dict(grrs[i] .=> ecoli_core_protein_stoichiometry[rid][i]),
-                (kcats[i][1], kcats[i][2]),
-            ) for i = 1:length(grrs)
-        ]
-    end
+    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
 
-    #: add molar mass to genes in model
-    for (gid, g) in model.genes
-        model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
-    end
+    get_reaction_isozyme =
+        rid ->
+            haskey(ecoli_core_reaction_kcats, rid) ?
+            argmax(
+                smoment_isozyme_speed(get_gene_product_mass),
+                Isozyme(
+                    Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                    ecoli_core_reaction_kcats[rid][i]...,
+                ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
+            ) : nothing
 
-    remove_slow_isozymes!(model, rid_isozymes)
-
-    smm = make_smomentmodel(model; rid_isozymes, enzyme_capacity = total_protein_mass)
-
-    change_bounds!(
-        smm,
-        ["EX_glc__D_e", "GLCpts"];
-        lower = [-1000.0, -1.0],
-        upper = [nothing, 12.0],
-    )
+    smoment_model =
+        model |>
+        with_changed_bounds(
+            ["EX_glc__D_e", "GLCpts"],
+            lower = [-1000.0, -1.0],
+            upper = [nothing, 12.0],
+        ) |>
+        with_smoment(
+            reaction_isozyme = get_reaction_isozyme,
+            gene_product_molar_mass = get_gene_product_mass,
+            total_enzyme_capacity = 100.0,
+        )
 
     rxn_fluxes = flux_balance_analysis_dict(
-        smm,
+        smoment_model,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )

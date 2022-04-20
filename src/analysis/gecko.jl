@@ -1,178 +1,170 @@
 """
-    make_geckomodel(
-        model::StandardModel;
-        rid_isozymes = Dict{String, Vector{Isozyme}}(),
-        enzyme_capacities = [(),],
-    ) 
-
-Construct a `GeckoModel` based on `model` using the kinetic data encoded by 
-`rid_isozymes`. Enzyme capacity constraints can be added through `enzyme_capacities`,
-which is a vector of tuples. In the first position of the tuple is a list of gene ids,
-and the second position is mass upperbound of the sum of these gene ids. 
-
-The units of the fluxes and protein concentration depend on those used in
-`rid_isozymes` for the kcats and the molar masses encoded in  the genes of
-`model`. Currently only `modifications` that change attributes of the
-`optimizer` are supported.
-
-# Example
-```
-gm = make_geckomodel(
-    model;
-    rid_isozymes,
-    enzyme_capacities = [(get_genes_with_kcats(rid_isozymes), total_protein_mass)],
-)
-
-opt_model = flux_balance_analysis(
-    gm,
-    Tulip.Optimizer
-)
-
-rxn_fluxes = flux_dict(gm, opt_model)
-prot_concens = protein_dict(gm, opt_model)
-```
-"""
-function make_geckomodel(
-    model::StandardModel;
-    rid_isozymes = Dict{String,Vector{Isozyme}}(),
-    enzyme_capacities = [()],
-)
-    S, lb_fluxes, ub_fluxes, reaction_map, metabolite_map =
-        _build_irreversible_stoichiometric_matrix(model, rid_isozymes)
-
-    #: find all gene products that have kcats associated with them
-    gene_ids = get_genes_with_kcats(rid_isozymes)
-
-    #: size of resultant model
-    num_reactions = size(S, 2)
-    num_genes = length(gene_ids)
-    num_metabolites = size(S, 1)
-    num_vars = num_reactions + num_genes
-
-    #: equality lhs
-    E_components = ( #TODO add size hints if possible
-        row_idxs = Vector{Int}(),
-        col_idxs = Vector{Int}(),
-        coeffs = Vector{Float64}(),
+    make_gecko_model(
+        model::MetabolicModel;
+        reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}}
+        gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
+        gene_product_molar_mass::Union{Function,Dict{String,Float64}},
+        gene_product_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
+        gene_product_mass_group_bound::Union{Function,Dict{String,Float64}},
     )
 
-    for (rid, col_idx) in reaction_map
-        original_rid = string(split(rid, "§")[1])
+Wrap a model into a [`GeckoModel`](@ref), following the structure given by
+GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
 
-        # skip these entries
-        contains(rid, "§ARM") && continue
-        !haskey(rid_isozymes, original_rid) && continue
+# Arguments
 
-        # these entries have kcats
-        if contains(rid, "§ISO")
-            iso_num = parse(
-                Int,
-                replace(
-                    first(filter(startswith("ISO"), split(rid, "§")[2:end])),
-                    "ISO" => "",
-                ),
-            )
-        else # only one enzyme
-            iso_num = 1
+- `reaction_isozymes` is a function that returns a vector of [`Isozyme`](@ref)s
+  for each reaction, or empty vector if the reaction is not enzymatic.
+- `gene_product_bounds` is a function that returns lower and upper bound for
+  concentration for a given gene product (specified by the same string gene ID as in
+  `reaction_isozymes`), as `Tuple{Float64,Float64}`.
+- `gene_product_molar_mass` is a function that returns a numeric molar mass of
+  a given gene product specified by string gene ID.
+- `gene_product_mass_group` is a function that returns a string group identifier for a
+  given gene product, again specified by string gene ID. By default, all gene
+  products belong to group `"uncategorized"` which is the behavior of original
+  GECKO.
+- `gene_product_mass_group_bound` is a function that returns the maximum mass for a given
+  mass group.
+
+Alternatively, all function arguments may be also supplied as dictionaries that
+provide the same data lookup.
+"""
+function make_gecko_model(
+    model::MetabolicModel;
+    reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}},
+    gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
+    gene_product_molar_mass::Union{Function,Dict{String,Float64}},
+    gene_product_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
+    gene_product_mass_group_bound::Union{Function,Dict{String,Float64}},
+)
+    ris_ =
+        reaction_isozymes isa Function ? reaction_isozymes :
+        (rid -> get(reaction_isozymes, rid, []))
+    gpb_ =
+        gene_product_bounds isa Function ? gene_product_bounds :
+        (gid -> gene_product_bounds[gid])
+    gpmm_ =
+        gene_product_molar_mass isa Function ? gene_product_molar_mass :
+        (gid -> gene_product_molar_mass[gid])
+    gmg_ =
+        gene_product_mass_group isa Function ? gene_product_mass_group :
+        (gid -> gene_product_mass_group[gid])
+    gmgb_ =
+        gene_product_mass_group_bound isa Function ? gene_product_mass_group_bound :
+        (grp -> gene_product_mass_group_bound[grp])
+    # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
+
+    columns = Vector{_gecko_reaction_column}()
+    coupling_row_reaction = Int[]
+    coupling_row_gene_product = Int[]
+
+    gids = genes(model)
+    (lbs, ubs) = bounds(model)
+    rids = reactions(model)
+
+    gene_name_lookup = Dict(gids .=> 1:length(gids))
+    gene_row_lookup = Dict{Int,Int}()
+
+    for i = 1:n_reactions(model)
+        isozymes = ris_(rids[i])
+        if isempty(isozymes)
+            push!(columns, _gecko_reaction_column(i, 0, 0, 0, lbs[i], ubs[i], []))
+            continue
         end
 
-        # add all entries to column of matrix
-        _add_enzyme_variable(
-            rid_isozymes,
-            iso_num, # only one enzyme
-            rid,
-            original_rid,
-            E_components,
-            col_idx,
-            gene_ids,
-        )
+        # loop over both directions for all isozymes
+        for (lb, ub, kcatf, dir) in [
+            (-ubs[i], -lbs[i], i -> i.kcat_reverse, -1),
+            (lbs[i], ubs[i], i -> i.kcat_forward, 1),
+        ]
+            # The coefficients in the coupling matrix will be categorized in
+            # separate rows for negative and positive reactions. Surprisingly,
+            # we do not need to explicitly remember the bounds, because the
+            # ones taken from the original model are perfectly okay -- the
+            # "reverse" direction is unreachable because of individual
+            # bounds on split reactions, and the "forward" direction is
+            # properly negated in the reverse case to work nicely with the
+            # global lower bound.
+            reaction_coupling_row =
+                ub > 0 && length(isozymes) > 1 ? begin
+                    push!(coupling_row_reaction, i)
+                    length(coupling_row_reaction)
+                end : 0
+
+            # all isozymes in this direction
+            for (iidx, isozyme) in enumerate(isozymes)
+                kcat = kcatf(isozyme)
+                if ub > 0 && kcat > _constants.tolerance
+                    # prepare the coupling with gene product molar
+                    gene_product_coupling = collect(
+                        begin
+                            gidx = gene_name_lookup[gene]
+                            row_idx = if haskey(gene_row_lookup, gidx)
+                                gene_row_lookup[gidx]
+                            else
+                                push!(coupling_row_gene_product, gidx)
+                                gene_row_lookup[gidx] =
+                                    length(coupling_row_gene_product)
+                            end
+                            (row_idx, stoich / kcat)
+                        end for (gene, stoich) in isozyme.gene_product_count if
+                        haskey(gene_name_lookup, gene)
+                    )
+
+                    # make a new column
+                    push!(
+                        columns,
+                        _gecko_reaction_column(
+                            i,
+                            iidx,
+                            dir,
+                            reaction_coupling_row,
+                            max(lb, 0),
+                            ub,
+                            gene_product_coupling,
+                        ),
+                    )
+                end
+            end
+        end
     end
 
-    Se = sparse(
-        E_components.row_idxs,
-        E_components.col_idxs,
-        E_components.coeffs,
-        num_genes,
-        num_reactions,
-    )
-
-    stoich_mat = sparse([
-        S zeros(num_metabolites, num_genes)
-        Se I(num_genes)
-    ])
-
-    #: equality rhs
-    b = spzeros(num_metabolites + num_genes)
-
-    #: find objective (assume objective is forward)
-    obj_idx_orig = first(findnz(objective(model))[1])
-    obj_id_orig = reactions(model)[obj_idx_orig]
-    obj_id = obj_id_orig * "§FOR"
-    c = spzeros(num_vars)
-    obj_idx = reaction_map[obj_id]
-    c[obj_idx] = 1.0
-
-    #: inequality constraints
-    xl = sparse([lb_fluxes; fill(0.0, num_genes)])
-    xu = sparse([ub_fluxes; fill(1000.0, num_genes)])
-
-    #: enzyme capacity constraints
-    mw_proteins = [model.genes[pid].molar_mass for pid in gene_ids]
-    C = spzeros(length(enzyme_capacities), num_vars)
-    cl = spzeros(length(enzyme_capacities))
-    cu = spzeros(length(enzyme_capacities))
-
-    for (i, enz_cap) in enumerate(enzyme_capacities)
-        enz_idxs = indexin(first(enz_cap), gene_ids)
-        C[i, num_reactions.+enz_idxs] .= mw_proteins[enz_idxs]
-        cu[i] = last(enz_cap)
+    # prepare enzyme capacity constraints
+    mg_gid_lookup = Dict{String,Vector{String}}()
+    for gid in gids[coupling_row_gene_product]
+        mg = gmg_(gid)
+        if haskey(mg_gid_lookup, mg)
+            push!(mg_gid_lookup[mg], gid)
+        else
+            mg_gid_lookup[mg] = [gid]
+        end
+    end
+    coupling_row_mass_group = Vector{_gecko_capacity}()
+    for (grp, gs) in mg_gid_lookup
+        idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
+        mms = gpmm_.(gs)
+        push!(coupling_row_mass_group, _gecko_capacity(grp, idxs, mms, gmgb_(grp)))
     end
 
-    return GeckoModel(
-        reactions(model),
-        _order_id_to_idx_dict(reaction_map),
-        _order_id_to_idx_dict(metabolite_map),
-        gene_ids,
-        c,
-        stoich_mat,
-        b,
-        xl,
-        xu,
-        C,
-        cl,
-        cu,
-    )
-end
-
-"""
-    _add_enzyme_variable(
-        rid_isozymes,
-        iso_num,
-        rid,
-        original_rid,
-        E_components,
-        col_idx,
-        gene_ids,
+    # create model with dummy objective
+    gm = GeckoModel(
+        spzeros(length(columns) + length(coupling_row_gene_product)),
+        columns,
+        coupling_row_reaction,
+        collect(zip(coupling_row_gene_product, gpb_.(gids[coupling_row_gene_product]))),
+        coupling_row_mass_group,
+        model,
     )
 
-Helper function to add an column into the enzyme stoichiometric matrix.
-"""
-function _add_enzyme_variable(
-    rid_isozymes,
-    iso_num,
-    rid,
-    original_rid,
-    E_components,
-    col_idx,
-    gene_ids,
-)
-    pstoich = rid_isozymes[original_rid][iso_num].stoichiometry
-    kcat =
-        contains(rid, "§FOR") ? rid_isozymes[original_rid][iso_num].kcats[1] :
-        rid_isozymes[original_rid][iso_num].kcats[2]
-    for (pid, pst) in pstoich
-        push!(E_components.row_idxs, first(indexin([pid], gene_ids)))
-        push!(E_components.col_idxs, col_idx)
-        push!(E_components.coeffs, -pst / kcat)
-    end
+    #=
+    Set objective. This is a separate field because gene products can also be objectives. 
+    This way they can be set as objectives by the user.
+    =#
+    gm.objective .= [
+        _gecko_reaction_column_reactions(gm)' * objective(gm.inner)
+        spzeros(length(coupling_row_gene_product))
+    ]
+
+    return gm
 end

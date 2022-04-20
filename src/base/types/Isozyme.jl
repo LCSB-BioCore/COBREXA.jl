@@ -1,17 +1,18 @@
 """
     mutable struct Isozyme
 
-Struct containing isozyme information. Here, `stoichiometry` is a dictionary of
-gene ids to their stoichiometry in the isozyme complex, and `kcats` is a tuple
-of the forward and reverse turnover numbers of the isozyme.
+Information about isozyme composition and activity.
 
 # Fields
-````
-stoichiometry :: Dict{String, Int}
-kcats :: Tuple{Float64, Float64}
+- `gene_product_count :: Dict{String, Int}` assigns each gene product ID its
+  count in the isozyme complex (which is used to determine the total mass of
+  the isozyme)
+- `kcat_forward`, `kcat_reverse` -- forward and reverse turnover numbers of the
+  isozyme
 ````
 """
 mutable struct Isozyme
-    stoichiometry::Dict{String,Int}
-    kcats::Tuple{Float64,Float64}
+    gene_product_count::Dict{String,Int}
+    kcat_forward::Float64
+    kcat_reverse::Float64
 end

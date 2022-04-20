@@ -75,10 +75,9 @@ function flux_balance_analysis(
     model::M,
     optimizer;
     modifications = [],
-    sense = MOI.MAX_SENSE,
 ) where {M<:MetabolicModel}
 
-    opt_model = make_optimization_model(model, optimizer; sense)
+    opt_model = make_optimization_model(model, optimizer)
 
     for mod in modifications
         mod(model, opt_model)

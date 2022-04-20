@@ -3,7 +3,7 @@
     make_optimization_model(
         model::MetabolicModel,
         optimizer;
-        sense = MOI.MAX_SENSE,
+        sense = MAX_SENSE,
     )
 
 Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
@@ -11,7 +11,7 @@ constraint.
 
 Here coupling means inequality constraints coupling multiple variables together.
 """
-function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.MAX_SENSE)
+function make_optimization_model(model::MetabolicModel, optimizer; sense = MAX_SENSE)
 
     precache!(model)
 
@@ -128,6 +128,11 @@ flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
 """
     flux_dict(model::MetabolicModel)
 
-A pipeable variant of `flux_dict`
+A pipeable variant of `flux_dict`.
+
+# Example
+```
+flux_balance_analysis(model, ...) |> flux_dict(model)
+```
 """
-flux_dict(model::MetabolicModel) = x -> flux_dict(model, x)
+flux_dict(model::MetabolicModel) = opt_model -> flux_dict(model, opt_model)

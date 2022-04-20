@@ -1,132 +1,144 @@
+
 """
-    mutable struct SMomentModel <: MetabolicModel
+    struct _smoment_column
 
-Construct an enzyme capacity constrained model see `Bekiaris, Pavlos Stephanos,
-and Steffen Klamt. "Automatic construction of metabolic models with enzyme
-constraints." BMC bioinformatics, 2020.` for implementation details.
-
-Note, `"§"` is reserved for internal use as a delimiter, no reaction id should
-contain that character. Also note, SMOMENT assumes that each reaction only has a
-single enzyme (one GRR) associated with it. It is required that a model be
-modified to ensure that this condition is met. For ease-of-use,
-[`remove_slow_isozymes!`](@ref) is supplied to effect this. Currently only
-`modifications` that change attributes of the `optimizer` are supported.
-
-# Fields
-```
-reaction_ids::Vector{String}
-irrev_reaction_ids::Vector{String}
-metabolites::Vector{String}
-c::SparseVec
-S::SparseMat
-b::SparseVec
-xl::SparseVec
-xu::SparseVec
-C::SparseMat
-cl::Vector{Float64}
-cu::Vector{Float64}
-```
+A helper type that describes the contents of [`SMomentModel`](@ref)s.
 """
-mutable struct SMomentModel <: MetabolicModel
-    reaction_ids::Vector{String}
-    irrev_reaction_ids::Vector{String}
-    metabolites::Vector{String}
-    c::SparseVec
-    S::SparseMat
-    b::SparseVec
-    xl::SparseVec
-    xu::SparseVec
+struct _smoment_column
+    reaction_idx::Int # number of the corresponding reaction in the inner model
+    direction::Int # 0 if "as is" and unique, -1 if reverse-only part, 1 if forward-only part
+    lb::Float64 # must be 0 if the reaction is unidirectional (if direction!=0)
+    ub::Float64
+    capacity_required::Float64 # must be 0 for bidirectional reactions (if direction==0)
 end
+
+"""
+    struct SMomentModel <: ModelWrapper
+
+An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
+*Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
+metabolic models with enzyme constraints" BMC bioinformatics, 2020*.
+
+Use [`make_smoment_model`](@ref) or [`with_smoment`](@ref) to construct the
+models.
+
+The model is constructed as follows:
+- stoichiometry of the original model is retained as much as possible, but
+  enzymatic reations are split into forward and reverse parts (marked by a
+  suffix like `...#forward` and `...#reverse`),
+- coupling is added to simulate a virtual metabolite "enzyme capacity", which
+  is consumed by all enzymatic reactions at a rate given by enzyme mass divided
+  by the corresponding kcat,
+- the total consumption of the enzyme capacity is constrained to a fixed
+  maximum.
+
+The `SMomentModel` structure contains a worked-out representation of the
+optimization problem atop a wrapped [`MetabolicModel`](@ref), in particular the
+separation of certain reactions into unidirectional forward and reverse parts,
+an "enzyme capacity" required for each reaction, and the value of the maximum
+capacity constraint. Original coupling in the inner model is retained.
+
+In the structure, the field `columns` describes the correspondence of stoichiometry
+columns to the stoichiometry and data of the internal wrapped model, and
+`total_enzyme_capacity` is the total bound on the enzyme capacity consumption
+as specified in sMOMENT algorithm.
+
+This implementation allows easy access to fluxes from the split reactions
+(available in `reactions(model)`), while the original "simple" reactions from
+the wrapped model are retained as [`fluxes`](@ref). All additional constraints
+are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
+"""
+struct SMomentModel <: ModelWrapper
+    columns::Vector{_smoment_column}
+    total_enzyme_capacity::Float64
+
+    inner::MetabolicModel
+end
+
+unwrap_model(model::SMomentModel) = model.inner
 
 """
     stoichiometry(model::SMomentModel)
 
-Return stoichiometry matrix that includes enzymes as metabolites.
+Return a stoichiometry of the [`SMomentModel`](@ref). The enzymatic reactions
+are split into unidirectional forward and reverse ones.
 """
-stoichiometry(model::SMomentModel) = model.S
-
-"""
-    balance(model::SMomentModel)
-
-Return stoichiometric balance.
-"""
-balance(model::SMomentModel) = model.b
+stoichiometry(model::SMomentModel) =
+    stoichiometry(model.inner) * _smoment_column_reactions(model)
 
 """
     objective(model::SMomentModel)
 
-Return objective of `model`.
+Reconstruct an objective of the [`SMomentModel`](@ref).
 """
-objective(model::SMomentModel) = model.c
+objective(model::SMomentModel) = _smoment_column_reactions(model)' * objective(model.inner)
 
 """
-    fluxes(model::SMomentModel)
+    reactions(model::SMomentModel)
 
-Returns the reversible reactions in `model`. For 
-the irreversible reactions, use [`reactions`][@ref].
+Returns the internal reactions in a [`SMomentModel`](@ref) (these may be split
+to forward- and reverse-only parts; reactions IDs are mangled accordingly with
+suffixes).
 """
-fluxes(model::SMomentModel) = model.reaction_ids
-
-"""
-    n_fluxes(model::SMomentModel)
-
-Returns the number of reversible reactions in the model.
-"""
-n_fluxes(model::SMomentModel) = length(model.reaction_ids)
-
-"""
-    irreversible_reactions(model::SMomentModel)
-
-Returns the irreversible reactions in `model`.
-"""
-reactions(model::SMomentModel) = model.irrev_reaction_ids
+reactions(model::SMomentModel) =
+    let inner_reactions = reactions(model.inner)
+        [
+            _smoment_reaction_name(inner_reactions[col.reaction_idx], col.direction) for
+            col in model.columns
+        ]
+    end
 
 """
     n_reactions(model::SMomentModel)
 
-Returns the number of irreversible reactions in `model`.
+The number of reactions (including split ones) in [`SMomentModel`](@ref).
 """
-n_reactions(model::SMomentModel) = length(model.irrev_reaction_ids)
-
-"""
-    metabolites(model::SMomentModel)
-
-Return the metabolites in `model`.
-"""
-metabolites(model::SMomentModel) = model.metabolites
-
-"""
-    n_metabolites(model::SMomentModel) = 
-
-Return the number of metabolites in `model`.
-"""
-n_metabolites(model::SMomentModel) = length(metabolites(model))
+n_reactions(model::SMomentModel) = length(model.columns)
 
 """
     bounds(model::SMomentModel)
 
-Return variable bounds for `SMomentModel`.
+Return the variable bounds for [`SMomentModel`](@ref).
 """
-bounds(model::SMomentModel) = (model.xl, model.xu)
+bounds(model::SMomentModel) =
+    ([col.lb for col in model.columns], [col.ub for col in model.columns])
 
 """
-    reaction_flux(model::MetabolicModel)
+    reaction_flux(model::SMomentModel)
 
-Helper function to get fluxes from optimization problem.
+Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
+fluxes in the wrapped model.
 """
-function reaction_flux(model::SMomentModel)
-    R = spzeros(n_fluxes(model), n_reactions(model) + 1)
-    for (i, rid) in enumerate(fluxes(model))
-        for_idx = findfirst(
-            x -> x == rid * "§ARM§FOR" || x == rid * "§FOR",
-            model.irrev_reaction_ids,
-        )
-        rev_idx = findfirst(
-            x -> x == rid * "§ARM§REV" || x == rid * "§REV",
-            model.irrev_reaction_ids,
-        )
-        !isnothing(for_idx) && (R[i, for_idx] = 1.0)
-        !isnothing(rev_idx) && (R[i, rev_idx] = -1.0)
+reaction_flux(model::SMomentModel) =
+    _smoment_column_reactions(model)' * reaction_flux(model.inner)
+
+"""
+    coupling(model::SMomentModel)
+
+Return the coupling of [`SMomentModel`](@ref). That combines the coupling of
+the wrapped model, coupling for split reactions, and the coupling for the total
+enzyme capacity.
+"""
+coupling(model::SMomentModel) = vcat(
+    coupling(model.inner) * _smoment_column_reactions(model),
+    [col.capacity_required for col in model.columns]',
+)
+
+"""
+    n_coupling_constraints(model::SMomentModel)
+
+Count the coupling constraints in [`SMomentModel`](@ref) (refer to
+[`coupling`](@ref) for details).
+"""
+n_coupling_constraints(model::SMomentModel) = n_coupling_constraints(model.inner) + 1
+
+"""
+    coupling_bounds(model::SMomentModel)
+
+The coupling bounds for [`SMomentModel`](@ref) (refer to [`coupling`](@ref) for
+details).
+"""
+coupling_bounds(model::SMomentModel) =
+    let (iclb, icub) = coupling_bounds(model.inner)
+        (vcat(iclb, [0.0]), vcat(icub, [model.total_enzyme_capacity]))
     end
-    return R'
-end

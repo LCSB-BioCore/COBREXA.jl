@@ -1,45 +1,43 @@
 @testset "GECKO" begin
     model = load_model(StandardModel, model_paths["e_coli_core.json"])
-    total_protein_mass = 100 # mg/gdW
 
-    #: construct isozymes from model
-    rid_isozymes = Dict{String,Vector{Isozyme}}()
-    for (rid, kcats) in ecoli_core_reaction_kcats
-        grrs = reaction_gene_association(model, rid)
-        rid_isozymes[rid] = [
-            Isozyme(
-                Dict(grrs[i] .=> ecoli_core_protein_stoichiometry[rid][i]),
-                (kcats[i][1], kcats[i][2]),
-            ) for i = 1:length(grrs)
-        ]
-    end
+    get_reaction_isozymes =
+        rid ->
+            haskey(ecoli_core_reaction_kcats, rid) ?
+            collect(
+                Isozyme(
+                    Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                    ecoli_core_reaction_kcats[rid][i]...,
+                ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
+            ) : Isozyme[]
 
-    #: add molar mass to genes in model
-    for (gid, g) in model.genes
-        model.genes[gid].molar_mass = get(ecoli_core_protein_masses, gid, nothing)
-    end
+    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
 
-    gm = make_geckomodel(
-        model;
-        rid_isozymes,
-        enzyme_capacities = [(get_genes_with_kcats(rid_isozymes), total_protein_mass)],
-    )
-    change_bounds!(
-        gm,
-        ["EX_glc__D_e", "b2779", "GLCpts"];
-        lower = [-1000.0, 0.01, -1.0],
-        upper = [nothing, 0.06, 12.0],
-    )
+    total_gene_product_mass = 100.0
+
+    bounded_model =
+        model |> with_changed_bounds(
+            ["EX_glc__D_e", "GLCpts"];
+            lower = [-1000.0, -1.0],
+            upper = [nothing, 12.0],
+        )
+
+    gm =
+        bounded_model |> with_gecko(
+            reaction_isozymes = get_reaction_isozymes,
+            gene_product_bounds = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
+            gene_product_molar_mass = get_gene_product_mass,
+            gene_product_mass_group_bound = _ -> total_gene_product_mass,
+        )
 
     opt_model = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-        sense = COBREXA.MOI.MAX_SENSE,
     )
 
     rxn_fluxes = flux_dict(gm, opt_model)
-    prot_concens = protein_dict(gm, opt_model)
+    prot_concens = gene_product_dict(gm, opt_model)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
@@ -47,8 +45,77 @@
         atol = TEST_TOLERANCE,
     )
 
-    prot_mass = sum(ecoli_core_protein_masses[gid] * c for (gid, c) in prot_concens)
+    prot_mass = sum(ecoli_core_gene_product_masses[gid] * c for (gid, c) in prot_concens)
 
-    @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
+    @test isapprox(prot_mass, total_gene_product_mass, atol = TEST_TOLERANCE)
 end
 
+@testset "GECKO small model" begin
+    #=
+    Implement the small model found in the supplment of the 
+    original GECKO paper. This model is nice to troubleshoot with,
+    because the stoich matrix is small.
+    =#
+    m = StandardModel("gecko")
+    m1 = Metabolite("m1")
+    m2 = Metabolite("m2")
+    m3 = Metabolite("m3")
+    m4 = Metabolite("m4")
+
+    @add_reactions! m begin
+        "r1", nothing → m1, 0, 100
+        "r2", nothing → m2, 0, 100
+        "r3", m1 + m2 → m3, 0, 100
+        "r4", m3 → m4, 0, 100
+        "r5", m2 ↔ m4, -100, 100
+        "r6", m4 → nothing, 0, 100
+    end
+
+    gs = [Gene("g$i") for i = 1:4]
+
+    m.reactions["r4"].grr = [["g1"], ["g2"]]
+    m.reactions["r5"].grr = [["g3", "g4"]]
+    m.reactions["r6"].objective_coefficient = 1.0
+
+    add_genes!(m, gs)
+    add_metabolites!(m, [m1, m2, m3, m4])
+
+    reaction_isozymes = Dict(
+        "r3" => [Isozyme(Dict("g1" => 1), 1.0, 1.0)],
+        "r4" =>
+            [Isozyme(Dict("g1" => 1), 2.0, 2.0), Isozyme(Dict("g2" => 1), 3.0, 3.0)],
+        "r5" => [Isozyme(Dict("g3" => 1, "g4" => 2), 70.0, 70.0)],
+    )
+    gene_product_bounds = Dict(
+        "g1" => (0.0, 10.0),
+        "g2" => (0.0, 10.0),
+        "g3" => (0.0, 10.0),
+        "g4" => (0.0, 10.0),
+    )
+
+    gene_product_molar_mass = Dict("g1" => 1.0, "g2" => 2.0, "g3" => 3.0, "g4" => 4.0)
+
+    gene_product_mass_group_bound = Dict("uncategorized" => 0.5)
+
+    gm = make_gecko_model(
+        m;
+        reaction_isozymes,
+        gene_product_bounds,
+        gene_product_molar_mass,
+        gene_product_mass_group_bound,
+    )
+
+    opt_model = flux_balance_analysis(
+        gm,
+        Tulip.Optimizer;
+        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    )
+
+    rxn_fluxes = flux_dict(gm, opt_model)
+    gene_products = gene_product_dict(gm, opt_model)
+    mass_groups = gene_product_mass_group_dict(gm, opt_model)
+
+    @test isapprox(rxn_fluxes["r6"], 3.181818181753438, atol = TEST_TOLERANCE)
+    @test isapprox(gene_products["g4"], 0.09090909090607537, atol = TEST_TOLERANCE)
+    @test isapprox(mass_groups["uncategorized"], 0.5, atol = TEST_TOLERANCE)
+end
