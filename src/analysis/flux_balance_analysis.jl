@@ -70,7 +70,6 @@ biomass_reaction_id = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 modified_solution = flux_balance_analysis(model, GLPK.optimizer;
     modifications=[change_objective(biomass_reaction_id)])
 ```
-
 """
 function flux_balance_analysis(
     model::M,
