@@ -155,7 +155,7 @@ const reaction_standard_gibbs_free_energies = Dict{String,Float64}(
     "FUM" => -3.424133018702122,
 )
 
-const ecoli_core_protein_masses = Dict{String,Float64}(
+const ecoli_core_gene_product_masses = Dict{String,Float64}(
     #=
     Data downloaded from Uniprot for E. coli K12,
     gene mass in kDa. To obtain these data yourself, go to

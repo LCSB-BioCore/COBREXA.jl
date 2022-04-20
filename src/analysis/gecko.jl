@@ -55,7 +55,7 @@ function make_gecko_model(
         (grp -> gene_product_mass_group_bound[grp])
     # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
 
-    columns = Vector{_gecko_column}()
+    columns = Vector{_gecko_reaction_column}()
     coupling_row_reaction = Int[]
     coupling_row_gene_product = Int[]
 
@@ -69,7 +69,7 @@ function make_gecko_model(
     for i = 1:n_reactions(model)
         isozymes = ris_(rids[i])
         if isempty(isozymes)
-            push!(columns, _gecko_column(i, 0, 0, 0, lbs[i], ubs[i], []))
+            push!(columns, _gecko_reaction_column(i, 0, 0, 0, lbs[i], ubs[i], []))
             continue
         end
 
@@ -115,7 +115,7 @@ function make_gecko_model(
                     # make a new column
                     push!(
                         columns,
-                        _gecko_column(
+                        _gecko_reaction_column(
                             i,
                             iidx,
                             dir,
@@ -162,7 +162,7 @@ function make_gecko_model(
     This way they can be set as objectives by the user.
     =#
     gm.objective .= [
-        _gecko_column_reactions(gm)' * objective(gm.inner)
+        _gecko_reaction_column_reactions(gm)' * objective(gm.inner)
         spzeros(length(coupling_row_gene_product))
     ]
 

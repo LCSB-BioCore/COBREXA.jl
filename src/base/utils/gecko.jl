@@ -10,12 +10,12 @@ _gecko_reaction_name(original_name::String, direction::Int, isozyme_idx::Int) =
     "$original_name#reverse#$isozyme_idx"
 
 """
-    _gecko_column_reactions(model::GeckoModel)
+    _gecko_reaction_column_reactions(model::GeckoModel)
 
 Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
 """
-_gecko_column_reactions(model::GeckoModel) = sparse(
+_gecko_reaction_column_reactions(model::GeckoModel) = sparse(
     [col.reaction_idx for col in model.columns],
     1:length(model.columns),
     [col.direction >= 0 ? 1 : -1 for col in model.columns],
