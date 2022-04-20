@@ -1,7 +1,7 @@
 @testset "SMOMENT" begin
     model = load_model(StandardModel, model_paths["e_coli_core.json"])
 
-    get_gene_product_mass = gid -> get(ecoli_core_protein_masses, gid, 0.0)
+    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
 
     get_reaction_isozyme =
         rid ->
@@ -22,7 +22,7 @@
             upper = [nothing, 12.0],
         ) |>
         with_smoment(
-            reaction_isozymes = get_reaction_isozyme,
+            reaction_isozyme = get_reaction_isozyme,
             gene_product_molar_mass = get_gene_product_mass,
             total_enzyme_capacity = 100.0,
         )

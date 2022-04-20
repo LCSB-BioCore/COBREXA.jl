@@ -36,9 +36,9 @@ The `SMomentModel` structure contains a worked-out representation of the
 optimization problem atop a wrapped [`MetabolicModel`](@ref), in particular the
 separation of certain reactions into unidirectional forward and reverse parts,
 an "enzyme capacity" required for each reaction, and the value of the maximum
-capacity constraint. Original coupling is retained.
+capacity constraint. Original coupling in the inner model is retained.
 
-In the structure, field `columns` describes the correspondence of stoichiometry
+In the structure, the field `columns` describes the correspondence of stoichiometry
 columns to the stoichiometry and data of the internal wrapped model, and
 `total_enzyme_capacity` is the total bound on the enzyme capacity consumption
 as specified in sMOMENT algorithm.
