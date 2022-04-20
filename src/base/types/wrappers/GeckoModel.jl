@@ -14,6 +14,19 @@ struct _gecko_column
 end
 
 """
+    struct _gecko_capacity
+
+A helper struct that contains the gene product capacity terms organized by 
+the grouping type, e.g. metabolic or membrane groups etc.
+"""
+struct _gecko_capacity
+    group_id::String
+    gene_product_idxs::Vector{Int}
+    gene_product_molar_masses::Vector{Float64}
+    group_upper_bound::Float64
+end
+
+"""
     struct GeckoModel <: ModelWrapper
 
 A model with complex enzyme concentration and capacity bounds, as described in
@@ -55,7 +68,7 @@ struct GeckoModel <: ModelWrapper
     columns::Vector{_gecko_column}
     coupling_row_reaction::Vector{Int}
     coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
-    coupling_row_mass_group::Vector{Tuple{String,Vector{Int},Vector{Float64},Float64}}
+    coupling_row_mass_group::Vector{_gecko_capacity}
 
     inner::MetabolicModel
 end
@@ -113,7 +126,7 @@ reactions(model::GeckoModel) =
 Returns the number of all irreversible reactions in `model` as well as the
 number of gene products that take part in enzymatic reactions.
 """
-n_reactions(model::GeckoModel) = length(reactions(model))
+n_reactions(model::GeckoModel) = length(model.columns)
 
 """
     bounds(model::GeckoModel)
@@ -138,8 +151,13 @@ end
 Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-reaction_flux(model::GeckoModel) =
-    _gecko_column_reactions(model)' * reaction_flux(model.inner)
+function reaction_flux(model::GeckoModel)
+    rxnmat = _gecko_column_reactions(model)' * reaction_flux(model.inner)
+    [
+        rxnmat
+        spzeros(n_genes(model), size(rxnmat, 2))
+    ]
+end
 
 """
     coupling(model::GeckoModel)
@@ -188,7 +206,7 @@ function coupling_bounds(model::GeckoModel)
         vcat(
             icub,
             iub[model.coupling_row_reaction],
-            [ub for (_, _, _, ub) in model.coupling_row_mass_group],
+            [grp.group_upper_bound for grp in model.coupling_row_mass_group],
         ),
     )
 end
@@ -207,7 +225,7 @@ balance(model::GeckoModel) =
 
 Return the number of genes that have enzymatic constraints associated with them.
 """
-n_genes(model::GeckoModel) = length(genes(model))
+n_genes(model::GeckoModel) = length(model.coupling_row_gene_product)
 
 """
     genes(model::GeckoModel)
@@ -229,4 +247,4 @@ metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model) .* "#su
 
 Return the number of metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
 """
-n_metabolites(model::GeckoModel) = length(metabolites(model))
+n_metabolites(model::GeckoModel) = n_metabolites(model.inner) + n_genes(model)

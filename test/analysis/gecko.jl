@@ -11,9 +11,9 @@
                 ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
             ) : Isozyme[]
 
-    get_gene_product_mass = gid -> get(ecoli_core_protein_masses, gid, 0.0)
+    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
 
-    total_protein_mass = 100.0
+    total_gene_product_mass = 100.0
 
     bounded_model =
         model |> with_changed_bounds(
@@ -27,7 +27,7 @@
             reaction_isozymes = get_reaction_isozymes,
             gene_product_bounds = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
             gene_product_molar_mass = get_gene_product_mass,
-            gene_mass_group_bound = _ -> total_protein_mass,
+            gene_product_mass_group_bound = _ -> total_gene_product_mass,
         )
 
     opt_model = flux_balance_analysis(
@@ -37,7 +37,7 @@
     )
 
     rxn_fluxes = flux_dict(gm, opt_model)
-    prot_concens = protein_dict(gm, opt_model)
+    prot_concens = gene_product_dict(gm, opt_model)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
@@ -45,9 +45,9 @@
         atol = TEST_TOLERANCE,
     )
 
-    prot_mass = sum(ecoli_core_protein_masses[gid] * c for (gid, c) in prot_concens)
+    prot_mass = sum(ecoli_core_gene_product_masses[gid] * c for (gid, c) in prot_concens)
 
-    @test isapprox(prot_mass, total_protein_mass, atol = TEST_TOLERANCE)
+    @test isapprox(prot_mass, total_gene_product_mass, atol = TEST_TOLERANCE)
 end
 
 @testset "GECKO small model" begin
@@ -95,14 +95,14 @@ end
 
     gene_product_molar_mass = Dict("g1" => 1.0, "g2" => 2.0, "g3" => 3.0, "g4" => 4.0)
 
-    gene_mass_group_bound = Dict("uncategorized" => 0.5)
+    gene_product_mass_group_bound = Dict("uncategorized" => 0.5)
 
     gm = make_gecko_model(
         m;
         reaction_isozymes,
         gene_product_bounds,
         gene_product_molar_mass,
-        gene_mass_group_bound,
+        gene_product_mass_group_bound,
     )
 
     opt_model = flux_balance_analysis(
@@ -112,8 +112,8 @@ end
     )
 
     rxn_fluxes = flux_dict(gm, opt_model)
-    gene_products = protein_dict(gm, opt_model)
-    mass_groups = protein_mass_group_dict(gm, opt_model)
+    gene_products = gene_product_dict(gm, opt_model)
+    mass_groups = gene_product_mass_group_dict(gm, opt_model)
 
     @test isapprox(rxn_fluxes["r6"], 3.181818181753438, atol = TEST_TOLERANCE)
     @test isapprox(gene_products["g4"], 0.09090909090607537, atol = TEST_TOLERANCE)

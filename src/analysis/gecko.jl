@@ -4,8 +4,8 @@
         reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}}
         gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
         gene_product_molar_mass::Union{Function,Dict{String,Float64}},
-        gene_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
-        gene_mass_group_bound::Union{Function,Dict{String,Float64}},
+        gene_product_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
+        gene_product_mass_group_bound::Union{Function,Dict{String,Float64}},
     )
 
 Wrap a model into a [`GeckoModel`](@ref), following the structure given by
@@ -20,11 +20,11 @@ GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
   `reaction_isozymes`), as `Tuple{Float64,Float64}`.
 - `gene_product_molar_mass` is a function that returns a numeric molar mass of
   a given gene product specified by string gene ID.
-- `gene_mass_group` is a function that returns a string group identifier for a
+- `gene_product_mass_group` is a function that returns a string group identifier for a
   given gene product, again specified by string gene ID. By default, all gene
   products belong to group `"uncategorized"` which is the behavior of original
   GECKO.
-- `gene_mass_group_bound` is a function that returns the maximum mass for a given
+- `gene_product_mass_group_bound` is a function that returns the maximum mass for a given
   mass group.
 
 Alternatively, all function arguments may be also supplied as dictionaries that
@@ -35,8 +35,8 @@ function make_gecko_model(
     reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}},
     gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},
-    gene_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
-    gene_mass_group_bound::Union{Function,Dict{String,Float64}},
+    gene_product_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
+    gene_product_mass_group_bound::Union{Function,Dict{String,Float64}},
 )
     ris_ =
         reaction_isozymes isa Function ? reaction_isozymes :
@@ -47,10 +47,12 @@ function make_gecko_model(
     gpmm_ =
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])
-    gmg_ = gene_mass_group isa Function ? gene_mass_group : (gid -> gene_mass_group[gid])
+    gmg_ =
+        gene_product_mass_group isa Function ? gene_product_mass_group :
+        (gid -> gene_product_mass_group[gid])
     gmgb_ =
-        gene_mass_group_bound isa Function ? gene_mass_group_bound :
-        (grp -> gene_mass_group_bound[grp])
+        gene_product_mass_group_bound isa Function ? gene_product_mass_group_bound :
+        (grp -> gene_product_mass_group_bound[grp])
     # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
 
     columns = Vector{_gecko_column}()
@@ -138,11 +140,11 @@ function make_gecko_model(
             mg_gid_lookup[mg] = [gid]
         end
     end
-    coupling_row_mass_group = Vector{Tuple{String,Vector{Int},Vector{Float64},Float64}}()
+    coupling_row_mass_group = Vector{_gecko_capacity}()
     for (grp, gs) in mg_gid_lookup
         idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)
-        push!(coupling_row_mass_group, (grp, idxs, mms, gmgb_(grp)))
+        push!(coupling_row_mass_group, _gecko_capacity(grp, idxs, mms, gmgb_(grp)))
     end
 
     # create model with dummy objective
