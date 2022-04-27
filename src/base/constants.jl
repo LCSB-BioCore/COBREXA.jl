@@ -24,6 +24,11 @@ const _constants = (
         objective = ["c"],
         grrs = ["gene_reaction_rules", "grRules", "rules"],
         ids = ["id", "description"],
+        metformulas = ["metFormula", "metFormulas"],
+        metcharges = ["metCharge", "metCharges"],
+        metcompartments = ["metCompartment", "metCompartments"],
+        rxnnames = ["rxnNames"],
+        metnames = ["metNames"],
     ),
     gene_annotation_checks = (
         "ncbigene",

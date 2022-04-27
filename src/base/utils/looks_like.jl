@@ -96,12 +96,12 @@ Shortcut for finding biomass reaction identifiers in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
 """
 find_biomass_reaction_ids(m::MetabolicModel; kwargs...) =
-    filter(id -> looks_like_biomass_reaction(id, kwargs...), reactions(m))
+    filter(id -> looks_like_biomass_reaction(id; kwargs...), reactions(m))
 
 """
     looks_like_extracellular_metabolite(rxn_id::String;
         extracellular_suffixes = _constants.extracellular_suffixes,
-        )::Bool
+    )::Bool
 
 A predicate that matches metabolite identifiers that look like they are extracellular
 metabolites. Extracellular metabolites are identified by `extracellular_suffixes` at the end of the

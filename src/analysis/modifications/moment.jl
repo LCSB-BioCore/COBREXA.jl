@@ -36,6 +36,9 @@ flux_balance_analysis(
 """
 add_moment_constraints(kcats::Dict{String,Float64}, protein_mass_fraction::Float64) =
     (model, opt_model) -> begin
+        @warn(
+            "DEPRECATION WARNING: 'add_moment_constraints' will be removed in future versions of COBREXA.jl in favor of a GECKO-based formulation"
+        )
 
         lbs, ubs = get_optmodel_bounds(opt_model) # to assign directions
         # get grrs and ignore empty blocks: TODO: fix importing to avoid this ugly conditional see #462

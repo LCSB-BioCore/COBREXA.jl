@@ -75,7 +75,7 @@ function warmup_from_variability(
 
     fluxes = hcat(
         dpmap(
-            rid -> :($COBREXA._max_variability_flux(
+            rid -> :($COBREXA._maximize_warmup_reaction(
                 cobrexa_sampling_warmup_optmodel,
                 $rid,
                 om -> $COBREXA.JuMP.value.(om[:x]),
@@ -95,4 +95,19 @@ function warmup_from_variability(
     map(fetch, remove_from.(workers, :cobrexa_sampling_warmup_optmodel))
 
     return fluxes, lbs, ubs
+end
+
+"""
+    _maximize_warmup_reaction(opt_model, rid, ret)
+
+A helper function for finding warmup points from reaction variability.
+"""
+function _maximize_warmup_reaction(opt_model, rid, ret)
+    sense = rid > 0 ? MAX_SENSE : MIN_SENSE
+    var = all_variables(opt_model)[abs(rid)]
+
+    @objective(opt_model, sense, var)
+    optimize!(opt_model)
+
+    is_solved(opt_model) ? ret(opt_model) : nothing
 end

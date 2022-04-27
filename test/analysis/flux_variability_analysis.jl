@@ -9,6 +9,9 @@
         2.0 2.0
     ]
 
+    rates = reaction_variability_analysis(cp, optimizer)
+    @test fluxes == rates
+
     fluxes = flux_variability_analysis(cp, [2], optimizer)
 
     @test size(fluxes) == (1, 2)

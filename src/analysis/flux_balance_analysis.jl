@@ -1,5 +1,5 @@
 """
-    flux_balance_analysis_vec(args...)::Maybe{Vector{Float64}}
+    flux_balance_analysis_vec(model::MetabolicModel, args...)::Maybe{Vector{Float64}}
 
 A variant of FBA that returns a vector of fluxes in the same order as reactions
 of the model, if the solution is found.
@@ -9,8 +9,12 @@ Arguments are passed to [`flux_balance_analysis`](@ref).
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-flux_balance_analysis_vec(args...; kwargs...)::Maybe{Vector{Float64}} =
-    flux_vector(flux_balance_analysis(args...; kwargs...))
+flux_balance_analysis_vec(
+    model::MetabolicModel,
+    args...;
+    kwargs...,
+)::Maybe{Vector{Float64}} =
+    flux_vector(model, flux_balance_analysis(model, args...; kwargs...))
 
 """
     flux_balance_analysis_dict(model::MetabolicModel, args...)::Maybe{Dict{String, Float64}}
@@ -66,7 +70,6 @@ biomass_reaction_id = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 modified_solution = flux_balance_analysis(model, GLPK.optimizer;
     modifications=[change_objective(biomass_reaction_id)])
 ```
-
 """
 function flux_balance_analysis(
     model::M,

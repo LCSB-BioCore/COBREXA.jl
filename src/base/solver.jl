@@ -3,13 +3,15 @@
     make_optimization_model(
         model::MetabolicModel,
         optimizer;
-        sense = MOI.MAX_SENSE,
+        sense = MAX_SENSE,
     )
 
 Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
 constraint.
+
+Here coupling means inequality constraints coupling multiple variables together.
 """
-function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.MAX_SENSE)
+function make_optimization_model(model::MetabolicModel, optimizer; sense = MAX_SENSE)
 
     precache!(model)
 
@@ -25,8 +27,8 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MOI.M
 
     C = coupling(model) # empty if no coupling
     cl, cu = coupling_bounds(model)
-    isempty(C) || @constraint(optimization_model, c_lbs, cl .<= coupling(model) * x) # coupling lower bounds
-    isempty(C) || @constraint(optimization_model, c_ubs, coupling(model) * x .<= cu) # coupling upper bounds
+    isempty(C) || @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
+    isempty(C) || @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
 
     return optimization_model
 end
@@ -83,7 +85,6 @@ function set_optmodel_bound!(
     isnothing(ub) || set_normalized_rhs(opt_model[:ubs][vidx], ub)
 end
 
-
 """
     solved_objective_value(opt_model)::Maybe{Float64}
 
@@ -107,8 +108,8 @@ Returns a vector of fluxes of the model, if solved.
 flux_vector(flux_balance_analysis(model, ...))
 ```
 """
-flux_vector(opt_model)::Maybe{Vector{Float64}} =
-    is_solved(opt_model) ? value.(opt_model[:x]) : nothing
+flux_vector(model::MetabolicModel, opt_model)::Maybe{Vector{Float64}} =
+    is_solved(opt_model) ? reaction_flux(model)' * value.(opt_model[:x]) : nothing
 
 """
     flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String, Float64}, Nothing}
@@ -121,4 +122,17 @@ flux_dict(model, flux_balance_analysis(model, ...))
 ```
 """
 flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
-    is_solved(opt_model) ? Dict(reactions(model) .=> value.(opt_model[:x])) : nothing
+    is_solved(opt_model) ?
+    Dict(fluxes(model) .=> reaction_flux(model)' * value.(opt_model[:x])) : nothing
+
+"""
+    flux_dict(model::MetabolicModel)
+
+A pipeable variant of `flux_dict`.
+
+# Example
+```
+flux_balance_analysis(model, ...) |> flux_dict(model)
+```
+"""
+flux_dict(model::MetabolicModel) = opt_model -> flux_dict(model, opt_model)

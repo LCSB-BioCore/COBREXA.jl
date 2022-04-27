@@ -18,9 +18,7 @@ import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
 
-
 include("banner.jl")
-_print_banner()
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))
@@ -34,6 +32,7 @@ _inc_all.(
             joinpath("base", "logging"),
             joinpath("base", "macros"),
             joinpath("base", "types"),
+            joinpath("base", "types", "wrappers"),
             "base",
             "io",
             joinpath("io", "show"),

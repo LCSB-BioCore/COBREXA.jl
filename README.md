@@ -128,20 +128,20 @@ some reactions were disabled independently:
 
 ```julia
 # convert to a model type that is efficient to modify
-m = convert(StandardModel, m)
+m = convert(StandardModel, model)
 
 # find the model objective value if oxygen or carbon dioxide transports are disabled
 screen(m, # the base model
     variants=[ # this specifies how to generate the desired model variants
         [], # one with no modifications, i.e. the base case
-        [with_changed_bound("O2t", lower=0.0, upper=0.0)], # disable oxygen
-        [with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable CO2
-        [with_changed_bound("O2t", lower=0.0, upper=0.0),
-	        with_changed_bound("CO2t", lower=0.0, upper=0.0)], # disable both
+        [with_changed_bound("R_O2t", lower=0.0, upper=0.0)], # disable oxygen
+        [with_changed_bound("R_CO2t", lower=0.0, upper=0.0)], # disable CO2
+        [with_changed_bound("R_O2t", lower=0.0, upper=0.0),
+	        with_changed_bound("R_CO2t", lower=0.0, upper=0.0)], # disable both
     ],
     # this specifies what to do with the model variants (received as the argument `x`)
     analysis = x ->
-        flux_balance_analysis_dict(x, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
+        flux_balance_analysis_dict(x, Tulip.Optimizer)["R_BIOMASS_Ecoli_core_w_GAM"],
 )
 ```
 You should receive a result showing that missing oxygen transport makes the

@@ -1,7 +1,7 @@
 """
     flux_variability_analysis(
         model::MetabolicModel,
-        reactions::Vector{Int},
+        fluxes::Vector{Int},
         optimizer;
         modifications = [],
         workers = [myid()],
@@ -11,9 +11,9 @@
     )::Matrix{Float64}
 
 Flux variability analysis solves a pair of optimization problems in `model` for
-each flux listed in `reactions`:
+each flux `f` described in `fluxes`:
 ```
- min,max xᵢ
+min,max fᵀxᵢ
 s.t. S x = b
     xₗ ≤ x ≤ xᵤ
      cᵀx ≥ bounds(Z₀)[1]
@@ -38,13 +38,13 @@ multithreaded variability computation can be used to improve resource
 allocation efficiency in many common use-cases.
 
 `ret` is a function used to extract results from optimized JuMP models of the
-individual reactions. By default, it calls and returns the value of
+individual fluxes. By default, it calls and returns the value of
 `JuMP.objective_value`. More information can be extracted e.g. by setting it to
 a function that returns a more elaborate data structure; such as `m ->
 (JuMP.objective_value(m), JuMP.value.(m[:x]))`.
 
 Returns a matrix of extracted `ret` values for minima and maxima, of total size
-(`length(reactions)`,2). The optimizer result status is checked with
+(`size(fluxes,2)`,2). The optimizer result status is checked with
 [`is_solved`](@ref); `nothing` is returned if the optimization failed for any
 reason.
 
@@ -56,7 +56,7 @@ flux_variability_analysis(model, [1, 2, 3, 42], GLPK.optimizer)
 """
 function flux_variability_analysis(
     model::MetabolicModel,
-    reactions::Vector{Int},
+    fluxes::SparseMat,
     optimizer;
     modifications = [],
     workers = [myid()],
@@ -64,8 +64,13 @@ function flux_variability_analysis(
     bounds = z -> (z, Inf),
     ret = objective_value,
 )
-    if any(reactions .< 1) || any(reactions .> n_reactions(model))
-        throw(DomainError(reactions, "Index exceeds number of reactions."))
+    if size(fluxes, 1) != n_reactions(model)
+        throw(
+            DomainError(
+                size(fluxes, 1),
+                "Flux matrix size is not compatible with model reaction count.",
+            ),
+        )
     end
 
     Z = bounds(
@@ -74,6 +79,8 @@ function flux_variability_analysis(
             flux_balance_analysis(model, optimizer; modifications = modifications),
         ) : optimal_objective_value,
     )
+
+    flux_vector = [fluxes[:, i] for i = 1:size(fluxes, 2)]
 
     return screen_optmodel_modifications(
         model,
@@ -93,9 +100,33 @@ function flux_variability_analysis(
                 end,
             ],
         ),
-        args = Tuple.([-reactions reactions]),
-        analysis = (_, opt_model, ridx) -> _max_variability_flux(opt_model, ridx, ret),
+        args = tuple.([flux_vector flux_vector], [MIN_SENSE MAX_SENSE]),
+        analysis = (_, opt_model, flux, sense) ->
+            _max_variability_flux(opt_model, flux, sense, ret),
         workers = workers,
+    )
+end
+
+"""
+    flux_variability_analysis(model::MetabolicModel, flux_indexes::Vector{Int}, optimizer; kwargs...)
+
+An overload of [`flux_variability_analysis`](@ref) that explores the fluxes specified by integer indexes
+"""
+function flux_variability_analysis(
+    model::MetabolicModel,
+    flux_indexes::Vector{Int},
+    optimizer;
+    kwargs...,
+)
+    if any((flux_indexes .< 1) .| (flux_indexes .> n_fluxes(model)))
+        throw(DomainError(flux_indexes, "Flux index out of range"))
+    end
+
+    flux_variability_analysis(
+        model,
+        reaction_flux(model)[:, flux_indexes],
+        optimizer;
+        kwargs...,
     )
 end
 
@@ -107,12 +138,10 @@ end
     )
 
 A simpler version of [`flux_variability_analysis`](@ref) that maximizes and
-minimizes all reactions in the model. Arguments are forwarded.
+minimizes all declared fluxes in the model. Arguments are forwarded.
 """
-function flux_variability_analysis(model::MetabolicModel, optimizer; kwargs...)
-    n = n_reactions(model)
-    return flux_variability_analysis(model, collect(1:n), optimizer; kwargs...)
-end
+flux_variability_analysis(model::MetabolicModel, optimizer; kwargs...) =
+    flux_variability_analysis(model, reaction_flux(model), optimizer; kwargs...)
 
 """
     flux_variability_analysis_dict(
@@ -122,8 +151,8 @@ end
     )
 
 A variant of [`flux_variability_analysis`](@ref) that returns the individual
-maximized and minimized fluxes of all reactions as two dictionaries (of
-dictionaries). All keyword arguments except `ret` are passed through.
+maximized and minimized fluxes as two dictionaries (of dictionaries). All
+keyword arguments except `ret` are passed through.
 
 # Example
 ```
@@ -140,24 +169,71 @@ mins, maxs = flux_variability_analysis_dict(
 ```
 """
 function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs...)
-    fluxes = flux_variability_analysis(model, optimizer; kwargs..., ret = flux_vector)
-    rxns = reactions(model)
-    dicts = zip.(Ref(rxns), fluxes)
+    vs = flux_variability_analysis(
+        model,
+        optimizer;
+        kwargs...,
+        ret = sol -> flux_vector(model, sol),
+    )
+    flxs = fluxes(model)
+    dicts = zip.(Ref(flxs), vs)
 
-    return (Dict(rxns .=> Dict.(dicts[:, 1])), Dict(rxns .=> Dict.(dicts[:, 2])))
+    return (Dict(flxs .=> Dict.(dicts[:, 1])), Dict(flxs .=> Dict.(dicts[:, 2])))
 end
 
 """
-    _max_variability_flux(opt_model, rid, ret)
+    _max_variability_flux(opt_model, flux, sense, ret)
 
 Internal helper for maximizing reactions in optimization model.
 """
-function _max_variability_flux(opt_model, rid, ret)
-    sense = rid > 0 ? MAX_SENSE : MIN_SENSE
-    var = all_variables(opt_model)[abs(rid)]
-
-    @objective(opt_model, sense, var)
+function _max_variability_flux(opt_model, flux, sense, ret)
+    @objective(opt_model, sense, sum(flux .* opt_model[:x]))
     optimize!(opt_model)
 
     is_solved(opt_model) ? ret(opt_model) : nothing
 end
+
+"""
+    reaction_variability_analysis(model::MetabolicModel, reaction_indexes::Vector{Int}, optimizer; kwargs...)
+
+A variant for [`flux_variability_analysis`](@ref) that examines actual
+reactions (selected by their indexes in `reactions` argument) instead of whole
+fluxes. This may be useful for models where the sets of reactions and fluxes
+differ.
+"""
+function reaction_variability_analysis(
+    model::MetabolicModel,
+    reaction_indexes::Vector{Int},
+    optimizer;
+    kwargs...,
+)
+    if any((reaction_indexes .< 1) .| (reaction_indexes .> n_reactions(model)))
+        throw(DomainError(reaction_indexes, "Flux index out of range"))
+    end
+
+    flux_variability_analysis(
+        model,
+        sparse(
+            reaction_indexes,
+            1:length(reaction_indexes),
+            1.0,
+            n_reactions(model),
+            length(reaction_indexes),
+        ),
+        optimizer;
+        kwargs...,
+    )
+end
+
+"""
+    reaction_variability_analysis( model::MetabolicModel, optimizer; kwargs...)
+
+Shortcut for [`reaction_variability_analysis`](@ref) that examines all reactions.
+"""
+reaction_variability_analysis(model::MetabolicModel, optimizer; kwargs...) =
+    reaction_variability_analysis(
+        model,
+        collect(1:n_reactions(model)),
+        optimizer;
+        kwargs...,
+    )
