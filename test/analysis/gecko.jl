@@ -46,8 +46,10 @@
     )
 
     prot_mass = sum(ecoli_core_gene_product_masses[gid] * c for (gid, c) in prot_concens)
+    mass_groups = gene_product_mass_group_dict(gm, opt_model)
 
     @test isapprox(prot_mass, total_gene_product_mass, atol = TEST_TOLERANCE)
+    @test isapprox(prot_mass, mass_groups["uncategorized"], atol = TEST_TOLERANCE)
 end
 
 @testset "GECKO small model" begin

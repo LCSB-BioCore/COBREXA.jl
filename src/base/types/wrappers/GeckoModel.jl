@@ -55,10 +55,10 @@ The structure contains fields `columns` that describe the contents of the
 coupling columns, `coupling_row_reaction`, `coupling_row_gene_product` and
 `coupling_row_mass_group` that describe correspondence of the coupling rows to
 original model and determine the coupling bounds, and `inner`, which is the
-original wrapped model. Note, `objective` is the objective vector of the model,
-special care needs to be taken to ensure that its length is `n_reactions(model)
-+ n_genes(model)` when the user modifies it, where `model` is the GeckoModel in
-question. 
+original wrapped model. Note, `objective` is the objective vector of the model.
+Special care needs to be taken to ensure that its length is the sum of
+`n_reactions(model)` and `n_genes(model)` when the user modifies it, where
+`model` is the GeckoModel in question.
 
 Implementation exposes the split reactions (available as `reactions(model)`),
 but retains the original "simple" reactions accessible by [`fluxes`](@ref). All
