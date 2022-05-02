@@ -129,9 +129,9 @@ function _screen_impl(
     workers = [myid()],
 )::Array where {V<:AbstractVector,A,N}
 
-    map(fetch, save_at.(workers, :cobrexa_screen_variants_model, Ref(model)))
-    map(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
-    map(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_variants_model)))))
+    asyncmap(fetch, save_at.(workers, :cobrexa_screen_variants_model, Ref(model)))
+    asyncmap(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
+    asyncmap(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_variants_model)))))
 
     res = pmap(
         (vars, args)::Tuple -> screen_variant(
@@ -144,8 +144,8 @@ function _screen_impl(
         zip(variants, args),
     )
 
-    map(fetch, remove_from.(workers, :cobrexa_screen_variants_model))
-    map(fetch, remove_from.(workers, :cobrexa_screen_variants_analysis_fn))
+    asyncmap(fetch, remove_from.(workers, :cobrexa_screen_variants_model))
+    asyncmap(fetch, remove_from.(workers, :cobrexa_screen_variants_analysis_fn))
 
     return res
 end
@@ -276,7 +276,7 @@ function _screen_optmodel_modifications_impl(
     workers = [myid()],
 )::Array where {V<:AbstractVector,VF<:AbstractVector,A,N}
 
-    map(
+    asyncmap(
         fetch,
         save_at.(
             workers,
@@ -290,12 +290,15 @@ function _screen_optmodel_modifications_impl(
             ),
         ),
     )
-    map(fetch, save_at.(workers, :cobrexa_screen_optmodel_modifications_fn, Ref(analysis)))
+    asyncmap(
+        fetch,
+        save_at.(workers, :cobrexa_screen_optmodel_modifications_fn, Ref(analysis)),
+    )
 
     res = pmap(_screen_optmodel_item, CachingPool(workers), zip(modifications, args))
 
-    map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_data))
-    map(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_fn))
+    asyncmap(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_data))
+    asyncmap(fetch, remove_from.(workers, :cobrexa_screen_optmodel_modifications_fn))
 
     return res
 end

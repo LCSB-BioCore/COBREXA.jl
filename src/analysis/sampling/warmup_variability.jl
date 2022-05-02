@@ -71,7 +71,7 @@ function warmup_from_variability(
         end
     )
 
-    map(fetch, save_at.(workers, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
+    asyncmap(fetch, save_at.(workers, :cobrexa_sampling_warmup_optmodel, Ref(save_model)))
 
     fluxes = hcat(
         dpmap(
@@ -92,7 +92,7 @@ function warmup_from_variability(
     )
 
     # free the data on workers
-    map(fetch, remove_from.(workers, :cobrexa_sampling_warmup_optmodel))
+    asyncmap(fetch, remove_from.(workers, :cobrexa_sampling_warmup_optmodel))
 
     return fluxes, lbs, ubs
 end
