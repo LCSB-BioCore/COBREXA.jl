@@ -148,16 +148,16 @@ metabolite_formula(m::MATModel, mid::String) = _maybemap(
 )
 
 """
-    metabolite_charge(m::MATModel, mid::String)
+    metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
 
 Extract metabolite charge from `metCharge` or `metCharges`.
 """
-function metabolite_charge(m::MATModel, mid::String)
+function metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
     met_charge = _maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
         gets(m.mat, nothing, _constants.keynames.metcharges),
     )
-    isnan(met_charge) ? 0 : met_charge
+    _maybemap(Int, isnan(met_charge) ? nothing : met_charge)
 end
 
 """

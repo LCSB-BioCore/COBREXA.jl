@@ -115,6 +115,13 @@ metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
     _maybemap(_parse_formula, model.sbml.species[mid].formula)
 
 """
+    metabolite_compartment(model::SBMLModel, mid::String)::Maybe{String}
+
+Get the compartment of a chosen metabolite from [`SBMLModel`](@ref).
+"""
+metabolite_compartment(model::SBMLModel, mid::String) = model.sbml.species[mid].compartment
+
+"""
     metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int}
 
 Get charge of a chosen metabolite from [`SBMLModel`](@ref).
