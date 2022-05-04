@@ -8,7 +8,7 @@ function that returns a dictionary of solved fluxes.
 """
 gene_product_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
-    Dict(genes(model) .=> value.(opt_model[:x])[(n_reactions(model)+1):end]) : nothing
+    Dict(genes(model) .=> value.(opt_model[:x])[(length(model.columns)+1):end]) : nothing
 
 """
     gene_product_dict(model::GeckoModel)
@@ -26,7 +26,7 @@ gene_product_mass_group_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
         grp.group_id => dot(
-            value.(opt_model[:x])[n_reactions(model).+grp.gene_product_idxs],
+            value.(opt_model[:x])[(length(model.columns)+1).+grp.gene_product_idxs],
             grp.gene_product_molar_masses,
         ) for grp in model.coupling_row_mass_group
     ) : nothing

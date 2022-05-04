@@ -54,17 +54,17 @@ The model wraps another "internal" model, and adds following modifications:
 The structure contains fields `columns` that describe the contents of the
 coupling columns, `coupling_row_reaction`, `coupling_row_gene_product` and
 `coupling_row_mass_group` that describe correspondence of the coupling rows to
-original model and determine the coupling bounds, and `inner`, which is the
-original wrapped model. Note, `objective` is the objective vector of the model.
-Special care needs to be taken to ensure that its length is the sum of
-`n_reactions(model)` and `n_genes(model)` when the user modifies it, where
-`model` is the GeckoModel in question.
+original model and determine the coupling bounds, `gene_row_lookup` that maps
+the index of a gene in the inner model to a row in the gene product coupling
+matrix, and `inner`, which is the original wrapped model. Note, `objective` is
+the objective vector of the model. Special care needs to be taken to ensure that
+its length is the sum of `n_reactions(model)` and `n_genes(model)` when the user
+modifies it, where `model` is the GeckoModel in question.
 
 Implementation exposes the split reactions (available as `reactions(model)`),
 but retains the original "simple" reactions accessible by [`fluxes`](@ref). All
 constraints are implemented using [`coupling`](@ref) and
-[`coupling_bounds`](@ref), i.e., all virtual metabolites described by GECKO are
-purely virtual and do not occur in [`metabolites`](@ref).
+[`coupling_bounds`](@ref).
 """
 struct GeckoModel <: ModelWrapper
     objective::SparseVec
@@ -98,10 +98,9 @@ end
     objective(model::GeckoModel)
 
 Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
-respect to the internal variables, i.e. [`reactions(model)`](@ref) and
-[`genes(model)`](@ref). To manually set the objective, index into
-`model.objective` appropriately, and remember to set the previous coefficients
-to zero.
+respect to the internal variables, i.e. [`reactions(model)`](@ref), which are 
+the unidirectional reactions and the genes involved in enzymatic reactions that 
+have kinetic data.
 """
 objective(model::GeckoModel) = model.objective
 
@@ -112,16 +111,17 @@ Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
 to forward- and reverse-only parts with different isozyme indexes; reactions
 IDs are mangled accordingly with suffixes).
 """
-reactions(model::GeckoModel) =
-    let inner_reactions = reactions(model.inner)
-        [
-            _gecko_reaction_name(
-                inner_reactions[col.reaction_idx],
-                col.direction,
-                col.isozyme_idx,
-            ) for col in model.columns
-        ]
-    end
+function reactions(model::GeckoModel)
+    inner_reactions = reactions(model.inner)
+    mangled_reactions = [
+        _gecko_reaction_name(
+            inner_reactions[col.reaction_idx],
+            col.direction,
+            col.isozyme_idx,
+        ) for col in model.columns
+    ]
+    [mangled_reactions; genes(model)]
+end
 
 """
     n_reactions(model::GeckoModel)
@@ -129,7 +129,7 @@ reactions(model::GeckoModel) =
 Returns the number of all irreversible reactions in `model` as well as the
 number of gene products that take part in enzymatic reactions.
 """
-n_reactions(model::GeckoModel) = length(model.columns)
+n_reactions(model::GeckoModel) = length(model.columns) + n_genes(model)
 
 """
     bounds(model::GeckoModel)
@@ -243,7 +243,7 @@ genes(model::GeckoModel) =
 
 Return the ids of all metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
 """
-metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model) .* "#supply"]
+metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model) .* "#gecko"]
 
 """
     n_metabolites(model::GeckoModel)
