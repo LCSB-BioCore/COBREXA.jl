@@ -15,12 +15,12 @@ constrain_objective_value(tolerance) =
 """
     change_constraint(id::String; lb=nothing, ub=nothing)
 
-Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id` if supplied.
+Change the lower and upper bounds (`lb` and `ub` respectively) of variable `id` if supplied.
 """
 change_constraint(id::String; lb = nothing, ub = nothing) =
     (model, opt_model) -> begin
-        ind = first(indexin([id], reactions(model)))
-        isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
+        ind = first(indexin([id], [reactions(model); genes(model)]))
+        isnothing(ind) && throw(DomainError(id, "No matching reaction or gene was found."))
         set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
     end
 
@@ -43,10 +43,10 @@ change_objective(
 
         # Construct objective_indices array
         if typeof(new_objective) == String
-            objective_indices = indexin([new_objective], reactions(model))
+            objective_indices = indexin([new_objective], [reactions(model); genes(model)])
         else
             objective_indices =
-                [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
+                [first(indexin([id], [reactions(model); genes(model)])) for id in new_objective]
         end
 
         any(isnothing.(objective_indices)) && throw(
@@ -54,7 +54,7 @@ change_objective(
         )
 
         # Initialize weights
-        opt_weights = spzeros(n_reactions(model))
+        opt_weights = spzeros(size(stoichiometry(model), 2))
 
         isempty(weights) && (weights = ones(length(objective_indices))) # equal weights
 
