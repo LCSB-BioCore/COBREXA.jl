@@ -20,7 +20,8 @@ Change the lower and upper bounds (`lb` and `ub` respectively) of variable `id` 
 change_constraint(id::String; lb = nothing, ub = nothing) =
     (model, opt_model) -> begin
         ind = first(indexin([id], [reactions(model); genes(model)]))
-        isnothing(ind) && throw(DomainError(id, "No matching reaction or gene was found."))
+        isnothing(ind) &&
+            throw(DomainError(id, "No matching reaction or gene was found."))
         set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
     end
 
@@ -45,8 +46,10 @@ change_objective(
         if typeof(new_objective) == String
             objective_indices = indexin([new_objective], [reactions(model); genes(model)])
         else
-            objective_indices =
-                [first(indexin([id], [reactions(model); genes(model)])) for id in new_objective]
+            objective_indices = [
+                first(indexin([id], [reactions(model); genes(model)])) for
+                id in new_objective
+            ]
         end
 
         any(isnothing.(objective_indices)) && throw(
