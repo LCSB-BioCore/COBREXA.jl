@@ -29,7 +29,7 @@ change_constraint(id::String; lb = nothing, ub = nothing) =
 
 Modification that changes the objective function used in a constraint based
 analysis function.  `new_objective` can be a single reaction identifier, or an
-array of reaction identifiers (usually reactions are reaction ids).
+array of reactions identifiers.
 
 Optionally, the objective can be weighted by a vector of `weights`, and a
 optimization `sense` can be set to either `MAX_SENSE` or `MIN_SENSE`.
@@ -46,7 +46,7 @@ change_objective(
             objective_indices = indexin([new_objective], reactions(model))
         else
             objective_indices =
-                [first(indexin([id], reactions(model))) for id in new_objective]
+                [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
         end
 
         any(isnothing.(objective_indices)) && throw(
@@ -54,7 +54,7 @@ change_objective(
         )
 
         # Initialize weights
-        opt_weights = spzeros(size(stoichiometry(model), 2))
+        opt_weights = spzeros(n_reactions(model))
 
         isempty(weights) && (weights = ones(length(objective_indices))) # equal weights
 
