@@ -15,12 +15,12 @@ constrain_objective_value(tolerance) =
 """
     change_constraint(id::String; lb=nothing, ub=nothing)
 
-Change the lower and upper bounds (`lb` and `ub` respectively) of variable `id` if supplied.
+Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id` if supplied.
 """
 change_constraint(id::String; lb = nothing, ub = nothing) =
     (model, opt_model) -> begin
         ind = first(indexin([id], reactions(model)))
-        isnothing(ind) && throw(DomainError(id, "No matching variable was found."))
+        isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
         set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
     end
 
@@ -28,8 +28,8 @@ change_constraint(id::String; lb = nothing, ub = nothing) =
     change_objective(new_objective::Union{String,Vector{String}}; weights=[], sense=MAX_SENSE)
 
 Modification that changes the objective function used in a constraint based
-analysis function.  `new_objective` can be a single variable identifier, or an
-array of variable identifiers (usually variables are reaction ids).
+analysis function.  `new_objective` can be a single reaction identifier, or an
+array of reaction identifiers (usually reactions are reaction ids).
 
 Optionally, the objective can be weighted by a vector of `weights`, and a
 optimization `sense` can be set to either `MAX_SENSE` or `MIN_SENSE`.
@@ -50,7 +50,7 @@ change_objective(
         end
 
         any(isnothing.(objective_indices)) && throw(
-            DomainError(new_objective, "No matching variable found for one or more ids."),
+            DomainError(new_objective, "No matching reaction found for one or more ids."),
         )
 
         # Initialize weights
