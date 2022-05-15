@@ -52,18 +52,17 @@ The model wraps another "internal" model, and adds following modifications:
   proteins).
 
 The structure contains fields `columns` that describe the contents of the
-coupling columns, `coupling_row_reaction`, `coupling_row_gene_product` and
-`coupling_row_mass_group` that describe correspondence of the coupling rows to
-original model and determine the coupling bounds, `gene_row_lookup` that maps
-the index of a gene in the inner model to a row in the gene product coupling
-matrix, and `inner`, which is the original wrapped model. Note, `objective` is
-the objective vector of the model. Special care needs to be taken to ensure that
-its length is the sum of `n_reactions(model)` and `n_genes(model)` when the user
-modifies it, where `model` is the GeckoModel in question.
+stoichiometry matrix columns, `coupling_row_reaction`,
+`coupling_row_gene_product` and `coupling_row_mass_group` that describe
+correspondence of the coupling rows to original model and determine the
+coupling bounds (note: the coupling for gene product is actually added to
+stoichiometry, not in [`coupling`](@ref)), and `inner`, which is the original
+wrapped model. The `objective` of the model includes also the extra columns for
+individual genes, as held by `coupling_row_gene_product`.
 
 Implementation exposes the split reactions (available as `reactions(model)`),
-but retains the original "simple" reactions accessible by [`fluxes`](@ref). All
-constraints are implemented using [`coupling`](@ref) and
+but retains the original "simple" reactions accessible by [`fluxes`](@ref).
+The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
 """
 struct GeckoModel <: ModelWrapper
