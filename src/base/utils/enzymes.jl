@@ -26,7 +26,9 @@ gene_product_mass_group_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
         grp.group_id => dot(
-            value.(opt_model[:x])[(n_reactions(model)-n_genes(model)).+grp.gene_product_idxs],
+            value.(opt_model[:x])[(n_reactions(
+                model,
+            )-n_genes(model)).+grp.gene_product_idxs],
             grp.gene_product_molar_masses,
         ) for grp in model.coupling_row_mass_group
     ) : nothing

@@ -52,19 +52,15 @@
     @test isapprox(prot_mass, mass_groups["uncategorized"], atol = TEST_TOLERANCE)
 
     # test enzyme objective 
-    growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"]*0.9
+    growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"] * 0.9
     opt_model = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
         modifications = [
-            change_objective(
-                genes(gm);
-                weights = [],
-                sense = COBREXA.MIN_SENSE,
-            ),
+            change_objective(genes(gm); weights = [], sense = COBREXA.MIN_SENSE),
             change_constraint("BIOMASS_Ecoli_core_w_GAM", lb = growth_lb),
-            change_optimizer_attribute("IPM_IterationsLimit", 1000)
-        ]
+            change_optimizer_attribute("IPM_IterationsLimit", 1000),
+        ],
     )
     mass_groups_min = gene_product_mass_group_dict(gm, opt_model)
     @test mass_groups_min["uncategorized"] < mass_groups["uncategorized"]
@@ -93,8 +89,8 @@ end
 
     gs = [Gene("g$i") for i = 1:5]
 
-    m.reactions["r2"].grr = [["g5"],]
-    m.reactions["r3"].grr = [["g1"],]
+    m.reactions["r2"].grr = [["g5"]]
+    m.reactions["r3"].grr = [["g1"]]
     m.reactions["r4"].grr = [["g1"], ["g2"]]
     m.reactions["r5"].grr = [["g3", "g4"]]
     m.reactions["r6"].objective_coefficient = 1.0

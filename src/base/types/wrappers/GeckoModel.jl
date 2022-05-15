@@ -116,12 +116,12 @@ IDs are mangled accordingly with suffixes).
 function reactions(model::GeckoModel)
     inner_reactions = reactions(model.inner)
     mangeled_reactions = [
-            _gecko_reaction_name(
-                inner_reactions[col.reaction_idx],
-                col.direction,
-                col.isozyme_idx,
-            ) for col in model.columns
-        ]
+        _gecko_reaction_name(
+            inner_reactions[col.reaction_idx],
+            col.direction,
+            col.isozyme_idx,
+        ) for col in model.columns
+    ]
     [mangeled_reactions; genes(model)]
 end
 
