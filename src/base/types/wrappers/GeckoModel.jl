@@ -16,7 +16,7 @@ end
 """
     struct _gecko_capacity
 
-A helper struct that contains the gene product capacity terms organized by 
+A helper struct that contains the gene product capacity terms organized by
 the grouping type, e.g. metabolic or membrane groups etc.
 """
 struct _gecko_capacity
@@ -217,7 +217,7 @@ end
 """
     balance(model::GeckoModel)
 
-Return the balance of the reactions in the inner model, concatenated with a vector of 
+Return the balance of the reactions in the inner model, concatenated with a vector of
 zeros representing the enzyme balance of a [`GeckoModel`](@ref).
 """
 balance(model::GeckoModel) =
@@ -233,7 +233,7 @@ n_genes(model::GeckoModel) = length(model.coupling_row_gene_product)
 """
     genes(model::GeckoModel)
 
-Return the gene ids of genes that have enzymatic constraints associated with them.  
+Return the gene ids of genes that have enzymatic constraints associated with them.
 """
 genes(model::GeckoModel) =
     genes(model.inner)[[idx for (idx, _) in model.coupling_row_gene_product]]

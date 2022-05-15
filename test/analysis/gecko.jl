@@ -54,7 +54,7 @@ end
 
 @testset "GECKO small model" begin
     #=
-    Implement the small model found in the supplment of the 
+    Implement the small model found in the supplment of the
     original GECKO paper. This model is nice to troubleshoot with,
     because the stoich matrix is small.
     =#

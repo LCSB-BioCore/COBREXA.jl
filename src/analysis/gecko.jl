@@ -147,24 +147,15 @@ function make_gecko_model(
         push!(coupling_row_mass_group, _gecko_capacity(grp, idxs, mms, gmgb_(grp)))
     end
 
-    # create model with dummy objective
-    gm = GeckoModel(
-        spzeros(length(columns) + length(coupling_row_gene_product)),
+    GeckoModel(
+        [
+            _gecko_reaction_column_reactions(columns, model)' * objective(model)
+            spzeros(length(coupling_row_gene_product))
+        ],
         columns,
         coupling_row_reaction,
         collect(zip(coupling_row_gene_product, gpb_.(gids[coupling_row_gene_product]))),
         coupling_row_mass_group,
         model,
     )
-
-    #=
-    Set objective. This is a separate field because gene products can also be objectives. 
-    This way they can be set as objectives by the user.
-    =#
-    gm.objective .= [
-        _gecko_reaction_column_reactions(gm)' * objective(gm.inner)
-        spzeros(length(coupling_row_gene_product))
-    ]
-
-    return gm
 end
