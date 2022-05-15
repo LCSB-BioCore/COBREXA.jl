@@ -12,7 +12,14 @@ _missing_impl_error(m, a) = throw(MethodError(m, a))
 """
     reactions(a::MetabolicModel)::Vector{String}
 
-Return a vector of reaction identifiers in a model.
+Return a vector of reaction identifiers in a model. The vector precisely
+corresponds to the columns in [`stoichiometry`](@ref) matrix.
+
+For technical reasons, the "reactions" may sometimes not be true reactions but
+various virtual and helper pseudo-reactions that are used in the metabolic
+modeling, such as metabolite exchanges, separate forward and reverse reactions,
+supplies of enzymatic and genetic material and virtual cell volume, etc. To
+simplify the view of the model contents use [`reaction_flux`](@ref).
 """
 function reactions(a::MetabolicModel)::Vector{String}
     _missing_impl_error(reactions, (a,))
@@ -21,7 +28,11 @@ end
 """
     metabolites(a::MetabolicModel)::Vector{String}
 
-Return a vector of metabolite identifiers in a model.
+Return a vector of metabolite identifiers in a model. The vector precisely
+corresponds to the rows in [`stoichiometry`](@ref) matrix.
+
+As with [`reaction`](@ref)s, some metabolites in models may be virtual,
+representing purely technical equality constraints.
 """
 function metabolites(a::MetabolicModel)::Vector{String}
     _missing_impl_error(metabolites, (a,))
