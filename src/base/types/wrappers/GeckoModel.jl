@@ -64,8 +64,7 @@ modifies it, where `model` is the GeckoModel in question.
 Implementation exposes the split reactions (available as `reactions(model)`),
 but retains the original "simple" reactions accessible by [`fluxes`](@ref). All
 constraints are implemented using [`coupling`](@ref) and
-[`coupling_bounds`](@ref), i.e., all virtual metabolites described by GECKO are
-purely virtual and do not occur in [`metabolites`](@ref).
+[`coupling_bounds`](@ref).
 """
 struct GeckoModel <: ModelWrapper
     objective::SparseVec
@@ -99,10 +98,9 @@ end
     objective(model::GeckoModel)
 
 Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
-respect to the internal variables, i.e. [`reactions(model)`](@ref) and
-[`genes(model)`](@ref). To manually set the objective, index into
-`model.objective` appropriately, and remember to set the previous coefficients
-to zero.
+respect to the internal variables, i.e. [`reactions(model)`](@ref), which are 
+the unidirectional reactions and the genes involved in enzymatic reactions that 
+have kinetic data.
 """
 objective(model::GeckoModel) = model.objective
 
@@ -245,7 +243,7 @@ genes(model::GeckoModel) =
 
 Return the ids of all metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
 """
-metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model) .* "#supply"]
+metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model) .* "#gecko"]
 
 """
     n_metabolites(model::GeckoModel)
