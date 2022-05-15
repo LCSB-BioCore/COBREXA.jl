@@ -8,7 +8,7 @@ function that returns a dictionary of solved fluxes.
 """
 gene_product_dict(model::GeckoModel, opt_model) =
     is_solved(opt_model) ?
-    Dict(genes(model) .=> value.(opt_model[:x])[(end-n_genes(model)+1):end]) : nothing
+    Dict(genes(model) .=> value.(opt_model[:x])[(length(model.columns)+1):end]) : nothing
 
 """
     gene_product_dict(model::GeckoModel)
