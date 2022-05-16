@@ -19,16 +19,18 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MAX_S
     xl, xu = bounds(model)
 
     optimization_model = Model(optimizer)
-    @variable(optimization_model, x[i = 1:n])
+    @variable(optimization_model, x[1:n])
     @objective(optimization_model, sense, objective(model)' * x)
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
     @constraint(optimization_model, lbs, xl .<= x) # lower bounds
     @constraint(optimization_model, ubs, x .<= xu) # upper bounds
 
     C = coupling(model) # empty if no coupling
-    cl, cu = coupling_bounds(model)
-    isempty(C) || @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
-    isempty(C) || @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
+    isempty(C) || begin
+        cl, cu = coupling_bounds(model)
+        @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
+        @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
+    end
 
     return optimization_model
 end
