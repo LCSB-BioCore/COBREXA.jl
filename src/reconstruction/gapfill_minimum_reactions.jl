@@ -95,7 +95,7 @@ function gapfill_minimum_reactions(
 
     # apply all modifications
     for mod in modifications
-        mod(opt_model, model)
+        mod(model, opt_model)
     end
 
     optimize!(opt_model)
