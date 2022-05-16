@@ -15,12 +15,20 @@ _gecko_reaction_name(original_name::String, direction::Int, isozyme_idx::Int) =
 Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
 """
-_gecko_reaction_column_reactions(model::GeckoModel) = sparse(
-    [col.reaction_idx for col in model.columns],
-    1:length(model.columns),
-    [col.direction >= 0 ? 1 : -1 for col in model.columns],
-    n_reactions(model.inner),
-    length(model.columns),
+_gecko_reaction_column_reactions(model::GeckoModel) =
+    _gecko_reaction_column_reactions(model.columns, model.inner)
+
+"""
+    _gecko_reaction_column_reactions(columns, inner)
+
+Helper method that doesn't require the whole [`GeckoModel`](@ref).
+"""
+_gecko_reaction_column_reactions(columns, inner) = sparse(
+    [col.reaction_idx for col in columns],
+    1:length(columns),
+    [col.direction >= 0 ? 1 : -1 for col in columns],
+    n_reactions(inner),
+    length(columns),
 )
 
 """
