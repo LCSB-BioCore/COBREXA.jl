@@ -8,6 +8,7 @@
         weights = fill(1.0, length(universal_reactions)),
         objective_upper_bound = COBREXA._constants.default_reaction_bound,
         ignore_reactions = [],
+        max_gaps_fillable = 1000_000,
     )
     
 Return the indices of reactions in `universal_reactions` that should be added to
@@ -16,7 +17,9 @@ is bounded by `objective_lower_bound`. Optionally, specify `weights` that can be
 used to bias the reactions found through solving the underlying mixed integer
 program (MILP). Also, some reactions in `universal_reactions` can be ignored by
 specifying their ids in `ignore_reactions`, this is useful to, e.g., restrict
-which exchanges can be added. 
+which exchanges can be added. Finally, the limit the search space, it is
+possible to specify the maximum number of gaps that can be filled through
+`max_gaps_fillable`.
 
 This gap filling algorithm is based on the one introduced in *Reed, Jennifer L.,
 et al. "Systems approach to refining genome annotation." Proceedings of the
@@ -42,6 +45,7 @@ function gapfill_minimum_reactions(
     weights = fill(1.0, length(universal_reactions)),
     objective_upper_bound = COBREXA._constants.default_reaction_bound,
     ignore_reactions = [],
+    max_gaps_fillable = COBREXA._constants.max_gaps_fillable,
 )
     # constraints from model to be gap filled
     S_model = stoichiometry(model)
@@ -91,6 +95,9 @@ function gapfill_minimum_reactions(
     # combined mass balances 
     @constraint(opt_model, mb, S * opt_model[:x] + S_universal * z .== bal) # mass balance of all reactions
 
+    # constrain the maximum number of gaps that can be filled 
+    @constrain(opt_model, max_gaps, sum(y) <= max_gaps_fillable)
+    
     # make new objective
     @objective(opt_model, Min, sum(weights .* y))
 
