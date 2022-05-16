@@ -1,155 +1,189 @@
 """
-    gapfill_minimum_reactions(
+    function gapfill_minimum_reactions(
         model::MetabolicModel,
         universal_reactions::Vector{Reaction},
-        objective_lower_bound::Float64,
         optimizer;
-        modifications=[], 
+        objective_bounds = (_constants.tolerance, _constants.default_reaction_bound),
+        maximum_new_reactions = 5,
         weights = fill(1.0, length(universal_reactions)),
-        objective_upper_bound = COBREXA._constants.default_reaction_bound,
-        ignore_reactions = [],
-        max_gaps_fillable = 1000_000,
+        modifications = [],
     )
-    
-Return the indices of reactions in `universal_reactions` that should be added to
-`model` so that the model can carry flux through its objective function, which
-is bounded by `objective_lower_bound`. Optionally, specify `weights` that can be
-used to bias the reactions found through solving the underlying mixed integer
-program (MILP). Also, some reactions in `universal_reactions` can be ignored by
-specifying their ids in `ignore_reactions`, this is useful to, e.g., restrict
-which exchanges can be added. Finally, the limit the search space, it is
-possible to specify the maximum number of gaps that can be filled through
-`max_gaps_fillable`.
 
-This gap filling algorithm is based on the one introduced in *Reed, Jennifer L.,
-et al. "Systems approach to refining genome annotation." Proceedings of the
-National Academy of Sciences (2006)*. Briefly, the algorithm find the smallest
-number of reactions to add by solving the MILP:
-```
-min     ∑ wᵢ * yᵢ
-s.t.    S * x = 0
-        xₗ ≤ x ≤ xᵤ ∀ model reactions 
-        y * xₗ ≤ x ≤ y * xᵤ ∀ universal reactions 
-        lb ≤ objective(x) ≤ ub
-        y ∈ {0, 1}
-```
-where `w` is the set of optional `weights`, `x` the fluxes, and `y` the indicator 
-variables.
+Find a minimal set of reactions from `universal_reactions` that should be added
+to `model` so that the model has a feasible solution with bounds on its
+objective function given in `objective_bounds`.  Weights of the added reactions
+may be specified in `weights` to prefer adding reactions with lower weights.
+
+Internally, this builds and solves a mixed integer program, following
+the method of Reed et al. (Reed, Jennifer L., et al. "Systems approach to
+refining genome annotation." *Proceedings of the National Academy of Sciences*
+(2006)).
+
+The function returns a solved JuMP optimization model, with the boolean
+reaction inclusion indicators in variable vector `y`. Use
+[`mask`](@ref) or [`gapfilled_rids`](@ref) to collect the reaction
+information in Julia datatypes.
+
+To reduce the uncertainty in the MILP solver (and likely reduce the
+complexity), you may put a limit on the size of the added reaction set in
+`maximum_new_reactions`.
 """
 function gapfill_minimum_reactions(
     model::MetabolicModel,
     universal_reactions::Vector{Reaction},
-    objective_lower_bound::Float64,
     optimizer;
-    modifications = [],
+    objective_bounds = (_constants.tolerance, _constants.default_reaction_bound),
+    maximum_new_reactions = length(universal_reactions),
     weights = fill(1.0, length(universal_reactions)),
-    objective_upper_bound = COBREXA._constants.default_reaction_bound,
-    ignore_reactions = [],
-    max_gaps_fillable = _constants.max_gaps_fillable,
+    modifications = [],
 )
-    # constraints from model to be gap filled
-    S_model = stoichiometry(model)
-    metabolite_id_order = metabolites(model)
+    precache!(model)
 
     # constraints from universal reactions that can fill gaps
-    n_universal_reactions = length(universal_reactions)
-    S_universal, lbs_universal, ubs_universal = COBREXA._universal_stoichiometry(
-        universal_reactions,
-        metabolite_id_order;
-        ignore_reactions,
-    )
+    univs = _universal_stoichiometry(universal_reactions, metabolites(model))
 
-    # adjust the model stoichiometric matrix to account for additional metabolites if necessary
-    S = [
-        S_model
-        spzeros(size(S_universal, 1) - size(S_model, 1), size(S_model, 2))
-    ]
-    # adjust the balance to account for additional metabolites
-    bal = [
-        balance(model)
-        spzeros(size(S_universal, 1) - size(S_model, 1))
-    ]
+    # add space for additional metabolites and glue with the universal reaction
+    # stoichiometry
+    extended_stoichiometry = [[
+        stoichiometry(model)
+        spzeros(length(univs.new_mids), n_reactions(model))
+    ] univs.stoichiometry]
 
-    #=
-    First build standard flux balance type optimization problem, then add
-    specific details of the gap filling algorithm, e.g. indicator constraints, etc.
-    =#
-    opt_model = make_optimization_model(model, optimizer; sense = COBREXA.MIN_SENSE)
-    delete(opt_model, opt_model[:mb]) #  need to remove mass balances
-    unregister(opt_model, :mb) # will re-use symbol
+    # make the model anew (we can't really use make_optimization_model because
+    # we need the balances and several other things completely removed. Could
+    # be solved either by parametrizing make_optimization_model or by making a
+    # tiny temporary wrapper for this.
+    # keep this in sync with src/base/solver.jl, except for adding balances.
+    opt_model = Model(optimizer)
+    @variable(opt_model, x[1:n_reactions(model)])
+    xl, xu = bounds(model)
+    @constraint(opt_model, lbs, xl .<= x)
+    @constraint(opt_model, ubs, x .<= xu)
 
-    @variable(opt_model, z[1:n_universal_reactions]) # fluxes from universal reactions 
-    @variable(opt_model, y[1:n_universal_reactions], Bin) # indicators
+    C = coupling(model)
+    isempty(C) || begin
+        cl, cu = coupling_bounds(model)
+        @constraint(opt_model, c_lbs, cl .<= C * x)
+        @constraint(opt_model, c_ubs, C * x .<= cu)
+    end
 
-    # objective bounds 
+    # add the variables for new stuff
+    @variable(opt_model, ux[1:length(universal_reactions)]) # fluxes from universal reactions
+    @variable(opt_model, y[1:length(universal_reactions)], Bin) # indicators
+
+    # combined metabolite balances
     @constraint(
         opt_model,
-        obj_bounds,
-        objective_lower_bound <= objective(model)' * opt_model[:x] <= objective_upper_bound
+        extended_stoichiometry * [x; ux] .==
+        [balance(model); zeros(length(univs.new_mids))]
     )
 
+    # objective bounds
+    @constraint(opt_model, objective_bounds[1] <= objective(model)' * x)
+    @constraint(opt_model, objective_bounds[2] >= objective(model)' * x)
+
     # flux bounds of universal reactions with indicators
-    @constraint(opt_model, lbs_universal, lbs_universal .* y .<= z)
-    @constraint(opt_model, ubs_universal, z .<= ubs_universal .* y)
+    @constraint(opt_model, ulb, univs.lbs .* y .<= ux)
+    @constraint(opt_model, uub, univs.ubs .* y .>= ux)
 
-    # combined mass balances 
-    @constraint(opt_model, mb, S * opt_model[:x] + S_universal * z .== bal) # mass balance of all reactions
+    # minimize the total number of indicated reactions
+    @objective(opt_model, Min, weights' * y)
 
-    # constrain the maximum number of gaps that can be filled 
-    @constrain(opt_model, max_gaps, sum(y) <= max_gaps_fillable)
-    
-    # make new objective
-    @objective(opt_model, Min, sum(weights .* y))
+    # limit the number of indicated reactions
+    # (prevents the solver from exploring too far)
+    @constraint(opt_model, sum(y) <= maximum_new_reactions)
 
+    # apply all modifications
     for mod in modifications
         mod(opt_model, model)
     end
 
     optimize!(opt_model)
 
-    findall(value.(y) .> 0)
+    return opt_model
 end
+
+"""
+    gapfilled_mask(opt_model::BitVector)
+
+Get a `BitVector` of added reactions from the model solved by
+[`gapfill_minimum_reactions`](@ref). The bit indexes correspond to the indexes
+of `universal_reactions` given to the gapfilling function. In case the model is
+not solved, this returns `nothing`.
+
+# Example
+
+    gapfill_minimum_reactions(myModel, myReactions, Tulip.Optimizer) |> gapfilled_mask
+"""
+gapfilled_mask(opt_model)::BitVector =
+    is_solved(opt_model) ? value.(opt_model[:y]) .> 0 : nothing
+
+"""
+    gapfilled_rids(opt_model, universal_reactions::Vector{Reaction})::Vector{String}
+
+Utility to extract a short vector of IDs of the reactions added by the
+gapfilling algorithm. Use with `opt_model` returned from
+[`gapfill_minimum_reactions`](@ref).
+"""
+gapfilled_rids(opt_model, universal_reactions::Vector{Reaction}) =
+    let v = gapfilled_mask(opt_model)
+        isnothing(v) ? nothing : [rxn.id for rxn in universal_reactions[v]]
+    end
+
+"""
+    gapfilled_rids(universal_reactions::Vector{Reaction})
+
+Overload of [`gapfilled_rids`](@ref) that can be piped easily.
+
+# Example
+
+    gapfill_minimum_reactions(myModel, myReactions, Tulip.Optimizer) |> gapfilled_rids(myReactions)
+"""
+gapfilled_rids(universal_reactions::Vector{Reaction}) =
+    opt_model -> gapfilled_rids(opt_model, universal_reactions)
 
 """
     _universal_stoichiometry(
         universal_reactions::Vector{Reaction},
-        metabolite_id_order,
+        mids,
     )
 
 A helper function that constructs the stoichiometric matrix of a set of
 `universal_reactions`. The order of the metabolites is determined with
-`metabolite_id_order`, so that this stoichiometric matrix can be combined with
+`mids`, so that this stoichiometric matrix can be combined with
 another one.
 """
-function _universal_stoichiometry(
-    universal_reactions::Vector{Reaction},
-    metabolite_id_order;
-    ignore_reactions = [],
-)
-    rows = Int[]
-    cols = Int[]
-    vals = Float64[]
-    lbs = zeros(length(universal_reactions))
-    ubs = zeros(length(universal_reactions))
-    met_id_order_lu = Dict(zip(metabolite_id_order, 1:length(metabolite_id_order)))
-    n_midxs = length(met_id_order_lu) # account for metabolites already in model
+function _universal_stoichiometry(urxns::Vector{Reaction}, mids::Vector{String})
 
-    n_cols = 0 # counter for filtered reactions
-    for (col, rxn) in
-        enumerate(filter(x -> !in(x.id, ignore_reactions), universal_reactions))
-        n_cols += 1
-        for (mid, stoich) in rxn.metabolites
-            if !haskey(met_id_order_lu, mid)
-                n_midxs += 1
-                met_id_order_lu[mid] = n_midxs
-            end
-            push!(rows, met_id_order_lu[mid])
-            push!(cols, col)
-            push!(vals, stoich)
-        end
-        lbs[col] = rxn.lb
-        ubs[col] = rxn.ub
-    end
+    # traversal over all elements in stoichiometry of universal_reactions
+    stoiMap(f) = [
+        f(ridx, mid, stoi) for (ridx, rxn) in enumerate(urxns) for
+        (mid, stoi) in rxn.metabolites
+    ]
 
-    return sparse(rows, cols, vals, n_midxs, n_cols), lbs, ubs
+    # make an index and find new metabolites
+    met_id_lookup = Dict(mids .=> eachindex(mids))
+
+    new_mids =
+        collect(Set(filter(x -> !haskey(met_id_lookup, x), stoiMap((_, mid, _) -> mid))))
+    all_mids = vcat(mids, new_mids)
+
+    # remake the index with all metabolites
+    met_id_lookup = Dict(all_mids .=> eachindex(all_mids))
+
+    # build the result
+    return (
+        stoichiometry = float.(
+            sparse(
+                stoiMap((_, mid, _) -> met_id_lookup[mid]),
+                stoiMap((ridx, _, _) -> ridx),
+                stoiMap((_, _, stoi) -> stoi),
+                length(all_mids),
+                length(urxns),
+            ),
+        ),
+        lbs = [rxn.lb for rxn in urxns],
+        ubs = [rxn.ub for rxn in urxns],
+        new_mids = new_mids,
+    )
 end
