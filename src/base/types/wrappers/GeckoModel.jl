@@ -97,8 +97,8 @@ end
     objective(model::GeckoModel)
 
 Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
-respect to the internal variables, i.e. [`reactions(model)`](@ref), which are 
-the unidirectional reactions and the genes involved in enzymatic reactions that 
+respect to the internal variables, i.e. [`reactions(model)`](@ref), which are
+the unidirectional reactions and the genes involved in enzymatic reactions that
 have kinetic data.
 """
 objective(model::GeckoModel) = model.objective

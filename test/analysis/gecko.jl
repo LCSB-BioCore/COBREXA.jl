@@ -51,7 +51,7 @@
     @test isapprox(prot_mass, total_gene_product_mass, atol = TEST_TOLERANCE)
     @test isapprox(prot_mass, mass_groups["uncategorized"], atol = TEST_TOLERANCE)
 
-    # test enzyme objective 
+    # test enzyme objective
     growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"] * 0.9
     opt_model = flux_balance_analysis(
         gm,
