@@ -7,17 +7,21 @@
         modifications=[], 
         weights = fill(1.0, length(universal_reactions)),
         objective_upper_bound = COBREXA._constants.default_reaction_bound,
+        ignore_reactions = [],
     )
     
 Return the indices of reactions in `universal_reactions` that should be added to
-`model` so that the model can carry flux through its objective function, which is bounded
-by `objective_lower_bound`. Optionally, specify `weights` that can be used to bias
-the reactions found through solving the underlying mixed integer program (MILP). This
-gap filling algorithm is based on the one introduced in *Reed, Jennifer L., et
-al. "Systems approach to refining genome annotation." Proceedings of the
-National Academy of Sciences (2006)*. Briefly, the algorithm find the smallest number 
-of reactions to add by solving the MILP:
+`model` so that the model can carry flux through its objective function, which
+is bounded by `objective_lower_bound`. Optionally, specify `weights` that can be
+used to bias the reactions found through solving the underlying mixed integer
+program (MILP). Also, some reactions in `universal_reactions` can be ignored by
+specifying their ids in `ignore_reactions`, this is useful to, e.g., restrict
+which exchanges can be added. 
 
+This gap filling algorithm is based on the one introduced in *Reed, Jennifer L.,
+et al. "Systems approach to refining genome annotation." Proceedings of the
+National Academy of Sciences (2006)*. Briefly, the algorithm find the smallest
+number of reactions to add by solving the MILP:
 ```
 min     ∑ wᵢ * yᵢ
 s.t.    S * x = 0
@@ -37,6 +41,7 @@ function gapfill_minimum_reactions(
     modifications = [],
     weights = fill(1.0, length(universal_reactions)),
     objective_upper_bound = COBREXA._constants.default_reaction_bound,
+    ignore_reactions = [],
 )
     # constraints from model to be gap filled
     S_model = stoichiometry(model)
@@ -44,8 +49,11 @@ function gapfill_minimum_reactions(
 
     # constraints from universal reactions that can fill gaps
     n_universal_reactions = length(universal_reactions)
-    S_universal, lbs_universal, ubs_universal =
-        COBREXA._universal_stoichiometry(universal_reactions, metabolite_id_order)
+    S_universal, lbs_universal, ubs_universal = COBREXA._universal_stoichiometry(
+        universal_reactions,
+        metabolite_id_order;
+        ignore_reactions,
+    )
 
     # adjust the model stoichiometric matrix to account for additional metabolites if necessary
     S = [
@@ -108,7 +116,8 @@ another one.
 """
 function _universal_stoichiometry(
     universal_reactions::Vector{Reaction},
-    metabolite_id_order,
+    metabolite_id_order;
+    ignore_reactions = [],
 )
     rows = Int[]
     cols = Int[]
@@ -116,9 +125,12 @@ function _universal_stoichiometry(
     lbs = zeros(length(universal_reactions))
     ubs = zeros(length(universal_reactions))
     met_id_order_lu = Dict(zip(metabolite_id_order, 1:length(metabolite_id_order)))
-    n_midxs = length(met_id_order_lu)
+    n_midxs = length(met_id_order_lu) # account for metabolites already in model
 
-    for (col, rxn) in enumerate(universal_reactions)
+    n_cols = 0 # counter for filtered reactions
+    for (col, rxn) in
+        enumerate(filter(x -> !in(x.id, ignore_reactions), universal_reactions))
+        n_cols += 1
         for (mid, stoich) in rxn.metabolites
             if !haskey(met_id_order_lu, mid)
                 n_midxs += 1
@@ -132,5 +144,5 @@ function _universal_stoichiometry(
         ubs[col] = rxn.ub
     end
 
-    return sparse(rows, cols, vals, n_midxs, length(universal_reactions)), lbs, ubs
+    return sparse(rows, cols, vals, n_midxs, n_cols), lbs, ubs
 end

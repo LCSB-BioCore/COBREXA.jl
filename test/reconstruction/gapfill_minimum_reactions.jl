@@ -38,10 +38,17 @@
     rB = Reaction("rB", Dict("m2" => -1, "m9" => 1), :forward)
     rC = Reaction("rC", Dict("m9" => -1, "m10" => 1), :bidirectional)
     rD = Reaction("rC", Dict("m10" => -1), :reverse)
+    rE = Reaction("rE", Dict("m2" => -1, "m7" => 2, "m6" => 2), :forward)
 
     universal_reactions = [r5, r7, r10, rA, rB, rC, rD]
     optimizer = GLPK.Optimizer
-    rxns = gapfill_minimum_reactions(model, universal_reactions, 0.1, optimizer)
+    rxns = gapfill_minimum_reactions(
+        model,
+        universal_reactions,
+        0.1,
+        optimizer;
+        ignore_reactions = ["rE"],
+    )
     @test 2 in rxns
     @test 3 in rxns
     @test length(rxns) == 2
