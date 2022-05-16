@@ -45,7 +45,7 @@ function gapfill_minimum_reactions(
     weights = fill(1.0, length(universal_reactions)),
     objective_upper_bound = COBREXA._constants.default_reaction_bound,
     ignore_reactions = [],
-    max_gaps_fillable = COBREXA._constants.max_gaps_fillable,
+    max_gaps_fillable = _constants.max_gaps_fillable,
 )
     # constraints from model to be gap filled
     S_model = stoichiometry(model)
