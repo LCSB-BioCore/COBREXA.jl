@@ -34,9 +34,10 @@ gene_product_mass_group_dict(model::GeckoModel, opt_model) =
 """
     gene_product_mass_group_dict(model::GeckoModel)
 
-A pipe-able variant of [`mass_group_dict`](@ref).
+A pipe-able variant of [`gene_product_mass_group_dict`](@ref).
 """
-gene_product_mass_group_dict(model::GeckoModel) = x -> mass_group_dict(model, x)
+gene_product_mass_group_dict(model::GeckoModel) =
+    x -> gene_product_mass_group_dict(model, x)
 
 """
     gene_product_mass(model::SMomentModel)

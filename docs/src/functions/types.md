@@ -12,3 +12,9 @@ Pages = map(file -> joinpath("base", "types", "abstract", file), readdir("../src
 Modules = [COBREXA]
 Pages = map(file -> joinpath("base", "types", file), readdir("../src/base/types"))
 ```
+
+## Model type wrappers
+```@autodocs
+Modules = [COBREXA]
+Pages = map(file -> joinpath("base", "types", "wrappers", file), readdir("../src/base/types/wrappers"))
+```

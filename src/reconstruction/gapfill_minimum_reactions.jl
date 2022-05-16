@@ -21,7 +21,7 @@ refining genome annotation." *Proceedings of the National Academy of Sciences*
 
 The function returns a solved JuMP optimization model, with the boolean
 reaction inclusion indicators in variable vector `y`. Use
-[`mask`](@ref) or [`gapfilled_rids`](@ref) to collect the reaction
+[`gapfilled_mask`](@ref) or [`gapfilled_rids`](@ref) to collect the reaction
 information in Julia datatypes.
 
 To reduce the uncertainty in the MILP solver (and likely reduce the

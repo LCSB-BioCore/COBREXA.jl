@@ -31,7 +31,7 @@ end
 Return a vector of metabolite identifiers in a model. The vector precisely
 corresponds to the rows in [`stoichiometry`](@ref) matrix.
 
-As with [`reaction`](@ref)s, some metabolites in models may be virtual,
+As with [`reactions`](@ref)s, some metabolites in models may be virtual,
 representing purely technical equality constraints.
 """
 function metabolites(a::MetabolicModel)::Vector{String}
