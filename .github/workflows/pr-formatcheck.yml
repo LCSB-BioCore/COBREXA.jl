@@ -1,0 +1,41 @@
+
+on:
+  pull_request:
+
+name: Formatting check
+
+jobs:
+  formatcheck:
+    name: check-code-format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+      - name: Install JuliaFormatter and format
+        run: |
+          julia -e 'import Pkg; Pkg.add("JuliaFormatter")'
+          julia -e 'using JuliaFormatter; format(".")'
+      - name: Remove trailing whitespace
+        run: |
+          find -name '*.jl' -or -name '*.md' -or -name '*.toml' -or -name '*.yml' | while read filename ; do
+            # remove any trailing spaces
+            sed --in-place -e 's/\s*$//' "$filename"
+            # add a final newline if missing
+            if [[ -s "$filename" && $(tail -c 1 "$filename" |wc -l) -eq 0 ]] ; then
+              echo >> "$filename"
+            fi
+            # squash superfluous final newlines
+            sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "$filename"
+          done
+      - name: Report any problems
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ `git status -s | wc -l` -ne 0 ]
+          then gh pr comment ${{ github.event.number }} --body \
+          ":red_square: &nbsp;Commit ${{ github.event.pull_request.head.sha }} requires formatting!\
+          "$'\n\n'"Required formatting changes summary:\
+          "$'\n```\n'"`git diff --stat`"$'\n```'
+          else gh pr comment ${{ github.event.number }} --body \
+          ":green_circle: &nbsp;Commit ${{ github.event.pull_request.head.sha }} is formatted properly."
+          fi

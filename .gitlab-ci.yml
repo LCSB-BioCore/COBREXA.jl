@@ -190,44 +190,6 @@ mac:julia1.6:
   <<: *global_env_mac
 
 #
-# CODE FORMAT CHECKER
-#
-
-format:
-  stage: test
-  script:
-    - |
-      docker run -v "$PWD":/project $CI_REGISTRY/r3/docker/julia-custom julia -e 'using JuliaFormatter; format("/project", verbose=true);'
-    - |
-      if [ `docker run -i -v "$PWD":/git alpine/git status -s | wc -l` -ne 0 ] ; then
-        GITHUB_COMMENT=":red_square: &nbsp;Commit ${CI_COMMIT_SHORT_SHA} requires formatting!\
-      "$'\n\n'"Required formatting changes summary:\
-      "$'\n```\n'"`docker run -i -v \"$PWD\":/git alpine/git diff --stat`"$'\n```'
-      else
-        GITHUB_COMMENT=":green_circle: &nbsp;Commit ${CI_COMMIT_SHORT_SHA} is formatted properly."
-      fi
-    - |
-      export GITHUB_TOKEN="${GITHUB_ACCESS_TOKEN_FORMATTER}"
-      export GITHUB_OWNER="lcsb-biocore"
-      export GITHUB_REPO="cobrexa.jl"
-      export GITHUB_COMMENT_TYPE=pr
-      export GITHUB_PR_ISSUE_NUMBER="${CI_EXTERNAL_PULL_REQUEST_IID}"
-      export GITHUB_COMMENT_FORMAT=""
-      export GITHUB_COMMENT
-    - |
-      docker run -i --rm \
-            -e GITHUB_TOKEN \
-            -e GITHUB_OWNER \
-            -e GITHUB_REPO \
-            -e GITHUB_COMMENT_TYPE \
-            -e GITHUB_PR_ISSUE_NUMBER \
-            -e GITHUB_COMMENT_FORMAT \
-            -e GITHUB_COMMENT \
-            cloudposse/github-commenter
-  <<: *global_dind
-  <<: *global_trigger_pull_request
-
-#
 # ASSETS
 #
 # This builds the development history gif using gource, and some containers.
