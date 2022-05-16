@@ -2,15 +2,9 @@
     #=
     Implement the small model that should be gapfilled.
     =#
-    model = StandardModel("partialmodel")
-    m1 = Metabolite("m1")
-    m2 = Metabolite("m2")
-    m3 = Metabolite("m3")
-    m4 = Metabolite("m4")
-    m5 = Metabolite("m5")
-    m6 = Metabolite("m6")
-    m7 = Metabolite("m7")
-    m8 = Metabolite("m8")
+    model = StandardModel("partial model")
+
+    (m1, m2, m3, m4, m5, m6, m7, m8) = Metabolite.("m$i" for i = 1:8)
 
     @add_reactions! model begin
         "r1", nothing → m1, 0, 1
@@ -38,18 +32,16 @@
     rB = Reaction("rB", Dict("m2" => -1, "m9" => 1), :forward)
     rC = Reaction("rC", Dict("m9" => -1, "m10" => 1), :bidirectional)
     rD = Reaction("rC", Dict("m10" => -1), :reverse)
-    rE = Reaction("rE", Dict("m2" => -1, "m7" => 2, "m6" => 2), :forward)
 
     universal_reactions = [r5, r7, r10, rA, rB, rC, rD]
-    optimizer = GLPK.Optimizer
-    rxns = gapfill_minimum_reactions(
-        model,
-        universal_reactions,
-        0.1,
-        optimizer;
-        ignore_reactions = ["rE"],
-    )
-    @test 2 in rxns
-    @test 3 in rxns
-    @test length(rxns) == 2
+
+    rxns =
+        gapfill_minimum_reactions(
+            model,
+            universal_reactions,
+            GLPK.Optimizer;
+            objective_bounds = (0.1, 1000.0),
+        ) |> gapfilled_rids(universal_reactions)
+
+    @test issetequal(["r7", "r10"], rxns)
 end
