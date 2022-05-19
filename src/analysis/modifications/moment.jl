@@ -33,6 +33,7 @@ flux_balance_analysis(
     ...,
     modifications = [ add_moment_constraints(my_kcats, 0.6) ],
 )
+```
 """
 add_moment_constraints(kcats::Dict{String,Float64}, protein_mass_fraction::Float64) =
     (model, opt_model) -> begin
