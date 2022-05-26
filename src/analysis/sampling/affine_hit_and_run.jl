@@ -1,8 +1,7 @@
 """
     function affine_hit_and_run(
-        warmup_points::Matrix{Float64},
-        lbs::Vector{Float64},
-        ubs::Vector{Float64};
+        m::MetabolicModel,
+        warmup_points::Matrix{Float64};
         sample_iters = 100 .* (1:5),
         workers = [myid()],
         chains = length(workers),
@@ -44,9 +43,8 @@ fluxes = reaction_flux(model)' * samples
 ```
 """
 function affine_hit_and_run(
-    warmup_points::Matrix{Float64},
-    lbs::Vector{Float64},
-    ubs::Vector{Float64};
+    m::MetabolicModel,
+    warmup_points::Matrix{Float64};
     sample_iters = 100 .* (1:5),
     workers = [myid()],
     chains = length(workers),
@@ -54,6 +52,7 @@ function affine_hit_and_run(
 )
 
     # distribute starting data to workers
+    lbs, ubs = bounds(m)
     save_at.(workers, :cobrexa_hit_and_run_data, Ref((warmup_points, lbs, ubs)))
 
     # sample all chains
