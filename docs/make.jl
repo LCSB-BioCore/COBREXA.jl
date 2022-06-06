@@ -88,7 +88,7 @@ makedocs(
         "Home" => "index.md",
         "Quick start" => "quickstart.md",
         "User guide" => [
-            "Detailed listing of examples" => "examples.md";
+            "Detailed listing of examples" => "examples.md"
             find_mds("examples")
         ],
         "Parallel, distributed and HPC processing" =>

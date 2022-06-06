@@ -38,4 +38,3 @@ model = load_model("e_coli_core.xml")
 #md #       require less user engagement.
 
 using Tulip, OSQP, GLPK
-
