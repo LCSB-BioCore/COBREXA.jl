@@ -91,7 +91,8 @@ makedocs(
             "Examples and notebooks" =>
                 vcat("All examples" => "examples.md", find_mds("examples")),
             "Core concepts" =>
-                vcat("All tutorials" => "tutorials.md", find_mds("tutorials")),
+                vcat("Parallal and HPC processing" => "hpc.md", find_mds("hpc")),
+                vcat("Core concepts and extensions" => "concepts.md", find_mds("concepts")),
         ],
         "Function reference" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
