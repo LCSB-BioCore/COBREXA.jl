@@ -1,5 +1,5 @@
 
-# Parallel and distributed processing in COBREXA.jl
+# Parallel processing overview
 
 Distributed processing in Julia is represented mainly by the package
 [`Distributed.jl`](https://docs.julialang.org/en/v1/stdlib/Distributed/).
