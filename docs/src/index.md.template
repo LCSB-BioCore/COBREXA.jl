@@ -39,25 +39,8 @@ Development history of COBREXA.jl.
 
 ## Quick start guide
 
-<!--insert_quickstart-->
-
-## Basic and quick-start tutorials
-
-Detailed tutorial content is [available here](tutorials.md).
-
-```@contents
-Pages = joinpath.("tutorials", filter(x -> endswith(x, ".md"), readdir("tutorials")))
-Depth = 1
-```
-
-## Advanced tutorials
-
-Detailed listing of advanced tutorials is [available here](advanced.md).
-
-```@contents
-Pages = joinpath.("advanced", filter(x -> endswith(x, ".md"), readdir("advanced")))
-Depth = 1
-```
+A dedicated [quick start guide](quickstart.md) is available for quickly trying out the
+analysis with COBREXA.jl.
 
 ## Example notebooks and workflows
 
@@ -65,6 +48,15 @@ Detailed notebook content is [available here](notebooks.md).
 
 ```@contents
 Pages = joinpath.("notebooks", filter(x -> endswith(x, ".md"), readdir("notebooks")))
+Depth = 1
+```
+
+## Core concept documentation
+
+Detailed concept documentation content is [available here](tutorials.md).
+
+```@contents
+Pages = joinpath.("tutorials", filter(x -> endswith(x, ".md"), readdir("tutorials")))
 Depth = 1
 ```
 
@@ -77,7 +69,7 @@ Pages = ["functions.md"]
 ## Contribution guide
 
 If you wish to contribute code, patches or improvements to `COBREXA.jl`, please
-read the basic [contribution guidelines and hints.](howToContribute.md).
+follow the [contribution guidelines and hints](howToContribute.md).
 
 <!--insert_acknowledgements-->
 
