@@ -31,7 +31,7 @@ as follows:
 
 - [`affine_hit_and_run`](@ref) sampling, together with [`warmup_from_variability`](@ref)
 - [`flux_variability_analysis`](@ref)
-- [`min_max_driving_force`](@ref)
+- [`max_min_driving_force`](@ref)
 - [`objective_envelope`](@ref)
 - [`screen`](@ref)
 - [`screen_optmodel_modifications`](@ref)
