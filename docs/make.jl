@@ -89,10 +89,11 @@ makedocs(
         "Quick start" => "quickstart.md",
         "User guide" => [
             "Examples and notebooks" =>
-                vcat("All examples" => "examples.md", find_mds("examples")),
-            "Core concepts" =>
-                vcat("Parallal and HPC processing" => "hpc.md", find_mds("hpc")),
-                vcat("Core concepts and extensions" => "concepts.md", find_mds("concepts")),
+                vcat("Detailed listing of examples" => "examples.md", find_mds("examples")),
+            "Parallel, distributed and HPC processing" =>
+                vcat("Contents" => "distributed.md", find_mds("distributed")),
+            "Core concepts and extensions" =>
+                vcat("Contents" => "concepts.md", find_mds("concepts")),
         ],
         "Function reference" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
