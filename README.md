@@ -181,7 +181,7 @@ res = screen(m,
 	# we need to check if the optimizer even found a feasible solution,
 	# which may not be the case if we knock out important reactions
     	sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
-	isnothing(sol) ? nothing : sol["BIOMASS_Ecoli_core_w_GAM"]
+	isnothing(sol) ? nothing : sol["R_BIOMASS_Ecoli_core_w_GAM"]
     end,
     # run the screening in parallel on all workers in the list
     workers = worker_list,
@@ -198,17 +198,17 @@ values named, giving a quick overview of which reactions are critical for the
 model organism to create biomass:
 ```julia
 Dict{String, Union{Nothing, Float64}} with 95 entries:
-  "ACALD"       => 0.873922
-  "PTAr"        => 0.873922
-  "ALCD2x"      => 0.873922
-  "PDH"         => 0.796696
-  "PYK"         => 0.864926
-  "CO2t"        => 0.46167
-  "EX_nh4_e"    => 1.44677e-15
-  "MALt2_2"     => 0.873922
-  "CS"          => 2.44779e-14
-  "PGM"         => 1.04221e-15
-  "TKT1"        => 0.864759
+  "R_ACALD"       => 0.873922
+  "R_PTAr"        => 0.873922
+  "R_ALCD2x"      => 0.873922
+  "R_PDH"         => 0.796696
+  "R_PYK"         => 0.864926
+  "R_CO2t"        => 0.46167
+  "R_EX_nh4_e"    => 1.44677e-15
+  "R_MALt2_2"     => 0.873922
+  "R_CS"          => 2.44779e-14
+  "R_PGM"         => 1.04221e-15
+  "R_TKT1"        => 0.864759
   ⋮             => ⋮
 ```
 <!--quickstart_end-->
