@@ -2,5 +2,5 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = readdir("../src/base", join=true)
+Pages = map(file -> joinpath("base", file), readdir("../src/base"))
 ```

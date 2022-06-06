@@ -4,19 +4,19 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = readdir("../src/analysis", join=true)
+Pages = map(file -> joinpath("analysis", file), readdir("../src/analysis"))
 ```
 
 ## Sampling
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = readdir("../src/analysis/sampling", join=true)
+Pages = map(file -> joinpath("analysis", "sampling", file), readdir("../src/analysis/sampling"))
 ```
 
 ## Analysis modifiers
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = readdir("../src/analysis/modifications", join=true)
+Pages = map(file -> joinpath("analysis", "modifications", file), readdir("../src/analysis/modifications"))
 ```
