@@ -1,11 +1,9 @@
-# # Loading, converting, and saving models
 
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+# # Loading models
 
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats (with
 # the latter denoting SBML formatted models).
-
+#
 # We will primarily use the *E. Coli* "core" model to demonstrate the utilities
 # found in `COBREXA`. First, let's download the model in several formats.
 
@@ -17,18 +15,14 @@
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml");
 
-# Now, load the package:
-
-using COBREXA
-
 #md # !!! tip "Save bandwidth!"
 #md #     The published models usually do not change very often. It is
 #md #     therefore pretty useful to save them to a central location and load
 #md #     them from there. That saves your time, and does not unnecessarily
 #md #     consume the connectivity resources of the model repository.
 
-# Load the models using the [`load_model`](@ref) function. Each model is able to
-# "pretty-print" itself, hiding the inner complexity.
+# Load the models using the [`load_model`](@ref) function. Models are able to
+# "pretty-print" themselves, hiding the inner complexity:
 
 mat_model = load_model("e_coli_core.mat")
 #
@@ -39,16 +33,15 @@ json_model = load_model("e_coli_core.json")
 sbml_model = load_model("e_coli_core.xml")
 #
 
-#md # !!! note "Note: `load_model` infers the output type from the file extension"
+#md # !!! note "Note: `load_model` infers the input type from the file extension"
 #md #       Notice how each model was read into memory as a model type corresponding
 #md #       to its file type, i.e. the file ending with `.json` loaded as a
 #md #       [`JSONModel`](@ref), the file ending with `.mat` loaded as [`MATModel`](@ref), and the
 #md #       file ending with `.xml` loaded as an [`SBMLModel`](@ref).
 
-# You can directly inspect the model objects, although only with a specific way
-# for each specific type.
-
-# JSON models contain their corresponding JSON:
+# The loaded models contain the data in a format that is preferably as
+# compatible as possible with the original representation. In particular, the
+# JSON model contains the representation of the JSON tree:
 
 json_model.json
 
@@ -61,33 +54,18 @@ typeof(sbml_model.sbml)
 
 mat_model.mat
 
-# ## Converting between model types
+# In all cases, you can access the data in the model in the same way, e.g.,
+# using [`reactions`](@ref) to get a list of the reactions in the models:
 
-# It is possible to convert model types to-and-fro. To do this, use the
-# `convert` function, which is overloaded from Julia's `Base`.
+reactions(mat_model)[1:5]
+#
 
-#md # !!! danger "Data loss may occur when converting between models"
-#md #     The conversion of models only uses the data accessible through the
-#md #     generic accessors. Other data may get lost.
+reactions(json_model)[1:5]
 
-m = convert(MATModel, json_model)
-
-# `m` will now contain the MATLAB-style matrix representation of the model:
-
-Matrix(m.mat["S"])
-
-# The loading and conversion can be combined using a shortcut:
-
-m = load_model(MATModel, "e_coli_core.json")
-
-# ## Saving and exporting models
-
-# `COBREXA.jl` supports exporting the models in JSON and MAT format, using [`save_model`](@ref).
-
-save_model(m, "converted_model.json")
-save_model(m, "converted_model.mat")
-
-# If you need a non-standard suffix, use the type-specific saving functions:
-
-save_json_model(m, "file.without.a.good.suffix")
-save_mat_model(m, "another.file.matlab")
+# You can use the [generic accessors](TODO) to gather more information about
+# the model contents, [convert the models](TODO) into formats more suitable for
+# hands-on processing, and [export them](TODO) back to disk after the
+# modification.
+#
+# All model types can be directly [used in analysis functions](TODO), such as
+# [`flux_balance_analysis`](@ref).
