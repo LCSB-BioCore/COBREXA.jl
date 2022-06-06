@@ -88,6 +88,11 @@ add Tulip
 
 Alternatively, you may use [prebuilt Docker and Apptainer images](#prebuilt-images).
 
+If you are running COBREXA.jl for the first time, it is very likely that upon
+installing and importing the packages, your Julia installation will need to
+precompile their source code. In fresh installations the precompilation process
+may typically take between 3 and 5 minutes.
+
 When the packages are installed, switch back to the "normal" julia shell by
 pressing Backspace (the prompt should change color back to green). After that,
 you can download [a SBML model from the
