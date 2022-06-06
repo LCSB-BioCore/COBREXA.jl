@@ -4,19 +4,19 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", "utils", file), readdir("../src/base/utils"))
+Pages = readdir("../src/base/utils", join=true)
 ```
 
 ## Macro-generated functions and internal helpers
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", "macros", file), readdir("../src/base/macros"))
+Pages = readdir("../src/base/macros", join=true)
 ```
 
 ## Logging and debugging helpers
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", "logging", file), readdir("../src/base/logging"))
+Pages = readdir("../src/base/logging", join=true)
 ```

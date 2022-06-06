@@ -4,17 +4,17 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", "types", "abstract", file), readdir("../src/base/types/abstract"))
+Pages = readdir("../src/base/types/abstract", join=true)
 ```
 
 ## Model types and contents
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", "types", file), readdir("../src/base/types"))
+Pages = readdir("../src/base/types", join=true)
 ```
 
 ## Model type wrappers
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("base", "types", "wrappers", file), readdir("../src/base/types/wrappers"))
+Pages = readdir("../src/base/types/wrappers", join=true)
 ```

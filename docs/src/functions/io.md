@@ -4,12 +4,12 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("io", file), readdir("../src/io"))
+Pages = readdir("../src/io", join=true)
 ```
 
 ## Pretty printing
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = map(file -> joinpath("io", "show", file), readdir("../src/io/show"))
+Pages = readdir("../src/io/show", join=true)
 ```
