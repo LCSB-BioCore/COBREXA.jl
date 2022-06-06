@@ -77,4 +77,7 @@ reactions(cm)
 #
 # A complete, up-to-date list of accessors can be always generated using `methodswith`:
 
-[x.name for x in methodswith(MetabolicModel, COBREXA) if endswith(String(x.file), "MetabolicModel.jl")]
+[
+    x.name for x in methodswith(MetabolicModel, COBREXA) if
+    endswith(String(x.file), "MetabolicModel.jl")
+]
