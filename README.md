@@ -68,6 +68,11 @@ answers to Julia specific questions.
 
 ### Quick start guide
 
+[COBREXA.jl documentation](https://lcsb-biocore.github.io/COBREXA.jl/stable/)
+is available online (also for
+[development version](https://lcsb-biocore.github.io/COBREXA.jl/dev/)
+of the package).
+
 <!--quickstart_begin-->
 You can install COBREXA from Julia repositories. Start `julia`, **press `]`** to
 switch to the Packaging environment, and type:
