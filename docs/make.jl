@@ -11,7 +11,7 @@ github_repo_slug = ENV["CI_PROJECT_NAMESPACE"] * "/" * ENV["CI_PROJECT_NAME"]
 
 # generate examples
 examples_path = joinpath(@__DIR__, "src", "examples")
-examples_basenames = filter(x -> endswith(x, ".jl"), readdir(examples_path))
+examples_basenames = sort(filter(x -> endswith(x, ".jl"), readdir(examples_path)))
 @info "base names:" examples_basenames
 examples = joinpath.(examples_path, examples_basenames)
 examples_outdir = joinpath(@__DIR__, "src", "examples")
@@ -25,7 +25,7 @@ for example in examples
         nbviewer_root_url = "https://nbviewer.jupyter.org/github/$github_repo_slug/blob/gh-pages/$dev_docs_folder",
         binder_root_url = "https://mybinder.org/v2/gh/$github_repo_slug/$pages_branch?filepath=$dev_docs_folder",
     )
-    Literate.notebook(example, exampless_outdir)
+    Literate.notebook(example, examples_outdir)
 end
 
 # extract shared documentation parts from README.md
