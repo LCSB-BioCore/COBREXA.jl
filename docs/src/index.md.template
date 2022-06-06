@@ -44,19 +44,20 @@ analysis with COBREXA.jl.
 
 ## Example notebooks and workflows
 
-Detailed notebook content is [available here](notebooks.md).
+Detailed example listing is [available here](examples.md).
+All examples are also avaialble as JuPyteR notebooks.
 
 ```@contents
-Pages = joinpath.("notebooks", filter(x -> endswith(x, ".md"), readdir("notebooks")))
+Pages = filter(x -> endswith(x, ".md"), readdir("examples", join=true))
 Depth = 1
 ```
 
 ## Core concept documentation
 
-Detailed concept documentation content is [available here](tutorials.md).
+Detailed concept guide listing is [available here](tutorials.md).
 
 ```@contents
-Pages = joinpath.("tutorials", filter(x -> endswith(x, ".md"), readdir("tutorials")))
+Pages = filter(x -> endswith(x, ".md"), readdir("tutorials", join=true))
 Depth = 1
 ```
 

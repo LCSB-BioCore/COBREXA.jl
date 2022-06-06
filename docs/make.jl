@@ -9,22 +9,23 @@ pages_branch = "gh-pages"
 # This must match the repo slug on github!
 github_repo_slug = ENV["CI_PROJECT_NAMESPACE"] * "/" * ENV["CI_PROJECT_NAME"]
 
-# generate notebooks
-notebooks_path = joinpath(@__DIR__, "src", "notebooks")
-notebooks_basenames = filter(x -> endswith(x, ".jl"), readdir(notebooks_path))
-@info "base names:" notebooks_basenames
-notebooks = joinpath.(notebooks_path, notebooks_basenames)
-notebooks_outdir = joinpath(@__DIR__, "src", "notebooks")
+# generate examples
+examples_path = joinpath(@__DIR__, "src", "examples")
+examples_basenames = filter(x -> endswith(x, ".jl"), readdir(examples_path))
+@info "base names:" examples_basenames
+examples = joinpath.(examples_path, examples_basenames)
+examples_outdir = joinpath(@__DIR__, "src", "examples")
 
-for notebook in notebooks
+for example in examples
+    #TODO improve how the nbviewer and binder links are inserted. Direct link to ipynb would be cool
     Literate.markdown(
-        notebook,
-        notebooks_outdir;
+        example,
+        examples_outdir;
         repo_root_url = "https://github.com/$github_repo_slug/blob/master",
         nbviewer_root_url = "https://nbviewer.jupyter.org/github/$github_repo_slug/blob/gh-pages/$dev_docs_folder",
         binder_root_url = "https://mybinder.org/v2/gh/$github_repo_slug/$pages_branch?filepath=$dev_docs_folder",
     )
-    Literate.notebook(notebook, notebooks_outdir)
+    Literate.notebook(example, exampless_outdir)
 end
 
 # extract shared documentation parts from README.md
@@ -86,12 +87,10 @@ makedocs(
         "Home" => "index.md",
         "Quick start" => "quickstart.md",
         "User guide" => [
-            "Quickstart tutorials" =>
-                vcat("All tutorials" => "tutorials.md", find_mds("tutorials")),
-            "Advanced tutorials" =>
-                vcat("All advanced tutorials" => "advanced.md", find_mds("advanced")),
             "Examples and notebooks" =>
-                vcat("All notebooks" => "notebooks.md", find_mds("notebooks")),
+                vcat("All examples" => "examples.md", find_mds("examples")),
+            "Core concepts" =>
+                vcat("All tutorials" => "tutorials.md", find_mds("tutorials")),
         ],
         "Function reference" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
@@ -115,31 +114,32 @@ replace_in_doc(
     "blob/master/docs/src/howToContribute.md" => "blob/master/.github/CONTRIBUTING.md",
 )
 
-# clean up notebooks -- we do not need to deploy all the stuff that was
+# clean up examples -- we do not need to deploy all the stuff that was
 # generated in the process
 #
 # extra fun: failing programs (such as plotting libraries) may generate core
 # dumps that contain the dumped environment strings, which in turn contain
 # github auth tokens. These certainly need to be avoided.
-notebooks_names = [n[begin:end-3] for n in notebooks_basenames]
-ipynb_names = notebooks_names .* ".ipynb"
-notebooks_allowed_files = vcat("index.html", ipynb_names)
-@info "allowed files:" notebooks_allowed_files
-for (root, dirs, files) in walkdir(joinpath(@__DIR__, "build", "notebooks"))
+examples_names = [n[begin:end-3] for n in examples_basenames]
+ipynb_names = examples_names .* ".ipynb"
+examples_allowed_files = vcat("index.html", ipynb_names)
+@info "allowed files:" examples_allowed_files
+for (root, dirs, files) in walkdir(joinpath(@__DIR__, "build", "examples"))
     for f in files
-        if !(f in notebooks_allowed_files)
+        if !(f in examples_allowed_files)
             @info "removing notebook build artifact `$(joinpath(root, f))'"
             rm(joinpath(root, f))
         end
     end
 end
 
-# also remove the index template
+# remove the template files
 rm(joinpath(@__DIR__, "build", "index.md.template"))
+rm(joinpath(@__DIR__, "build", "quickstart.md.template"))
 
 # Binder actually has 1.6.2 kernel (seen in October 2021), but for whatever
 # reason it's called julia-1.1. Don't ask me.
-for ipynb in joinpath.(@__DIR__, "build", "notebooks", ipynb_names)
+for ipynb in joinpath.(@__DIR__, "build", "examples", ipynb_names)
     @info "changing julia version to 1.1 in `$ipynb'"
     js = JSON.parsefile(ipynb)
     js["metadata"]["kernelspec"]["name"] = "julia-1.1"
