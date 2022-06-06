@@ -61,4 +61,3 @@ moma = minimize_metabolic_adjustment_analysis_dict(
         change_constraint("R_CYTBD"; lb = 0.0, ub = 0.0), # find flux distribution closest to the CYTBD knockout
     ],
 )
-
