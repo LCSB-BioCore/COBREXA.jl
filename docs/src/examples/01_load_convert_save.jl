@@ -61,35 +61,6 @@ typeof(sbml_model.sbml)
 
 mat_model.mat
 
-# ## Using the generic interface to access model details
-
-# To prevent the complexities of object representation, `COBREXA.jl` uses a set
-# of generic interface functions that extract various important information
-# from all supported model types. This approach ensures that the analysis
-# functions can work on any data.
-
-# For example, you can check the reactions and metabolites contained in SBML
-# and JSON models using the same accessor:
-
-reactions(json_model)
-#
-
-reactions(sbml_model)
-#
-
-issetequal(reactions(json_model), reactions(mat_model)) # do models contain the same reactions?
-
-# All accessors are defined in a single file in COBREXA source code; you may
-# therefore get a list of all accessors as follows:
-using InteractiveUtils
-
-for method in filter(
-    x -> endswith(string(x.file), "MetabolicModel.jl"),
-    InteractiveUtils.methodswith(MetabolicModel, COBREXA),
-)
-    println(method.name)
-end
-
 # ## Converting between model types
 
 # It is possible to convert model types to-and-fro. To do this, use the
@@ -120,30 +91,3 @@ save_model(m, "converted_model.mat")
 
 save_json_model(m, "file.without.a.good.suffix")
 save_mat_model(m, "another.file.matlab")
-
-# If you are saving the models only for future processing in Julia environment,
-# it is often wasteful to encode the models to external formats and decode them
-# back. Instead, you can use the "native" Julia data format, accessible with
-# package `Serialization`.
-#
-# This way, you can use `serialize` to save even the [`StandardModel`](@ref)
-# that has no file format associated:
-
-using Serialization
-
-sm = convert(StandardModel, m)
-
-open(f -> serialize(f, sm), "myModel.stdmodel", "w")
-
-# The models can then be loaded back using `deserialize`:
-
-sm2 = deserialize("myModel.stdmodel")
-issetequal(metabolites(sm), metabolites(sm2))
-
-# This form of loading operation is usually pretty quick:
-t = @elapsed deserialize("myModel.stdmodel")
-@info "Deserialization took $t seconds"
-# Notably, large and complicated models with thousands of reactions and
-# annotations can take seconds to decode properly. Serialization allows you to
-# almost completely remove this overhead, and scales well to tens of millions
-# of reactions.
