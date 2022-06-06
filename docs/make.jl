@@ -46,8 +46,9 @@ index_md = replace(index_md, "<!--insert_acknowledgements-->\n" => acks)
 index_md = replace(index_md, "<!--insert_ack_logos-->\n" => ack_logos)
 open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
 
-quickstart_md = open(f -> read(f, String), joinpath(@__DIR__, "src", "quickstart.md.template"))
-quickstart_md = replace(quickstart_md, "<!--insert_quickstart-->\n" => ack_logos)
+quickstart_md =
+    open(f -> read(f, String), joinpath(@__DIR__, "src", "quickstart.md.template"))
+quickstart_md = replace(quickstart_md, "<!--insert_quickstart-->\n" => quickstart)
 open(f -> write(f, quickstart_md), joinpath(@__DIR__, "src", "quickstart.md"), "w")
 
 # copy the contribution guide

@@ -4,12 +4,12 @@
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = readdir("../src/reconstruction", join=true)
+Pages = map(file -> joinpath("reconstruction", file), readdir("../src/reconstruction"))
 ```
 
 ## Variant specifiers
 
 ```@autodocs
 Modules = [COBREXA]
-Pages = readdir("../src/reconstruction/modifications", join=true)
+Pages = map(file -> joinpath("reconstruction", "modifications", file), readdir("../src/reconstruction/modifications"))
 ```
