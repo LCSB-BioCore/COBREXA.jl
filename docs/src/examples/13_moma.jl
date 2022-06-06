@@ -1,5 +1,64 @@
-# # Minimization of metabolic adjustment (MOMA)
+# # Finding balance and variability of constraint-based models
 
-# TODO
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+
+# Here we will use [`flux_balance_analysis`](@ref), [`flux_variability_analysis`](@ref),
+# [`parsimonious_flux_balance_analysis`](@ref), and
+# [`minimize_metabolic_adjustment_analysis`](@ref), along with the modification functions of
+# `COBREXA.jl`, to analyze a toy model of *E. coli*.
+
+# If it is not already present, download the model.
+
+!isfile("e_coli_core.xml") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
 using COBREXA
+
+#md # !!! tip "Tip: use `?` to get quick help about functions"
+#md #       When you are unsure about how a function works, write `?
+#md #       function_name` to see the function reference documentation.
+
+model = load_model("e_coli_core.xml")
+
+# ## Optimization solvers in `COBREXA`
+#
+# To actually perform any optimization based analysis we need to load an
+# optimizer. Any [`JuMP.jl`-supported
+# optimizers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers)
+# will work. Here, we will use [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl)
+# to optimize linear programs and
+# [`OSQP.jl`](https://osqp.org/docs/get_started/julia.html) to optimize quadratic
+# programs.
+
+#md # !!! note "Note: OSQP can be sensitive"
+#md #       We recommend reading the docs of `OSQP` before using it, since
+#md #       it may give inconsistent results depending on what settings
+#md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
+#md #       require less user engagement.
+
+using Tulip, OSQP, GLPK
+
+
+# ## Minimizing metabolic adjustment analysis (MOMA)
+
+# MOMA is a technique used to find a flux distribution that is closest to some reference
+# distribution with respect to the Euclidian norm.
+
+reference_fluxes = parsimonious_flux_balance_analysis_dict( # reference distribution
+    model,
+    OSQP.Optimizer;
+    modifications = [silence, change_optimizer_attribute("polish", true)],
+)
+
+moma = minimize_metabolic_adjustment_analysis_dict(
+    model,
+    reference_fluxes,
+    OSQP.Optimizer;
+    modifications = [
+        silence,
+        change_optimizer_attribute("polish", true),
+        change_constraint("R_CYTBD"; lb = 0.0, ub = 0.0), # find flux distribution closest to the CYTBD knockout
+    ],
+)
+
