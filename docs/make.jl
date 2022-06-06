@@ -27,21 +27,27 @@ for notebook in notebooks
     Literate.notebook(notebook, notebooks_outdir)
 end
 
-# generate index.md from .template and the quickstart in README.md
-readme = open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md"))
+# extract shared documentation parts from README.md
+readme_md = open(f -> read(f, String), joinpath(@__DIR__, "..", "README.md"))
 quickstart =
-    match(r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->", readme).captures[1]
+    match(r"<!--quickstart_begin-->\n([^\0]*)<!--quickstart_end-->", readme_md).captures[1]
 acks = match(
     r"<!--acknowledgements_begin-->\n([^\0]*)<!--acknowledgements_end-->",
-    readme,
+    readme_md,
 ).captures[1]
 ack_logos =
-    match(r"<!--ack_logos_begin-->\n([^\0]*)<!--ack_logos_end-->", readme).captures[1]
+    match(r"<!--ack_logos_begin-->\n([^\0]*)<!--ack_logos_end-->", readme_md).captures[1]
+
+# insert the shared documentation parts into index and quickstart templates
+#TODO use direct filename read/write
 index_md = open(f -> read(f, String), joinpath(@__DIR__, "src", "index.md.template"))
-index_md = replace(index_md, "<!--insert_quickstart-->\n" => quickstart)
 index_md = replace(index_md, "<!--insert_acknowledgements-->\n" => acks)
 index_md = replace(index_md, "<!--insert_ack_logos-->\n" => ack_logos)
 open(f -> write(f, index_md), joinpath(@__DIR__, "src", "index.md"), "w")
+
+quickstart_md = open(f -> read(f, String), joinpath(@__DIR__, "src", "quickstart.md.template"))
+quickstart_md = replace(quickstart_md, "<!--insert_quickstart-->\n" => ack_logos)
+open(f -> write(f, quickstart_md), joinpath(@__DIR__, "src", "quickstart.md"), "w")
 
 # copy the contribution guide
 cp(
@@ -78,6 +84,7 @@ makedocs(
     linkcheck = !("skiplinks" in ARGS),
     pages = [
         "Home" => "index.md",
+        "Quick start" => "quickstart.md",
         "User guide" => [
             "Quickstart tutorials" =>
                 vcat("All tutorials" => "tutorials.md", find_mds("tutorials")),
@@ -86,7 +93,7 @@ makedocs(
             "Examples and notebooks" =>
                 vcat("All notebooks" => "notebooks.md", find_mds("notebooks")),
         ],
-        "Types and functions" => vcat("Contents" => "functions.md", find_mds("functions")),
+        "Function reference" => vcat("Contents" => "functions.md", find_mds("functions")),
         "How to contribute" => "howToContribute.md",
     ],
 )
