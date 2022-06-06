@@ -54,10 +54,10 @@ Depth = 1
 
 ## Core concept documentation
 
-Detailed concept guide listing is [available here](tutorials.md).
+Detailed concept guide listing is [available here](concepts.md).
 
 ```@contents
-Pages = filter(x -> endswith(x, ".md"), readdir("tutorials", join=true))
+Pages = filter(x -> endswith(x, ".md"), readdir("concepts", join=true))
 Depth = 1
 ```
 
