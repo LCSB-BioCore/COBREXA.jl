@@ -128,8 +128,9 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
 
                 # do the same for coupling
                 dc = C * dir
+                pc = C * points[:, i]
                 for j = 1:n_couplings
-                    run_range = update_range(run_range, points[j, i], dc[j], cl[j], cu[j])
+                    run_range = update_range(run_range, pc[j], dc[j], cl[j], cu[j])
                 end
 
                 # generate a point in the viable run range and update it

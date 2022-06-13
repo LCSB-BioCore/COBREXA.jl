@@ -69,8 +69,8 @@ function warmup_from_variability(
     # create optimization problem at workers, apply modifications
     save_model = :(
         begin
-            model = $model
-            optmodel = $COBREXA.make_optimization_model(model, $optimizer)
+            local model = $model
+            local optmodel = $COBREXA.make_optimization_model(model, $optimizer)
             for mod in $modifications
                 mod(model, optmodel)
             end
