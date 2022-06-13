@@ -44,11 +44,18 @@ end
         max_reactions::Vector{Int}=1:n_reactions(model);
         modifications = [],
         workers::Vector{Int} = [myid()],
-    )::Tuple{Matrix{Float64}, Vector{Float64}, Vector{Float64}}
+    )::Matrix{Float64}
 
 Generate FVA-like warmup points for samplers, by minimizing and maximizing the
 specified reactions. The result is returned as a matrix, each point occupies as
 single column in the result.
+
+!!! warning Limited effect of modifications in `warmup_from_variability`
+    Modifications of the optimization model applied in `modifications`
+    parameter that change the semantics of the model have an effect on the
+    warmup points, but do not automatically carry to the subsequent sampling.
+    Users are expected to manually transplant any semantic changes to the
+    actual sampling functions, such as [`affine_hit_and_run`](@ref).
 """
 function warmup_from_variability(
     model::MetabolicModel,
@@ -57,13 +64,13 @@ function warmup_from_variability(
     max_reactions::AbstractVector{Int} = 1:n_reactions(model);
     modifications = [],
     workers::Vector{Int} = [myid()],
-)::Tuple{Matrix{Float64},Vector{Float64},Vector{Float64}}
+)::Matrix{Float64}
 
     # create optimization problem at workers, apply modifications
     save_model = :(
         begin
-            model = $model
-            optmodel = $COBREXA.make_optimization_model(model, $optimizer)
+            local model = $model
+            local optmodel = $COBREXA.make_optimization_model(model, $optimizer)
             for mod in $modifications
                 mod(model, optmodel)
             end
@@ -85,16 +92,10 @@ function warmup_from_variability(
         )...,
     )
 
-    # snatch the bounds from whatever worker is around
-    lbs, ubs = get_val_from(
-        workers[1],
-        :($COBREXA.get_optmodel_bounds(cobrexa_sampling_warmup_optmodel)),
-    )
-
     # free the data on workers
     asyncmap(fetch, remove_from.(workers, :cobrexa_sampling_warmup_optmodel))
 
-    return fluxes, lbs, ubs
+    return fluxes
 end
 
 """
