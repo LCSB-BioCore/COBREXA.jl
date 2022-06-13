@@ -50,12 +50,12 @@ Generate FVA-like warmup points for samplers, by minimizing and maximizing the
 specified reactions. The result is returned as a matrix, each point occupies as
 single column in the result.
 
-!!! warning Modifications in warmup
-    Effect of modifications that change the semantics of the model have an
-    effect on the warmup points, but do not automatically carry to the
-    subsequent sampling. Users are expected to manually transplant any semantic
-    changes to the actual sampling functions, such as
-    [`affine_hit_and_run`](@ref).
+!!! warning Limited effect of modifications in `warmup_from_variability`
+    Modifications of the optimization model applied in `modifications`
+    parameter that change the semantics of the model have an effect on the
+    warmup points, but do not automatically carry to the subsequent sampling.
+    Users are expected to manually transplant any semantic changes to the
+    actual sampling functions, such as [`affine_hit_and_run`](@ref).
 """
 function warmup_from_variability(
     model::MetabolicModel,
