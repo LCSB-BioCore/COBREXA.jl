@@ -81,7 +81,8 @@ vs = flux_variability_analysis(
         change_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
         change_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
     ],
-    ret = optimized_model ->
-        (COBREXA.JuMP.objective_value(optimized_model),
-         COBREXA.JuMP.value(optimized_model[:x][biomass_idx])),
+    ret = optimized_model -> (
+        COBREXA.JuMP.objective_value(optimized_model),
+        COBREXA.JuMP.value(optimized_model[:x][biomass_idx]),
+    ),
 )
