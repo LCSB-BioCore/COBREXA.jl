@@ -1,7 +1,7 @@
 # # Gene knockouts
 
 # Here we will use the [`knockout`](@ref) function to modify the optimization
-# model before solving, in order to simulate genes knocked out. You can pass
+# model before solving, in order to simulate genes knocked out. We can pass
 # [`knockout`](@ref) to many analysis functions that support parameter
 # `modifications`, including [`flux_balance_analysis`](@ref),
 # [`flux_variability_analysis`](@ref), and others.
@@ -18,7 +18,7 @@ model = load_model("e_coli_core.xml")
 # First, let's compute the "original" flux, with no knockouts.
 original_flux = flux_balance_analysis_dict(model, GLPK.Optimizer);
 
-# You can find gene IDs that you can knock out using [`genes`](@ref) and
+# One can find gene IDs that we can knock out using [`genes`](@ref) and
 # [`gene_name`](@ref) functions:
 genes(model)
 # It is possible to sort the genes by gene name to allow easier lookups:
@@ -32,7 +32,7 @@ flux_with_knockout =
 biomass_id = "R_BIOMASS_Ecoli_core_w_GAM"
 flux_with_knockout[biomass_id] / original_flux[biomass_id]
 
-# Similarly, you can explore how the flux variability has changed once the gene
+# Similarly, we can explore how the flux variability has changed once the gene
 # is knocked out:
 variability_with_knockout =
     flux_variability_analysis(model, GLPK.Optimizer, modifications = [knockout("G_b3236")])
@@ -77,7 +77,7 @@ sort(gene_name.(Ref(model), genes(model)) .=> knockout_fluxes, by = first)
 #
 # ### Double gene knockouts
 #
-# Since you can generate any kind of argument matrix for [`screen`](@ref) to
+# Since we can generate any kind of argument matrix for [`screen`](@ref) to
 # process, it is straightforward to generate the matrix of all double gene
 # knockouts and let the function process it. This computes the biomass
 # production of all double-gene knockouts:
@@ -103,11 +103,11 @@ reshape([gene_name.(Ref(model), p) for p in gene_groups] .=> double_knockout_flu
 
 # ### Triple gene knockouts (and others)
 #
-# You can extend the same analysis to triple or other gene knockouts by
-# generating a different array of gene pairs. For example, you can generate
+# We can extend the same analysis to triple or other gene knockouts by
+# generating a different array of gene pairs. For example, one can generate
 # gene_groups for triple gene deletion screening:
 gene_groups = [[g1, g2, g3] for g1 in genes(model), g2 in genes(model), g3 in genes(model)];
 
-# !!! warning Full triple gene deletion analysis may take a long time to compute.
-#     You may use parallel processing with [`screen`](@ref) to speed up the
-#     analysis. Alternatively, process only a subset of the genes triples.
+#md # !!! warning Full triple gene deletion analysis may take a long time to compute.
+#md #     We may use parallel processing with [`screen`](@ref) to speed up the
+#md #     analysis. Alternatively, process only a subset of the genes triples.
