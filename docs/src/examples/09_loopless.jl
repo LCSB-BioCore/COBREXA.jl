@@ -17,12 +17,18 @@ model = load_model("e_coli_core.xml")
 # In COBREXA.jl, the Loopless FBA is implemented as a modification of the
 # normal FBA, called [`add_loopless_constraints`](@ref).
 
-loopless_flux = flux_balance_analysis_vec(model, GLPK.Optimizer,
-    modifications = [add_loopless_constraints()])
+loopless_flux = flux_balance_analysis_vec(
+    model,
+    GLPK.Optimizer,
+    modifications = [add_loopless_constraints()],
+)
 
 # The representation is particularly convenient since it allows to also explore
 # other properties of loopless models, such as variability and parsimonious
 # balance, as well as other analyses that accept `modifications` parameter:
 
-loopless_variability = flux_variability_analysis(model, GLPK.Optimizer,
-    modifications = [add_loopless_constraints()])
+loopless_variability = flux_variability_analysis(
+    model,
+    GLPK.Optimizer,
+    modifications = [add_loopless_constraints()],
+)

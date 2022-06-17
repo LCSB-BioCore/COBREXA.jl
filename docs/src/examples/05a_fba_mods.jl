@@ -22,7 +22,7 @@ model = load_model("e_coli_core.xml")
 # modification ordering is sensible.
 
 # The following example applies multiple different (although partially
-# nonsential) modifications to the *E.  Coli* core model: 
+# nonsential) modifications to the *E.  Coli* core model:
 
 fluxes = flux_balance_analysis_dict(
     model,
