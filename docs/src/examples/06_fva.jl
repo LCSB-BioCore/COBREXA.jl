@@ -19,11 +19,7 @@ model = load_model("e_coli_core.xml")
 # function is allowed to vary by around 1% from the optimum found by FBA on the
 # same model:
 
-flux_variability_analysis(
-    model,
-    GLPK.Optimizer;
-    bounds = objective_bounds(0.99),
-)
+flux_variability_analysis(model, GLPK.Optimizer; bounds = objective_bounds(0.99))
 
 # ## Detailed variability analysis with modifications
 #
