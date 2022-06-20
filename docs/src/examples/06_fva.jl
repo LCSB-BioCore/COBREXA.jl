@@ -14,13 +14,14 @@ using COBREXA, GLPK
 model = load_model("e_coli_core.xml")
 
 # The FVA implementation in [`flux_variability_analysis`](@ref) returns
-# maximized and minimized reaction fluxes in a 2-column matrix:
+# maximized and minimized reaction fluxes in a 2-column matrix.
+# The bounds parameter here sets the "gamma" parameter -- the objective
+# function is allowed to vary by around 1% from the optimum found by FBA on the
+# same model:
 
 flux_variability_analysis(
     model,
     GLPK.Optimizer;
-    # set the "gamma" parameter -- the objective function is allowed to vary by
-    # around 1% from the optimum found by FBA on the same model
     bounds = objective_bounds(0.99),
 )
 

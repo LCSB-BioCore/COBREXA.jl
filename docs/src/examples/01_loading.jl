@@ -24,6 +24,8 @@
 # Load the models using the [`load_model`](@ref) function. Models are able to
 # "pretty-print" themselves, hiding the inner complexity:
 
+using COBREXA
+
 mat_model = load_model("e_coli_core.mat")
 #
 

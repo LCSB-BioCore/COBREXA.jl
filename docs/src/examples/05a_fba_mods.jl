@@ -28,22 +28,11 @@ fluxes = flux_balance_analysis_dict(
     model,
     GLPK.Optimizer;
     modifications = [ # modifications are applied in order
-        # this changes the objective to maximize the biomass production
-        change_objective("R_BIOMASS_Ecoli_core_w_GAM"),
-
-        # this fixes a specific rate of the glucose exchange
-        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
-
-        # this knocks out two genes, i.e. constrains their associated reactions to zero.
-        knockout(["b0978", "b0734"]), ## the gene IDs are cytochrome oxidase (CYTBD)
-
-        # ignore the optimizer specified above and change it to Tulip
-        change_optimizer(Tulip.Optimizer),
-
-        # set a custom attribute of the Tulip optimizer (see Tulip docs for more possibilities)
-        change_optimizer_attribute("IPM_IterationsLimit", 110),
-
-        # explicitly tell the optimizer to maximize the new objective
-        change_sense(MAX_SENSE),
+        change_objective("R_BIOMASS_Ecoli_core_w_GAM"), # maximize production
+        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix an exchange rate
+        knockout(["b0978", "b0734"]), # knock out two genes
+        change_optimizer(Tulip.Optimizer), # ignore the above optimizer and switch to Tulip
+        change_optimizer_attribute("IPM_IterationsLimit", 1000), # customize Tulip
+        change_sense(MAX_SENSE), # explicitly tell Tulip to maximize the objective
     ],
 )

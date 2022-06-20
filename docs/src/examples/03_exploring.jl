@@ -1,6 +1,9 @@
 # # Exploring model contents
 
-# For practical reasons, COBREXA.jl supports many different model types. These comprise ones that reflect the storage formats (such as [`JSONModel`](@ref) and [`SBMLModel`](@ref)), and ones that are more easily accessible for users and mimic the usual workflows in COBRA methodology:
+# For practical reasons, COBREXA.jl supports many different model types. These
+# comprise ones that reflect the storage formats (such as [`JSONModel`](@ref)
+# and [`SBMLModel`](@ref)), and ones that are more easily accessible for users
+# and mimic the usual workflows in COBRA methodology:
 #
 # - [`StandardModel`](@ref), which contains and object-oriented representation
 # of model internals, built out of [`Reaction`](@ref), [`Metabolite`](@ref) and
@@ -12,6 +15,8 @@
 # toolbox](https://github.com/opencobra/cobratoolbox)
 
 # The fields in [`StandardModel`](@ref) structure can be discovered using `fieldnames` as follows:
+
+using COBREXA
 
 fieldnames(StandardModel)
 
@@ -28,21 +33,21 @@ fieldnames(Reaction)
 # reaction:
 
 sm.reactions["TALA"].name
-
+#
 sm.reactions["TALA"].grr #gene-reaction relationship
-
+#
 sm.reactions["TALA"].subsystem
-
+#
 sm.reactions["TALA"].ub #upper rate bound
 
 # The same applies to [`CoreModel`](@ref):
 
 fieldnames(CoreModel)
-
+#
 cm = load_model(CoreModel, "e_coli_core.json")
-
+#
 cm.S
-
+#
 cm.rxns[1:10]
 
 # ## Generic accessors
@@ -56,7 +61,7 @@ cm.rxns[1:10]
 # and JSON models using the same accessor:
 
 reactions(sm)
-
+#
 reactions(cm)
 
 # All accessors allow systematic access to information about reactions,
@@ -76,6 +81,8 @@ reactions(cm)
 # - [`reaction_gene_association`](@ref) describes the dependency of a reaction on gene products
 #
 # A complete, up-to-date list of accessors can be always generated using `methodswith`:
+
+using InteractiveUtils
 
 [
     x.name for x in methodswith(MetabolicModel, COBREXA) if

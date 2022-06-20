@@ -85,7 +85,7 @@ sort(gene_name.(Ref(model), genes(model)) .=> knockout_fluxes, by = first)
 gene_groups = [[g1, g2] for g1 in genes(model), g2 in genes(model)];
 double_knockout_fluxes = screen(
     model,
-    args = tuple.(gene_pairs),
+    args = tuple.(gene_groups),
     analysis = (m, gene_groups) -> begin
         res = flux_balance_analysis_dict(
             m,
@@ -99,7 +99,7 @@ double_knockout_fluxes = screen(
 )
 
 # The results can be converted to an easily scrutinizable form as follows:
-reshape([gene_name.(Ref(model), p) for p in gene_pairs] .=> double_knockout_fluxes, :)
+reshape([gene_name.(Ref(model), p) for p in gene_groups] .=> double_knockout_fluxes, :)
 
 # ### Triple gene knockouts (and others)
 #

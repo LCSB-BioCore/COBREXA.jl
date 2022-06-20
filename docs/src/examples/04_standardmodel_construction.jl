@@ -1,8 +1,5 @@
 # # Model construction and modification
 
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
-
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats; and convert
 # these into `StandardModel`s. However, it is also possible to construct models
 # from scratch, and modify existing models. This will be demonstrated
@@ -83,4 +80,5 @@ model
 
 # Likewise, reactions and metabolites can also be deleted.
 
-remove_metabolites!()
+remove_metabolite!(model, "m1")
+model
