@@ -65,7 +65,7 @@ dictionary, a reaction string id or a `Reaction` as an argument for `rxn`.
 
 See also: [`reaction_mass_balanced`](@ref)
 """
-function reaction_atom_balance(model::StandardModel, reaction_dict::Dict{String,Float64})
+function reaction_atom_balance(model::MetabolicModel, reaction_dict::Dict{String,Float64})
     atom_balances = Dict{String,Float64}()
     for (met, stoich_rxn) in reaction_dict
         adict = metabolite_formula(model, met)
@@ -79,8 +79,8 @@ function reaction_atom_balance(model::StandardModel, reaction_dict::Dict{String,
     return atom_balances
 end
 
-function reaction_atom_balance(model::StandardModel, rxn_id::String)
-    reaction_atom_balance(model, model.reactions[rxn_id].metabolites)
+function reaction_atom_balance(model::MetabolicModel, rxn_id::String)
+    reaction_atom_balance(model, reaction_stoichiometry(model,rxn_id))
 end
 
 reaction_atom_balance(model::StandardModel, rxn::Reaction) =
