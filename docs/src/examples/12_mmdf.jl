@@ -157,7 +157,7 @@ sol.mmdf
 
 #md # !!! note "Note: transporters"
 #md #       Transporters can be included in MMDF analysis, however water and proton
-#md #       transporters must be excluded explicitly in `ignore_reaction_ids`. 
+#md #       transporters must be excluded explicitly in `ignore_reaction_ids`.
 #md #       In turn, the ΔᵣG for these transport reactions
 #md #       will always be 0. If you do not exclude the transport of the metabolites,
 #md #       the MMDF will likely only have a zero solution.
