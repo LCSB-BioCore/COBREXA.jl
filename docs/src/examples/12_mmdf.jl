@@ -165,7 +165,8 @@ sol.mmdf
 # Finally, we show how the concentrations are optimized to
 # ensure that each reach proceeds "down hill" (ΔᵣG < 0). We can explore the glycolysis pathway reactions:
 
-glycolysis_pathway = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"]
+glycolysis_pathway =
+    ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"]
 
 # We additionally scale the fluxes according to their stoichiometry in the
 # pathway. From the output, we can clearly see that that metabolite concentrations
@@ -173,15 +174,12 @@ glycolysis_pathway = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM"
 
 # The flux from simple loopless FBA has several reactions with positive ΔᵣG:
 Dict(
-    rid =>
-    reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for rid in glycolysis_pathway
+    rid => reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for
+    rid in glycolysis_pathway
 )
 
 # The solution optimized with max_min_driving_force is thermodynamically more viable:
-Dict(
-    rid =>
-    sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway
-)
+Dict(rid => sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway)
 
 #md # !!! tip "Thermodynamic variability"
 #md #     As with normal flux variability, thermodynamic constraints in a model also allow a certain amount of parameter selection freedom.

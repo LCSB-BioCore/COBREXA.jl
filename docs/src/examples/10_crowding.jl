@@ -33,7 +33,7 @@ import Random
 Random.seed!(1) # for repeatability of random numbers below
 
 rid_crowding_weight = Dict(
-    rid => 0.002+0.003*rand() for rid in reactions(model) if
+    rid => 0.002 + 0.003 * rand() for rid in reactions(model) if
     !looks_like_biomass_reaction(rid) && !looks_like_exchange_reaction(rid)
 )
 
@@ -42,9 +42,7 @@ rid_crowding_weight = Dict(
 loopless_crowding_fluxes = flux_balance_analysis_dict(
     model,
     Tulip.Optimizer;
-    modifications = [
-        add_crowding_constraints(rid_crowding_weight),
-    ],
+    modifications = [add_crowding_constraints(rid_crowding_weight)],
 )
 #
 flux_summary(loopless_crowding_fluxes)
