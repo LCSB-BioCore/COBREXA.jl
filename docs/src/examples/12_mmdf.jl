@@ -1,29 +1,36 @@
 
 # # Maximum-minimum driving force analysis
 
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
-
-# In this notebook we use the max-min driving force analysis (MMDFA) to find
-# optimal concentrations for the metabolites in glycolysis to ensure that the
-# smallest driving force across all the reactions in the model is as large as
-# possible. For more information, see Flamholz, Avi, et al.  "Glycolytic
+# Here, we use the max-min driving force analysis (MMDF) to find optimal
+# concentrations for the metabolites in glycolysis to ensure that the smallest
+# driving force across all the reactions in the model is as large as possible.
+# The method is described closer by Flamholz, Avi, et al., in "Glycolytic
 # strategy as a tradeoff between energy yield and protein cost.", Proceedings
 # of the National Academy of Sciences 110.24 (2013): 10039-10044.
 
-using COBREXA, GLPK, Tulip
+# We start as usual, with loading models and packages:
 
-# Let's load the core E. coli model
+using COBREXA, GLPK
+
+!isfile("e_coli_core.json") &&
+    download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 
 model = load_model("e_coli_core.json")
 
-# We need some thermodynamic data. You can get reaction Gibbs free energies (ΔG⁰) from
-# e.g. [eQuilibrator](https://equilibrator.weizmann.ac.il/), possibly using the
-# [Julia wrapper](https://github.com/stelmo/eQuilibrator.jl) that allows you to
-# automate this step. Here, we make a dictionary that maps the reaction IDs to
-# calculated Gibbs free energy of reaction for each reaction (including the transporters).
+# For MMDF to work, we need thermodynamic data about the involved reactions.
+#
+# In particular, we will use reaction Gibbs free energies (ΔG⁰) that can be
+# obtained e.g. from [eQuilibrator](https://equilibrator.weizmann.ac.il/)
+# (possibly using the existing [Julia
+# wrapper](https://github.com/stelmo/eQuilibrator.jl) that allows you to
+# automate this step).
+#
+# Here, we have gathered a dictionary that maps the reaction IDs to calculated
+# Gibbs free energy of that reaction for each reaction (including the
+# transporters). The units of the measurements are not crucial for the
+# computation, but we use the usual kJ/mol for consistency.
 
-reaction_standard_gibbs_free_energies = Dict( # kJ/mol
+reaction_standard_gibbs_free_energies = Dict(
     "ACALD" => -21.26,
     "PTAr" => 8.65,
     "ALCD2x" => 17.47,
@@ -99,29 +106,33 @@ reaction_standard_gibbs_free_energies = Dict( # kJ/mol
     "FUM" => -3.42,
 );
 
-# In general we cannot be certain that all fluxes will be positive for a given flux
-# solution. This poses problems for systematically enforcing that ΔᵣG ≤ 0 for each reaction,
-# because it implicitly assumes that all fluxes are positive, as done in the original
-# formulation of MMDF. In `max_min_driving_force` we instead enforce ΔᵣG ⋅ vᵢ ≤ 0, where vᵢ
-# is the flux of reaction i. By default all fluxes are assumed to be positive, but by
-# supplying thermodynamically consistent flux solution it is possible to drop this implicit
-# assumption and makes it easier to directly incorporate the max min driving force into
-# non-customized models. Here, customized model means a model written such that a negative
-# ΔᵣG is associated with each positive flux in the model, and only positive fluxes are used
-# by the model.
+# COBREXA implementation of MMDF enforces that `ΔᵣG .* v ≤ 0` (where `v` is the
+# flux solution).  This is slightly less restrictive than the original
+# formulation of MMDF, where all fluxes are enforced to be positive; instead,
+# the COBREXA solution needs a pre-existing thermodynamically consistent
+# solution that is used as a reference.
+#
+# We can generate a well-suited reference solution using e.g. the [loopless
+# FBA](TODO):
 
-flux_solution = flux_balance_analysis_dict( # find a thermodynamically consistent solution
+flux_solution = flux_balance_analysis_dict(
     model,
     GLPK.Optimizer;
     modifications = [add_loopless_constraints()],
 )
 
-# Run max min driving force analysis with some reasonable constraints on metabolite
-# concentration bounds. To remove protons and water from the concentration calculations, we
-# explicitly specify their IDs. Note, protons and water need to be removed from the
-# concentration calculation of the optimization problem, because the Gibbs free energies of
-# biochemical reactions are measured at constant pH, so proton concentration is fixed, and
-# reactions occur in aqueous environments, hence water concentration does not change.
+# We can now run the MMDF.
+#
+# In the call, we additionally specify the metabolite IDs of protons and water
+# so that they are omitted from concentration calculations, water transport
+# reaction (that should also be ignored), and additionally fix precise ratios
+# of concentrations of certain metabolites to reflect the assumptions (and
+# possibly measurements) about the organism.
+#
+# The reason for removing the protons and water from concentration calculation
+# is that because the Gibbs free energies of biochemical reactions are measured
+# at constant pH. Allowing the model to change the pH would break the
+# assumptions about validity of the thermodynamics of all reactions.
 
 sol = max_min_driving_force(
     model,
@@ -135,10 +146,10 @@ sol = max_min_driving_force(
         ("nadh_c", "nad_c") => 0.13,
         ("nadph_c", "nadp_c") => 1.3,
     ),
-    concentration_lb = 1e-6, # M
-    concentration_ub = 100e-3, # M
+    concentration_lb = 1e-6, # 1 uM
+    concentration_ub = 0.1, # 100 mM
     ignore_reaction_ids = [
-        "H2Ot", # ignore water transporter
+        "H2Ot", # ignore water transport
     ],
 )
 
@@ -146,46 +157,32 @@ sol.mmdf
 
 #md # !!! note "Note: transporters"
 #md #       Transporters can be included in MMDF analysis, however water and proton
-#md #       transporters must be excluded explicitly in `ignore_reaction_ids`. Due to
-#md #       the way the method is implemented, the ΔᵣG for these transport reactions
-#md #       will always be 0. If not excluded, the MMDF will only have a zero solution (if
-#md #       these reactions are used in the flux solution).
+#md #       transporters must be excluded explicitly in `ignore_reaction_ids`. 
+#md #       In turn, the ΔᵣG for these transport reactions
+#md #       will always be 0. If you do not exclude the transport of the metabolites,
+#md #       the MMDF will likely only have a zero solution.
 
-# Next, we plot the results to show how the concentrations can be used to ensure that
-# each reach proceeds "down hill" (ΔᵣG < 0) and that the driving force is as
-# large as possible across all the reactions in the model. Compare this to the
-# driving forces at standard conditions. Note, we only plot glycolysis for simplicity.
+# Finally, we show how the concentrations are optimized to
+# ensure that each reach proceeds "down hill" (ΔᵣG < 0). We can explore the glycolysis pathway reactions:
+
+glycolysis_pathway = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"]
 
 # We additionally scale the fluxes according to their stoichiometry in the
 # pathway. From the output, we can clearly see that that metabolite concentrations
 # play a large role in ensuring the thermodynamic consistency of in vivo reactions.
 
-rids = ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"] # glycolysis
-rid_rf = [flux_solution[rid] for rid in rids]
-dg_standard = cumsum([
-    reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for rid in rids
-])
-dg_standard .-= first(dg_standard)
-dg_opt = cumsum([sol.dg_reactions[rid] * flux_solution[rid] for rid in rids])
-dg_opt .-= first(dg_opt)
+# The flux from simple loopless FBA has several reactions with positive ΔᵣG:
+Dict(
+    rid =>
+    reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for rid in glycolysis_pathway
+)
 
-using CairoMakie
+# The solution optimized with max_min_driving_force is thermodynamically more viable:
+Dict(
+    rid =>
+    sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway
+)
 
-fig = Figure();
-ax = Axis(
-    fig[1, 1],
-    xticklabelrotation = -pi / 2,
-    xlabel = "Reaction",
-    ylabel = "Cumulative ΔG [kJ/mol]",
-);
-
-lines!(ax, 1:length(rids), dg_standard; color = :red, label = "Standard")
-lines!(ax, 1:length(rids), dg_opt, color = :blue, label = "Optimized")
-ax.xticks = (1:length(rids), rids)
-fig[1, 2] = Legend(fig, ax, "ΔG'", framevisible = false)
-fig
-
-#md # !!! tip "Tip: Thermodynamic variability"
-#md #       Much like flux variability, thermodynamic constraints in a model are also
-#md #       degenerate. Check out [`max_min_driving_force_variability`](@ref) for ways
-#md #       to explore the thermodynamic solution space.
+#md # !!! tip "Thermodynamic variability"
+#md #     As with normal flux variability, thermodynamic constraints in a model also allow a certain amount of parameter selection freedom.
+#md #     Specialized [`max_min_driving_force_variability`](@ref) can be used to explore the thermodynamic solution space more easily.
