@@ -1,63 +1,53 @@
-# # Finding balance and variability of constraint-based models
+# # Minimization of metabolic adjustment (MOMA)
 
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
+# MOMA allows you to find a feasible solution of the model that is closest (in
+# an Euclidean metric) to a reference solution. Often this gives a realistic
+# estimate of the organism behavior that has undergone a radical change (such
+# as a gene knockout) that prevents it from metabolizing optimally, but the
+# rest of the metabolism has not yet adjusted to compensate for the change.
 
-# Here we will use [`flux_balance_analysis`](@ref), [`flux_variability_analysis`](@ref),
-# [`parsimonious_flux_balance_analysis`](@ref), and
-# [`minimize_metabolic_adjustment_analysis`](@ref), along with the modification functions of
-# `COBREXA.jl`, to analyze a toy model of *E. coli*.
-
-# If it is not already present, download the model.
+# As always, let's start with downloading a model.
 
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
 using COBREXA
 
-#md # !!! tip "Tip: use `?` to get quick help about functions"
-#md #       When you are unsure about how a function works, write `?
-#md #       function_name` to see the function reference documentation.
+model = load_model(StandardModel, "e_coli_core.xml")
 
-model = load_model("e_coli_core.xml")
+# MOMA analysis requires solution of a quadratic model, we will thus use OSQP as the main optimizer.
 
-# ## Optimization solvers in `COBREXA`
-#
-# To actually perform any optimization based analysis we need to load an
-# optimizer. Any [`JuMP.jl`-supported
-# optimizers](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers)
-# will work. Here, we will use [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl)
-# to optimize linear programs and
-# [`OSQP.jl`](https://osqp.org/docs/get_started/julia.html) to optimize quadratic
-# programs.
+using OSQP
 
-#md # !!! note "Note: OSQP can be sensitive"
-#md #       We recommend reading the docs of `OSQP` before using it, since
-#md #       it may give inconsistent results depending on what settings
-#md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
-#md #       require less user engagement.
-
-using Tulip, OSQP, GLPK
-
-
-# ## Minimizing metabolic adjustment analysis (MOMA)
-
-# MOMA is a technique used to find a flux distribution that is closest to some reference
-# distribution with respect to the Euclidian norm.
-
-reference_fluxes = parsimonious_flux_balance_analysis_dict( # reference distribution
+# We will need a reference solution, which represents the original state of the
+# organism before the change.
+reference_flux = flux_balance_analysis_dict(
     model,
     OSQP.Optimizer;
     modifications = [silence, change_optimizer_attribute("polish", true)],
 )
 
-moma = minimize_metabolic_adjustment_analysis_dict(
-    model,
-    reference_fluxes,
-    OSQP.Optimizer;
-    modifications = [
-        silence,
-        change_optimizer_attribute("polish", true),
-        change_constraint("R_CYTBD"; lb = 0.0, ub = 0.0), # find flux distribution closest to the CYTBD knockout
-    ],
+# As the change here, we manually knock out CYTBD reaction:
+changed_model = change_bound(model, "R_CYTBD", lower = 0.0, upper = 0.0);
+
+# Now, let's find a flux that minimizes the organism's metabolic adjustment for
+# this model:
+flux_summary(
+    minimize_metabolic_adjustment_analysis_dict(
+        changed_model,
+        reference_flux,
+        OSQP.Optimizer;
+        modifications = [silence, change_optimizer_attribute("polish", true)],
+    ),
+)
+
+# For illustration, you can compare the result to the flux that is found by
+# simple optimization:
+
+flux_summary(
+    flux_balance_analysis_dict(
+        changed_model,
+        OSQP.Optimizer;
+        modifications = [silence, change_optimizer_attribute("polish", true)],
+    ),
 )
