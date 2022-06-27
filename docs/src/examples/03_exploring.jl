@@ -6,13 +6,13 @@
 # and mimic the usual workflows in COBRA methodology:
 #
 # - [`StandardModel`](@ref), which contains and object-oriented representation
-# of model internals, built out of [`Reaction`](@ref), [`Metabolite`](@ref) and
-# [`Gene`](@ref) structures, in a way similar to e.g.
-# [COBRApy](https://github.com/opencobra/cobrapy/)
+#   of model internals, built out of [`Reaction`](@ref), [`Metabolite`](@ref)
+#   and [`Gene`](@ref) structures, in a way similar to e.g.
+#   [COBRApy](https://github.com/opencobra/cobrapy/)
 # - [`CoreModel`](@ref), which contains array-oriented representation of the
-# model structures, such as stoichiometry matrix and the bounds vector, in a
-# way similar to e.g. [COBRA
-# toolbox](https://github.com/opencobra/cobratoolbox)
+#   model structures, such as stoichiometry matrix and the bounds vector, in a
+#   way similar to e.g. [COBRA
+#   toolbox](https://github.com/opencobra/cobratoolbox)
 
 # The fields in [`StandardModel`](@ref) structure can be discovered using `fieldnames` as follows:
 

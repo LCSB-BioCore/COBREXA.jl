@@ -162,15 +162,17 @@ sol.mmdf
 #md #       will always be 0. If you do not exclude the transport of the metabolites,
 #md #       the MMDF will likely only have a zero solution.
 
-# Finally, we show how the concentrations are optimized to
-# ensure that each reach proceeds "down hill" (ΔᵣG < 0). We can explore the glycolysis pathway reactions:
+# Finally, we show how the concentrations are optimized to ensure that each
+# reach proceeds "down hill" (ΔᵣG < 0). We can explore the glycolysis pathway
+# reactions:
 
 glycolysis_pathway =
     ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"]
 
 # We additionally scale the fluxes according to their stoichiometry in the
-# pathway. From the output, we can clearly see that that metabolite concentrations
-# play a large role in ensuring the thermodynamic consistency of in vivo reactions.
+# pathway. From the output, we can clearly see that that metabolite
+# concentrations play a large role in ensuring the thermodynamic consistency of
+# in vivo reactions.
 
 # The flux from simple loopless FBA has several reactions with positive ΔᵣG:
 Dict(
@@ -178,7 +180,8 @@ Dict(
     rid in glycolysis_pathway
 )
 
-# The solution optimized with max_min_driving_force is thermodynamically more viable:
+# The solution optimized with [`max_min_driving_force`](@ref) is
+# thermodynamically more viable:
 Dict(rid => sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway)
 
 #md # !!! tip "Thermodynamic variability"
