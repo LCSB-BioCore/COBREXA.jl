@@ -52,8 +52,8 @@ function add_community_objective!(
     rdict = Dict(k => -float(v) for (k, v) in objective_mets_weights)
     rxn = Reaction(objective_id)
     rxn.metabolites = rdict
-    rxn.lb = 0.0
-    rxn.ub = _constants.default_reaction_bound
+    rxn.lower_bound = 0.0
+    rxn.upper_bound = _constants.default_reaction_bound
     rxn.objective_coefficient = 1.0
     community.reactions[rxn.id] = rxn
 
@@ -347,8 +347,8 @@ function join_with_exchanges(
     for (rid, mid) in exchange_rxn_mets
         community.reactions[rid] = Reaction(rid)
         community.reactions[rid].metabolites = Dict{String,Float64}(mid => -1.0)
-        community.reactions[rid].lb = 0.0
-        community.reactions[rid].ub = 0.0
+        community.reactions[rid].lower_bound = 0.0
+        community.reactions[rid].upper_bound = 0.0
         community.metabolites[mid] = Metabolite(mid)
         community.metabolites[mid].id = mid
     end

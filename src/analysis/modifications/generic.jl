@@ -15,13 +15,13 @@ constrain_objective_value(tolerance) =
 """
 $(TYPEDSIGNATURES)
 
-Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id` if supplied.
+Change the lower and upper bounds (`lower_bound` and `upper_bound` respectively) of reaction `id` if supplied.
 """
-change_constraint(id::String; lb = nothing, ub = nothing) =
+change_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
     (model, opt_model) -> begin
         ind = first(indexin([id], reactions(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
-        set_optmodel_bound!(ind, opt_model, lb = lb, ub = ub)
+        set_optmodel_bound!(ind, opt_model, lower = lower_bound, upper = upper_bound)
     end
 
 """

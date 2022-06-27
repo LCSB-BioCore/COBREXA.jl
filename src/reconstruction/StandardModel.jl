@@ -97,12 +97,12 @@ macro add_reactions!(model::Symbol, ex::Expr)
         push!(all_reactions.args, :(r.id = $id))
         if length(args) == 3
             lb = args[3]
-            push!(all_reactions.args, :(r.lb = $lb))
+            push!(all_reactions.args, :(r.lower_bound = $lb))
         elseif length(args) == 4
             lb = args[3]
             ub = args[4]
-            push!(all_reactions.args, :(r.lb = $lb))
-            push!(all_reactions.args, :(r.ub = $ub))
+            push!(all_reactions.args, :(r.lower_bound = $lb))
+            push!(all_reactions.args, :(r.upper_bound = $ub))
         end
         push!(all_reactions.args, :(add_reaction!($model, r)))
     end

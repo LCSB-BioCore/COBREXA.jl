@@ -19,8 +19,8 @@ Shallow copy of a [`Reaction`](@ref)
 Base.copy(r::Reaction) = Reaction(
     r.id;
     metabolites = r.metabolites,
-    lb = r.lb,
-    ub = r.ub,
+    lower_bound = r.lower_bound,
+    upper_bound = r.upper_bound,
     grr = r.grr,
     subsystem = r.subsystem,
     notes = r.notes,

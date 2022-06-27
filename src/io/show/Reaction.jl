@@ -15,11 +15,11 @@ function _pretty_substances(ss::Vector{String})::String
 end
 
 function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
-    if r.ub > 0.0 && r.lb < 0.0
+    if r.upper_bound > 0.0 && r.lower_bound < 0.0
         arrow = " ↔  "
-    elseif r.ub <= 0.0 && r.lb < 0.0
+    elseif r.upper_bound <= 0.0 && r.lower_bound < 0.0
         arrow = " ←  "
-    elseif r.ub > 0.0 && r.lb >= 0.0
+    elseif r.upper_bound > 0.0 && r.lower_bound >= 0.0
         arrow = " →  "
     else
         arrow = " →|←  " # blocked reaction
@@ -42,7 +42,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
                 "Reaction.$(string(fname)): ",
                 _maybemap(x -> _unparse_grr(String, x), r.grr),
             )
-        elseif fname in (:lb, :ub, :objective_coefficient)
+        elseif fname in (:lower_bound, :upper_bound, :objective_coefficient)
             _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",

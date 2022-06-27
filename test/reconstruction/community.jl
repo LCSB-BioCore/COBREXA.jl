@@ -20,9 +20,9 @@
     # test if environmental exchanges have been added properly
     @test c1.S[13, 15] == c1.S[14, 16] == -1
     # test of bounds set properly
-    lb, ub = bounds(c1)
-    @test all(lb[1:14] .== -ub[1:14] .== -1000)
-    @test all(lb[15:16] .== -ub[15:16] .== 0.0)
+    lower_bound, upper_bound = bounds(c1)
+    @test all(lower_bound[1:14] .== -upper_bound[1:14] .== -1000)
+    @test all(lower_bound[15:16] .== -upper_bound[15:16] .== 0.0)
 
     add_community_objective!(
         c1,
@@ -202,9 +202,9 @@ end
     @test c1.reactions["species_2_EX_m3(e)"].metabolites["species_2_m3[e]"] == 1
 
     # test of bounds set properly
-    lb, ub = bounds(c1) # this only works because the insertion order is preserved (they get added last)
-    @test all(lb[1:14] .== -ub[1:14] .== -1000)
-    @test all(lb[15:16] .== -ub[15:16] .== 0.0)
+    lower_bound, upper_bound = bounds(c1) # this only works because the insertion order is preserved (they get added last)
+    @test all(lower_bound[1:14] .== -upper_bound[1:14] .== -1000)
+    @test all(lower_bound[15:16] .== -upper_bound[15:16] .== 0.0)
 
     add_community_objective!(
         c1,
@@ -243,8 +243,8 @@ end
     )
 
     for rid in keys(exchange_rxn_mets)
-        c.reactions[rid].lb = m1.reactions[rid].lb
-        c.reactions[rid].ub = m1.reactions[rid].ub
+        c.reactions[rid].lower_bound = m1.reactions[rid].lower_bound
+        c.reactions[rid].upper_bound = m1.reactions[rid].upper_bound
     end
 
     @test c.reactions["species_1_BIOMASS_Ecoli_core_w_GAM"].metabolites["species_1_BIOMASS_Ecoli_core_w_GAM"] ==

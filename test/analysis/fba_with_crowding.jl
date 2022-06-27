@@ -11,7 +11,7 @@
         modifications = [
             change_optimizer_attribute("IPM_IterationsLimit", 1000),
             add_crowding_constraints(rid_weight),
-            change_constraint("EX_glc__D_e"; lb = -6),
+            change_constraint("EX_glc__D_e"; lower_bound = -6),
         ],
     )
 

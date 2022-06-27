@@ -203,8 +203,8 @@ function _universal_stoichiometry(urxns::Vector{Reaction}, mids::Vector{String})
                 length(urxns),
             ),
         ),
-        lbs = [rxn.lb for rxn in urxns],
-        ubs = [rxn.ub for rxn in urxns],
+        lbs = [rxn.lower_bound for rxn in urxns],
+        ubs = [rxn.upper_bound for rxn in urxns],
         new_mids = new_mids,
     )
 end

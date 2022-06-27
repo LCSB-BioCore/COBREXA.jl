@@ -20,8 +20,8 @@
     r1 = Reaction()
     r1.id = "r1"
     r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
-    r1.lb = -100.0
-    r1.ub = 100.0
+    r1.lower_bound = -100.0
+    r1.upper_bound = 100.0
     r1.grr = [["g1", "g2"], ["g3"]]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
