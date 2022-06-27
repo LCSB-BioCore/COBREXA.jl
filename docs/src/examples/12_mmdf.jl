@@ -137,7 +137,7 @@ flux_solution = flux_balance_analysis_dict(
 sol = max_min_driving_force(
     model,
     reaction_standard_gibbs_free_energies,
-    Tulip.Optimizer;
+    GLPK.Optimizer;
     flux_solution = flux_solution,
     proton_ids = ["h_c", "h_e"],
     water_ids = ["h2o_c", "h2o_e"],
