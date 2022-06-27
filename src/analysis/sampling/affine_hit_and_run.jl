@@ -31,7 +31,7 @@ be `size(warmup_points,2) * chains * length(sample_iters)`.
 # Example
 ```
 warmup_points = warmup_from_variability(model, GLPK.Optimizer)
-samples = affine_hit_and_run(model, warmup_points, sample_iters=101:105)
+samples = affine_hit_and_run(model, warmup_points, sample_iters = 101:105)
 
 # convert the result to flux (for models where the distinction matters):
 fluxes = reaction_flux(model)' * samples
