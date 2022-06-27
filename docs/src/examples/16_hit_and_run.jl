@@ -48,7 +48,7 @@ samples = affine_hit_and_run(model, warmup_points)
 # total number of points collected is the number of points in warmup times the
 # number of sample-collecting iterations times the number of chains.
 
-samples = affine_hit_and_run(model, warmup_points, sample_iters=201:210, chains=2)
+samples = affine_hit_and_run(model, warmup_points, sample_iters = 201:210, chains = 2)
 
 #md # !!! tip "Parallelization"
 #md #     Both procedures used for sampling in this example
@@ -66,4 +66,8 @@ using CairoMakie
 
 o2, co2 = indexin(["R_EX_o2_e", "R_EX_co2_e"], reactions(model))
 
-scatter(samples[o2,:], samples[co2,:]; axis = (;xlabel = "Oxygen exchange", ylabel="Carbon dioxide exchange"))
+scatter(
+    samples[o2, :],
+    samples[co2, :];
+    axis = (; xlabel = "Oxygen exchange", ylabel = "Carbon dioxide exchange"),
+)
