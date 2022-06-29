@@ -109,13 +109,13 @@ screen(
 
 # ## What is the minimal total amount of nutrients for my model to grow?
 
-# We solve the "minimal necessary medium" problem by constraining the model
-# growth to a desired lower bound (in case of this model, to 0.1 biomass
-# production), and then optimize the model with an objective that minimizes
-# intake of all exchanges (i.e., maximizes the flux through all exchange
-# reactions along their direction).
+# You can compute the minimal amount (e.g., mass) of required nutrients by
+# constraining the model growth to a desired lower bound, and then optimize the
+# model with an objective that minimizes intake of all exchanges (i.e., given
+# the directionality convention of the exchanges, actually maximizes the flux
+# through all exchange reactions along their direction).
 
-model_with_bounded_production = change_bound(model, biomass, lower = 0.1)
+model_with_bounded_production = change_bound(model, biomass, lower = 0.1) #minimum required growth
 
 minimal_intake_production = flux_balance_analysis_dict(
     model_with_bounded_production,

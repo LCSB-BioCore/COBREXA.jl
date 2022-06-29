@@ -86,16 +86,23 @@ makedocs(
     linkcheck = !("skiplinks" in ARGS),
     pages = [
         "Home" => "index.md",
-        "Quick start" => "quickstart.md",
-        "User guide" => [
-            "Detailed listing of examples" => "examples.md"
+        "COBREXA.jl in 10 minutes" => "quickstart.md",
+        "Examples" => [
+            "Contents" => "examples.md"
             find_mds("examples")
         ],
-        "Parallel, distributed and HPC processing" =>
-            vcat("Contents" => "distributed.md", find_mds("distributed")),
-        "Core concepts and extensions" =>
-            vcat("Contents" => "concepts.md", find_mds("concepts")),
-        "Function reference" => vcat("Contents" => "functions.md", find_mds("functions")),
+        "Parallel, distributed and HPC processing" => [
+            "Contents" => "distributed.md"
+            find_mds("distributed")
+        ],
+        "Internals and extensions" => [
+            "Contents" => "concepts.md"
+            find_mds("concepts")
+        ],
+        "Reference (Functions and types)" => [
+            "Contents" => "functions.md"
+            find_mds("functions")
+        ],
         "How to contribute" => "howToContribute.md",
     ],
 )

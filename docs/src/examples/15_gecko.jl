@@ -4,7 +4,7 @@
 # the cell to respect many known parameters, measured by proteomics and other
 # methods.
 #
-# The original description from GECKO is by: 
+# The original description from GECKO is by:
 # Sánchez, B.J., Zhang, C., Nilsson, A., Lahtvee, P.J., Kerkhoven, E.J. and
 # Nielsen, J., 2017. "Improving the phenotype predictions of a yeast
 # genome‐scale metabolic model by incorporating enzymatic constraints."
