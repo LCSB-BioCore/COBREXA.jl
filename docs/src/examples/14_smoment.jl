@@ -95,4 +95,9 @@ flux_variability_analysis(smoment_model, GLPK.Optimizer, bounds = gamma_bounds(0
 
 # ...and a sMOMENT model sample can be obtained [as usual with sampling](TODO):
 
-affine_hit_and_run(smoment_model, warmup_from_variability(smoment_model, GLPK.Optimizer))
+(
+    affine_hit_and_run(
+        smoment_model,
+        warmup_from_variability(smoment_model, GLPK.Optimizer),
+    )' * reaction_flux(smoment_model)
+)
