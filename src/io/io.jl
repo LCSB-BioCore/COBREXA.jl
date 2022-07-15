@@ -52,6 +52,8 @@ Currently, these model types are supported:
 function save_model(model::MetabolicModel, file_name::String)
     if endswith(file_name, ".json")
         return save_json_model(model, file_name)
+    elseif endswith(file_name, ".xml")
+        return save_sbml_model(model, file_name)
     elseif endswith(file_name, ".mat")
         return save_mat_model(model, file_name)
     else

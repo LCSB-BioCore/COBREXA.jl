@@ -30,7 +30,7 @@ Convert a GeneAssociation to the corresponding `SBML.jl` structure.
 function _unparse_grr(
     ::Type{SBML.GeneProductAssociation},
     x::GeneAssociation,
-)::SBML.GeneAssociation
+)::SBML.GeneProductAssociation
     SBML.GPAOr([SBML.GPAAnd([SBML.GPARef(j) for j in i]) for i in x])
 end
 
