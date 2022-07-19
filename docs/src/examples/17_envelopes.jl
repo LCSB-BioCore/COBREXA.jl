@@ -28,26 +28,35 @@ model = load_model("e_coli_core.xml")
 # In short, we can compute the envelope of a single reaction in the *E. Coli*
 # model as follows:
 
-envelope = objective_envelope(model, ["R_EX_gln__L_e"], GLPK.Optimizer)
+envelope = objective_envelope(
+    model,
+    ["R_EX_o2_e"],
+    GLPK.Optimizer,
+    lattice_args = (ranges = [(-50, 0)],),
+)
 
-# The result has 2 fields which can be used to easily plot the envelope:
+# The result has 2 fields which can be used to easily plot the envelope. We
+# also need to "fix" the missing values (represented as `nothing`) where the
+# model failed to solve -- we will simply omit them here).
 
 using CairoMakie
 
-lines(envelope.lattice[1], envelope.values)
+valid = .!(isnothing.(envelope.values))
+lines(envelope.lattice[1][valid], float.(envelope.values[valid]))
 
-# Additional resolution can be obtained either by supplying your own lattice,
-# or simply forwarding a few arguments to the internal call of
+# Additional resolution can be obtained either by supplying your own larger
+# lattice, or simply forwarding the `samples` argument to the internal call of
 # [`envelope_lattice`](@ref):
 
 envelope = objective_envelope(
     model,
-    ["R_EX_fum_e"],
+    ["R_EX_co2_e"],
     GLPK.Optimizer,
-    lattice_args = (samples = 100,),
+    lattice_args = (samples = 1000, ranges = [(-50, 100)]),
 )
 
-lines(envelope.lattice[1], envelope.values)
+valid = .!(isnothing.(envelope.values))
+lines(envelope.lattice[1][valid], float.(envelope.values[valid]))
 
 # ## Multi-dimensional envelopes
 
@@ -57,9 +66,14 @@ lines(envelope.lattice[1], envelope.values)
 
 envelope = objective_envelope(
     model,
-    ["R_EX_gln__L_e", "R_EX_fum_e"],
+    ["R_EX_o2_e", "R_EX_co2_e"],
     GLPK.Optimizer,
-    lattice_args = (samples = 30,),
+    lattice_args = (samples = 100, ranges = [(-60, 0), (-15, 60)]),
 )
 
-heatmap(envelope.lattice[1], envelope.lattice[2], envelope.values)
+heatmap(
+    envelope.lattice[1],
+    envelope.lattice[2],
+    [isnothing(x) ? 0 : x for x in envelope.values],
+    axis = (; xlabel = "Oxygen exchange", ylabel = "Carbon dioxide exchange"),
+)

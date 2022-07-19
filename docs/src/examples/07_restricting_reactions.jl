@@ -112,7 +112,9 @@ biomass_mtx = screen(
     analysis = m ->
         flux_balance_analysis_dict(m, GLPK.Optimizer)["BIOMASS_Ecoli_core_w_GAM"] /
         original_flux["BIOMASS_Ecoli_core_w_GAM"],
-);
+)
+
+# Finally, let's plot the result:
 
 using CairoMakie, Clustering
 
