@@ -130,6 +130,3 @@ minimal_intake_production = flux_balance_analysis_dict(
 # In our simple case, we obtain the following minimal required intake:
 
 flux_summary(minimal_intake_production)
-
-# ## What is the minimal count of different nutrients for my model to grow?
-# TODO
