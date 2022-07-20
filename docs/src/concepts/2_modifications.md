@@ -10,17 +10,16 @@ list callbacks that do the changes to the prepared optimization model.
 The callbacks available in COBREXA.jl include functions that may help with
 tuning the optimizer, or change the raw values in the linear model, such as:
 
-- [`change_objective_value`](@ref) and [`change_objective`](@ref)
-- [`change_constraint`](@ref)
+- [`change_constraint`](@ref) and [`change_objective`](@ref)
 - [`change_sense`](@ref), [`change_optimizer`](@ref), [`change_optimizer_attribute`](@ref)
 - [`silence`](@ref)
 - [`knockout`](@ref), [`add_crowding_constraints`](@ref)
 
-Compared to the [variant system](TODO) and the [model wrappers](TODO),
-optimizer modifications are slightly more powerful (they can do anything they
-want with the optimizer!), but do not compose well -- it is very easy to break
-the semantics of the model or erase the previous changes by carelessly adding
-the modifications.
+Compared to the [variant system](1_screen.md) and the [model
+wrappers](4_wrappers.md), optimizer modifications are slightly more powerful
+(they can do anything they want with the optimizer!), but do not compose well
+-- it is very easy to break the semantics of the model or erase the previous
+changes by carelessly adding the modifications.
 
 Here, we show how to construct the modifications. Their semantics is similar to
 the [variant-generating functions](1_screen.md), which receive a model (of type

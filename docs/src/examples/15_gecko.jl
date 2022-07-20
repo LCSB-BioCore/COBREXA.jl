@@ -4,20 +4,20 @@
 # the cell to respect many known parameters, measured by proteomics and other
 # methods.
 #
-# The original description from GECKO is by:
-# Sánchez, B.J., Zhang, C., Nilsson, A., Lahtvee, P.J., Kerkhoven, E.J. and
-# Nielsen, J., 2017. "Improving the phenotype predictions of a yeast
-# genome‐scale metabolic model by incorporating enzymatic constraints."
-# *Molecular systems biology*, 13(8), p.935.
+# The original description from GECKO is by: Sánchez, B.J., Zhang, C., Nilsson,
+# A., Lahtvee, P.J., Kerkhoven, E.J. and Nielsen, J., 2017. "Improving the
+# phenotype predictions of a yeast genome‐scale metabolic model by
+# incorporating enzymatic constraints." *Molecular systems biology*, 13(8),
+# p.935.
 #
 # The analysis method and implementation in COBREXA is principially similar to
-# [sMOMENT](14_smoment), but GECKO is able to process and represent much larger scale
-# of the constraints -- mainly, it supports multiple isozymes for each
-# reaction, and the isozymes can be grouped into "enzyme mass groups" to
+# [sMOMENT](14_smoment.md), but GECKO is able to process and represent much
+# larger scale of the constraints -- mainly, it supports multiple isozymes for
+# each reaction, and the isozymes can be grouped into "enzyme mass groups" to
 # simplify interpretation of data from proteomics.
 
 # For demonstration, we will generate artificial random data in a way similar
-# to the [sMOMENT example](14_smoment):
+# to the [sMOMENT example](14_smoment.md):
 
 !isfile("e_coli_core.json") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")

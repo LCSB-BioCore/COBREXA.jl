@@ -29,10 +29,6 @@ making small changes to the model using the modifications system, with
 functions such as [`with_added_reactions`](@ref) and
 [`with_changed_bound`](@ref).
 
-!!! tip "Notebook available"
-    A better example of using a custom model structure is available
-    [in a separate notebook](../notebooks/8_custom_model.md).
-
 ## Writing the generic accessors
 
 Let's write a data structure that represents a very small model that contains N

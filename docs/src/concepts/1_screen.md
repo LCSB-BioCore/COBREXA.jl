@@ -127,10 +127,6 @@ collect(zip(
 This may be easily used for e.g. scrutinizing all possible reaction pairs, to
 find the ones that are redundant and not.
 
-!!! tip "Notebook available"
-    A notebook is available that demonstrates
-    [the screening on a larger scale](../notebooks/6_screening.md).
-
 There are many other variant "specifications" to choose from. You may use
 [`with_added_reactions`](@ref), [`with_removed_reactions`](@ref),
 [`with_removed_metabolites`](@ref), and others. Function reference contains a
