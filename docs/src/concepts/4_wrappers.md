@@ -113,7 +113,7 @@ function COBREXA.bounds(x::LeakyModel)
 end
 ```
 
-To make the wrapper complete and consistent, we also have to modify the 
+To make the wrapper complete and consistent, we also have to modify the
 accessors that depend on correct sizes of the model items:
 
 ```julia

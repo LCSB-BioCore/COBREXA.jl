@@ -27,7 +27,7 @@ convert it to the small serialized form:
 model = load_model(...)
 # ... prepare the model ...
 
-cachefile = tempname(".") 
+cachefile = tempname(".")
 sm = serialize_model(model, cachefile)
 ```
 
