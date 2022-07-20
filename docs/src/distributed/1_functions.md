@@ -22,7 +22,7 @@ You may run your analyses in parallel to gain speed-ups. The usual workflow in
    "as usual".
 
 Specific documentation is available about [running parallel analysis
-locally](TODO) and [running distributed analysis in HPC clusters](TODO).
+locally](2_parallel.md) and [running distributed analysis in HPC clusters](3_slurm.md).
 
 ## Functions that support parallelization
 
@@ -40,10 +40,12 @@ Notably, the screening functions are reused to run many other kinds of analyses
 which, in turn, inherit the parallelizability. This includes a wide range of
 functionality, including analyses such as:
 
-- [single and multiple gene deletions](TODO) (and other genetic modifications),
-- [modifications of the reaction spectrum](TODO) (e.g., disabling reactions)
+- [single and multiple gene deletions](../examples/07_gene_deletion.md) (and other
+  genetic modifications),
+- [modifications of the reaction
+  spectrum](../examples/07_restricting_reactions.md) (e.g., disabling reactions)
 - advanced envelope-scanning analyses,
-- [growth media exploration](TODO) (e.g., metabolite depletion)
+- [growth media exploration](../examples/11_growth.md) (e.g., metabolite depletion)
 
 ## Mitigating parallel inefficiencies
 
@@ -65,9 +67,10 @@ that reduce the parallel efficiency, which can be summarized as follows:
   round-trip-time to the worker processes. Do not use unnecessary
   parallelization for small tasks.
 - Transferring large amounts of data among workers may hamper parallel
-  efficiency. Use [the system of model variants](TODO) to avoid transferring
-  many similar models to the workers, and [model serialization
-  functionality](TODO) to quickly distribute share large models to the workers.
+  efficiency. Use [the system of model variants](../concepts/1_screen.md) to avoid
+  transferring many similar models to the workers, and [model serialization
+  functionality](4_serialized.md) to quickly distribute share large models to the
+  workers.
 
 !!! note "Cost of the distribution and parallelization overhead"
     Before allocating extra resources into the distributed execution, always

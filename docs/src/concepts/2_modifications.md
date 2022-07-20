@@ -23,7 +23,7 @@ the semantics of the model or erase the previous changes by carelessly adding
 the modifications.
 
 Here, we show how to construct the modifications. Their semantics is similar to
-hte [variant-generating functions](TODO), which receive a model (of type
+the [variant-generating functions](1_screen.md), which receive a model (of type
 [`MetabolicModel`](@ref)), and are expected to create another (modified) model.
 Contrary to that, modifications receive both the [`MetabolicModel`](@ref) and a
 JuMP model structure, and are expected to cause a side effect on the latter.

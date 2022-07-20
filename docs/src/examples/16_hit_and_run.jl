@@ -3,7 +3,7 @@
 # Sampling the feasible space of the model allows you to gain a realistic
 # insight into the distribution of the flow and its probabilistic nature, often
 # better describing the variance and correlations of the possible fluxes better
-# (but more approximately) than e.g. [flux variability analysis](TODO).
+# (but more approximately) than e.g. [flux variability analysis](06_fva.md).
 
 # COBREXA supports a variant of hit-and-run sampling adjusted to the
 # complexities of metabolic models; in particular, it implements a version
@@ -53,8 +53,8 @@ samples = affine_hit_and_run(model, warmup_points, sample_iters = 201:210, chain
 #md # !!! tip "Parallelization"
 #md #     Both procedures used for sampling in this example
 #md #     ([`warmup_from_variability`](@ref), [`affine_hit_and_run`](@ref)) can be
-#md #     effectively parallelized by adding `workers=` parameter, as demonstrated
-#md #     in [other examples](TODO). Due to the nature of the algorithm, parallelization
+#md #     effectively parallelized by adding `workers=` parameter, as summarized
+#md #     in [the documentation](../distributed/1_functions.md). Due to the nature of the algorithm, parallelization
 #md #     of the sampling requires at least 1 chain per worker.
 
 # ## Visualizing the samples

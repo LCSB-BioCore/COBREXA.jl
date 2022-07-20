@@ -4,7 +4,7 @@
 # core model.
 
 # As usual, it is not already present, download the model and load the required
-# packages. We picked the GLPK solver, but [others may work as well](TODO):
+# packages. We picked the GLPK solver, but others may work as well:
 
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
@@ -25,7 +25,8 @@ flux_variability_analysis(model, GLPK.Optimizer; bounds = objective_bounds(0.99)
 #
 # A dictionary-returning variant in [`flux_variability_analysis_dict`](@ref),
 # returns the result in a slightly more structured way. At the same time, we
-# can specify additional [modifications](TODO) to be applied to the model:
+# can specify additional [modifications](../concepts/2_modifications.md) to be
+# applied to the model:
 
 min_fluxes, max_fluxes = flux_variability_analysis_dict(
     model,

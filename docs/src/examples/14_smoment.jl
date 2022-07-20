@@ -89,11 +89,12 @@ flux_balance_analysis_dict(smoment_model, GLPK.Optimizer)
 # reactions are indeed split in the model! The underlying mechanism is provided
 # by [`reaction_flux`](@ref) accessor.)
 
-# [Variability](TODO) of the sMOMENT model can be explored as such:
+# [Variability](06_fva.md) of the sMOMENT model can be explored as such:
 
 flux_variability_analysis(smoment_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))
 
-# ...and a sMOMENT model sample can be obtained [as usual with sampling](TODO):
+# ...and a sMOMENT model sample can be obtained [as usual with
+# sampling](16_hit_and_run.md):
 
 (
     affine_hit_and_run(

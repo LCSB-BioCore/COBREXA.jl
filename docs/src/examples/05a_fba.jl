@@ -47,6 +47,3 @@ flux_balance_analysis_dict(model, Tulip.Optimizer)
 
 using GLPK
 flux_balance_analysis_dict(model, GLPK.Optimizer)
-
-# An overview of solver properties relevant for COBREXA.jl can be [found
-# here](TODO).

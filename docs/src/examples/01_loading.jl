@@ -64,10 +64,10 @@ reactions(mat_model)[1:5]
 
 reactions(json_model)[1:5]
 
-# You can use the [generic accessors](TODO) to gather more information about
-# the model contents, [convert the models](TODO) into formats more suitable for
-# hands-on processing, and [export them](TODO) back to disk after the
+# You can use the [generic accessors](03_exploring.md) to gather more information about
+# the model contents, [convert the models](02_convert_save.md) into formats more suitable for
+# hands-on processing, and export them back to disk after the
 # modification.
 #
-# All model types can be directly [used in analysis functions](TODO), such as
+# All model types can be directly [used in analysis functions](05a_fba.md), such as
 # [`flux_balance_analysis`](@ref).

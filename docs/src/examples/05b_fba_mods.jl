@@ -14,12 +14,12 @@ using COBREXA, GLPK, Tulip
 
 model = load_model("e_coli_core.xml")
 
-# `COBREXA.jl` supports [many modifications](TODO), which include changing
-# objective sense, optimizer attributes, flux constraints, optimization
-# objective, reaction and gene knockouts, and others. These modifications are
-# applied to the optimization built within the supplied optimizer (in this case
-# GLPK) in order as they are specified. User needs to manually ensure that the
-# modification ordering is sensible.
+# `COBREXA.jl` supports [many modifications](../concepts/2_modifications.md),
+# which include changing objective sense, optimizer attributes, flux
+# constraints, optimization objective, reaction and gene knockouts, and others.
+# These modifications are applied to the optimization built within the supplied
+# optimizer (in this case GLPK) in order as they are specified. User needs to
+# manually ensure that the modification ordering is sensible.
 
 # The following example applies multiple different (although partially
 # nonsential) modifications to the *E.  Coli* core model:

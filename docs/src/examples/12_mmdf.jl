@@ -113,7 +113,7 @@ reaction_standard_gibbs_free_energies = Dict(
 # solution that is used as a reference.
 #
 # We can generate a well-suited reference solution using e.g. the [loopless
-# FBA](TODO):
+# FBA](09_loopless.md):
 
 flux_solution = flux_balance_analysis_dict(
     model,

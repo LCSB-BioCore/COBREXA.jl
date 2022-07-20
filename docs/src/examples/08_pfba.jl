@@ -30,11 +30,11 @@ model = load_model("e_coli_core.xml")
 #md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
 #md #       require less user engagement.
 
-# Running of basic pFBA is perfectly analogous to running of [FBA](TODO) and
-# other analyses. We add several modifications that improve the solution (using
-# functions [`silence`](@ref), and [`change_optimizer_attribute`](@ref)), and
-# fix the glucose exchange (using [`change_constraint`](@ref)) in order to get
-# a more reasonable result:
+# Running of basic pFBA is perfectly analogous to running of [FBA](05a_fba.md)
+# and other analyses. We add several modifications that improve the solution
+# (using functions [`silence`](@ref), and
+# [`change_optimizer_attribute`](@ref)), and fix the glucose exchange (using
+# [`change_constraint`](@ref)) in order to get a more reasonable result:
 
 fluxes = parsimonious_flux_balance_analysis_dict(
     model,

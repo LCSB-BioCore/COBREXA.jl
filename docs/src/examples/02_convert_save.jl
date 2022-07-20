@@ -53,8 +53,8 @@ t = @elapsed deserialize("myModel.stdmodel")
 
 # ## Converting and saving a modified model
 
-# To modify the models easily, it is useful to convert them to [a format that
-# simplifies this modification](TODO), such as [`CoreModel`](@ref) or
+# To modify the models easily, it is useful to convert them to a format that
+# simplifies this modification, such as [`CoreModel`](@ref) or
 # [`StandardModel`](@ref):
 
 sm = convert(StandardModel, sbml_model)
@@ -68,7 +68,7 @@ sm = load_model(StandardModel, "e_coli_core.json")
 
 sm.reactions["PFK"].ub = 10.0
 
-# After [possibly applying more modifications](TODO), you can again save the
+# After [possibly applying more modifications](04_standardmodel.md), you can again save the
 # modified model in a desirable exchange format:
 
 save_model(sm, "modified_e_coli.json")

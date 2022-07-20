@@ -71,7 +71,8 @@ original_flux["BIOMASS_Ecoli_core_w_GAM"], restricted_flux["BIOMASS_Ecoli_core_w
 
 running_reactions = [(rid, x) for (rid, x) in original_flux if abs(x) > 1e-3]
 
-# ...and choke these reactions to half that flux, computing the relative loss of the biomass production::
+# ...and choke these reactions to half that flux, computing the relative loss
+# of the biomass production::
 
 screen(
     model,
@@ -136,5 +137,5 @@ ax.yticklabelalign = (:right, :center)
 f
 
 # Remember that [`screen`](@ref) can be parallelized just [by supplying worker
-# IDs](TODO). Use that to gain significant speedup with analyses of larger
-# models.
+# IDs](../distributed/1_functions.md). Use that to gain significant speedup
+# with analyses of larger models.
