@@ -27,7 +27,7 @@ optmodel = minimize_metabolic_adjustment(
     model,
     flux_ref,
     Gurobi.Optimizer;
-    modifications = [change_constraint("PFL"; lb=0, ub=0)], # find flux of mutant that is closest to the wild type (reference) model
+    modifications = [change_constraint("PFL"; lower_bound=0, upper_bound=0)], # find flux of mutant that is closest to the wild type (reference) model
     )
 value.(solution[:x])  # extract the flux from the optimizer
 ```

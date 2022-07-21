@@ -155,8 +155,8 @@ remove_gene!(model::StandardModel, gid::String; knockout_reactions::Bool = false
 
 
 @_change_bounds_fn StandardModel String inplace begin
-    isnothing(lower) || (model.reactions[rxn_id].lb = lower)
-    isnothing(upper) || (model.reactions[rxn_id].ub = upper)
+    isnothing(lower) || (model.reactions[rxn_id].lower_bound = lower)
+    isnothing(upper) || (model.reactions[rxn_id].upper_bound = upper)
     nothing
 end
 
