@@ -143,11 +143,12 @@ Return the stoichiometry of reaction with ID `rid`.
 """
 function reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
     s = Dict{String,Float64}()
-    for (mid, x) in m.sbml.reactions[rid].reactants
-        s[mid] = get(s, mid, 0.0) - x
+    default1(x) = isnothing(x) ? 1 : x
+    for sr in m.sbml.reactions[rid].reactants
+        s[sr.species] = get(s, sr.species, 0.0) - default1(sr.stoichiometry)
     end
-    for (mid, x) in m.sbml.reactions[rid].products
-        s[mid] = get(s, mid, 0.0) + x
+    for sr in m.sbml.reactions[rid].products
+        s[sr.species] = get(s, sr.species, 0.0) + default1(sr.stoichiometry)
     end
     return s
 end
@@ -211,14 +212,22 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             reactions = Dict(
                 rid => SBML.Reaction(
                     name = reaction_name(mm, rid),
-                    reactants = Dict(
-                        mets[i] => -stoi[i, ri] for
+                    reactants = [
+                        SBML.SpeciesReference(
+                            species = mets[i],
+                            stoichiometry = -stoi[i, ri],
+                            constant = true,
+                        ) for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] <= 0
-                    ),
-                    products = Dict(
-                        mets[i] => stoi[i, ri] for
+                    ],
+                    products = [
+                        SBML.SpeciesReference(
+                            species = mets[i],
+                            stoichiometry = stoi[i, ri],
+                            constant = true,
+                        ) for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] > 0
-                    ),
+                    ],
                     kinetic_parameters = Dict(
                         "LOWER_BOUND" => SBML.Parameter(value = lbs[ri]),
                         "UPPER_BOUND" => SBML.Parameter(value = ubs[ri]),

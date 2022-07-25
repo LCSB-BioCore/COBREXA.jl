@@ -7,10 +7,25 @@
     @test Set(reactions(sbmlm)) == Set(reactions(sbmlm2))
     @test Set(reactions(sbmlm)) == Set(reactions(sm))
     @test Set(metabolites(sbmlm)) == Set(metabolites(sbmlm2))
+    sp(x) = x.species
     @test all([
-        sbmlm.sbml.reactions[i].reactants == sbmlm2.sbml.reactions[i].reactants &&
-        sbmlm.sbml.reactions[i].products == sbmlm2.sbml.reactions[i].products for
-        i in reactions(sbmlm2)
+        issetequal(
+            sp.(sbmlm.sbml.reactions[i].reactants),
+            sp.(sbmlm2.sbml.reactions[i].reactants),
+        ) && issetequal(
+            sp.(sbmlm.sbml.reactions[i].products),
+            sp.(sbmlm2.sbml.reactions[i].products),
+        ) for i in reactions(sbmlm2)
+    ])
+    st(x) = isnothing(x.stoichiometry) ? 1.0 : x.stoichiometry
+    @test all([
+        issetequal(
+            st.(sbmlm.sbml.reactions[i].reactants),
+            st.(sbmlm2.sbml.reactions[i].reactants),
+        ) && issetequal(
+            st.(sbmlm.sbml.reactions[i].products),
+            st.(sbmlm2.sbml.reactions[i].products),
+        ) for i in reactions(sbmlm2)
     ])
 end
 
