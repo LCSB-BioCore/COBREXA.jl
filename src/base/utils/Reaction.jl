@@ -12,7 +12,7 @@ See also: [`reaction_mass_balanced`](@ref)
 function check_duplicate_reaction(
     crxn::Reaction,
     rxns::OrderedDict{String,Reaction};
-    only_metabolites=true
+    only_metabolites = true,
 )
     for (k, rxn) in rxns
         if rxn.id != crxn.id # skip if same ID
@@ -120,7 +120,7 @@ julia> stoichiometry_string(req; format_id = x -> x[1:end-2])
 "coa + pyr = for + accoa"
 ```
 """
-function stoichiometry_string(req; format_id=x -> x)
+function stoichiometry_string(req; format_id = x -> x)
     count_prefix(n) = abs(n) == 1 ? "" : string(abs(n), " ")
     substrates =
         join((string(count_prefix(n), format_id(met)) for (met, n) in req if n < 0), " + ")

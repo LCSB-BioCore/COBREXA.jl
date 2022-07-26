@@ -126,9 +126,10 @@ function _sbml_export_annotation(annotation)::Maybe{String}
     if isnothing(annotation) || isempty(annotation)
         nothing
     elseif length(annotation) != 1 || first(annotation).first != ""
-        @_io_log @warn "Possible data loss: annotation cannot be exported to SBML" annotation
+        @_io_log @warn "Possible data loss: multiple annotations converted to text for SBML" annotation
         join(["$k: $v" for (k, v) in annotation], "\n")
     else
+        @_io_log @warn "Possible data loss: trying to represent annotation in SBML is unlikely to work " annotation
         first(annotation).second
     end
 end
@@ -142,11 +143,12 @@ Return the stoichiometry of reaction with ID `rid`.
 """
 function reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
     s = Dict{String,Float64}()
-    for (mid, x) in m.sbml.reactions[rid].reactants
-        s[mid] = get(s, mid, 0.0) - x
+    default1(x) = isnothing(x) ? 1 : x
+    for sr in m.sbml.reactions[rid].reactants
+        s[sr.species] = get(s, sr.species, 0.0) - default1(sr.stoichiometry)
     end
-    for (mid, x) in m.sbml.reactions[rid].products
-        s[mid] = get(s, mid, 0.0) + x
+    for sr in m.sbml.reactions[rid].products
+        s[sr.species] = get(s, sr.species, 0.0) + default1(sr.stoichiometry)
     end
     return s
 end
@@ -186,18 +188,23 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
     rxns = reactions(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = bounds(mm)
-    comps = _default.("", metabolite_compartment.(Ref(mm), mets))
+    comps = _default.("compartment", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 
     return SBMLModel(
         SBML.Model(
-            compartments = Dict(comp => SBML.Compartment() for comp in compss),
+            compartments = Dict(
+                comp => SBML.Compartment(constant = true) for comp in compss
+            ),
             species = Dict(
                 mid => SBML.Species(
                     name = metabolite_name(mm, mid),
-                    compartment = _default("", comps[mi]),
+                    compartment = _default("compartment", comps[mi]),
                     formula = metabolite_formula(mm, mid),
                     charge = metabolite_charge(mm, mid),
+                    constant = false,
+                    boundary_condition = false,
+                    only_substance_units = false,
                     notes = _sbml_export_notes(metabolite_notes(mm, mid)),
                     annotation = _sbml_export_annotation(metabolite_annotations(mm, mid)),
                 ) for (mi, mid) in enumerate(mets)
@@ -205,18 +212,28 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             reactions = Dict(
                 rid => SBML.Reaction(
                     name = reaction_name(mm, rid),
-                    reactants = Dict(
-                        mets[i] => -stoi[i, ri] for
+                    reactants = [
+                        SBML.SpeciesReference(
+                            species = mets[i],
+                            stoichiometry = -stoi[i, ri],
+                            constant = true,
+                        ) for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] <= 0
-                    ),
-                    products = Dict(
-                        mets[i] => stoi[i, ri] for
+                    ],
+                    products = [
+                        SBML.SpeciesReference(
+                            species = mets[i],
+                            stoichiometry = stoi[i, ri],
+                            constant = true,
+                        ) for
                         i in SparseArrays.nonzeroinds(stoi[:, ri]) if stoi[i, ri] > 0
-                    ),
+                    ],
                     kinetic_parameters = Dict(
                         "LOWER_BOUND" => SBML.Parameter(value = lbs[ri]),
                         "UPPER_BOUND" => SBML.Parameter(value = ubs[ri]),
                     ),
+                    lower_bound = "LOWER_BOUND",
+                    upper_bound = "UPPER_BOUND",
                     gene_product_association = _maybemap(
                         x -> _unparse_grr(SBML.GeneProductAssociation, x),
                         reaction_gene_association(mm, rid),
@@ -228,13 +245,18 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             ),
             gene_products = Dict(
                 gid => SBML.GeneProduct(
+                    label = gid,
                     name = gene_name(mm, gid),
                     notes = _sbml_export_notes(gene_notes(mm, gid)),
                     annotation = _sbml_export_annotation(gene_annotations(mm, gid)),
                 ) for gid in genes(mm)
             ),
-            objective = Dict(
-                rid => oc for (rid, oc) in zip(rxns, objective(mm)) if oc != 0
+            active_objective = "objective",
+            objectives = Dict(
+                "objective" => SBML.Objective(
+                    "maximize",
+                    Dict(rid => oc for (rid, oc) in zip(rxns, objective(mm)) if oc != 0),
+                ),
             ),
         ),
     )
