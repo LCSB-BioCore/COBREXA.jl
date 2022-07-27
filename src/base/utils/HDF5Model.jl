@@ -9,7 +9,7 @@ function h5_read_sparse(::Type{SparseVector}, g::HDF5.Group)
     n = read(g["n"])
     nzind = HDF5.readmmap(g["nzind"])
     nzval = HDF5.readmmap(g["nzval"])
-    SparseVector{eltype(nzval), eltype(nzind)}(n, nzind, nzval)
+    SparseVector{eltype(nzval),eltype(nzind)}(n, nzind, nzval)
 end
 
 function h5_write_sparse(g::HDF5.Group, m::SparseMatrixCSC)
@@ -26,5 +26,5 @@ function h5_read_sparse(::Type{SparseMatrixCSC}, g::HDF5.Group)
     colptr = HDF5.readmmap(g["colptr"])
     rowval = HDF5.readmmap(g["rowval"])
     nzval = HDF5.readmmap(g["nzval"])
-    SparseMatrixCSC{eltype(nzval), eltype(colptr)}(m, n, colptr, rowval, nzval)
+    SparseMatrixCSC{eltype(nzval),eltype(colptr)}(m, n, colptr, rowval, nzval)
 end

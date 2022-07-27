@@ -41,7 +41,6 @@ opened for writing again.
 function Base.close(model::HDF5Model)
     if !isnothing(model.h5)
         close(model.h5)
-        model.h5=nothing
+        model.h5 = nothing
     end
 end
-        
