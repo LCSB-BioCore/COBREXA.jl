@@ -37,6 +37,7 @@ end
 
 function reactions(model::HDF5Model)::Vector{String}
     precache!(model)
+    # TODO is there any reasonable method to mmap strings from HDF5?
     read(model.h5["reactions"])
 end
 
@@ -50,8 +51,6 @@ function metabolites(model::HDF5Model)::Vector{String}
     read(model.h5["metabolites"])
 end
 
-#TODO this needs mmap!
-
 function stoichiometry(model::HDF5Model)::SparseMat
     precache!(model)
     h5_read_sparse(SparseMat, model.h5["stoichiometry"])
@@ -59,7 +58,7 @@ end
 
 function bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
     precache!(model)
-    (read(model.h5["lower_bounds"]), read(model.h5["upper_bounds"]))
+    (HDF5.readmmap(model.h5["lower_bounds"]), HDF5.readmmap(model.h5["upper_bounds"]))
 end
 
 function balance(model::HDF5Model)::SparseVec
