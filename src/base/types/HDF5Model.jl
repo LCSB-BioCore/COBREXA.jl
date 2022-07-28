@@ -4,18 +4,17 @@
 
 A model that is stored in HDF5 format. The model data is never really pulled
 into memory, but instead mmap'ed as directly as possible into the Julia
-structures.  This makes reading the `HDF5Model`s extremely fast.
+structures.  This makes reading the `HDF5Model`s extremely fast, at the same
+time the (uncached) `HDF5Model`s can be sent around efficiently among
+distributed nodes just like [`Serialized`](@ref) models, provided the nodes
+share a common storage.
 
-TODO: it can be sent around like SerializedModel.
-
-TODO: decide how to create the models
-- there should be save_model support
-- there could be explicit function like `serialize_model`, like `hdf5size_model`? :D
-- explicitly say you can't convert to HDF5model.
-- explicitly say this model MUST be backed by the disk storage
-
-TODO: decide if this should be able to hold eeeeeeeeverything or just the
-CoreModel-style computation-relevant parts.
+All HDF5Models must have the backing disk storage. To create one, use
+[`save_h5_model`](@ref) or [`save_model`](@ref) with `.h5` file extension. To
+create a temporary model that behaves like a model "in memory", save it to a
+temporary file. For related reasons, you can not use `convert` models to
+`HDF5Model` format, because the conversion would impliy having the model saved
+somewhere.
 """
 mutable struct HDF5Model <: MetabolicModel
     h5::Maybe{HDF5.File}
