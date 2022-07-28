@@ -30,7 +30,7 @@ function save_h5_model(model::MetabolicModel, file_name::String)::HDF5Model
         write(f, "reactions", rxns[rxnp])
         h5_write_sparse(create_group(f, "balance"), balance(model)[metp])
         h5_write_sparse(create_group(f, "objective"), objective(model)[rxnp])
-        h5_write_sparse(create_group(f, "stoichiometry"), stoichiometry(model)[metp,rxnp])
+        h5_write_sparse(create_group(f, "stoichiometry"), stoichiometry(model)[metp, rxnp])
         let (lbs, ubs) = bounds(model)
             write(f, "lower_bounds", lbs[rxnp])
             write(f, "upper_bounds", ubs[rxnp])
