@@ -12,6 +12,7 @@ TODO: decide how to create the models
 - there should be save_model support
 - there could be explicit function like `serialize_model`, like `hdf5size_model`? :D
 - explicitly say you can't convert to HDF5model.
+- explicitly say this model MUST be backed by the disk storage
 
 TODO: decide if this should be able to hold eeeeeeeeverything or just the
 CoreModel-style computation-relevant parts.

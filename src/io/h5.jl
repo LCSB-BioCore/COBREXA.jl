@@ -11,32 +11,40 @@ function load_h5_model(file_name::String)::HDF5Model
 end
 
 """
-    save_h5_model(model::MetabolicModel, file_name::String)
+    save_h5_model(model::MetabolicModel, file_name::String)::HDF5Model
 
-
+Converts and writes a metabolic model to disk in the HDF5 format.
 
 Additionally returns an (uncached) [`HDF5Model`](@ref) that represents the
-contents of the saved file.
+contents of the saved file. Because all HDF5-based models need to be backed by
+disk storage, writing the data to disk (using this function) is the only way to
+make new HDF5 models.
 """
 function save_h5_model(model::MetabolicModel, file_name::String)::HDF5Model
+    rxns = reactions(model)
+    rxnp = sortperm(rxns)
+    mets = metabolites(model)
+    metp = sortperm(mets)
     h5open(file_name, "w") do f
-        write(f, "metabolites", metabolites(model))
-        write(f, "reactions", reactions(model))
-        h5_write_sparse(create_group(f, "balance"), balance(model))
-        h5_write_sparse(create_group(f, "objective"), objective(model))
-        h5_write_sparse(create_group(f, "stoichiometry"), stoichiometry(model))
+        write(f, "metabolites", mets[metp])
+        write(f, "reactions", rxns[rxnp])
+        h5_write_sparse(create_group(f, "balance"), balance(model)[metp])
+        h5_write_sparse(create_group(f, "objective"), objective(model)[rxnp])
+        h5_write_sparse(create_group(f, "stoichiometry"), stoichiometry(model)[metp,rxnp])
         let (lbs, ubs) = bounds(model)
-            write(f, "lower_bounds", lbs)
-            write(f, "upper_bounds", ubs)
+            write(f, "lower_bounds", lbs[rxnp])
+            write(f, "upper_bounds", ubs[rxnp])
         end
     end
+    # TODO: genes, grrs, compartments. Perhaps chemistry and others?
+    HDF5Model(file_name)
 end
 
 """
     Base.close(model::HDF5Model)
 
-Close (and un-cache) the [`HDF5Model`](@ref) data. This allows the file to be
-opened for writing again.
+Close (and un-cache) the [`HDF5Model`](@ref) data. This allows the associated
+file to be opened for writing again.
 """
 function Base.close(model::HDF5Model)
     if !isnothing(model.h5)
