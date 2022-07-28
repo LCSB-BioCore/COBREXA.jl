@@ -17,6 +17,7 @@ docs/site/
 *.mat
 *.xml
 *.json
+*.h5
 *.jl.*.cov
 .*.swp
 
