@@ -53,7 +53,7 @@ end
 
 function stoichiometry(model::HDF5Model)::SparseMat
     precache!(model)
-    h5_read_sparse(SparseMat, model.h5["stoichiometry"])
+    _h5_read_sparse(SparseMat, model.h5["stoichiometry"])
 end
 
 function bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
@@ -63,10 +63,10 @@ end
 
 function balance(model::HDF5Model)::SparseVec
     precache!(model)
-    h5_read_sparse(SparseVec, model.h5["balance"])
+    _h5_read_sparse(SparseVec, model.h5["balance"])
 end
 
 function objective(model::HDF5Model)::SparseVec
     precache!(model)
-    h5_read_sparse(SparseVec, model.h5["objective"])
+    _h5_read_sparse(SparseVec, model.h5["objective"])
 end
