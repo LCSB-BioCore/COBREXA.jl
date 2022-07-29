@@ -1,4 +1,4 @@
-# # Finding balance and variability of constraint-based models
+# # FBA with crowding
 
 # Here we will use [`flux_balance_analysis`](@ref) to explore the metabolism of
 # the toy *E. coli* model that additionally respects common protein crowding

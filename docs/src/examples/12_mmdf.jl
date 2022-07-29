@@ -163,8 +163,8 @@ sol.mmdf
 #md #       the MMDF will likely only have a zero solution.
 
 # Finally, we show how the concentrations are optimized to ensure that each
-# reach proceeds "down hill" (ΔᵣG < 0). We can explore the glycolysis pathway
-# reactions:
+# reacction proceeds "down the hill" (ΔᵣG < 0). We can explore the glycolysis
+# pathway reactions:
 
 glycolysis_pathway =
     ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"]
@@ -181,7 +181,7 @@ Dict(
 )
 
 # The solution optimized with [`max_min_driving_force`](@ref) is
-# thermodynamically more viable:
+# thermodynamically viable:
 Dict(rid => sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway)
 
 #md # !!! tip "Thermodynamic variability"

@@ -51,11 +51,24 @@ t = @elapsed deserialize("myModel.stdmodel")
 # you to minimize this overhead, and scales well to tens of millions of
 # reactions.
 
+#md # !!! warning "Compatibility"
+#md       The format of serialized models may change between Julia versions.
+#md       In particular, never use the the serialized format for publishing models -- others will have hard time finding the correct Julia version to open them.
+#md       Similarly, never use serialized models for long-term storage -- your future self will have hard time finding the historic Julia version that was used to write the data.
+
 # ## Converting and saving a modified model
 
 # To modify the models easily, it is useful to convert them to a format that
-# simplifies this modification, such as [`CoreModel`](@ref) or
-# [`StandardModel`](@ref):
+# simplifies this modification. You may use e.g. [`CoreModel`](@ref) that
+# exposes the usual matrix-and-vectors structure of models as used in MATLAB
+# COBRA implementations, and [`StandardModel`](@ref) that contains structures,
+# lists and dictionaries of model contents, as typical in Python COBRA
+# implementations. The object-oriented nature of [`StandardModel`](@ref) is
+# better for making small modifications that utilize known identifiers of model
+# contents.
+#
+# Conversion of any model to [`StandardModel`](@ref) can be performed using the
+# standard Julia `convert`:
 
 sm = convert(StandardModel, sbml_model)
 
@@ -73,3 +86,6 @@ sm.reactions["PFK"].ub = 10.0
 
 save_model(sm, "modified_e_coli.json")
 save_model(sm, "modified_e_coli.mat")
+
+# More information about [`StandardModel`](@ref) internals is available [in a
+# separate example](04_standardmodel.md).

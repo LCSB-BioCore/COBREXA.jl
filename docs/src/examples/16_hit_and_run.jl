@@ -41,12 +41,12 @@ samples = affine_hit_and_run(model, warmup_points)
 # in the same order with rows as before. To get a different sample, you can
 # tune the parameters the function. `sample_iters` allows you to specify the
 # iterations at which you want the current sample to be collected and reported
-# -- by default, that is done 5 times on each 100th iteration, but you can also
-# collect the samples in 5 iterations in a row after the 500th iteration
-# passes, as below. Similarly, to avoid possible degeneracy, you can choose to
-# run more hit-and-run batch chains than 1, using the `chains` parameters. The
-# total number of points collected is the number of points in warmup times the
-# number of sample-collecting iterations times the number of chains.
+# -- by default, that is done 5 times on each 100th iteration. In the example
+# below, we catch the samples in 10 iterations right after the 200th iteration
+# passed.  Similarly, to avoid possible degeneracy, you can choose to run more
+# hit-and-run batch chains than 1, using the `chains` parameters. The total
+# number of points collected is the number of points in warmup times the number
+# of sample-collecting iterations times the number of chains.
 
 samples = affine_hit_and_run(model, warmup_points, sample_iters = 201:210, chains = 2)
 

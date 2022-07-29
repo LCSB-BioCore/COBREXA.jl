@@ -94,7 +94,7 @@ model.reactions[random_reaction_id]
 #md #       Combining models that use different namespaces requires care.
 #md #       For example, in some models the water exchange reaction is called
 #md #       `EX_h2o_e`, while in others it is called `R_EX_h2o_s`. This needs to
-#md #       manually addressed (for now) to prevent duplicate, e.g. reactions,
+#md #       manually addressed to prevent duplicates, e.g. reactions,
 #md #       from being added.
 
 # ## Checking the internals of `StandardModel`s: `annotation_index`

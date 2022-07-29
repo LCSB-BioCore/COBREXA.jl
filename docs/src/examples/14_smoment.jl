@@ -42,8 +42,8 @@ rxns = filter(
 )
 
 # The information about each enzyme and its capabilities is stored in an
-# [`Isozyme`](@ref) structure. For simplicity, we shall blatantly ignore much
-# of the information about the multiplicity of required gene products and
+# [`Isozyme`](@ref) structure. For simplicity, sMOMENT ignores much of the
+# information about the multiplicity of required gene products and
 # other.
 
 rxn_isozymes = Dict(
@@ -54,7 +54,9 @@ rxn_isozymes = Dict(
     ) for rxn in rxns
 )
 
-
+# In case some of the reactions are missing in `rxn_isozymes`, sMOMENT simply
+# ignores them.
+#
 # Once the data is gathered, we create a model that wraps the original model
 # with additional sMOMENT structure:
 

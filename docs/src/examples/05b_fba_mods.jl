@@ -21,8 +21,8 @@ model = load_model("e_coli_core.xml")
 # optimizer (in this case GLPK) in order as they are specified. User needs to
 # manually ensure that the modification ordering is sensible.
 
-# The following example applies multiple different (although partially
-# nonsential) modifications to the *E.  Coli* core model:
+# The following example applies multiple different modifications to the *E.
+# coli* core model:
 
 fluxes = flux_balance_analysis_dict(
     model,

@@ -6,8 +6,8 @@
 #### Model variant processing
 
 The main feature of COBREXA.jl is the ability to easily specify and process
-many analyses in parallel. To demonstrate, let's see how the organism would perform if
-some reactions were disabled independently:
+many analyses in parallel. To demonstrate, let's see how the organism would
+perform if some reactions were disabled independently:
 
 ```julia
 # convert to a model type that is efficient to modify

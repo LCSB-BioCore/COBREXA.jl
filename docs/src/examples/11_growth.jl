@@ -3,10 +3,10 @@
 # Nutrient availability is a major driving factor for growth of microorganisms
 # and energy production in cells. Here, we demonstrate two main ways to examine
 # the nutrient consumption with COBREXA.jl: Simulating deficiency of nutrients,
-# and finding the minimal amount of nutrients required to support certain model
+# and finding the minimal flux of nutrients required to support certain model
 # output.
 
-# As always, we work on the toy model of *E. Coli*:
+# As always, we work on the toy model of *E. coli*:
 
 using COBREXA, GLPK
 
@@ -104,16 +104,16 @@ screen(
 
 #md # !!! tip "Screening can be easily parallelized"
 #md #     To speed up larger analyses, remember that execution of [`screen`](@ref)
-#md #     can be parallelized to gain speedup. Parallelization in `screen` is optimized to avoid
+#md #     can be [parallelized to gain speedup](../distributed/1_functions.md). Parallelization in `screen` is optimized to avoid
 #md #     unnecessary data transfers that may occur when using trivial `pmap`.
 
-# ## What is the minimal total amount of nutrients for my model to grow?
+# ## What is the minimal flux of nutrients for my model to grow?
 
-# You can compute the minimal amount (e.g., mass) of required nutrients by
-# constraining the model growth to a desired lower bound, and then optimize the
-# model with an objective that minimizes intake of all exchanges (i.e., given
-# the directionality convention of the exchanges, actually maximizes the flux
-# through all exchange reactions along their direction).
+# You can compute the minimal flux (i.e., mass per time) of required nutrients
+# by constraining the model growth to a desired lower bound, and then optimize
+# the model with an objective that minimizes intake of all exchanges (i.e.,
+# given the directionality convention of the exchanges, actually maximizes the
+# flux through all exchange reactions along their direction).
 
 model_with_bounded_production = change_bound(model, biomass, lower = 0.1) #minimum required growth
 

@@ -10,7 +10,7 @@
 # incorporating enzymatic constraints." *Molecular systems biology*, 13(8),
 # p.935.
 #
-# The analysis method and implementation in COBREXA is principially similar to
+# The analysis method and implementation in COBREXA is similar to
 # [sMOMENT](14_smoment.md), but GECKO is able to process and represent much
 # larger scale of the constraints -- mainly, it supports multiple isozymes for
 # each reaction, and the isozymes can be grouped into "enzyme mass groups" to
@@ -39,7 +39,9 @@ rxns = filter(
     reactions(model),
 )
 
-# The main difference from sMOMENT comes from allowing multiple isozymes per reaction:
+# The main difference from sMOMENT comes from allowing multiple isozymes per
+# reaction (reactions with missing isozyme informations will be ignored,
+# leaving them as-is):
 rxn_isozymes = Dict(
     rxn => [
         Isozyme(
@@ -50,6 +52,7 @@ rxn_isozymes = Dict(
     ] for rxn in rxns
 )
 
+# We also construct similar bounds for total gene product amounts:
 gene_product_bounds = Dict(genes(model) .=> Ref((0.0, 10.0)))
 
 # With this, the construction of the model constrained by all enzymatic
@@ -63,6 +66,9 @@ gecko_model =
         gene_product_mass_group = _ -> "uncategorized", # all products belong to the same "uncategorized" category
         gene_product_mass_group_bound = _ -> 100.0, # the total limit of mass in the single category
     )
+
+# (Alternatively, you may use [`make_gecko_model`](@ref), which does the same
+# without piping by `|>`.)
 
 # The stoichiometry and coupling in the gecko model is noticeably more complex;
 # you may notice new "reactions" added that simulate the gene product

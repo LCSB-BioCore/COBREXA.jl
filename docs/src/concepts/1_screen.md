@@ -1,5 +1,5 @@
 
-# Exploring many model variants
+# Screening many model variants
 
 A major goal of COBREXA.jl is to make exploring of many model variants easy and
 fast.
@@ -7,7 +7,7 @@ fast.
 One main concept that can be utilized for doing that is implemented in the
 function [`screen`](@ref), which takes your model, a list of model _variants_
 that you want to explore by some specified _analysis_, and schedules the
-analysis of the model variants parallely on the available distributed workers.
+analysis of the model variants parallelly on the available distributed workers.
 
 In its most basic form, the "screening" may use the slightly simplified variant
 of [`screen`](@ref) that is called [`screen_variants`](@ref), which works as
@@ -176,7 +176,7 @@ with_disabled_oxygen_transport = (model::StandardModel) -> begin
 end
 ```
 
-Finally, the whole definition may be parametrized as a normal function. The
+Finally, the whole definition may be parameterized as a normal function. The
 following variant removes any user-selected reaction:
 
 ```julia

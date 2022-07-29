@@ -3,7 +3,7 @@
 # Here we will use [`flux_variability_analysis`](@ref) to analyze the *E. coli*
 # core model.
 
-# As usual, it is not already present, download the model and load the required
+# As usual, if not already present, download the model and load the required
 # packages. We picked the GLPK solver, but others may work as well:
 
 !isfile("e_coli_core.xml") &&
@@ -15,11 +15,13 @@ model = load_model("e_coli_core.xml")
 
 # The FVA implementation in [`flux_variability_analysis`](@ref) returns
 # maximized and minimized reaction fluxes in a 2-column matrix.
-# The bounds parameter here sets the "gamma" parameter -- the objective
-# function is allowed to vary by around 1% from the optimum found by FBA on the
-# same model:
+# The bounds parameter function here (constructed with
+# [`objective_bounds`](@ref)) sets that the objective value is allowed to vary
+# by 1% from the optimum found by FBA on the same model:
 
 flux_variability_analysis(model, GLPK.Optimizer; bounds = objective_bounds(0.99))
+
+# (You may also use [`gamma_bounds`](@ref).)
 
 # ## Detailed variability analysis with modifications
 #
@@ -61,16 +63,17 @@ max_fluxes["R_EX_ac_e"]["R_EX_co2_e"]
 # this information in a nice overview:
 flux_variability_summary((min_fluxes, max_fluxes))
 
-# ## Customizing the FVA output
+# ## Retrieving details about FVA output
 #
 # Parameter `ret` of [`flux_variability_analysis`](@ref) can be used to extract
 # specific pieces of information from the individual solved (minimized and
 # maximized) optimization problems. Here we show how to extract the value of
-# biomass "growth" along with the minimized/maximized reaction flux:
+# biomass "growth" along with the minimized/maximized reaction flux.
 
-# find the index of biomass reaction in all reactions
+# First, find the index of biomass reaction in all reactions
 biomass_idx = first(indexin(["R_BIOMASS_Ecoli_core_w_GAM"], reactions(model)))
 
+# Now run the FVA:
 vs = flux_variability_analysis(
     model,
     GLPK.Optimizer;

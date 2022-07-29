@@ -8,7 +8,7 @@
 # [`parsimonious_flux_balance_analysis_vec`](@ref) and
 # [`parsimonious_flux_balance_analysis_dict`](@ref)).
 #
-# As usual, we demonstrate the functionality on the *E. Coli* model:
+# As usual, we demonstrate the functionality on the *E. coli* model:
 
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
@@ -17,7 +17,9 @@ using COBREXA, Tulip, OSQP
 
 model = load_model("e_coli_core.xml")
 
-# Because the parsimonious objective is quadratic, we need a proper optimizer.
+# Because the parsimonious objective is quadratic, we need a an optimizer
+# capable of solving quadratic programs.
+#
 # As the simplest choice, we can use
 # [`OSQP.jl`](https://osqp.org/docs/get_started/julia.html), but any any
 # [`JuMP.jl`-supported

@@ -95,7 +95,7 @@ makedocs(
             "Contents" => "distributed.md"
             find_mds("distributed")
         ],
-        "Internals and extensions" => [
+        "Core concepts guide" => [
             "Contents" => "concepts.md"
             find_mds("concepts")
         ],

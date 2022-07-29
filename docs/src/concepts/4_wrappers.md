@@ -15,7 +15,7 @@ to add coupling to an existing [`SMomentModel`](@ref).
 
 As the main benefit of the approach, creating model variants using the wrapper
 approach is usually more efficient than recomputing the models in place. The
-wrappers are thin, and if all values can get computed and materialied only once
+wrappers are thin, and if all values can get computed and materialized only once
 the model data is actually needed, we may save a great amount of computing
 power.
 
@@ -41,7 +41,7 @@ end
 COBREXA.unwrap_model(x::IdentityWrap) = x.mdl
 ```
 
-This is instantly usuable in all analysis functions, although there is no
+This is instantly usable in all analysis functions, although there is no
 actual "new" functionality:
 
 ```julia
@@ -114,13 +114,15 @@ end
 ```
 
 To make the wrapper complete and consistent, we also have to modify the
-accessors that depend on correct sizes of the model items:
+accessors that depend on correct sizes of the model items.
 
 ```julia
 COBREXA.objective(x::LeakyModel) = [objective(x.mdl); 0]
 COBREXA.reaction_flux(x::LeakyModel) = [reaction_flux(x.mdl); zeros(1, n_reactions(x.mdl))]
 COBREXA.coupling(x::LeakyModel) = [coupling(x.mdl) zeros(n_coupling_constraints(x.mdl))]
 ```
+(Among other, we modified the [`reaction_flux`](@ref) so that all analysis
+methods ignore the leak reaction.)
 
 Now, any model can be made to lose some chosen metabolites as follows:
 ```julia

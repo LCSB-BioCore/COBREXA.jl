@@ -25,7 +25,7 @@ model = load_model("e_coli_core.xml")
 # because it is taken as a "default" way to create the lattice by
 # [`objective_envelope`](@ref).
 
-# In short, we can compute the envelope of a single reaction in the *E. Coli*
+# In short, we can compute the envelope of a single reaction in the *E. coli*
 # model as follows:
 
 envelope = objective_envelope(
@@ -34,6 +34,10 @@ envelope = objective_envelope(
     GLPK.Optimizer,
     lattice_args = (ranges = [(-50, 0)],),
 )
+
+# (The named tuple given in `lattice_args` argument is passed to the internal
+# call of [`envelope_lattice`](@ref), giving you an easy way to customize its
+# behavior.)
 
 # The result has 2 fields which can be used to easily plot the envelope. We
 # also need to "fix" the missing values (represented as `nothing`) where the
