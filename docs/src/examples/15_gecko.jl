@@ -82,7 +82,9 @@ opt_model = flux_balance_analysis(gecko_model, GLPK.Optimizer)
 
 flux_sol = flux_dict(gecko_model, opt_model)
 
-gp_concs = gene_product_dict(model, opt_model)
+gp_concs = gene_product_dict(gecko_model, opt_model)
+
+gene_product_mass_group_dict(gecko_model, opt_model)
 
 # Variability:
 
@@ -91,5 +93,3 @@ flux_variability_analysis(gecko_model, GLPK.Optimizer, bounds = gamma_bounds(0.9
 # ...and sampling:
 affine_hit_and_run(gecko_model, warmup_from_variability(gecko_model, GLPK.Optimizer))' *
 reaction_flux(gecko_model)
-
-# See also 
