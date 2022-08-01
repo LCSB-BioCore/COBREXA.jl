@@ -41,10 +41,12 @@ reactions(std)
 
 using InteractiveUtils
 
-[
+accessors = [
     x.name for x in methodswith(MetabolicModel, COBREXA) if
     endswith(String(x.file), "MetabolicModel.jl")
 ]
+
+println.(accessors);
 
 #md # !!! note "Note: Not all accessors may be implemented for all the models"
 #md #       It is possible that not all the accessors are implemented for all the model 
