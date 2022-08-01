@@ -4,7 +4,11 @@
 # the toy *E. coli* model that additionally respects common protein crowding
 # constraints. In particular, the model is limited by the amount of protein
 # required to run certain reactions. If that data is available, the predictions
-# are accordingly more realistic.
+# are accordingly more realistic. See Beg, Qasim K., et al. "Intracellular
+# crowding defines the mode and sequence of substrate uptake by Escherichia coli
+# and constrains its metabolic activity." *Proceedings of the National Academy
+# of Sciences*, 104.31, 2007, (https://doi.org/10.1073/pnas.0609845104) for more
+# details.
 #
 # As usual, the same model modification can be transparently used with many
 # other analysis functions, including [`flux_variability_analysis`](@ref) and

@@ -4,8 +4,8 @@
 # the cell to respect known enzymatic parameters and enzyme mass constraints
 # measured by proteomics and other methods.
 #
-# The original description from sMOMENT is by: Bekiaris, P.S. and Klamt, S.,
-# (2020). "Automatic construction of metabolic models with enzyme constraints.",
+# The original description from sMOMENT is by: Bekiaris, P.S. and Klamt, S., (2020). 
+# "Automatic construction of metabolic models with enzyme constraints.",
 # *BMC bioinformatics*, 21(1), pp.1-13.
 # (https://doi.org/10.1186/s12859-019-3329-9)
 #

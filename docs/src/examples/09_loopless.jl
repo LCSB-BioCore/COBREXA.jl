@@ -2,7 +2,10 @@
 
 # Here we will use [`flux_balance_analysis`](@ref) and
 # [`flux_variability_analysis`](@ref) to analyze a toy model of *E. coli* that
-# is constrained in a way that avoids unnecessary loops in the flux.
+# is constrained in a way that removes all thermodynamically infeasible loops in the flux solution. 
+# For more details about the algorithm, see Schellenberger, Lewis, and, Palsson. "Elimination
+# of thermodynamically infeasible loops in steady-state metabolic models.", *Biophysical
+# journal*, 2011 (https://doi.org/10.1016/j.bpj.2010.12.3707).
 
 # If it is not already present, download the model:
 
