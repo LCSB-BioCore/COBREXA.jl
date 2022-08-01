@@ -5,10 +5,10 @@
 # methods.
 #
 # The original description from GECKO is by: Sánchez, B.J., Zhang, C., Nilsson,
-# A., Lahtvee, P.J., Kerkhoven, E.J. and Nielsen, J., 2017. "Improving the
+# A., Lahtvee, P.J., Kerkhoven, E.J. and Nielsen, J., (2017). "Improving the
 # phenotype predictions of a yeast genome‐scale metabolic model by
 # incorporating enzymatic constraints." *Molecular systems biology*, 13(8),
-# p.935.
+# p.935 (https://doi.org/10.15252/msb.20167411).
 #
 # The analysis method and implementation in COBREXA is similar to
 # [sMOMENT](14_smoment.md), but GECKO is able to process and represent much

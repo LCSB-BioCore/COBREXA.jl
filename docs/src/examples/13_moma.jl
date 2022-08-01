@@ -6,6 +6,11 @@
 # as a gene knockout) that prevents it from metabolizing optimally, but the
 # rest of the metabolism has not yet adjusted to compensate for the change.
 
+# The original description of MOMA is by: Segre, D., Vitkup, D., & Church, G. M.
+# (2002). Analysis of optimality in natural and perturbed metabolic networks.
+# *Proceedings of the National Academy of Sciences*, 99(23), 15112-15117
+# (https://doi.org/10.1073/pnas.232349399).
+
 # As always, let's start with downloading a model.
 
 !isfile("e_coli_core.xml") &&
