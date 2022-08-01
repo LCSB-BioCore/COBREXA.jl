@@ -48,27 +48,40 @@ reactions(std)</code></pre><pre class="documenter-example-output">95-element Vec
  &quot;O2t&quot;
  &quot;PDH&quot;</pre><p>All accessors allow systematic access to information about reactions, stoichiometry, metabolite properties and chemistry, genes, and various model annotations.</p><p>The most notable ones include:</p><ul><li><a href="../../functions/types/#COBREXA.reactions-Tuple{CoreModel}"><code>reactions</code></a>, <a href="../../functions/types/#COBREXA.metabolites-Tuple{CoreModel}"><code>metabolites</code></a> and <a href="../../functions/types/#COBREXA.genes-Tuple{CoreModel}"><code>genes</code></a> return respective vectors of identifiers of reactions, metabolites and genes present in the model,</li><li><a href="../../functions/types/#COBREXA.stoichiometry-Tuple{CoreModel}"><code>stoichiometry</code></a> returns the S matrix</li><li><a href="../../functions/types/#COBREXA.balance-Tuple{CoreModel}"><code>balance</code></a> returns the right-hand vector of the linear model in form <code>Ax=b</code></li><li><a href="../../functions/types/#COBREXA.bounds-Tuple{CoreModel}"><code>bounds</code></a> return lower and upper bounds of reaction rates</li><li><a href="../../functions/types/#COBREXA.metabolite_charge-Tuple{JSONModel, String}"><code>metabolite_charge</code></a> and <a href="../../functions/types/#COBREXA.metabolite_formula-Tuple{JSONModel, String}"><code>metabolite_formula</code></a> return details about metabolites</li><li><a href="../../functions/types/#COBREXA.objective-Tuple{CoreModel}"><code>objective</code></a> returns the objective of the model (usually labeled as <code>c</code>)</li><li><a href="../../functions/types/#COBREXA.reaction_gene_association-Tuple{CoreModel, Int64}"><code>reaction_gene_association</code></a> describes the dependency of a reaction on gene products</li></ul><p>A complete, up-to-date list of accessors can be always generated using <code>methodswith</code>:</p><pre><code class="language-julia">using InteractiveUtils
 
-[
+accessors = [
     x.name for x in methodswith(MetabolicModel, COBREXA) if
     endswith(String(x.file), &quot;MetabolicModel.jl&quot;)
-]</code></pre><pre class="documenter-example-output">32-element Vector{Symbol}:
- :balance
- :bounds
- :coupling
- :coupling_bounds
- :fluxes
- :gene_annotations
- :gene_name
- :gene_notes
- :genes
- :metabolite_annotations
- ⋮
- :reaction_annotations
- :reaction_flux
- :reaction_gene_association
- :reaction_name
- :reaction_notes
- :reaction_stoichiometry
- :reaction_subsystem
- :reactions
- :stoichiometry</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../03_exploring/">« Exploring model contents</a><a class="docs-footer-nextpage" href="../04_core_model/"><code>CoreModel</code> usage »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 1 August 2022 11:40">Monday 1 August 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+]
+
+println.(accessors);</code></pre><pre class="documenter-example-output">balance
+bounds
+coupling
+coupling_bounds
+fluxes
+gene_annotations
+gene_name
+gene_notes
+genes
+metabolite_annotations
+metabolite_charge
+metabolite_compartment
+metabolite_formula
+metabolite_name
+metabolite_notes
+metabolites
+n_coupling_constraints
+n_fluxes
+n_genes
+n_metabolites
+n_reactions
+objective
+precache!
+reaction_annotations
+reaction_flux
+reaction_gene_association
+reaction_name
+reaction_notes
+reaction_stoichiometry
+reaction_subsystem
+reactions
+stoichiometry</pre><div class="admonition is-info"><header class="admonition-header">Note: Not all accessors may be implemented for all the models</header><div class="admonition-body"><p>It is possible that not all the accessors are implemented for all the model   types. If this is the case, usually <code>nothing</code> or an empty data structure is   returned. If you need a specific accessor, just overload the function you require!</p></div></div><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../03_exploring/">« Exploring model contents</a><a class="docs-footer-nextpage" href="../04_core_model/"><code>CoreModel</code> usage »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 1 August 2022 12:45">Monday 1 August 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
