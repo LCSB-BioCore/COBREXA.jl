@@ -4,7 +4,7 @@
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats (with
 # the latter denoting SBML formatted models).
 #
-# We will primarily use the *E. coli* "core" model to demonstrate the utilities
+# We will primarily use the *E. coli*  "core" model to demonstrate the utilities
 # found in `COBREXA`. First, let's download the model in several formats.
 
 ## Downloads the model files if they don't already exist

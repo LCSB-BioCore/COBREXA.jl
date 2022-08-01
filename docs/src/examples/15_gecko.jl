@@ -5,10 +5,10 @@
 # methods.
 #
 # The original description from GECKO is by: Sánchez, B.J., Zhang, C., Nilsson,
-# A., Lahtvee, P.J., Kerkhoven, E.J. and Nielsen, J., 2017. "Improving the
+# A., Lahtvee, P.J., Kerkhoven, E.J. and Nielsen, J., (2017). "Improving the
 # phenotype predictions of a yeast genome‐scale metabolic model by
 # incorporating enzymatic constraints." *Molecular systems biology*, 13(8),
-# p.935.
+# p.935 (https://doi.org/10.15252/msb.20167411).
 #
 # The analysis method and implementation in COBREXA is similar to
 # [sMOMENT](14_smoment.md), but GECKO is able to process and represent much
@@ -80,9 +80,15 @@ gecko_model =
 
 opt_model = flux_balance_analysis(gecko_model, GLPK.Optimizer)
 
+# Get the fluxes
+
 flux_sol = flux_dict(gecko_model, opt_model)
 
+# Get the gene product concentrations
+
 gp_concs = gene_product_dict(gecko_model, opt_model)
+
+# Get the total masses assigned to each mass group
 
 gene_product_mass_group_dict(gecko_model, opt_model)
 

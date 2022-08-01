@@ -4,9 +4,10 @@
 # Here, we use the max-min driving force analysis (MMDF) to find optimal
 # concentrations for the metabolites in glycolysis to ensure that the smallest
 # driving force across all the reactions in the model is as large as possible.
-# The method is described closer by Flamholz, Avi, et al., in "Glycolytic
-# strategy as a tradeoff between energy yield and protein cost.", Proceedings
-# of the National Academy of Sciences 110.24 (2013): 10039-10044.
+# The method is described in more detail by Flamholz, Avi, et al., in
+# "Glycolytic strategy as a tradeoff between energy yield and protein cost.",
+# Proceedings of the National Academy of Sciences 110.24, 2013, 10039-10044
+# (https://doi.org/10.1073/pnas.1215283110).
 
 # We start as usual, with loading models and packages:
 
