@@ -11,6 +11,9 @@
 [docs-img-dev]: https://img.shields.io/badge/docs-latest-0af.svg
 [docs-url-dev]: https://lcsb-biocore.github.io/COBREXA.jl/dev/
 
+[docs-url-quickstart]: https://lcsb-biocore.github.io/COBREXA.jl/stable/quickstart/
+[docs-url-examples]: https://lcsb-biocore.github.io/COBREXA.jl/stable/examples/
+
 [docker-url]: https://hub.docker.com/r/lcsbbiocore/cobrexa.jl
 [docker-img]: https://img.shields.io/docker/image-size/lcsbbiocore/cobrexa.jl
 
@@ -66,7 +69,12 @@ installation-related difficulties. Of course, [the Julia
 channel](https://discourse.julialang.org/) is another fast and easy way to find
 answers to Julia specific questions.
 
-### Quick start guide
+### Quick start
+
+[COBREXA.jl documentation][docs-url-stable]
+is available online (also for
+[development version][docs-url-dev]
+of the package).
 
 <!--quickstart_begin-->
 You can install COBREXA from Julia repositories. Start `julia`, **press `]`** to
@@ -75,13 +83,20 @@ switch to the Packaging environment, and type:
 add COBREXA
 ```
 
-You also need to install your favorite solver supported by `JuMP.jl`, typing
-e.g.:
+You also need to install your favorite solver supported by `JuMP.jl` (such as
+Gurobi, Mosek, CPLEX, GLPK, OSQP, etc., see a [list
+here](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers)).  For
+example, you can install `Tulip.jl` solver by typing:
 ```
 add Tulip
 ```
 
 Alternatively, you may use [prebuilt Docker and Apptainer images](#prebuilt-images).
+
+If you are running COBREXA.jl for the first time, it is very likely that upon
+installing and importing the packages, your Julia installation will need to
+precompile their source code from the scratch. In fresh installations, the
+precompilation process should take less than 5 minutes.
 
 When the packages are installed, switch back to the "normal" julia shell by
 pressing Backspace (the prompt should change color back to green). After that,
@@ -119,99 +134,12 @@ Dict{String,Float64} with 95 entries:
   "R_TALA"        => 1.49698
   ⋮               => ⋮
 ```
-
-#### Model variant processing
-
-The main feature of COBREXA.jl is the ability to easily specify and process
-many analyses in parallel. To demonstrate, let's see how the organism would perform if
-some reactions were disabled independently:
-
-```julia
-# convert to a model type that is efficient to modify
-m = convert(StandardModel, model)
-
-# find the model objective value if oxygen or carbon dioxide transports are disabled
-screen(m, # the base model
-    variants=[ # this specifies how to generate the desired model variants
-        [], # one with no modifications, i.e. the base case
-        [with_changed_bound("R_O2t", lower=0.0, upper=0.0)], # disable oxygen
-        [with_changed_bound("R_CO2t", lower=0.0, upper=0.0)], # disable CO2
-        [with_changed_bound("R_O2t", lower=0.0, upper=0.0),
-	        with_changed_bound("R_CO2t", lower=0.0, upper=0.0)], # disable both
-    ],
-    # this specifies what to do with the model variants (received as the argument `x`)
-    analysis = x ->
-        flux_balance_analysis_dict(x, Tulip.Optimizer)["R_BIOMASS_Ecoli_core_w_GAM"],
-)
-```
-You should receive a result showing that missing oxygen transport makes the
-biomass production much harder:
-```julia
-4-element Vector{Float64}:
- 0.8739215022674809
- 0.21166294973372796
- 0.46166961413944896
- 0.21114065173865457
-```
-
-Most importantly, such analyses can be easily specified by automatically
-generating long lists of modifications to be applied to the model, and
-parallelized.
-
-Knocking out each reaction in the model is efficiently accomplished:
-
-```julia
-# load the task distribution package, add several worker nodes, and load
-# COBREXA and the solver on the nodes
-using Distributed
-addprocs(4)
-@everywhere using COBREXA, Tulip
-
-# get a list of the workers
-worker_list = workers()
-
-# run the processing in parallel for many model variants
-res = screen(m,
-    variants=[
-	# create one variant for each reaction in the model, with that reaction knocked out
-        [with_changed_bound(reaction_id, lower=0.0, upper=0.0)]
-	for reaction_id in reactions(m)
-    ],
-    analysis = model -> begin
-	# we need to check if the optimizer even found a feasible solution,
-	# which may not be the case if we knock out important reactions
-    	sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
-	isnothing(sol) ? nothing : sol["BIOMASS_Ecoli_core_w_GAM"]
-    end,
-    # run the screening in parallel on all workers in the list
-    workers = worker_list,
-)
-```
-
-In result, you should get a long list of the biomass production for each
-reaction knockout. Let's decorate it with reaction names:
-```julia
-Dict(reactions(m) .=> res)
-```
-...which should output an easily accessible dictionary with all the objective
-values named, giving a quick overview of which reactions are critical for the
-model organism to create biomass:
-```julia
-Dict{String, Union{Nothing, Float64}} with 95 entries:
-  "ACALD"       => 0.873922
-  "PTAr"        => 0.873922
-  "ALCD2x"      => 0.873922
-  "PDH"         => 0.796696
-  "PYK"         => 0.864926
-  "CO2t"        => 0.46167
-  "EX_nh4_e"    => 1.44677e-15
-  "MALt2_2"     => 0.873922
-  "CS"          => 2.44779e-14
-  "PGM"         => 1.04221e-15
-  "TKT1"        => 0.864759
-  ⋮             => ⋮
-```
 <!--quickstart_end-->
+
+The main feature of COBREXA.jl is the ability to easily specify and process a
+huge number of analyses in parallel. You. You can have a look at a
+[longer guide that describes the parallelization and screening functionality][docs-url-quickstart],
+or dive into the [example analysis workflows][docs-url-examples].
 
 ### Testing the installation
 
@@ -262,7 +190,8 @@ The development was supported by European Union's Horizon 2020 Programme under
 PerMedCoE project ([permedcoe.eu](https://permedcoe.eu/)) agreement no. 951773.
 <!--acknowledgements_end-->
 
-If you use COBREXA.jl and want to refer to it in your work, use the following citation format (also available as BibTeX in [cobrexa.bib](cobrexa.bib)):
+If you use COBREXA.jl and want to refer to it in your work, use the following
+citation format (also available as BibTeX in [cobrexa.bib](cobrexa.bib)):
 
 > Miroslav Kratochvíl, Laurent Heirendt, St Elmo Wilken, Taneli Pusa, Sylvain Arreckx, Alberto Noronha, Marvin van Aalst, Venkata P Satagopam, Oliver Ebenhöh, Reinhard Schneider, Christophe Trefois, Wei Gu, *COBREXA.jl: constraint-based reconstruction and exascale analysis*, Bioinformatics, Volume 38, Issue 4, 15 February 2022, Pages 1171–1172, https://doi.org/10.1093/bioinformatics/btab782
 
