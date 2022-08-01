@@ -74,7 +74,6 @@ ENV["TRAVIS_REPO_SLUG"] = github_repo_slug
 # build the docs
 makedocs(
     modules = [COBREXA],
-    clean = false,
     sitename = "COBREXA.jl",
     format = Documenter.HTML(
         # Use clean URLs, unless built as a "local" build
