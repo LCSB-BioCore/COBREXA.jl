@@ -23,10 +23,10 @@ model = load_model("e_coli_core.json")
 # obtained e.g. from [eQuilibrator](https://equilibrator.weizmann.ac.il/)
 # (possibly using the existing [Julia
 # wrapper](https://github.com/stelmo/eQuilibrator.jl) that allows you to
-# automate this step).
+# automate this step in Julia).
 #
 # Here, we have gathered a dictionary that maps the reaction IDs to calculated
-# Gibbs free energy of that reaction for each reaction (including the
+# Gibbs free energy of reaction for each metabolic reaction (including the
 # transporters). The units of the measurements are not crucial for the
 # computation, but we use the usual kJ/mol for consistency.
 
@@ -123,16 +123,16 @@ flux_solution = flux_balance_analysis_dict(
 
 # We can now run the MMDF.
 #
-# In the call, we additionally specify the metabolite IDs of protons and water
-# so that they are omitted from concentration calculations, water transport
-# reaction (that should also be ignored), and additionally fix precise ratios
-# of concentrations of certain metabolites to reflect the assumptions (and
-# possibly measurements) about the organism.
+# In the call, we specify the metabolite IDs of protons and water so that they
+# are omitted from concentration calculations. Also, the water transport
+# reaction should typically also be ignored. Additionally, we can fix the
+# concentration ratios of certain metabolites directly.
 #
-# The reason for removing the protons and water from concentration calculation
-# is that because the Gibbs free energies of biochemical reactions are measured
-# at constant pH. Allowing the model to change the pH would break the
-# assumptions about validity of the thermodynamics of all reactions.
+# The reason for removing the protons and water from the concentration
+# calculations is because the Gibbs free energies of biochemical reactions are
+# measured at constant pH in aqueous environments. Allowing the model to change
+# the pH would break the assumptions about validity of the thermodynamic
+# measurements.
 
 sol = max_min_driving_force(
     model,
@@ -163,26 +163,28 @@ sol.mmdf
 #md #       the MMDF will likely only have a zero solution.
 
 # Finally, we show how the concentrations are optimized to ensure that each
-# reacction proceeds "down the hill" (ΔᵣG < 0). We can explore the glycolysis
+# reaction proceeds "down the hill" (ΔᵣG < 0). We can explore the glycolysis
 # pathway reactions:
 
 glycolysis_pathway =
     ["GLCpts", "PGI", "PFK", "FBA", "TPI", "GAPD", "PGK", "PGM", "ENO", "PYK"]
 
 # We additionally scale the fluxes according to their stoichiometry in the
-# pathway. From the output, we can clearly see that that metabolite
-# concentrations play a large role in ensuring the thermodynamic consistency of
-# in vivo reactions.
+# pathway. From the output, we can clearly see that metabolite concentrations
+# play a large role in ensuring the thermodynamic consistency of in vivo
+# reactions.
 
-# The flux from simple loopless FBA has several reactions with positive ΔᵣG:
-Dict(
-    rid => reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for
-    rid in glycolysis_pathway
-)
+using CairoMakie
 
-# The solution optimized with [`max_min_driving_force`](@ref) is
-# thermodynamically viable:
-Dict(rid => sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway)
+standard_dg = cumsum([reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for rid in glycolysis_pathway]);
+optimal_dg = cumsum([sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway]);
+
+f = Figure();
+ax = Axis(f[1,1], ylabel="Cumulative ΔG", xticks = (1:10, glycolysis_pathway));
+lines!(ax, 1:10, standard_dg .- first(standard_dg), color=:blue, label="ΔG⁰");
+lines!(ax, 1:10, optimal_dg .- first(optimal_dg), color=:red, label="MMDF solution");
+axislegend(ax)
+f
 
 #md # !!! tip "Thermodynamic variability"
 #md #     As with normal flux variability, thermodynamic constraints in a model also allow a certain amount of parameter selection freedom.
