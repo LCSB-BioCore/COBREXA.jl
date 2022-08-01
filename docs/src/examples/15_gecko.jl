@@ -80,11 +80,11 @@ gecko_model =
 
 opt_model = flux_balance_analysis(gecko_model, GLPK.Optimizer)
 
-# Get the fluxes 
+# Get the fluxes
 
 flux_sol = flux_dict(gecko_model, opt_model)
 
-# Get the gene product concentrations 
+# Get the gene product concentrations
 
 gp_concs = gene_product_dict(gecko_model, opt_model)
 
