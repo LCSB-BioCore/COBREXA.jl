@@ -52,9 +52,9 @@ t = @elapsed deserialize("myModel.stdmodel")
 # reactions.
 
 #md # !!! warning "Compatibility"
-#md       The format of serialized models may change between Julia versions.
-#md       In particular, never use the the serialized format for publishing models -- others will have hard time finding the correct Julia version to open them.
-#md       Similarly, never use serialized models for long-term storage -- your future self will have hard time finding the historic Julia version that was used to write the data.
+#md #     The format of serialized models may change between Julia versions.
+#md #     In particular, never use the the serialized format for publishing models -- others will have hard time finding the correct Julia version to open them.
+#md #     Similarly, never use serialized models for long-term storage -- your future self will have hard time finding the historic Julia version that was used to write the data.
 
 # ## Converting and saving a modified model
 
