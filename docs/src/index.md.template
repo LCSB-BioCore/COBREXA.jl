@@ -61,10 +61,14 @@ Pages = filter(x -> endswith(x, ".md"), readdir("concepts", join=true))
 Depth = 1
 ```
 
-## Functions reference
+## Functions and types API reference
+
+Detailed table of contents of the API documentation is [available
+here](functions.md).
 
 ```@contents
-Pages = ["functions.md"]
+Pages = filter(x -> endswith(x, ".md"), readdir("functions", join=true))
+Depth = 1
 ```
 
 ## Contribution guide
