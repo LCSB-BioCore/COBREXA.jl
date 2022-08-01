@@ -176,13 +176,17 @@ glycolysis_pathway =
 
 using CairoMakie
 
-standard_dg = cumsum([reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for rid in glycolysis_pathway]);
-optimal_dg = cumsum([sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway]);
+standard_dg = cumsum([
+    reaction_standard_gibbs_free_energies[rid] * flux_solution[rid] for
+    rid in glycolysis_pathway
+]);
+optimal_dg =
+    cumsum([sol.dg_reactions[rid] * flux_solution[rid] for rid in glycolysis_pathway]);
 
 f = Figure();
-ax = Axis(f[1,1], ylabel="Cumulative ΔG", xticks = (1:10, glycolysis_pathway));
-lines!(ax, 1:10, standard_dg .- first(standard_dg), color=:blue, label="ΔG⁰");
-lines!(ax, 1:10, optimal_dg .- first(optimal_dg), color=:red, label="MMDF solution");
+ax = Axis(f[1, 1], ylabel = "Cumulative ΔG", xticks = (1:10, glycolysis_pathway));
+lines!(ax, 1:10, standard_dg .- first(standard_dg), color = :blue, label = "ΔG⁰");
+lines!(ax, 1:10, optimal_dg .- first(optimal_dg), color = :red, label = "MMDF solution");
 axislegend(ax)
 f
 
