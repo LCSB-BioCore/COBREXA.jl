@@ -12,6 +12,8 @@
     @test !isnothing(h5.h5)
 
     # briefly test that the loading is okay
+    @test n_reactions(model) == n_reactions(h5)
+    @test n_metabolites(model) == n_metabolites(h5)
     @test issetequal(reactions(model), reactions(h5))
     @test issetequal(metabolites(model), metabolites(h5))
     @test issorted(metabolites(h5))
@@ -23,4 +25,7 @@
     @test bounds(model)[2][rxnp] == bounds(h5)[2]
     @test objective(model)[rxnp] == objective(h5)
     @test all(iszero, balance(h5))
+
+    close(h5)
+    @test isnothing(h5.h5)
 end
