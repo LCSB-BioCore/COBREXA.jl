@@ -76,9 +76,15 @@ gecko_model =
 
 [stoichiometry(gecko_model); coupling(gecko_model)]
 
-# Again, the resulting model can be used in any type of analysis. For example, balance:
+# Again, the resulting model can be used in any type of analysis. For example, flux balance analysis:
 
-flux_balance_analysis_dict(gecko_model, GLPK.Optimizer)
+opt_model = flux_balance_analysis(gecko_model, GLPK.Optimizer)
+
+flux_sol = flux_dict(gecko_model, opt_model)
+
+gp_concs = gene_product_dict(gecko_model, opt_model)
+
+gene_product_mass_group_dict(gecko_model, opt_model)
 
 # Variability:
 
