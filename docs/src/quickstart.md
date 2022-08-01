@@ -7,8 +7,10 @@ switch to the Packaging environment, and type:
 add COBREXA
 ```
 
-You also need to install your favorite solver supported by `JuMP.jl`, typing
-e.g.:
+You also need to install your favorite solver supported by `JuMP.jl` (such as
+Gurobi, Mosek, CPLEX, GLPK, OSQP, etc., see a [list
+here](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers)).  For
+example, you can install `Tulip.jl` solver by typing:
 ```
 add Tulip
 ```
@@ -17,8 +19,8 @@ Alternatively, you may use [prebuilt Docker and Apptainer images](#prebuilt-imag
 
 If you are running COBREXA.jl for the first time, it is very likely that upon
 installing and importing the packages, your Julia installation will need to
-precompile their source code. In fresh installations the precompilation process
-may typically take between 3 and 5 minutes.
+precompile their source code from the scratch. In fresh installations, the
+precompilation process should take less than 5 minutes.
 
 When the packages are installed, switch back to the "normal" julia shell by
 pressing Backspace (the prompt should change color back to green). After that,
@@ -60,8 +62,8 @@ Dict{String,Float64} with 95 entries:
 #### Model variant processing
 
 The main feature of COBREXA.jl is the ability to easily specify and process
-many analyses in parallel. To demonstrate, let's see how the organism would perform if
-some reactions were disabled independently:
+many analyses in parallel. To demonstrate, let's see how the organism would
+perform if some reactions were disabled independently:
 
 ```julia
 # convert to a model type that is efficient to modify
