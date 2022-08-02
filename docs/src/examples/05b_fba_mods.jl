@@ -30,7 +30,7 @@ fluxes = flux_balance_analysis_dict(
     modifications = [ # modifications are applied in order
         change_objective("R_BIOMASS_Ecoli_core_w_GAM"), # maximize production
         change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix an exchange rate
-        knockout(["b0978", "b0734"]), # knock out two genes
+        add_knockout_constraints(["b0978", "b0734"]), # knock out two genes
         change_optimizer(Tulip.Optimizer), # ignore the above optimizer and switch to Tulip
         change_optimizer_attribute("IPM_IterationsLimit", 1000), # customize Tulip
         change_sense(MAX_SENSE), # explicitly tell Tulip to maximize the objective

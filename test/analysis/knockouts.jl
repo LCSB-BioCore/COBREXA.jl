@@ -1,4 +1,4 @@
-@testset "single_knockout" begin
+@testset "single knockout" begin
     m = StandardModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
@@ -27,7 +27,7 @@
     )
 
     opt_model = make_optimization_model(m, Tulip.Optimizer)
-    knockout("g1")(m, opt_model)
+    add_knockout_constraints("g1")(m, opt_model)
 
     # Knockout should remove v1
     @test normalized_rhs(opt_model[:lbs][1]) == 0
@@ -46,7 +46,7 @@
     @test normalized_rhs(opt_model[:ubs][4]) == 1000
 end
 
-@testset "multiple_knockouts" begin
+@testset "multiple knockouts" begin
     m = StandardModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
@@ -75,7 +75,7 @@ end
     )
 
     opt_model = make_optimization_model(m, Tulip.Optimizer)
-    knockout(["g1", "g3"])(m, opt_model)
+    add_knockout_constraints(["g1", "g3"])(m, opt_model)
 
     # Reaction 1 should be knocked out, because both
     # gene1 and gene 3 are knocked out
@@ -107,7 +107,7 @@ end
                 change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
                 change_sense(MAX_SENSE),
                 change_optimizer_attribute("IPM_IterationsLimit", 110),
-                knockout(["b0978", "b0734"]), # knockouts out cytbd
+                add_knockout_constraints(["b0978", "b0734"]), # knockouts out cytbd
             ],
         )
         @test isapprox(
@@ -124,7 +124,7 @@ end
                 change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
                 change_sense(MAX_SENSE),
                 change_optimizer_attribute("IPM_IterationsLimit", 110),
-                knockout("b2779"), # knockouts out enolase
+                add_knockout_constraints("b2779"), # knockouts out enolase
             ],
         )
         @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)

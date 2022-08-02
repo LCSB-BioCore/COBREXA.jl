@@ -1,8 +1,8 @@
 # # Gene knockouts
 
-# Here we will use the [`knockout`](@ref) function to modify the optimization
+# Here we will use the [`add_knockout_constraints`](@ref) function to modify the optimization
 # model before solving, in order to simulate genes knocked out. We can pass
-# [`knockout`](@ref) to many analysis functions that support parameter
+# [`add_knockout_constraints`](@ref) to many analysis functions that support parameter
 # `modifications`, including [`flux_balance_analysis`](@ref),
 # [`flux_variability_analysis`](@ref), and others.
 
@@ -25,8 +25,11 @@ genes(model)
 sort(gene_name.(Ref(model), genes(model)) .=> genes(model))
 
 # Compute the flux with a genes knocked out:
-flux_with_knockout =
-    flux_balance_analysis_dict(model, GLPK.Optimizer, modifications = [knockout("G_b3236")])
+flux_with_knockout = flux_balance_analysis_dict(
+    model,
+    GLPK.Optimizer,
+    modifications = [add_knockout_constraints("G_b3236")],
+)
 
 # We can see there is a small decrease in production upon knocking out the gene:
 biomass_id = "R_BIOMASS_Ecoli_core_w_GAM"
@@ -34,8 +37,11 @@ flux_with_knockout[biomass_id] / original_flux[biomass_id]
 
 # Similarly, we can explore how the flux variability has changed once the gene
 # is knocked out:
-variability_with_knockout =
-    flux_variability_analysis(model, GLPK.Optimizer, modifications = [knockout("G_b3236")])
+variability_with_knockout = flux_variability_analysis(
+    model,
+    GLPK.Optimizer,
+    modifications = [add_knockout_constraints("G_b3236")],
+)
 
 # ## Knocking out multiple genes
 
@@ -48,7 +54,7 @@ reaction_gene_association(model, "R_FBA")
 flux_with_double_knockout = flux_balance_analysis_dict(
     model,
     GLPK.Optimizer,
-    modifications = [knockout(["G_b2097", "G_b1773", "G_b2925"])],
+    modifications = [add_knockout_constraints(["G_b2097", "G_b1773", "G_b2925"])],
 )
 #
 flux_with_double_knockout[biomass_id] / original_flux[biomass_id]
@@ -62,7 +68,11 @@ knockout_fluxes = screen(
     model,
     args = tuple.(genes(model)),
     analysis = (m, gene) -> begin
-        res = flux_balance_analysis_dict(m, GLPK.Optimizer, modifications = [knockout(gene)])
+        res = flux_balance_analysis_dict(
+            m,
+            GLPK.Optimizer,
+            modifications = [add_knockout_constraints(gene)],
+        )
         if !isnothing(res)
             res[biomass_id]
         end
@@ -90,7 +100,7 @@ double_knockout_fluxes = screen(
         res = flux_balance_analysis_dict(
             m,
             GLPK.Optimizer,
-            modifications = [knockout(gene_groups)],
+            modifications = [add_knockout_constraints(gene_groups)],
         )
         if !isnothing(res)
             res[biomass_id]
