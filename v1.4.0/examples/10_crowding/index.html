@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>FBA with crowding · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../">Contents</a></li><li><a class="tocitem" href="../01_loading/">Loading models</a></li><li><a class="tocitem" href="../02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../06_fva/">Flux variability analysis (FVA)</a></li><li><a class="tocitem" href="../07_gene_deletion/">Gene knockouts</a></li><li><a class="tocitem" href="../07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../09_loopless/">Loopless FBA</a></li><li class="is-active"><a class="tocitem" href>FBA with crowding</a></li><li><a class="tocitem" href="../11_growth/">Growth media analysis</a></li><li><a class="tocitem" href="../12_mmdf/">Maximum-minimum driving force analysis</a></li><li><a class="tocitem" href="../13_moma/">Minimization of metabolic adjustment (MOMA)</a></li><li><a class="tocitem" href="../14_smoment/">sMOMENT</a></li><li><a class="tocitem" href="../15_gecko/">GECKO</a></li><li><a class="tocitem" href="../16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../../distributed/">Contents</a></li><li><a class="tocitem" href="../../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../../concepts/">Contents</a></li><li><a class="tocitem" href="../../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>FBA with crowding</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>FBA with crowding</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/examples/10_crowding.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="FBA-with-crowding"><a class="docs-heading-anchor" href="#FBA-with-crowding">FBA with crowding</a><a id="FBA-with-crowding-1"></a><a class="docs-heading-anchor-permalink" href="#FBA-with-crowding" title="Permalink"></a></h1><p>Here we will use <a href="../../functions/analysis/#COBREXA.flux_balance_analysis-Union{Tuple{M}, Tuple{M, Any}} where M&lt;:MetabolicModel"><code>flux_balance_analysis</code></a> to explore the metabolism of the toy <em>E. coli</em> model that additionally respects common protein crowding constraints. In particular, the model is limited by the amount of protein required to run certain reactions. If that data is available, the predictions are accordingly more realistic. See <a href="https://doi.org/10.1073/pnas.0609845104">Beg, et al., &quot;Intracellular crowding defines the mode and sequence of substrate uptake by Escherichia coli and constrains its metabolic activity.&quot;, Proceedings of the National Academy of Sciences,2007</a> for more details.</p><p>As usual, the same model modification can be transparently used with many other analysis functions, including <a href="../../functions/analysis/#COBREXA.flux_variability_analysis-Tuple{MetabolicModel, Any}"><code>flux_variability_analysis</code></a> and <a href="../../functions/analysis/#COBREXA.parsimonious_flux_balance_analysis-Tuple{MetabolicModel, Any}"><code>parsimonious_flux_balance_analysis</code></a>.</p><p>Let&#39;s starting with loading the models and packages.</p><pre><code class="language-julia">!isfile(&quot;e_coli_core.xml&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.xml&quot;, &quot;e_coli_core.xml&quot;)
+
+using COBREXA, Tulip
+
+model = load_model(&quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type SBMLModel
+sparse([41, 23, 51, 67, 61, 65, 1, 7, 19, 28  …  72, 3, 8, 33, 57, 66, 31, 45, 46, 57], [1, 2, 2, 2, 3, 3, 4, 4, 4, 4  …  93, 94, 94, 94, 94, 94, 95, 95, 95, 95], [-1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0  …  1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+Number of reactions: 95
+Number of metabolites: 72
+</pre><p>To describe the protein crowding, each of the enzymes that catalyze the reactions gets an associated weight per unit of reaction conversion rate. The total sum of all weights multiplied by the flux in the model must be lower than 1.</p><p>The weights are prepared in a dictionary; for simplicity we assume that the relative weight of all enzymes is random between 0.002 and 0.005. enzymes are of the same size. Reactions that are not present in the dictionary (typically exchanges) are ignored.</p><pre><code class="language-julia">import Random
+Random.seed!(1) # for repeatability of random numbers below
+
+rid_crowding_weight = Dict(
+    rid =&gt; 0.002 + 0.003 * rand() for rid in reactions(model) if
+    !looks_like_biomass_reaction(rid) &amp;&amp; !looks_like_exchange_reaction(rid)
+)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 74 entries:
+  &quot;R_ACONTb&quot;   =&gt; 0.0022201
+  &quot;R_TPI&quot;      =&gt; 0.00304772
+  &quot;R_SUCOAS&quot;   =&gt; 0.00409648
+  &quot;R_GLNS&quot;     =&gt; 0.00388479
+  &quot;R_PPC&quot;      =&gt; 0.00474479
+  &quot;R_O2t&quot;      =&gt; 0.00257842
+  &quot;R_G6PDH2r&quot;  =&gt; 0.00431054
+  &quot;R_TALA&quot;     =&gt; 0.00434156
+  &quot;R_PPCK&quot;     =&gt; 0.00401079
+  &quot;R_PGL&quot;      =&gt; 0.00250314
+  &quot;R_H2Ot&quot;     =&gt; 0.00371326
+  &quot;R_GLNabc&quot;   =&gt; 0.00335843
+  &quot;R_MALt2_2&quot;  =&gt; 0.00290698
+  &quot;R_ME2&quot;      =&gt; 0.00200405
+  &quot;R_GAPD&quot;     =&gt; 0.00370107
+  &quot;R_CS&quot;       =&gt; 0.00384781
+  &quot;R_ETOHt2r&quot;  =&gt; 0.00258722
+  &quot;R_ACKr&quot;     =&gt; 0.00203739
+  &quot;R_PGK&quot;      =&gt; 0.00293598
+  ⋮            =&gt; ⋮</pre><p>With this, the crowding constraints are added with modification <a href="../../functions/analysis/#COBREXA.add_crowding_constraints-Tuple{Dict{Int64, Float64}}"><code>add_crowding_constraints</code></a>:</p><pre><code class="language-julia">loopless_crowding_fluxes = flux_balance_analysis_dict(
+    model,
+    Tulip.Optimizer;
+    modifications = [add_crowding_constraints(rid_crowding_weight)],
+)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; 0.0
+  &quot;R_ACONTb&quot;      =&gt; 0.641957
+  &quot;R_TPI&quot;         =&gt; 6.25052
+  &quot;R_SUCOAS&quot;      =&gt; -1.59844e-11
+  &quot;R_GLNS&quot;        =&gt; 0.152144
+  &quot;R_EX_pi_e&quot;     =&gt; -2.18886
+  &quot;R_PPC&quot;         =&gt; 1.70506
+  &quot;R_O2t&quot;         =&gt; 12.5638
+  &quot;R_G6PDH2r&quot;     =&gt; 5.10105
+  &quot;R_TALA&quot;        =&gt; 1.5939
+  &quot;R_PPCK&quot;        =&gt; 1.92339e-12
+  &quot;R_EX_lac__D_e&quot; =&gt; 4.00181e-12
+  &quot;R_PGL&quot;         =&gt; 5.10105
+  &quot;R_H2Ot&quot;        =&gt; -17.586
+  &quot;R_GLNabc&quot;      =&gt; 0.0
+  &quot;R_EX_co2_e&quot;    =&gt; 13.2517
+  &quot;R_EX_gln__L_e&quot; =&gt; 0.0
+  &quot;R_EX_nh4_e&quot;    =&gt; -3.24447
+  &quot;R_MALt2_2&quot;     =&gt; 0.0
+  ⋮               =&gt; ⋮</pre><pre><code class="language-julia">flux_summary(loopless_crowding_fluxes)</code></pre><pre class="documenter-example-output">Biomass
+  R_BIOMASS_Ecoli_core_w_GAM: 0.595
+Import
+  R_EX_o2_e:                  -12.5638
+  R_EX_glc__D_e:              -8.5427
+  R_EX_nh4_e:                 -3.2445
+  R_EX_pi_e:                  -2.1889
+Export
+  R_EX_ac_e:                  6.3418
+  R_EX_co2_e:                 13.2517
+  R_EX_h2o_e:                 17.586
+  R_EX_h_e:                   18.2778
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../09_loopless/">« Loopless FBA</a><a class="docs-footer-nextpage" href="../11_growth/">Growth media analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 5 August 2022 11:01">Friday 5 August 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
