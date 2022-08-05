@@ -19,8 +19,6 @@ import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
 
-include("banner.jl")
-
 # autoloading
 const _inc(path...) = include(joinpath(path...))
 const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
