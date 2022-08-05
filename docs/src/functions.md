@@ -1,6 +1,6 @@
-# Types and functions
+# API reference
 
 ```@contents
-Pages = joinpath.("functions", filter(x -> endswith(x, ".md"), readdir("functions")))
+Pages = filter(x -> endswith(x, ".md"), readdir("functions", join=true))
 Depth = 2
 ```

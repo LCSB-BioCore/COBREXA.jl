@@ -14,3 +14,11 @@
     @test sum(jlbs) == sum(slbs)
     @test sum(jubs) == sum(subs)
 end
+
+@testset "Save JSON model" begin
+    model = load_model(CoreModel, model_paths["e_coli_core.json"])
+    testpath = tmpfile("modeltest.json")
+    save_model(model, testpath)
+    wrote = convert(CoreModel, load_json_model(testpath))
+    @test isequal(model, wrote)
+end

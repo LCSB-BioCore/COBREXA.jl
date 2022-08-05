@@ -86,7 +86,7 @@ the lattice; alternate outputs can be implemented via the `analysis` argument.
 
 # Example
 ```
-julia> m = load_model("test/downloaded/e_coli_core.xml");
+julia> m = load_model("e_coli_core.xml");
 
 julia> envelope = objective_envelope(m, ["R_EX_gln__L_e", "R_EX_fum_e"],
                                      Tulip.Optimizer;
@@ -126,7 +126,7 @@ objective_envelope(
                 [
                     (_, optmodel) -> begin
                         for (i, ridx) in enumerate(ridxs)
-                            set_normalized_rhs(optmodel[:lbs][ridx], fluxes[i])
+                            set_normalized_rhs(optmodel[:lbs][ridx], -fluxes[i])
                             set_normalized_rhs(optmodel[:ubs][ridx], fluxes[i])
                         end
                     end,

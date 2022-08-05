@@ -16,3 +16,11 @@
     cm = convert(CoreModelCoupled, sbmlm)
     @test n_coupling_constraints(cm) == 0
 end
+
+@testset "Save SBML model" begin
+    model = load_model(CoreModel, model_paths["e_coli_core.xml"])
+    testpath = tmpfile("modeltest.xml")
+    save_model(convert(SBMLModel, model), testpath)
+    wrote = convert(CoreModel, load_sbml_model(testpath))
+    @test isequal(model, wrote)
+end

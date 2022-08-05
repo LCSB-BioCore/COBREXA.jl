@@ -1,8 +1,7 @@
 """
     function affine_hit_and_run(
-        warmup_points::Matrix{Float64},
-        lbs::Vector{Float64},
-        ubs::Vector{Float64};
+        m::MetabolicModel,
+        warmup_points::Matrix{Float64};
         sample_iters = 100 .* (1:5),
         workers = [myid()],
         chains = length(workers),
@@ -31,30 +30,32 @@ be `size(warmup_points,2) * chains * length(sample_iters)`.
 
 # Example
 ```
-using COBREXA
-using Tulip
-
-model = load_model(StandardModel, model_path)
-
-warmup, lbs, ubs = warmup_from_variability(model, Tulip.Optimizer, 100)
-samples = affine_hit_and_run(warmup, lbs, ubs, sample_iters = 1:3)
+warmup_points = warmup_from_variability(model, GLPK.Optimizer)
+samples = affine_hit_and_run(model, warmup_points, sample_iters = 101:105)
 
 # convert the result to flux (for models where the distinction matters):
 fluxes = reaction_flux(model)' * samples
 ```
 """
 function affine_hit_and_run(
-    warmup_points::Matrix{Float64},
-    lbs::Vector{Float64},
-    ubs::Vector{Float64};
+    m::MetabolicModel,
+    warmup_points::Matrix{Float64};
     sample_iters = 100 .* (1:5),
     workers = [myid()],
     chains = length(workers),
     seed = rand(Int),
 )
+    @assert size(warmup_points, 1) == n_reactions(m)
 
-    # distribute starting data to workers
-    save_at.(workers, :cobrexa_hit_and_run_data, Ref((warmup_points, lbs, ubs)))
+    lbs, ubs = bounds(m)
+    C = coupling(m)
+    cl, cu = coupling_bounds(m)
+    if isnothing(C)
+        C = zeros(0, n_reactions(m))
+        cl = zeros(0)
+        cu = zeros(0)
+    end
+    save_at.(workers, :cobrexa_hit_and_run_data, Ref((warmup_points, lbs, ubs, C, cl, cu)))
 
     # sample all chains
     samples = hcat(
@@ -80,16 +81,27 @@ end
 
 Internal helper function for computing a single affine hit-and-run chain.
 """
-function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
+function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
 
     rng = StableRNG(seed % UInt)
     points = copy(warmup)
     d, n_points = size(points)
-    result = Matrix{Float64}(undef, size(points, 1), 0)
+    n_couplings = size(C, 1)
+    result = Matrix{Float64}(undef, d, n_points * length(iters))
+
+    # helper for reducing the available run range
+    function update_range(range, pos, dir, lb, ub)
+        dl = lb - pos
+        du = ub - pos
+        lower, upper =
+            dir < -_constants.tolerance ? (du, dl) ./ dir :
+            dir > _constants.tolerance ? (dl, du) ./ dir : (-Inf, Inf)
+        return (max(range[1], lower), min(range[2], upper))
+    end
 
     iter = 0
 
-    for iter_target in iters
+    for (iter_idx, iter_target) in enumerate(iters)
 
         while iter < iter_target
             iter += 1
@@ -103,28 +115,22 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
 
                 # iteratively collect the maximum and minimum possible multiple
                 # of `dir` added to the current point
-                lambda_max = Inf
-                lambda_min = -Inf
+                run_range = (-Inf, Inf)
                 for j = 1:d
-                    dl = lbs[j] - points[j, i]
-                    du = ubs[j] - points[j, i]
-                    idir = 1 / dir[j]
-                    if dir[j] < -_constants.tolerance
-                        lower = du * idir
-                        upper = dl * idir
-                    elseif dir[j] > _constants.tolerance
-                        lower = dl * idir
-                        upper = du * idir
-                    else
-                        lower = -Inf
-                        upper = Inf
-                    end
-                    lambda_min = max(lambda_min, lower)
-                    lambda_max = min(lambda_max, upper)
+                    run_range =
+                        update_range(run_range, points[j, i], dir[j], lbs[j], ubs[j])
                 end
 
-                lambda = lambda_min + rand(rng) * (lambda_max - lambda_min)
-                !isfinite(lambda) && continue # avoid divergence
+                # do the same for coupling
+                dc = C * dir
+                pc = C * points[:, i]
+                for j = 1:n_couplings
+                    run_range = update_range(run_range, pc[j], dc[j], cl[j], cu[j])
+                end
+
+                # generate a point in the viable run range and update it
+                lambda = run_range[1] + rand(rng) * (run_range[2] - run_range[1])
+                isfinite(lambda) || continue # avoid divergence
                 new_points[:, i] = points[:, i] .+ lambda .* dir
 
                 # TODO normally, here we would check if sum(S*new_point) is still
@@ -135,7 +141,7 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
             points = new_points
         end
 
-        result = hcat(result, points)
+        result[:, n_points*(iter_idx-1)+1:iter_idx*n_points] .= points
     end
 
     result

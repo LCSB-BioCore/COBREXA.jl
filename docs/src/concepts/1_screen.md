@@ -1,5 +1,5 @@
 
-# Exploring many model variants
+# Screening many model variants
 
 A major goal of COBREXA.jl is to make exploring of many model variants easy and
 fast.
@@ -7,7 +7,7 @@ fast.
 One main concept that can be utilized for doing that is implemented in the
 function [`screen`](@ref), which takes your model, a list of model _variants_
 that you want to explore by some specified _analysis_, and schedules the
-analysis of the model variants parallely on the available distributed workers.
+analysis of the model variants parallelly on the available distributed workers.
 
 In its most basic form, the "screening" may use the slightly simplified variant
 of [`screen`](@ref) that is called [`screen_variants`](@ref), which works as
@@ -127,10 +127,6 @@ collect(zip(
 This may be easily used for e.g. scrutinizing all possible reaction pairs, to
 find the ones that are redundant and not.
 
-!!! tip "Notebook available"
-    A notebook is available that demonstrates
-    [the screening on a larger scale](../notebooks/6_screening.md).
-
 There are many other variant "specifications" to choose from. You may use
 [`with_added_reactions`](@ref), [`with_removed_reactions`](@ref),
 [`with_removed_metabolites`](@ref), and others. Function reference contains a
@@ -180,7 +176,7 @@ with_disabled_oxygen_transport = (model::StandardModel) -> begin
 end
 ```
 
-Finally, the whole definition may be parametrized as a normal function. The
+Finally, the whole definition may be parameterized as a normal function. The
 following variant removes any user-selected reaction:
 
 ```julia

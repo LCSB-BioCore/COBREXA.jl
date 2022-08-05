@@ -2,6 +2,7 @@ module COBREXA
 
 using Distributed
 using DistributedData
+using HDF5
 using JSON
 using JuMP
 using LinearAlgebra

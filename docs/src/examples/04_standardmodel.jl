@@ -12,7 +12,7 @@
 
 using COBREXA
 
-# ## Loading a model
+# ## Loading a model in the StandardModel format
 
 model = load_model(StandardModel, "e_coli_core.json") # we specifically want to load a StandardModel from the model file
 
@@ -29,58 +29,9 @@ model = load_model(StandardModel, "e_coli_core.json") # we specifically want to 
 #nb # Thus, data loss may occur. Always check your model to ensure that
 #nb # nothing important has been lost.
 
-# ## Basic analysis
-
-# As before, for optimization based analysis we need to load an optimizer. Here we
-# will use [`Tulip.jl`](https://github.com/ds4dm/Tulip.jl) to solve the linear
-# programs of this tutorial. Refer to the basic constraint-based analysis
-# tutorial for more informaiton.
-
-# All the normal analysis functions work on `StandardModel`, due to it also
-# having the same generic accessor interface as all the other model types.
-
-using Tulip
-
-fluxes = flux_balance_analysis_dict(
-    model,
-    Tulip.Optimizer;
-    modifications = [
-        change_objective("BIOMASS_Ecoli_core_w_GAM"),
-        change_constraint("EX_glc__D_e"; lb = -12, ub = -12),
-        change_constraint("EX_o2_e"; lb = 0, ub = 0),
-    ],
-)
-
-# This is not very exciting yet, since every other model type can also do this.
-# However, deeper inspection of flux results is possible when using
-# `StandardModel`.
-
-# ## Inspecting the flux solution: `atom_fluxes`
-
-# It is sometimes interesting to keep track of the atoms entering and leaving
-# the system through boundary reactions. This can be inspected by calling
-# [`atom_fluxes`](@ref). That gives you the flux of individual atoms getting
-# consumed and produced by all reactions, based on `fluxes`. We erase the
-# reaction that consumes the atoms for creating biomass, to see how much mass
-# the "rest" of the reaction produces for it:
-
-fluxes_without_biomass = copy(fluxes);
-delete!(fluxes_without_biomass, "BIOMASS_Ecoli_core_w_GAM");
-atom_fluxes(model, fluxes_without_biomass)
-
-# ## Inspecting the flux solution: `metabolite_fluxes`
-
-# Another useful flux result analysis function is [`metabolite_fluxes`](@ref).
-# This function gives an overview of reactions consuming and producing each
-# metabolite.
-
-consuming, producing = metabolite_fluxes(model, fluxes)
-
-consuming["atp_c"] # reactions consuming `atp_c`
-
 # ## Internals of `StandardModel`
 
-# Another benefit of `StandardModel` is that it supports a richer internal
+# A benefit of `StandardModel` is that it supports a richer internal
 # infrastructure that can be used to manipulate internal model attributes in a
 # systematic way. Specifically, the genes, reactions, and metabolites with of a
 # model each have a type. This is particularly useful when modifying or even
@@ -143,7 +94,7 @@ model.reactions[random_reaction_id]
 #md #       Combining models that use different namespaces requires care.
 #md #       For example, in some models the water exchange reaction is called
 #md #       `EX_h2o_e`, while in others it is called `R_EX_h2o_s`. This needs to
-#md #       manually addressed (for now) to prevent duplicate, e.g. reactions,
+#md #       manually addressed to prevent duplicates, e.g. reactions,
 #md #       from being added.
 
 # ## Checking the internals of `StandardModel`s: `annotation_index`
