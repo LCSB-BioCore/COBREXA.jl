@@ -16,7 +16,7 @@ end
 
 """
 Metabolite(
-    id::AbstractString;
+    id="";
     name=nothing,
     formula=nothing,
     charge=nothing,
@@ -28,7 +28,7 @@ Metabolite(
 A constructor for `Metabolite`s.
 """
 Metabolite(
-    id::AbstractString;
+    id="";
     name = nothing,
     formula = nothing,
     charge = nothing,

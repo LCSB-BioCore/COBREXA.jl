@@ -13,7 +13,7 @@ end
 
 """
 Gene(
-    id::AbstractString; 
+    id=""; 
     name = nothing, 
     notes = Notes(), 
     annotations = Annotations(),
@@ -21,5 +21,5 @@ Gene(
 
 A convenient constructor for a `Gene`.
 """
-Gene(id::AbstractString; name = nothing, notes = Notes(), annotations = Annotations()) =
+Gene(id=""; name = nothing, notes = Notes(), annotations = Annotations()) =
     Gene(String(id), name, notes, annotations)
