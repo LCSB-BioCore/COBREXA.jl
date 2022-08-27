@@ -9,9 +9,6 @@ mutable struct Gene
     name::Maybe{String}
     notes::Notes
     annotations::Annotations
-
-    Gene(id::String = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
-        new(id, name, notes, annotations)
 end
 
 """

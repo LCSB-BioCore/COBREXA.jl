@@ -12,16 +12,6 @@ mutable struct Metabolite
     compartment::Maybe{String}
     notes::Notes
     annotations::Annotations
-
-    Metabolite(
-        id = "";
-        name = nothing,
-        formula = nothing,
-        charge = nothing,
-        compartment = nothing,
-        notes = Notes(),
-        annotations = Annotations(),
-    ) = new(id, name, formula, charge, compartment, notes, annotations)
 end
 
 """
