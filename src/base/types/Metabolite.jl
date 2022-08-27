@@ -39,10 +39,10 @@ A constructor for `Metabolite`s.
 """
 Metabolite(
     id::AbstractString;
-    name=nothing,
-    formula=nothing,
-    charge=nothing,
-    compartment=nothing,
-    notes=Notes(),
-    annotations=Annotations(),
-) = Metabolite(id, name, formula, charge, compartment, notes, annotations)
+    name = nothing,
+    formula = nothing,
+    charge = nothing,
+    compartment = nothing,
+    notes = Notes(),
+    annotations = Annotations(),
+) = Metabolite(String(id), name, formula, charge, compartment, notes, annotations)
