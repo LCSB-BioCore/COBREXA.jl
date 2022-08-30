@@ -3,6 +3,7 @@ $(TYPEDEF)
 
 Information about isozyme composition and activity.
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct Isozyme

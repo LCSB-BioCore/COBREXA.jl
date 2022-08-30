@@ -3,6 +3,7 @@ $(TYPEDEF)
 
 A helper type for describing the contents of [`GeckoModel`](@ref)s.
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct _gecko_reaction_column
@@ -21,6 +22,7 @@ $(TYPEDEF)
 A helper struct that contains the gene product capacity terms organized by
 the grouping type, e.g. metabolic or membrane groups etc.
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct _gecko_capacity
@@ -69,6 +71,7 @@ but retains the original "simple" reactions accessible by [`fluxes`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct GeckoModel <: ModelWrapper

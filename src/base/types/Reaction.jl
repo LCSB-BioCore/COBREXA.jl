@@ -3,6 +3,7 @@ $(TYPEDEF)
 
 A structure for representing a single reaction in a [`StandardModel`](@ref).
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct Reaction

@@ -4,6 +4,7 @@ $(TYPEDEF)
 
 A helper type that describes the contents of [`SMomentModel`](@ref)s.
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct _smoment_column
@@ -50,6 +51,7 @@ This implementation allows easy access to fluxes from the split reactions
 the wrapped model are retained as [`fluxes`](@ref). All additional constraints
 are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct SMomentModel <: ModelWrapper

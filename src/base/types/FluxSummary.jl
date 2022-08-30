@@ -4,6 +4,7 @@ $(TYPEDEF)
 A struct used to store summary information about the solution
 of a constraint based analysis result.
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct FluxSummary

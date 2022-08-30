@@ -16,6 +16,7 @@ temporary file. For related reasons, you can not use `convert` models to
 `HDF5Model` format, because the conversion would impliy having the model saved
 somewhere.
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct HDF5Model <: MetabolicModel

@@ -8,6 +8,7 @@ flux `x` feasible in this model must satisfy:
     cₗ ≤ C x ≤ cᵤ
 ```
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}

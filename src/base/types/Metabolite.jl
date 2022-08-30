@@ -1,6 +1,7 @@
 """
 $(TYPEDEF)
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct Metabolite

@@ -32,6 +32,7 @@ model = load_model(StandardModel, "my_model.json")
 keys(model.reactions)
 ```
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct StandardModel <: MetabolicModel

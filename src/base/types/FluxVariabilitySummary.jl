@@ -3,6 +3,7 @@ $(TYPEDEF)
 
 Stores summary information about the result of a flux variability analysis.
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct FluxVariabilitySummary

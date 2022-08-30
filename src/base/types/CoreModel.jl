@@ -10,6 +10,7 @@ s.t. S x = b
       xₗ ≤ x ≤ xᵤ
 ```
 
+# Fields
 $(TYPEDFIELDS)
 """
 mutable struct CoreModel <: MetabolicModel

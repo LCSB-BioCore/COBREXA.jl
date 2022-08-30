@@ -21,6 +21,7 @@ model.json # see the actual underlying JSON
 reactions(model) # see the list of reactions
 ````
 
+# Fields
 $(TYPEDFIELDS)
 """
 struct JSONModel <: MetabolicModel
