@@ -1,8 +1,10 @@
 """
-    struct SBMLModel
+$(TYPEDEF)
 
 Thin wrapper around the model from SBML.jl library. Allows easy conversion from
 SBML to any other model format.
+
+$(TYPEDFIELDS)
 """
 struct SBMLModel <: MetabolicModel
     sbml::SBML.Model

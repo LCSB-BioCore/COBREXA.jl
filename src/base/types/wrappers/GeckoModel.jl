@@ -1,7 +1,9 @@
 """
-    struct _gecko_reaction_column
+$(TYPEDEF)
 
 A helper type for describing the contents of [`GeckoModel`](@ref)s.
+
+$(TYPEDFIELDS)
 """
 struct _gecko_reaction_column
     reaction_idx::Int
@@ -14,10 +16,12 @@ struct _gecko_reaction_column
 end
 
 """
-    struct _gecko_capacity
+$(TYPEDEF)
 
 A helper struct that contains the gene product capacity terms organized by
 the grouping type, e.g. metabolic or membrane groups etc.
+
+$(TYPEDFIELDS)
 """
 struct _gecko_capacity
     group_id::String
@@ -27,7 +31,7 @@ struct _gecko_capacity
 end
 
 """
-    struct GeckoModel <: ModelWrapper
+$(TYPEDEF)
 
 A model with complex enzyme concentration and capacity bounds, as described in
 *Sánchez, Benjamín J., et al. "Improving the phenotype predictions of a yeast
@@ -64,6 +68,8 @@ Implementation exposes the split reactions (available as `reactions(model)`),
 but retains the original "simple" reactions accessible by [`fluxes`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
+
+$(TYPEDFIELDS)
 """
 struct GeckoModel <: ModelWrapper
     objective::SparseVec

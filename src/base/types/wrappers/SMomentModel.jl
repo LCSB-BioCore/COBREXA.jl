@@ -1,8 +1,10 @@
 
 """
-    struct _smoment_column
+$(TYPEDEF)
 
 A helper type that describes the contents of [`SMomentModel`](@ref)s.
+
+$(TYPEDFIELDS)
 """
 struct _smoment_column
     reaction_idx::Int # number of the corresponding reaction in the inner model
@@ -13,7 +15,7 @@ struct _smoment_column
 end
 
 """
-    struct SMomentModel <: ModelWrapper
+$(TYPEDEF)
 
 An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
 *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
@@ -47,6 +49,8 @@ This implementation allows easy access to fluxes from the split reactions
 (available in `reactions(model)`), while the original "simple" reactions from
 the wrapped model are retained as [`fluxes`](@ref). All additional constraints
 are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
+
+$(TYPEDFIELDS)
 """
 struct SMomentModel <: ModelWrapper
     columns::Vector{_smoment_column}

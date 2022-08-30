@@ -1,13 +1,5 @@
 """
-    struct JSONModel <: MetabolicModel
-        json::Dict{String,Any}
-        rxn_index::Dict{String,Int}
-        rxns::Vector{Any}
-        met_index::Dict{String,Int}
-        mets::Vector{Any}
-        gene_index::Dict{String,Int}
-        genes::Vector{Any}
-    end
+$(TYPEDEF)
 
 A struct used to store the contents of a JSON model, i.e. a model read from a
 file ending with `.json`. These model files typically store all the model data
@@ -28,6 +20,8 @@ model = load_json_model("some_model.json")
 model.json # see the actual underlying JSON
 reactions(model) # see the list of reactions
 ````
+
+$(TYPEDFIELDS)
 """
 struct JSONModel <: MetabolicModel
     json::Dict{String,Any}

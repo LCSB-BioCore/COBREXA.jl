@@ -1,6 +1,6 @@
 
 """
-    struct CoreModel <: MetabolicModel
+$(TYPEDEF)
 
 A "bare bones" core linear optimization problem of the form, with reaction and
 metabolite names.
@@ -9,6 +9,8 @@ min c^T x
 s.t. S x = b
       xₗ ≤ x ≤ xᵤ
 ```
+
+$(TYPEDFIELDS)
 """
 mutable struct CoreModel <: MetabolicModel
     S::SparseMat

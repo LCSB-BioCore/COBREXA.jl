@@ -1,18 +1,9 @@
 """
-    mutable struct Reaction
-        id::String
-        name::Maybe{String}
-        metabolites::Dict{String,Float64}
-        lb::Float64
-        ub::Float64
-        grr::Maybe{GeneAssociation}
-        subsystem::Maybe{String}
-        notes::Notes
-        annotations::Annotations
-        objective_coefficient::Float64
-    end
+$(TYPEDEF)
 
 A structure for representing a single reaction in a [`StandardModel`](@ref).
+
+$(TYPEDFIELDS)
 """
 mutable struct Reaction
     id::String

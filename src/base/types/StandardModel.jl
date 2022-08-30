@@ -1,5 +1,5 @@
 """
-    mutable struct StandardModel
+$(TYPEDEF)
 
 `StandardModel` is used to store a constraint based metabolic model with
 meta-information.  Meta-information is defined as annotation details, which
@@ -26,19 +26,13 @@ types if performance is critical.
 
 See also: [`Reaction`](@ref), [`Metabolite`](@ref), [`Gene`](@ref)
 
-# Fields
-```
-id :: String
-reactions :: OrderedDict{String, Reaction}
-metabolites :: OrderedDict{String, Metabolite}
-genes :: OrderedDict{String, Gene}
-```
-
 # Example
 ```
 model = load_model(StandardModel, "my_model.json")
 keys(model.reactions)
 ```
+
+$(TYPEDFIELDS)
 """
 mutable struct StandardModel <: MetabolicModel
     id::String

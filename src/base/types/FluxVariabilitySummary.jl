@@ -1,7 +1,9 @@
 """
-    FluxVariabilitySummary
+$(TYPEDEF)
 
 Stores summary information about the result of a flux variability analysis.
+
+$(TYPEDFIELDS)
 """
 struct FluxVariabilitySummary
     biomass_fluxes::Dict{String,Vector{Maybe{Float64}}}

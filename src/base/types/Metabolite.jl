@@ -1,16 +1,7 @@
 """
-Metabolite structure.
+$(TYPEDEF)
 
-# Fields
-````
-id :: String
-name :: Maybe{String}
-formula :: String
-charge :: Int
-compartment :: String
-notes :: Dict{String, Vector{String}}
-annotation :: Dict{String, Union{Vector{String}, String}}
-````
+$(TYPEDFIELDS)
 """
 mutable struct Metabolite
     id::String

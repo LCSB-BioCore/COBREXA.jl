@@ -1,7 +1,9 @@
 """
-    struct MATModel
+$(TYPEDEF)
 
 Wrapper around the models loaded in dictionaries from the MATLAB representation.
+
+$(TYPEDFIELDS)
 """
 struct MATModel <: MetabolicModel
     mat::Dict{String,Any}

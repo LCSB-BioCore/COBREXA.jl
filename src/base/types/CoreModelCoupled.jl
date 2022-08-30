@@ -1,12 +1,14 @@
 
 """
-    mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
+$(TYPEDEF)
 
 A matrix-based wrap that adds reaction coupling matrix to the inner model. A
 flux `x` feasible in this model must satisfy:
 ```
     cₗ ≤ C x ≤ cᵤ
 ```
+
+$(TYPEDFIELDS)
 """
 mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
     lm::M
