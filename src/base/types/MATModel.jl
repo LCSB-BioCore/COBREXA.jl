@@ -11,7 +11,7 @@ n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
 n_reactions(m::MATModel)::Int = size(m.mat["S"], 2)
 
 """
-    reactions(m::MATModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Extracts reaction names from `rxns` key in the MAT file.
 """
@@ -24,7 +24,7 @@ function reactions(m::MATModel)::Vector{String}
 end
 
 """
-    _mat_has_squashed_coupling(mat)
+$(TYPEDSIGNATURES)
 
 Guesses whether C in the MAT file is stored in A=[S;C].
 """
@@ -33,7 +33,7 @@ _mat_has_squashed_coupling(mat) =
 
 
 """
-    metabolites(m::MATModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Extracts metabolite names from `mets` key in the MAT file.
 """
@@ -47,14 +47,14 @@ function metabolites(m::MATModel)::Vector{String}
 end
 
 """
-    stoichiometry(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extract the stoichiometry matrix, stored under key `S`.
 """
 stoichiometry(m::MATModel) = sparse(m.mat["S"])
 
 """
-    bounds(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extracts bounds from the MAT file, saved under `lb` and `ub`.
 """
@@ -64,7 +64,7 @@ bounds(m::MATModel) = (
 )
 
 """
-    balance(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extracts balance from the MAT model, defaulting to zeroes if not present.
 """
@@ -77,7 +77,7 @@ function balance(m::MATModel)
 end
 
 """
-    objective(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extracts the objective from the MAT model (defaults to zeroes).
 """
@@ -85,7 +85,7 @@ objective(m::MATModel) =
     sparse(reshape(get(m.mat, "c", zeros(n_reactions(m), 1)), n_reactions(m)))
 
 """
-    coupling(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extract coupling matrix stored, in `C` key.
 """
@@ -94,7 +94,7 @@ coupling(m::MATModel) =
     sparse(get(m.mat, "C", zeros(0, n_reactions(m))))
 
 """
-    coupling_bounds(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extracts the coupling constraints. Currently, there are several accepted ways to store these in MATLAB models; this takes the constraints from vectors `cl` and `cu`.
 """
@@ -114,7 +114,7 @@ function coupling_bounds(m::MATModel)
 end
 
 """
-    genes(m::MATModel)
+$(TYPEDSIGNATURES)
 
 Extracts the possible gene list from `genes` key.
 """
@@ -124,7 +124,7 @@ function genes(m::MATModel)
 end
 
 """
-    reaction_gene_association(m::MATModel, rid::String)
+$(TYPEDSIGNATURES)
 
 Extracts the associations from `grRules` key, if present.
 """
@@ -138,7 +138,7 @@ function reaction_gene_association(m::MATModel, rid::String)
 end
 
 """
-    metabolite_formula(m::MATModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Extract metabolite formula from key `metFormula` or `metFormulas`.
 """
@@ -148,7 +148,7 @@ metabolite_formula(m::MATModel, mid::String) = _maybemap(
 )
 
 """
-    metabolite_charge(m::MATModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Extract metabolite charge from `metCharge` or `metCharges`.
 """
@@ -161,7 +161,7 @@ function metabolite_charge(m::MATModel, mid::String)
 end
 
 """
-    metabolite_compartment(m::MATModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Extract metabolite compartment from `metCompartment` or `metCompartments`.
 """
@@ -171,7 +171,7 @@ metabolite_compartment(m::MATModel, mid::String) = _maybemap(
 )
 
 """
-    reaction_stoichiometry(model::MATModel, rid::String)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
@@ -181,7 +181,7 @@ function reaction_stoichiometry(m::MATModel, rid::String)::Dict{String,Float64}
 end
 
 """
-    reaction_stoichiometry(model::MATModel, ridx)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction at index `ridx`.
 """
@@ -198,7 +198,7 @@ end
 # out there.
 
 """
-    Base.convert(::Type{MATModel}, m::MetabolicModel)
+$(TYPEDSIGNATURES)
 
 Convert any metabolic model to `MATModel`.
 """
@@ -248,7 +248,7 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
 end
 
 """
-    reaction_name(m::MATModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Extract reaction name from `rxnNames`.
 """
@@ -258,7 +258,7 @@ reaction_name(m::MATModel, rid::String) = _maybemap(
 )
 
 """
-    metabolite_name(m::MATModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Extract metabolite name from `metNames`.
 """

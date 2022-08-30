@@ -77,28 +77,28 @@ end
 _parse_notes(x)::Notes = _parse_annotations(x)
 
 """
-    reactions(model::JSONModel)
+$(TYPEDSIGNATURES)
 
 Extract reaction names (stored as `.id`) from JSON model.
 """
 reactions(model::JSONModel) = [_json_rxn_name(r, i) for (i, r) in enumerate(model.rxns)]
 
 """
-    metabolites(model::JSONModel)
+$(TYPEDSIGNATURES)
 
 Extract metabolite names (stored as `.id`) from JSON model.
 """
 metabolites(model::JSONModel) = [_json_met_name(m, i) for (i, m) in enumerate(model.mets)]
 
 """
-    genes(model::JSONModel)
+$(TYPEDSIGNATURES)
 
 Extract gene names from a JSON model.
 """
 genes(model::JSONModel) = [_json_gene_name(g, i) for (i, g) in enumerate(model.genes)]
 
 """
-    stoichiometry(model::JSONModel)
+$(TYPEDSIGNATURES)
 
 Get the stoichiometry. Assuming the information is stored in reaction object
 under key `.metabolites`.
@@ -140,7 +140,7 @@ function stoichiometry(model::JSONModel)
 end
 
 """
-    bounds(model::JSONModel)
+$(TYPEDSIGNATURES)
 
 Get the bounds for reactions, assuming the information is stored in
 `.lower_bound` and `.upper_bound`.
@@ -151,7 +151,7 @@ bounds(model::JSONModel) = (
 )
 
 """
-    objective(model::JSONModel)
+$(TYPEDSIGNATURES)
 
 Collect `.objective_coefficient` keys from model reactions.
 """
@@ -159,7 +159,7 @@ objective(model::JSONModel) =
     sparse([float(get(rxn, "objective_coefficient", 0.0)) for rxn in model.rxns])
 
 """
-    reaction_gene_associaton(model::JSONModel, rid::String)
+$(TYPEDSIGNATURES)
 
 Parses the `.gene_reaction_rule` from reactions.
 """
@@ -169,7 +169,7 @@ reaction_gene_association(model::JSONModel, rid::String) = _maybemap(
 )
 
 """
-    reaction_subsystem(model::JSONModel, rid::String)
+$(TYPEDSIGNATURES)
 
 Parses the `.subsystem` out from reactions.
 """
@@ -177,7 +177,7 @@ reaction_subsystem(model::JSONModel, rid::String) =
     get(model.rxns[model.rxn_index[rid]], "subsystem", nothing)
 
 """
-    metabolite_formula(model::JSONModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Parse and return the metabolite `.formula`
 """
@@ -185,7 +185,7 @@ metabolite_formula(model::JSONModel, mid::String) =
     _maybemap(_parse_formula, get(model.mets[model.met_index[mid]], "formula", nothing))
 
 """
-    metabolite_charge(model::JSONModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Return the metabolite `.charge`
 """
@@ -193,7 +193,7 @@ metabolite_charge(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "charge", 0)
 
 """
-    metabolite_compartment(model::JSONModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Return the metabolite `.compartment`
 """
@@ -201,7 +201,7 @@ metabolite_compartment(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "compartment", nothing)
 
 """
-    gene_annotations(model::JSONModel, gid::String)::Annotations
+$(TYPEDSIGNATURES)
 
 Gene annotations from the [`JSONModel`](@ref).
 """
@@ -211,7 +211,7 @@ gene_annotations(model::JSONModel, gid::String)::Annotations = _maybemap(
 )
 
 """
-    gene_notes(model::JSONModel, gid::String)::Notes
+$(TYPEDSIGNATURES)
 
 Gene notes from the [`JSONModel`](@ref).
 """
@@ -219,7 +219,7 @@ gene_notes(model::JSONModel, gid::String)::Notes =
     _maybemap(_parse_notes, get(model.genes[model.gene_index[gid]], "notes", nothing))
 
 """
-    reaction_annotations(model::JSONModel, rid::String)::Annotations
+$(TYPEDSIGNATURES)
 
 Reaction annotations from the [`JSONModel`](@ref).
 """
@@ -229,7 +229,7 @@ reaction_annotations(model::JSONModel, rid::String)::Annotations = _maybemap(
 )
 
 """
-    reaction_notes(model::JSONModel, rid::String)::Notes
+$(TYPEDSIGNATURES)
 
 Reaction notes from the [`JSONModel`](@ref).
 """
@@ -237,7 +237,7 @@ reaction_notes(model::JSONModel, rid::String)::Notes =
     _maybemap(_parse_notes, get(model.rxns[model.rxn_index[rid]], "notes", nothing))
 
 """
-    metabolite_annotations(model::JSONModel, mid::String)::Annotations
+$(TYPEDSIGNATURES)
 
 Metabolite annotations from the [`JSONModel`](@ref).
 """
@@ -247,7 +247,7 @@ metabolite_annotations(model::JSONModel, mid::String)::Annotations = _maybemap(
 )
 
 """
-    metabolite_notes(model::JSONModel, mid::String)::Notes
+$(TYPEDSIGNATURES)
 
 Metabolite notes from the [`JSONModel`](@ref).
 """
@@ -255,7 +255,7 @@ metabolite_notes(model::JSONModel, mid::String)::Notes =
     _maybemap(_parse_notes, get(model.mets[model.met_index[mid]], "notes", nothing))
 
 """
-    reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
@@ -263,7 +263,7 @@ reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]
 
 """
-    reaction_name(model::JSONModel, rid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of reaction with ID `rid`.
 """
@@ -271,7 +271,7 @@ reaction_name(model::JSONModel, rid::String) =
     get(model.rxns[model.rxn_index[rid]], "name", nothing)
 
 """
-    metabolite_name(model::JSONModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of metabolite with ID `mid`.
 """
@@ -279,7 +279,7 @@ metabolite_name(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "name", nothing)
 
 """
-    gene_name(model::JSONModel, gid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of gene with ID `gid`.
 """
@@ -287,7 +287,7 @@ gene_name(model::JSONModel, gid::String) =
     get(model.genes[model.gene_index[gid]], "name", nothing)
 
 """
-    Base.convert(::Type{JSONModel}, mm::MetabolicModel)
+$(TYPEDSIGNATURES)
 
 Convert any [`MetabolicModel`](@ref) to [`JSONModel`](@ref).
 """

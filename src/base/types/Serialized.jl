@@ -19,7 +19,7 @@ mutable struct Serialized{M} <: ModelWrapper where {M<:MetabolicModel}
 end
 
 """
-    unwrap_model(m::Serialized)
+$(TYPEDSIGNATURES)
 
 Unwrap the serialized model (precaching it transparently).
 """
@@ -29,7 +29,7 @@ function unwrap_model(m::Serialized)
 end
 
 """
-    precache!(model::Serialized{MetabolicModel})::Nothing
+$(TYPEDSIGNATURES)
 
 Load the `Serialized` model from disk in case it's not alreadly loaded.
 """

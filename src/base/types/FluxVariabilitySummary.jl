@@ -9,7 +9,7 @@ struct FluxVariabilitySummary
 end
 
 """
-    FluxVariabilitySummary()
+$(TYPEDSIGNATURES)
 
 A default empty constructor for [`FluxVariabilitySummary`](@ref).
 """
@@ -21,12 +21,7 @@ function FluxVariabilitySummary()
 end
 
 """
-    flux_variability_summary(flux_result::Tuple{Dict{String, Dict{String, Float64}}, Dict{String, Dict{String, Float64}}};
-        exclude_exchanges = false,
-        exchange_prefixes = _constants.exchange_prefixes,
-        biomass_strings = _constants.biomass_strings,
-        exclude_biomass = false,
-        )::FluxVariabilitySummary
+$(TYPEDSIGNATURES)
 
 Summarize a dictionary of flux dictionaries obtained eg. from
 [`flux_variability_analysis_dict`](@ref). The simplified summary representation

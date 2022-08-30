@@ -78,7 +78,7 @@ end
 unwrap_model(model::GeckoModel) = model.inner
 
 """
-    stoichiometry(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return a stoichiometry of the [`GeckoModel`](@ref). The enzymatic reactions are
 split into unidirectional forward and reverse ones, each of which may have
@@ -94,7 +94,7 @@ function stoichiometry(model::GeckoModel)
 end
 
 """
-    objective(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
 respect to the internal variables, i.e. [`reactions(model)`](@ref), which are
@@ -104,7 +104,7 @@ have kinetic data.
 objective(model::GeckoModel) = model.objective
 
 """
-    reactions(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
 to forward- and reverse-only parts with different isozyme indexes; reactions
@@ -123,7 +123,7 @@ function reactions(model::GeckoModel)
 end
 
 """
-    n_reactions(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Returns the number of all irreversible reactions in `model` as well as the
 number of gene products that take part in enzymatic reactions.
@@ -131,7 +131,7 @@ number of gene products that take part in enzymatic reactions.
 n_reactions(model::GeckoModel) = length(model.columns) + n_genes(model)
 
 """
-    bounds(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return variable bounds for [`GeckoModel`](@ref).
 """
@@ -148,7 +148,7 @@ function bounds(model::GeckoModel)
 end
 
 """
-    reaction_flux(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
@@ -162,7 +162,7 @@ function reaction_flux(model::GeckoModel)
 end
 
 """
-    coupling(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the coupling of [`GeckoModel`](@ref). That combines the coupling of the
 wrapped model, coupling for split (arm) reactions, and the coupling for the total
@@ -180,7 +180,7 @@ function coupling(model::GeckoModel)
 end
 
 """
-    n_coupling_constraints(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Count the coupling constraints in [`GeckoModel`](@ref) (refer to
 [`coupling`](@ref) for details).
@@ -191,7 +191,7 @@ n_coupling_constraints(model::GeckoModel) =
     length(model.coupling_row_mass_group)
 
 """
-    coupling_bounds(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 The coupling bounds for [`GeckoModel`](@ref) (refer to [`coupling`](@ref) for
 details).
@@ -214,7 +214,7 @@ function coupling_bounds(model::GeckoModel)
 end
 
 """
-    balance(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the balance of the reactions in the inner model, concatenated with a vector of
 zeros representing the enzyme balance of a [`GeckoModel`](@ref).
@@ -223,14 +223,14 @@ balance(model::GeckoModel) =
     [balance(model.inner); spzeros(length(model.coupling_row_gene_product))]
 
 """
-    n_genes(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the number of genes that have enzymatic constraints associated with them.
 """
 n_genes(model::GeckoModel) = length(model.coupling_row_gene_product)
 
 """
-    genes(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the gene ids of genes that have enzymatic constraints associated with them.
 """
@@ -238,14 +238,14 @@ genes(model::GeckoModel) =
     genes(model.inner)[[idx for (idx, _) in model.coupling_row_gene_product]]
 
 """
-    metabolites(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the ids of all metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
 """
 metabolites(model::GeckoModel) = [metabolites(model.inner); genes(model) .* "#gecko"]
 
 """
-    n_metabolites(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Return the number of metabolites, both real and pseudo, for a [`GeckoModel`](@ref).
 """
