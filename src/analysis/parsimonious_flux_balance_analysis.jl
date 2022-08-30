@@ -61,7 +61,7 @@ function parsimonious_flux_balance_analysis(
 )
     # Run FBA
     opt_model = flux_balance_analysis(model, optimizer; modifications = modifications)
-    is_solved(opt_model) || return nothing # FBA failed
+    is_solved(opt_model) || return opt_model # FBA failed
 
     # get the objective
     Z = objective_value(opt_model)
@@ -87,8 +87,6 @@ function parsimonious_flux_balance_analysis(
         delete(opt_model, pfba_constraint)
         unregister(opt_model, :pfba_constraint)
     end
-
-    is_solved(opt_model) || return nothing # pFBA failed
 
     return opt_model
 end
