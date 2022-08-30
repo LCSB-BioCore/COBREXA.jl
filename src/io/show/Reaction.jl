@@ -1,6 +1,6 @@
 
 """
-    _pretty_substances(ss::Vector{String})::String
+$(TYPEDSIGNATURES)
 
 Nicely format a substance list.
 """

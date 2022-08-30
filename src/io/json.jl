@@ -1,5 +1,5 @@
 """
-    load_json_model(filename::String)::JSONModel
+$(TYPEDSIGNATURES)
 
 Load and return a JSON-formatted model that is stored in `file_name`.
 """
@@ -8,7 +8,7 @@ function load_json_model(filename::String)::JSONModel
 end
 
 """
-    save_json_model(model::MetabolicModel, file_name::String)
+$(TYPEDSIGNATURES)
 
 Save a [`JSONModel`](@ref) in `model` to a JSON file `file_name`.
 

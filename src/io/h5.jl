@@ -1,6 +1,6 @@
 
 """
-    load_h5_model(file_name::String)::HDF5Model
+$(TYPEDSIGNATURES)
 
 Return a HDF5Model associated with the given file. Does not actually load
 anything (for efficiency) -- use [`precache!`](@ref) to start pulling data into
@@ -11,7 +11,7 @@ function load_h5_model(file_name::String)::HDF5Model
 end
 
 """
-    save_h5_model(model::MetabolicModel, file_name::String)::HDF5Model
+$(TYPEDSIGNATURES)
 
 Converts and writes a metabolic model to disk in the HDF5 format.
 
@@ -41,7 +41,7 @@ function save_h5_model(model::MetabolicModel, file_name::String)::HDF5Model
 end
 
 """
-    Base.close(model::HDF5Model)
+$(TYPEDSIGNATURES)
 
 Close (and un-cache) the [`HDF5Model`](@ref) data. This allows the associated
 file to be opened for writing again.

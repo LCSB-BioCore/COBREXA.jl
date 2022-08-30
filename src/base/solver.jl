@@ -1,10 +1,6 @@
 
 """
-    make_optimization_model(
-        model::MetabolicModel,
-        optimizer;
-        sense = MAX_SENSE,
-    )
+$(TYPEDSIGNATURES)
 
 Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
 constraint.
@@ -36,7 +32,7 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MAX_S
 end
 
 """
-    is_solved(opt_model)
+$(TYPEDSIGNATURES)
 
 Return `true` if `opt_model` solved successfully (solution is optimal or locally
 optimal).  Return `false` if any other termination status is reached.
@@ -45,7 +41,7 @@ Termination status is defined in the documentation of `JuMP`.
 is_solved(opt_model) = termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
 
 """
-    optimize_objective(opt_model)::Maybe{Float64}
+$(TYPEDSIGNATURES)
 
 Shortcut for running JuMP `optimize!` on a model and returning the objective
 value, if solved.
@@ -56,7 +52,7 @@ function optimize_objective(opt_model)::Maybe{Float64}
 end
 
 """
-    get_optmodel_bounds(opt_model)
+$(TYPEDSIGNATURES)
 
 Returns vectors of the lower and upper bounds of `opt_model` constraints, where
 `opt_model` is a JuMP model constructed by e.g.
@@ -68,10 +64,7 @@ get_optmodel_bounds(opt_model) = (
 )
 
 """
-    set_optmodel_bound!(vidx, opt_model;
-        ub::Maybe{Real} = nothing,
-        lb::Maybe{Real} = nothing,
-    )
+$(TYPEDSIGNATURES)
 
 Helper function to set the bounds of a variable in the model. Internally calls
 `set_normalized_rhs` from JuMP. If the bounds are set to `nothing`, they will
@@ -88,7 +81,7 @@ function set_optmodel_bound!(
 end
 
 """
-    solved_objective_value(opt_model)::Maybe{Float64}
+$(TYPEDSIGNATURES)
 
 Returns the current objective value of a model, if solved.
 
@@ -101,7 +94,7 @@ solved_objective_value(opt_model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
 
 """
-    flux_vector(opt_model)::Maybe{Vector{Float64}}
+$(TYPEDSIGNATURES)
 
 Returns a vector of fluxes of the model, if solved.
 
@@ -114,7 +107,7 @@ flux_vector(model::MetabolicModel, opt_model)::Maybe{Vector{Float64}} =
     is_solved(opt_model) ? reaction_flux(model)' * value.(opt_model[:x]) : nothing
 
 """
-    flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String, Float64}, Nothing}
+$(TYPEDSIGNATURES)
 
 Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
 
@@ -128,7 +121,7 @@ flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
     Dict(fluxes(model) .=> reaction_flux(model)' * value.(opt_model[:x])) : nothing
 
 """
-    flux_dict(model::MetabolicModel)
+$(TYPEDSIGNATURES)
 
 A pipeable variant of `flux_dict`.
 

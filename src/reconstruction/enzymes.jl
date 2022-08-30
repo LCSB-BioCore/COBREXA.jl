@@ -1,5 +1,5 @@
 """
-    with_smoment(; kwargs...)
+$(TYPEDSIGNATURES)
 
 Specifies a model variant which adds extra semantics of the sMOMENT algorithm,
 giving a [`SMomentModel`](@ref). The arguments are forwarded to
@@ -8,7 +8,7 @@ giving a [`SMomentModel`](@ref). The arguments are forwarded to
 with_smoment(; kwargs...) = model -> make_smoment_model(model; kwargs...)
 
 """
-    with_gecko(; kwargs...)
+$(TYPEDSIGNATURES)
 
 Specifies a model variant which adds extra semantics of the Gecko algorithm,
 giving a [`GeckoModel`](@ref). The arguments are forwarded to

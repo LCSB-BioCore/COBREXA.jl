@@ -1,6 +1,6 @@
 
 """
-    _parse_formula(f::String)::MetaboliteFormula
+$(TYPEDSIGNATURES)
 
 Parse a formula in format `C2H6O` into a [`MetaboliteFormula`](@ref), which is
 basically a dictionary of atom counts in the molecule.
@@ -17,7 +17,7 @@ function _parse_formula(f::String)::MetaboliteFormula
 end
 
 """
-    _unparse_formula(f::MetaboliteFormula)::String
+$(TYPEDSIGNATURES)
 
 Format [`MetaboliteFormula`](@ref) to `String`.
 """

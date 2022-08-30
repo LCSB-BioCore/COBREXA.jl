@@ -1,6 +1,6 @@
 
 """
-    serialize_model(model::MM, filename::String)::Serialized{MM} where {MM<:MetabolicModel}
+$(TYPEDSIGNATURES)
 
 Serialize the `model` to file `filename`, returning a [`Serialized`](@ref)
 model that can be loaded back transparently by [`precache!`](@ref). The result
@@ -22,7 +22,7 @@ function serialize_model(
 end
 
 """
-    serialize_model(model::Serialized, filename::String)::Serialized
+$(TYPEDSIGNATURES)
 
 Specialization of [`serialize_model`](@ref) that prevents nested serialization
 of already-serialized models.
