@@ -1,6 +1,6 @@
 
 """
-    macro _make_logging_group(sym::Symbol, doc::String)
+$(TYPEDSIGNATURES)
 
 This creates a group of functions that allow masking out topic-related logging
 actions. A call that goes as follows:
