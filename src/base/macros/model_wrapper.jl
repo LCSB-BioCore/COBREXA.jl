@@ -1,6 +1,6 @@
 
 """
-    _inherit_model_methods_impl(mtype::Symbol, arglist, access, fwdlist, fns...)
+$(TYPEDSIGNATURES)
 
 A helper backend for [`@_inherit_model_methods`](@ref) and
 [`@_inherit_model_methods_fn`](@ref).
