@@ -1,14 +1,5 @@
 """
-    flux_variability_analysis(
-        model::MetabolicModel,
-        fluxes::Vector{Int},
-        optimizer;
-        modifications = [],
-        workers = [myid()],
-        optimal_objective_value = nothing,
-        bounds = z -> (z, Inf),
-        ret = objective_value,
-    )::Matrix{Float64}
+$(TYPEDSIGNATURES)
 
 Flux variability analysis solves a pair of optimization problems in `model` for
 each flux `f` described in `fluxes`:
@@ -108,7 +99,7 @@ function flux_variability_analysis(
 end
 
 """
-    flux_variability_analysis(model::MetabolicModel, flux_indexes::Vector{Int}, optimizer; kwargs...)
+$(TYPEDSIGNATURES)
 
 An overload of [`flux_variability_analysis`](@ref) that explores the fluxes specified by integer indexes
 """
@@ -131,11 +122,7 @@ function flux_variability_analysis(
 end
 
 """
-    flux_variability_analysis(
-        model::MetabolicModel,
-        optimizer;
-        kwargs...
-    )
+$(TYPEDSIGNATURES)
 
 A simpler version of [`flux_variability_analysis`](@ref) that maximizes and
 minimizes all declared fluxes in the model. Arguments are forwarded.
@@ -144,12 +131,7 @@ flux_variability_analysis(model::MetabolicModel, optimizer; kwargs...) =
     flux_variability_analysis(model, reaction_flux(model), optimizer; kwargs...)
 
 """
-    flux_variability_analysis_dict(
-        model::MetabolicModel,
-        optimizer;
-        kwargs...
-    )
-
+$(TYPEDSIGNATURES)
 A variant of [`flux_variability_analysis`](@ref) that returns the individual
 maximized and minimized fluxes as two dictionaries (of dictionaries). All
 keyword arguments except `ret` are passed through.
@@ -182,7 +164,7 @@ function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs
 end
 
 """
-    _max_variability_flux(opt_model, flux, sense, ret)
+$(TYPEDSIGNATURES)
 
 Internal helper for maximizing reactions in optimization model.
 """
@@ -194,7 +176,7 @@ function _max_variability_flux(opt_model, flux, sense, ret)
 end
 
 """
-    reaction_variability_analysis(model::MetabolicModel, reaction_indexes::Vector{Int}, optimizer; kwargs...)
+$(TYPEDSIGNATURES)
 
 A variant for [`flux_variability_analysis`](@ref) that examines actual
 reactions (selected by their indexes in `reactions` argument) instead of whole
@@ -226,7 +208,7 @@ function reaction_variability_analysis(
 end
 
 """
-    reaction_variability_analysis( model::MetabolicModel, optimizer; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for [`reaction_variability_analysis`](@ref) that examines all reactions.
 """

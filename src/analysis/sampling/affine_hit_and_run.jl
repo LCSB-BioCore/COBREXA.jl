@@ -1,12 +1,5 @@
 """
-    function affine_hit_and_run(
-        m::MetabolicModel,
-        warmup_points::Matrix{Float64};
-        sample_iters = 100 .* (1:5),
-        workers = [myid()],
-        chains = length(workers),
-        seed = rand(Int),
-    )
+$(TYPEDSIGNATURES)
 
 Run a hit-and-run style sampling that starts from `warmup_points` and uses
 their affine combinations for generating the run directions to sample the space
@@ -77,7 +70,7 @@ function affine_hit_and_run(
 end
 
 """
-    _affine_hit_and_run_chain(warmup, lbs, ubs, iters, seed)
+$(TYPEDSIGNATURES)
 
 Internal helper function for computing a single affine hit-and-run chain.
 """

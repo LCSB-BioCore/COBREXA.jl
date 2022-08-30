@@ -1,11 +1,5 @@
 """
-    parsimonious_flux_balance_analysis(
-        model::MetabolicModel,
-        optimizer;
-        modifications = [],
-        qp_modifications = [],
-        relax_bounds=[1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
-    )
+$(TYPEDSIGNATURES)
 
 Run parsimonious flux balance analysis (pFBA) on the `model`. In short, pFBA
 runs two consecutive optimization problems. The first is traditional FBA:
@@ -94,7 +88,7 @@ function parsimonious_flux_balance_analysis(
 end
 
 """
-    parsimonious_flux_balance_analysis_vec(model::MetabolicModel, args...; kwargs...)
+$(TYPEDSIGNATURES)
 
 Perform parsimonious flux balance analysis on `model` using `optimizer`.
 Returns a vector of fluxes in the same order as the reactions in `model`.
@@ -108,7 +102,7 @@ parsimonious_flux_balance_analysis_vec(model::MetabolicModel, args...; kwargs...
     flux_vector(model, parsimonious_flux_balance_analysis(model, args...; kwargs...))
 
 """
-    parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...)
+$(TYPEDSIGNATURES)
 
 Perform parsimonious flux balance analysis on `model` using `optimizer`.
 Returns a dictionary mapping the reaction IDs to fluxes. Arguments are

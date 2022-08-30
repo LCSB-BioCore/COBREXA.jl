@@ -1,6 +1,6 @@
 
 """
-    _screen_args(argtuple, kwargtuple, modsname)
+$(TYPEDSIGNATURES)
 
 Internal helper to check the presence and shape of modification and argument
 arrays in [`screen`](@ref) and pals.
@@ -33,13 +33,7 @@ function _screen_args(argtuple, kwargtuple, modsname)
 end
 
 """
-    screen(
-        model::MetabolicModel;
-        variants::Array{V,N}, # defaults to an array of identities
-        analysis,
-        args::Array{A,N}, # defaults to an array of empty argument lists
-        workers = [myid()],
-    )::Array where {V<:AbstractVector,A,N}
+$(TYPEDSIGNATURES)
 
 Take an array of model-modifying function vectors in `variants`, and execute
 the function `analysis` on all variants of the `model` specified by `variants`.
@@ -111,13 +105,7 @@ screen(args...; kwargs...) =
     _screen_impl(args...; kwargs..., _screen_args(args, kwargs, :variants)...)
 
 """
-    _screen_impl(
-        model::MetabolicModel;
-        variants::Array{V,N},
-        analysis,
-        args::Array{A,N},
-        workers = [myid()],
-    )::Array where {V<:AbstractVector,A,N}
+$(TYPEDSIGNATURES)
 
 The actual implementation of [`screen`](@ref).
 """
@@ -151,7 +139,7 @@ function _screen_impl(
 end
 
 """
-    screen_variant(model::MetabolicModel, variant::Vector, analysis, args = ())
+$(TYPEDSIGNATURES)
 
 Helper function for [`screen`](@ref) that applies all single-argument
 functions in `variant` to the `model` (in order from "first" to
@@ -167,7 +155,7 @@ function screen_variant(model::MetabolicModel, variant::Vector, analysis, args =
 end
 
 """
-    screen_variants(model, variants, analysis; workers=[myid()])
+$(TYPEDSIGNATURES)
 
 A shortcut for [`screen`](@ref) that only works with model variants.
 """
@@ -175,7 +163,7 @@ screen_variants(model, variants, analysis; workers = [myid()]) =
     screen(model; variants = variants, analysis = analysis, workers = workers)
 
 """
-    screen_optimize_objective(_, optmodel)::Maybe{Float64}
+$(TYPEDSIGNATURES)
 
 A variant of [`optimize_objective`](@ref) directly usable in
 [`screen_optmodel_modifications`](@ref).
@@ -183,7 +171,7 @@ A variant of [`optimize_objective`](@ref) directly usable in
 screen_optimize_objective(_, optmodel)::Maybe{Float64} = optimize_objective(optmodel)
 
 """
-    _screen_optmodel_prepare(model, optimizer, common_modifications)
+$(TYPEDSIGNATURES)
 
 Internal helper for [`screen_optmodel_modifications`](@ref) that creates the
 model and applies the modifications.
@@ -198,7 +186,7 @@ function _screen_optmodel_prepare(model, optimizer, common_modifications)
 end
 
 """
-    _screen_optmodel_item((mods, args))
+$(TYPEDSIGNATURES)
 
 Internal helper for [`screen_optmodel_modifications`](@ref) that computes one
 item of the screening task.
@@ -212,15 +200,7 @@ function _screen_optmodel_item((mods, args))
 end
 
 """
-    screen_optmodel_modifications(
-        model::MetabolicModel,
-        optimizer;
-        common_modifications::VF = [],
-        modifications::Array{V,N}, # defaults to an array with no modifications
-        args::Array{A,N}, # defaults to an array of empty argument lists
-        analysis::Function,
-        workers = [myid()],
-    )::Array where {V<:AbstractVector,VF<:AbstractVector,A,N}
+$(TYPEDSIGNATURES)
 
 Screen multiple modifications of the same optimization model.
 
@@ -254,15 +234,7 @@ screen_optmodel_modifications(args...; kwargs...) = _screen_optmodel_modificatio
 )
 
 """
-    _screen_optmodel_modifications_impl(
-        model::MetabolicModel,
-        optimizer;
-        common_modifications::VF = [],
-        modifications::Array{V,N},
-        args::Array{A,N},
-        analysis::Function,
-        workers = [myid()],
-    )::Array where {V<:AbstractVector,VF<:AbstractVector,A,N}
+$(TYPEDSIGNATURES)
 
 The actual implementation of [`screen_optmodel_modifications`](@ref).
 """

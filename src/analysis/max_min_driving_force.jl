@@ -1,24 +1,5 @@
 """
-    max_min_driving_force(
-        model::MetabolicModel,
-        reaction_standard_gibbs_free_energies::Dict{String,Float64},
-        optimizer;
-        flux_solution::Dict{String,Float64} = Dict{String,Float64}(),
-        proton_ids::Vector{String} = ["h_c", "h_e"],
-        water_ids::Vector{String} = ["h2o_c", "h2o_e"],
-        constant_concentrations::Dict{String,Float64} = Dict{String,Float64}(),
-        concentration_ratios::Dict{Tuple{String,String},Float64} = Dict{
-            Tuple{String,String},
-            Float64,
-        }(),
-        concentration_lb = 1e-9,
-        concentration_ub = 100e-3,
-        T = _constants.T,
-        R = _constants.R,
-        small_flux_tol = 1e-6,
-        modifications = [],
-        ignore_reaction_ids = [],
-    )
+$(TYPEDSIGNATURES)
 
 Perform a max-min driving force analysis on the `model`, as defined by Noor, et al.,
 "Pathway thermodynamics highlights kinetic obstacles in central metabolism.", PLoS
@@ -183,29 +164,7 @@ function max_min_driving_force(
 end
 
 """
-    max_min_driving_force_variability(
-        model::MetabolicModel,
-        reaction_standard_gibbs_free_energies::Dict{String,Float64},
-        optimizer;
-        workers =[myid()],
-        optimal_objective_value = nothing,
-        bounds = z -> (z, Inf),
-        flux_solution::Dict{String,Float64} = Dict{String,Float64}(),
-        proton_ids::Vector{String} = ["h_c", "h_e"],
-        water_ids::Vector{String} = ["h2o_c", "h2o_e"],
-        constant_concentrations::Dict{String,Float64} = Dict{String,Float64}(),
-        concentration_ratios::Dict{Tuple{String,String},Float64} = Dict{
-            Tuple{String,String},
-            Float64,
-        }(),
-        concentration_lb = 1e-9,
-        concentration_ub = 100e-3,
-        T = _constants.T,
-        R = _constants.R,
-        small_flux_tol = 1e-6,
-        modifications = [],
-        ignore_reaction_ids = [],
-    )
+$(TYPEDSIGNATURES)
 
 Perform a variant of flux variability analysis on a max min driving force type problem.
 Arguments are forwarded to [`max_min_driving_force`](@ref). Calls [`screen`](@ref)
@@ -278,6 +237,8 @@ function max_min_driving_force_variability(
 end
 
 """
+$(TYPEDSIGNATURES)
+
 Helper function to change the objective to optimizing some dG.
 """
 function _mmdf_dgr_objective(ridx, sense)
@@ -287,6 +248,8 @@ function _mmdf_dgr_objective(ridx, sense)
 end
 
 """
+$(TYPEDSIGNATURES)
+
 Helper function to change the objective to optimizing some concentration.
 """
 function _mmdf_concen_objective(midx, sense)
@@ -296,6 +259,8 @@ function _mmdf_concen_objective(midx, sense)
 end
 
 """
+$(TYPEDSIGNATURES)
+
 Helper function to add a new constraint on the driving force.
 """
 function _mmdf_add_df_bound(lb, ub)
