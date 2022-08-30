@@ -3,7 +3,7 @@
 
 Wrapper around the models loaded in dictionaries from the MATLAB representation.
 """
-struct MATModel <: MetabolicModel
+@with_repr struct MATModel <: MetabolicModel
     mat::Dict{String,Any}
 end
 

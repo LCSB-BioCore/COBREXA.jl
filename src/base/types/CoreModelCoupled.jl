@@ -8,7 +8,7 @@ flux `x` feasible in this model must satisfy:
     cₗ ≤ C x ≤ cᵤ
 ```
 """
-mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
+@with_repr mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
     lm::M
     C::SparseMat
     cl::Vector{Float64}

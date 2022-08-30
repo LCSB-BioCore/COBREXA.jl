@@ -48,7 +48,7 @@ This implementation allows easy access to fluxes from the split reactions
 the wrapped model are retained as [`fluxes`](@ref). All additional constraints
 are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 """
-struct SMomentModel <: ModelWrapper
+@with_repr struct SMomentModel <: ModelWrapper
     columns::Vector{_smoment_column}
     total_enzyme_capacity::Float64
 

@@ -29,7 +29,7 @@ model.json # see the actual underlying JSON
 reactions(model) # see the list of reactions
 ````
 """
-struct JSONModel <: MetabolicModel
+@with_repr struct JSONModel <: MetabolicModel
     json::Dict{String,Any}
     rxn_index::Dict{String,Int}
     rxns::Vector{Any}

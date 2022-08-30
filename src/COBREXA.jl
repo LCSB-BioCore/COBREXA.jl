@@ -14,6 +14,7 @@ using Serialization
 using SparseArrays
 using StableRNGs
 using Statistics
+using Term.Repr
 
 import Base: findfirst, getindex, show
 import Pkg

@@ -65,7 +65,7 @@ but retains the original "simple" reactions accessible by [`fluxes`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
 """
-struct GeckoModel <: ModelWrapper
+@with_repr struct GeckoModel <: ModelWrapper
     objective::SparseVec
     columns::Vector{_gecko_reaction_column}
     coupling_row_reaction::Vector{Int}

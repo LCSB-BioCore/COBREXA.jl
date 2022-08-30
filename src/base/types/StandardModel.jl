@@ -40,7 +40,7 @@ model = load_model(StandardModel, "my_model.json")
 keys(model.reactions)
 ```
 """
-mutable struct StandardModel <: MetabolicModel
+@with_repr mutable struct StandardModel <: MetabolicModel
     id::String
     reactions::OrderedDict{String,Reaction}
     metabolites::OrderedDict{String,Metabolite}

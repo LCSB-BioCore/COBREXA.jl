@@ -16,7 +16,7 @@ temporary file. For related reasons, you can not use `convert` models to
 `HDF5Model` format, because the conversion would impliy having the model saved
 somewhere.
 """
-mutable struct HDF5Model <: MetabolicModel
+@with_repr mutable struct HDF5Model <: MetabolicModel
     h5::Maybe{HDF5.File}
     filename::String
 

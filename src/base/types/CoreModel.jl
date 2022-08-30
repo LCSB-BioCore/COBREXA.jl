@@ -10,7 +10,7 @@ s.t. S x = b
       xₗ ≤ x ≤ xᵤ
 ```
 """
-mutable struct CoreModel <: MetabolicModel
+@with_repr mutable struct CoreModel <: MetabolicModel
     S::SparseMat
     b::SparseVec
     c::SparseVec
