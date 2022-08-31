@@ -1,6 +1,6 @@
 
 """
-    _guesskey(ks, possibilities)
+$(TYPEDSIGNATURES)
 
 Unfortunately, many model types that contain dictionares do not have
 standardized field names, so we need to try a few possibilities and guess the
@@ -22,7 +22,7 @@ function _guesskey(avail, possibilities)
 end
 
 """
-    gets(collection, fail, keys)
+$(TYPEDSIGNATURES)
 
 Return `fail` if key in `keys` is not in `collection`, otherwise
 return `collection[key]`. Useful if may different keys need to be

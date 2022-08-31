@@ -1,5 +1,5 @@
 """
-    check_duplicate_reaction(rxn::Reaction, rxns::Dict{String, Reaction}; only_metabolites=true)
+$(TYPEDSIGNATURES)
 
 Check if `rxn` already exists in `rxns` but has another `id`.
 If `only_metabolites` is `true` then only the metabolite `id`s are checked.
@@ -39,7 +39,7 @@ function check_duplicate_reaction(
 end
 
 """
-    is_boundary(rxn_dict::Dict{String, Float64})
+$(TYPEDSIGNATURES)
 
 Return true if the reaction denoted by `rxn_dict` is a boundary reaction, otherwise return false.
 Checks if on boundary by inspecting the number of metabolites in `rxn_dict`.
@@ -57,7 +57,7 @@ is_boundary(rxn::Reaction) = is_boundary(rxn.metabolites)
 is_boundary(model::StandardModel, rxn::Reaction) = is_boundary(rxn) # for consistency with functions below
 
 """
-    reaction_atom_balance(model::StandardModel, rxn)
+$(TYPEDSIGNATURES)
 
 Returns a dictionary mapping the stoichiometry of atoms through a single reaction. Uses the
 metabolite information in `model` to determine the mass balance. Accepts a reaction
@@ -87,7 +87,7 @@ reaction_atom_balance(model::StandardModel, rxn::Reaction) =
     reaction_atom_balance(model, rxn.id)
 
 """
-    reaction_mass_balanced(model::StandardModel, rxn)
+$(TYPEDSIGNATURES)
 
 Checks if `rxn` is atom balanced. Returns a boolean for whether the reaction is balanced,
 and the associated balance of atoms for convenience (useful if not balanced). Calls
@@ -105,7 +105,7 @@ reaction_mass_balanced(model::StandardModel, reaction_dict::Dict{String,Float64}
     all(values(reaction_atom_balance(model, reaction_dict)) .== 0)
 
 """
-    stoichiometry_string(rxn_dict::Dict{String, Float64}; format_id = x -> x)
+$(TYPEDSIGNATURES)
 
 Return the reaction equation as a string. The metabolite strings can be manipulated by
 setting `format_id`.
@@ -130,7 +130,7 @@ function stoichiometry_string(req; format_id = x -> x)
 end
 
 """
-    stoichiometry_string(rxn::Reaction; kwargs)
+$(TYPEDSIGNATURES)
 
 Alternative of [`stoichiometry_string`](@ref) take takes a `Reaction` as an argument.
 """

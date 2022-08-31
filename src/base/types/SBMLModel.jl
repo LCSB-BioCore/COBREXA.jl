@@ -1,43 +1,46 @@
 """
-    struct SBMLModel
+$(TYPEDEF)
 
 Thin wrapper around the model from SBML.jl library. Allows easy conversion from
 SBML to any other model format.
+
+# Fields
+$(TYPEDFIELDS)
 """
 struct SBMLModel <: MetabolicModel
     sbml::SBML.Model
 end
 
 """
-    reactions(model::SBMLModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Get reactions from a [`SBMLModel`](@ref).
 """
 reactions(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.reactions)]
 
 """
-    metabolites(model::SBMLModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Get metabolites from a [`SBMLModel`](@ref).
 """
 metabolites(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.species)]
 
 """
-    n_reactions(model::SBMLModel)::Int
+$(TYPEDSIGNATURES)
 
 Efficient counting of reactions in [`SBMLModel`](@ref).
 """
 n_reactions(model::SBMLModel)::Int = length(model.sbml.reactions)
 
 """
-    n_metabolites(model::SBMLModel)::Int
+$(TYPEDSIGNATURES)
 
 Efficient counting of metabolites in [`SBMLModel`](@ref).
 """
 n_metabolites(model::SBMLModel)::Int = length(model.sbml.species)
 
 """
-    stoichiometry(model::SBMLModel)::SparseMat
+$(TYPEDSIGNATURES)
 
 Recreate the stoichiometry matrix from the [`SBMLModel`](@ref).
 """
@@ -47,7 +50,7 @@ function stoichiometry(model::SBMLModel)::SparseMat
 end
 
 """
-    bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
+$(TYPEDSIGNATURES)
 
 Get the lower and upper flux bounds of model [`SBMLModel`](@ref). Throws `DomainError` in
 case if the SBML contains mismatching units.
@@ -71,35 +74,35 @@ function bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
 end
 
 """
-    balance(model::SBMLModel)::SparseVec
+$(TYPEDSIGNATURES)
 
 Balance vector of a [`SBMLModel`](@ref). This is always zero.
 """
 balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
 
 """
-    objective(model::SBMLModel)::SparseVec
+$(TYPEDSIGNATURES)
 
 Objective of the [`SBMLModel`](@ref).
 """
 objective(model::SBMLModel)::SparseVec = SBML.flux_objective(model.sbml)
 
 """
-    genes(model::SBMLModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Get genes of a [`SBMLModel`](@ref).
 """
 genes(model::SBMLModel)::Vector{String} = [k for k in keys(model.sbml.gene_products)]
 
 """
-    n_genes(model::SBMLModel)::Int
+$(TYPEDSIGNATURES)
 
 Get number of genes in [`SBMLModel`](@ref).
 """
 n_genes(model::SBMLModel)::Int = length(model.sbml.gene_products)
 
 """
-    reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation}
+$(TYPEDSIGNATURES)
 
 Retrieve the [`GeneAssociation`](@ref) from [`SBMLModel`](@ref).
 """
@@ -107,7 +110,7 @@ reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation}
     _maybemap(_parse_grr, model.sbml.reactions[rid].gene_product_association)
 
 """
-    metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula}
+$(TYPEDSIGNATURES)
 
 Get [`MetaboliteFormula`](@ref) from a chosen metabolite from [`SBMLModel`](@ref).
 """
@@ -115,7 +118,7 @@ metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
     _maybemap(_parse_formula, model.sbml.species[mid].formula)
 
 """
-    metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int}
+$(TYPEDSIGNATURES)
 
 Get charge of a chosen metabolite from [`SBMLModel`](@ref).
 """
@@ -137,7 +140,7 @@ end
 const _sbml_export_notes = _sbml_export_annotation
 
 """
-    reaction_stoichiometry(model::SBMLModel, rid::String)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
@@ -154,28 +157,28 @@ function reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
 end
 
 """
-    reaction_name(model::SBMLModel, rid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of reaction with ID `rid`.
 """
 reaction_name(model::SBMLModel, rid::String) = model.sbml.reactions[rid].name
 
 """
-    metabolite_name(model::SBMLModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of metabolite with ID `mid`.
 """
 metabolite_name(model::SBMLModel, mid::String) = model.sbml.species[mid].name
 
 """
-    gene_name(model::SBMLModel, gid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of gene with ID `gid`.
 """
 gene_name(model::SBMLModel, gid::String) = model.sbml.gene_products[gid].name
 
 """
-    Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
+$(TYPEDSIGNATURES)
 
 Convert any metabolic model to [`SBMLModel`](@ref).
 """

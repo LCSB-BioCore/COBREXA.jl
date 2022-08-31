@@ -1,13 +1,5 @@
 """
-    function gapfill_minimum_reactions(
-        model::MetabolicModel,
-        universal_reactions::Vector{Reaction},
-        optimizer;
-        objective_bounds = (_constants.tolerance, _constants.default_reaction_bound),
-        maximum_new_reactions = 5,
-        weights = fill(1.0, length(universal_reactions)),
-        modifications = [],
-    )
+$(TYPEDSIGNATURES)
 
 Find a minimal set of reactions from `universal_reactions` that should be added
 to `model` so that the model has a feasible solution with bounds on its
@@ -104,7 +96,7 @@ function gapfill_minimum_reactions(
 end
 
 """
-    gapfilled_mask(opt_model::BitVector)
+$(TYPEDSIGNATURES)
 
 Get a `BitVector` of added reactions from the model solved by
 [`gapfill_minimum_reactions`](@ref). The bit indexes correspond to the indexes
@@ -119,7 +111,7 @@ gapfilled_mask(opt_model)::BitVector =
     is_solved(opt_model) ? value.(opt_model[:y]) .> 0 : nothing
 
 """
-    gapfilled_rids(opt_model, universal_reactions::Vector{Reaction})::Vector{String}
+$(TYPEDSIGNATURES)
 
 Utility to extract a short vector of IDs of the reactions added by the
 gapfilling algorithm. Use with `opt_model` returned from
@@ -131,7 +123,7 @@ gapfilled_rids(opt_model, universal_reactions::Vector{Reaction}) =
     end
 
 """
-    gapfilled_rids(universal_reactions::Vector{Reaction})
+$(TYPEDSIGNATURES)
 
 Overload of [`gapfilled_rids`](@ref) that can be piped easily.
 
@@ -143,10 +135,7 @@ gapfilled_rids(universal_reactions::Vector{Reaction}) =
     opt_model -> gapfilled_rids(opt_model, universal_reactions)
 
 """
-    _universal_stoichiometry(
-        universal_reactions::Vector{Reaction},
-        mids,
-    )
+$(TYPEDSIGNATURES)
 
 A helper function that constructs the stoichiometric matrix of a set of
 `universal_reactions`. The order of the metabolites is determined with

@@ -1,6 +1,6 @@
 
 """
-    Base.copy(m::StandardModel)
+$(TYPEDSIGNATURES)
 
 Shallow copy of a [`StandardModel`](@ref)
 """
@@ -12,7 +12,7 @@ Base.copy(m::StandardModel) = StandardModel(
 )
 
 """
-    Base.copy(r::Reaction)
+$(TYPEDSIGNATURES)
 
 Shallow copy of a [`Reaction`](@ref)
 """
@@ -29,7 +29,7 @@ Base.copy(r::Reaction) = Reaction(
 )
 
 """
-    Base.copy(m::Metabolite)
+$(TYPEDSIGNATURES)
 
 Shallow copy of a [`Metabolite`](@ref)
 """
@@ -43,7 +43,7 @@ Base.copy(m::Metabolite) = Metabolite(
 )
 
 """
-    Base.copy(g::Gene)
+$(TYPEDSIGNATURES)
 
 Shallow copy of a [`Gene`](@ref)
 """

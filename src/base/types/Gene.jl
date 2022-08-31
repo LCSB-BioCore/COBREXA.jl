@@ -1,13 +1,8 @@
 """
-Gene struct.
+$(TYPEDEF)
 
 # Fields
-````
-id :: String
-name :: Maybe{String}
-notes :: Dict{String, Vector{String}}
-annotation :: Dict{String, Union{Vector{String}, String}}
-````
+$(TYPEDFIELDS)
 """
 mutable struct Gene
     id::String

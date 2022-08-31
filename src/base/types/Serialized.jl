@@ -1,13 +1,13 @@
 
 """
-    mutable struct Serialized{M <: MetabolicModel}
-        m::Maybe{M}
-        filename::String
-    end
+$(TYPEDEF)
 
 A meta-model that represents a model that is serialized on the disk. The
 internal model will be loaded on-demand by using any accessor, or by calling
 [`precache!`](@ref) directly.
+
+# Fields
+$(TYPEDFIELDS)
 """
 mutable struct Serialized{M} <: ModelWrapper where {M<:MetabolicModel}
     m::Maybe{M}
@@ -19,7 +19,7 @@ mutable struct Serialized{M} <: ModelWrapper where {M<:MetabolicModel}
 end
 
 """
-    unwrap_model(m::Serialized)
+$(TYPEDSIGNATURES)
 
 Unwrap the serialized model (precaching it transparently).
 """
@@ -29,7 +29,7 @@ function unwrap_model(m::Serialized)
 end
 
 """
-    precache!(model::Serialized{MetabolicModel})::Nothing
+$(TYPEDSIGNATURES)
 
 Load the `Serialized` model from disk in case it's not alreadly loaded.
 """

@@ -1,18 +1,10 @@
 """
-    mutable struct Reaction
-        id::String
-        name::Maybe{String}
-        metabolites::Dict{String,Float64}
-        lb::Float64
-        ub::Float64
-        grr::Maybe{GeneAssociation}
-        subsystem::Maybe{String}
-        notes::Notes
-        annotations::Annotations
-        objective_coefficient::Float64
-    end
+$(TYPEDEF)
 
 A structure for representing a single reaction in a [`StandardModel`](@ref).
+
+# Fields
+$(TYPEDFIELDS)
 """
 mutable struct Reaction
     id::String
@@ -28,18 +20,7 @@ mutable struct Reaction
 end
 
 """
-    Reaction(
-        id = "";
-        name = nothing,
-        metabolites = Dict{String,Float64}(),
-        lb = -_constants.default_reaction_bound,
-        ub = _constants.default_reaction_bound,
-        grr = nothing,
-        subsystem = nothing,
-        notes = Notes(),
-        annotations = Annotations(),
-        objective_coefficient = 0.0,
-    )
+$(TYPEDSIGNATURES)
 
 A constructor for Reaction that only takes a reaction `id` and
 assigns default/uninformative values to all the fields that are not
@@ -73,12 +54,7 @@ function Reaction(
 end
 
 """
-    Reaction(
-        id::String,
-        metabolites::Dict{String,Union{Int, Float64}},
-        dir = :bidirectional;
-        default_bound = _constants.default_reaction_bound,
-    )
+$(TYPEDSIGNATURES)
 
 Convenience constructor for `Reaction`. The reaction equation is specified using
 `metabolites`, which is a dictionary mapping metabolite ids to stoichiometric

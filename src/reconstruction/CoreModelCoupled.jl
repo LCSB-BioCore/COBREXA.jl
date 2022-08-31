@@ -1,13 +1,5 @@
 """
-    add_reactions(
-        m::CoreModelCoupled,
-        s::V1,
-        b::V2,
-        c::AbstractFloat,
-        xl::AbstractFloat,
-        xu::AbstractFloat;
-        check_consistency = false,
-    ) where {V1<:VecType,V2<:VecType}
+$(TYPEDSIGNATURES)
 
 Add reaction(s) to a `CoreModelCoupled` model `m`.
 
@@ -31,17 +23,7 @@ function add_reactions(
 end
 
 """
-    add_reactions(
-        m::CoreModelCoupled,
-        s::V1,
-        b::V2,
-        c::AbstractFloat,
-        xl::AbstractFloat,
-        xu::AbstractFloat,
-        rxn::String,
-        mets::K;
-        check_consistency = false,
-    ) where {V1<:VecType,V2<:VecType,K<:StringVecType}
+$(TYPEDSIGNATURES)
 
 """
 function add_reactions(
@@ -75,16 +57,7 @@ function add_reactions(
 end
 
 """
-    add_reactions(
-        m::CoreModelCoupled,
-        Sp::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V;
-        check_consistency = false,
-    ) where {M<:MatType,V<:VecType}
-
+$(TYPEDSIGNATURES)
 """
 function add_reactions(
     m::CoreModelCoupled,
@@ -105,10 +78,9 @@ function add_reactions(
 end
 
 """
-    add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = false)
+$(TYPEDSIGNATURES)
 
 Add all reactions from `m2` to `m1`.
-
 """
 function add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = false)
     new_lm = add_reactions(m1.lm, m2, check_consistency = check_consistency)
@@ -121,18 +93,7 @@ function add_reactions(m1::CoreModelCoupled, m2::CoreModel; check_consistency = 
 end
 
 """
-    add_reactions(
-        m::CoreModelCoupled,
-        Sp::M,
-        b::V,
-        c::V,
-        xl::V,
-        xu::V,
-        rxns::K,
-        mets::K;
-        check_consistency = false,
-    ) where {M<:MatType,V<:VecType,K<:StringVecType}
-
+$(TYPEDSIGNATURES)
 """
 function add_reactions(
     m::CoreModelCoupled,
@@ -165,7 +126,7 @@ function add_reactions(
 end
 
 """
-    add_coupling_constraints(m::CoreCoupling, args...)
+$(TYPEDSIGNATURES)
 
 Add constraints of the following form to CoreCoupling and return the modified
 model.
@@ -179,7 +140,7 @@ function add_coupling_constraints(m::CoreCoupling, args...)
 end
 
 """
-    add_coupling_constraints(m::CoreModel, args...)
+$(TYPEDSIGNATURES)
 
 Add coupling constraints to a plain [`CoreModel`](@ref) (returns a
 [`CoreModelCoupled`](@ref)).
@@ -187,12 +148,7 @@ Add coupling constraints to a plain [`CoreModel`](@ref) (returns a
 add_coupling_constraints(m::CoreModel, args...) = CoreModelCoupled(m, args...)
 
 """
-    add_coupling_constraints!(
-        m::CoreCoupling,
-        c::VecType,
-        cl::AbstractFloat,
-        cu::AbstractFloat,
-    )
+$(TYPEDSIGNATURES)
 
 Overload for adding a single coupling constraint.
 """
@@ -206,12 +162,7 @@ function add_coupling_constraints!(
 end
 
 """
-    add_coupling_constraints!(
-        m::CoreCoupling,
-        C::MatType,
-        cl::V,
-        cu::V,
-    ) where {V<:VecType}
+$(TYPEDSIGNATURES)
 
 In-place add a single coupling constraint in form
 ```
@@ -237,7 +188,7 @@ function add_coupling_constraints!(
 end
 
 """
-    remove_coupling_constraints(m::CoreCoupling, args...)
+$(TYPEDSIGNATURES)
 
 Remove coupling constraints from the linear model, and return the modified
 model. Arguments are the same as for in-place version
@@ -250,7 +201,7 @@ function remove_coupling_constraints(m::CoreCoupling, args...)
 end
 
 """
-    remove_coupling_constraints!(m::CoreCoupling, constraint::Int)
+$(TYPEDSIGNATURES)
 
 Removes a single coupling constraints from a [`CoreCoupling`](@ref) in-place.
 """
@@ -259,7 +210,7 @@ remove_coupling_constraints!(m::CoreCoupling, constraint::Int) =
 
 
 """
-    remove_coupling_constraints!(m::CoreCoupling, constraints::Vector{Int})
+$(TYPEDSIGNATURES)
 
 Removes a set of coupling constraints from a [`CoreCoupling`](@ref)
 in-place.
@@ -273,12 +224,7 @@ function remove_coupling_constraints!(m::CoreCoupling, constraints::Vector{Int})
 end
 
 """
-    change_coupling_bounds!(
-        model::CoreCoupling,
-        constraints::Vector{Int};
-        cl::V = Float64[],
-        cu::V = Float64[],
-    ) where {V<:VecType}
+$(TYPEDSIGNATURES)
 
 Change the lower and/or upper bounds (`cl` and `cu`) for the given list of
 coupling constraints.
@@ -425,11 +371,7 @@ end
 end
 
 """
-    change_objective!(
-        model::CoreCoupling,
-        args...;
-        kwargs...,
-    )
+$(TYPEDSIGNATURES)
 
 Forwards arguments to [`change_objective!`](@ref) of the internal model.
 """

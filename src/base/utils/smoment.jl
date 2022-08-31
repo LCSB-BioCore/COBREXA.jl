@@ -1,6 +1,6 @@
 
 """
-    _smoment_reaction_name(original_name::String, direction::Int)
+$(TYPEDSIGNATURES)
 
 Internal helper for systematically naming reactions in [`SMomentModel`](@ref).
 """
@@ -9,7 +9,7 @@ _smoment_reaction_name(original_name::String, direction::Int) =
     direction > 0 ? "$original_name#forward" : "$original_name#reverse"
 
 """
-    _smoment_column_reactions(model::SMomentModel)
+$(TYPEDSIGNATURES)
 
 Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
@@ -23,7 +23,7 @@ _smoment_column_reactions(model::SMomentModel) = sparse(
 )
 
 """
-    smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass)
+$(TYPEDSIGNATURES)
 
 Compute a "score" for picking the most viable isozyme for
 [`make_smoment_model`](@ref), based on maximum kcat divided by relative mass of
@@ -37,7 +37,7 @@ smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass) =
     )
 
 """
-    smoment_isozyme_speed(gene_product_molar_mass::Function)
+$(TYPEDSIGNATURES)
 
 A piping- and argmax-friendly overload of [`smoment_isozyme_speed`](@ref).
 

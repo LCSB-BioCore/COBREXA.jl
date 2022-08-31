@@ -1,5 +1,5 @@
 """
-    mutable struct StandardModel
+$(TYPEDEF)
 
 `StandardModel` is used to store a constraint based metabolic model with
 meta-information.  Meta-information is defined as annotation details, which
@@ -26,19 +26,14 @@ types if performance is critical.
 
 See also: [`Reaction`](@ref), [`Metabolite`](@ref), [`Gene`](@ref)
 
-# Fields
-```
-id :: String
-reactions :: OrderedDict{String, Reaction}
-metabolites :: OrderedDict{String, Metabolite}
-genes :: OrderedDict{String, Gene}
-```
-
 # Example
 ```
 model = load_model(StandardModel, "my_model.json")
 keys(model.reactions)
 ```
+
+# Fields
+$(TYPEDFIELDS)
 """
 mutable struct StandardModel <: MetabolicModel
     id::String
@@ -56,7 +51,7 @@ end
 
 # MetabolicModel interface follows
 """
-    reactions(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return a vector of reaction id strings contained in `model`.
 The order of reaction ids returned here matches the order used to construct the
@@ -65,7 +60,7 @@ stoichiometric matrix.
 reactions(model::StandardModel)::StringVecType = collect(keys(model.reactions))
 
 """
-    n_reactions(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return the number of reactions contained in `model`.
 """
@@ -73,7 +68,7 @@ n_reactions(model::StandardModel)::Int = length(model.reactions)
 
 
 """
-    metabolites(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return a vector of metabolite id strings contained in `model`.
 The order of metabolite strings returned here matches the order used to construct
@@ -82,28 +77,28 @@ the stoichiometric matrix.
 metabolites(model::StandardModel)::StringVecType = collect(keys(model.metabolites))
 
 """
-n_metabolites(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return the number of metabolites in `model`.
 """
 n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 """
-    genes(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return a vector of gene id strings in `model`.
 """
 genes(model::StandardModel)::StringVecType = collect(keys(model.genes))
 
 """
-    n_genes(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return the number of genes in `model`.
 """
 n_genes(model::StandardModel)::Int = length(model.genes)
 
 """
-    stoichiometry(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return the stoichiometric matrix associated with `model` in sparse format.
 """
@@ -144,7 +139,7 @@ function stoichiometry(model::StandardModel)::SparseMat
 end
 
 """
-    lower_bounds(model::StandardModel)::Vector{Float64}
+$(TYPEDSIGNATURES)
 
 Return the lower bounds for all reactions in `model` in sparse format.
 """
@@ -152,7 +147,7 @@ lower_bounds(model::StandardModel)::Vector{Float64} =
     sparse([model.reactions[rxn].lb for rxn in reactions(model)])
 
 """
-    upper_bounds(model::StandardModel)::Vector{Float64}
+$(TYPEDSIGNATURES)
 
 Return the upper bounds for all reactions in `model` in sparse format.
 Order matches that of the reaction ids returned in `reactions()`.
@@ -161,7 +156,7 @@ upper_bounds(model::StandardModel)::Vector{Float64} =
     sparse([model.reactions[rxn].ub for rxn in reactions(model)])
 
 """
-    bounds(model::StandardModel)::Tuple{Vector{Float64},Vector{Float64}}
+$(TYPEDSIGNATURES)
 
 Return the lower and upper bounds, respectively, for reactions in `model`.
 Order matches that of the reaction ids returned in `reactions()`.
@@ -170,7 +165,7 @@ bounds(model::StandardModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
 """
-    balance(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return the balance of the linear problem, i.e. b in Sv = 0 where S is the stoichiometric matrix
 and v is the flux vector.
@@ -178,7 +173,7 @@ and v is the flux vector.
 balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 
 """
-    objective(model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return sparse objective vector for `model`.
 """
@@ -186,7 +181,7 @@ objective(model::StandardModel)::SparseVec =
     sparse([model.reactions[rid].objective_coefficient for rid in keys(model.reactions)])
 
 """
-    reaction_gene_association(model::StandardModel, id::String)
+$(TYPEDSIGNATURES)
 
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
@@ -195,7 +190,7 @@ reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociati
     _maybemap(identity, model.reactions[id].grr)
 
 """
-    metabolite_formula(model::StandardModel, id::String)
+$(TYPEDSIGNATURES)
 
 Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
@@ -204,7 +199,7 @@ metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula} =
     _maybemap(_parse_formula, model.metabolites[id].formula)
 
 """
-    metabolite_charge(model::StandardModel, id::String)
+$(TYPEDSIGNATURES)
 
 Return the charge associated with metabolite `id` in `model`.
 Return nothing if not present.
@@ -213,7 +208,7 @@ metabolite_charge(model::StandardModel, id::String)::Maybe{Int} =
     model.metabolites[id].charge
 
 """
-    metabolite_compartment(model::StandardModel, id::String)
+$(TYPEDSIGNATURES)
 
 Return compartment associated with metabolite `id` in `model`.
 Return `nothing` if not present.
@@ -222,7 +217,7 @@ metabolite_compartment(model::StandardModel, id::String)::Maybe{String} =
     model.metabolites[id].compartment
 
 """
-    reaction_subsystem(id::String, model::StandardModel)
+$(TYPEDSIGNATURES)
 
 Return the subsystem associated with reaction `id` in `model`.
 Return `nothing` if not present.
@@ -231,7 +226,7 @@ reaction_subsystem(model::StandardModel, id::String)::Maybe{String} =
     model.reactions[id].subsystem
 
 """
-    metabolite_notes(model::StandardModel, id::String)::Notes
+$(TYPEDSIGNATURES)
 
 Return the notes associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
@@ -240,7 +235,7 @@ metabolite_notes(model::StandardModel, id::String)::Maybe{Notes} =
     model.metabolites[id].notes
 
 """
-    metabolite_annotations(model::StandardModel, id::String)::Annotations
+$(TYPEDSIGNATURES)
 
 Return the annotation associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
@@ -249,7 +244,7 @@ metabolite_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.metabolites[id].annotations
 
 """
-    gene_notes(model::StandardModel, id::String)::Notes
+$(TYPEDSIGNATURES)
 
 Return the notes associated with gene `id` in `model`.
 Return an empty Dict if not present.
@@ -257,7 +252,7 @@ Return an empty Dict if not present.
 gene_notes(model::StandardModel, id::String)::Maybe{Notes} = model.genes[id].notes
 
 """
-    gene_annotations(model::StandardModel, id::String)::Annotations
+$(TYPEDSIGNATURES)
 
 Return the annotation associated with gene `id` in `model`.
 Return an empty Dict if not present.
@@ -266,7 +261,7 @@ gene_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.genes[id].annotations
 
 """
-    reaction_notes(model::StandardModel, id::String)::Notes
+$(TYPEDSIGNATURES)
 
 Return the notes associated with reaction `id` in `model`.
 Return an empty Dict if not present.
@@ -274,7 +269,7 @@ Return an empty Dict if not present.
 reaction_notes(model::StandardModel, id::String)::Maybe{Notes} = model.reactions[id].notes
 
 """
-    reaction_annotations(model::StandardModel, id::String)::Annotations
+$(TYPEDSIGNATURES)
 
 Return the annotation associated with reaction `id` in `model`.
 Return an empty Dict if not present.
@@ -283,7 +278,7 @@ reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.reactions[id].annotations
 
 """
-    reaction_stoichiometry(model::StandardModel, rid::String)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
@@ -291,28 +286,28 @@ reaction_stoichiometry(m::StandardModel, rid::String)::Dict{String,Float64} =
     m.reactions[rid].metabolites
 
 """
-    reaction_name(m::StandardModel, rid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of reaction with ID `id`.
 """
 reaction_name(m::StandardModel, rid::String) = m.reactions[rid].name
 
 """
-    metabolite_name(m::StandardModel, mid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of metabolite with ID `id`.
 """
 metabolite_name(m::StandardModel, mid::String) = m.metabolites[mid].name
 
 """
-    gene_name(m::StandardModel, gid::String)
+$(TYPEDSIGNATURES)
 
 Return the name of gene with ID `id`.
 """
 gene_name(m::StandardModel, gid::String) = m.genes[gid].name
 
 """
-Base.convert(::Type{StandardModel}, model::MetabolicModel)
+$(TYPEDSIGNATURES)
 
 Convert any `MetabolicModel` into a `StandardModel`.
 Note, some data loss may occur since only the generic interface is used during

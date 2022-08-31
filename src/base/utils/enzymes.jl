@@ -1,5 +1,5 @@
 """
-    gene_product_dict(model::GeckoModel, opt_model)
+$(TYPEDSIGNATURES)
 
 Return a dictionary mapping protein molar concentrations to their ids. The
 argument `opt_model` is a solved optimization problem, typically returned by
@@ -11,14 +11,14 @@ gene_product_dict(model::GeckoModel, opt_model) =
     Dict(genes(model) .=> value.(opt_model[:x])[(length(model.columns)+1):end]) : nothing
 
 """
-    gene_product_dict(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 A pipe-able variant of [`gene_product_dict`](@ref).
 """
 gene_product_dict(model::GeckoModel) = x -> gene_product_dict(model, x)
 
 """
-    gene_product_mass_group_dict(model::GeckoModel, opt_model)
+$(TYPEDSIGNATURES)
 
 Extract the mass utilization in mass groups from a solved [`GeckoModel`](@ref).
 """
@@ -32,7 +32,7 @@ gene_product_mass_group_dict(model::GeckoModel, opt_model) =
     ) : nothing
 
 """
-    gene_product_mass_group_dict(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 A pipe-able variant of [`gene_product_mass_group_dict`](@ref).
 """
@@ -40,7 +40,7 @@ gene_product_mass_group_dict(model::GeckoModel) =
     x -> gene_product_mass_group_dict(model, x)
 
 """
-    gene_product_mass(model::SMomentModel)
+$(TYPEDSIGNATURES)
 
 Extract the total mass utilization in a solved [`SMomentModel`](@ref).
 """
@@ -49,8 +49,7 @@ gene_product_mass(model::SMomentModel, opt_model) =
     sum((col.capacity_required for col in model.columns) .* value.(opt_model[:x])) : nothing
 
 """
-    gene_product_mass(model::SMomentModel)
-
+$(TYPEDSIGNATURES)
 
 A pipe-able variant of [`gene_product_mass`](@ref).
 """

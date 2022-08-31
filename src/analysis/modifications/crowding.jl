@@ -1,6 +1,6 @@
 
 """
-    add_crowding_constraints(weights::Dict{Int64, Float64})
+$(TYPEDSIGNATURES)
 
 Adds a molecular crowding constraint to the optimization problem: `∑ wᵢ × vᵢ ≤ 1` where `wᵢ`
 is a weight and `vᵢ` is a flux index in the model's reactions specified in `weights` as `vᵢ
@@ -23,7 +23,7 @@ add_crowding_constraints(weights::Dict{Int64,Float64}) =
     end
 
 """
-    add_crowding_constraints(weights::Dict{String, Float64})
+$(TYPEDSIGNATURES)
 
 Variant of [`add_crowding_constraints`](@ref) that takes a dictinary of reactions `ids`
 instead of reaction indices mapped to weights.

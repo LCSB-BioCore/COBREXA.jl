@@ -1,6 +1,6 @@
 
 """
-    _gecko_reaction_name(original_name::String, direction::Int)
+$(TYPEDSIGNATURES)
 
 Internal helper for systematically naming reactions in [`GeckoModel`](@ref).
 """
@@ -10,7 +10,7 @@ _gecko_reaction_name(original_name::String, direction::Int, isozyme_idx::Int) =
     "$original_name#reverse#$isozyme_idx"
 
 """
-    _gecko_reaction_column_reactions(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
@@ -19,7 +19,7 @@ _gecko_reaction_column_reactions(model::GeckoModel) =
     _gecko_reaction_column_reactions(model.columns, model.inner)
 
 """
-    _gecko_reaction_column_reactions(columns, inner)
+$(TYPEDSIGNATURES)
 
 Helper method that doesn't require the whole [`GeckoModel`](@ref).
 """
@@ -32,7 +32,7 @@ _gecko_reaction_column_reactions(columns, inner) = sparse(
 )
 
 """
-    _gecko_reaction_coupling(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Compute the part of the coupling for [`GeckoModel`](@ref) that limits the
 "arm" reactions (which group the individual split unidirectional reactions).
@@ -52,7 +52,7 @@ _gecko_reaction_coupling(model::GeckoModel) =
     end
 
 """
-    _gecko_gene_product_coupling(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Compute the part of the coupling for GeckoModel that limits the amount of each
 kind of protein available.
@@ -73,7 +73,7 @@ _gecko_gene_product_coupling(model::GeckoModel) =
     end
 
 """
-    _gecko_mass_group_coupling(model::GeckoModel)
+$(TYPEDSIGNATURES)
 
 Compute the part of the coupling for [`GeckoModel`](@ref) that limits the total
 mass of each group of gene products.

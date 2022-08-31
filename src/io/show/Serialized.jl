@@ -1,6 +1,6 @@
 
 """
-    Base.show(io::IO, ::MIME"text/plain", m::Serialized{M}) where {M}
+$(TYPEDSIGNATURES)
 
 Show the [`Serialized`](@ref) model without unnecessarily loading it.
 """

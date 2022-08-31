@@ -14,6 +14,7 @@ using Serialization
 using SparseArrays
 using StableRNGs
 using Statistics
+using DocStringExtensions
 
 import Base: findfirst, getindex, show
 import Pkg

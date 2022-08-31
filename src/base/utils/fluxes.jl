@@ -1,5 +1,5 @@
 """
-    metabolite_fluxes(model::MetabolicModel, flux_dict::Dict{String, Float64})
+$(TYPEDSIGNATURES)
 
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or
 produce them, given the flux distribution supplied in `flux_dict`.
@@ -33,7 +33,7 @@ function metabolite_fluxes(model::MetabolicModel, flux_dict::Dict{String,Float64
 end
 
 """
-    atom_fluxes(model::MetabolicModel, reaction_fluxes::Dict{String, Float64})
+$(TYPEDSIGNATURES)
 
 Return a dictionary mapping the flux of atoms across a flux solution given by
 `reaction_fluxes` using the reactions in `model` to determine the appropriate stoichiometry.

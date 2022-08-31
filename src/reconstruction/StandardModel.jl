@@ -1,5 +1,5 @@
 """
-    add_reactions!(model::StandardModel, rxns::Vector{Reaction})
+$(TYPEDSIGNATURES)
 
 Add `rxns` to `model` based on reaction `id`.
 """
@@ -11,14 +11,14 @@ function add_reactions!(model::StandardModel, rxns::Vector{Reaction})
 end
 
 """
-    add_reaction!(model::StandardModel, rxn::Reaction)
+$(TYPEDSIGNATURES)
 
 Add `rxn` to `model` based on reaction `id`.
 """
 add_reaction!(model::StandardModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
-    add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
+$(TYPEDSIGNATURES)
 
 Add `mets` to `model` based on metabolite `id`.
 """
@@ -30,14 +30,14 @@ function add_metabolites!(model::StandardModel, mets::Vector{Metabolite})
 end
 
 """
-    add_metabolite!(model::StandardModel, met::Metabolite)
+$(TYPEDSIGNATURES)
 
 Add `met` to `model` based on metabolite `id`.
 """
 add_metabolite!(model::StandardModel, met::Metabolite) = add_metabolites!(model, [met])
 
 """
-    add_genes!(model::StandardModel, genes::Vector{Gene})
+$(TYPEDSIGNATURES)
 
 Add `genes` to `model` based on gene `id`.
 """
@@ -49,14 +49,14 @@ function add_genes!(model::StandardModel, genes::Vector{Gene})
 end
 
 """
-    add_gene!(model::StandardModel, genes::Gene)
+$(TYPEDSIGNATURES)
 
 Add `gene` to `model` based on gene `id`.
 """
 add_gene!(model::StandardModel, gene::Gene) = add_genes!(model, [gene])
 
 """
-    @add_reactions!(model::Symbol, ex::Expr)
+$(TYPEDSIGNATURES)
 
 Shortcut to add multiple reactions and their lower and upper bounds
 
@@ -110,11 +110,7 @@ macro add_reactions!(model::Symbol, ex::Expr)
 end
 
 """
-    remove_genes!(
-        model::StandardModel,
-        ids::Vector{String};
-        knockout_reactions::Bool = false,
-    )
+$(TYPEDSIGNATURES)
 
 Remove all genes with `ids` from `model`. If `knockout_reactions` is true, then also
 constrain reactions that require the genes to function to carry zero flux.
@@ -144,11 +140,7 @@ function remove_genes!(
 end
 
 """
-    remove_gene!(
-        model::StandardModel,
-        id::Vector{String};
-        knockout_reactions::Bool = false,
-    )
+$(TYPEDSIGNATURES)
 
 Remove gene with `id` from `model`. If `knockout_reactions` is true, then also
 constrain reactions that require the genes to function to carry zero flux.
@@ -244,11 +236,7 @@ end
 end
 
 """
-    change_objective!(
-        model::StandardModel,
-        rxn_ids::Vector{String};
-        weights = ones(length(rxn_ids)),
-    )
+$(TYPEDSIGNATURES)
 
 Change the objective for `model` to reaction(s) with `rxn_ids`, optionally specifying their `weights`. By default,
 assume equal weights. If no objective exists in model, sets objective.

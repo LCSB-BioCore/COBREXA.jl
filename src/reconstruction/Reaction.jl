@@ -1,6 +1,10 @@
-
 """
+$(TYPEDEF)
+
 A small helper type for constructing reactions inline
+
+# Fields
+$(TYPEDFIELDS)
 """
 struct _Stoichiometry
     s::Dict{String,Float64}
@@ -14,10 +18,11 @@ Base.convert(::Type{_Stoichiometry}, m::Metabolite) = _Stoichiometry(Dict(m.id =
 Base.:*(a::Real, m::Metabolite) = _Stoichiometry(Dict(m.id => a))
 
 """
-    metabolite1 + metabolite2
+$(TYPEDSIGNATURES)
 
-Add 2 groups of [`Metabolite`](@ref)s together to form reactions inline. Use
-with `+`, `*`, [`→`](@ref) and similar operators.
+Shorthand for `metabolite1 + metabolite2`. Add 2 groups of [`Metabolite`](@ref)s
+together to form reactions inline. Use with `+`, `*`, [`→`](@ref) and similar
+operators.
 """
 function Base.:+(a::_Stoichiometrizable, b::_Stoichiometrizable)
     ad = convert(_Stoichiometry, a).s
@@ -30,6 +35,9 @@ function Base.:+(a::_Stoichiometrizable, b::_Stoichiometrizable)
     )
 end
 
+"""
+$(TYPEDSIGNATURES)
+"""
 function _make_reaction_dict(r, p)
     rd = convert(_Stoichiometry, r).s
     pd = convert(_Stoichiometry, p).s
@@ -39,26 +47,28 @@ function _make_reaction_dict(r, p)
 end
 
 """
-    substrates → products
+$(TYPEDSIGNATURES)
 
-Make a forward-only [`Reaction`](@ref) from `substrates` and `products`.
+Shorthand for `substrates → products`. Make a forward-only [`Reaction`](@ref)
+from `substrates` and `products`.
 """
 →(substrates::Maybe{_Stoichiometrizable}, products::Maybe{_Stoichiometrizable}) =
     Reaction("", _make_reaction_dict(substrates, products), :forward)
 
 """
-    substrates ← products
+$(TYPEDSIGNATURES)
 
-Make a reverse-only [`Reaction`](@ref) from `substrates` and `products`.
+Shorthand for `substrates ← products`. Make a reverse-only [`Reaction`](@ref)
+from `substrates` and `products`.
 """
 ←(substrates::Maybe{_Stoichiometrizable}, products::Maybe{_Stoichiometrizable}) =
     Reaction("", _make_reaction_dict(substrates, products), :reverse)
 
 """
-    substrates ↔ products
+$(TYPEDSIGNATURES)
 
-Make a bidirectional (reversible) [`Reaction`](@ref) from `substrates` and
-`products`.
+Shorthand for `substrates ↔ products`. Make a bidirectional (reversible)
+[`Reaction`](@ref) from `substrates` and `products`.
 """
 ↔(substrates::Maybe{_Stoichiometrizable}, products::Maybe{_Stoichiometrizable}) =
     Reaction("", _make_reaction_dict(substrates, products), :bidirectional)

@@ -1,6 +1,6 @@
 
 """
-    load_mat_model(file_name::String)
+$(TYPEDSIGNATURES)
 
 Load and return a MATLAB file `file_name` that contains a COBRA-compatible
 model.
@@ -12,7 +12,7 @@ function load_mat_model(file_name::String)::MATModel
 end
 
 """
-    save_mat_model(model::MetabolicModel, file_name::String; model_name::String="model")
+$(TYPEDSIGNATURES)
 
 Save a [`MATModel`](@ref) in `model` to a MATLAB file `file_name` in a format
 compatible with other MATLAB-based COBRA software.

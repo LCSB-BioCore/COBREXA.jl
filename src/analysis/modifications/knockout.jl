@@ -1,5 +1,5 @@
 """
-    knockout(gene_ids::Vector{String})
+$(TYPEDSIGNATURES)
 
 A modification that zeroes the bounds of all reactions that would be knocked
 out by the combination of specified genes (effectively disabling the
@@ -20,14 +20,14 @@ knockout(gene_ids::Vector{String}) =
     (model, optmodel) -> _do_knockout(model, optmodel, gene_ids)
 
 """
-    knockout(gene_id::String)
+$(TYPEDSIGNATURES)
 
 A helper variant of [`knockout`](@ref) for a single gene.
 """
 knockout(gene_id::String) = knockout([gene_id])
 
 """
-    _do_knockout(model::MetabolicModel, opt_model)
+$(TYPEDSIGNATURES)
 
 Internal helper for knockouts on generic MetabolicModels. This can be
 overloaded so that the knockouts may work differently (more efficiently) with
