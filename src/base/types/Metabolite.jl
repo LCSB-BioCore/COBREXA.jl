@@ -15,15 +15,7 @@ mutable struct Metabolite
 end
 
 """
-Metabolite(
-    id="";
-    name=nothing,
-    formula=nothing,
-    charge=nothing,
-    compartment=nothing,
-    notes=Notes(),
-    annotations=Annotations(),
-)
+$(TYPEDSIGNATURES)
 
 A constructor for `Metabolite`s.
 """

@@ -12,12 +12,7 @@ mutable struct Gene
 end
 
 """
-Gene(
-    id=""; 
-    name = nothing, 
-    notes = Notes(), 
-    annotations = Annotations(),
-)
+$(TYPEDSIGNATURES)
 
 A convenient constructor for a `Gene`.
 """
