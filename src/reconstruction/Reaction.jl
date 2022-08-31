@@ -3,7 +3,7 @@ $(TYPEDEF)
 
 A small helper type for constructing reactions inline
 
-# Fields 
+# Fields
 $(TYPEDFIELDS)
 """
 struct _Stoichiometry
