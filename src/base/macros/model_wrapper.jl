@@ -38,7 +38,7 @@ function _inherit_model_methods_impl(
 end
 
 """
-    @_inherit_model_methods
+$(TYPEDSIGNATURES)
 
 Generates trivial accessor functions listed in `fns` for a model that is
 wrapped in type `mtype` as field `member`.
@@ -55,7 +55,7 @@ macro _inherit_model_methods(mtype::Symbol, arglist, member::Symbol, fwdlist, fn
 end
 
 """
-    @_inherit_model_methods_fn
+$(TYPEDSIGNATURES)
 
 A more generic version of [`@_inherit_model_methods`](@ref) that accesses the
 "inner" model using an accessor function name.
