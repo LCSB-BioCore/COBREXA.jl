@@ -20,7 +20,7 @@ $(TYPEDSIGNATURES)
 A constructor for `Metabolite`s.
 """
 Metabolite(
-    id="";
+    id = "";
     name = nothing,
     formula = nothing,
     charge = nothing,

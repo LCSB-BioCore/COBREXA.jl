@@ -16,5 +16,5 @@ $(TYPEDSIGNATURES)
 
 A convenient constructor for a `Gene`.
 """
-Gene(id=""; name = nothing, notes = Notes(), annotations = Annotations()) =
+Gene(id = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
     Gene(String(id), name, notes, annotations)
