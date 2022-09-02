@@ -19,6 +19,28 @@ information in Julia datatypes.
 To reduce the uncertainty in the MILP solver (and likely reduce the
 complexity), you may put a limit on the size of the added reaction set in
 `maximum_new_reactions`.
+
+# Common pitfalls
+
+If [`gapfill_minimum_reactions`](@ref) is supposed to generate any reasonable
+output, the input model *MUST NOT* be feasible, otherwise there is "no work to
+do" and no reactions are added. Notably, an inactive model (the flux is zero)
+is considered to be feasible. If this is the case, [`gapfilled_rids`](@ref)
+will return an empty vector (as opposed to `nothing`).
+
+To prevent this, you may need to modify the model to disallow the trivial
+solutions (for example by putting a lower bound on reactions that you expect to
+be working in the solved model, in a similar manner like how the ATP
+maintenance reaction is bounded in E. Coli "core" model). The
+`objective_bounds` parameter makes this easier by directly placing a bound on
+the objective value of the model, which typically forces the model to be
+active.
+
+The `maximum_new_reactions` parameter may have critical impact on performance
+in some solvers, because (in a general worst case) there is
+`2^maximum_new_reactions` model variants to be examined. Putting a hard limit
+on the reaction count may serve as a heuristic that helps the solver not to
+waste too much time solving impractically complex subproblems.
 """
 function gapfill_minimum_reactions(
     model::MetabolicModel,
@@ -103,6 +125,11 @@ Get a `BitVector` of added reactions from the model solved by
 of `universal_reactions` given to the gapfilling function. In case the model is
 not solved, this returns `nothing`.
 
+If this function returns a zero vector (instead of `nothing`), it is very
+likely that the original model was already feasible and you may need to
+constraint it more. Refer to "pitfalls" section in the documentation of
+[`gapfill_minimum_reactions`](@ref) for more details.
+
 # Example
 
     gapfill_minimum_reactions(myModel, myReactions, Tulip.Optimizer) |> gapfilled_mask
@@ -116,6 +143,11 @@ $(TYPEDSIGNATURES)
 Utility to extract a short vector of IDs of the reactions added by the
 gapfilling algorithm. Use with `opt_model` returned from
 [`gapfill_minimum_reactions`](@ref).
+
+If this function returns an empty vector (instead of `nothing`), it is very
+likely that the original model was already feasible and you may need to
+constraint it more. Refer to "pitfalls" section in the documentation of
+[`gapfill_minimum_reactions`](@ref) for more details.
 """
 gapfilled_rids(opt_model, universal_reactions::Vector{Reaction}) =
     let v = gapfilled_mask(opt_model)
