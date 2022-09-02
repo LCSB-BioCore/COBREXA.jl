@@ -1,6 +1,6 @@
 """
 ```
-\\\\\\\\\\  // //     | COBREXA.jl  v$(VersionNumber(Pkg.TOML.parsefile(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))["version"]))
+\\\\\\\\\\  // //     | COBREXA.jl  v$(COBREXA.COBREXA_VERSION)
  \\\\ \\\\// //      |
   \\\\ \\/ //       | COnstraint-Based Reconstruction
    \\\\  //        | and EXascale Analysis in Julia
@@ -9,17 +9,19 @@
  // //\\\\ \\\\      | https://lcsb-biocore.github.io/COBREXA.jl
 // //  \\\\\\\\\\     |
 ```
-To perform flux balance analysis using COBREXA, try:
+
+To start up quickly, install your favorite optimizer, load a metabolic model in
+a format such as SBML or JSON, and run a metabolic analysis such as the flux
+balance analysis:
 ```
-using COBREXA, Clarabel
-
-model = load_model(StandardModel, "path_to_model")
-
-fba_dict = flux_balance_analysis_dict(model, Clarabel.Optimizer)
-
-flux_summary(flux_dict)
+import Pkg; Pkg.add("GLPK")
+using COBREXA, GLPK
+model = load_model("e_coli_core.xml")
+x = flux_balance_analysis_dict(model, GLPK.Optimizer)
+flux_summary(x)
 ```
-More examples can be found in the documentation.
+
+A complete overview of the functionality can be found in the documentation.
 """
 module COBREXA
 
