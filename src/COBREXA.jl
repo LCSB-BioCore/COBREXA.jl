@@ -1,3 +1,12 @@
+"""
+COBREXA.jl  v$(VersionNumber(Pkg.TOML.parsefile(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))["version"]))\n
+\n
+COnstraint-Based Reconstruction\n
+and EXascale Analysis in Julia\n
+\n
+See documentation and examples at:\n
+https://lcsb-biocore.github.io/COBREXA.jl\n
+"""
 module COBREXA
 
 using Distributed
@@ -18,6 +27,8 @@ using Statistics
 import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
+
+include_dependency(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))
