@@ -9,6 +9,17 @@
  // //\\\\ \\\\      | https://lcsb-biocore.github.io/COBREXA.jl
 // //  \\\\\\\\\\     |
 ```
+To perform flux balance analysis using COBREXA, try:
+```
+using COBREXA, Clarabel
+
+model = load_model(StandardModel, "path_to_model")
+
+fba_dict = flux_balance_analysis_dict(model, Clarabel.Optimizer)
+
+flux_summary(flux_dict)
+```
+More examples can be found in the documentation.
 """
 module COBREXA
 
@@ -31,7 +42,11 @@ import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
 
-include_dependency(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))
+const _PKG_ROOT_DIR = normpath(joinpath(@__DIR__, ".."))
+include_dependency(joinpath(_PKG_ROOT_DIR, "Project.toml"))
+
+const COBREXA_VERSION =
+    VersionNumber(Pkg.TOML.parsefile(joinpath(_PKG_ROOT_DIR, "Project.toml"))["version"])
 
 # autoloading
 const _inc(path...) = include(joinpath(path...))
