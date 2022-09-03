@@ -4,6 +4,8 @@ genes, etc. If an subject has a matching annotation, then it is assumed that it
 is part of the associated class of objects. 
 """
 module Identifiers
+    using ..COBREXA.SBOTerms
+
     const EXCHANGE_REACTIONS = [SBOTerms.EXCHANGE_REACTION]
 
     const TRANSPORT_REACTIONS = [
