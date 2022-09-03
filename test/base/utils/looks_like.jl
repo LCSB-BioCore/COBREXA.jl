@@ -76,3 +76,11 @@ end
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
     @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 end
+
+@testset "Ontology usage in is_xxx_reaction" begin
+    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+
+    # macro generated, so only test positive and negative case
+    @test !is_biomass_reaction(model, "PFL")
+    @test is_biomass_reaction(model, "BIOMASS_Ecoli_core_w_GAM")
+end

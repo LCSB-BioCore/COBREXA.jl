@@ -1,5 +1,6 @@
 """
 $(TYPEDSIGNATURES)
+
 A predicate that matches reaction identifiers that look like
 exchange or biomass reactions, given the usual naming schemes in common model
 repositories. Exchange reactions are identified based on matching prefixes in
@@ -7,6 +8,12 @@ the set `exchange_prefixes` and biomass reactions are identified by looking for
 occurences of `biomass_strings` in the reaction id.
 
 Also see [`find_exchange_reactions`](@ref).
+
+# Note
+While `looks_like_exchange_reaction` is useful for heuristically finding a
+reaction, it is preferable to use standardized terms for finding reactions (e.g.
+SBO terms). See [`is_exchange_reaction`](@ref) for a more systematic
+alternative.
 
 # Example
 ```
@@ -54,6 +61,12 @@ A predicate that matches reaction identifiers that look like biomass reactions.
 Biomass reactions are identified by looking for occurences of `biomass_strings`
 in the reaction id. If `exclude_exchanges` is set, the strings that look like
 exchanges (from [`looks_like_exchange_reaction`](@ref)) will not match.
+
+# Note
+While `looks_like_biomass_reaction` is useful for heuristically finding a
+reaction, it is preferable to use standardized terms for finding reactions (e.g.
+SBO terms). See [`is_biomass_reaction`](@ref) for a more systematic
+alternative.
 
 # Example
 ```
@@ -126,3 +139,11 @@ forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
 find_extracellular_metabolite_ids(m::MetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
+
+@_is_reaction_fn "exchange" Identifiers.EXCHANGE_REACTIONS
+@_is_reaction_fn "transport" Identifiers.TRANSPORT_REACTIONS
+@_is_reaction_fn "biomass" Identifiers.BIOMASS_REACTIONS
+@_is_reaction_fn "atp_maintenance" Identifiers.ATP_MAINTENANCE_REACTIONS
+@_is_reaction_fn "pseudo" Identifiers.PSEUDOREACTIONS
+@_is_reaction_fn "metabolic" Identifiers.METABOLIC_REACTIONS
+@_is_reaction_fn "spontaneous" Identifiers.SPONTANEOUS_REACTIONS
