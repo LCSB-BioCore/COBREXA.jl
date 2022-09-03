@@ -12,13 +12,13 @@
     samples = affine_hit_and_run(
         cm,
         warmup,
-        sample_iters = 10 * (1:3),
+        sample_iters = 100 * (1:3:30),
         workers = W,
         chains = length(W),
     )
 
     @test size(samples, 1) == size(warmup, 1)
-    @test size(samples, 2) == size(warmup, 2) * 3 * length(W)
+    @test size(samples, 2) == 10 * length(W)
 
     lbs, ubs = bounds(model)
     @test all(samples .>= lbs)
