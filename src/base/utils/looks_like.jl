@@ -9,7 +9,7 @@ occurences of `biomass_strings` in the reaction id.
 
 Also see [`find_exchange_reactions`](@ref).
 
-# Note 
+# Note
 While `looks_like_exchange_reaction` is useful for heuristically finding a
 reaction, it is preferable to use standardized terms for finding reactions (e.g.
 SBO terms). See [`is_exchange_reaction`](@ref) for a more systematic
@@ -62,7 +62,7 @@ Biomass reactions are identified by looking for occurences of `biomass_strings`
 in the reaction id. If `exclude_exchanges` is set, the strings that look like
 exchanges (from [`looks_like_exchange_reaction`](@ref)) will not match.
 
-# Note 
+# Note
 While `looks_like_biomass_reaction` is useful for heuristically finding a
 reaction, it is preferable to use standardized terms for finding reactions (e.g.
 SBO terms). See [`is_biomass_reaction`](@ref) for a more systematic
