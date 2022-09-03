@@ -126,3 +126,18 @@ forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
 find_extracellular_metabolite_ids(m::MetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
+
+"""
+$(TYPEDSIGNATURES)
+
+Check if a reaction is annotated as an exchange reaction through SBO terms. Uses
+the SBO constant `EXCHANGE_REACTION` internally. In the reaction annotations,
+look for `sbo` or `SBO` entries. Returns false if no hits or if no SBO
+annotation found.
+"""
+function is_exchange_reaction(model::MetabolicModel, reaction_id::String)
+    anno = reaction_annotations(model, reaction_id)
+    sbo = haskey(anno, "sbo") ? "sbo" : haskey(anno, "SBO") ? "SBO" : return false 
+    EXCHANGE_REACTION in anno[sbo]
+end
+
