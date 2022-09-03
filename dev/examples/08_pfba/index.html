@@ -17,25 +17,25 @@ Number of metabolites: 72
         change_constraint(&quot;R_EX_glc__D_e&quot;; lb = -12, ub = -12), # fix glucose consumption rate
     ],
 )</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
-  &quot;R_EX_fum_e&quot;    =&gt; -0.00740519
-  &quot;R_ACONTb&quot;      =&gt; 6.50489
-  &quot;R_TPI&quot;         =&gt; 8.90216
-  &quot;R_SUCOAS&quot;      =&gt; -5.40139
-  &quot;R_GLNS&quot;        =&gt; 0.246959
-  &quot;R_EX_pi_e&quot;     =&gt; -3.85014
-  &quot;R_PPC&quot;         =&gt; 2.9436
-  &quot;R_O2t&quot;         =&gt; 25.1755
-  &quot;R_G6PDH2r&quot;     =&gt; 6.27635
-  &quot;R_TALA&quot;        =&gt; 1.90489
-  &quot;R_PPCK&quot;        =&gt; -0.00258038
-  &quot;R_EX_lac__D_e&quot; =&gt; -0.00523843
-  &quot;R_PGL&quot;         =&gt; 6.27637
-  &quot;R_H2Ot&quot;        =&gt; -33.9456
-  &quot;R_GLNabc&quot;      =&gt; 0.011269
-  &quot;R_EX_co2_e&quot;    =&gt; 26.4102
-  &quot;R_EX_gln__L_e&quot; =&gt; -0.0112578
-  &quot;R_EX_nh4_e&quot;    =&gt; -5.67679
-  &quot;R_MALt2_2&quot;     =&gt; 0.00661143
+  &quot;R_EX_fum_e&quot;    =&gt; -0.0054306
+  &quot;R_ACONTb&quot;      =&gt; 6.51108
+  &quot;R_TPI&quot;         =&gt; 8.90211
+  &quot;R_SUCOAS&quot;      =&gt; -5.41568
+  &quot;R_GLNS&quot;        =&gt; 0.250914
+  &quot;R_EX_pi_e&quot;     =&gt; -3.85013
+  &quot;R_PPC&quot;         =&gt; 2.94799
+  &quot;R_O2t&quot;         =&gt; 25.1823
+  &quot;R_G6PDH2r&quot;     =&gt; 6.27109
+  &quot;R_TALA&quot;        =&gt; 1.90314
+  &quot;R_PPCK&quot;        =&gt; -0.00186526
+  &quot;R_EX_lac__D_e&quot; =&gt; -0.00399055
+  &quot;R_PGL&quot;         =&gt; 6.27111
+  &quot;R_H2Ot&quot;        =&gt; -33.9472
+  &quot;R_GLNabc&quot;      =&gt; 0.0126618
+  &quot;R_EX_co2_e&quot;    =&gt; 26.4219
+  &quot;R_EX_gln__L_e&quot; =&gt; -0.0126492
+  &quot;R_EX_nh4_e&quot;    =&gt; -5.67116
+  &quot;R_MALt2_2&quot;     =&gt; 0.00493596
   ⋮               =&gt; ⋮</pre><h2 id="Using-different-optimizers-for-linear-and-quadratic-problems"><a class="docs-heading-anchor" href="#Using-different-optimizers-for-linear-and-quadratic-problems">Using different optimizers for linear and quadratic problems</a><a id="Using-different-optimizers-for-linear-and-quadratic-problems-1"></a><a class="docs-heading-anchor-permalink" href="#Using-different-optimizers-for-linear-and-quadratic-problems" title="Permalink"></a></h2><p>It is quite useful to use specialized optimizers for specialized tasks in pFBA. In particular, one would usually require to get a precise solution from the linear programming part (where the precision is achievable), and trade off a little precision for vast improvements in computation time in the quadratic programming part.</p><p>In pFBA, we can use the <code>modifications</code> and <code>qp_modifications</code> parameters to switch and parametrize the solvers in the middle of the process, which allows us to implement precisely that improvement. We demonstrate the switching on a vector-returning variant of pFBA:</p><pre><code class="language-julia">flux_vector = parsimonious_flux_balance_analysis_vec(
     model,
     Tulip.Optimizer; # start with Tulip
@@ -49,23 +49,23 @@ Number of metabolites: 72
         silence, # and make it quiet.
     ],
 )</code></pre><pre class="documenter-example-output">95-element Vector{Float64}:
-  -0.00645620622352188
-   6.851837981534216
-   8.913341572099457
-  -5.74102223475315
-   0.2546019668801427
-  -3.8888374186478805
-   2.977074571131644
-  25.64644396822028
-   6.197416083246767
-   1.8766996924783867
+  -0.006231402533094581
+   6.847122967587614
+   8.914435875871503
+  -5.738183656745528
+   0.25363156710733
+  -3.8887743417980833
+   2.977310372502161
+  25.64208341306474
+   6.1991009754149715
+   1.877264043236841
    ⋮
-  -0.00010898686223948537
-  34.50239498696516
-  -0.001894364829844857
-  -0.0014869114445033595
-  -0.0018422507357719023
- -25.646443859189773
-   0.01524881430898677
-   0.0052844123614167
-   3.8888374206512077</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../07_restricting_reactions/">« Restricting and disabling individual reactions</a><a class="docs-footer-nextpage" href="../09_loopless/">Loopless FBA »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 2 September 2022 15:58">Friday 2 September 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  -0.0002197051126034427
+  34.49592944330335
+  -0.0020752886988600542
+  -0.0014018715428246171
+  -0.002009900868927077
+ -25.642083259145206
+   0.0161569956400718
+   0.004729690379188246
+   3.8887743479784547</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../07_restricting_reactions/">« Restricting and disabling individual reactions</a><a class="docs-footer-nextpage" href="../09_loopless/">Loopless FBA »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 3 September 2022 16:11">Saturday 3 September 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
