@@ -1,5 +1,7 @@
 """
-$(TYPEDSIGNATURES) A predicate that matches reaction identifiers that look like
+$(TYPEDSIGNATURES) 
+
+A predicate that matches reaction identifiers that look like
 exchange or biomass reactions, given the usual naming schemes in common model
 repositories. Exchange reactions are identified based on matching prefixes in
 the set `exchange_prefixes` and biomass reactions are identified by looking for
