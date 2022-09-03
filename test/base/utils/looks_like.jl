@@ -77,7 +77,7 @@ end
     @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 end
 
-@testset "Ontology usage in is_xxx_reaction" begin 
+@testset "Ontology usage in is_xxx_reaction" begin
     model = load_model(StandardModel, model_paths["e_coli_core.json"])
 
     # macro generated, so only test positive and negative case
