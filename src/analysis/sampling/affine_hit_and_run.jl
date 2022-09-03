@@ -1,25 +1,27 @@
 """
 $(TYPEDSIGNATURES)
 
-Run a hit-and-run style sampling that starts from `warmup_points` and uses
-their affine combinations for generating the run directions to sample the space
-delimited by `lbs` and `ubs`.  The reaction rate vectors in `warmup_points`
-should be organized in columns, i.e. `warmup_points[:,1]` is the first set of
-reaction rates.
+Run a hit-and-run style sampling that starts from `warmup_points` and uses their
+affine combinations for generating the run directions to sample the polytope
+bounded by `lbs` and `ubs`. Since only feasible points are used, any equality
+constraints are implicitly satisfied. The reaction rate vectors in
+`warmup_points` should be organized in columns, i.e. `warmup_points[:,1]` is the
+first set of reaction rates.
 
-There are total `chains` of hit-and-run runs, each on a batch of
-`size(warmup_points, 2)` points. The runs are scheduled on `workers`, for good
-load balancing `chains` should be ideally much greater than `length(workers)`.
+The hit-and-run algorithm will be repeated exactly `chains` times, each
+collecting `length(sample_iters)` samples. The runs are scheduled on `workers`,
+for good load balancing `chains` should be ideally much greater than
+`length(workers)`.
 
 Each run continues for `maximum(sample_iters)` iterations; the numbers in
-`sample_iters` represent the iterations at which the whole "current" batch of
-points is collected for output. For example, `sample_iters=[1,4,5]` causes the
-process run for 5 iterations, returning the sample batch that was produced by
-1st, 4th and last (5th) iteration.
+`sample_iters` represent the iterations at which samples are collected for
+output. For example, `sample_iters=[1,4,5]` causes the process to run for 5
+iterations, returning the samples that were produced by 1st, 4th and last
+(5th) iteration.
 
 Returns a matrix of sampled reaction rates (in columns), with all collected
-samples horizontally concatenated. The total number of samples (columns) will
-be `size(warmup_points,2) * chains * length(sample_iters)`.
+samples horizontally concatenated. The total number of samples (columns) will be
+`chains * length(sample_iters)`.
 
 # Example
 ```
