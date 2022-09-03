@@ -4,6 +4,9 @@ https://github.com/EBI-BioModels/SBO/blob/master/SBO_OBO.obo.
 
 If an SBO term appears here it *may* be used in a function; if an SBO term does
 not appear here, then it is *not* used in a COBREXA function.
+
+These terms are used in `Identifiers.jl` which groups them as appropriate for
+use in functions that classify reactions, metabolites, etc.
 """
 module SBOTerms
 const FLUX_BALANCE_FRAMEWORK = "SBO:0000624"
