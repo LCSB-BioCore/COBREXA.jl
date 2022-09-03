@@ -1,5 +1,5 @@
 """
-$(TYPEDSIGNATURES) 
+$(TYPEDSIGNATURES)
 
 A predicate that matches reaction identifiers that look like
 exchange or biomass reactions, given the usual naming schemes in common model
