@@ -134,4 +134,3 @@ find_extracellular_metabolite_ids(m::MetabolicModel; kwargs...) =
 @_is_reaction_fn "pseudo" "PSEUDOREACTIONS"
 @_is_reaction_fn "metabolic" "METABOLIC_REACTIONS"
 @_is_reaction_fn "spontaneous" "SPONTANEOUS_REACTIONS"
-
