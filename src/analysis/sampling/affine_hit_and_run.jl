@@ -79,10 +79,9 @@ Internal helper function for computing a single affine hit-and-run chain.
 function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
 
     rng = StableRNG(seed % UInt)
-    points = copy(warmup)
-    d, n_points = size(points)
+    current_point = warmup[:, rand(rng, 1:size(warmup, 2))]
     n_couplings = size(C, 1)
-    result = Matrix{Float64}(undef, d, n_points * length(iters))
+    result = Matrix{Float64}(undef, size(warmup, 1), length(iters))
 
     # helper for reducing the available run range
     function update_range(range, pos, dir, lb, ub)
@@ -101,42 +100,33 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
         while iter < iter_target
             iter += 1
 
-            new_points = copy(points)
+            dir = warmup[:, rand(rng, 1:size(warmup, 2))] - current_point
 
-            for i = 1:n_points
-
-                mix = rand(rng, n_points) .+ _constants.tolerance
-                dir = points * (mix ./ sum(mix)) - points[:, i]
-
-                # iteratively collect the maximum and minimum possible multiple
-                # of `dir` added to the current point
-                run_range = (-Inf, Inf)
-                for j = 1:d
-                    run_range =
-                        update_range(run_range, points[j, i], dir[j], lbs[j], ubs[j])
-                end
-
-                # do the same for coupling
-                dc = C * dir
-                pc = C * points[:, i]
-                for j = 1:n_couplings
-                    run_range = update_range(run_range, pc[j], dc[j], cl[j], cu[j])
-                end
-
-                # generate a point in the viable run range and update it
-                lambda = run_range[1] + rand(rng) * (run_range[2] - run_range[1])
-                isfinite(lambda) || continue # avoid divergence
-                new_points[:, i] = points[:, i] .+ lambda .* dir
-
-                # TODO normally, here we would check if sum(S*new_point) is still
-                # lower than the tolerance, but we shall trust the computer
-                # instead.
+            # iteratively collect the maximum and minimum possible multiple
+            # of `dir` added to the current point
+            run_range = (-Inf, Inf)
+            for j = 1:size(warmup, 1)
+                run_range =
+                    update_range(run_range, current_point[j], dir[j], lbs[j], ubs[j])
             end
 
-            points = new_points
+            # do the same for coupling
+            dc = C * dir
+            pc = C * current_point
+            for j = 1:n_couplings
+                run_range = update_range(run_range, pc[j], dc[j], cl[j], cu[j])
+            end
+
+            # generate a point in the viable run range and update it
+            lambda = run_range[1] + rand(rng) * (run_range[2] - run_range[1])
+            isfinite(lambda) || continue # avoid divergence
+            current_point .+= lambda .* dir
+
+            # TODO normally, here we would check if sum(S*new_point) is still
+            # lower than the tolerance, but we shall trust the computer
         end
 
-        result[:, n_points*(iter_idx-1)+1:iter_idx*n_points] .= points
+        result[:, iter_idx] .= current_point
     end
 
     result
