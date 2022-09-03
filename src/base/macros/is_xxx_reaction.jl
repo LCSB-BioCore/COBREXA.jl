@@ -2,7 +2,7 @@
 """
 @_is_reaction_fn(anno_id, identifier)
 
-A helper for creating functions that constructs functions like `is_exchange_reaction`.
+A helper for creating functions like `is_exchange_reaction`.
 """
 macro _is_reaction_fn(anno_id, identifiers)
 
