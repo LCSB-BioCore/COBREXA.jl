@@ -14,8 +14,7 @@ macro _is_reaction_fn(anno_id, identifiers)
             anno = reaction_annotations(model, reaction_id)
             for key in annotation_keys
                 if haskey(anno, key)
-                    any(in.($identifiers, Ref(anno[key]))) &&
-                        return true
+                    any(in.($identifiers, Ref(anno[key]))) && return true
                 end
             end
             return false
