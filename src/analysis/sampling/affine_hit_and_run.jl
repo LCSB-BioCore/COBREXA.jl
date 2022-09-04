@@ -101,17 +101,17 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
         while iter < iter_target
             iter += 1
 
-            #= 
+            #=
             Pick a random point from a set of feasible points that include the
             warmup points as well as the current set of sampled points.
             =#
-            dir_idx = rand(rng, 1:(size(warmup, 2) + iter_idx - 1))
+            dir_idx = rand(rng, 1:(size(warmup, 2)+iter_idx-1))
             if dir_idx <= size(warmup, 2)
                 dir = warmup[:, dir_idx] - current_point
             else
-                dir = result[:, dir_idx - size(warmup, 2)] - current_point
+                dir = result[:, dir_idx-size(warmup, 2)] - current_point
             end
-            
+
             # iteratively collect the maximum and minimum possible multiple
             # of `dir` added to the current point
             run_range = (-Inf, Inf)
