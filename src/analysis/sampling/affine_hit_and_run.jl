@@ -16,8 +16,9 @@ for good load balancing `chains` should be ideally much greater than
 Each run continues for `maximum(sample_iters)` iterations; the numbers in
 `sample_iters` represent the iterations at which samples are collected for
 output. For example, `sample_iters=[1,4,5]` causes the process to run for 5
-iterations, returning the samples that were produced by 1st, 4th and last
-(5th) iteration.
+iterations, returning the samples that were produced by 1st, 4th and last (5th)
+iteration. Note, each sample that gets returned can also be used to generate
+directions for the algorithm.
 
 Returns a matrix of sampled reaction rates (in columns), with all collected
 samples horizontally concatenated. The total number of samples (columns) will be
@@ -100,8 +101,17 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
         while iter < iter_target
             iter += 1
 
-            dir = warmup[:, rand(rng, 1:size(warmup, 2))] - current_point
-
+            #= 
+            Pick a random point from a set of feasible points that include the
+            warmup points as well as the current set of sampled points.
+            =#
+            dir_idx = rand(rng, 1:(size(warmup, 2) + iter_idx - 1))
+            if dir_idx <= size(warmup, 2)
+                dir = warmup[:, dir_idx] - current_point
+            else
+                dir = result[:, dir_idx - size(warmup, 2)] - current_point
+            end
+            
             # iteratively collect the maximum and minimum possible multiple
             # of `dir` added to the current point
             run_range = (-Inf, Inf)
