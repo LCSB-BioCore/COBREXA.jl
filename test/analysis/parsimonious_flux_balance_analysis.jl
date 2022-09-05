@@ -9,8 +9,7 @@
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
         qp_modifications = [
-            change_optimizer(OSQP.Optimizer),
-            change_optimizer_attribute("polish", true),
+            change_optimizer(Clarabel.Optimizer),
             silence,
         ],
     )

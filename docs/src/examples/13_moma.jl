@@ -19,15 +19,15 @@ using COBREXA
 
 model = load_model(StandardModel, "e_coli_core.xml")
 
-# MOMA analysis requires solution of a quadratic model, we will thus use OSQP as the main optimizer.
+# MOMA analysis requires solution of a quadratic model, we will thus use Clarabel as the main optimizer.
 
-using OSQP
+using Clarabel
 
 # We will need a reference solution, which represents the original state of the
 # organism before the change.
 reference_flux = flux_balance_analysis_dict(
     model,
-    OSQP.Optimizer;
+    Clarabel.Optimizer;
     modifications = [silence, change_optimizer_attribute("polish", true)],
 )
 
@@ -40,7 +40,7 @@ flux_summary(
     minimize_metabolic_adjustment_analysis_dict(
         changed_model,
         reference_flux,
-        OSQP.Optimizer;
+        Clarabel.Optimizer;
         modifications = [silence, change_optimizer_attribute("polish", true)],
     ),
 )
@@ -51,7 +51,7 @@ flux_summary(
 flux_summary(
     flux_balance_analysis_dict(
         changed_model,
-        OSQP.Optimizer;
+        Clarabel.Optimizer;
         modifications = [silence, change_optimizer_attribute("polish", true)],
     ),
 )

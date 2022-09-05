@@ -6,8 +6,8 @@
     moma = minimize_metabolic_adjustment_analysis_dict(
         model,
         sol,
-        OSQP.Optimizer;
-        modifications = [silence, change_optimizer_attribute("polish", true)],
+        Clarabel.Optimizer;
+        modifications = [silence],
     )
 
     @test isapprox(moma["biomass1"], 0.07692307692307691, atol = QP_TEST_TOLERANCE)
