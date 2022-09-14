@@ -3,7 +3,7 @@
 $(TYPEDSIGNATURES)
 
 Change the objective sense of optimization.
-Possible arguments are `MOI.MAX_SENSE` and `MOI.MIN_SENSE`.
+Possible arguments are `MAX_SENSE` and `MIN_SENSE`.
 
 If you want to change the objective and sense at the same time, use
 [`change_objective`](@ref) instead to do both at once.

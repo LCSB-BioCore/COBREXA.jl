@@ -215,11 +215,11 @@ function max_min_driving_force_variability(
 
     dgr_variants = [
         [[_mmdf_add_df_bound(lb, ub), _mmdf_dgr_objective(ridx, sense)]] for
-        ridx = 1:n_reactions(model), sense in [MOI.MAX_SENSE, MOI.MIN_SENSE]
+        ridx = 1:n_reactions(model), sense in [MAX_SENSE, MIN_SENSE]
     ]
     concen_variants = [
         [[_mmdf_add_df_bound(lb, ub), _mmdf_concen_objective(midx, sense)]] for
-        midx = 1:n_metabolites(model), sense in [MOI.MAX_SENSE, MOI.MIN_SENSE]
+        midx = 1:n_metabolites(model), sense in [MAX_SENSE, MIN_SENSE]
     ]
 
     return screen(
