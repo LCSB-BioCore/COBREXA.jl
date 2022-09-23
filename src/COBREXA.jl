@@ -59,23 +59,13 @@ using ..COBREXA.DocStringExtensions
 
 include(joinpath("base", "types", "abstract", "Maybe.jl"))
 
-end
-using .Common
-
-module Macros
-using ..COBREXA.DocStringExtensions
-
+# helper macros
 include(joinpath("base", "logging", "log.jl"))
 include(joinpath("base", "macros", "model_wrapper.jl"))
 include(joinpath("base", "macros", "is_xxx_reaction.jl"))
-include(joinpath("base", "macros", "change_bounds.jl"))
-include(joinpath("base", "macros", "remove_item.jl"))
+
 end
-using .Macros
-
-# macros
-# include(joinpath("base", "macros", "serialized.jl"))
-
+using .Common
 
 # constants and definitions
 include(joinpath("base", "constants.jl"))
@@ -86,8 +76,7 @@ include(joinpath("base", "identifiers.jl"))
 Common types, utilities and constants used by COBREXA.
 """
 module ModelTypes
-using ..Common: Maybe
-using ..Macros: @_io_log, @_inherit_model_methods, @_inherit_model_methods_fn
+using ..Common: Maybe, @_io_log, @_inherit_model_methods, @_inherit_model_methods_fn
 using ..COBREXA: _constants
 using ..COBREXA.JSON,
     ..COBREXA.SparseArrays,
@@ -130,10 +119,9 @@ include(joinpath("base", "types", "wrappers", "SMomentModel.jl"))
 # io types
 include(joinpath("base", "types", "FluxSummary.jl"))
 include(joinpath("base", "types", "FluxVariabilitySummary.jl"))
-export CoreModel
+
 end
 using .ModelTypes
-export CoreModel
 
 """
 Input/output functions, as well as pretty printing.
@@ -151,7 +139,9 @@ using ..ModelTypes:
     Metabolite,
     Reaction,
     Serialized
-using ..Macros: @_io_log
+
+using ..Common: @_io_log
+
 using ..COBREXA.JSON,
     ..COBREXA.MAT, ..COBREXA.SBML, ..COBREXA.HDF5, ..COBREXA.DocStringExtensions
 
@@ -192,7 +182,7 @@ using ..ModelTypes:
     StandardModel,
     Serialized
 
-using ..Macros: @_models_log, @_is_reaction_fn
+using ..Common: @_models_log, @_is_reaction_fn
 
 using ..COBREXA.SBML,
     ..COBREXA.HDF5,
@@ -235,9 +225,7 @@ using ..ModelTypes:
     Serialized,
     SparseMat
 
-using ..Macros: @_models_log
-
-using ..Common: Maybe
+using ..Common: Maybe, @_models_log
 
 using ..COBREXA.DocStringExtensions,
     ..COBREXA.JuMP,
@@ -291,20 +279,38 @@ using ..ModelTypes:
     SparseMat,
     StringVecType,
     VecType,
-    MatType
+    MatType,
+    CoreCoupling,
+    Serialized
 
-using ..Macros: @_change_bounds_fn, @_remove_fn
+using ..Common: Maybe, @_models_log
 
-using ..Common: Maybe
+using ..COBREXA.DocStringExtensions, ..COBREXA.JuMP
 
-using ..COBREXA.DocStringExtensions
+include(joinpath("base", "macros", "change_bounds.jl"))
+include(joinpath("base", "macros", "remove_item.jl"))
+include(joinpath("base", "macros", "serialized.jl"))
 
-include(joinpath("reconstruction", "CoreModel.jl")) # borked
+include(joinpath("reconstruction", "CoreModel.jl"))
+include(joinpath("reconstruction", "CoreModelCoupled.jl"))
+include(joinpath("reconstruction", "StandardModel.jl"))
+include(joinpath("reconstruction", "SerializedModel.jl"))
 
+include(joinpath("reconstruction", "Reaction.jl"))
+include(joinpath("reconstruction", "enzymes.jl"))
+
+include(joinpath("reconstruction", "community.jl"))
+
+include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
+
+module Modifications # model modifications
+using ....COBREXA.DocStringExtensions
+include(joinpath("reconstruction", "modifications", "generic.jl"))
+end
+using .Modifications
 end
 using .Reconstruction
 using .Reconstruction.Modifications
-
 
 # export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
 for sym in names(@__MODULE__, all = true)
