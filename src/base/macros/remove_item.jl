@@ -1,4 +1,3 @@
-
 """
     @ _remove_fn objname ModelType IndexType [plural] [inplace] begin ... end
 

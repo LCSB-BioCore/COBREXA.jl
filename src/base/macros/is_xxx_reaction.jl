@@ -1,4 +1,3 @@
-
 """
 @_is_reaction_fn(anno_id, identifier)
 
@@ -40,7 +39,7 @@ macro _is_reaction_fn(anno_id, identifiers)
         docstring,
         :(
             $fname(
-                model::MetabolicModel,
+                model, # TODO removed ::MetabolicModel from here
                 reaction_id::String;
                 annotation_keys = ["sbo", "SBO"],
             ) = $body
