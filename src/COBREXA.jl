@@ -81,11 +81,11 @@ include(joinpath("base", "SBOTerms.jl")) # must come before identifiers.jl
 include(joinpath("base", "identifiers.jl"))
 
 """
-module ModelTypes
+module Types
 
 Types used by COBREXA.
 """
-module ModelTypes
+module Types
 using ..Common:
     Maybe,
     @_io_log,
@@ -131,8 +131,6 @@ include(joinpath("base", "types", "Serialized.jl"))
 
 include(joinpath("base", "types", "ReactionStatus.jl"))
 
-include(joinpath("base", "types", "ModelWrapper.jl"))
-
 # enzyme constrained models 
 include(joinpath("base", "types", "Isozyme.jl"))
 include(joinpath("base", "types", "wrappers", "GeckoModel.jl"))
@@ -163,11 +161,47 @@ using ..Common:
     GeneAssociation,
     MetaboliteFormula,
     Annotations,
-    Notes
+    Notes,
+    @_io_log,
+    @_inherit_model_methods,
+    @_inherit_model_methods_fn
+
+using ..Types:
+    CoreModel,
+    CoreCoupling,
+    CoreModelCoupled,
+    StandardModel,
+    JSONModel,
+    SBMLModel,
+    MATModel,
+    MetabolicModel,
+    HDF5Model,
+    FluxSummary,
+    FluxVariabilitySummary,
+    Gene,
+    Metabolite,
+    Reaction,
+    Serialized
 
 using ..COBREXA.DocStringExtensions
 
-include(joinpath("base", "types", "accessors.jl"))
+include(joinpath("base", "accessors", "MetabolicModel.jl"))
+include(joinpath("base", "accessors", "CoreModel.jl"))
+include(joinpath("base", "accessors", "CoreModelCoupled.jl"))
+include(joinpath("base", "accessors", "StandardModel.jl"))
+include(joinpath("base", "accessors", "JSONModel.jl"))
+include(joinpath("base", "accessors", "MATModel.jl"))
+include(joinpath("base", "accessors", "SBMLModel.jl"))
+include(joinpath("base", "accessors",  "ModelWrapper.jl"))
+include(joinpath("base", "accessors", "HDF5Model.jl"))
+
+for sym in names(Accessors, all = true)
+    if sym in [:eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
+
 end
 
 """
@@ -176,7 +210,7 @@ module InputOutput
 Input/output functions, as well as pretty printing.
 """
 module InputOutput # can't use IO
-using ..ModelTypes:
+using ..Types:
     JSONModel,
     SBMLModel,
     MATModel,
@@ -219,7 +253,7 @@ module Utils
 Utility functions.
 """
 module Utils
-using ..ModelTypes:
+using ..Types:
     Gene,
     Metabolite,
     Reaction,
@@ -269,7 +303,7 @@ Analysis functions. Contains a submodule, `Modifications`, which contains
 optimizer based modifications.
 """
 module Analysis
-using ..ModelTypes:
+using ..Types:
     Gene,
     Metabolite,
     Reaction,
@@ -309,7 +343,7 @@ module Modifications
 A module containing optimizer based modifications.
 """
 module Modifications # optimization modifications
-using ....ModelTypes: MetabolicModel
+using ....Types: MetabolicModel
 
 using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP
 
@@ -328,7 +362,7 @@ module Reconstruction
 A module containing functions used to build and modify models. 
 """
 module Reconstruction
-using ..ModelTypes:
+using ..Types:
     Gene,
     Metabolite,
     Reaction,
