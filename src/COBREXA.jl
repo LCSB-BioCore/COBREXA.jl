@@ -63,9 +63,10 @@ A module that contains structs, macros, and names used by COBREXA functions
 generally.
 """
 module Common
-using ..COBREXA.DocStringExtensions
+using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays
 
 include(joinpath("base", "types", "abstract", "Maybe.jl"))
+include(joinpath("base", "types", "abstract", "MetabolicModel.jl"))
 
 # helper macros
 include(joinpath("base", "logging", "log.jl"))
@@ -85,7 +86,22 @@ module ModelTypes
 Types used by COBREXA.
 """
 module ModelTypes
-using ..Common: Maybe, @_io_log, @_inherit_model_methods, @_inherit_model_methods_fn
+using ..Common:
+    Maybe,
+    @_io_log,
+    @_inherit_model_methods,
+    @_inherit_model_methods_fn,
+    MetabolicModel,
+    ModelWrapper,
+    SparseMat,
+    SparseVec,
+    MatType,
+    VecType,
+    StringVecType,
+    GeneAssociation,
+    MetaboliteFormula,
+    Annotations,
+    Notes
 using ..COBREXA: _constants
 using ..COBREXA.JSON,
     ..COBREXA.SparseArrays,
@@ -95,9 +111,6 @@ using ..COBREXA.JSON,
     ..COBREXA.SBML,
     ..COBREXA.OrderedCollections
 
-# abstract models
-include(joinpath("base", "types", "abstract", "MetabolicModel.jl"))
-include(joinpath("base", "types", "MetabolicModel.jl"))
 
 # concrete external models
 include(joinpath("base", "types", "JSONModel.jl"))
@@ -131,6 +144,31 @@ include(joinpath("base", "types", "FluxVariabilitySummary.jl"))
 
 end
 
+"""
+module Accessors
+
+Accessors used to query information about models. Use these instead of directly
+interrogating the models via their internals.
+"""
+module Accessors
+using ..Common:
+    Maybe,
+    MetabolicModel,
+    ModelWrapper,
+    SparseMat,
+    SparseVec,
+    MatType,
+    VecType,
+    StringVecType,
+    GeneAssociation,
+    MetaboliteFormula,
+    Annotations,
+    Notes
+
+using ..COBREXA.DocStringExtensions
+
+include(joinpath("base", "types", "accessors.jl"))
+end
 
 """
 module InputOutput
@@ -287,8 +325,7 @@ end
 """
 module Reconstruction
 
-A module containing functions used to build and modify models. Contains a 
-submodule, `Modifications`, which houses model modification functions. 
+A module containing functions used to build and modify models. 
 """
 module Reconstruction
 using ..ModelTypes:
@@ -327,15 +364,17 @@ include(joinpath("reconstruction", "community.jl"))
 
 include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
-"""
-module Modifications
-
-A module containing functions used to change models.
-"""
-module Modifications # model modifications
-using ....COBREXA.DocStringExtensions
 include(joinpath("reconstruction", "modifications", "generic.jl"))
+
 end
+
+# export a selection of names to make life easier
+using .Accessors
+for sym in names(Accessors, all = true)
+    if sym in [:eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
 end
 
 end # module
