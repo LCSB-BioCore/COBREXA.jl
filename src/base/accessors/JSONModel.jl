@@ -1,30 +1,3 @@
-_json_rxn_name(r, i) = string(get(r, "id", "rxn$i"))
-_json_met_name(m, i) = string(get(m, "id", "met$i"))
-_json_gene_name(g, i) = string(get(g, "id", "gene$i"))
-
-JSONModel(json::Dict{String,Any}) = begin
-    rkey = _guesskey(keys(json), _constants.keynames.rxns)
-    isnothing(rkey) && throw(DomainError(keys(json), "JSON model has no reaction keys"))
-    rs = json[rkey]
-
-    mkey = _guesskey(keys(json), _constants.keynames.mets)
-    ms = json[mkey]
-    isnothing(mkey) && throw(DomainError(keys(json), "JSON model has no metabolite keys"))
-
-    gkey = _guesskey(keys(json), _constants.keynames.genes)
-    gs = isnothing(gkey) ? [] : json[gkey]
-
-    JSONModel(
-        json,
-        Dict(_json_rxn_name(r, i) => i for (i, r) in enumerate(rs)),
-        rs,
-        Dict(_json_met_name(m, i) => i for (i, m) in enumerate(ms)),
-        ms,
-        Dict(_json_gene_name(g, i) => i for (i, g) in enumerate(gs)),
-        gs,
-    )
-end
-
 function _parse_annotations(x)::Annotations
     Annotations([k => if typeof(v) == String
         [v]

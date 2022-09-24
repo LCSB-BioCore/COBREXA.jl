@@ -1,3 +1,7 @@
+using TestEnv
+TestEnv.activate()
+cd("test")
+
 using COBREXA, Test
 
 using Aqua
@@ -14,6 +18,16 @@ using SparseArrays
 using Statistics
 using Tulip
 using GLPK # for MILPs
+
+# import entire COBREXA namespace
+using COBREXA.Common
+using COBREXA.Types
+using COBREXA.Accessors
+using COBREXA.InputOutput
+using COBREXA.Utils
+using COBREXA.Analysis
+using COBREXA.Analysis.Modifications
+using COBREXA.Reconstruction
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
@@ -37,16 +51,16 @@ end
 
 # set up the workers for Distributed, so that the tests that require more
 # workers do not unnecessarily load the stuff multiple times
-W = addprocs(2)
-t = @elapsed @everywhere using COBREXA, Tulip, JuMP
-print_timing("import of packages", t)
-t = @elapsed @everywhere begin
-    model = Model(Tulip.Optimizer)
-    @variable(model, 0 <= x <= 1)
-    @objective(model, Max, x)
-    optimize!(model)
-end
-print_timing("JuMP+Tulip code warmup", t)
+# W = addprocs(2)
+# t = @elapsed @everywhere using COBREXA, Tulip, JuMP
+# print_timing("import of packages", t)
+# t = @elapsed @everywhere begin
+#     model = Model(Tulip.Optimizer)
+#     @variable(model, 0 <= x <= 1)
+#     @objective(model, Max, x)
+#     optimize!(model)
+# end
+# print_timing("JuMP+Tulip code warmup", t)
 
 # make sure there's a directory for temporary data
 tmpdir = "tmpfiles"

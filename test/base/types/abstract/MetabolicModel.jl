@@ -1,4 +1,4 @@
-struct FakeModel <: COBREXA.Types.MetabolicModel
+struct FakeModel <: MetabolicModel
     dummy::Int
 end
 

@@ -56,6 +56,22 @@ Organize COBREXA into modules to make discovery of functions and data structures
 easier. Load order matters inside each module. 
 =#
 
+macro export_stuff()
+    quote
+        for sym in names(@__MODULE__, all = true)
+            if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+                continue
+            end
+            @eval export $sym
+        end
+    end
+end
+
+# constants and definitions
+include(joinpath("base", "constants.jl"))
+include(joinpath("base", "SBOTerms.jl")) # must come before identifiers.jl
+include(joinpath("base", "identifiers.jl"))
+
 """
 module Common
 
@@ -63,7 +79,7 @@ A module that contains structs, macros, and names used by COBREXA functions
 generally.
 """
 module Common
-using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays
+using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays, ..COBREXA.@export_stuff
 
 include(joinpath("base", "types", "abstract", "Maybe.jl"))
 include(joinpath("base", "types", "abstract", "MetabolicModel.jl"))
@@ -73,19 +89,10 @@ include(joinpath("base", "logging", "log.jl"))
 include(joinpath("base", "macros", "model_wrapper.jl"))
 include(joinpath("base", "macros", "is_xxx_reaction.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
+@export_stuff()
 
 end
 
-# constants and definitions directly exported
-include(joinpath("base", "constants.jl"))
-include(joinpath("base", "SBOTerms.jl")) # must come before identifiers.jl
-include(joinpath("base", "identifiers.jl"))
 
 """
 module Types
@@ -93,22 +100,7 @@ module Types
 Types used by COBREXA.
 """
 module Types
-using ..Common:
-    Maybe,
-    @_io_log,
-    @_inherit_model_methods,
-    @_inherit_model_methods_fn,
-    MetabolicModel,
-    ModelWrapper,
-    SparseMat,
-    SparseVec,
-    MatType,
-    VecType,
-    StringVecType,
-    GeneAssociation,
-    MetaboliteFormula,
-    Annotations,
-    Notes
+using ..Common
 using ..COBREXA: _constants
 using ..COBREXA.JSON,
     ..COBREXA.SparseArrays,
@@ -117,7 +109,6 @@ using ..COBREXA.JSON,
     ..COBREXA.HDF5,
     ..COBREXA.SBML,
     ..COBREXA.OrderedCollections
-
 
 # concrete external models
 include(joinpath("base", "types", "JSONModel.jl"))
@@ -163,41 +154,10 @@ Accessors used to query information about models. Use these instead of directly
 interrogating the models via their internals.
 """
 module Accessors
-using ..Common:
-    Maybe,
-    MetabolicModel,
-    ModelWrapper,
-    SparseMat,
-    SparseVec,
-    MatType,
-    VecType,
-    StringVecType,
-    GeneAssociation,
-    MetaboliteFormula,
-    Annotations,
-    Notes,
-    @_io_log,
-    @_inherit_model_methods,
-    @_inherit_model_methods_fn
+using ..Common
+using ..Types
 
-using ..Types:
-    CoreModel,
-    CoreCoupling,
-    CoreModelCoupled,
-    StandardModel,
-    JSONModel,
-    SBMLModel,
-    MATModel,
-    MetabolicModel,
-    HDF5Model,
-    FluxSummary,
-    FluxVariabilitySummary,
-    Gene,
-    Metabolite,
-    Reaction,
-    Serialized
-
-using ..COBREXA.DocStringExtensions
+using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays 
 
 include(joinpath("base", "accessors", "MetabolicModel.jl"))
 include(joinpath("base", "accessors", "CoreModel.jl"))
@@ -208,6 +168,8 @@ include(joinpath("base", "accessors", "MATModel.jl"))
 include(joinpath("base", "accessors", "SBMLModel.jl"))
 include(joinpath("base", "accessors",  "ModelWrapper.jl"))
 include(joinpath("base", "accessors", "HDF5Model.jl"))
+include(joinpath("base", "accessors", "GeckoModel.jl"))
+include(joinpath("base", "accessors", "SMomentModel.jl"))
 
 for sym in names(@__MODULE__, all = true)
     if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
@@ -224,23 +186,12 @@ module InputOutput
 Input/output functions, as well as pretty printing.
 """
 module InputOutput # can't use IO
-using ..Types:
-    JSONModel,
-    SBMLModel,
-    MATModel,
-    MetabolicModel,
-    HDF5Model,
-    FluxSummary,
-    FluxVariabilitySummary,
-    Gene,
-    Metabolite,
-    Reaction,
-    Serialized
-
-using ..Common: @_io_log
+using ..Types
+using ..Common
+using ..Accessors
 
 using ..COBREXA.JSON,
-    ..COBREXA.MAT, ..COBREXA.SBML, ..COBREXA.HDF5, ..COBREXA.DocStringExtensions
+    ..COBREXA.MAT, ..COBREXA.SBML, ..COBREXA.HDF5, ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays 
 
 # IO functions
 include(joinpath("io", "json.jl"))
@@ -269,84 +220,15 @@ end
 end
 
 """
-module Utils
-
-Utility functions.
-"""
-module Utils
-using ..Types:
-    Gene,
-    Metabolite,
-    Reaction,
-    MetaboliteFormula,
-    CoreModel,
-    CoreModelCoupled,
-    GeckoModel,
-    SMomentModel,
-    MetabolicModel,
-    GeneAssociation,
-    Isozyme,
-    MetabolicModel,
-    StandardModel,
-    Serialized
-
-using ..Common: @_models_log, @_is_reaction_fn
-
-using ..COBREXA.SBML,
-    ..COBREXA.HDF5,
-    ..COBREXA.OrderedCollections,
-    ..COBREXA.Serialization,
-    ..COBREXA.DocStringExtensions,
-    ..COBREXA.SparseArrays
-
-include(joinpath("base", "utils", "Annotation.jl"))
-include(joinpath("base", "utils", "bounds.jl"))
-include(joinpath("base", "utils", "chemical_formulas.jl"))
-include(joinpath("base", "utils", "CoreModel.jl"))
-include(joinpath("base", "utils", "enzymes.jl"))
-include(joinpath("base", "utils", "fluxes.jl"))
-include(joinpath("base", "utils", "gecko.jl"))
-include(joinpath("base", "utils", "gene_associations.jl"))
-include(joinpath("base", "utils", "guesskey.jl"))
-include(joinpath("base", "utils", "HDF5Model.jl"))
-include(joinpath("base", "utils", "looks_like.jl"))
-include(joinpath("base", "utils", "Reaction.jl"))
-include(joinpath("base", "utils", "Serialized.jl"))
-include(joinpath("base", "utils", "smoment.jl"))
-include(joinpath("base", "utils", "StandardModel.jl"))
-
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
-
-end
-
-"""
 module Analysis
 
 Analysis functions. Contains a submodule, `Modifications`, which contains
 optimizer based modifications.
 """
 module Analysis
-using ..Types:
-    Gene,
-    Metabolite,
-    Reaction,
-    CoreModel,
-    CoreModelCoupled,
-    GeckoModel,
-    SMomentModel,
-    MetabolicModel,
-    Isozyme,
-    MetabolicModel,
-    StandardModel,
-    Serialized,
-    SparseMat
-
-using ..Common: Maybe, @_models_log
+using ..Common
+using ..Types
+using ..Accessors
 
 using ..COBREXA.DocStringExtensions,
     ..COBREXA.JuMP, ..COBREXA.Distributed, ..COBREXA.DistributedData
@@ -371,8 +253,8 @@ module Modifications
 A module containing optimizer based modifications.
 """
 module Modifications # optimization modifications
-using ....Types: MetabolicModel
-
+using ....Types
+using ....Common
 using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP
 
 include(joinpath("analysis", "modifications", "generic.jl"))
@@ -406,23 +288,8 @@ module Reconstruction
 A module containing functions used to build and modify models. 
 """
 module Reconstruction
-using ..Types:
-    Gene,
-    Metabolite,
-    Reaction,
-    CoreModel,
-    CoreModelCoupled,
-    MetabolicModel,
-    MetabolicModel,
-    StandardModel,
-    SparseMat,
-    StringVecType,
-    VecType,
-    MatType,
-    CoreCoupling,
-    Serialized
-
-using ..Common: Maybe, @_models_log
+using ..Types
+using ..Common
 
 using ..COBREXA.DocStringExtensions, ..COBREXA.JuMP
 
@@ -443,6 +310,46 @@ include(joinpath("reconstruction", "community.jl"))
 include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
 include(joinpath("reconstruction", "modifications", "generic.jl"))
+
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
+
+end
+
+"""
+module Utils
+
+Utility functions.
+"""
+module Utils
+using ..Types
+using ..Common
+using ..COBREXA.SBML,
+    ..COBREXA.HDF5,
+    ..COBREXA.OrderedCollections,
+    ..COBREXA.Serialization,
+    ..COBREXA.DocStringExtensions,
+    ..COBREXA.SparseArrays
+
+include(joinpath("base", "utils", "Annotation.jl"))
+include(joinpath("base", "utils", "bounds.jl"))
+include(joinpath("base", "utils", "chemical_formulas.jl"))
+include(joinpath("base", "utils", "CoreModel.jl"))
+include(joinpath("base", "utils", "enzymes.jl"))
+include(joinpath("base", "utils", "fluxes.jl"))
+include(joinpath("base", "utils", "gecko.jl"))
+include(joinpath("base", "utils", "gene_associations.jl"))
+include(joinpath("base", "utils", "guesskey.jl"))
+include(joinpath("base", "utils", "HDF5Model.jl"))
+include(joinpath("base", "utils", "looks_like.jl"))
+include(joinpath("base", "utils", "Reaction.jl"))
+include(joinpath("base", "utils", "Serialized.jl"))
+include(joinpath("base", "utils", "smoment.jl"))
+include(joinpath("base", "utils", "StandardModel.jl"))
 
 for sym in names(@__MODULE__, all = true)
     if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
