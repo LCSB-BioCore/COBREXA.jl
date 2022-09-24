@@ -195,13 +195,6 @@ include(joinpath("base", "accessors", "SBMLModel.jl"))
 include(joinpath("base", "accessors",  "ModelWrapper.jl"))
 include(joinpath("base", "accessors", "HDF5Model.jl"))
 
-for sym in names(Accessors, all = true)
-    if sym in [:eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
-
 end
 
 """
@@ -400,15 +393,6 @@ include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
 include(joinpath("reconstruction", "modifications", "generic.jl"))
 
-end
-
-# export a selection of names to make life easier
-using .Accessors
-for sym in names(Accessors, all = true)
-    if sym in [:eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
 end
 
 end # module
