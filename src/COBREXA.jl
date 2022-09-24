@@ -45,15 +45,23 @@ import Base: findfirst, getindex, show
 import SBML # conflict with Reaction struct name 
 import Pkg
 
+# duplicate joinpath(normpath(joinpath(@__DIR__, "..")) to reduce the exported names
 include_dependency(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))
-const COBREXA_VERSION =
-    VersionNumber(Pkg.TOML.parsefile(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))["version"])
+const COBREXA_VERSION = VersionNumber(
+    Pkg.TOML.parsefile(joinpath(normpath(joinpath(@__DIR__, "..")), "Project.toml"))["version"],
+)
 
 #=
 Organize COBREXA into modules to make discovery of functions and data structures
 easier. Load order matters inside each module. 
 =#
 
+"""
+module Common
+
+A module that contains structs, macros, and names used by COBREXA functions
+generally.
+"""
 module Common
 using ..COBREXA.DocStringExtensions
 
@@ -65,15 +73,16 @@ include(joinpath("base", "macros", "model_wrapper.jl"))
 include(joinpath("base", "macros", "is_xxx_reaction.jl"))
 
 end
-using .Common
 
-# constants and definitions
+# constants and definitions directly exported
 include(joinpath("base", "constants.jl"))
 include(joinpath("base", "SBOTerms.jl")) # must come before identifiers.jl
 include(joinpath("base", "identifiers.jl"))
 
 """
-Common types, utilities and constants used by COBREXA.
+module ModelTypes
+
+Types used by COBREXA.
 """
 module ModelTypes
 using ..Common: Maybe, @_io_log, @_inherit_model_methods, @_inherit_model_methods_fn
@@ -121,9 +130,11 @@ include(joinpath("base", "types", "FluxSummary.jl"))
 include(joinpath("base", "types", "FluxVariabilitySummary.jl"))
 
 end
-using .ModelTypes
+
 
 """
+module InputOutput
+
 Input/output functions, as well as pretty printing.
 """
 module InputOutput # can't use IO
@@ -163,8 +174,12 @@ include(joinpath("io", "show", "Reaction.jl"))
 include(joinpath("io", "show", "Serialized.jl"))
 
 end
-using .InputOutput
 
+"""
+module Utils
+
+Utility functions.
+"""
 module Utils
 using ..ModelTypes:
     Gene,
@@ -206,9 +221,15 @@ include(joinpath("base", "utils", "Reaction.jl"))
 include(joinpath("base", "utils", "Serialized.jl"))
 include(joinpath("base", "utils", "smoment.jl"))
 include(joinpath("base", "utils", "StandardModel.jl"))
-end
-using .Utils
 
+end
+
+"""
+module Analysis
+
+Analysis functions. Contains a submodule, `Modifications`, which contains
+optimizer based modifications.
+"""
 module Analysis
 using ..ModelTypes:
     Gene,
@@ -228,9 +249,7 @@ using ..ModelTypes:
 using ..Common: Maybe, @_models_log
 
 using ..COBREXA.DocStringExtensions,
-    ..COBREXA.JuMP,
-    ..COBREXA.Distributed,
-    ..COBREXA.DistributedData
+    ..COBREXA.JuMP, ..COBREXA.Distributed, ..COBREXA.DistributedData
 
 include(joinpath("base", "solver.jl"))
 include(joinpath("analysis", "screening.jl"))
@@ -246,13 +265,16 @@ include(joinpath("analysis", "smoment.jl"))
 include(joinpath("analysis", "sampling", "warmup_variability.jl"))
 include(joinpath("analysis", "sampling", "affine_hit_and_run.jl"))
 
-module Modifications # optimization modifications
-using ....ModelTypes:
-    MetabolicModel
+"""
+module Modifications
 
-using ....COBREXA.DocStringExtensions,
-    ....COBREXA.JuMP
-    
+A module containing optimizer based modifications.
+"""
+module Modifications # optimization modifications
+using ....ModelTypes: MetabolicModel
+
+using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP
+
 include(joinpath("analysis", "modifications", "generic.jl"))
 include(joinpath("analysis", "modifications", "crowding.jl"))
 include(joinpath("analysis", "modifications", "knockout.jl"))
@@ -260,13 +282,15 @@ include(joinpath("analysis", "modifications", "loopless.jl"))
 include(joinpath("analysis", "modifications", "moment.jl")) # TODO remove and deprecate
 include(joinpath("analysis", "modifications", "optimizer.jl"))
 end
-using .Modifications
 end
-using .Analysis
-using .Analysis.Modifications
 
+"""
 module Reconstruction
 
+A module containing functions used to build and modify models. Contains a 
+submodule, `Modifications`, which houses model modification functions. 
+"""
+module Reconstruction
 using ..ModelTypes:
     Gene,
     Metabolite,
@@ -303,21 +327,15 @@ include(joinpath("reconstruction", "community.jl"))
 
 include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
+"""
+module Modifications
+
+A module containing functions used to change models.
+"""
 module Modifications # model modifications
 using ....COBREXA.DocStringExtensions
 include(joinpath("reconstruction", "modifications", "generic.jl"))
 end
-using .Modifications
-end
-using .Reconstruction
-using .Reconstruction.Modifications
-
-# export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
 end
 
 end # module

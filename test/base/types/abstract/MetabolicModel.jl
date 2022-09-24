@@ -1,4 +1,3 @@
-
 struct FakeModel <: MetabolicModel
     dummy::Int
 end
