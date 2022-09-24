@@ -73,6 +73,13 @@ include(joinpath("base", "logging", "log.jl"))
 include(joinpath("base", "macros", "model_wrapper.jl"))
 include(joinpath("base", "macros", "is_xxx_reaction.jl"))
 
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
+
 end
 
 # constants and definitions directly exported
@@ -140,6 +147,13 @@ include(joinpath("base", "types", "wrappers", "SMomentModel.jl"))
 include(joinpath("base", "types", "FluxSummary.jl"))
 include(joinpath("base", "types", "FluxVariabilitySummary.jl"))
 
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
+
 end
 
 """
@@ -195,6 +209,13 @@ include(joinpath("base", "accessors", "SBMLModel.jl"))
 include(joinpath("base", "accessors",  "ModelWrapper.jl"))
 include(joinpath("base", "accessors", "HDF5Model.jl"))
 
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
+
 end
 
 """
@@ -237,6 +258,13 @@ include(joinpath("io", "show", "MetabolicModel.jl"))
 include(joinpath("io", "show", "Metabolite.jl"))
 include(joinpath("io", "show", "Reaction.jl"))
 include(joinpath("io", "show", "Serialized.jl"))
+
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
 
 end
 
@@ -286,6 +314,13 @@ include(joinpath("base", "utils", "Reaction.jl"))
 include(joinpath("base", "utils", "Serialized.jl"))
 include(joinpath("base", "utils", "smoment.jl"))
 include(joinpath("base", "utils", "StandardModel.jl"))
+
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
 
 end
 
@@ -346,7 +381,23 @@ include(joinpath("analysis", "modifications", "knockout.jl"))
 include(joinpath("analysis", "modifications", "loopless.jl"))
 include(joinpath("analysis", "modifications", "moment.jl")) # TODO remove and deprecate
 include(joinpath("analysis", "modifications", "optimizer.jl"))
+
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
 end
+
+end
+
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
+
 end
 
 """
@@ -392,6 +443,13 @@ include(joinpath("reconstruction", "community.jl"))
 include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
 include(joinpath("reconstruction", "modifications", "generic.jl"))
+
+for sym in names(@__MODULE__, all = true)
+    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+        continue
+    end
+    @eval export $sym
+end
 
 end
 

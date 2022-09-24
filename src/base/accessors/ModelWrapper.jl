@@ -1,7 +1,5 @@
-
 """
-$(TYPEDSIGNATURES)
-
+    unwrap_model(a::ModelWrapper)
 A simple helper to pick the single w
 """
 function unwrap_model(a::ModelWrapper)
