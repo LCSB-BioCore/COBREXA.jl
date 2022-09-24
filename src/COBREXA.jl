@@ -62,7 +62,7 @@ macro export_stuff()
             if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
                 continue
             end
-            @eval export $sym
+            @eval export $(Expr(:$, :sym))
         end
     end
 end
@@ -79,7 +79,8 @@ A module that contains structs, macros, and names used by COBREXA functions
 generally.
 """
 module Common
-using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays, ..COBREXA.@export_stuff
+using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays
+import ..COBREXA
 
 include(joinpath("base", "types", "abstract", "Maybe.jl"))
 include(joinpath("base", "types", "abstract", "MetabolicModel.jl"))
@@ -89,8 +90,7 @@ include(joinpath("base", "logging", "log.jl"))
 include(joinpath("base", "macros", "model_wrapper.jl"))
 include(joinpath("base", "macros", "is_xxx_reaction.jl"))
 
-@export_stuff()
-
+COBREXA.@export_stuff()
 end
 
 
