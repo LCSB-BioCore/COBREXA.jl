@@ -254,12 +254,26 @@ using ..COBREXA.DocStringExtensions,
 
 include(joinpath("base", "solver.jl"))
 
+"""
 module Parallel
+
+A module containing purpose built parallelization functions for cobrexa. See
+[`screen`](@ref) as an example.
+"""
+module Parallel
+import ....COBREXA
+using ....Misc
+using ....Types
+using ....Accessors
+using ..Analysis
+
+using ....COBREXA.DocStringExtensions,
+    ....COBREXA.JuMP, ....COBREXA.Distributed, ....COBREXA.DistributedData
+
 include(joinpath("analysis", "screening.jl"))
 
 COBREXA.@_export_names()
 end
-
 
 include(joinpath("analysis", "flux_balance_analysis.jl"))
 include(joinpath("analysis", "flux_variability_analysis.jl"))
@@ -269,15 +283,26 @@ include(joinpath("analysis", "max_min_driving_force.jl"))
 include(joinpath("analysis", "gecko.jl"))
 include(joinpath("analysis", "smoment.jl"))
 
+"""
 module Sampling
+
+A module containing flux sampling functions.
+"""
+module Sampling
+import ....COBREXA
+using ....Misc
+using ....Types
+using ....Accessors
+using ..Analysis
+
+using ....COBREXA.DocStringExtensions,
+    ....COBREXA.JuMP, ....COBREXA.Distributed, ....COBREXA.DistributedData
 
 include(joinpath("analysis", "sampling", "warmup_variability.jl"))
 include(joinpath("analysis", "sampling", "affine_hit_and_run.jl"))
 
 COBREXA.@_export_names()
 end
-
-
 
 """
 module Modifications
