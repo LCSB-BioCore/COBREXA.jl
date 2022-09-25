@@ -20,7 +20,7 @@ using Tulip
 using GLPK # for MILPs
 
 # import entire COBREXA namespace
-using COBREXA.Common
+using COBREXA.Misc
 using COBREXA.Types
 using COBREXA.Accessors
 using COBREXA.InputOutput

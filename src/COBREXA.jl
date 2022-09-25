@@ -56,10 +56,15 @@ Organize COBREXA into modules to make discovery of functions and data structures
 easier. Load order matters inside each module. 
 =#
 
-macro export_stuff()
+"""
+@_export_names()
+
+An internal macro that exports names contained in the module that calls it.
+"""
+macro _export_names()
     quote
         for sym in names(@__MODULE__, all = true)
-            if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
+            if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_',  '#'])
                 continue
             end
             @eval export $(Expr(:$, :sym))
@@ -73,12 +78,12 @@ include(joinpath("base", "SBOTerms.jl")) # must come before identifiers.jl
 include(joinpath("base", "identifiers.jl"))
 
 """
-module Common
+module Misc
 
-A module that contains structs, macros, and names used by COBREXA functions
-generally.
+A module that contains miscellaneous structs, macros, and names used by COBREXA
+functions generally.
 """
-module Common
+module Misc
 using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays
 import ..COBREXA
 
@@ -90,7 +95,10 @@ include(joinpath("base", "logging", "log.jl"))
 include(joinpath("base", "macros", "model_wrapper.jl"))
 include(joinpath("base", "macros", "is_xxx_reaction.jl"))
 
-COBREXA.@export_stuff()
+# helper functions
+include(joinpath("base", "utils", "guesskey.jl"))
+
+COBREXA.@_export_names()
 end
 
 
@@ -101,7 +109,8 @@ Types used by COBREXA.
 """
 module Types
 import ..COBREXA
-using ..Common
+using ..Misc
+using ..Misc: _gets, _guesskey
 using ..COBREXA: _constants
 using ..COBREXA.JSON,
     ..COBREXA.SparseArrays,
@@ -139,8 +148,7 @@ include(joinpath("base", "types", "wrappers", "SMomentModel.jl"))
 include(joinpath("base", "types", "FluxSummary.jl"))
 include(joinpath("base", "types", "FluxVariabilitySummary.jl"))
 
-COBREXA.@export_stuff()
-
+COBREXA.@_export_names()
 end
 
 """
@@ -151,10 +159,14 @@ interrogating the models via their internals.
 """
 module Accessors
 import ..COBREXA
-using ..Common
+using ..COBREXA: _constants
+using ..Misc
+using ..Misc: _maybemap
 using ..Types
+using ..Types: _json_gene_name, _json_met_name, _json_rxn_name
+using ..Misc: _gets, _guesskey
 
-using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays 
+using ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays, ..COBREXA.OrderedCollections, ..COBREXA.SBML
 
 include(joinpath("base", "accessors", "MetabolicModel.jl"))
 include(joinpath("base", "accessors", "CoreModel.jl"))
@@ -168,8 +180,11 @@ include(joinpath("base", "accessors", "HDF5Model.jl"))
 include(joinpath("base", "accessors", "GeckoModel.jl"))
 include(joinpath("base", "accessors", "SMomentModel.jl"))
 
-COBREXA.@export_stuff()
+# functions used by accessors
+include(joinpath("base", "utils", "chemical_formulas.jl"))
+include(joinpath("base", "utils", "gene_associations.jl"))
 
+COBREXA.@_export_names()
 end
 
 """
@@ -179,12 +194,13 @@ Input/output functions, as well as pretty printing.
 """
 module InputOutput # can't use IO
 import ..COBREXA
+using ..COBREXA: _constants
 using ..Types
-using ..Common
+using ..Misc
 using ..Accessors
 
 using ..COBREXA.JSON,
-    ..COBREXA.MAT, ..COBREXA.SBML, ..COBREXA.HDF5, ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays 
+    ..COBREXA.MAT, ..COBREXA.SBML, ..COBREXA.HDF5, ..COBREXA.DocStringExtensions, ..COBREXA.SparseArrays, ..COBREXA.OrderedCollections
 
 # IO functions
 include(joinpath("io", "json.jl"))
@@ -203,7 +219,7 @@ include(joinpath("io", "show", "Metabolite.jl"))
 include(joinpath("io", "show", "Reaction.jl"))
 include(joinpath("io", "show", "Serialized.jl"))
 
-COBREXA.@export_stuff()
+COBREXA.@_export_names()
 end
 
 """
@@ -214,7 +230,7 @@ optimizer based modifications.
 """
 module Analysis
 import ..COBREXA
-using ..Common
+using ..Misc
 using ..Types
 using ..Accessors
 
@@ -243,7 +259,7 @@ A module containing optimizer based modifications.
 module Modifications # optimization modifications
 import ..COBREXA
 using ....Types
-using ....Common
+using ....Misc
 using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP
 
 include(joinpath("analysis", "modifications", "generic.jl"))
@@ -253,17 +269,10 @@ include(joinpath("analysis", "modifications", "loopless.jl"))
 include(joinpath("analysis", "modifications", "moment.jl")) # TODO remove and deprecate
 include(joinpath("analysis", "modifications", "optimizer.jl"))
 
-COBREXA.@export_stuff()
-
+COBREXA.@_export_names()
 end
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
-
+COBREXA.@_export_names()
 end
 
 """
@@ -274,7 +283,7 @@ A module containing functions used to build and modify models.
 module Reconstruction
 import ..COBREXA
 using ..Types
-using ..Common
+using ..Misc
 
 using ..COBREXA.DocStringExtensions, ..COBREXA.JuMP
 
@@ -296,8 +305,7 @@ include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
 include(joinpath("reconstruction", "modifications", "generic.jl"))
 
-COBREXA.@export_stuff()
-
+COBREXA.@_export_names()
 end
 
 """
@@ -308,7 +316,7 @@ Utility functions.
 module Utils
 import ..COBREXA
 using ..Types
-using ..Common
+using ..Misc
 using ..COBREXA.SBML,
     ..COBREXA.HDF5,
     ..COBREXA.OrderedCollections,
@@ -318,13 +326,10 @@ using ..COBREXA.SBML,
 
 include(joinpath("base", "utils", "Annotation.jl"))
 include(joinpath("base", "utils", "bounds.jl"))
-include(joinpath("base", "utils", "chemical_formulas.jl"))
 include(joinpath("base", "utils", "CoreModel.jl"))
 include(joinpath("base", "utils", "enzymes.jl"))
 include(joinpath("base", "utils", "fluxes.jl"))
 include(joinpath("base", "utils", "gecko.jl"))
-include(joinpath("base", "utils", "gene_associations.jl"))
-include(joinpath("base", "utils", "guesskey.jl"))
 include(joinpath("base", "utils", "HDF5Model.jl"))
 include(joinpath("base", "utils", "looks_like.jl"))
 include(joinpath("base", "utils", "Reaction.jl"))
@@ -332,8 +337,7 @@ include(joinpath("base", "utils", "Serialized.jl"))
 include(joinpath("base", "utils", "smoment.jl"))
 include(joinpath("base", "utils", "StandardModel.jl"))
 
-COBREXA.@export_stuff()
-
+COBREXA.@_export_names()
 end
 
 end # module
