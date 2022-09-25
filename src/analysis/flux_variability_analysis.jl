@@ -73,7 +73,7 @@ function flux_variability_analysis(
 
     flux_vector = [fluxes[:, i] for i = 1:size(fluxes, 2)]
 
-    return screen_optmodel_modifications(
+    return Parallel.screen_optmodel_modifications(
         model,
         optimizer;
         common_modifications = vcat(

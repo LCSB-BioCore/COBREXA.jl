@@ -275,6 +275,7 @@ include(joinpath("analysis", "screening.jl"))
 COBREXA.@_export_names()
 end
 
+import .Parallel # so that screen functions can be made visible 
 include(joinpath("analysis", "flux_balance_analysis.jl"))
 include(joinpath("analysis", "flux_variability_analysis.jl"))
 include(joinpath("analysis", "minimize_metabolic_adjustment.jl"))
