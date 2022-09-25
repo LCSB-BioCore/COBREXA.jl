@@ -25,9 +25,11 @@ mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
     ) where {M<:MetabolicModel}
         length(cu) == length(cl) ||
             throw(DimensionMismatch("`cl` and `cu` need to have the same size"))
-        size(C) == (length(cu), n_reactions(lm)) ||
+        size(C) == (length(cu), size(lm.S, 2)) ||
             throw(DimensionMismatch("wrong dimensions of `C`"))
-
+        # TODO if CoreCoupling is retained, the size call above needs to be
+        # TODO replaced with n_reactions (which introduces ordering issues since
+        # TODO accessors are defined after types.)
         new{M}(lm, sparse(C), collect(cl), collect(cu))
     end
 end

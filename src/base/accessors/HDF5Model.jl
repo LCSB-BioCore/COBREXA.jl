@@ -1,3 +1,9 @@
+function precache!(model::HDF5Model)::Nothing
+    if isnothing(model.h5)
+        model.h5 = h5open(model.filename, "r")
+    end
+    nothing
+end
 
 function n_reactions(model::HDF5Model)::Int
     precache!(model)

@@ -61,4 +61,3 @@ struct SMomentModel <: ModelWrapper
     inner::MetabolicModel
 end
 
-unwrap_model(model::SMomentModel) = model.inner

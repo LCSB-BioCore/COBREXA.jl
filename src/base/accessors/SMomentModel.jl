@@ -1,3 +1,4 @@
+unwrap_model(model::SMomentModel) = model.inner
 
 """
 $(TYPEDSIGNATURES)

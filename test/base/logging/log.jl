@@ -1,4 +1,4 @@
-COBREXA.@_make_logging_tag TEST "testing stuff"
+@_make_logging_tag TEST "testing stuff"
 
 log_TEST()
 @testset "Logging on" begin

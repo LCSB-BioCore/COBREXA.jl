@@ -37,12 +37,10 @@ macro _is_reaction_fn(anno_id, identifiers)
         Symbol("@doc"),
         __source__,
         docstring,
-        :(
-            $fname(
-                model, # TODO removed ::MetabolicModel from here
-                reaction_id::String;
-                annotation_keys = ["sbo", "SBO"],
-            ) = $body
-        ),
+        :($fname(
+            model, # TODO removed ::MetabolicModel from here
+            reaction_id::String;
+            annotation_keys = ["sbo", "SBO"],
+        ) = $body),
     )
 end

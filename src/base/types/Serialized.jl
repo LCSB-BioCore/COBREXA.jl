@@ -1,4 +1,3 @@
-
 """
 $(TYPEDEF)
 
@@ -16,26 +15,4 @@ mutable struct Serialized{M} <: ModelWrapper where {M<:MetabolicModel}
     Serialized{T}(filename::String) where {T} = new{T}(nothing, filename)
     Serialized(model::T, filename::String) where {T<:MetabolicModel} =
         new{T}(model, filename)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Unwrap the serialized model (precaching it transparently).
-"""
-function unwrap_model(m::Serialized)
-    precache!(m)
-    m.m
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Load the `Serialized` model from disk in case it's not alreadly loaded.
-"""
-function precache!(model::Serialized)::Nothing
-    if isnothing(model.m)
-        model.m = deserialize(model.filename)
-    end
-    nothing
 end

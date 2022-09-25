@@ -83,5 +83,3 @@ struct GeckoModel <: ModelWrapper
 
     inner::MetabolicModel
 end
-
-unwrap_model(model::GeckoModel) = model.inner

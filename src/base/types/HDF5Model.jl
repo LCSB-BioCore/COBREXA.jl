@@ -25,10 +25,3 @@ mutable struct HDF5Model <: MetabolicModel
 
     HDF5Model(filename::String) = new(nothing, filename)
 end
-
-function precache!(model::HDF5Model)::Nothing
-    if isnothing(model.h5)
-        model.h5 = h5open(model.filename, "r")
-    end
-    nothing
-end

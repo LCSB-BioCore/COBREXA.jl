@@ -1,3 +1,4 @@
+unwrap_model(model::GeckoModel) = model.inner
 
 """
 $(TYPEDSIGNATURES)
