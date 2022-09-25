@@ -100,6 +100,7 @@ module Types
 Types used by COBREXA.
 """
 module Types
+import ..COBREXA
 using ..Common
 using ..COBREXA: _constants
 using ..COBREXA.JSON,
@@ -138,12 +139,7 @@ include(joinpath("base", "types", "wrappers", "SMomentModel.jl"))
 include(joinpath("base", "types", "FluxSummary.jl"))
 include(joinpath("base", "types", "FluxVariabilitySummary.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
+COBREXA.@export_stuff()
 
 end
 
@@ -154,6 +150,7 @@ Accessors used to query information about models. Use these instead of directly
 interrogating the models via their internals.
 """
 module Accessors
+import ..COBREXA
 using ..Common
 using ..Types
 
@@ -171,12 +168,7 @@ include(joinpath("base", "accessors", "HDF5Model.jl"))
 include(joinpath("base", "accessors", "GeckoModel.jl"))
 include(joinpath("base", "accessors", "SMomentModel.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
+COBREXA.@export_stuff()
 
 end
 
@@ -186,6 +178,7 @@ module InputOutput
 Input/output functions, as well as pretty printing.
 """
 module InputOutput # can't use IO
+import ..COBREXA
 using ..Types
 using ..Common
 using ..Accessors
@@ -210,13 +203,7 @@ include(joinpath("io", "show", "Metabolite.jl"))
 include(joinpath("io", "show", "Reaction.jl"))
 include(joinpath("io", "show", "Serialized.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
-
+COBREXA.@export_stuff()
 end
 
 """
@@ -226,6 +213,7 @@ Analysis functions. Contains a submodule, `Modifications`, which contains
 optimizer based modifications.
 """
 module Analysis
+import ..COBREXA
 using ..Common
 using ..Types
 using ..Accessors
@@ -253,6 +241,7 @@ module Modifications
 A module containing optimizer based modifications.
 """
 module Modifications # optimization modifications
+import ..COBREXA
 using ....Types
 using ....Common
 using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP
@@ -264,12 +253,7 @@ include(joinpath("analysis", "modifications", "loopless.jl"))
 include(joinpath("analysis", "modifications", "moment.jl")) # TODO remove and deprecate
 include(joinpath("analysis", "modifications", "optimizer.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
+COBREXA.@export_stuff()
 
 end
 
@@ -288,6 +272,7 @@ module Reconstruction
 A module containing functions used to build and modify models. 
 """
 module Reconstruction
+import ..COBREXA
 using ..Types
 using ..Common
 
@@ -311,12 +296,7 @@ include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
 include(joinpath("reconstruction", "modifications", "generic.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
+COBREXA.@export_stuff()
 
 end
 
@@ -326,6 +306,7 @@ module Utils
 Utility functions.
 """
 module Utils
+import ..COBREXA
 using ..Types
 using ..Common
 using ..COBREXA.SBML,
@@ -351,12 +332,7 @@ include(joinpath("base", "utils", "Serialized.jl"))
 include(joinpath("base", "utils", "smoment.jl"))
 include(joinpath("base", "utils", "StandardModel.jl"))
 
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
-    end
-    @eval export $sym
-end
+COBREXA.@export_stuff()
 
 end
 
