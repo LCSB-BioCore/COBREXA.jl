@@ -222,7 +222,7 @@ function max_min_driving_force_variability(
         midx = 1:n_metabolites(model), sense in [MAX_SENSE, MIN_SENSE]
     ]
 
-    return screen(
+    return Parallel.screen(
         model;
         args = [dgr_variants; concen_variants],
         analysis = (m, args) -> max_min_driving_force(

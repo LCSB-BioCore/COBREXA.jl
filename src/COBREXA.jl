@@ -236,6 +236,40 @@ COBREXA.@_export_names()
 end
 
 """
+module Utils
+
+Utility functions.
+"""
+module Utils
+import ..COBREXA
+using COBREXA: _constants
+using ..Types
+using ..Misc
+using ..Misc: @_is_reaction_fn
+using ..Accessors
+using ..COBREXA.SBML,
+    ..COBREXA.OrderedCollections,
+    ..COBREXA.Serialization,
+    ..COBREXA.DocStringExtensions,
+    ..COBREXA.SparseArrays
+
+include(joinpath("base", "utils", "Annotation.jl"))
+include(joinpath("base", "utils", "bounds.jl"))
+include(joinpath("base", "utils", "CoreModel.jl"))
+include(joinpath("base", "utils", "enzymes.jl"))
+include(joinpath("base", "utils", "fluxes.jl"))
+include(joinpath("base", "utils", "gecko.jl"))
+include(joinpath("base", "utils", "looks_like.jl"))
+include(joinpath("base", "utils", "Reaction.jl"))
+include(joinpath("base", "utils", "Serialized.jl"))
+include(joinpath("base", "utils", "smoment.jl"))
+include(joinpath("base", "utils", "StandardModel.jl"))
+include(joinpath("base", "utils", "summary.jl"))
+
+COBREXA.@_export_names()
+end
+
+"""
 module Analysis
 
 Analysis functions. Contains submodules:
@@ -245,6 +279,7 @@ Analysis functions. Contains submodules:
 """
 module Analysis
 import ..COBREXA
+using ....COBREXA: _constants
 using ..Misc
 using ..Types
 using ..Accessors
@@ -262,10 +297,10 @@ A module containing purpose built parallelization functions for cobrexa. See
 """
 module Parallel
 import ....COBREXA
+using ....COBREXA: _constants
 using ....Misc
 using ....Types
 using ....Accessors
-using ..Analysis
 
 using ....COBREXA.DocStringExtensions,
     ....COBREXA.JuMP, ....COBREXA.Distributed, ....COBREXA.DistributedData
@@ -311,11 +346,14 @@ module Modifications
 A module containing optimizer based modifications.
 """
 module Modifications # optimization modifications
-import ..COBREXA
+import ....COBREXA
+using ....COBREXA: _constants
+using ..Analysis
+using ....Utils
 using ....Types
 using ....Misc
 using ....Accessors
-using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP, ....COBREXA.SparseArrays
+using ....COBREXA.DocStringExtensions, ....COBREXA.JuMP, ....COBREXA.SparseArrays, ....COBREXA.LinearAlgebra
 
 include(joinpath("analysis", "modifications", "generic.jl"))
 include(joinpath("analysis", "modifications", "crowding.jl"))
@@ -359,40 +397,6 @@ include(joinpath("reconstruction", "community.jl"))
 include(joinpath("reconstruction", "gapfill_minimum_reactions.jl"))
 
 include(joinpath("reconstruction", "modifications", "generic.jl"))
-
-COBREXA.@_export_names()
-end
-
-"""
-module Utils
-
-Utility functions.
-"""
-module Utils
-import ..COBREXA
-using COBREXA: _constants
-using ..Types
-using ..Misc
-using ..Misc: @_is_reaction_fn
-using ..Accessors
-using ..COBREXA.SBML,
-    ..COBREXA.OrderedCollections,
-    ..COBREXA.Serialization,
-    ..COBREXA.DocStringExtensions,
-    ..COBREXA.SparseArrays
-
-include(joinpath("base", "utils", "Annotation.jl"))
-include(joinpath("base", "utils", "bounds.jl"))
-include(joinpath("base", "utils", "CoreModel.jl"))
-include(joinpath("base", "utils", "enzymes.jl"))
-include(joinpath("base", "utils", "fluxes.jl"))
-include(joinpath("base", "utils", "gecko.jl"))
-include(joinpath("base", "utils", "looks_like.jl"))
-include(joinpath("base", "utils", "Reaction.jl"))
-include(joinpath("base", "utils", "Serialized.jl"))
-include(joinpath("base", "utils", "smoment.jl"))
-include(joinpath("base", "utils", "StandardModel.jl"))
-include(joinpath("base", "utils", "summary.jl"))
 
 COBREXA.@_export_names()
 end
