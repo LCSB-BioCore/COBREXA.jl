@@ -27,7 +27,6 @@ using COBREXA.InputOutput
 using COBREXA.Utils
 using COBREXA.Analysis
 using COBREXA.Analysis.Modifications
-using COBREXA.Analysis.Parallel
 using COBREXA.Analysis.Sampling
 using COBREXA.Reconstruction
 

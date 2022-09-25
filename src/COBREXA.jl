@@ -164,7 +164,7 @@ using ..COBREXA: _constants
 using ..Misc
 using ..Misc: _maybemap, _default
 using ..Types
-using ..Types: _json_gene_name, _json_met_name, _json_rxn_name
+using ..Types: _json_gene_name, _json_met_name, _json_rxn_name, _smoment_column, _smoment_column_reactions, _gecko_reaction_name, _gecko_reaction_column_reactions, _gecko_reaction_coupling, _gecko_gene_product_coupling, _gecko_mass_group_coupling
 using ..Misc: _gets, _guesskey
 
 using ..COBREXA.DocStringExtensions,
@@ -258,7 +258,6 @@ include(joinpath("base", "utils", "bounds.jl"))
 include(joinpath("base", "utils", "CoreModel.jl"))
 include(joinpath("base", "utils", "enzymes.jl"))
 include(joinpath("base", "utils", "fluxes.jl"))
-include(joinpath("base", "utils", "gecko.jl"))
 include(joinpath("base", "utils", "looks_like.jl"))
 include(joinpath("base", "utils", "Reaction.jl"))
 include(joinpath("base", "utils", "Serialized.jl"))
@@ -274,8 +273,7 @@ module Analysis
 
 Analysis functions. Contains submodules:
 - `Modifications`, which contains optimizer based modifications,
-- `Sampling`, which contains samplers,
-- `Parallel`, which contains `screen` like functions.
+- `Sampling`, which contains samplers.
 """
 module Analysis
 import ..COBREXA
@@ -283,34 +281,14 @@ using ....COBREXA: _constants
 using ..Misc
 using ..Types
 using ..Accessors
+using ..Utils
 
 using ..COBREXA.DocStringExtensions,
-    ..COBREXA.JuMP, ..COBREXA.Distributed, ..COBREXA.DistributedData
+    ..COBREXA.JuMP, ..COBREXA.Distributed, ..COBREXA.DistributedData, ..COBREXA.LinearAlgebra
 
 include(joinpath("base", "solver.jl"))
-
-"""
-module Parallel
-
-A module containing purpose built parallelization functions for cobrexa. See
-[`screen`](@ref) as an example.
-"""
-module Parallel
-import ....COBREXA
-using ....COBREXA: _constants
-using ....Misc
-using ....Types
-using ....Accessors
-
-using ....COBREXA.DocStringExtensions,
-    ....COBREXA.JuMP, ....COBREXA.Distributed, ....COBREXA.DistributedData
-
 include(joinpath("analysis", "screening.jl"))
 
-COBREXA.@_export_names()
-end
-
-import .Parallel # so that screen functions can be made visible 
 include(joinpath("analysis", "flux_balance_analysis.jl"))
 include(joinpath("analysis", "flux_variability_analysis.jl"))
 include(joinpath("analysis", "minimize_metabolic_adjustment.jl"))
@@ -377,6 +355,7 @@ module Reconstruction
 import ..COBREXA
 using ..Types
 using ..Misc
+using ..Analysis
 
 using ..COBREXA.DocStringExtensions, ..COBREXA.JuMP
 
