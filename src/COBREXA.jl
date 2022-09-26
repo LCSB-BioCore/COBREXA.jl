@@ -78,12 +78,19 @@ _inc_all.(
     ),
 )
 
-# export everything that isn't prefixed with _ (inspired by JuMP.jl, thanks!)
-for sym in names(@__MODULE__, all = true)
-    if sym in [Symbol(@__MODULE__), :eval, :include] || startswith(string(sym), ['_', '#'])
-        continue
+# export everything from the local namespace that seems exportable
+# (inspired by JuMP.jl, thanks!)
+macro _export_locals()
+    quote
+        for sym in names(@__MODULE__, all = true)
+            sym in [Symbol(@__MODULE__), :eval, :include] && continue
+            startswith(string(sym), ['_', '#']) && continue
+            sym == :Internal && continue
+            @eval export $(Expr(:$, :sym))
+        end
     end
-    @eval export $sym
 end
+
+@_export_locals
 
 end # module
