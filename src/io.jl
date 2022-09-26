@@ -3,7 +3,7 @@ using ..ModuleTools
 @dse
 
 using ..Types
-using ..Log: @io_log
+using ..Log.Internal: @io_log
 
 @inc_dir io
 

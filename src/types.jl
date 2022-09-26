@@ -4,7 +4,7 @@ using ..ModuleTools
 @dse
 
 using ..Internal.Macros
-using ..Log: @io_log
+using ..Log.Internal: @io_log
 
 using SparseArrays, OrderedCollections
 using HDF5, SBML, JSON, MAT, Serialization #for the storable types

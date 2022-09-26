@@ -67,7 +67,7 @@ end
 @export_locals
 end #Internal
 
-using .Internal
+import .Internal: log_models, log_io, log_perf
 
 #TODO can this be exported automatically?
 export log_models
