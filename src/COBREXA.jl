@@ -1,6 +1,6 @@
 """
 ```
-\\\\\\\\\\  // //     | COBREXA.jl  v$(COBREXA.COBREXA_VERSION)
+\\\\\\\\\\  // //     | COBREXA.jl  v$(COBREXA.version)
  \\\\ \\\\// //      |
   \\\\ \\/ //       | COnstraint-Based Reconstruction
    \\\\  //        | and EXascale Analysis in Julia
@@ -48,7 +48,7 @@ import SBML # conflict with Reaction struct name
 const _PKG_ROOT_DIR = normpath(joinpath(@__DIR__, ".."))
 include_dependency(joinpath(_PKG_ROOT_DIR, "Project.toml"))
 
-const COBREXA_VERSION =
+const version =
     VersionNumber(Pkg.TOML.parsefile(joinpath(_PKG_ROOT_DIR, "Project.toml"))["version"])
 
 module ModuleTools
