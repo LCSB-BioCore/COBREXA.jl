@@ -9,7 +9,7 @@
         Tulip.Optimizer;
         modifications = [
             add_moment_constraints(ksas, protein_mass_fraction;),
-            change_constraint("EX_glc__D_e", lb = -1000),
+            change_constraint("EX_glc__D_e", lower_bound = -1000),
         ],
     )
 

@@ -144,7 +144,7 @@ $(TYPEDSIGNATURES)
 Return the lower bounds for all reactions in `model` in sparse format.
 """
 lower_bounds(model::StandardModel)::Vector{Float64} =
-    sparse([model.reactions[rxn].lb for rxn in reactions(model)])
+    sparse([model.reactions[rxn].lower_bound for rxn in reactions(model)])
 
 """
 $(TYPEDSIGNATURES)
@@ -153,7 +153,7 @@ Return the upper bounds for all reactions in `model` in sparse format.
 Order matches that of the reaction ids returned in `reactions()`.
 """
 upper_bounds(model::StandardModel)::Vector{Float64} =
-    sparse([model.reactions[rxn].ub for rxn in reactions(model)])
+    sparse([model.reactions[rxn].upper_bound for rxn in reactions(model)])
 
 """
 $(TYPEDSIGNATURES)
@@ -360,8 +360,8 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             rid;
             name = reaction_name(model, rid),
             metabolites = rmets,
-            lb = lbs[i],
-            ub = ubs[i],
+            lower_bound = lbs[i],
+            upper_bound = ubs[i],
             grr = reaction_gene_association(model, rid),
             objective_coefficient = ocs[i],
             notes = reaction_notes(model, rid),

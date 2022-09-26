@@ -10,8 +10,8 @@ mutable struct Reaction
     id::String
     name::Maybe{String}
     metabolites::Dict{String,Float64}
-    lb::Float64
-    ub::Float64
+    lower_bound::Float64
+    upper_bound::Float64
     grr::Maybe{GeneAssociation}
     subsystem::Maybe{String}
     notes::Notes
@@ -30,8 +30,8 @@ function Reaction(
     id = "";
     name = nothing,
     metabolites = Dict{String,Float64}(),
-    lb = -_constants.default_reaction_bound,
-    ub = _constants.default_reaction_bound,
+    lower_bound = -_constants.default_reaction_bound,
+    upper_bound = _constants.default_reaction_bound,
     grr = nothing,
     subsystem = nothing,
     notes = Notes(),
@@ -43,8 +43,8 @@ function Reaction(
         id,
         name,
         mets,
-        lb,
-        ub,
+        lower_bound,
+        upper_bound,
         grr,
         subsystem,
         notes,
@@ -70,16 +70,21 @@ function Reaction(
     default_bound = _constants.default_reaction_bound,
 )
     if dir == :forward
-        lb = 0.0
-        ub = default_bound
+        lower_bound = 0.0
+        upper_bound = default_bound
     elseif dir == :reverse
-        lb = -default_bound
-        ub = 0.0
+        lower_bound = -default_bound
+        upper_bound = 0.0
     elseif dir == :bidirectional
-        lb = -default_bound
-        ub = default_bound
+        lower_bound = -default_bound
+        upper_bound = default_bound
     else
         throw(DomainError(dir, "unsupported direction"))
     end
-    Reaction(id; metabolites = metabolites, lb = lb, ub = ub)
+    Reaction(
+        id;
+        metabolites = metabolites,
+        lower_bound = lower_bound,
+        upper_bound = upper_bound,
+    )
 end

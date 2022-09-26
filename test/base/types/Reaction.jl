@@ -21,8 +21,8 @@
     r1 = Reaction()
     r1.id = "r1"
     r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
-    r1.lb = -100.0
-    r1.ub = 100.0
+    r1.lower_bound = -100.0
+    r1.upper_bound = 100.0
     r1.grr = [["g1", "g2"], ["g3"]]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
@@ -77,14 +77,14 @@
     @test occursin("...", sprint(show, MIME("text/plain"), rlongrev))
 
     r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
-    @test r2.lb == -1000.0 && r2.ub == 0.0
+    @test r2.lower_bound == -1000.0 && r2.upper_bound == 0.0
 
     r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
-    @test r3.lb == 0.0 && r3.ub == 1000.0
+    @test r3.lower_bound == 0.0 && r3.upper_bound == 1000.0
 
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
-    @test r4.lb == -1000.0 && r4.ub == 1000.0
+    @test r4.lower_bound == -1000.0 && r4.upper_bound == 1000.0
 
     rd = OrderedDict(r.id => r for r in [r1, r2, r3, r4])
     @test issetequal(["r1", "r4"], ambiguously_identified_items(annotation_index(rd)))

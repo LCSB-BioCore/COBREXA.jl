@@ -19,8 +19,8 @@ function add_reactions!(model::CoreModel, rxns::Vector{Reaction})
             push!(V, v)
         end
         push!(model.rxns, rxn.id)
-        lbs[j] = rxn.lb
-        ubs[j] = rxn.ub
+        lbs[j] = rxn.lower_bound
+        ubs[j] = rxn.upper_bound
         cs[j] = rxn.objective_coefficient
     end
     Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))

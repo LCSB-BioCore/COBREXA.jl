@@ -12,14 +12,14 @@
     end
 
     rxn = mod.reactions["v1"]
-    @test rxn.lb == -1000.0
-    @test rxn.ub == 1000.0
+    @test rxn.lower_bound == -1000.0
+    @test rxn.upper_bound == 1000.0
 
     rxn = mod.reactions["v2"]
-    @test rxn.lb == -500
-    @test rxn.ub == 1000.0
+    @test rxn.lower_bound == -500
+    @test rxn.upper_bound == 1000.0
 
     rxn = mod.reactions["v3"]
-    @test rxn.lb == -500
-    @test rxn.ub == 500
+    @test rxn.lower_bound == -500
+    @test rxn.upper_bound == 500
 end

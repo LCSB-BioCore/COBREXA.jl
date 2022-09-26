@@ -236,7 +236,7 @@ end
     rxn1 = Reaction("nr1"; metabolites = Dict("m1[c]" => -1, "m3[c]" => 1))
     rxn2 = Reaction("nr2"; metabolites = Dict("m1[c]" => -1, "m2[c]" => 1))
     rxn3 = Reaction("nr3"; metabolites = Dict("m2[c]" => -1, "m3[c]" => 1))
-    rxn3.lb = 10
+    rxn3.lower_bound = 10
 
     add_reaction!(toymodel, rxn1)
     @test toymodel.S[1, 8] == -1
