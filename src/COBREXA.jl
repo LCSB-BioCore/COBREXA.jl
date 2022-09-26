@@ -64,7 +64,7 @@ _inc_all.(
             joinpath("base", "macros"),
             joinpath("base", "types"),
             joinpath("base", "types", "wrappers"),
-            joinpath("base", "ontologies"),
+            joinpath("base", "ontology"),
             "base",
             "io",
             joinpath("io", "show"),
