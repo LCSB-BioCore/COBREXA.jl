@@ -182,7 +182,7 @@ end
 
 @_remove_fn reaction StandardModel String inplace begin
     if !(reaction_id in reactions(model))
-        @_models_log @info "Reaction $reaction_id not found in model."
+        @models_log @info "Reaction $reaction_id not found in model."
     else
         delete!(model.reactions, reaction_id)
     end
@@ -211,7 +211,7 @@ end
 
 @_remove_fn metabolite StandardModel String inplace plural begin
     !all(in.(metabolite_ids, Ref(metabolites(model)))) &&
-        @_models_log @info "Some metabolites not found in model."
+        @models_log @info "Some metabolites not found in model."
     remove_reactions!(
         model,
         [

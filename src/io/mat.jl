@@ -7,7 +7,7 @@ model.
 """
 function load_mat_model(file_name::String)::MATModel
     model_pair = first(matread(file_name))
-    @_io_log @info "Loading MAT: taking a model with ID $(model_pair.first)"
+    @io_log @info "Loading MAT: taking a model with ID $(model_pair.first)"
     return MATModel(model_pair.second)
 end
 
@@ -26,7 +26,7 @@ function save_mat_model(model::MetabolicModel, file_path::String; model_name = "
     m =
         typeof(model) == MATModel ? model :
         begin
-            @_io_log @warn "Automatically converting $(typeof(model)) to MATModel for saving, information may be lost."
+            @io_log @warn "Automatically converting $(typeof(model)) to MATModel for saving, information may be lost."
             convert(MATModel, model)
         end
     matwrite(file_path, Dict(model_name => m.mat))

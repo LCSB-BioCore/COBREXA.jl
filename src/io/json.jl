@@ -18,7 +18,7 @@ function save_json_model(model::MetabolicModel, file_name::String)
     m =
         typeof(model) == JSONModel ? model :
         begin
-            @_io_log @warn "Automatically converting $(typeof(model)) to JSONModel for saving, information may be lost."
+            @io_log @warn "Automatically converting $(typeof(model)) to JSONModel for saving, information may be lost."
             convert(JSONModel, model)
         end
 

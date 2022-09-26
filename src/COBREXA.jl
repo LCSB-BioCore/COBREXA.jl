@@ -39,21 +39,62 @@ using Serialization
 using SparseArrays
 using StableRNGs
 using Statistics
-using DocStringExtensions
 
 import Base: findfirst, getindex, show
 import Pkg
 import SBML # conflict with Reaction struct name
 
+# versioning tools
 const _PKG_ROOT_DIR = normpath(joinpath(@__DIR__, ".."))
 include_dependency(joinpath(_PKG_ROOT_DIR, "Project.toml"))
 
 const COBREXA_VERSION =
     VersionNumber(Pkg.TOML.parsefile(joinpath(_PKG_ROOT_DIR, "Project.toml"))["version"])
 
-# autoloading
-const _inc(path...) = include(joinpath(path...))
-const _inc_all(dir) = _inc.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
+module ModuleTools
+macro inc(path...)
+    esc(:(include(joinpath(@__DIR__, $(joinpath(String.(path)...) * ".jl")))))
+end
+
+macro inc_dir(path...)
+    dir = joinpath(@__DIR__, String.(path)...)
+    files = filter(endswith(".jl"), readdir(dir; join = true))
+    esc(Expr(:block, (:(include($f)) for f in files)...))
+end
+
+macro dse()
+    :(using DocStringExtensions)
+end
+
+# export everything from the local namespace that seems exportable
+# (inspired by JuMP.jl, thanks!)
+macro export_locals()
+    quote
+        for sym in names(@__MODULE__; all = true, imported = true)
+            sym in [Symbol(@__MODULE__), :eval, :include] && continue
+            startswith(string(sym), ['_', '#']) && continue
+            sym == :Internal && continue
+            @eval export $(Expr(:$, :sym))
+        end
+    end
+end
+
+@export_locals
+end
+
+# start loading the individual modules
+module Internal
+using ..ModuleTools
+@inc macros
+end
+
+using .ModuleTools
+
+@inc log
+@inc types
+@inc io
+
+#= TODOs here
 
 _inc_all.(
     joinpath.(
@@ -77,20 +118,8 @@ _inc_all.(
         ],
     ),
 )
+=#
 
-# export everything from the local namespace that seems exportable
-# (inspired by JuMP.jl, thanks!)
-macro _export_locals()
-    quote
-        for sym in names(@__MODULE__, all = true)
-            sym in [Symbol(@__MODULE__), :eval, :include] && continue
-            startswith(string(sym), ['_', '#']) && continue
-            sym == :Internal && continue
-            @eval export $(Expr(:$, :sym))
-        end
-    end
-end
-
-@_export_locals
+@export_locals
 
 end # module

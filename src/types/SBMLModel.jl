@@ -129,10 +129,10 @@ function _sbml_export_annotation(annotation)::Maybe{String}
     if isnothing(annotation) || isempty(annotation)
         nothing
     elseif length(annotation) != 1 || first(annotation).first != ""
-        @_io_log @warn "Possible data loss: multiple annotations converted to text for SBML" annotation
+        @io_log @warn "Possible data loss: multiple annotations converted to text for SBML" annotation
         join(["$k: $v" for (k, v) in annotation], "\n")
     else
-        @_io_log @warn "Possible data loss: trying to represent annotation in SBML is unlikely to work " annotation
+        @io_log @warn "Possible data loss: trying to represent annotation in SBML is unlikely to work " annotation
         first(annotation).second
     end
 end

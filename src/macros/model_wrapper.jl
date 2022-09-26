@@ -2,8 +2,8 @@
 """
 $(TYPEDSIGNATURES)
 
-A helper backend for [`@_inherit_model_methods`](@ref) and
-[`@_inherit_model_methods_fn`](@ref).
+A helper backend for [`@inherit_model_methods`](@ref) and
+[`@inherit_model_methods_fn`](@ref).
 """
 function _inherit_model_methods_impl(
     source,
@@ -43,7 +43,7 @@ $(TYPEDSIGNATURES)
 Generates trivial accessor functions listed in `fns` for a model that is
 wrapped in type `mtype` as field `member`.
 """
-macro _inherit_model_methods(mtype::Symbol, arglist, member::Symbol, fwdlist, fns...)
+macro inherit_model_methods(mtype::Symbol, arglist, member::Symbol, fwdlist, fns...)
     _inherit_model_methods_impl(
         __source__,
         mtype,
@@ -57,10 +57,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-A more generic version of [`@_inherit_model_methods`](@ref) that accesses the
+A more generic version of [`@inherit_model_methods`](@ref) that accesses the
 "inner" model using an accessor function name.
 """
-macro _inherit_model_methods_fn(mtype::Symbol, arglist, accessor, fwdlist, fns...)
+macro inherit_model_methods_fn(mtype::Symbol, arglist, accessor, fwdlist, fns...)
     _inherit_model_methods_impl(
         __source__,
         mtype,

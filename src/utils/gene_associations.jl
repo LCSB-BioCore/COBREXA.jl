@@ -9,7 +9,7 @@ function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
     parse_ref(x) =
         typeof(x) == SBML.GPARef ? [x.gene_product] :
         begin
-            @_models_log @warn "Could not parse a part of gene association, ignoring: $x"
+            @models_log @warn "Could not parse a part of gene association, ignoring: $x"
             String[]
         end
     parse_and(x) =
