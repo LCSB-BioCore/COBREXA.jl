@@ -120,6 +120,4 @@ _inc_all.(
 )
 =#
 
-@export_locals
-
 end # module
