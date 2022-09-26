@@ -59,12 +59,12 @@ _inc_all.(
     joinpath.(
         @__DIR__,
         [
-            joinpath("base", "types", "abstract"),
-            joinpath("base", "logging"),
-            joinpath("base", "macros"),
-            joinpath("base", "types"),
-            joinpath("base", "types", "wrappers"),
-            joinpath("base", "ontology"),
+            joinpath("types", "abstract"),
+            joinpath("logging"),
+            joinpath("macros"),
+            joinpath("types"),
+            joinpath("types", "wrappers"),
+            joinpath("ontology"),
             "base",
             "io",
             joinpath("io", "show"),
@@ -73,7 +73,7 @@ _inc_all.(
             "analysis",
             joinpath("analysis", "modifications"),
             joinpath("analysis", "sampling"),
-            joinpath("base", "utils"),
+            joinpath("utils"),
         ],
     ),
 )
