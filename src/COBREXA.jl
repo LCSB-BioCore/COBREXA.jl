@@ -40,12 +40,14 @@ using .ModuleTools
 
 # load various internal helpers first
 @inc internal
+@inc log
 
 # start loading individual user-facing modules
-
-@inc log
 @inc types
+
 @inc io
+@inc solver
+@inc reconstruction
 
 # TODO: this needs to be assimilated to actual modules
 module Rest
@@ -57,13 +59,6 @@ using ..Types
 using ..Accessors
 using ..IO
 
-using JuMP
-
-@inc solver
-
-#joinpath("io", "show"),
-#"reconstruction",
-#joinpath("reconstruction", "modifications"),
 #"analysis",
 #joinpath("analysis", "modifications"),
 #joinpath("analysis", "sampling"),

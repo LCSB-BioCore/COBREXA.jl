@@ -47,18 +47,20 @@ macro _change_bounds_fn(model_type, idx_type, args...)
     ```
     """
 
-    Expr(
-        :macrocall,
-        Symbol("@doc"),
-        __source__,
-        docstring,
-        :(
-            $fname(
-                model::$model_type,
-                $idx_var::$idx_type;
-                lower = $missing_default,
-                upper = $missing_default,
-            ) = $body
+    esc(
+        Expr(
+            :macrocall,
+            Symbol("@doc"),
+            __source__,
+            docstring,
+            :(
+                $fname(
+                    model::$model_type,
+                    $idx_var::$idx_type;
+                    lower = $missing_default,
+                    upper = $missing_default,
+                ) = $body
+            ),
         ),
     )
 end

@@ -23,12 +23,13 @@ end
 # the modules depend on each other so we have to inject the stuff like this
 @inject Types begin
     using ..Accessors
-
     using ..Internal.Macros
     using ..Log.Internal: @io_log
+
     @inc_dir types
     @inc_dir types models
     @inc_dir types wrappers
+    @inc_dir types misc
 
     @export_locals
 end

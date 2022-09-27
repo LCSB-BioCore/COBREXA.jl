@@ -1,4 +1,12 @@
 
+module Solver
+using ..ModuleTools
+@dse
+
+using ..Types
+using ..Accessors
+using JuMP
+
 """
 $(TYPEDSIGNATURES)
 
@@ -131,3 +139,6 @@ flux_balance_analysis(model, ...) |> flux_dict(model)
 ```
 """
 flux_dict(model::MetabolicModel) = opt_model -> flux_dict(model, opt_model)
+
+@export_locals
+end

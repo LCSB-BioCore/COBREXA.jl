@@ -31,11 +31,13 @@ macro _remove_fn(objname, model_type, idx_type, args...)
     $(inplace ? "in-place" : "and return the modified model").
     """
 
-    Expr(
-        :macrocall,
-        Symbol("@doc"),
-        __source__,
-        docstring,
-        :($fname(model::$model_type, $idx_var::$idx_type) = $body),
+    esc(
+        Expr(
+            :macrocall,
+            Symbol("@doc"),
+            __source__,
+            docstring,
+            :($fname(model::$model_type, $idx_var::$idx_type) = $body),
+        ),
     )
 end

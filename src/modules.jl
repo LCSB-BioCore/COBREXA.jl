@@ -13,7 +13,7 @@ macro dse()
     :(using DocStringExtensions)
 end
 
-macro inject(mod::Symbol, code)
+macro inject(mod, code)
     esc(:(Base.eval($mod, $(Expr(:quote, code)))))
 end
 
