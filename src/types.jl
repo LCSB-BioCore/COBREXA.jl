@@ -24,7 +24,7 @@ end
 @inject Types begin
     using ..Accessors
     using ..Internal.Macros
-    using ..Log.Internal: @io_log
+    using ..Log.Internal: @io_log, @models_log
 
     @inc_dir types
     @inc_dir types models
