@@ -292,7 +292,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                 metid(mid) => SBML.Species(
                     name = metabolite_name(mm, mid),
                     compartment = _default("compartment", comps[mi]),
-                    formula = _unparse_formula(metabolite_formula(mm, mid)),
+                    formula = _maybemap(_unparse_formula, metabolite_formula(mm, mid)),
                     charge = metabolite_charge(mm, mid),
                     constant = false,
                     boundary_condition = false,
