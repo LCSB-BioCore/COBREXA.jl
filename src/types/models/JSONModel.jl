@@ -39,15 +39,15 @@ _json_met_name(m, i) = string(get(m, "id", "met$i"))
 _json_gene_name(g, i) = string(get(g, "id", "gene$i"))
 
 JSONModel(json::Dict{String,Any}) = begin
-    rkey = _guesskey(keys(json), _constants.keynames.rxns)
+    rkey = guesskey(keys(json), constants.keynames.rxns)
     isnothing(rkey) && throw(DomainError(keys(json), "JSON model has no reaction keys"))
     rs = json[rkey]
 
-    mkey = _guesskey(keys(json), _constants.keynames.mets)
+    mkey = guesskey(keys(json), constants.keynames.mets)
     ms = json[mkey]
     isnothing(mkey) && throw(DomainError(keys(json), "JSON model has no metabolite keys"))
 
-    gkey = _guesskey(keys(json), _constants.keynames.genes)
+    gkey = guesskey(keys(json), constants.keynames.genes)
     gs = isnothing(gkey) ? [] : json[gkey]
 
     JSONModel(
@@ -148,8 +148,8 @@ Get the bounds for reactions, assuming the information is stored in
 `.lower_bound` and `.upper_bound`.
 """
 Accessors.bounds(model::JSONModel) = (
-    [get(rxn, "lower_bound", -_constants.default_reaction_bound) for rxn in model.rxns],
-    [get(rxn, "upper_bound", _constants.default_reaction_bound) for rxn in model.rxns],
+    [get(rxn, "lower_bound", -constants.default_reaction_bound) for rxn in model.rxns],
+    [get(rxn, "upper_bound", constants.default_reaction_bound) for rxn in model.rxns],
 )
 
 """
@@ -308,7 +308,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
     json = Dict{String,Any}()
     json["id"] = "model" # default
 
-    json[first(_constants.keynames.genes)] = [
+    json[first(constants.keynames.genes)] = [
         Dict([
             "id" => gid,
             "name" => gene_name(mm, gid),
@@ -317,7 +317,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         ],) for gid in gene_ids
     ]
 
-    json[first(_constants.keynames.mets)] = [
+    json[first(constants.keynames.mets)] = [
         Dict([
             "id" => mid,
             "name" => metabolite_name(mm, mid),
@@ -329,7 +329,7 @@ function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
         ]) for mid in met_ids
     ]
 
-    json[first(_constants.keynames.rxns)] = [
+    json[first(constants.keynames.rxns)] = [
         begin
             res = Dict{String,Any}()
             res["id"] = rid

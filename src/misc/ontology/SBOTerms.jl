@@ -3,12 +3,13 @@ This module contains SBO terms recognized by COBREXA. For the full ontology, see
 https://github.com/EBI-BioModels/SBO/blob/master/SBO_OBO.obo.
 
 If an SBO term appears here it *may* be used in a function; if an SBO term does
-not appear here, then it is *not* used in a COBREXA function.
+not appear here, then it is *not* used in any COBREXA function.
 
-These terms are used in `Identifiers.jl` which groups them as appropriate for
-use in functions that classify reactions, metabolites, etc.
+These terms are used in module `Identifiers` which groups them as appropriate
+for use in functions that classify reactions, metabolites, etc.
 """
 module SBOTerms
+
 const FLUX_BALANCE_FRAMEWORK = "SBO:0000624"
 const RESOURCE_BALANCE_FRAMEWORK = "SBO:0000692"
 const CONSTRAINT_BASED_FRAMEWORK = "SBO:0000693"
@@ -81,4 +82,5 @@ const ACTIVE_TRANSPORT = "SBO:0000657"
 const PASSIVE_TRANSPORT = "SBO:0000658"
 
 const SUBSYSTEM = "SBO:0000633"
+
 end

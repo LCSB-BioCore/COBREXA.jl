@@ -1,4 +1,4 @@
-function Base.show(io::IO, ::MIME"text/plain", m::Metabolite)
+function Base.show(io::Base.IO, ::MIME"text/plain", m::Metabolite)
     for fname in fieldnames(Metabolite)
         if fname == :charge
             c = isnothing(getfield(m, fname)) ? nothing : string(getfield(m, fname))

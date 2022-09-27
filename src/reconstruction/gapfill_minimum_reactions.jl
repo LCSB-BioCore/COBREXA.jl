@@ -46,7 +46,7 @@ function gapfill_minimum_reactions(
     model::MetabolicModel,
     universal_reactions::Vector{Reaction},
     optimizer;
-    objective_bounds = (_constants.tolerance, _constants.default_reaction_bound),
+    objective_bounds = (constants.tolerance, constants.default_reaction_bound),
     maximum_new_reactions = length(universal_reactions),
     weights = fill(1.0, length(universal_reactions)),
     modifications = [],

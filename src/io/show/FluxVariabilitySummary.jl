@@ -1,4 +1,4 @@
-function Base.show(io::IO, ::MIME"text/plain", flux_res::FluxVariabilitySummary)
+function Base.show(io::Base.IO, ::MIME"text/plain", flux_res::FluxVariabilitySummary)
 
     longest_biomass_len =
         maximum(length(k) for k in keys(flux_res.biomass_fluxes); init = 0)

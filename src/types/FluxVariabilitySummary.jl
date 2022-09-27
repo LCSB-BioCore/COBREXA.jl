@@ -56,8 +56,8 @@ Exchange
 function flux_variability_summary(
     flux_result::Tuple{Dict{String,Dict{String,Float64}},Dict{String,Dict{String,Float64}}};
     exclude_exchanges = false,
-    exchange_prefixes = _constants.exchange_prefixes,
-    biomass_strings = _constants.biomass_strings,
+    exchange_prefixes = constants.exchange_prefixes,
+    biomass_strings = constants.biomass_strings,
     exclude_biomass = false,
 )
     isnothing(flux_result) && return FluxVariabilitySummary()

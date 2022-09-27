@@ -4,7 +4,7 @@ end
 
 _pad_spaces(str::String, maxlen::Int) = _pad_spaces(length(str), maxlen)
 
-function Base.show(io::IO, ::MIME"text/plain", flux_res::FluxSummary)
+function Base.show(io::Base.IO, ::MIME"text/plain", flux_res::FluxSummary)
     longest_biomass_len =
         maximum(length(k) for k in keys(flux_res.biomass_fluxes); init = 0)
     longest_import_len = maximum(length(k) for k in keys(flux_res.import_fluxes); init = 0)

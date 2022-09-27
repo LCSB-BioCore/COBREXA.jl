@@ -3,7 +3,7 @@
 A named tuple that contains the magic values that are used globally for
 whatever purposes.
 """
-const _constants = (
+const constants = (
     default_stoich_show_size = 50_000,
     default_reaction_bound = 1e3,
     tolerance = 1e-6,

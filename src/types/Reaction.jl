@@ -30,8 +30,8 @@ function Reaction(
     id = "";
     name = nothing,
     metabolites = Dict{String,Float64}(),
-    lower_bound = -_constants.default_reaction_bound,
-    upper_bound = _constants.default_reaction_bound,
+    lower_bound = -constants.default_reaction_bound,
+    upper_bound = constants.default_reaction_bound,
     grr = nothing,
     subsystem = nothing,
     notes = Notes(),
@@ -67,7 +67,7 @@ function Reaction(
     id::String,
     metabolites,
     dir = :bidirectional;
-    default_bound = _constants.default_reaction_bound,
+    default_bound = constants.default_reaction_bound,
 )
     if dir == :forward
         lower_bound = 0.0

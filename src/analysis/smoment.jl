@@ -47,7 +47,7 @@ function make_smoment_model(
 
         mw = sum(gpmm_(gid) * ps for (gid, ps) in isozyme.gene_product_count)
 
-        if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > _constants.tolerance
+        if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_reverse > constants.tolerance
             # reaction can run in reverse
             push!(
                 columns,
@@ -55,7 +55,7 @@ function make_smoment_model(
             )
         end
 
-        if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > _constants.tolerance
+        if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > constants.tolerance
             # reaction can run forward
             push!(
                 columns,

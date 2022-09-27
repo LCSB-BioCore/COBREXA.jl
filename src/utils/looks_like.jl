@@ -29,8 +29,8 @@ filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), reactions(mod
 function looks_like_exchange_reaction(
     rxn_id::String;
     exclude_biomass = false,
-    biomass_strings = _constants.biomass_strings,
-    exchange_prefixes = _constants.exchange_prefixes,
+    biomass_strings = constants.biomass_strings,
+    exchange_prefixes = constants.exchange_prefixes,
 )::Bool
     any(startswith(rxn_id, x) for x in exchange_prefixes) &&
         !(exclude_biomass && any(occursin(x, rxn_id) for x in biomass_strings))
@@ -77,8 +77,8 @@ findall(looks_like_biomass_reaction, reactions(model)) # returns indices
 function looks_like_biomass_reaction(
     rxn_id::String;
     exclude_exchanges = false,
-    exchange_prefixes = _constants.exchange_prefixes,
-    biomass_strings = _constants.biomass_strings,
+    exchange_prefixes = constants.exchange_prefixes,
+    biomass_strings = constants.biomass_strings,
 )::Bool
     any(occursin(x, rxn_id) for x in biomass_strings) &&
         !(exclude_exchanges && any(startswith(rxn_id, x) for x in exchange_prefixes))
@@ -117,7 +117,7 @@ findall(looks_like_extracellular_metabolite, metabolites(model)) # returns indic
 """
 function looks_like_extracellular_metabolite(
     met_id::String;
-    extracellular_suffixes = _constants.extracellular_suffixes,
+    extracellular_suffixes = constants.extracellular_suffixes,
 )::Bool
     any(endswith(met_id, x) for x in extracellular_suffixes)
 end

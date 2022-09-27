@@ -88,7 +88,7 @@ function make_gecko_model(
             # all isozymes in this direction
             for (iidx, isozyme) in enumerate(isozymes)
                 kcat = kcatf(isozyme)
-                if ub > 0 && kcat > _constants.tolerance
+                if ub > 0 && kcat > constants.tolerance
                     # prepare the coupling with gene product molar
                     gene_product_coupling = collect(
                         begin

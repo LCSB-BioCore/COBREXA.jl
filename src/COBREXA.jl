@@ -25,24 +25,7 @@ A complete overview of the functionality can be found in the documentation.
 """
 module COBREXA
 
-using Distributed
-using DistributedData
-using HDF5
-using JSON
-using JuMP
-using LinearAlgebra
-using MAT
-using MacroTools
-using OrderedCollections
-using Random
-using Serialization
-using SparseArrays
-using StableRNGs
-using Statistics
-
-import Base: findfirst, getindex, show
 import Pkg
-import SBML # conflict with Reaction struct name
 
 # versioning tools
 const _PKG_ROOT_DIR = normpath(joinpath(@__DIR__, ".."))
@@ -86,42 +69,46 @@ end
 @export_locals
 end
 
-# start loading the individual modules
+# load various internal helpers
 module Internal
 using ..ModuleTools
+@dse
+
 @inc macros
+@inc_dir misc ontology
+@inc_dir misc
+
+@export_locals
 end
 
+# start loading individual user-facing modules
 using .ModuleTools
 
 @inc log
 @inc types
 @inc io
 
-#= TODOs here
+# TODO: this needs to be assimilated to actual modules
+module Rest
+using ..ModuleTools
+@dse
 
-_inc_all.(
-    joinpath.(
-        @__DIR__,
-        [
-            joinpath("types", "abstract"),
-            joinpath("logging"),
-            joinpath("macros"),
-            joinpath("types"),
-            joinpath("types", "wrappers"),
-            joinpath("ontology"),
-            "base",
-            "io",
-            joinpath("io", "show"),
-            "reconstruction",
-            joinpath("reconstruction", "modifications"),
-            "analysis",
-            joinpath("analysis", "modifications"),
-            joinpath("analysis", "sampling"),
-            joinpath("utils"),
-        ],
-    ),
-)
-=#
+using ..Internal
+using ..Types
+using ..Accessors
+using ..IO
+
+using JuMP
+
+@inc solver
+
+#joinpath("io", "show"),
+#"reconstruction",
+#joinpath("reconstruction", "modifications"),
+#"analysis",
+#joinpath("analysis", "modifications"),
+#joinpath("analysis", "sampling"),
+#joinpath("utils"),
+end
 
 end # module
