@@ -2,7 +2,7 @@
 """
 $(TYPEDSIGNATURES)
 
-A simple helper to pick the single w
+A simple helper to pick a single wrapped model
 """
 function unwrap_model(a::ModelWrapper)
     _missing_impl_error(unwrap_model, (a,))

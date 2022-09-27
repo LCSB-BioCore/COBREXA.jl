@@ -57,14 +57,14 @@ Return a vector of reaction id strings contained in `model`.
 The order of reaction ids returned here matches the order used to construct the
 stoichiometric matrix.
 """
-reactions(model::StandardModel)::StringVecType = collect(keys(model.reactions))
+Accessors.reactions(model::StandardModel)::StringVecType = collect(keys(model.reactions))
 
 """
 $(TYPEDSIGNATURES)
 
 Return the number of reactions contained in `model`.
 """
-n_reactions(model::StandardModel)::Int = length(model.reactions)
+Accessors.n_reactions(model::StandardModel)::Int = length(model.reactions)
 
 
 """
@@ -74,35 +74,36 @@ Return a vector of metabolite id strings contained in `model`.
 The order of metabolite strings returned here matches the order used to construct
 the stoichiometric matrix.
 """
-metabolites(model::StandardModel)::StringVecType = collect(keys(model.metabolites))
+Accessors.metabolites(model::StandardModel)::StringVecType =
+    collect(keys(model.metabolites))
 
 """
 $(TYPEDSIGNATURES)
 
 Return the number of metabolites in `model`.
 """
-n_metabolites(model::StandardModel)::Int = length(model.metabolites)
+Accessors.n_metabolites(model::StandardModel)::Int = length(model.metabolites)
 
 """
 $(TYPEDSIGNATURES)
 
 Return a vector of gene id strings in `model`.
 """
-genes(model::StandardModel)::StringVecType = collect(keys(model.genes))
+Accessors.genes(model::StandardModel)::StringVecType = collect(keys(model.genes))
 
 """
 $(TYPEDSIGNATURES)
 
 Return the number of genes in `model`.
 """
-n_genes(model::StandardModel)::Int = length(model.genes)
+Accessors.n_genes(model::StandardModel)::Int = length(model.genes)
 
 """
 $(TYPEDSIGNATURES)
 
 Return the stoichiometric matrix associated with `model` in sparse format.
 """
-function stoichiometry(model::StandardModel)::SparseMat
+function Accessors.stoichiometry(model::StandardModel)::SparseMat
     n_entries = 0
     for (_, r) in model.reactions
         for _ in r.metabolites
@@ -161,7 +162,7 @@ $(TYPEDSIGNATURES)
 Return the lower and upper bounds, respectively, for reactions in `model`.
 Order matches that of the reaction ids returned in `reactions()`.
 """
-bounds(model::StandardModel)::Tuple{Vector{Float64},Vector{Float64}} =
+Accessors.bounds(model::StandardModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
 """
@@ -170,14 +171,14 @@ $(TYPEDSIGNATURES)
 Return the balance of the linear problem, i.e. b in Sv = 0 where S is the stoichiometric matrix
 and v is the flux vector.
 """
-balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
+Accessors.balance(model::StandardModel)::SparseVec = spzeros(length(model.metabolites))
 
 """
 $(TYPEDSIGNATURES)
 
 Return sparse objective vector for `model`.
 """
-objective(model::StandardModel)::SparseVec =
+Accessors.objective(model::StandardModel)::SparseVec =
     sparse([model.reactions[rid].objective_coefficient for rid in keys(model.reactions)])
 
 """
@@ -186,8 +187,10 @@ $(TYPEDSIGNATURES)
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation} =
-    _maybemap(identity, model.reactions[id].grr)
+Accessors.reaction_gene_association(
+    model::StandardModel,
+    id::String,
+)::Maybe{GeneAssociation} = _maybemap(identity, model.reactions[id].grr)
 
 """
 $(TYPEDSIGNATURES)
@@ -195,7 +198,7 @@ $(TYPEDSIGNATURES)
 Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
 """
-metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula} =
+Accessors.metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula} =
     _maybemap(_parse_formula, model.metabolites[id].formula)
 
 """
@@ -204,7 +207,7 @@ $(TYPEDSIGNATURES)
 Return the charge associated with metabolite `id` in `model`.
 Return nothing if not present.
 """
-metabolite_charge(model::StandardModel, id::String)::Maybe{Int} =
+Accessors.metabolite_charge(model::StandardModel, id::String)::Maybe{Int} =
     model.metabolites[id].charge
 
 """
@@ -213,7 +216,7 @@ $(TYPEDSIGNATURES)
 Return compartment associated with metabolite `id` in `model`.
 Return `nothing` if not present.
 """
-metabolite_compartment(model::StandardModel, id::String)::Maybe{String} =
+Accessors.metabolite_compartment(model::StandardModel, id::String)::Maybe{String} =
     model.metabolites[id].compartment
 
 """
@@ -222,7 +225,7 @@ $(TYPEDSIGNATURES)
 Return the subsystem associated with reaction `id` in `model`.
 Return `nothing` if not present.
 """
-reaction_subsystem(model::StandardModel, id::String)::Maybe{String} =
+Accessors.reaction_subsystem(model::StandardModel, id::String)::Maybe{String} =
     model.reactions[id].subsystem
 
 """
@@ -231,7 +234,7 @@ $(TYPEDSIGNATURES)
 Return the notes associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
 """
-metabolite_notes(model::StandardModel, id::String)::Maybe{Notes} =
+Accessors.metabolite_notes(model::StandardModel, id::String)::Maybe{Notes} =
     model.metabolites[id].notes
 
 """
@@ -240,7 +243,7 @@ $(TYPEDSIGNATURES)
 Return the annotation associated with metabolite `id` in `model`.
 Return an empty Dict if not present.
 """
-metabolite_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
+Accessors.metabolite_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.metabolites[id].annotations
 
 """
@@ -249,7 +252,7 @@ $(TYPEDSIGNATURES)
 Return the notes associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-gene_notes(model::StandardModel, id::String)::Maybe{Notes} = model.genes[id].notes
+Accessors.gene_notes(model::StandardModel, id::String)::Maybe{Notes} = model.genes[id].notes
 
 """
 $(TYPEDSIGNATURES)
@@ -257,7 +260,7 @@ $(TYPEDSIGNATURES)
 Return the annotation associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-gene_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
+Accessors.gene_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.genes[id].annotations
 
 """
@@ -266,7 +269,8 @@ $(TYPEDSIGNATURES)
 Return the notes associated with reaction `id` in `model`.
 Return an empty Dict if not present.
 """
-reaction_notes(model::StandardModel, id::String)::Maybe{Notes} = model.reactions[id].notes
+Accessors.reaction_notes(model::StandardModel, id::String)::Maybe{Notes} =
+    model.reactions[id].notes
 
 """
 $(TYPEDSIGNATURES)
@@ -274,7 +278,7 @@ $(TYPEDSIGNATURES)
 Return the annotation associated with reaction `id` in `model`.
 Return an empty Dict if not present.
 """
-reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
+Accessors.reaction_annotations(model::StandardModel, id::String)::Maybe{Annotations} =
     model.reactions[id].annotations
 
 """
@@ -290,21 +294,21 @@ $(TYPEDSIGNATURES)
 
 Return the name of reaction with ID `id`.
 """
-reaction_name(m::StandardModel, rid::String) = m.reactions[rid].name
+Accessors.reaction_name(m::StandardModel, rid::String) = m.reactions[rid].name
 
 """
 $(TYPEDSIGNATURES)
 
 Return the name of metabolite with ID `id`.
 """
-metabolite_name(m::StandardModel, mid::String) = m.metabolites[mid].name
+Accessors.metabolite_name(m::StandardModel, mid::String) = m.metabolites[mid].name
 
 """
 $(TYPEDSIGNATURES)
 
 Return the name of gene with ID `id`.
 """
-gene_name(m::StandardModel, gid::String) = m.genes[gid].name
+Accessors.gene_name(m::StandardModel, gid::String) = m.genes[gid].name
 
 """
 $(TYPEDSIGNATURES)

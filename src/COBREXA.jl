@@ -66,6 +66,10 @@ macro dse()
     :(using DocStringExtensions)
 end
 
+macro inject(mod::Symbol, code)
+    esc(:(Base.eval($mod, $(Expr(:quote, code)))))
+end
+
 # export everything from the local namespace that seems exportable
 # (inspired by JuMP.jl, thanks!)
 macro export_locals()

@@ -37,28 +37,29 @@ $(TYPEDSIGNATURES)
 
 Get the internal [`CoreModel`](@ref) out of [`CoreCoupling`](@ref).
 """
-unwrap_model(a::CoreCoupling) = a.lm
+Accessors.unwrap_model(a::CoreCoupling) = a.lm
 
 """
 $(TYPEDSIGNATURES)
 
 Coupling constraint matrix for a `CoreCoupling`.
 """
-coupling(a::CoreCoupling)::SparseMat = vcat(coupling(a.lm), a.C)
+Accessors.coupling(a::CoreCoupling)::SparseMat = vcat(coupling(a.lm), a.C)
 
 """
 $(TYPEDSIGNATURES)
 
 The number of coupling constraints in a `CoreCoupling`.
 """
-n_coupling_constraints(a::CoreCoupling)::Int = n_coupling_constraints(a.lm) + size(a.C, 1)
+Accessors.n_coupling_constraints(a::CoreCoupling)::Int =
+    n_coupling_constraints(a.lm) + size(a.C, 1)
 
 """
 $(TYPEDSIGNATURES)
 
 Coupling bounds for a `CoreCoupling`.
 """
-coupling_bounds(a::CoreCoupling)::Tuple{Vector{Float64},Vector{Float64}} =
+Accessors.coupling_bounds(a::CoreCoupling)::Tuple{Vector{Float64},Vector{Float64}} =
     vcat.(coupling_bounds(a.lm), (a.cl, a.cu))
 
 """
@@ -100,4 +101,4 @@ CoreModelCoupled(lm::CoreModel, C::MatType, cl::VecType, cu::VecType) =
 
 # these are special for CoreModel-ish models
 @inherit_model_methods CoreModelCoupled () lm () reaction_gene_association_vec
-@inherit_model_methods CoreModelCoupled (ridx::Int,) lm (ridx,) reaction_stoichiometry
+@inherit_model_methods CoreModelCoupled (ridx::Int,) lm (ridx,) Accessors.reaction_stoichiometry

@@ -26,50 +26,50 @@ mutable struct HDF5Model <: MetabolicModel
     HDF5Model(filename::String) = new(nothing, filename)
 end
 
-function precache!(model::HDF5Model)::Nothing
+function Accessors.precache!(model::HDF5Model)::Nothing
     if isnothing(model.h5)
         model.h5 = h5open(model.filename, "r")
     end
     nothing
 end
 
-function n_reactions(model::HDF5Model)::Int
+function Accessors.n_reactions(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["reactions"])
 end
 
-function reactions(model::HDF5Model)::Vector{String}
+function Accessors.reactions(model::HDF5Model)::Vector{String}
     precache!(model)
     # TODO is there any reasonable method to mmap strings from HDF5?
     read(model.h5["reactions"])
 end
 
-function n_metabolites(model::HDF5Model)::Int
+function Accessors.n_metabolites(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["metabolites"])
 end
 
-function metabolites(model::HDF5Model)::Vector{String}
+function Accessors.metabolites(model::HDF5Model)::Vector{String}
     precache!(model)
     read(model.h5["metabolites"])
 end
 
-function stoichiometry(model::HDF5Model)::SparseMat
+function Accessors.stoichiometry(model::HDF5Model)::SparseMat
     precache!(model)
     _h5_read_sparse(SparseMat, model.h5["stoichiometry"])
 end
 
-function bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
+function Accessors.bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
     precache!(model)
     (HDF5.readmmap(model.h5["lower_bounds"]), HDF5.readmmap(model.h5["upper_bounds"]))
 end
 
-function balance(model::HDF5Model)::SparseVec
+function Accessors.balance(model::HDF5Model)::SparseVec
     precache!(model)
     _h5_read_sparse(SparseVec, model.h5["balance"])
 end
 
-function objective(model::HDF5Model)::SparseVec
+function Accessors.objective(model::HDF5Model)::SparseVec
     precache!(model)
     _h5_read_sparse(SparseVec, model.h5["objective"])
 end
