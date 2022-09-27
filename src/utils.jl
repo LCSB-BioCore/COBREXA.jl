@@ -7,13 +7,18 @@ using ..ModuleTools
 @dse
 
 using ..Types
+using ..Accessors
 using ..Internal.Identifiers
+using ..Internal: constants
 using ..Internal.Macros
 
 using SparseArrays, OrderedCollections
 using HDF5
+using Serialization
 
 @inc_dir utils
 
 @export_locals
 end
+
+@inject Analysis.Modifications using ...Utils: is_boundary

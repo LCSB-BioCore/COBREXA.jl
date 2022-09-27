@@ -16,6 +16,8 @@ using ..ModuleTools
 @dse
 using ..Types
 using ..Internal.Macros
+using SparseArrays
+
 @inc_dir types accessors
 @export_locals
 end

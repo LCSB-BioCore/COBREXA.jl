@@ -286,7 +286,7 @@ $(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
-reaction_stoichiometry(m::StandardModel, rid::String)::Dict{String,Float64} =
+Accessors.reaction_stoichiometry(m::StandardModel, rid::String)::Dict{String,Float64} =
     m.reactions[rid].metabolites
 
 """

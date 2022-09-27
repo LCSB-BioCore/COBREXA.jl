@@ -114,7 +114,7 @@ $(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 Accessors."""
-reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
+Accessors.reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
 """

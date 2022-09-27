@@ -1,23 +1,34 @@
 using COBREXA, Test
 
+using COBREXA.Types,
+    COBREXA.Accessors,
+    COBREXA.Analysis,
+    COBREXA.Analysis.Modifications,
+    COBREXA.Reconstruction,
+    COBREXA.Reconstruction.Modifications,
+    COBREXA.Utils,
+    COBREXA.IO,
+    COBREXA.Solver
+
 using Aqua
+using Clarabel
 using Distributed
 using Downloads
+using GLPK # for MILPs
 using JSON
 using JuMP
 using LinearAlgebra
 using MAT
 using OrderedCollections
-using Clarabel
+using Serialization
 using SHA
 using SparseArrays
 using Statistics
 using Tulip
-using GLPK # for MILPs
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
-TEST_TOLERANCE = 10 * COBREXA._constants.tolerance
+TEST_TOLERANCE = 10 * COBREXA.Internal.constants.tolerance
 QP_TEST_TOLERANCE = 1e-2 # for Clarabel
 
 print_timing(fn, t) = @info "$(fn) done in $(round(t; digits = 2))s"

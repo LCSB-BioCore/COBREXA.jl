@@ -3,6 +3,7 @@ using ..ModuleTools
 @dse
 
 using ..Types
+using ..Types: _maybemap
 using ..Accessors
 using ..Internal: constants
 using ..Log.Internal: @io_log
