@@ -47,22 +47,8 @@ using .ModuleTools
 
 @inc io
 @inc solver
+@inc analysis
 @inc reconstruction
-
-# TODO: this needs to be assimilated to actual modules
-module Rest
-using ..ModuleTools
-@dse
-
-using ..Internal
-using ..Types
-using ..Accessors
-using ..IO
-
-#"analysis",
-#joinpath("analysis", "modifications"),
-#joinpath("analysis", "sampling"),
-#joinpath("utils"),
-end
+@inc utils
 
 end # module

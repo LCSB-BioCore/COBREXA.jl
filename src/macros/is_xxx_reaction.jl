@@ -33,17 +33,19 @@ macro _is_reaction_fn(anno_id, identifiers)
     the reaction annotations, use the keys in `annotation_keys` to look for entries.
     Returns false if no hits or if no keys are found.
     """
-    Expr(
-        :macrocall,
-        Symbol("@doc"),
-        __source__,
-        docstring,
-        :(
-            $fname(
-                model::MetabolicModel,
-                reaction_id::String;
-                annotation_keys = ["sbo", "SBO"],
-            ) = $body
+    esc(
+        Expr(
+            :macrocall,
+            Symbol("@doc"),
+            __source__,
+            docstring,
+            :(
+                $fname(
+                    model::MetabolicModel,
+                    reaction_id::String;
+                    annotation_keys = ["sbo", "SBO"],
+                ) = $body
+            ),
         ),
     )
 end
