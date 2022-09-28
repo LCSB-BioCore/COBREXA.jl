@@ -46,6 +46,7 @@ end
     using ..Log.Internal: @models_log
 
     using SBML
+    using SparseArrays
 
     @inc_dir types misc
     @export_locals

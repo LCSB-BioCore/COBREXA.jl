@@ -32,7 +32,7 @@ function make_smoment_model(
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])
 
-    columns = Vector{_SMomentColumn}()
+    columns = Vector{Types._SMomentColumn}()
 
     (lbs, ubs) = bounds(model)
     rids = reactions(model)
@@ -41,7 +41,7 @@ function make_smoment_model(
         isozyme = ris_(rids[i])
         if isnothing(isozyme)
             # non-enzymatic reaction (or a totally ignored one)
-            push!(columns, _SMomentColumn(i, 0, lbs[i], ubs[i], 0))
+            push!(columns, Types._SMomentColumn(i, 0, lbs[i], ubs[i], 0))
             continue
         end
 
@@ -51,7 +51,13 @@ function make_smoment_model(
             # reaction can run in reverse
             push!(
                 columns,
-                _SMomentColumn(i, -1, max(-ubs[i], 0), -lbs[i], mw / isozyme.kcat_reverse),
+                Types._SMomentColumn(
+                    i,
+                    -1,
+                    max(-ubs[i], 0),
+                    -lbs[i],
+                    mw / isozyme.kcat_reverse,
+                ),
             )
         end
 
@@ -59,7 +65,13 @@ function make_smoment_model(
             # reaction can run forward
             push!(
                 columns,
-                _SMomentColumn(i, 1, max(lbs[i], 0), ubs[i], mw / isozyme.kcat_forward),
+                Types._SMomentColumn(
+                    i,
+                    1,
+                    max(lbs[i], 0),
+                    ubs[i],
+                    mw / isozyme.kcat_forward,
+                ),
             )
         end
     end

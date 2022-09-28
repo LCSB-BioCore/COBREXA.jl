@@ -58,7 +58,7 @@ function warmup_from_variability(
     save_model = :(
         begin
             local model = $model
-            local optmodel = $COBREXA.make_optimization_model(model, $optimizer)
+            local optmodel = $make_optimization_model(model, $optimizer)
             for mod in $modifications
                 mod(model, optmodel)
             end
@@ -70,10 +70,10 @@ function warmup_from_variability(
 
     fluxes = hcat(
         dpmap(
-            rid -> :($COBREXA._maximize_warmup_reaction(
+            rid -> :($_maximize_warmup_reaction(
                 cobrexa_sampling_warmup_optmodel,
                 $rid,
-                om -> $COBREXA.JuMP.value.(om[:x]),
+                om -> $JuMP.value.(om[:x]),
             )),
             CachingPool(workers),
             vcat(-min_reactions, max_reactions),

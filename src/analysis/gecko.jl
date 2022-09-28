@@ -48,7 +48,7 @@ function make_gecko_model(
         (grp -> gene_product_mass_group_bound[grp])
     # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
 
-    columns = Vector{_GeckoReactionColumn}()
+    columns = Vector{Types._GeckoReactionColumn}()
     coupling_row_reaction = Int[]
     coupling_row_gene_product = Int[]
 
@@ -62,7 +62,7 @@ function make_gecko_model(
     for i = 1:n_reactions(model)
         isozymes = ris_(rids[i])
         if isempty(isozymes)
-            push!(columns, _GeckoReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []))
+            push!(columns, Types._GeckoReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []))
             continue
         end
 
@@ -108,7 +108,7 @@ function make_gecko_model(
                     # make a new column
                     push!(
                         columns,
-                        _GeckoReactionColumn(
+                        Types._GeckoReactionColumn(
                             i,
                             iidx,
                             dir,
@@ -133,16 +133,16 @@ function make_gecko_model(
             mg_gid_lookup[mg] = [gid]
         end
     end
-    coupling_row_mass_group = Vector{_GeckoCapacity}()
+    coupling_row_mass_group = Vector{Types._GeckoCapacity}()
     for (grp, gs) in mg_gid_lookup
         idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)
-        push!(coupling_row_mass_group, _GeckoCapacity(grp, idxs, mms, gmgb_(grp)))
+        push!(coupling_row_mass_group, Types._GeckoCapacity(grp, idxs, mms, gmgb_(grp)))
     end
 
     GeckoModel(
         [
-            _GeckoReactionColumn_reactions(columns, model)' * objective(model)
+            Types._GeckoReactionColumn_reactions(columns, model)' * objective(model)
             spzeros(length(coupling_row_gene_product))
         ],
         columns,

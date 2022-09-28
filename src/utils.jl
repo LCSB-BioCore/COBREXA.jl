@@ -21,4 +21,5 @@ using Serialization
 @export_locals
 end
 
+@inject Analysis using ...Utils: objective_bounds
 @inject Analysis.Modifications using ...Utils: is_boundary
