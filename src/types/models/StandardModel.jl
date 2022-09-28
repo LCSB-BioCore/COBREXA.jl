@@ -190,7 +190,7 @@ Return `nothing` if not available.
 Accessors.reaction_gene_association(
     model::StandardModel,
     id::String,
-)::Maybe{GeneAssociation} = _maybemap(identity, model.reactions[id].grr)
+)::Maybe{GeneAssociation} = maybemap(identity, model.reactions[id].grr)
 
 """
 $(TYPEDSIGNATURES)
@@ -199,7 +199,7 @@ Return the formula of reaction `id` in `model`.
 Return `nothing` if not present.
 """
 Accessors.metabolite_formula(model::StandardModel, id::String)::Maybe{MetaboliteFormula} =
-    _maybemap(_parse_formula, model.metabolites[id].formula)
+    maybemap(parse_formula, model.metabolites[id].formula)
 
 """
 $(TYPEDSIGNATURES)
@@ -345,7 +345,7 @@ function Base.convert(::Type{StandardModel}, model::MetabolicModel)
             mid;
             name = metabolite_name(model, mid),
             charge = metabolite_charge(model, mid),
-            formula = _maybemap(_unparse_formula, metabolite_formula(model, mid)),
+            formula = maybemap(unparse_formula, metabolite_formula(model, mid)),
             compartment = metabolite_compartment(model, mid),
             notes = metabolite_notes(model, mid),
             annotations = metabolite_annotations(model, mid),

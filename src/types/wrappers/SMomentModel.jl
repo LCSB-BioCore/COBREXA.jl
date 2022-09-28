@@ -7,7 +7,7 @@ A helper type that describes the contents of [`SMomentModel`](@ref)s.
 # Fields
 $(TYPEDFIELDS)
 """
-struct _smoment_column
+struct _SMomentColumn
     reaction_idx::Int # number of the corresponding reaction in the inner model
     direction::Int # 0 if "as is" and unique, -1 if reverse-only part, 1 if forward-only part
     lb::Float64 # must be 0 if the reaction is unidirectional (if direction!=0)
@@ -55,7 +55,7 @@ are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 $(TYPEDFIELDS)
 """
 struct SMomentModel <: ModelWrapper
-    columns::Vector{_smoment_column}
+    columns::Vector{_SMomentColumn}
     total_enzyme_capacity::Float64
 
     inner::MetabolicModel
@@ -70,7 +70,7 @@ Return a stoichiometry of the [`SMomentModel`](@ref). The enzymatic reactions
 are split into unidirectional forward and reverse ones.
 """
 Accessors.stoichiometry(model::SMomentModel) =
-    stoichiometry(model.inner) * _smoment_column_reactions(model)
+    stoichiometry(model.inner) * smoment_column_reactions(model)
 
 """
 $(TYPEDSIGNATURES)
@@ -78,7 +78,7 @@ $(TYPEDSIGNATURES)
 Reconstruct an objective of the [`SMomentModel`](@ref).
 """
 Accessors.objective(model::SMomentModel) =
-    _smoment_column_reactions(model)' * objective(model.inner)
+    smoment_column_reactions(model)' * objective(model.inner)
 
 """
 $(TYPEDSIGNATURES)
@@ -90,7 +90,7 @@ suffixes).
 Accessors.reactions(model::SMomentModel) =
     let inner_reactions = reactions(model.inner)
         [
-            _smoment_reaction_name(inner_reactions[col.reaction_idx], col.direction) for
+            smoment_reaction_name(inner_reactions[col.reaction_idx], col.direction) for
             col in model.columns
         ]
     end
@@ -117,7 +117,7 @@ Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
 fluxes in the wrapped model.
 """
 Accessors.reaction_flux(model::SMomentModel) =
-    _smoment_column_reactions(model)' * reaction_flux(model.inner)
+    smoment_column_reactions(model)' * reaction_flux(model.inner)
 
 """
 $(TYPEDSIGNATURES)
@@ -127,7 +127,7 @@ the wrapped model, coupling for split reactions, and the coupling for the total
 enzyme capacity.
 """
 Accessors.coupling(model::SMomentModel) = vcat(
-    coupling(model.inner) * _smoment_column_reactions(model),
+    coupling(model.inner) * smoment_column_reactions(model),
     [col.capacity_required for col in model.columns]',
 )
 

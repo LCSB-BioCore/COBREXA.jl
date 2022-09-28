@@ -134,7 +134,7 @@ Extracts the associations from `grRules` key, if present.
 function Accessors.reaction_gene_association(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
         grr = m.mat["grRules"][findfirst(==(rid), reactions(m))]
-        typeof(grr) == String ? _parse_grr(grr) : nothing
+        typeof(grr) == String ? parse_grr(grr) : nothing
     else
         nothing
     end
@@ -145,8 +145,8 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite formula from key `metFormula` or `metFormulas`.
 """
-Accessors.metabolite_formula(m::MATModel, mid::String) = _maybemap(
-    x -> _parse_formula(x[findfirst(==(mid), metabolites(m))]),
+Accessors.metabolite_formula(m::MATModel, mid::String) = maybemap(
+    x -> parse_formula(x[findfirst(==(mid), metabolites(m))]),
     gets(m.mat, nothing, constants.keynames.metformulas),
 )
 
@@ -156,7 +156,7 @@ $(TYPEDSIGNATURES)
 Extract metabolite charge from `metCharge` or `metCharges`.
 """
 function Accessors.metabolite_charge(m::MATModel, mid::String)
-    met_charge = _maybemap(
+    met_charge = maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
         gets(m.mat, nothing, constants.keynames.metcharges),
     )
@@ -168,7 +168,7 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite compartment from `metCompartment` or `metCompartments`.
 """
-Accessors.metabolite_compartment(m::MATModel, mid::String) = _maybemap(
+Accessors.metabolite_compartment(m::MATModel, mid::String) = maybemap(
     x -> x[findfirst(==(mid), metabolites(m))],
     gets(m.mat, nothing, constants.keynames.metcompartments),
 )
@@ -198,7 +198,7 @@ $(TYPEDSIGNATURES)
 
 Extract reaction name from `rxnNames`.
 """
-Accessors.reaction_name(m::MATModel, rid::String) = _maybemap(
+Accessors.reaction_name(m::MATModel, rid::String) = maybemap(
     x -> x[findfirst(==(rid), reactions(m))],
     gets(m.mat, nothing, constants.keynames.rxnnames),
 )
@@ -208,7 +208,7 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite name from `metNames`.
 """
-Accessors.metabolite_name(m::MATModel, mid::String) = _maybemap(
+Accessors.metabolite_name(m::MATModel, mid::String) = maybemap(
     x -> x[findfirst(==(mid), metabolites(m))],
     gets(m.mat, nothing, constants.keynames.metnames),
 )
@@ -248,24 +248,21 @@ function Base.convert(::Type{MATModel}, m::MetabolicModel)
             "cu" => Vector(cu),
             "genes" => genes(m),
             "grRules" =>
-                _default.(
+                default.(
                     "",
-                    _maybemap.(
-                        x -> _unparse_grr(String, x),
+                    maybemap.(
+                        x -> unparse_grr(String, x),
                         reaction_gene_association.(Ref(m), reactions(m)),
                     ),
                 ),
             "metFormulas" =>
-                _default.(
+                default.(
                     "",
-                    _maybemap.(
-                        _unparse_formula,
-                        metabolite_formula.(Ref(m), metabolites(m)),
-                    ),
+                    maybemap.(unparse_formula, metabolite_formula.(Ref(m), metabolites(m))),
                 ),
-            "metCharges" => _default.(0, metabolite_charge.(Ref(m), metabolites(m))),
+            "metCharges" => default.(0, metabolite_charge.(Ref(m), metabolites(m))),
             "metCompartments" =>
-                _default.("", metabolite_compartment.(Ref(m), metabolites(m))),
+                default.("", metabolite_compartment.(Ref(m), metabolites(m))),
         ),
     )
 end

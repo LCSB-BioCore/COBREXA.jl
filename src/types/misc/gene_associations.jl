@@ -5,7 +5,7 @@ $(TYPEDSIGNATURES)
 Parse `SBML.GeneProductAssociation` structure to the simpler GeneAssociation.
 The input must be (implicitly) in a positive DNF.
 """
-function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
+function parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
     parse_ref(x) =
         typeof(x) == SBML.GPARef ? [x.gene_product] :
         begin
@@ -24,7 +24,7 @@ $(TYPEDSIGNATURES)
 
 Convert a GeneAssociation to the corresponding `SBML.jl` structure.
 """
-function _unparse_grr(
+function unparse_grr(
     ::Type{SBML.GeneProductAssociation},
     x::GeneAssociation,
 )::SBML.GeneProductAssociation
@@ -40,21 +40,21 @@ and `&&`.
 
 # Example
 ```
-julia> _parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
+julia> parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
 2-element Array{Array{String,1},1}:
  ["YIL010W", "YLR043C"]
  ["YIL010W", "YGR209C"]
 ```
 """
-_parse_grr(s::String)::Maybe{GeneAssociation} = _maybemap(_parse_grr, _parse_grr_to_sbml(s))
+parse_grr(s::String)::Maybe{GeneAssociation} = maybemap(parse_grr, parse_grr_to_sbml(s))
 
 """
 $(TYPEDSIGNATURES)
 
 Internal helper for parsing the string GRRs into SBML data structures. More
-general than [`_parse_grr`](@ref).
+general than [`parse_grr`](@ref).
 """
-function _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
+function parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
     s = str
     toks = String[]
     m = Nothing
@@ -123,11 +123,11 @@ string.
 
 # Example
 ```
-julia> _unparse_grr(String, [["YIL010W", "YLR043C"], ["YIL010W", "YGR209C"]])
+julia> unparse_grr(String, [["YIL010W", "YLR043C"], ["YIL010W", "YGR209C"]])
 "(YIL010W and YLR043C) or (YIL010W and YGR209C)"
 ```
 """
-function _unparse_grr(::Type{String}, grr::GeneAssociation)::String
+function unparse_grr(::Type{String}, grr::GeneAssociation)::String
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")

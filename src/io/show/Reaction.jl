@@ -40,7 +40,7 @@ function Base.show(io::Base.IO, ::MIME"text/plain", r::Reaction)
             _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",
-                _maybemap(x -> _unparse_grr(String, x), r.grr),
+                maybemap(x -> unparse_grr(String, x), r.grr),
             )
         elseif fname in (:lower_bound, :upper_bound, :objective_coefficient)
             _pretty_print_keyvals(

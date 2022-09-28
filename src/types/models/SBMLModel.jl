@@ -110,7 +110,7 @@ $(TYPEDSIGNATURES)
 Retrieve the [`GeneAssociation`](@ref) from [`SBMLModel`](@ref).
 """
 Accessors.reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation} =
-    _maybemap(_parse_grr, model.sbml.reactions[rid].gene_product_association)
+    maybemap(parse_grr, model.sbml.reactions[rid].gene_product_association)
 
 """
 $(TYPEDSIGNATURES)
@@ -118,7 +118,7 @@ $(TYPEDSIGNATURES)
 Get [`MetaboliteFormula`](@ref) from a chosen metabolite from [`SBMLModel`](@ref).
 """
 Accessors.metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
-    _maybemap(_parse_formula, model.sbml.species[mid].formula)
+    maybemap(parse_formula, model.sbml.species[mid].formula)
 
 """
 $(TYPEDSIGNATURES)
@@ -194,7 +194,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
     rxns = reactions(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = bounds(mm)
-    comps = _default.("compartment", metabolite_compartment.(Ref(mm), mets))
+    comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 
     return SBMLModel(
@@ -205,7 +205,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
             species = Dict(
                 mid => SBML.Species(
                     name = metabolite_name(mm, mid),
-                    compartment = _default("compartment", comps[mi]),
+                    compartment = default("compartment", comps[mi]),
                     formula = metabolite_formula(mm, mid),
                     charge = metabolite_charge(mm, mid),
                     constant = false,
@@ -240,8 +240,8 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     ),
                     lower_bound = "LOWER_BOUND",
                     upper_bound = "UPPER_BOUND",
-                    gene_product_association = _maybemap(
-                        x -> _unparse_grr(SBML.GeneProductAssociation, x),
+                    gene_product_association = maybemap(
+                        x -> unparse_grr(SBML.GeneProductAssociation, x),
                         reaction_gene_association(mm, rid),
                     ),
                     reversible = true,

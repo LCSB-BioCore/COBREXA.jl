@@ -5,7 +5,7 @@ $(TYPEDSIGNATURES)
 Parse a formula in format `C2H6O` into a [`MetaboliteFormula`](@ref), which is
 basically a dictionary of atom counts in the molecule.
 """
-function _parse_formula(f::String)::MetaboliteFormula
+function parse_formula(f::String)::MetaboliteFormula
     res = Dict{String,Int}()
     pattern = @r_str "([A-Z][a-z]*)([1-9][0-9]*)?"
 
@@ -21,6 +21,6 @@ $(TYPEDSIGNATURES)
 
 Format [`MetaboliteFormula`](@ref) to `String`.
 """
-function _unparse_formula(f::MetaboliteFormula)::String
+function unparse_formula(f::MetaboliteFormula)::String
     return join(["$elem$n" for (elem, n) in f])
 end

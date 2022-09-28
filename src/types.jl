@@ -18,6 +18,11 @@ using ..Types
 using ..Internal.Macros
 using SparseArrays
 
+module Internal
+using ..ModuleTools
+@dse
+end
+
 @inc_dir types accessors
 @export_locals
 end
@@ -26,12 +31,26 @@ end
 @inject Types begin
     using ..Accessors
     using ..Internal.Macros
-    using ..Log.Internal: @io_log, @models_log
+    using ..Log.Internal: @io_log
 
     @inc_dir types
     @inc_dir types models
     @inc_dir types wrappers
-    @inc_dir types misc
 
     @export_locals
+end
+
+@inject Types.Internal begin
+    using ..Types
+    using ..Accessors
+    using ..Log.Internal: @models_log
+
+    using SBML
+
+    @inc_dir types misc
+    @export_locals
+end
+
+@inject Types begin
+    using .Internal
 end

@@ -6,7 +6,7 @@ A helper type for describing the contents of [`GeckoModel`](@ref)s.
 # Fields
 $(TYPEDFIELDS)
 """
-struct _gecko_reaction_column
+struct _GeckoReactionColumn
     reaction_idx::Int
     isozyme_idx::Int
     direction::Int
@@ -25,7 +25,7 @@ the grouping type, e.g. metabolic or membrane groups etc.
 # Fields
 $(TYPEDFIELDS)
 """
-struct _gecko_capacity
+struct _GeckoCapacity
     group_id::String
     gene_product_idxs::Vector{Int}
     gene_product_molar_masses::Vector{Float64}
@@ -76,10 +76,10 @@ $(TYPEDFIELDS)
 """
 struct GeckoModel <: ModelWrapper
     objective::SparseVec
-    columns::Vector{_gecko_reaction_column}
+    columns::Vector{_GeckoReactionColumn}
     coupling_row_reaction::Vector{Int}
     coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
-    coupling_row_mass_group::Vector{_gecko_capacity}
+    coupling_row_mass_group::Vector{_GeckoCapacity}
 
     inner::MetabolicModel
 end
@@ -94,8 +94,8 @@ split into unidirectional forward and reverse ones, each of which may have
 multiple variants per isozyme.
 """
 function Accessors.stoichiometry(model::GeckoModel)
-    irrevS = stoichiometry(model.inner) * COBREXA._gecko_reaction_column_reactions(model)
-    enzS = COBREXA._gecko_gene_product_coupling(model)
+    irrevS = stoichiometry(model.inner) * _GeckoReactionColumn_reactions(model)
+    enzS = gecko_gene_product_coupling(model)
     [
         irrevS spzeros(size(irrevS, 1), size(enzS, 1))
         -enzS I(size(enzS, 1))
@@ -122,7 +122,7 @@ IDs are mangled accordingly with suffixes).
 function Accessors.reactions(model::GeckoModel)
     inner_reactions = reactions(model.inner)
     mangled_reactions = [
-        _gecko_reaction_name(
+        gecko_reaction_name(
             inner_reactions[col.reaction_idx],
             col.direction,
             col.isozyme_idx,
@@ -163,7 +163,7 @@ Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
 """
 function Accessors.reaction_flux(model::GeckoModel)
-    rxnmat = _gecko_reaction_column_reactions(model)' * reaction_flux(model.inner)
+    rxnmat = _GeckoReactionColumn_reactions(model)' * reaction_flux(model.inner)
     [
         rxnmat
         spzeros(n_genes(model), size(rxnmat, 2))
@@ -178,9 +178,9 @@ wrapped model, coupling for split (arm) reactions, and the coupling for the tota
 enzyme capacity.
 """
 function Accessors.coupling(model::GeckoModel)
-    innerC = coupling(model.inner) * _gecko_reaction_column_reactions(model)
-    rxnC = _gecko_reaction_coupling(model)
-    enzcap = _gecko_mass_group_coupling(model)
+    innerC = coupling(model.inner) * _GeckoReactionColumn_reactions(model)
+    rxnC = gecko_reaction_coupling(model)
+    enzcap = gecko_mass_group_coupling(model)
     [
         innerC spzeros(size(innerC, 1), n_genes(model))
         rxnC spzeros(size(rxnC, 1), n_genes(model))

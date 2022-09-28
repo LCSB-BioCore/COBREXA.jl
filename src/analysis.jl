@@ -4,13 +4,19 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
+using ..Internal: constants
 using ..Log.Internal: @models_log
 using ..Solver
 using ..Types
+using ..Types: _GeckoReactionColumn, _SMomentColumn
 
-using Distributed, DistributedData
+using Distributed
+using DistributedData
 using JuMP
-using StableRNGs, Random
+using LinearAlgebra
+using Random
+using SparseArrays
+using StableRNGs
 
 @inc_dir analysis
 @inc_dir analysis sampling
@@ -28,11 +34,12 @@ end
 @inject Analysis.Modifications begin
     using ...Accessors
     using ...Analysis
+    using ...Internal: constants
     using ...Solver
     using ...Types
-    using ...Internal: constants
 
     using JuMP
+    using LinearAlgebra
     using SparseArrays
 
     @inc_dir analysis modifications
