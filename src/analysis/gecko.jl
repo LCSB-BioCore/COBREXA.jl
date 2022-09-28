@@ -142,7 +142,7 @@ function make_gecko_model(
 
     GeckoModel(
         [
-            Types._GeckoReactionColumn_reactions(columns, model)' * objective(model)
+            Types.gecko_column_reactions(columns, model)' * objective(model)
             spzeros(length(coupling_row_gene_product))
         ],
         columns,

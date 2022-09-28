@@ -15,15 +15,15 @@ $(TYPEDSIGNATURES)
 Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
 """
-_GeckoReactionColumn_reactions(model::GeckoModel) =
-    _GeckoReactionColumn_reactions(model.columns, model.inner)
+gecko_column_reactions(model::GeckoModel) =
+    gecko_column_reactions(model.columns, model.inner)
 
 """
 $(TYPEDSIGNATURES)
 
 Helper method that doesn't require the whole [`GeckoModel`](@ref).
 """
-_GeckoReactionColumn_reactions(columns, inner) = sparse(
+gecko_column_reactions(columns, inner) = sparse(
     [col.reaction_idx for col in columns],
     1:length(columns),
     [col.direction >= 0 ? 1 : -1 for col in columns],

@@ -4,8 +4,16 @@ module Types
 using ..ModuleTools
 @dse
 using ..Internal
-using SparseArrays, OrderedCollections
-using HDF5, SBML, JSON, MAT, Serialization #for the storable types
+
+using HDF5
+using JSON
+using LinearAlgebra
+using MAT
+using OrderedCollections
+using SBML
+using Serialization
+using SparseArrays
+
 @inc_dir types abstract
 @export_locals
 end
@@ -16,6 +24,7 @@ using ..ModuleTools
 @dse
 using ..Types
 using ..Internal.Macros
+
 using SparseArrays
 
 module Internal

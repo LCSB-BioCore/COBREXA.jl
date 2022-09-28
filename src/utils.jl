@@ -11,10 +11,14 @@ using ..Accessors
 using ..Internal.Identifiers
 using ..Internal: constants
 using ..Internal.Macros
+using ..Solver
 
-using SparseArrays, OrderedCollections
 using HDF5
+using JuMP
+using LinearAlgebra
+using OrderedCollections
 using Serialization
+using SparseArrays
 
 @inc_dir utils
 

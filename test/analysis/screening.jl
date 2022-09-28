@@ -37,7 +37,7 @@
     @test screen_variants(
         m,
         [[quad_rxn(i)] for i = 1:3],
-        m -> flux_balance_analysis_vec(m, Tulip.Optimizer);
+        m -> Analysis.flux_balance_analysis_vec(m, Tulip.Optimizer);
         workers = W,
     ) == [
         [250.0, -250.0, -1000.0, 250.0, 1000.0, 250.0, 250.0],
@@ -48,7 +48,7 @@
     # test solver modifications
     @test screen(
         m;
-        analysis = (m, sense) -> flux_balance_analysis_vec(
+        analysis = (m, sense) -> Analysis.flux_balance_analysis_vec(
             m,
             Tulip.Optimizer;
             modifications = [change_sense(sense)],

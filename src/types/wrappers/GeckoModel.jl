@@ -94,7 +94,7 @@ split into unidirectional forward and reverse ones, each of which may have
 multiple variants per isozyme.
 """
 function Accessors.stoichiometry(model::GeckoModel)
-    irrevS = stoichiometry(model.inner) * _GeckoReactionColumn_reactions(model)
+    irrevS = stoichiometry(model.inner) * gecko_column_reactions(model)
     enzS = gecko_gene_product_coupling(model)
     [
         irrevS spzeros(size(irrevS, 1), size(enzS, 1))
@@ -163,7 +163,7 @@ Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
 """
 function Accessors.reaction_flux(model::GeckoModel)
-    rxnmat = _GeckoReactionColumn_reactions(model)' * reaction_flux(model.inner)
+    rxnmat = gecko_column_reactions(model)' * reaction_flux(model.inner)
     [
         rxnmat
         spzeros(n_genes(model), size(rxnmat, 2))
@@ -178,7 +178,7 @@ wrapped model, coupling for split (arm) reactions, and the coupling for the tota
 enzyme capacity.
 """
 function Accessors.coupling(model::GeckoModel)
-    innerC = coupling(model.inner) * _GeckoReactionColumn_reactions(model)
+    innerC = coupling(model.inner) * gecko_column_reactions(model)
     rxnC = gecko_reaction_coupling(model)
     enzcap = gecko_mass_group_coupling(model)
     [
