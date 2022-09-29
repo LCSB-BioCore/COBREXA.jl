@@ -7,8 +7,6 @@
 # automatically derived methods for [`ModelWrapper`](@ref).
 #
 
-_missing_impl_error(m, a) = throw(MethodError(m, a))
-
 """
 $(TYPEDSIGNATURES)
 
@@ -22,7 +20,7 @@ supplies of enzymatic and genetic material and virtual cell volume, etc. To
 simplify the view of the model contents use [`reaction_flux`](@ref).
 """
 function reactions(a::MetabolicModel)::Vector{String}
-    _missing_impl_error(reactions, (a,))
+    missing_impl_error(reactions, (a,))
 end
 
 """
@@ -35,7 +33,7 @@ As with [`reactions`](@ref)s, some metabolites in models may be virtual,
 representing purely technical equality constraints.
 """
 function metabolites(a::MetabolicModel)::Vector{String}
-    _missing_impl_error(metabolites, (a,))
+    missing_impl_error(metabolites, (a,))
 end
 
 """
@@ -68,7 +66,7 @@ model `m` is defined as satisfying the equations:
 - `(lbs, ubs) == bounds(m)
 """
 function stoichiometry(a::MetabolicModel)::SparseMat
-    _missing_impl_error(stoichiometry, (a,))
+    missing_impl_error(stoichiometry, (a,))
 end
 
 """
@@ -77,7 +75,7 @@ $(TYPEDSIGNATURES)
 Get the lower and upper solution bounds of a model.
 """
 function bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    _missing_impl_error(bounds, (a,))
+    missing_impl_error(bounds, (a,))
 end
 
 """
@@ -97,7 +95,7 @@ Get the objective vector of the model. Analysis functions, such as
 where `x` is a feasible solution of the model.
 """
 function objective(a::MetabolicModel)::SparseVec
-    _missing_impl_error(objective, (a,))
+    missing_impl_error(objective, (a,))
 end
 
 """
@@ -131,7 +129,7 @@ an identity matrix.
 function reaction_flux(a::MetabolicModel)::SparseMat
     nr = n_reactions(a)
     nf = n_fluxes(a)
-    nr == nf || _missing_impl_error(reaction_flux, (a,))
+    nr == nf || missing_impl_error(reaction_flux, (a,))
     spdiagm(fill(1, nr))
 end
 
