@@ -35,7 +35,7 @@ const version =
     VersionNumber(Pkg.TOML.parsefile(joinpath(_PKG_ROOT_DIR, "Project.toml"))["version"])
 
 # bootstrap the module machinery
-include("modules.jl")
+include("moduletools.jl")
 using .ModuleTools
 
 # load various internal helpers first
