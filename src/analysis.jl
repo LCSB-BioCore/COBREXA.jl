@@ -1,4 +1,18 @@
 
+"""
+Contains the analysis functions of COBREXA.jl. Typically, these take a
+[`MetabolicModel`](@ref), convert it to the solver represenation and run
+various optimization tasks on top of it, such as finding an optimum (e.g. in
+[`flux_balance_analysis`](@ref)) or multiple optima (e.g.,
+[`flux_variability_analysis`](@ref)).
+
+Functions [`screen`](@ref) and [`screen_optmodel_modifications`](@ref) are
+special meta-analyses that apply another specified analysis to multiple
+systematically generated versions of the same input model.
+
+# Exports
+$(EXPORTS)
+"""
 module Analysis
 using ..ModuleTools
 @dse
