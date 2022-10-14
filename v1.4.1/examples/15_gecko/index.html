@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>GECKO · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../">Contents</a></li><li><a class="tocitem" href="../01_loading/">Loading models</a></li><li><a class="tocitem" href="../02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../06_fva/">Flux variability analysis (FVA)</a></li><li><a class="tocitem" href="../07_gene_deletion/">Gene knockouts</a></li><li><a class="tocitem" href="../07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../09_loopless/">Loopless FBA</a></li><li><a class="tocitem" href="../10_crowding/">FBA with crowding</a></li><li><a class="tocitem" href="../11_growth/">Growth media analysis</a></li><li><a class="tocitem" href="../12_mmdf/">Maximum-minimum driving force analysis</a></li><li><a class="tocitem" href="../13_moma/">Minimization of metabolic adjustment (MOMA)</a></li><li><a class="tocitem" href="../14_smoment/">sMOMENT</a></li><li class="is-active"><a class="tocitem" href>GECKO</a></li><li><a class="tocitem" href="../16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../../distributed/">Contents</a></li><li><a class="tocitem" href="../../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../../concepts/">Contents</a></li><li><a class="tocitem" href="../../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>GECKO</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>GECKO</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/examples/15_gecko.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="GECKO"><a class="docs-heading-anchor" href="#GECKO">GECKO</a><a id="GECKO-1"></a><a class="docs-heading-anchor-permalink" href="#GECKO" title="Permalink"></a></h1><p>GECKO algorithm can be used to easily adjust the metabolic activity within the cell to respect many known parameters, measured by proteomics and other methods.</p><p>The original description from GECKO is by: <a href="https://doi.org/10.15252/msb.20167411">Sánchez, et. al., &quot;Improving the phenotype predictions of a yeast genome‐scale metabolic model by incorporating enzymatic constraints.&quot;, Molecular systems biology, 2017</a>.</p><p>The analysis method and implementation in COBREXA is similar to <a href="../14_smoment/">sMOMENT</a>, but GECKO is able to process and represent much larger scale of the constraints – mainly, it supports multiple isozymes for each reaction, and the isozymes can be grouped into &quot;enzyme mass groups&quot; to simplify interpretation of data from proteomics.</p><p>For demonstration, we will generate artificial random data in a way similar to the <a href="../14_smoment/">sMOMENT example</a>:</p><pre><code class="language-julia">!isfile(&quot;e_coli_core.json&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.json&quot;, &quot;e_coli_core.json&quot;)
+
+using COBREXA, GLPK
+
+model = load_model(&quot;e_coli_core.json&quot;)
+
+import Random
+Random.seed!(1) # repeatability
+
+gene_product_masses = Dict(genes(model) .=&gt; randn(n_genes(model)) .* 10 .+ 60)
+
+rxns = filter(
+    x -&gt;
+        !looks_like_biomass_reaction(x) &amp;&amp;
+            !looks_like_exchange_reaction(x) &amp;&amp;
+            !isnothing(reaction_gene_association(model, x)),
+    reactions(model),
+)</code></pre><pre class="documenter-example-output">69-element Vector{String}:
+ &quot;PFK&quot;
+ &quot;PFL&quot;
+ &quot;PGI&quot;
+ &quot;PGK&quot;
+ &quot;PGL&quot;
+ &quot;ACALD&quot;
+ &quot;AKGt2r&quot;
+ &quot;PGM&quot;
+ &quot;PIt2r&quot;
+ &quot;ALCD2x&quot;
+ ⋮
+ &quot;MALt2_2&quot;
+ &quot;MDH&quot;
+ &quot;ME1&quot;
+ &quot;ME2&quot;
+ &quot;NADH16&quot;
+ &quot;NADTRHD&quot;
+ &quot;NH4t&quot;
+ &quot;O2t&quot;
+ &quot;PDH&quot;</pre><p>The main difference from sMOMENT comes from allowing multiple isozymes per reaction (reactions with missing isozyme informations will be ignored, leaving them as-is):</p><pre><code class="language-julia">rxn_isozymes = Dict(
+    rxn =&gt; [
+        Isozyme(
+            Dict(isozyme_genes .=&gt; 1),
+            randn() * 100 + 600, #forward kcat
+            randn() * 100 + 500, #reverse kcat
+        ) for isozyme_genes in reaction_gene_association(model, rxn)
+    ] for rxn in rxns
+)</code></pre><pre class="documenter-example-output">Dict{String, Vector{Isozyme}} with 69 entries:
+  &quot;ACALD&quot;   =&gt; [Isozyme(Dict(&quot;b0351&quot;=&gt;1), 462.073, 330.922), Isozyme(Dict(&quot;b124…
+  &quot;PTAr&quot;    =&gt; [Isozyme(Dict(&quot;b2297&quot;=&gt;1), 471.533, 631.132), Isozyme(Dict(&quot;b245…
+  &quot;ALCD2x&quot;  =&gt; [Isozyme(Dict(&quot;b0356&quot;=&gt;1), 617.367, 537.297), Isozyme(Dict(&quot;b147…
+  &quot;PDH&quot;     =&gt; [Isozyme(Dict(&quot;b0114&quot;=&gt;1, &quot;b0115&quot;=&gt;1, &quot;b0116&quot;=&gt;1), 670.35, 423.7…
+  &quot;PYK&quot;     =&gt; [Isozyme(Dict(&quot;b1854&quot;=&gt;1), 607.735, 454.975), Isozyme(Dict(&quot;b167…
+  &quot;CO2t&quot;    =&gt; [Isozyme(Dict(&quot;s0001&quot;=&gt;1), 847.517, 338.625)]
+  &quot;MALt2_2&quot; =&gt; [Isozyme(Dict(&quot;b3528&quot;=&gt;1), 383.908, 397.408)]
+  &quot;CS&quot;      =&gt; [Isozyme(Dict(&quot;b0720&quot;=&gt;1), 750.383, 549.73)]
+  &quot;PGM&quot;     =&gt; [Isozyme(Dict(&quot;b3612&quot;=&gt;1), 586.875, 439.579), Isozyme(Dict(&quot;b439…
+  &quot;TKT1&quot;    =&gt; [Isozyme(Dict(&quot;b2935&quot;=&gt;1), 650.793, 528.251), Isozyme(Dict(&quot;b246…
+  &quot;ACONTa&quot;  =&gt; [Isozyme(Dict(&quot;b0118&quot;=&gt;1), 621.458, 449.334), Isozyme(Dict(&quot;b127…
+  &quot;GLNS&quot;    =&gt; [Isozyme(Dict(&quot;b3870&quot;=&gt;1), 411.219, 513.669), Isozyme(Dict(&quot;b129…
+  &quot;ICL&quot;     =&gt; [Isozyme(Dict(&quot;b4015&quot;=&gt;1), 657.74, 627.894)]
+  &quot;FBA&quot;     =&gt; [Isozyme(Dict(&quot;b2097&quot;=&gt;1), 575.634, 511.58), Isozyme(Dict(&quot;b1773…
+  &quot;FORt2&quot;   =&gt; [Isozyme(Dict(&quot;b0904&quot;=&gt;1), 669.647, 627.895), Isozyme(Dict(&quot;b249…
+  &quot;G6PDH2r&quot; =&gt; [Isozyme(Dict(&quot;b1852&quot;=&gt;1), 737.135, 408.509)]
+  &quot;AKGDH&quot;   =&gt; [Isozyme(Dict(&quot;b0727&quot;=&gt;1, &quot;b0116&quot;=&gt;1, &quot;b0726&quot;=&gt;1), 537.049, 670.…
+  &quot;TKT2&quot;    =&gt; [Isozyme(Dict(&quot;b2935&quot;=&gt;1), 676.15, 452.057), Isozyme(Dict(&quot;b2465…
+  &quot;FRD7&quot;    =&gt; [Isozyme(Dict(&quot;b4151&quot;=&gt;1, &quot;b4153&quot;=&gt;1, &quot;b4154&quot;=&gt;1, &quot;b4152&quot;=&gt;1), 5…
+  ⋮         =&gt; ⋮</pre><p>We also construct similar bounds for total gene product amounts:</p><pre><code class="language-julia">gene_product_bounds = Dict(genes(model) .=&gt; Ref((0.0, 10.0)))</code></pre><pre class="documenter-example-output">Dict{String, Tuple{Float64, Float64}} with 137 entries:
+  &quot;b4301&quot; =&gt; (0.0, 10.0)
+  &quot;b1602&quot; =&gt; (0.0, 10.0)
+  &quot;b4154&quot; =&gt; (0.0, 10.0)
+  &quot;b3236&quot; =&gt; (0.0, 10.0)
+  &quot;b1621&quot; =&gt; (0.0, 10.0)
+  &quot;b1779&quot; =&gt; (0.0, 10.0)
+  &quot;b3951&quot; =&gt; (0.0, 10.0)
+  &quot;b1676&quot; =&gt; (0.0, 10.0)
+  &quot;b3114&quot; =&gt; (0.0, 10.0)
+  &quot;b1241&quot; =&gt; (0.0, 10.0)
+  &quot;b2276&quot; =&gt; (0.0, 10.0)
+  &quot;b1761&quot; =&gt; (0.0, 10.0)
+  &quot;b3925&quot; =&gt; (0.0, 10.0)
+  &quot;b3493&quot; =&gt; (0.0, 10.0)
+  &quot;b3733&quot; =&gt; (0.0, 10.0)
+  &quot;b2926&quot; =&gt; (0.0, 10.0)
+  &quot;b0979&quot; =&gt; (0.0, 10.0)
+  &quot;b4015&quot; =&gt; (0.0, 10.0)
+  &quot;b2296&quot; =&gt; (0.0, 10.0)
+  ⋮       =&gt; ⋮</pre><p>With this, the construction of the model constrained by all enzymatic information is straightforward:</p><pre><code class="language-julia">gecko_model =
+    model |&gt; with_gecko(;
+        reaction_isozymes = rxn_isozymes,
+        gene_product_bounds,
+        gene_product_molar_mass = gene_product_masses,
+        gene_product_mass_group = _ -&gt; &quot;uncategorized&quot;, # all products belong to the same &quot;uncategorized&quot; category
+        gene_product_mass_group_bound = _ -&gt; 100.0, # the total limit of mass in the single category
+    )</code></pre><pre class="documenter-example-output">Metabolic model of type GeckoModel
+sparse([9, 51, 55, 64, 65, 73, 9, 51, 55, 64  …  200, 201, 202, 203, 204, 205, 206, 207, 208, 209], [1, 1, 1, 1, 1, 1, 2, 2, 2, 2  …  325, 326, 327, 328, 329, 330, 331, 332, 333, 334], [1.0, 1.0, -1.0, -1.0, 1.0, -0.001546133025849219, 1.0, 1.0, -1.0, -1.0  …  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], 209, 334)
+Number of reactions: 334
+Number of metabolites: 209
+</pre><p>(Alternatively, you may use <a href="../../functions/analysis/#COBREXA.make_gecko_model-Tuple{MetabolicModel}"><code>make_gecko_model</code></a>, which does the same without piping by <code>|&gt;</code>.)</p><p>The stoichiometry and coupling in the gecko model is noticeably more complex; you may notice new &quot;reactions&quot; added that simulate the gene product utilization:</p><pre><code class="language-julia">[stoichiometry(gecko_model); coupling(gecko_model)]</code></pre><pre class="documenter-example-output">262×334 SparseArrays.SparseMatrixCSC{Float64, Int64} with 1386 stored entries:
+⠄⠦⠤⠤⠄⠶⠶⠦⠇⠶⡴⠠⠀⠀⢧⠀⠢⣲⠼⠿⠶⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⡎⢶⡉⣁⡄⣬⣠⡅⠔⠰⡈⠀⠀⠐⡄⡀⠄⣫⡉⡉⠩⠝⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠭⠰⠀⠒⣆⣀⣊⣬⢗⣾⢠⣵⣆⠆⠀⡁⠨⠁⠈⠀⠂⠥⠁⠅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣧⡣⠁⠤⠟⠒⠻⠿⡗⠆⠠⣧⣤⢵⠀⢠⣄⡀⠘⠋⠚⠠⠂⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢶⣂⠀⠀⠀⠀⠀⠀⠃⠀⠀⠉⠉⠉⠁⠈⠉⠉⠓⠀⠀⠀⠀⠰⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠈⠙⠺⠥⣀⡀⠀⠤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠀⠠⠄⠀⠱⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠘⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠑⢆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠉⠳⢄⡀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠑⢆⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠲⠄⠀⠠⣄⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠧⣜⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀
+⠒⠰⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙
+⠀⠀⠀⠀⠀⠉⠁⠲⠤⢤⡀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠀⠀⠐⠲⠤⢠⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠘⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒</pre><p>Again, the resulting model can be used in any type of analysis. For example, flux balance analysis:</p><pre><code class="language-julia">opt_model = flux_balance_analysis(gecko_model, GLPK.Optimizer)</code></pre><pre class="documenter-example-output">A JuMP Model
+Maximization problem with:
+Variables: 334
+Objective function type: JuMP.AffExpr
+`JuMP.AffExpr`-in-`MathOptInterface.EqualTo{Float64}`: 209 constraints
+`JuMP.AffExpr`-in-`MathOptInterface.LessThan{Float64}`: 774 constraints
+Model mode: AUTOMATIC
+CachingOptimizer state: ATTACHED_OPTIMIZER
+Solver name: GLPK
+Names registered in the model: c_lbs, c_ubs, lbs, mb, ubs, x</pre><p>Get the fluxes</p><pre><code class="language-julia">flux_sol = flux_dict(gecko_model, opt_model)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;ACALD&quot;       =&gt; 0.0
+  &quot;PTAr&quot;        =&gt; 6.34803
+  &quot;ALCD2x&quot;      =&gt; 0.0
+  &quot;PDH&quot;         =&gt; 10.4628
+  &quot;PYK&quot;         =&gt; 2.52634
+  &quot;CO2t&quot;        =&gt; -16.3044
+  &quot;EX_nh4_e&quot;    =&gt; -3.97209
+  &quot;MALt2_2&quot;     =&gt; 0.0
+  &quot;CS&quot;          =&gt; 1.38468
+  &quot;PGM&quot;         =&gt; -14.9919
+  &quot;TKT1&quot;        =&gt; 1.85156
+  &quot;EX_mal__L_e&quot; =&gt; 0.0
+  &quot;ACONTa&quot;      =&gt; 1.38468
+  &quot;EX_pi_e&quot;     =&gt; -2.67974
+  &quot;GLNS&quot;        =&gt; 0.186264
+  &quot;ICL&quot;         =&gt; 0.0
+  &quot;EX_o2_e&quot;     =&gt; -15.4623
+  &quot;FBA&quot;         =&gt; 7.29353
+  &quot;EX_gln__L_e&quot; =&gt; 0.0
+  ⋮             =&gt; ⋮</pre><p>Get the gene product concentrations</p><pre><code class="language-julia">gp_concs = gene_product_dict(gecko_model, opt_model)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 137 entries:
+  &quot;b4301&quot; =&gt; -3.40857e-19
+  &quot;b1602&quot; =&gt; 0.0
+  &quot;b4154&quot; =&gt; 0.0
+  &quot;b3236&quot; =&gt; 0.000804895
+  &quot;b1621&quot; =&gt; 0.0144236
+  &quot;b3951&quot; =&gt; 0.0
+  &quot;b1779&quot; =&gt; 0.0252316
+  &quot;b1676&quot; =&gt; 0.0
+  &quot;b3114&quot; =&gt; 0.0
+  &quot;b1241&quot; =&gt; 0.0
+  &quot;b2276&quot; =&gt; 0.0499511
+  &quot;b1761&quot; =&gt; 0.00565514
+  &quot;b3925&quot; =&gt; 0.0
+  &quot;b3493&quot; =&gt; 0.00349559
+  &quot;b3733&quot; =&gt; 0.0550335
+  &quot;b2926&quot; =&gt; 0.0332496
+  &quot;b0979&quot; =&gt; 0.0581609
+  &quot;b4015&quot; =&gt; 0.0
+  &quot;b2296&quot; =&gt; 0.0170712
+  ⋮       =&gt; ⋮</pre><p>Get the total masses assigned to each mass group</p><pre><code class="language-julia">gene_product_mass_group_dict(gecko_model, opt_model)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 1 entry:
+  &quot;uncategorized&quot; =&gt; 100.0</pre><p>Variability:</p><pre><code class="language-julia">flux_variability_analysis(gecko_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))</code></pre><pre class="documenter-example-output">95×2 Matrix{Float64}:
+   5.94319       11.2165
+   0.0           14.5575
+  -0.0321351      9.85813
+ -18.1604       -14.1881
+   0.0            9.89027
+  -3.45412        0.0
+  -1.18575        0.0
+ -17.1251       -13.1528
+   2.54576        2.67974
+  -3.45412        0.0
+   ⋮            
+   0.0            0.0
+  -2.77471        8.56368
+   0.0            3.01162
+   0.0            4.05986
+  27.1611        31.3545
+   0.0            7.91762
+   3.77348        4.79778
+  14.092         17.1644
+   1.60011e-15   15.6326</pre><p>...and sampling:</p><pre><code class="language-julia">affine_hit_and_run(gecko_model, warmup_from_variability(gecko_model, GLPK.Optimizer))&#39; *
+reaction_flux(gecko_model)</code></pre><pre class="documenter-example-output">3340×95 Matrix{Float64}:
+ 5.79328  7.5366   4.3418    -9.82421  …  2.58758  0.17788   4.65744  1.68863
+ 5.97333  7.69778  4.47655  -10.2696      2.82579  0.191588  5.18066  1.86689
+ 5.89026  7.08202  4.19798   -9.84901     2.55179  0.261319  4.80338  1.79239
+ 5.7884   7.59933  4.33564   -9.84982     2.56038  0.18865   4.66571  1.61211
+ 5.38476  7.68176  4.22329   -9.25033     2.24586  0.148972  4.24191  1.36568
+ 5.79231  7.46857  4.26242   -9.68658  …  2.58216  0.18182   4.69658  1.62649
+ 5.85494  7.62495  4.38296   -9.86721     2.55466  0.171205  4.66977  1.72731
+ 5.38828  7.2455   4.09085   -9.79485     2.95402  0.205523  5.38638  1.97981
+ 5.70757  7.39758  4.24663   -9.70354     2.63388  0.178315  4.66406  1.69633
+ 5.69684  7.69649  4.29907   -9.98219     3.02046  0.186573  4.66822  1.48071
+ ⋮                                     ⋱                              
+ 5.9346   5.92205  4.42021  -10.0368      2.56921  0.128902  3.74741  2.67765
+ 6.08436  7.9515   4.79178  -10.6586      2.73663  0.150585  4.6993   1.94007
+ 5.93497  7.26596  4.53978  -10.1772      2.95226  0.177053  4.41834  2.1028
+ 6.07124  7.31656  4.60853  -10.2969      2.81449  0.148366  4.39322  2.00136
+ 6.04734  7.39569  4.60626  -10.255    …  2.72693  0.163991  4.32969  1.96255
+ 5.94455  6.73671  4.54698  -10.024       2.48861  0.117976  3.8185   1.91764
+ 5.83735  7.30476  4.54043  -10.139       2.6802   0.121411  4.06588  2.00725
+ 6.55567  7.48676  4.83817  -10.8052      2.6987   0.215073  4.65713  2.01313
+ 6.20068  7.53459  4.63939  -10.3459      2.60957  0.18502   4.4637   1.87995</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../14_smoment/">« sMOMENT</a><a class="docs-footer-nextpage" href="../16_hit_and_run/">Hit and run sampling »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 14 October 2022 13:54">Friday 14 October 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
