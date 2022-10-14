@@ -25,11 +25,8 @@ using Clarabel
 
 # We will need a reference solution, which represents the original state of the
 # organism before the change.
-reference_flux = flux_balance_analysis_dict(
-    model,
-    Clarabel.Optimizer;
-    modifications = [silence],
-)
+reference_flux =
+    flux_balance_analysis_dict(model, Clarabel.Optimizer; modifications = [silence])
 
 # As the change here, we manually knock out CYTBD reaction:
 changed_model = change_bound(model, "R_CYTBD", lower = 0.0, upper = 0.0);
