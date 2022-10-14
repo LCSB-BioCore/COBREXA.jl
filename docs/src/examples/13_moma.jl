@@ -28,7 +28,7 @@ using Clarabel
 reference_flux = flux_balance_analysis_dict(
     model,
     Clarabel.Optimizer;
-    modifications = [silence, change_optimizer_attribute("polish", true)],
+    modifications = [silence],
 )
 
 # As the change here, we manually knock out CYTBD reaction:
@@ -41,7 +41,7 @@ flux_summary(
         changed_model,
         reference_flux,
         Clarabel.Optimizer;
-        modifications = [silence, change_optimizer_attribute("polish", true)],
+        modifications = [silence],
     ),
 )
 
@@ -52,6 +52,6 @@ flux_summary(
     flux_balance_analysis_dict(
         changed_model,
         Clarabel.Optimizer;
-        modifications = [silence, change_optimizer_attribute("polish", true)],
+        modifications = [silence],
     ),
 )
