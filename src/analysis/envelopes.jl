@@ -1,6 +1,6 @@
 
 """
-    envelope_lattice(model::MetabolicModel, rids::Vector{String}; kwargs...)
+$(TYPEDSIGNATURES)
 
 Version of [`envelope_lattice`](@ref) that works on string reaction IDs instead
 of integer indexes.
@@ -9,13 +9,7 @@ envelope_lattice(model::MetabolicModel, rids::Vector{String}; kwargs...) =
     envelope_lattice(model, Vector{Int}(indexin(rids, reactions(model))); kwargs...)
 
 """
-    envelope_lattice(
-        model::MetabolicModel,
-        ridxs::Vector{Int};
-        samples = 10,
-        ranges = collect(zip(bounds(model)...))[ridxs],
-        reaction_samples = fill(samples, length(ridxs)),
-    )
+$(TYPEDSIGNATURES)
 
 Create a lattice (list of "tick" vectors) for reactions at indexes `ridxs` in a
 model. Arguments `samples`, `ranges`, and `reaction_samples` may be optionally
@@ -33,7 +27,7 @@ envelope_lattice(
 )
 
 """
-    objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs...)
+$(TYPEDSIGNATURES)
 
 Version of [`objective_envelope`](@ref) that works on string reaction IDs
 instead of integer indexes.
@@ -47,16 +41,7 @@ objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs.
     )
 
 """
-    objective_envelope(
-        model::MetabolicModel,
-        ridxs::Vector{Int},
-        optimizer;
-        modifications = [],
-        lattice_args = (),
-        lattice = envelope_lattice(model, ridxs; lattice_args...),
-        analysis = screen_optimize_objective,
-        kwargs...,
-    )
+$(TYPEDSIGNATURES)
 
 Compute an array of objective values for the `model` for rates of reactions
 specified `ridxs` fixed to a regular range of values between their respective

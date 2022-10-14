@@ -1,8 +1,5 @@
 """
-    add_moment_constraints(
-        ksas::Dict{String,Float64},
-        protein_mass_fraction::Float64
-    )
+$(TYPEDSIGNATURES)
 
 A modification that adds enzyme capacity constraints to the problem using a _modified_
 version of the MOMENT algorithm. Requires specific activities, `ksas` [mmol product/g

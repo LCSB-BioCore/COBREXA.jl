@@ -1,8 +1,11 @@
 """
-    FluxSummary
+$(TYPEDEF)
 
 A struct used to store summary information about the solution
 of a constraint based analysis result.
+
+# Fields
+$(TYPEDFIELDS)
 """
 struct FluxSummary
     biomass_fluxes::OrderedDict{String,Float64}
@@ -12,7 +15,7 @@ struct FluxSummary
 end
 
 """
-    FluxSummary()
+$(TYPEDSIGNATURES)
 
 A default empty constructor for `FluxSummary`.
 """
@@ -26,15 +29,7 @@ function FluxSummary()
 end
 
 """
-    flux_summary(flux_result::Dict{String, Float64};
-        exclude_exchanges = false,
-        exchange_prefixes = _constants.exchange_prefixes,
-        biomass_strings = _constants.biomass_strings,
-        exclude_biomass = false,
-        small_flux_bound = 1.0/_constants.default_reaction_bound^2,
-        large_flux_bound = _constants.default_reaction_bound,
-        keep_unbounded = false,
-    )::FluxSummary
+$(TYPEDSIGNATURES)
 
 Summarize a dictionary of fluxes into small, useful representation of the most
 important information contained. Useful for pretty-printing and quickly

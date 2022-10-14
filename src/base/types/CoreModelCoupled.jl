@@ -1,12 +1,15 @@
 
 """
-    mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
+$(TYPEDEF)
 
 A matrix-based wrap that adds reaction coupling matrix to the inner model. A
 flux `x` feasible in this model must satisfy:
 ```
     cₗ ≤ C x ≤ cᵤ
 ```
+
+# Fields
+$(TYPEDFIELDS)
 """
 mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
     lm::M
@@ -30,28 +33,28 @@ mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
 end
 
 """
-    unwrap_model(a::CoreCoupling)
+$(TYPEDSIGNATURES)
 
 Get the internal [`CoreModel`](@ref) out of [`CoreCoupling`](@ref).
 """
 unwrap_model(a::CoreCoupling) = a.lm
 
 """
-    coupling(a::CoreCoupling)::SparseMat
+$(TYPEDSIGNATURES)
 
 Coupling constraint matrix for a `CoreCoupling`.
 """
 coupling(a::CoreCoupling)::SparseMat = vcat(coupling(a.lm), a.C)
 
 """
-    n_coupling_constraints(a::CoreCoupling)::Int
+$(TYPEDSIGNATURES)
 
 The number of coupling constraints in a `CoreCoupling`.
 """
 n_coupling_constraints(a::CoreCoupling)::Int = n_coupling_constraints(a.lm) + size(a.C, 1)
 
 """
-    coupling_bounds(a::CoreCoupling)::Tuple{Vector{Float64},Vector{Float64}}
+$(TYPEDSIGNATURES)
 
 Coupling bounds for a `CoreCoupling`.
 """
@@ -59,7 +62,7 @@ coupling_bounds(a::CoreCoupling)::Tuple{Vector{Float64},Vector{Float64}} =
     vcat.(coupling_bounds(a.lm), (a.cl, a.cu))
 
 """
-    Base.convert(::Type{CoreCoupling{M}}, mm::MetabolicModel; clone_coupling = true) where {M}
+$(TYPEDSIGNATURES)
 
 Make a `CoreCoupling` out of any compatible model type.
 """

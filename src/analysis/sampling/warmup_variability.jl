@@ -1,10 +1,5 @@
 """
-    warmup_from_variability(
-        model::MetabolicModel,
-        optimizer,
-        n_points::Int;
-        kwargs...
-    )
+$(TYPEDSIGNATURES)
 
 Generates FVA-like warmup points for samplers, by selecting random points by
 minimizing and maximizing reactions. Can not return more than 2 times the
@@ -37,14 +32,7 @@ function warmup_from_variability(
 end
 
 """
-    function warmup_from_variability(
-        model::MetabolicModel,
-        optimizer,
-        min_reactions::Vector{Int}=1:n_reactions(model),
-        max_reactions::Vector{Int}=1:n_reactions(model);
-        modifications = [],
-        workers::Vector{Int} = [myid()],
-    )::Matrix{Float64}
+$(TYPEDSIGNATURES)
 
 Generate FVA-like warmup points for samplers, by minimizing and maximizing the
 specified reactions. The result is returned as a matrix, each point occupies as
@@ -99,7 +87,7 @@ function warmup_from_variability(
 end
 
 """
-    _maximize_warmup_reaction(opt_model, rid, ret)
+$(TYPEDSIGNATURES)
 
 A helper function for finding warmup points from reaction variability.
 """

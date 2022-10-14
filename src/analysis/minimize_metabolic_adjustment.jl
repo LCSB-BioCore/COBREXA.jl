@@ -1,11 +1,5 @@
 """
-    minimize_metabolic_adjustment_analysis(
-        model::MetabolicModel,
-        flux_ref::Union{Dict{String,Float64}, Vector{Float64}},
-        optimizer;
-        modifications = [],
-        kwargs...
-    )
+$(TYPEDSIGNATURES)
 
 Run minimization of metabolic adjustment (MOMA) on `model` with respect to
 `flux_ref`, which is a vector of fluxes in the order of `reactions(model)`.
@@ -52,7 +46,7 @@ minimize_metabolic_adjustment_analysis(
 )
 
 """
-    minimize_metabolic_adjustment(flux_ref::Vector{Float64})
+$(TYPEDSIGNATURES)
 
 An optimization model modification that implements the MOMA in
 [`minimize_metabolic_adjustment_analysis`](@ref).
@@ -69,7 +63,7 @@ minimize_metabolic_adjustment(flux_ref::Vector{Float64}) =
     end
 
 """
-    minimize_metabolic_adjustment(flux_ref_dict::Dict{String, Float64})
+$(TYPEDSIGNATURES)
 
 Overload of [`minimize_metabolic_adjustment`](@ref) that works with a
 dictionary of fluxes.
@@ -82,7 +76,7 @@ minimize_metabolic_adjustment(flux_ref_dict::Dict{String,Float64}) =
         )
 
 """
-    minimize_metabolic_adjustment_analysis_vec(model::MetabolicModel, args...; kwargs...)
+$(TYPEDSIGNATURES)
 
 Perform minimization of metabolic adjustment (MOMA) and return a vector of fluxes in the
 same order as the reactions in `model`. Arguments are forwarded to
@@ -95,7 +89,7 @@ minimize_metabolic_adjustment_analysis_vec(model::MetabolicModel, args...; kwarg
     flux_vector(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))
 
 """
-    minimize_metabolic_adjustment_analysis_dict(model::MetabolicModel, args...; kwargs...)
+$(TYPEDSIGNATURES)
 
 Perform minimization of metabolic adjustment (MOMA) and return a dictionary mapping the
 reaction IDs to fluxes. Arguments are forwarded to [`minimize_metabolic_adjustment`](@ref)

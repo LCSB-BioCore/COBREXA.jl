@@ -1,6 +1,6 @@
 
 """
-    struct CoreModel <: MetabolicModel
+$(TYPEDEF)
 
 A "bare bones" core linear optimization problem of the form, with reaction and
 metabolite names.
@@ -9,6 +9,9 @@ min c^T x
 s.t. S x = b
       xₗ ≤ x ≤ xᵤ
 ```
+
+# Fields
+$(TYPEDFIELDS)
 """
 mutable struct CoreModel <: MetabolicModel
     S::SparseMat
@@ -45,49 +48,49 @@ mutable struct CoreModel <: MetabolicModel
 end
 
 """
-    reactions(a::CoreModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Get the reactions in a `CoreModel`.
 """
 reactions(a::CoreModel)::Vector{String} = a.rxns
 
 """
-    metabolites(a::CoreModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Metabolites in a `CoreModel`.
 """
 metabolites(a::CoreModel)::Vector{String} = a.mets
 
 """
-    stoichiometry(a::CoreModel)::SparseMat
+$(TYPEDSIGNATURES)
 
 `CoreModel` stoichiometry matrix.
 """
 stoichiometry(a::CoreModel)::SparseMat = a.S
 
 """
-    bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}}
+$(TYPEDSIGNATURES)
 
 `CoreModel` flux bounds.
 """
 bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
 
 """
-    balance(a::CoreModel)::SparseVec
+$(TYPEDSIGNATURES)
 
 `CoreModel` target flux balance.
 """
 balance(a::CoreModel)::SparseVec = a.b
 
 """
-    objective(a::CoreModel)::SparseVec
+$(TYPEDSIGNATURES)
 
 `CoreModel` objective vector.
 """
 objective(a::CoreModel)::SparseVec = a.c
 
 """
-    genes(a::CoreModel)::Vector{String}
+$(TYPEDSIGNATURES)
 
 Collect all genes contained in the [`CoreModel`](@ref). The call is expensive
 for large models, because the vector is not stored and instead gets rebuilt
@@ -107,7 +110,7 @@ function genes(a::CoreModel)::Vector{String}
 end
 
 """
-    reaction_stoichiometry(model::CoreModel, rid::String)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
@@ -115,7 +118,7 @@ reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
 """
-    reaction_stoichiometry(model::CoreModel, ridx)::Dict{String, Float64}
+$(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction at index `ridx`.
 """
@@ -123,7 +126,7 @@ reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
-    reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}}
+$(TYPEDSIGNATURES)
 
 Retrieve a vector of all gene associations in a [`CoreModel`](@ref), in the
 same order as `reactions(model)`.
@@ -131,7 +134,7 @@ same order as `reactions(model)`.
 reaction_gene_association_vec(model::CoreModel)::Vector{Maybe{GeneAssociation}} = model.grrs
 
 """
-    reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation}
+$(TYPEDSIGNATURES)
 
 Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction
 index.
@@ -140,7 +143,7 @@ reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation} =
     model.grrs[ridx]
 
 """
-    reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation}
+$(TYPEDSIGNATURES)
 
 Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction ID.
 """
@@ -148,7 +151,7 @@ reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation}
     model.grrs[first(indexin([rid], model.rxns))]
 
 """
-    Base.convert(::Type{CoreModel}, m::M) where {M <: MetabolicModel}
+$(TYPEDSIGNATURES)
 
 Make a `CoreModel` out of any compatible model type.
 """

@@ -1,16 +1,8 @@
 """
-Metabolite structure.
+$(TYPEDEF)
 
 # Fields
-````
-id :: String
-name :: Maybe{String}
-formula :: String
-charge :: Int
-compartment :: String
-notes :: Dict{String, Vector{String}}
-annotation :: Dict{String, Union{Vector{String}, String}}
-````
+$(TYPEDFIELDS)
 """
 mutable struct Metabolite
     id::String
@@ -20,14 +12,19 @@ mutable struct Metabolite
     compartment::Maybe{String}
     notes::Notes
     annotations::Annotations
-
-    Metabolite(
-        id = "";
-        name = nothing,
-        formula = nothing,
-        charge = nothing,
-        compartment = nothing,
-        notes = Notes(),
-        annotations = Annotations(),
-    ) = new(id, name, formula, charge, compartment, notes, annotations)
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+A constructor for `Metabolite`s.
+"""
+Metabolite(
+    id = "";
+    name = nothing,
+    formula = nothing,
+    charge = nothing,
+    compartment = nothing,
+    notes = Notes(),
+    annotations = Annotations(),
+) = Metabolite(String(id), name, formula, charge, compartment, notes, annotations)

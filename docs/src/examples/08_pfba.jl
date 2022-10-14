@@ -13,7 +13,7 @@
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
-using COBREXA, Tulip, OSQP
+using COBREXA, Tulip, Clarabel
 
 model = load_model("e_coli_core.xml")
 
@@ -21,13 +21,13 @@ model = load_model("e_coli_core.xml")
 # capable of solving quadratic programs.
 #
 # As the simplest choice, we can use
-# [`OSQP.jl`](https://osqp.org/docs/get_started/julia.html), but any any
+# [`Clarabel.jl`](https://osqp.org/docs/get_started/julia.html), but any any
 # [`JuMP.jl`-supported
 # optimizer](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers)
 # that supports quadratic programming will work.
 
-#md # !!! note "Note: OSQP can be sensitive"
-#md #       We recommend reading the documentation of `OSQP` before using it, since
+#md # !!! note "Note: Clarabel can be sensitive"
+#md #       We recommend reading the documentation of `Clarabel` before using it, since
 #md #       it may give inconsistent results depending on what settings
 #md #       you use. Commercial solvers like `Gurobi`, `Mosek`, `CPLEX`, etc.
 #md #       require less user engagement.
@@ -40,10 +40,9 @@ model = load_model("e_coli_core.xml")
 
 fluxes = parsimonious_flux_balance_analysis_dict(
     model,
-    OSQP.Optimizer;
+    Clarabel.Optimizer;
     modifications = [
-        silence, # optionally silence the optimizer (OSQP is very verbose by default)
-        change_optimizer_attribute("polish", true), # tell OSQP to invest time into improving the precision of the solution
+        silence, # optionally silence the optimizer (Clarabel is very verbose by default)
         change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix glucose consumption rate
     ],
 )
@@ -69,8 +68,7 @@ flux_vector = parsimonious_flux_balance_analysis_vec(
         change_optimizer_attribute("IPM_IterationsLimit", 500), # we may change Tulip-specific attributes here
     ],
     qp_modifications = [
-        change_optimizer(OSQP.Optimizer), # now switch to OSQP (Tulip wouldn't be able to finish the computation)
-        change_optimizer_attribute("polish", true), # get an accurate solution, see OSQP's documentation
+        change_optimizer(Clarabel.Optimizer), # now switch to Clarabel (Tulip wouldn't be able to finish the computation)
         silence, # and make it quiet.
     ],
 )

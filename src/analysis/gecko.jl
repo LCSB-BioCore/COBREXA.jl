@@ -1,12 +1,5 @@
 """
-    make_gecko_model(
-        model::MetabolicModel;
-        reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}}
-        gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
-        gene_product_molar_mass::Union{Function,Dict{String,Float64}},
-        gene_product_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
-        gene_product_mass_group_bound::Union{Function,Dict{String,Float64}},
-    )
+$(TYPEDSIGNATURES)
 
 Wrap a model into a [`GeckoModel`](@ref), following the structure given by
 GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).

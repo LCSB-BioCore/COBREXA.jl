@@ -1,9 +1,5 @@
 """
-    add_community_objective!(
-        community::CoreModel,
-        objective_mets_weights::Dict{String, Float64};
-        objective_id = "community_biomass",
-    )
+$(TYPEDSIGNATURES)
 
 Add an objective column to the `community` model with optional id `objective_id`. Supply a
 dictionary mapping the string names of the objective metabolites to their weights in
@@ -41,11 +37,7 @@ function add_community_objective!(
 end
 
 """
-    add_community_objective!(
-        community::StandardModel,
-        objective_mets_weights::Dict{String, Float64};
-        objective_id = "community_biomass"
-    )
+$(TYPEDSIGNATURES)
 
 Variant of [`add_community_objective!`] that takes a `StandardModel` community model as input.
 """
@@ -69,11 +61,7 @@ function add_community_objective!(
 end
 
 """
-    update_community_objective!(
-        community::CoreModel,
-        objective_id::String,
-        objective_mets_weights::Dict{String, Float64}
-    )
+$(TYPEDSIGNATURES)
 
 Update the weights for the objective column with id `objective_id` in `community` using
 `objective_mets_weights`, which maps metabolite ids to weights. The current weights are
@@ -110,11 +98,7 @@ function update_community_objective!(
 end
 
 """
-    update_community_objective!(
-        community::StandardModel,
-        objective_id::String,
-        objective_mets_weights::Dict{String, Float64}
-    )
+$(TYPEDSIGNATURES)
 
 Variant of [`update_community_objective!`] that takes a `StandardModel` community model as input.
 """
@@ -130,13 +114,7 @@ function update_community_objective!(
 end
 
 """
-    join_with_exchanges(
-        ::Type{CoreModel},
-        models::Vector{M},
-        exchange_rxn_mets::Dict{String,String};
-        biomass_ids = String[],
-        model_names = String[],
-    ) where {M<:MetabolicModel}
+$(TYPEDSIGNATURES)
 
 Return a `CoreModel` representing the community model of `models` joined through their
 exchange reactions and metabolites in the dictionary `exchange_rxn_mets`, which maps
@@ -324,13 +302,7 @@ function join_with_exchanges(
 end
 
 """
-    join_with_exchanges(
-        ::Type{StandardModel},
-        models::Vector{M},
-        exchange_rxn_mets::Dict{String,String};
-        biomass_ids = [],
-        model_names = [],
-    )::StandardModel where {M<:MetabolicModel}
+$(TYPEDSIGNATURES)
 
 A variant of [`join_with_exchanges`](@ref) that returns a `StandardModel`.
 """
@@ -385,13 +357,7 @@ function join_with_exchanges(
 end
 
 """
-    add_model_with_exchanges(
-        community::CoreModel,
-        model::MetabolicModel,
-        exchange_rxn_mets::Dict{String,String};
-        model_name = "unknown_species",
-        biomass_id = nothing,
-    )
+$(TYPEDSIGNATURES)
 
 Add `model` to `community`, which is a pre-existing community model with exchange reactions
 and metabolites in the dictionary `exchange_rxn_mets`. The `model_name` is appended to each
@@ -501,13 +467,7 @@ function add_model_with_exchanges(
 end
 
 """
-    add_model_with_exchanges!(
-        community::StandardModel,
-        model::MetabolicModel,
-        exchange_rxn_mets::Dict{String,String};
-        model_name = "unknown_species",
-        biomass_id = nothing,
-    )
+$(TYPEDSIGNATURES)
 
 The `StandardModel` variant of [`add_model_with_exchanges`](@ref), but is in-place.
 """
@@ -558,13 +518,7 @@ function add_model_with_exchanges!(
 end
 
 """
-    add_model_with_exchanges(
-        community::StandardModel,
-        model::MetabolicModel,
-        exchange_rxn_mets::Dict{String,String};
-        model_name = "unknown_species",
-        biomass_id = nothing,
-    )
+$(TYPEDSIGNATURES)
 
 The `StandardModel` variant of [`add_model_with_exchanges`](@ref). Makes a deepcopy of
 `community` and calls the inplace variant of this function on that copy.

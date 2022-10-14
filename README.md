@@ -84,7 +84,7 @@ add COBREXA
 ```
 
 You also need to install your favorite solver supported by `JuMP.jl` (such as
-Gurobi, Mosek, CPLEX, GLPK, OSQP, etc., see a [list
+Gurobi, Mosek, CPLEX, GLPK, Clarabel, etc., see a [list
 here](https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers)).  For
 example, you can install `Tulip.jl` solver by typing:
 ```

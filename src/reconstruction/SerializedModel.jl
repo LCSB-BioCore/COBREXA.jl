@@ -10,7 +10,7 @@
 @_serialized_change_unwrap remove_reactions
 
 """
-    unwrap_serialized(model::Serialized)
+$(TYPEDSIGNATURES)
 
 Returns the model stored in the serialized structure.
 """

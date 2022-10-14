@@ -4,10 +4,7 @@ _annotations(r::Reaction) = r.annotations
 _annotations(g::Gene) = g.annotations
 
 """
-    annotation_index(
-        xs::AbstractDict{String};
-        annotations = _annotations,
-    )::Dict{String,Dict{String,[String]}}
+$(TYPEDSIGNATURES)
 
 Extract annotations from a dictionary of items `xs` and build an index that
 maps annotation "kinds" (e.g. `"PubChem"`) to the mapping from the annotations
@@ -42,9 +39,7 @@ function annotation_index(
 end
 
 """
-    ambiguously_identified_items(
-        index::Dict{String,Dict{String,[String]}},
-    )::Vector{String}
+$(TYPEDSIGNATURES)
 
 Find items (genes, metabolites, ...) from the annotation index that are
 identified non-uniquely by at least one of their annotations.

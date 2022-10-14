@@ -8,11 +8,7 @@
             change_constraint("EX_m1(e)", lb = -10.0),
             change_optimizer_attribute("IPM_IterationsLimit", 500),
         ],
-        qp_modifications = [
-            change_optimizer(OSQP.Optimizer),
-            change_optimizer_attribute("polish", true),
-            silence,
-        ],
+        qp_modifications = [change_optimizer(Clarabel.Optimizer), silence],
     )
 
     # The used optimizer doesn't really converge to the same answer everytime

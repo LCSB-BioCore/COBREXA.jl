@@ -1,6 +1,6 @@
 
 """
-    load_sbml_model(file_name::String)::SBMLModel
+$(TYPEDSIGNATURES)
 
 Load and return a SBML XML model in `file_name`.
 """
@@ -9,7 +9,7 @@ function load_sbml_model(file_name::String)::SBMLModel
 end
 
 """
-    write_sbml_model(model::MetabolicModel, file_name::String)
+$(TYPEDSIGNATURES)
 
 Write a given SBML model to `file_name`.
 """

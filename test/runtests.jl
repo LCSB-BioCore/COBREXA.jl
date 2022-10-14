@@ -8,7 +8,7 @@ using JuMP
 using LinearAlgebra
 using MAT
 using OrderedCollections
-using OSQP
+using Clarabel
 using SHA
 using SparseArrays
 using Statistics
@@ -18,7 +18,7 @@ using GLPK # for MILPs
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
 TEST_TOLERANCE = 10 * COBREXA._constants.tolerance
-QP_TEST_TOLERANCE = 1e-2 # for OSQP
+QP_TEST_TOLERANCE = 1e-2 # for Clarabel
 
 print_timing(fn, t) = @info "$(fn) done in $(round(t; digits = 2))s"
 

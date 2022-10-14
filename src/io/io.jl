@@ -1,6 +1,6 @@
 
 """
-    load_model(file_name::String)::MetabolicModel
+$(TYPEDSIGNATURES)
 
 Generic function for loading models that chooses a specific loader function
 from the `file_name` extension, or throws an error.
@@ -28,7 +28,7 @@ end
 
 
 """
-    load_model(type::Type{T}, file_name::String)::T where T
+$(TYPEDSIGNATURES)
 
 Helper function tht loads the model using [`load_model`](@ref) and return it
 converted to `type`.
@@ -42,7 +42,7 @@ function load_model(type::Type{T}, file_name::String)::T where {T<:MetabolicMode
 end
 
 """
-    save_model(model::MetabolicModel, file_name::String)
+$(TYPEDSIGNATURES)
 
 Generic function for saving models that chooses a specific writer function
 from the `file_name` extension, or throws an error.

@@ -7,7 +7,7 @@ A nice name for "nullable" type.
 const Maybe{T} = Union{Nothing,T}
 
 """
-    _default(d::T, x::Maybe{T})::T where {T}
+$(TYPEDSIGNATURES)
 
 Fold the `Maybe{T}` down to `T` by defaulting.
 """
@@ -16,7 +16,7 @@ function _default(d::T, x::Maybe{T})::T where {T}
 end
 
 """
-    _maybemap(f, x::Maybe)::Maybe
+$(TYPEDSIGNATURES)
 
 Apply a function to `x` only if it is not `nothing`.
 """

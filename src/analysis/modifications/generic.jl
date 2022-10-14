@@ -1,6 +1,6 @@
 
 """
-    constrain_objective_value(tolerance)
+$(TYPEDSIGNATURES)
 
 Limit the objective value to `tolerance`-times the current objective value, as
 with [`objective_bounds`](@ref).
@@ -13,7 +13,7 @@ constrain_objective_value(tolerance) =
     end
 
 """
-    change_constraint(id::String; lb=nothing, ub=nothing)
+$(TYPEDSIGNATURES)
 
 Change the lower and upper bounds (`lb` and `ub` respectively) of reaction `id` if supplied.
 """
@@ -25,7 +25,7 @@ change_constraint(id::String; lb = nothing, ub = nothing) =
     end
 
 """
-    change_objective(new_objective::Union{String,Vector{String}}; weights=[], sense=MAX_SENSE)
+$(TYPEDSIGNATURES)
 
 Modification that changes the objective function used in a constraint based
 analysis function.  `new_objective` can be a single reaction identifier, or an

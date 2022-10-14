@@ -1,13 +1,5 @@
 """
-    function gapfill_minimum_reactions(
-        model::MetabolicModel,
-        universal_reactions::Vector{Reaction},
-        optimizer;
-        objective_bounds = (_constants.tolerance, _constants.default_reaction_bound),
-        maximum_new_reactions = 5,
-        weights = fill(1.0, length(universal_reactions)),
-        modifications = [],
-    )
+$(TYPEDSIGNATURES)
 
 Find a minimal set of reactions from `universal_reactions` that should be added
 to `model` so that the model has a feasible solution with bounds on its
@@ -27,6 +19,28 @@ information in Julia datatypes.
 To reduce the uncertainty in the MILP solver (and likely reduce the
 complexity), you may put a limit on the size of the added reaction set in
 `maximum_new_reactions`.
+
+# Common pitfalls
+
+If [`gapfill_minimum_reactions`](@ref) is supposed to generate any reasonable
+output, the input model *MUST NOT* be feasible, otherwise there is "no work to
+do" and no reactions are added. Notably, an inactive model (the flux is zero)
+is considered to be feasible. If this is the case, [`gapfilled_rids`](@ref)
+will return an empty vector (as opposed to `nothing`).
+
+To prevent this, you may need to modify the model to disallow the trivial
+solutions (for example by putting a lower bound on reactions that you expect to
+be working in the solved model, in a similar manner like how the ATP
+maintenance reaction is bounded in E. Coli "core" model). The
+`objective_bounds` parameter makes this easier by directly placing a bound on
+the objective value of the model, which typically forces the model to be
+active.
+
+The `maximum_new_reactions` parameter may have critical impact on performance
+in some solvers, because (in a general worst case) there is
+`2^maximum_new_reactions` model variants to be examined. Putting a hard limit
+on the reaction count may serve as a heuristic that helps the solver not to
+waste too much time solving impractically complex subproblems.
 """
 function gapfill_minimum_reactions(
     model::MetabolicModel,
@@ -104,12 +118,17 @@ function gapfill_minimum_reactions(
 end
 
 """
-    gapfilled_mask(opt_model::BitVector)
+$(TYPEDSIGNATURES)
 
 Get a `BitVector` of added reactions from the model solved by
 [`gapfill_minimum_reactions`](@ref). The bit indexes correspond to the indexes
 of `universal_reactions` given to the gapfilling function. In case the model is
 not solved, this returns `nothing`.
+
+If this function returns a zero vector (instead of `nothing`), it is very
+likely that the original model was already feasible and you may need to
+constraint it more. Refer to "pitfalls" section in the documentation of
+[`gapfill_minimum_reactions`](@ref) for more details.
 
 # Example
 
@@ -119,11 +138,16 @@ gapfilled_mask(opt_model)::BitVector =
     is_solved(opt_model) ? value.(opt_model[:y]) .> 0 : nothing
 
 """
-    gapfilled_rids(opt_model, universal_reactions::Vector{Reaction})::Vector{String}
+$(TYPEDSIGNATURES)
 
 Utility to extract a short vector of IDs of the reactions added by the
 gapfilling algorithm. Use with `opt_model` returned from
 [`gapfill_minimum_reactions`](@ref).
+
+If this function returns an empty vector (instead of `nothing`), it is very
+likely that the original model was already feasible and you may need to
+constraint it more. Refer to "pitfalls" section in the documentation of
+[`gapfill_minimum_reactions`](@ref) for more details.
 """
 gapfilled_rids(opt_model, universal_reactions::Vector{Reaction}) =
     let v = gapfilled_mask(opt_model)
@@ -131,7 +155,7 @@ gapfilled_rids(opt_model, universal_reactions::Vector{Reaction}) =
     end
 
 """
-    gapfilled_rids(universal_reactions::Vector{Reaction})
+$(TYPEDSIGNATURES)
 
 Overload of [`gapfilled_rids`](@ref) that can be piped easily.
 
@@ -143,10 +167,7 @@ gapfilled_rids(universal_reactions::Vector{Reaction}) =
     opt_model -> gapfilled_rids(opt_model, universal_reactions)
 
 """
-    _universal_stoichiometry(
-        universal_reactions::Vector{Reaction},
-        mids,
-    )
+$(TYPEDSIGNATURES)
 
 A helper function that constructs the stoichiometric matrix of a set of
 `universal_reactions`. The order of the metabolites is determined with

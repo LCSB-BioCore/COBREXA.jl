@@ -1,9 +1,5 @@
 """
-    looks_like_exchange_reaction(rxn_id::String;
-        exclude_biomass = false,
-        biomass_strings = _constants.biomass_strings,
-        exchange_prefixes = _constants.exchange_prefixes,
-    )
+$(TYPEDSIGNATURES)
 
 A predicate that matches reaction identifiers that look like
 exchange or biomass reactions, given the usual naming schemes in common model
@@ -12,6 +8,12 @@ the set `exchange_prefixes` and biomass reactions are identified by looking for
 occurences of `biomass_strings` in the reaction id.
 
 Also see [`find_exchange_reactions`](@ref).
+
+# Note
+While `looks_like_exchange_reaction` is useful for heuristically finding a
+reaction, it is preferable to use standardized terms for finding reactions (e.g.
+SBO terms). See [`is_exchange_reaction`](@ref) for a more systematic
+alternative.
 
 # Example
 ```
@@ -35,7 +37,7 @@ function looks_like_exchange_reaction(
 end
 
 """
-    find_exchange_reactions(m::MetabolicModel; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for finding exchange reaction indexes in a model; arguments are
 forwarded to [`looks_like_exchange_reaction`](@ref).
@@ -44,7 +46,7 @@ find_exchange_reactions(m::MetabolicModel; kwargs...) =
     findall(id -> looks_like_exchange_reaction(id; kwargs...), reactions(m))
 
 """
-    find_exchange_reaction_ids(m::MetabolicModel; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for finding exchange reaction identifiers in a model; arguments are
 forwarded to [`looks_like_exchange_reaction`](@ref).
@@ -53,16 +55,18 @@ find_exchange_reaction_ids(m::MetabolicModel; kwargs...) =
     filter(id -> looks_like_exchange_reaction(id, kwargs...), reactions(m))
 
 """
-    looks_like_biomass_reaction(rxn_id::String;
-        exclude_exchanges = false,
-        exchange_prefixes = _constants.exchange_prefixes,
-        biomass_strings = _constants.biomass_strings,
-    )::Bool
+$(TYPEDSIGNATURES)
 
 A predicate that matches reaction identifiers that look like biomass reactions.
 Biomass reactions are identified by looking for occurences of `biomass_strings`
 in the reaction id. If `exclude_exchanges` is set, the strings that look like
 exchanges (from [`looks_like_exchange_reaction`](@ref)) will not match.
+
+# Note
+While `looks_like_biomass_reaction` is useful for heuristically finding a
+reaction, it is preferable to use standardized terms for finding reactions (e.g.
+SBO terms). See [`is_biomass_reaction`](@ref) for a more systematic
+alternative.
 
 # Example
 ```
@@ -81,7 +85,7 @@ function looks_like_biomass_reaction(
 end
 
 """
-    find_biomass_reactions(m::MetabolicModel; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for finding biomass reaction indexes in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
@@ -90,7 +94,7 @@ find_biomass_reactions(m::MetabolicModel; kwargs...) =
     findall(id -> looks_like_biomass_reaction(id; kwargs...), reactions(m))
 
 """
-    find_biomass_reaction_ids(m::MetabolicModel; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for finding biomass reaction identifiers in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
@@ -99,9 +103,7 @@ find_biomass_reaction_ids(m::MetabolicModel; kwargs...) =
     filter(id -> looks_like_biomass_reaction(id; kwargs...), reactions(m))
 
 """
-    looks_like_extracellular_metabolite(rxn_id::String;
-        extracellular_suffixes = _constants.extracellular_suffixes,
-    )::Bool
+$(TYPEDSIGNATURES)
 
 A predicate that matches metabolite identifiers that look like they are extracellular
 metabolites. Extracellular metabolites are identified by `extracellular_suffixes` at the end of the
@@ -121,18 +123,27 @@ function looks_like_extracellular_metabolite(
 end
 
 """
-    find_extracellular_metabolites(m::MetabolicModel; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for finding extracellular metabolite indexes in a model; arguments are
 forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
 find_extracellular_metabolites(m::MetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
+
 """
-    find_extracellular_metabolite_ids(m::MetabolicModel; kwargs...)
+$(TYPEDSIGNATURES)
 
 Shortcut for finding extracellular metabolite identifiers in a model; arguments are
 forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
 find_extracellular_metabolite_ids(m::MetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
+
+@_is_reaction_fn "exchange" Identifiers.EXCHANGE_REACTIONS
+@_is_reaction_fn "transport" Identifiers.TRANSPORT_REACTIONS
+@_is_reaction_fn "biomass" Identifiers.BIOMASS_REACTIONS
+@_is_reaction_fn "atp_maintenance" Identifiers.ATP_MAINTENANCE_REACTIONS
+@_is_reaction_fn "pseudo" Identifiers.PSEUDOREACTIONS
+@_is_reaction_fn "metabolic" Identifiers.METABOLIC_REACTIONS
+@_is_reaction_fn "spontaneous" Identifiers.SPONTANEOUS_REACTIONS

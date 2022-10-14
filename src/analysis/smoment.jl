@@ -1,11 +1,6 @@
 
 """
-    make_smoment_model(
-        model::MetabolicModel;
-        reaction_isozyme::Union{Function,Dict{String,Isozyme}},
-        gene_product_molar_mass::Union{Function,Dict{String,Float64}},
-        total_enzyme_capacity::Float64,
-    )
+$(TYPEDSIGNATURES)
 
 Construct a model with a structure given by sMOMENT algorithm; returns a
 [`SMomentModel`](@ref) (see the documentation for details).

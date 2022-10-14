@@ -1,6 +1,6 @@
 
 """
-    _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
+$(TYPEDSIGNATURES)
 
 Parse `SBML.GeneProductAssociation` structure to the simpler GeneAssociation.
 The input must be (implicitly) in a positive DNF.
@@ -20,10 +20,7 @@ function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
 end
 
 """
-    _unparse_grr(
-        ::Type{SBML.GeneProductAssociation},
-        x::GeneAssociation,
-    )::SBML.GeneAssociation
+$(TYPEDSIGNATURES)
 
 Convert a GeneAssociation to the corresponding `SBML.jl` structure.
 """
@@ -35,7 +32,7 @@ function _unparse_grr(
 end
 
 """
-    _parse_grr(s::String)::GeneAssociation
+$(TYPEDSIGNATURES)
 
 Parse a DNF gene association rule in format `(YIL010W and YLR043C) or (YIL010W
 and YGR209C)` to `GeneAssociation. Also accepts `OR`, `|`, `||`, `AND`, `&`,
@@ -52,7 +49,7 @@ julia> _parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
 _parse_grr(s::String)::Maybe{GeneAssociation} = _maybemap(_parse_grr, _parse_grr_to_sbml(s))
 
 """
-    _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
+$(TYPEDSIGNATURES)
 
 Internal helper for parsing the string GRRs into SBML data structures. More
 general than [`_parse_grr`](@ref).
@@ -119,7 +116,7 @@ function _parse_grr_to_sbml(str::String)::Maybe{SBML.GeneProductAssociation}
 end
 
 """
-    unparse_grr(grr::Vector{Vector{Gene}}
+$(TYPEDSIGNATURES)
 
 Converts a nested string gene reaction array  back into a gene reaction rule
 string.

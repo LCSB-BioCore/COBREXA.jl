@@ -1,9 +1,9 @@
 
 """
-    change_sense(objective_sense)
+$(TYPEDSIGNATURES)
 
 Change the objective sense of optimization.
-Possible arguments are `MOI.MAX_SENSE` and `MOI.MIN_SENSE`.
+Possible arguments are `MAX_SENSE` and `MIN_SENSE`.
 
 If you want to change the objective and sense at the same time, use
 [`change_objective`](@ref) instead to do both at once.
@@ -12,7 +12,7 @@ change_sense(objective_sense) =
     (_, opt_model) -> set_objective_sense(opt_model, objective_sense)
 
 """
-    change_optimizer(optimizer)
+$(TYPEDSIGNATURES)
 
 Change the JuMP optimizer used to run the optimization.
 
@@ -23,7 +23,7 @@ problems that may require different optimizers for different parts, such as the
 change_optimizer(optimizer) = (_, opt_model) -> set_optimizer(opt_model, optimizer)
 
 """
-    change_optimizer_attribute(attribute_key, value)
+$(TYPEDSIGNATURES)
 
 Change a JuMP optimizer attribute. The attributes are optimizer-specific, refer
 to the JuMP documentation and the documentation of the specific optimizer for

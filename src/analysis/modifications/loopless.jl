@@ -1,8 +1,5 @@
 """
-    add_loopless_constraints(;
-        max_flux_bound = _constants.default_reaction_bound,
-        strict_inequality_tolerance = _constants.loopless_strict_inequality_tolerance,
-    )
+$(TYPEDSIGNATURES)
 
 Add quasi-thermodynamic constraints to the model to ensure that no thermodynamically
 infeasible internal cycles can occur. Adds the following constraints to the problem:

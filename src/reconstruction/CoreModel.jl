@@ -1,5 +1,5 @@
 """
-    add_reactions!(model::CoreModel, rxns::Vector{Reaction})
+$(TYPEDSIGNATURES)
 
 Add `rxns` to `model` efficiently. The model must already contain the metabolites used by
 `rxns` in the model.
@@ -32,7 +32,7 @@ function add_reactions!(model::CoreModel, rxns::Vector{Reaction})
 end
 
 """
-    add_reaction!(model::CoreModel, rxn::Reaction)
+$(TYPEDSIGNATURES)
 
 Add `rxn` to `model`. The model must already contain the metabolites used by
 `rxn` in the model.
@@ -40,15 +40,7 @@ Add `rxn` to `model`. The model must already contain the metabolites used by
 add_reaction!(model::CoreModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
-    add_reactions(
-        m::CoreModel,
-        s::VecType,
-        b::VecType,
-        c::AbstractFloat,
-        xl::AbstractFloat,
-        xu::AbstractFloat;
-        check_consistency = false,
-    )
+$(TYPEDSIGNATURES)
 
 Add reaction(s) to a `CoreModel` model `m`.
 """
@@ -73,17 +65,7 @@ function add_reactions(
 end
 
 """
-    add_reactions(
-        m::CoreModel,
-        s::VecType,
-        b::VecType,
-        c::AbstractFloat,
-        xl::AbstractFloat,
-        xu::AbstractFloat,
-        rxn::String,
-        mets::K;
-        check_consistency = false,
-    )
+$(TYPEDSIGNATURES)
 """
 function add_reactions(
     m::CoreModel,
@@ -110,15 +92,7 @@ function add_reactions(
 end
 
 """
-    add_reactions(
-        m::CoreModel,
-        Sp::MatType,
-        b::VecType,
-        c::VecType,
-        xl::VecType,
-        xu::VecType;
-        check_consistency = false,
-    )
+$(TYPEDSIGNATURES)
 """
 function add_reactions(
     m::CoreModel,
@@ -145,7 +119,7 @@ function add_reactions(
 end
 
 """
-    add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
+$(TYPEDSIGNATURES)
 
 Add all reactions from `m2` to `m1`.
 """
@@ -164,17 +138,7 @@ function add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
 end
 
 """
-    add_reactions(
-        m::CoreModel,
-        Sp::MatType,
-        b::VecType,
-        c::VecType,
-        xl::VecType,
-        xu::VecType,
-        rxns::StringVecType,
-        mets::StringVecType;
-        check_consistency = false,
-    )
+$(TYPEDSIGNATURES)
 """
 function add_reactions(
     m::CoreModel,
@@ -245,18 +209,7 @@ function add_reactions(
 end
 
 """
-    verify_consistency(
-        m::CoreModel,
-        Sp::M,
-        b::V,
-        c::V,
-        xl::B,
-        xu::B,
-        names::K,
-        mets::K,
-        new_reactions,
-        new_metabolites,
-    ) where {M<:MatType,V<:VecType,B<:VecTypeK<:StringVecType}
+$(TYPEDSIGNATURES)
 
 Check the consistency of given reactions with existing reactions in `m`.
 
@@ -438,11 +391,7 @@ end
 end
 
 """
-    change_objective!(
-        model::CoreModel,
-        rxn_idxs::Vector{Int};
-        weights = ones(length(rxn_idxs)),
-    )
+$(TYPEDSIGNATURES)
 
 Change the objective to reactions at given indexes, optionally specifying their
 `weights` in the same order. By default, all set weights are 1.
@@ -458,7 +407,7 @@ function change_objective!(
 end
 
 """
-    change_objective!(model::CoreModel, rxn_idx::Int)
+$(TYPEDSIGNATURES)
 
 Change objective function of a CoreModel to a single `1` at reaction index
 `rxn_idx`.
@@ -466,11 +415,7 @@ Change objective function of a CoreModel to a single `1` at reaction index
 change_objective!(model::CoreModel, rxn_idx::Int) = change_objective!(model, [rxn_idx])
 
 """
-    change_objective!(
-        model::CoreModel,
-        rxn_ids::Vector{String};
-        weights = ones(length(rxn_ids)),
-    )
+$(TYPEDSIGNATURES)
 
 Change objective of given reaction IDs, optionally specifying objective
 `weights` in the same order as `rxn_ids`. By default, all set weights are 1.
@@ -487,7 +432,7 @@ function change_objective!(
 end
 
 """
-    change_objective!(model::CoreModel, rxn_id::String)
+$(TYPEDSIGNATURES)
 
 Change objective function of a CoreModel to a single `1` at the given reaction
 ID.

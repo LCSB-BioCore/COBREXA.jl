@@ -1,4 +1,6 @@
 """
+$(TYPEDSIGNATURES)
+
 Pretty printing of everything metabolic-modelish.
 """
 function Base.show(io::IO, ::MIME"text/plain", m::MetabolicModel)

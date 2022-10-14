@@ -1,5 +1,5 @@
 """
-    _pretty_print_keyvals(io, def::String, payload; kwargs...)
+$(TYPEDSIGNATURES)
 
 Nicely prints keys and values.
 """
@@ -7,11 +7,7 @@ _pretty_print_keyvals(io, def::String, payload; kwargs...) =
     _pretty_print_keyvals(io, def, isnothing(payload) ? "---" : string(payload); kwargs...)
 
 """
-    _pretty_print_keyvals(
-        io,
-        def::String,
-        payload::String
-    )
+$(TYPEDSIGNATURES)
 
 Specialization of `_pretty_print_keyvals` for plain strings.
 """
@@ -25,11 +21,7 @@ function _pretty_print_keyvals(io, def::String, payload::String)
 end
 
 """
-    _pretty_print_keyvals(
-        io,
-        def::String,
-        payload::Dict
-    )
+$(TYPEDSIGNATURES)
 
 Specialization of `_pretty_print_keyvals` for dictionaries.
 """

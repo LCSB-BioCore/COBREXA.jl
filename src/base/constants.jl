@@ -63,6 +63,3 @@ const _constants = (
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
 )
-
-const MAX_SENSE = MOI.MAX_SENSE
-const MIN_SENSE = MOI.MIN_SENSE

@@ -1,20 +1,20 @@
 """
-Gene struct.
+$(TYPEDEF)
 
 # Fields
-````
-id :: String
-name :: Maybe{String}
-notes :: Dict{String, Vector{String}}
-annotation :: Dict{String, Union{Vector{String}, String}}
-````
+$(TYPEDFIELDS)
 """
 mutable struct Gene
     id::String
     name::Maybe{String}
     notes::Notes
     annotations::Annotations
-
-    Gene(id::String = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
-        new(id, name, notes, annotations)
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+A convenient constructor for a `Gene`.
+"""
+Gene(id = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
+    Gene(String(id), name, notes, annotations)
