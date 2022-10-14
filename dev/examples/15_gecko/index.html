@@ -184,23 +184,23 @@ Names registered in the model: c_lbs, c_ubs, lbs, mb, ubs, x</pre><p>Get the flu
   14.092         17.1644
    1.60011e-15   15.6326</pre><p>...and sampling:</p><pre><code class="language-julia">affine_hit_and_run(gecko_model, warmup_from_variability(gecko_model, GLPK.Optimizer))&#39; *
 reaction_flux(gecko_model)</code></pre><pre class="documenter-example-output">3340×95 Matrix{Float64}:
- 5.79321  7.53434  4.341     -9.82259  …  2.58742  0.178106  4.65941  1.68849
- 5.97172  7.69418  4.47547  -10.2705      2.82836  0.191991  5.18346  1.86908
- 5.88919  7.08271  4.19867   -9.8486      2.55031  0.2609    4.80288  1.79194
- 5.78822  7.59651  4.33514   -9.84917     2.56176  0.188864  4.66782  1.61288
- 5.38645  7.6815   4.22388   -9.25145     2.24728  0.14908   4.24294  1.36614
- 5.79294  7.4851   4.27372   -9.70463  …  2.58035  0.180579  4.68954  1.63211
- 5.85428  7.62246  4.38253   -9.86583     2.55356  0.171362  4.67094  1.72747
- 5.38753  7.2377   4.08927   -9.7917      2.9556   0.206229  5.38608  1.98014
- 5.70746  7.3966   4.24649   -9.70319     2.63334  0.178416  4.66491  1.69637
- 5.69817  7.69786  4.2997    -9.98324     3.02154  0.186499  4.66858  1.4801
+ 5.79328  7.5366   4.3418    -9.82421  …  2.58758  0.17788   4.65744  1.68863
+ 5.97333  7.69778  4.47655  -10.2696      2.82579  0.191588  5.18066  1.86689
+ 5.89026  7.08202  4.19798   -9.84901     2.55179  0.261319  4.80338  1.79239
+ 5.7884   7.59933  4.33564   -9.84982     2.56038  0.18865   4.66571  1.61211
+ 5.38476  7.68176  4.22329   -9.25033     2.24586  0.148972  4.24191  1.36568
+ 5.79231  7.46857  4.26242   -9.68658  …  2.58216  0.18182   4.69658  1.62649
+ 5.85494  7.62495  4.38296   -9.86721     2.55466  0.171205  4.66977  1.72731
+ 5.38828  7.2455   4.09085   -9.79485     2.95402  0.205523  5.38638  1.97981
+ 5.70757  7.39758  4.24663   -9.70354     2.63388  0.178315  4.66406  1.69633
+ 5.69684  7.69649  4.29907   -9.98219     3.02046  0.186573  4.66822  1.48071
  ⋮                                     ⋱                              
- 6.41219  7.55886  4.77719  -10.7465      2.51659  0.190647  4.86579  2.17292
- 6.09411  7.09449  4.54019   -9.93358     2.30911  0.221519  4.17799  1.88773
- 5.98383  7.43657  4.61554  -10.2747      2.38729  0.175689  4.70194  2.12283
- 6.06742  7.24054  4.54556   -9.99035     2.35708  0.190526  4.38236  1.95298
- 6.09424  7.25184  4.57651  -10.0623   …  2.35591  0.186185  4.36823  1.95021
- 6.21735  8.24101  4.63718  -10.4816      2.35836  0.174095  5.30491  1.95086
- 5.92004  7.28773  4.60061   -9.98184     2.19296  0.176998  4.47597  2.137
- 6.17176  7.33389  4.65558  -10.1599      2.34695  0.174037  4.59866  2.17223
- 6.14954  7.02426  4.42488   -9.97557     2.96939  0.16056   4.262    1.86895</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../14_smoment/">« sMOMENT</a><a class="docs-footer-nextpage" href="../16_hit_and_run/">Hit and run sampling »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 11 September 2022 09:59">Sunday 11 September 2022</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 5.9346   5.92205  4.42021  -10.0368      2.56921  0.128902  3.74741  2.67765
+ 6.08436  7.9515   4.79178  -10.6586      2.73663  0.150585  4.6993   1.94007
+ 5.93497  7.26596  4.53978  -10.1772      2.95226  0.177053  4.41834  2.1028
+ 6.07124  7.31656  4.60853  -10.2969      2.81449  0.148366  4.39322  2.00136
+ 6.04734  7.39569  4.60626  -10.255    …  2.72693  0.163991  4.32969  1.96255
+ 5.94455  6.73671  4.54698  -10.024       2.48861  0.117976  3.8185   1.91764
+ 5.83735  7.30476  4.54043  -10.139       2.6802   0.121411  4.06588  2.00725
+ 6.55567  7.48676  4.83817  -10.8052      2.6987   0.215073  4.65713  2.01313
+ 6.20068  7.53459  4.63939  -10.3459      2.60957  0.18502   4.4637   1.87995</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../14_smoment/">« sMOMENT</a><a class="docs-footer-nextpage" href="../16_hit_and_run/">Hit and run sampling »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 14 October 2022 10:07">Friday 14 October 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
