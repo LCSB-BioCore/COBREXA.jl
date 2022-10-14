@@ -43,7 +43,6 @@ fluxes = parsimonious_flux_balance_analysis_dict(
     Clarabel.Optimizer;
     modifications = [
         silence, # optionally silence the optimizer (Clarabel is very verbose by default)
-        change_optimizer_attribute("polish", true), # tell Clarabel to invest time into improving the precision of the solution
         change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix glucose consumption rate
     ],
 )
@@ -70,7 +69,6 @@ flux_vector = parsimonious_flux_balance_analysis_vec(
     ],
     qp_modifications = [
         change_optimizer(Clarabel.Optimizer), # now switch to Clarabel (Tulip wouldn't be able to finish the computation)
-        change_optimizer_attribute("polish", true), # get an accurate solution, see Clarabel's documentation
         silence, # and make it quiet.
     ],
 )
