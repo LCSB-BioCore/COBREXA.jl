@@ -13,7 +13,6 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
-using ..Analysis
 using ..Internal: constants
 using ..Internal.Macros
 using ..Log.Internal
@@ -43,7 +42,7 @@ end
 
 # this needs to import from Reconstruction
 @inject Reconstruction.Modifications begin
-    using ...Reconstruction
+    using ..Reconstruction
     @inc_dir reconstruction modifications
 
     @export_locals
