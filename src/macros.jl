@@ -1,4 +1,12 @@
 
+"""
+    module Macros
+
+Internal COBREXA macros.
+
+# Exports
+$(EXPORTS)
+"""
 module Macros
 using ..ModuleTools
 @dse

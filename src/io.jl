@@ -1,3 +1,11 @@
+"""
+    module IO
+
+Reading and writing the models from/to storage.
+
+# Exports
+$(EXPORTS)
+"""
 module IO
 using ..ModuleTools
 @dse
@@ -13,6 +21,14 @@ using JSON, MAT, SBML, HDF5
 @inc_dir io
 @inc_dir io show
 
+"""
+    module Internal
+
+Internal IO helpers.
+
+# Exports
+$(EXPORTS)
+"""
 module Internal
 using ..ModuleTools
 @dse

@@ -1,14 +1,22 @@
 """
-This module contains SBO terms recognized by COBREXA. For the full ontology, see
-https://github.com/EBI-BioModels/SBO/blob/master/SBO_OBO.obo.
+    module SBOTerms
 
-If an SBO term appears here it *may* be used in a function; if an SBO term does
-not appear here, then it is *not* used in any COBREXA function.
+Several selected SBO terms that are recognized by COBREXA. For the full
+ontology, see https://github.com/EBI-BioModels/SBO/blob/master/SBO_OBO.obo.
 
-These terms are used in module `Identifiers` which groups them as appropriate
-for use in functions that classify reactions, metabolites, etc.
+If an SBO term appears here, it *may* be recognized in a function; if an SBO
+term does not appear here, then it is *not* used in any COBREXA function.
+
+Mostly, the SBO terms are now used in module `Identifiers`, where they get
+grouped semantically to allow other functions to classify reactions (such as
+exchanges vs. biomass vs. normal reactions), metabolites, compartments, etc.
+
+# Exports
+$(EXPORTS)
 """
 module SBOTerms
+using ..ModuleTools
+@dse
 
 const FLUX_BALANCE_FRAMEWORK = "SBO:0000624"
 const RESOURCE_BALANCE_FRAMEWORK = "SBO:0000692"

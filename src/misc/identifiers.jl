@@ -1,9 +1,18 @@
 """
-This module uses annotation identifiers to classify reactions, metabolites,
+    module Identifiers
+
+This module exports interpretation of terms to classify reactions, metabolites,
 genes, etc. If an subject has a matching annotation, then it is assumed that it
-is part of the associated class of objects.
+is part of the associated class of objects. Where possible, this is done using
+the terms in module [`SBOTerms`](@ref).
+
+# Exports
+$(EXPORTS)
 """
 module Identifiers
+using ..ModuleTools
+@dse
+
 using ..SBOTerms
 
 const EXCHANGE_REACTIONS = [SBOTerms.EXCHANGE_REACTION]

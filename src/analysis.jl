@@ -1,5 +1,7 @@
 
 """
+    module Analysis
+
 Contains the analysis functions of COBREXA.jl. Typically, these take a
 [`MetabolicModel`](@ref), convert it to the solver represenation and run
 various optimization tasks on top of it, such as finding an optimum (e.g. in
@@ -36,7 +38,18 @@ using StableRNGs
 @inc_dir analysis sampling
 @inc_dir analysis reconstruction
 
+"""
+    module Modifications
+
+Functions that implement well-defined modifications of the optimization model
+before solving. These can be used as `modifications` parameter in e.g.
+[`flux_balance_analysis`](@ref) and other analysis functions.
+
+# Exports
+$(EXPORTS)
+"""
 module Modifications
+# TODO move this into Solver
 using ..ModuleTools
 @dse
 end

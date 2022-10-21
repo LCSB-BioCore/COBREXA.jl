@@ -1,3 +1,11 @@
+"""
+    module Internal
+
+Internal COBREXA.jl functionality, mostly constants and macros.
+
+# Exports
+$(EXPORTS)
+"""
 module Internal
 using ..ModuleTools
 @dse

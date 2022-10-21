@@ -1,4 +1,13 @@
 
+"""
+    module Reconstruction
+
+Reconstruction functionality of COBREXA; mainly functions that construct or
+modify the model contents.
+
+# Exports
+$(EXPORTS)
+"""
 module Reconstruction
 using ..ModuleTools
 @dse
@@ -15,6 +24,15 @@ using MacroTools
 
 @inc_dir reconstruction
 
+"""
+    module Modifications
+
+Functions that create model variants, typically for efficient use in
+[`screen`](@ref) and similar functions.
+
+# Exports
+$(EXPORTS)
+"""
 module Modifications
 using ..ModuleTools
 @dse

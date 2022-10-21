@@ -1,4 +1,13 @@
 
+"""
+    module Solver
+
+Interface of COBREXA to JuMP solvers; mainly recreation of the
+`MetabolicModel`s into JuMP optimization models.
+
+# Exports
+$(EXPORTS)
+"""
 module Solver
 using ..ModuleTools
 @dse

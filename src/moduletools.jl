@@ -1,3 +1,11 @@
+"""
+    module ModuleTools
+
+Internal helpers for simplifying the work with COBREXA submodules.
+
+# Exports
+$(EXPORTS)
+"""
 module ModuleTools
 macro inc(path...)
     esc(:(include(joinpath(@__DIR__, $(joinpath(String.(path)...) * ".jl")))))
@@ -12,6 +20,7 @@ end
 macro dse()
     :(using DocStringExtensions)
 end
+@dse
 
 macro inject(mod, code)
     esc(:(Base.eval($mod, $(Expr(:quote, code)))))

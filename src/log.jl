@@ -1,8 +1,24 @@
 
+"""
+    module Log
+
+Logging helpers for COBREXA.
+
+# Exports
+$(EXPORTS)
+"""
 module Log
 using ..ModuleTools
 @dse
 
+"""
+    module Internal
+
+Internal helpers for logging.
+
+# Exports
+$(EXPORTS)
+"""
 module Internal
 using ..ModuleTools
 @dse

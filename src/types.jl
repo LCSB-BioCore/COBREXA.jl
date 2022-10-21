@@ -1,5 +1,13 @@
 
 # make the module for types and load basic abstract types
+"""
+    module Types
+
+Module with all types, mainly the model types and various typed model contents.
+
+# Exports
+$(EXPORTS)
+"""
 module Types
 using ..ModuleTools
 @dse
@@ -18,7 +26,15 @@ using SparseArrays
 @export_locals
 end
 
-# the specialized module for accessors
+"""
+    module Accessors
+
+Functions that gather data from various model types in a standardized form.
+Overload these if you want COBREXA to work with your own module types.
+
+# Exports
+$(EXPORTS)
+"""
 module Accessors
 using ..ModuleTools
 @dse
@@ -27,6 +43,14 @@ using ..Internal.Macros
 
 using SparseArrays
 
+"""
+    module Internal
+
+Internal helpers for types.
+
+# Exports
+$(EXPORTS)
+"""
 module Internal
 using ..ModuleTools
 @dse

@@ -1,7 +1,15 @@
 
-# TODO: This is now for stuff that didn't really fit anywhere else. It might be
-# much much more useful to actually sort out the utils into individual
-# namespaces.
+# TODO: It might be much much more useful to actually sort out the utils into
+# individual namespaces.
+"""
+    module Utils
+
+Mostly contains various COBREXA functions and helpers, including internal ones.
+
+# Exports
+
+$(EXPORTS)
+"""
 module Utils
 using ..ModuleTools
 @dse
