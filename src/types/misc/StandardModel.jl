@@ -48,3 +48,21 @@ $(TYPEDSIGNATURES)
 Shallow copy of a [`Gene`](@ref)
 """
 Base.copy(g::Gene) = Gene(g.id; notes = g.notes, annotations = g.annotations)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the lower bounds for all reactions in `model`.
+Order matches that of the reaction ids returned in `reactions()`.
+"""
+lower_bounds(model::StandardModel)::Vector{Float64} =
+    [model.reactions[rxn].lower_bound for rxn in reactions(model)]
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the upper bounds for all reactions in `model`.
+Order matches that of the reaction ids returned in `reactions()`.
+"""
+upper_bounds(model::StandardModel)::Vector{Float64} =
+    [model.reactions[rxn].upper_bound for rxn in reactions(model)]
