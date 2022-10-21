@@ -123,24 +123,66 @@ Accessors.metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFor
 """
 $(TYPEDSIGNATURES)
 
+Get the compartment of a chosen metabolite from [`SBMLModel`](@ref).
+"""
+metabolite_compartment(model::SBMLModel, mid::String) = model.sbml.species[mid].compartment
+
+"""
+$(TYPEDSIGNATURES)
+
 Get charge of a chosen metabolite from [`SBMLModel`](@ref).
 """
 Accessors.metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int} =
     model.sbml.species[mid].charge
 
-function _sbml_export_annotation(annotation)::Maybe{String}
-    if isnothing(annotation) || isempty(annotation)
-        nothing
-    elseif length(annotation) != 1 || first(annotation).first != ""
-        @io_log @warn "Possible data loss: multiple annotations converted to text for SBML" annotation
-        join(["$k: $v" for (k, v) in annotation], "\n")
-    else
-        @io_log @warn "Possible data loss: trying to represent annotation in SBML is unlikely to work " annotation
-        first(annotation).second
-    end
+function _parse_sbml_identifiers_org_uri(uri::String)::Tuple{String,String}
+    m = match(r"^http://identifiers.org/([^/]+)/(.*)$", uri)
+    isnothing(m) ? ("RESOURCE_URI", uri) : (m[1], m[2])
 end
 
-const _sbml_export_notes = _sbml_export_annotation
+function _sbml_import_cvterms(sbo::Maybe{String}, cvs::Vector{SBML.CVTerm})::Annotations
+    res = Annotations()
+    isnothing(sbo) || (res["sbo"] = [sbo])
+    for cv in cvs
+        cv.biological_qualifier == :is || continue
+        for (id, val) in _parse_sbml_identifiers_org_uri.(cv.resource_uris)
+            push!(get!(res, id, []), val)
+        end
+    end
+    return res
+end
+
+function _sbml_export_cvterms(annotations::Annotations)::Vector{SBML.CVTerm}
+    isempty(annotations) && return []
+    length(annotations) == 1 && haskey(annotations, "sbo") && return []
+    [
+        SBML.CVTerm(
+            biological_qualifier = :is,
+            resource_uris = [
+                id == "RESOURCE_URI" ? val : "http://identifiers.org/$id/$val" for
+                (id, vals) = annotations if id != "sbo" for val in vals
+            ],
+        ),
+    ]
+end
+
+function _sbml_export_sbo(annotations::Annotations)::Maybe{String}
+    haskey(annotations, "sbo") || return nothing
+    if length(annotations["sbo"]) != 1
+        @_io_log @error "Data loss: SBO term is not unique for SBML export" annotations["sbo"]
+        return
+    end
+    return annotations["sbo"][1]
+end
+
+function _sbml_import_notes(notes::Maybe{String})::Notes
+    isnothing(notes) ? Notes() : Notes("" => [notes])
+end
+
+function _sbml_export_notes(notes::Notes)::Maybe{String}
+    isempty(notes) || @_io_log @error "Data loss: notes not exported to SBML" notes
+    nothing
+end
 
 """
 $(TYPEDSIGNATURES)
@@ -183,6 +225,56 @@ Accessors.gene_name(model::SBMLModel, gid::String) = model.sbml.gene_products[gi
 """
 $(TYPEDSIGNATURES)
 
+Return the annotations of reaction with ID `rid`.
+"""
+reaction_annotations(model::SBMLModel, rid::String) =
+    _sbml_import_cvterms(model.sbml.reactions[rid].sbo, model.sbml.reactions[rid].cv_terms)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the annotations of metabolite with ID `mid`.
+"""
+metabolite_annotations(model::SBMLModel, mid::String) =
+    _sbml_import_cvterms(model.sbml.species[mid].sbo, model.sbml.species[mid].cv_terms)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the annotations of gene with ID `gid`.
+"""
+gene_annotations(model::SBMLModel, gid::String) = _sbml_import_cvterms(
+    model.sbml.gene_products[gid].sbo,
+    model.sbml.gene_products[gid].cv_terms,
+)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the notes about reaction with ID `rid`.
+"""
+reaction_notes(model::SBMLModel, rid::String) =
+    _sbml_import_notes(model.sbml.reactions[rid].notes)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the notes about metabolite with ID `mid`.
+"""
+metabolite_notes(model::SBMLModel, mid::String) =
+    _sbml_import_notes(model.sbml.species[mid].notes)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the notes about gene with ID `gid`.
+"""
+gene_notes(model::SBMLModel, gid::String) =
+    _sbml_import_notes(model.sbml.gene_products[gid].notes)
+
+"""
+$(TYPEDSIGNATURES)
+
 Convert any metabolic model to [`SBMLModel`](@ref).
 """
 function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
@@ -197,30 +289,37 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
     comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 
+    metid(x) = startswith(x, "M_") ? x : "M_$x"
+    rxnid(x) = startswith(x, "R_") ? x : "R_$x"
+    gprid(x) = startswith(x, "G_") ? x : "G_$x"
+
     return SBMLModel(
         SBML.Model(
             compartments = Dict(
                 comp => SBML.Compartment(constant = true) for comp in compss
             ),
             species = Dict(
-                mid => SBML.Species(
+                metid(mid) => SBML.Species(
                     name = metabolite_name(mm, mid),
                     compartment = default("compartment", comps[mi]),
                     formula = metabolite_formula(mm, mid),
+                    formula = maybemap(unparse_formula, metabolite_formula(mm, mid)),
                     charge = metabolite_charge(mm, mid),
                     constant = false,
                     boundary_condition = false,
                     only_substance_units = false,
+                    sbo = _sbml_export_sbo(metabolite_annotations(mm, mid)),
                     notes = _sbml_export_notes(metabolite_notes(mm, mid)),
-                    annotation = _sbml_export_annotation(metabolite_annotations(mm, mid)),
+                    metaid = metid(mid),
+                    cv_terms = _sbml_export_cvterms(metabolite_annotations(mm, mid)),
                 ) for (mi, mid) in enumerate(mets)
             ),
             reactions = Dict(
-                rid => SBML.Reaction(
+                rxnid(rid) => SBML.Reaction(
                     name = reaction_name(mm, rid),
                     reactants = [
                         SBML.SpeciesReference(
-                            species = mets[i],
+                            species = metid(mets[i]),
                             stoichiometry = -stoi[i, ri],
                             constant = true,
                         ) for
@@ -228,7 +327,7 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                     ],
                     products = [
                         SBML.SpeciesReference(
-                            species = mets[i],
+                            species = metid(mets[i]),
                             stoichiometry = stoi[i, ri],
                             constant = true,
                         ) for
@@ -245,16 +344,20 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                         reaction_gene_association(mm, rid),
                     ),
                     reversible = true,
+                    sbo = _sbml_export_sbo(reaction_annotations(mm, rid)),
                     notes = _sbml_export_notes(reaction_notes(mm, rid)),
-                    annotation = _sbml_export_annotation(reaction_annotations(mm, rid)),
+                    metaid = rxnid(rid),
+                    cv_terms = _sbml_export_cvterms(reaction_annotations(mm, rid)),
                 ) for (ri, rid) in enumerate(rxns)
             ),
             gene_products = Dict(
-                gid => SBML.GeneProduct(
+                gprid(gid) => SBML.GeneProduct(
                     label = gid,
                     name = gene_name(mm, gid),
+                    sbo = _sbml_export_sbo(gene_annotations(mm, gid)),
                     notes = _sbml_export_notes(gene_notes(mm, gid)),
-                    annotation = _sbml_export_annotation(gene_annotations(mm, gid)),
+                    metaid = gprid(gid),
+                    cv_terms = _sbml_export_cvterms(gene_annotations(mm, gid)),
                 ) for gid in genes(mm)
             ),
             active_objective = "objective",

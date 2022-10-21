@@ -155,12 +155,12 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite charge from `metCharge` or `metCharges`.
 """
-function Accessors.metabolite_charge(m::MATModel, mid::String)
+function Accessors.metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
     met_charge = maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
         gets(m.mat, nothing, constants.keynames.metcharges),
     )
-    isnan(met_charge) ? 0 : met_charge
+    _maybemap(Int, isnan(met_charge) ? nothing : met_charge)
 end
 
 """

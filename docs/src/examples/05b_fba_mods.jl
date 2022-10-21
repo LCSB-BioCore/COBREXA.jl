@@ -10,7 +10,7 @@
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
-using COBREXA, GLPK, Tulip
+using COBREXA, GLPK, Tulip, JuMP
 
 model = load_model("e_coli_core.xml")
 
@@ -33,6 +33,6 @@ fluxes = flux_balance_analysis_dict(
         knockout(["b0978", "b0734"]), # knock out two genes
         change_optimizer(Tulip.Optimizer), # ignore the above optimizer and switch to Tulip
         change_optimizer_attribute("IPM_IterationsLimit", 1000), # customize Tulip
-        change_sense(MAX_SENSE), # explicitly tell Tulip to maximize the objective
+        change_sense(JuMP.MAX_SENSE), # explicitly tell Tulip to maximize the objective
     ],
 )
