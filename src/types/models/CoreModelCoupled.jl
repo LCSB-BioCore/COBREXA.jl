@@ -100,5 +100,4 @@ CoreModelCoupled(lm::CoreModel, C::MatType, cl::VecType, cu::VecType) =
     CoreCoupling(lm, sparse(C), collect(cl), collect(cu))
 
 # these are special for CoreModel-ish models
-@inherit_model_methods CoreModelCoupled () lm () reaction_gene_association_vec
 @inherit_model_methods CoreModelCoupled (ridx::Int,) lm (ridx,) Accessors.reaction_stoichiometry

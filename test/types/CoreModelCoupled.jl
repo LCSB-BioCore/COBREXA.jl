@@ -17,15 +17,4 @@ end
 
     @test reaction_gene_association(sm, reactions(sm)[1]) ==
           reaction_gene_association(cm, reactions(sm)[1])
-
-    @test reaction_gene_association_vec(cm)[1:3] == [
-        [["b3916"], ["b1723"]],
-        [
-            ["b0902", "b0903", "b2579"],
-            ["b0902", "b0903"],
-            ["b0902", "b3114"],
-            ["b3951", "b3952"],
-        ],
-        [["b4025"]],
-    ]
 end

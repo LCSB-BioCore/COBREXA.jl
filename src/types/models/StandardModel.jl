@@ -142,23 +142,6 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Return the lower bounds for all reactions in `model` in sparse format.
-"""
-lower_bounds(model::StandardModel)::Vector{Float64} =
-    sparse([model.reactions[rxn].lower_bound for rxn in reactions(model)])
-
-"""
-$(TYPEDSIGNATURES)
-
-Return the upper bounds for all reactions in `model` in sparse format.
-Order matches that of the reaction ids returned in `reactions()`.
-"""
-upper_bounds(model::StandardModel)::Vector{Float64} =
-    sparse([model.reactions[rxn].upper_bound for rxn in reactions(model)])
-
-"""
-$(TYPEDSIGNATURES)
-
 Return the lower and upper bounds, respectively, for reactions in `model`.
 Order matches that of the reaction ids returned in `reactions()`.
 """
