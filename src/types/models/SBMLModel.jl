@@ -169,7 +169,7 @@ end
 function _sbml_export_sbo(annotations::Annotations)::Maybe{String}
     haskey(annotations, "sbo") || return nothing
     if length(annotations["sbo"]) != 1
-        @_io_log @error "Data loss: SBO term is not unique for SBML export" annotations["sbo"]
+        @io_log @error "Data loss: SBO term is not unique for SBML export" annotations["sbo"]
         return
     end
     return annotations["sbo"][1]
@@ -180,7 +180,7 @@ function _sbml_import_notes(notes::Maybe{String})::Notes
 end
 
 function _sbml_export_notes(notes::Notes)::Maybe{String}
-    isempty(notes) || @_io_log @error "Data loss: notes not exported to SBML" notes
+    isempty(notes) || @io_log @error "Data loss: notes not exported to SBML" notes
     nothing
 end
 
