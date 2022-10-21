@@ -258,31 +258,6 @@ docker-release:
   <<: *global_trigger_release_containers
 
 #
-# DOCUMENTATION TESTS
-#
-# In pull requests, triggered after the tests succeed to avoid unnecessary
-# double failure.  In normal branch testing, these get triggered with normal
-# tests (the error should be visible ASAP). We avoid a separate stage to keep
-# the pipeline parallelizable.
-#
-
-.global_doctests: &global_doctests
-  image: $CI_REGISTRY/r3/docker/julia-custom
-  script:
-    - julia --project=@. -e 'import Pkg; Pkg.instantiate();'
-    - julia --project=@. --color=yes test/doctests.jl
-
-doc-tests-pr:julia1.7:
-  stage: documentation
-  <<: *global_doctests
-  <<: *global_trigger_pull_request
-
-doc-tests:julia1.7:
-  stage: test
-  <<: *global_doctests
-  <<: *global_trigger_full_tests
-
-#
 # DOCUMENTATION
 #
 

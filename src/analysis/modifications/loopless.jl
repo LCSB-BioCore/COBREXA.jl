@@ -22,8 +22,8 @@ of thermodynamically infeasible loops in steady-state metabolic models.", Biophy
 journal, 2011`.
 """
 add_loopless_constraints(;
-    max_flux_bound = _constants.default_reaction_bound, # needs to be an order of magnitude bigger, big M method heuristic
-    strict_inequality_tolerance = _constants.loopless_strict_inequality_tolerance,
+    max_flux_bound = constants.default_reaction_bound, # needs to be an order of magnitude bigger, big M method heuristic
+    strict_inequality_tolerance = constants.loopless_strict_inequality_tolerance,
 ) =
     (model, opt_model) -> begin
 

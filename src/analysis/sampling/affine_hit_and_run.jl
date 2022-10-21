@@ -87,8 +87,8 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
         dl = lb - pos
         du = ub - pos
         lower, upper =
-            dir < -_constants.tolerance ? (du, dl) ./ dir :
-            dir > _constants.tolerance ? (dl, du) ./ dir : (-Inf, Inf)
+            dir < -constants.tolerance ? (du, dl) ./ dir :
+            dir > constants.tolerance ? (dl, du) ./ dir : (-Inf, Inf)
         return (max(range[1], lower), min(range[2], upper))
     end
 
@@ -103,7 +103,7 @@ function _affine_hit_and_run_chain(warmup, lbs, ubs, C, cl, cu, iters, seed)
 
             for i = 1:n_points
 
-                mix = rand(rng, n_points) .+ _constants.tolerance
+                mix = rand(rng, n_points) .+ constants.tolerance
                 dir = points * (mix ./ sum(mix)) - points[:, i]
 
                 # iteratively collect the maximum and minimum possible multiple

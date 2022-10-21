@@ -119,7 +119,7 @@ function _screen_impl(
 
     asyncmap(fetch, save_at.(workers, :cobrexa_screen_variants_model, Ref(model)))
     asyncmap(fetch, save_at.(workers, :cobrexa_screen_variants_analysis_fn, Ref(analysis)))
-    asyncmap(fetch, get_from.(workers, Ref(:(precache!(cobrexa_screen_variants_model)))))
+    asyncmap(fetch, get_from.(workers, Ref(:($(precache!)(cobrexa_screen_variants_model)))))
 
     res = pmap(
         (vars, args)::Tuple -> screen_variant(
@@ -253,13 +253,7 @@ function _screen_optmodel_modifications_impl(
         save_at.(
             workers,
             :cobrexa_screen_optmodel_modifications_data,
-            Ref(
-                :($COBREXA._screen_optmodel_prepare(
-                    $model,
-                    $optimizer,
-                    $common_modifications,
-                )),
-            ),
+            Ref(:($_screen_optmodel_prepare($model, $optimizer, $common_modifications))),
         ),
     )
     asyncmap(

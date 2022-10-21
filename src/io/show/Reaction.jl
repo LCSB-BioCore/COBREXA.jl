@@ -14,7 +14,7 @@ function _pretty_substances(ss::Vector{String})::String
     end
 end
 
-function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
+function Base.show(io::Base.IO, ::MIME"text/plain", r::Reaction)
     if r.upper_bound > 0.0 && r.lower_bound < 0.0
         arrow = " ↔  "
     elseif r.upper_bound <= 0.0 && r.lower_bound < 0.0
@@ -40,7 +40,7 @@ function Base.show(io::IO, ::MIME"text/plain", r::Reaction)
             _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",
-                _maybemap(x -> _unparse_grr(String, x), r.grr),
+                maybemap(x -> unparse_grr(String, x), r.grr),
             )
         elseif fname in (:lower_bound, :upper_bound, :objective_coefficient)
             _pretty_print_keyvals(

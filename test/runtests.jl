@@ -1,23 +1,34 @@
 using COBREXA, Test
 
+using COBREXA.Types,
+    COBREXA.Accessors,
+    COBREXA.Analysis,
+    COBREXA.Analysis.Modifications,
+    COBREXA.Reconstruction,
+    COBREXA.Reconstruction.Modifications,
+    COBREXA.Utils,
+    COBREXA.IO,
+    COBREXA.Solver
+
 using Aqua
+using Clarabel
 using Distributed
 using Downloads
+using GLPK # for MILPs
 using JSON
 using JuMP
 using LinearAlgebra
 using MAT
 using OrderedCollections
-using Clarabel
+using Serialization
 using SHA
 using SparseArrays
 using Statistics
 using Tulip
-using GLPK # for MILPs
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
-TEST_TOLERANCE = 10 * COBREXA._constants.tolerance
+TEST_TOLERANCE = 10 * COBREXA.Internal.constants.tolerance
 QP_TEST_TOLERANCE = 1e-2 # for Clarabel
 
 print_timing(fn, t) = @info "$(fn) done in $(round(t; digits = 2))s"
@@ -38,7 +49,7 @@ end
 # set up the workers for Distributed, so that the tests that require more
 # workers do not unnecessarily load the stuff multiple times
 W = addprocs(2)
-t = @elapsed @everywhere using COBREXA, Tulip, JuMP
+t = @elapsed @everywhere using COBREXA, COBREXA.Analysis, Tulip, JuMP
 print_timing("import of packages", t)
 t = @elapsed @everywhere begin
     model = Model(Tulip.Optimizer)
@@ -59,11 +70,10 @@ run_test_file("data_downloaded.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    run_test_dir(joinpath("base", "types", "abstract"), "Abstract types")
-    run_test_dir(joinpath("base", "types"), "Base model types")
-    run_test_dir(joinpath("base", "logging"), "Logging")
-    run_test_dir("base", "Base functionality")
-    run_test_dir(joinpath("base", "utils"), "Utilities")
+    run_test_dir(joinpath("types", "abstract"), "Abstract types")
+    run_test_dir("types", "Model types and wrappers")
+    run_test_file("log.jl")
+    run_test_dir("utils", "Utilities")
     run_test_dir("io", "I/O functions")
     run_test_dir("reconstruction")
     run_test_dir("analysis")

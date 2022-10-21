@@ -73,7 +73,7 @@ function parsimonious_flux_balance_analysis(
 
     for rb in relax_bounds
         lb, ub = objective_bounds(rb)(Z)
-        @_models_log @info "pFBA step relaxed to [$lb,$ub]"
+        @models_log @info "pFBA step relaxed to [$lb,$ub]"
         @constraint(opt_model, pfba_constraint, lb <= original_objective <= ub)
 
         optimize!(opt_model)

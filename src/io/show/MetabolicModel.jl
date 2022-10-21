@@ -3,9 +3,9 @@ $(TYPEDSIGNATURES)
 
 Pretty printing of everything metabolic-modelish.
 """
-function Base.show(io::IO, ::MIME"text/plain", m::MetabolicModel)
+function Base.show(io::Base.IO, ::MIME"text/plain", m::MetabolicModel)
     _pretty_print_keyvals(io, "", "Metabolic model of type $(typeof(m))")
-    if n_reactions(m) <= _constants.default_stoich_show_size
+    if n_reactions(m) <= constants.default_stoich_show_size
         println(io, stoichiometry(m))
     else # too big to display nicely
         println(io, "S = [...]")

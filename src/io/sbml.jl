@@ -17,7 +17,7 @@ function save_sbml_model(model::MetabolicModel, file_name::String)
     m =
         typeof(model) == SBMLModel ? model :
         begin
-            @_io_log @warn "Automatically converting $(typeof(model)) to SBMLModel for saving, information may be lost."
+            @io_log @warn "Automatically converting $(typeof(model)) to SBMLModel for saving, information may be lost."
             convert(SBMLModel, model)
         end
 

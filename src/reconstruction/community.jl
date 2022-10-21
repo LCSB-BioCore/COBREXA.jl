@@ -28,7 +28,7 @@ function add_community_objective!(
     # extend model by one reaction
     community.S = hcat(community.S, objcol)
     community.xl = [community.xl; 0.0]
-    community.xu = [community.xu; _constants.default_reaction_bound]
+    community.xu = [community.xu; constants.default_reaction_bound]
     community.rxns = [community.rxns; objective_id]
     community.c = spzeros(size(community.S, 2))
     community.c[end] = 1.0
@@ -53,7 +53,7 @@ function add_community_objective!(
     rxn = Reaction(objective_id)
     rxn.metabolites = rdict
     rxn.lower_bound = 0.0
-    rxn.upper_bound = _constants.default_reaction_bound
+    rxn.upper_bound = constants.default_reaction_bound
     rxn.objective_coefficient = 1.0
     community.reactions[rxn.id] = rxn
 
@@ -92,7 +92,7 @@ function update_community_objective!(
     community.c = spzeros(size(community.S, 2))
     community.c[objective_column_index] = 1.0
     community.xl[objective_column_index] = 0.0
-    community.xu[objective_column_index] = _constants.default_reaction_bound
+    community.xu[objective_column_index] = constants.default_reaction_bound
 
     return nothing # stop annoying return value
 end
