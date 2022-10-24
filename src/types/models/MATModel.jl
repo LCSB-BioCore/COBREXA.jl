@@ -160,7 +160,7 @@ function Accessors.metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
         x -> x[findfirst(==(mid), metabolites(m))],
         gets(m.mat, nothing, constants.keynames.metcharges),
     )
-    _maybemap(Int, isnan(met_charge) ? nothing : met_charge)
+    maybemap(Int, isnan(met_charge) ? nothing : met_charge)
 end
 
 """

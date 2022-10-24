@@ -235,7 +235,7 @@ $(TYPEDSIGNATURES)
 Return the notes associated with gene `id` in `model`.
 Return an empty Dict if not present.
 """
-Accessors.gene_notes(model::StandardModel, id::String)::Maybe{Notes} = model.genes[id].notes
+Accessors.gene_notes(model::StandardModel, gid::String) = model.genes[gid].notes
 
 """
 $(TYPEDSIGNATURES)

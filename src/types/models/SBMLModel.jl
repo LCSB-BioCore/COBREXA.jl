@@ -125,7 +125,7 @@ $(TYPEDSIGNATURES)
 
 Get the compartment of a chosen metabolite from [`SBMLModel`](@ref).
 """
-metabolite_compartment(model::SBMLModel, mid::String) = model.sbml.species[mid].compartment
+Accessors.metabolite_compartment(model::SBMLModel, mid::String) = model.sbml.species[mid].compartment
 
 """
 $(TYPEDSIGNATURES)
@@ -227,7 +227,7 @@ $(TYPEDSIGNATURES)
 
 Return the annotations of reaction with ID `rid`.
 """
-reaction_annotations(model::SBMLModel, rid::String) =
+Accessors.reaction_annotations(model::SBMLModel, rid::String) =
     _sbml_import_cvterms(model.sbml.reactions[rid].sbo, model.sbml.reactions[rid].cv_terms)
 
 """
@@ -235,7 +235,7 @@ $(TYPEDSIGNATURES)
 
 Return the annotations of metabolite with ID `mid`.
 """
-metabolite_annotations(model::SBMLModel, mid::String) =
+Accessors.metabolite_annotations(model::SBMLModel, mid::String) =
     _sbml_import_cvterms(model.sbml.species[mid].sbo, model.sbml.species[mid].cv_terms)
 
 """
@@ -243,7 +243,7 @@ $(TYPEDSIGNATURES)
 
 Return the annotations of gene with ID `gid`.
 """
-gene_annotations(model::SBMLModel, gid::String) = _sbml_import_cvterms(
+Accessors.gene_annotations(model::SBMLModel, gid::String) = _sbml_import_cvterms(
     model.sbml.gene_products[gid].sbo,
     model.sbml.gene_products[gid].cv_terms,
 )
@@ -253,7 +253,7 @@ $(TYPEDSIGNATURES)
 
 Return the notes about reaction with ID `rid`.
 """
-reaction_notes(model::SBMLModel, rid::String) =
+Accessors.reaction_notes(model::SBMLModel, rid::String) =
     _sbml_import_notes(model.sbml.reactions[rid].notes)
 
 """
@@ -261,7 +261,7 @@ $(TYPEDSIGNATURES)
 
 Return the notes about metabolite with ID `mid`.
 """
-metabolite_notes(model::SBMLModel, mid::String) =
+Accessors.metabolite_notes(model::SBMLModel, mid::String) =
     _sbml_import_notes(model.sbml.species[mid].notes)
 
 """
@@ -269,7 +269,7 @@ $(TYPEDSIGNATURES)
 
 Return the notes about gene with ID `gid`.
 """
-gene_notes(model::SBMLModel, gid::String) =
+Accessors.gene_notes(model::SBMLModel, gid::String) =
     _sbml_import_notes(model.sbml.gene_products[gid].notes)
 
 """
@@ -302,7 +302,6 @@ function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
                 metid(mid) => SBML.Species(
                     name = metabolite_name(mm, mid),
                     compartment = default("compartment", comps[mi]),
-                    formula = metabolite_formula(mm, mid),
                     formula = maybemap(unparse_formula, metabolite_formula(mm, mid)),
                     charge = metabolite_charge(mm, mid),
                     constant = false,
