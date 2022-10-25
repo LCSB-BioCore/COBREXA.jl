@@ -254,7 +254,7 @@ function change_coupling_bounds!(
     nothing
 end
 
-# TODO see if some of these can be derived from ModelWrapper
+# TODO see if some of these can be derived from AbstractModelWrapper
 @_change_bounds_fn CoreCoupling Int inplace begin
     change_bound!(model.lm, rxn_idx, lower = lower, upper = upper)
 end

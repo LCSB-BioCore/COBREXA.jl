@@ -9,7 +9,7 @@ internal model will be loaded on-demand by using any accessor, or by calling
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct Serialized{M} <: ModelWrapper where {M<:AbstractMetabolicModel}
+mutable struct Serialized{M} <: AbstractModelWrapper where {M<:AbstractMetabolicModel}
     m::Maybe{M}
     filename::String
 

@@ -8,7 +8,7 @@ small layers that add or change the functionality of a given base models.
 Types [`Serialized`](@ref), [`CoreCoupling`](@ref), [`SMomentModel`](@ref), and
 [`GeckoModel`](@ref) all work in this manner -- add some extra functionality to
 the "base". Technically, they are all subtypes of the abstract type
-[`ModelWrapper`](@ref), which itself is a subtype of [`AbstractMetabolicModel`](@ref)
+[`AbstractModelWrapper`](@ref), which itself is a subtype of [`AbstractMetabolicModel`](@ref)
 and can thus be used in all standard analysis functions.  Similarly, the model
 wraps can be stacked -- it is easy to e.g. serialize a [`GeckoModel`](@ref), or
 to add coupling to an existing [`SMomentModel`](@ref).
@@ -26,7 +26,7 @@ and fast -- we just discard the wrapper.
 ## Writing a model wrapper
 
 Creating a model wrapper structure is simple -- by declaring it a subtype of
-[`ModelWrapper`](@ref) and implementing a single function
+[`AbstractModelWrapper`](@ref) and implementing a single function
 [`unwrap_model`](@ref), we get default implementations of all accessors that
 should work for any [`AbstractMetabolicModel`](@ref).
 
@@ -34,7 +34,7 @@ As a technical example, we may make a minimal model wrapper that does not do
 anything:
 
 ```julia
-struct IdentityWrap <: ModelWrapper
+struct IdentityWrap <: AbstractModelWrapper
     mdl::AbstractMetabolicModel
 end
 
@@ -60,7 +60,7 @@ a constant factor. This can be used to e.g. simulate higher or lower abundance
 of certain organism in a model.
 
 ```julia
-struct RateChangedModel <: ModelWrapper
+struct RateChangedModel <: AbstractModelWrapper
     factor::Float64
     mdl::AbstractMetabolicModel
 end
@@ -91,7 +91,7 @@ not quite realistic, but may be useful to validate the mathematical robustness
 of the models.
 
 ```julia
-struct LeakyModel <: ModelWrapper
+struct LeakyModel <: AbstractModelWrapper
     leaking_metabolites::Vector{String}
     leak_rate::Float64
     mdl::AbstractMetabolicModel

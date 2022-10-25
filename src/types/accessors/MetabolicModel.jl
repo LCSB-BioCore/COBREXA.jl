@@ -4,7 +4,7 @@
 #
 # This file provides a list of "officially supported" accessors that should
 # work with all subtypes of [`AbstractMetabolicModel`](@ref). Keep this synced with the
-# automatically derived methods for [`ModelWrapper`](@ref).
+# automatically derived methods for [`AbstractModelWrapper`](@ref).
 #
 
 """

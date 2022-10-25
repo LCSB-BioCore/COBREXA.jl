@@ -74,7 +74,7 @@ The related constraints are implemented using [`coupling`](@ref) and
 # Fields
 $(TYPEDFIELDS)
 """
-struct GeckoModel <: ModelWrapper
+struct GeckoModel <: AbstractModelWrapper
     objective::SparseVec
     columns::Vector{_GeckoReactionColumn}
     coupling_row_reaction::Vector{Int}

@@ -11,7 +11,7 @@ flux `x` feasible in this model must satisfy:
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct CoreCoupling{M} <: ModelWrapper where {M<:AbstractMetabolicModel}
+mutable struct CoreCoupling{M} <: AbstractModelWrapper where {M<:AbstractMetabolicModel}
     lm::M
     C::SparseMat
     cl::Vector{Float64}

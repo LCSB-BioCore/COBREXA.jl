@@ -54,7 +54,7 @@ are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 # Fields
 $(TYPEDFIELDS)
 """
-struct SMomentModel <: ModelWrapper
+struct SMomentModel <: AbstractModelWrapper
     columns::Vector{_SMomentColumn}
     total_enzyme_capacity::Float64
 

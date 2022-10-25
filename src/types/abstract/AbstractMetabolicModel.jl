@@ -14,12 +14,12 @@ mandatory and default to safe "empty" values.
 abstract type AbstractMetabolicModel end
 
 """
-    abstract type ModelWrapper <: AbstractMetabolicModel end
+    abstract type AbstractModelWrapper <: AbstractMetabolicModel end
 
 A helper supertype of all "wrapper" types that contain precisely one other
 [`AbstractMetabolicModel`](@ref).
 """
-abstract type ModelWrapper <: AbstractMetabolicModel end
+abstract type AbstractModelWrapper <: AbstractMetabolicModel end
 
 const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}
