@@ -74,8 +74,7 @@ Return a vector of metabolite id strings contained in `model`.
 The order of metabolite strings returned here matches the order used to construct
 the stoichiometric matrix.
 """
-Accessors.metabolites(model::ObjectModel)::StringVecType =
-    collect(keys(model.metabolites))
+Accessors.metabolites(model::ObjectModel)::StringVecType = collect(keys(model.metabolites))
 
 """
 $(TYPEDSIGNATURES)

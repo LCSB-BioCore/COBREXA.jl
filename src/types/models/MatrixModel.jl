@@ -139,8 +139,10 @@ $(TYPEDSIGNATURES)
 
 Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction ID.
 """
-Accessors.reaction_gene_association(model::MatrixModel, rid::String)::Maybe{GeneAssociation} =
-    model.grrs[first(indexin([rid], model.rxns))]
+Accessors.reaction_gene_association(
+    model::MatrixModel,
+    rid::String,
+)::Maybe{GeneAssociation} = model.grrs[first(indexin([rid], model.rxns))]
 
 """
 $(TYPEDSIGNATURES)

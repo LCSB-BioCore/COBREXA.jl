@@ -82,7 +82,11 @@ $(TYPEDSIGNATURES)
 
 Add all reactions from `m2` to `m1`.
 """
-function add_reactions(m1::MatrixModelWithCoupling, m2::MatrixModel; check_consistency = false)
+function add_reactions(
+    m1::MatrixModelWithCoupling,
+    m2::MatrixModel;
+    check_consistency = false,
+)
     new_lm = add_reactions(m1.lm, m2, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,

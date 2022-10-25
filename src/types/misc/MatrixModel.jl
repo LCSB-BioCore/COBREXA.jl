@@ -16,4 +16,5 @@ Base.isequal(model1::MatrixModelWithCoupling, model2::MatrixModelWithCoupling) =
     isequal(model1.cl, model2.cl) &&
     isequal(model1.cu, model2.cu)
 
-Base.copy(model::MatrixModelWithCoupling) = MatrixModelWithCoupling(model.lm, model.C, model.cl, model.cu)
+Base.copy(model::MatrixModelWithCoupling) =
+    MatrixModelWithCoupling(model.lm, model.C, model.cl, model.cu)
