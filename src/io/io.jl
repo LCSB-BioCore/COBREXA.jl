@@ -1,9 +1,9 @@
-
 """
 $(TYPEDSIGNATURES)
 
 Generic function for loading models that chooses a specific loader function
-from the `file_name` extension, or throws an error.
+from the `ext` keyword, or throws an error.
+By default the `file_name` extension will be used.
 
 Currently, these model types are supported:
 
@@ -12,20 +12,22 @@ Currently, these model types are supported:
 - MATLAB models (`*.mat`, loaded with [`load_mat_model`](@ref))
 - HDF5 models (`*.h5`, loaded with [`load_h5_model`](@ref))
 """
-function load_model(file_name::String)::MetabolicModel
-    if endswith(file_name, ".json")
+function load_model(file_name::String; 
+        ext = last(splitext(file_name))
+    )::MetabolicModel
+
+    if ext == ".json"
         return load_json_model(file_name)
-    elseif endswith(file_name, ".xml")
+    elseif ext == ".xml"
         return load_sbml_model(file_name)
-    elseif endswith(file_name, ".mat")
+    elseif ext == ".mat"
         return load_mat_model(file_name)
-    elseif endswith(file_name, ".h5")
+    elseif ext == ".h5"
         return load_h5_model(file_name)
     else
-        throw(DomainError(file_name, "Unknown file extension"))
+        throw(DomainError(ext, "Unknown file extension"))
     end
 end
-
 
 """
 $(TYPEDSIGNATURES)
@@ -37,15 +39,18 @@ converted to `type`.
 
     load_model(CoreModel, "mySBMLModel.xml")
 """
-function load_model(type::Type{T}, file_name::String)::T where {T<:MetabolicModel}
-    convert(type, load_model(file_name))
+function load_model(type::Type{T}, file_name::String; 
+        ext = last(splitext(file_name))
+    )::T where {T<:MetabolicModel}
+    convert(type, load_model(file_name; ext))
 end
 
 """
 $(TYPEDSIGNATURES)
 
 Generic function for saving models that chooses a specific writer function
-from the `file_name` extension, or throws an error.
+from the `ext` keyword, or throws an error.
+By default the `file_name` extension will be used.
 
 Currently, these model types are supported:
 
@@ -54,16 +59,18 @@ Currently, these model types are supported:
 - MATLAB models (`*.mat`, saved with [`save_mat_model`](@ref))
 - HDF5 models (`*.h5`, saved with [`save_h5_model`](@ref))
 """
-function save_model(model::MetabolicModel, file_name::String)
-    if endswith(file_name, ".json")
+function save_model(model::MetabolicModel, file_name::String;
+        ext = last(splitext(file_name))
+    )
+    if ext == ".json"
         return save_json_model(model, file_name)
-    elseif endswith(file_name, ".xml")
+    elseif ext == ".xml"
         return save_sbml_model(model, file_name)
-    elseif endswith(file_name, ".mat")
+    elseif ext == ".mat"
         return save_mat_model(model, file_name)
-    elseif endswith(file_name, ".h5")
+    elseif ext == ".h5"
         return save_h5_model(model, file_name)
     else
-        throw(DomainError(file_name, "Unknown file extension"))
+        throw(DomainError(ext, "Unknown file extension"))
     end
 end
