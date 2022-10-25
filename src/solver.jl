@@ -24,7 +24,11 @@ constraint.
 
 Here coupling means inequality constraints coupling multiple variables together.
 """
-function make_optimization_model(model::AbstractMetabolicModel, optimizer; sense = MAX_SENSE)
+function make_optimization_model(
+    model::AbstractMetabolicModel,
+    optimizer;
+    sense = MAX_SENSE,
+)
 
     precache!(model)
 

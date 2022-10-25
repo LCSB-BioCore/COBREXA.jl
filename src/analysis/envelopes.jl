@@ -32,13 +32,17 @@ $(TYPEDSIGNATURES)
 Version of [`objective_envelope`](@ref) that works on string reaction IDs
 instead of integer indexes.
 """
-objective_envelope(model::AbstractMetabolicModel, rids::Vector{String}, args...; kwargs...) =
-    objective_envelope(
-        model,
-        Vector{Int}(indexin(rids, reactions(model))),
-        args...;
-        kwargs...,
-    )
+objective_envelope(
+    model::AbstractMetabolicModel,
+    rids::Vector{String},
+    args...;
+    kwargs...,
+) = objective_envelope(
+    model,
+    Vector{Int}(indexin(rids, reactions(model))),
+    args...;
+    kwargs...,
+)
 
 """
 $(TYPEDSIGNATURES)

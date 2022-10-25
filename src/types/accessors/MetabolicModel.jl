@@ -208,7 +208,10 @@ $(TYPEDSIGNATURES)
 Return the subsystem of reaction `reaction_id` in `model` if it is assigned. If not,
 return `nothing`.
 """
-function reaction_subsystem(model::AbstractMetabolicModel, reaction_id::String)::Maybe{String}
+function reaction_subsystem(
+    model::AbstractMetabolicModel,
+    reaction_id::String,
+)::Maybe{String}
     return nothing
 end
 
@@ -218,7 +221,10 @@ $(TYPEDSIGNATURES)
 Return the stoichiometry of reaction with ID `rid` in the model. The dictionary
 maps the metabolite IDs to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::AbstractMetabolicModel, rid::String)::Dict{String,Float64}
+function reaction_stoichiometry(
+    m::AbstractMetabolicModel,
+    rid::String,
+)::Dict{String,Float64}
     mets = metabolites(m)
     Dict(
         mets[k] => v for
@@ -255,7 +261,10 @@ $(TYPEDSIGNATURES)
 Return the compartment of metabolite `metabolite_id` in `model` if it is assigned. If not,
 return `nothing`.
 """
-function metabolite_compartment(model::AbstractMetabolicModel, metabolite_id::String)::Maybe{String}
+function metabolite_compartment(
+    model::AbstractMetabolicModel,
+    metabolite_id::String,
+)::Maybe{String}
     return nothing
 end
 
@@ -277,7 +286,10 @@ Return standardized names that may help to reliably identify the metabolite. The
 dictionary assigns vectors of possible identifiers to identifier system names,
 e.g. `"ChEMBL" => ["123"]` or `"PubChem" => ["CID123", "CID654645645"]`.
 """
-function metabolite_annotations(a::AbstractMetabolicModel, metabolite_id::String)::Annotations
+function metabolite_annotations(
+    a::AbstractMetabolicModel,
+    metabolite_id::String,
+)::Annotations
     return Dict()
 end
 

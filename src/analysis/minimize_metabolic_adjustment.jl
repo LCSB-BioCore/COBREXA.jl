@@ -85,8 +85,11 @@ same order as the reactions in `model`. Arguments are forwarded to
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-minimize_metabolic_adjustment_analysis_vec(model::AbstractMetabolicModel, args...; kwargs...) =
-    flux_vector(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))
+minimize_metabolic_adjustment_analysis_vec(
+    model::AbstractMetabolicModel,
+    args...;
+    kwargs...,
+) = flux_vector(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))
 
 """
 $(TYPEDSIGNATURES)
@@ -98,5 +101,8 @@ internally.
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-minimize_metabolic_adjustment_analysis_dict(model::AbstractMetabolicModel, args...; kwargs...) =
-    flux_dict(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))
+minimize_metabolic_adjustment_analysis_dict(
+    model::AbstractMetabolicModel,
+    args...;
+    kwargs...,
+) = flux_dict(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))
