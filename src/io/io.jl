@@ -12,9 +12,7 @@ Currently, these model types are supported:
 - MATLAB models (`*.mat`, loaded with [`load_mat_model`](@ref))
 - HDF5 models (`*.h5`, loaded with [`load_h5_model`](@ref))
 """
-function load_model(file_name::String; 
-        ext = last(splitext(file_name))
-    )::MetabolicModel
+function load_model(file_name::String; ext = last(splitext(file_name)))::MetabolicModel
 
     if ext == ".json"
         return load_json_model(file_name)
@@ -39,9 +37,11 @@ converted to `type`.
 
     load_model(CoreModel, "mySBMLModel.xml")
 """
-function load_model(type::Type{T}, file_name::String; 
-        ext = last(splitext(file_name))
-    )::T where {T<:MetabolicModel}
+function load_model(
+    type::Type{T},
+    file_name::String;
+    ext = last(splitext(file_name)),
+)::T where {T<:MetabolicModel}
     convert(type, load_model(file_name; ext))
 end
 
@@ -59,9 +59,11 @@ Currently, these model types are supported:
 - MATLAB models (`*.mat`, saved with [`save_mat_model`](@ref))
 - HDF5 models (`*.h5`, saved with [`save_h5_model`](@ref))
 """
-function save_model(model::MetabolicModel, file_name::String;
-        ext = last(splitext(file_name))
-    )
+function save_model(
+    model::MetabolicModel,
+    file_name::String;
+    ext = last(splitext(file_name)),
+)
     if ext == ".json"
         return save_json_model(model, file_name)
     elseif ext == ".xml"
