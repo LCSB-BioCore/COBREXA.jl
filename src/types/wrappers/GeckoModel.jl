@@ -81,7 +81,7 @@ struct GeckoModel <: ModelWrapper
     coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
     coupling_row_mass_group::Vector{_GeckoCapacity}
 
-    inner::MetabolicModel
+    inner::AbstractMetabolicModel
 end
 
 Accessors.unwrap_model(model::GeckoModel) = model.inner

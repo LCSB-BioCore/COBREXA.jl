@@ -15,8 +15,8 @@ separate concerns:
   work properly on any data structure?
 
 To solve the first concern, COBREXA.jl specifies a set of generic accessors
-that work over the abstract type [`MetabolicModel`](@ref). To use your data
-structure in a model, you just make it a subtype of [`MetabolicModel`](@ref)
+that work over the abstract type [`AbstractMetabolicModel`](@ref). To use your data
+structure in a model, you just make it a subtype of [`AbstractMetabolicModel`](@ref)
 and overload the required accessors. The accessors are functions that extract
 some relevant information, such as [`stoichiometry`](@ref) and
 [`bounds`](@ref), returning a fixed simple data type that can be further used
@@ -41,7 +41,7 @@ The whole model can thus be specified with a single integer N that represents
 the length of the reaction cycle:
 
 ```julia
-struct CircularModel <: MetabolicModel
+struct CircularModel <: AbstractMetabolicModel
     size::Int
 end
 ```

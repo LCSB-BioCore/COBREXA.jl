@@ -1,25 +1,25 @@
 
 """
-    abstract type MetabolicModel end
+    abstract type AbstractMetabolicModel end
 
 A helper supertype of everything usable as a linear-like model for COBREXA
 functions.
 
-If you want your model type to work with COBREXA, add the `MetabolicModel` as
+If you want your model type to work with COBREXA, add the `AbstractMetabolicModel` as
 its supertype, and implement the accessor functions. Accessors
 [`reactions`](@ref), [`metabolites`](@ref), [`stoichiometry`](@ref),
 [`bounds`](@ref) and [`objective`](@ref) must be implemented; others are not
 mandatory and default to safe "empty" values.
 """
-abstract type MetabolicModel end
+abstract type AbstractMetabolicModel end
 
 """
-    abstract type ModelWrapper <: MetabolicModel end
+    abstract type ModelWrapper <: AbstractMetabolicModel end
 
 A helper supertype of all "wrapper" types that contain precisely one other
-[`MetabolicModel`](@ref).
+[`AbstractMetabolicModel`](@ref).
 """
-abstract type ModelWrapper <: MetabolicModel end
+abstract type ModelWrapper <: AbstractMetabolicModel end
 
 const SparseMat = SparseMatrixCSC{Float64,Int}
 const SparseVec = SparseVector{Float64,Int}

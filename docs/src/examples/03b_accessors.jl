@@ -42,8 +42,8 @@ reactions(std)
 using InteractiveUtils
 
 accessors = [
-    x.name for x in methodswith(MetabolicModel, COBREXA) if
-    endswith(String(x.file), "MetabolicModel.jl")
+    x.name for x in methodswith(AbstractMetabolicModel, COBREXA) if
+    endswith(String(x.file), "AbstractMetabolicModel.jl")
 ]
 
 println.(accessors);

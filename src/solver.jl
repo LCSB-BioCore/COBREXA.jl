@@ -3,7 +3,7 @@
     module Solver
 
 Interface of COBREXA to JuMP solvers; mainly recreation of the
-`MetabolicModel`s into JuMP optimization models.
+`AbstractMetabolicModel`s into JuMP optimization models.
 
 # Exports
 $(EXPORTS)
@@ -19,12 +19,12 @@ using JuMP
 """
 $(TYPEDSIGNATURES)
 
-Convert `MetabolicModel`s to a JuMP model, place objectives and the equality
+Convert `AbstractMetabolicModel`s to a JuMP model, place objectives and the equality
 constraint.
 
 Here coupling means inequality constraints coupling multiple variables together.
 """
-function make_optimization_model(model::MetabolicModel, optimizer; sense = MAX_SENSE)
+function make_optimization_model(model::AbstractMetabolicModel, optimizer; sense = MAX_SENSE)
 
     precache!(model)
 
@@ -120,7 +120,7 @@ Returns a vector of fluxes of the model, if solved.
 flux_vector(flux_balance_analysis(model, ...))
 ```
 """
-flux_vector(model::MetabolicModel, opt_model)::Maybe{Vector{Float64}} =
+flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} =
     is_solved(opt_model) ? reaction_flux(model)' * value.(opt_model[:x]) : nothing
 
 """
@@ -133,7 +133,7 @@ Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
 flux_dict(model, flux_balance_analysis(model, ...))
 ```
 """
-flux_dict(model::MetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
+flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
     is_solved(opt_model) ?
     Dict(fluxes(model) .=> reaction_flux(model)' * value.(opt_model[:x])) : nothing
 
@@ -147,7 +147,7 @@ A pipeable variant of `flux_dict`.
 flux_balance_analysis(model, ...) |> flux_dict(model)
 ```
 """
-flux_dict(model::MetabolicModel) = opt_model -> flux_dict(model, opt_model)
+flux_dict(model::AbstractMetabolicModel) = opt_model -> flux_dict(model, opt_model)
 
 @export_locals
 end

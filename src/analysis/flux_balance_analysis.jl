@@ -10,7 +10,7 @@ This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
 flux_balance_analysis_vec(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     args...;
     kwargs...,
 )::Maybe{Vector{Float64}} =
@@ -26,7 +26,7 @@ This function is kept for backwards compatibility, use [`flux_dict`](@ref)
 instead.
 """
 flux_balance_analysis_dict(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     args...;
     kwargs...,
 )::Maybe{Dict{String,Float64}} =
@@ -71,7 +71,7 @@ function flux_balance_analysis(
     model::M,
     optimizer;
     modifications = [],
-) where {M<:MetabolicModel}
+) where {M<:AbstractMetabolicModel}
 
     opt_model = make_optimization_model(model, optimizer)
 

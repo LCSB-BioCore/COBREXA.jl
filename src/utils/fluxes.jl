@@ -4,7 +4,7 @@ $(TYPEDSIGNATURES)
 Return two dictionaries of metabolite `id`s mapped to reactions that consume or
 produce them, given the flux distribution supplied in `flux_dict`.
 """
-function metabolite_fluxes(model::MetabolicModel, flux_dict::Dict{String,Float64})
+function metabolite_fluxes(model::AbstractMetabolicModel, flux_dict::Dict{String,Float64})
     S = stoichiometry(model)
     rids = reactions(model)
     mids = metabolites(model)
@@ -51,7 +51,7 @@ delete!(fluxes, "BIOMASS_Ecoli_core_w_GAM")
 atom_fluxes(model, fluxes)["C"]
 ```
 """
-function atom_fluxes(model::MetabolicModel, reaction_fluxes::Dict{String,Float64})
+function atom_fluxes(model::AbstractMetabolicModel, reaction_fluxes::Dict{String,Float64})
     rids = reactions(model)
     atom_flux = Dict{String,Float64}()
     for (ridx, rid) in enumerate(rids)

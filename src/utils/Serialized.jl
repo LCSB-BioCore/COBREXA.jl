@@ -16,7 +16,7 @@ the `Serialization` package directly.
 function serialize_model(
     model::MM,
     filename::String,
-)::Serialized{MM} where {MM<:MetabolicModel}
+)::Serialized{MM} where {MM<:AbstractMetabolicModel}
     open(f -> serialize(f, model), filename, "w")
     Serialized{MM}(filename)
 end

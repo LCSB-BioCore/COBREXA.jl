@@ -182,7 +182,7 @@ function join_with_exchanges(
     exchange_rxn_mets::Dict{String,String};
     biomass_ids = String[],
     model_names = String[],
-) where {M<:MetabolicModel}
+) where {M<:AbstractMetabolicModel}
 
     exchange_rxn_ids = keys(exchange_rxn_mets)
     exchange_met_ids = values(exchange_rxn_mets)
@@ -312,7 +312,7 @@ function join_with_exchanges(
     exchange_rxn_mets::Dict{String,String};
     biomass_ids = [],
     model_names = [],
-)::StandardModel where {M<:MetabolicModel}
+)::StandardModel where {M<:AbstractMetabolicModel}
 
     community = StandardModel()
     rxns = OrderedDict{String,Reaction}()
@@ -381,7 +381,7 @@ community = add_model_with_exchanges(community,
 """
 function add_model_with_exchanges(
     community::CoreModel,
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",
     biomass_id = nothing,
@@ -473,7 +473,7 @@ The `StandardModel` variant of [`add_model_with_exchanges`](@ref), but is in-pla
 """
 function add_model_with_exchanges!(
     community::StandardModel,
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",
     biomass_id = nothing,
@@ -525,7 +525,7 @@ The `StandardModel` variant of [`add_model_with_exchanges`](@ref). Makes a deepc
 """
 function add_model_with_exchanges(
     community::StandardModel,
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",
     biomass_id = nothing,

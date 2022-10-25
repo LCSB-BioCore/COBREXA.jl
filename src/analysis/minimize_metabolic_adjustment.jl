@@ -33,7 +33,7 @@ value.(solution[:x])  # extract the flux from the optimizer
 ```
 """
 minimize_metabolic_adjustment_analysis(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     flux_ref::Union{Dict{String,Float64},Vector{Float64}},
     optimizer;
     modifications = [],
@@ -85,7 +85,7 @@ same order as the reactions in `model`. Arguments are forwarded to
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-minimize_metabolic_adjustment_analysis_vec(model::MetabolicModel, args...; kwargs...) =
+minimize_metabolic_adjustment_analysis_vec(model::AbstractMetabolicModel, args...; kwargs...) =
     flux_vector(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))
 
 """
@@ -98,5 +98,5 @@ internally.
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-minimize_metabolic_adjustment_analysis_dict(model::MetabolicModel, args...; kwargs...) =
+minimize_metabolic_adjustment_analysis_dict(model::AbstractMetabolicModel, args...; kwargs...) =
     flux_dict(model, minimize_metabolic_adjustment_analysis(model, args...; kwargs...))

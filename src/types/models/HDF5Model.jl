@@ -19,7 +19,7 @@ somewhere.
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct HDF5Model <: MetabolicModel
+mutable struct HDF5Model <: AbstractMetabolicModel
     h5::Maybe{HDF5.File}
     filename::String
 

@@ -43,7 +43,7 @@ on the reaction count may serve as a heuristic that helps the solver not to
 waste too much time solving impractically complex subproblems.
 """
 function gapfill_minimum_reactions(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     universal_reactions::Vector{Reaction},
     optimizer;
     objective_bounds = (constants.tolerance, constants.default_reaction_bound),

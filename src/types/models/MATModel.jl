@@ -6,7 +6,7 @@ Wrapper around the models loaded in dictionaries from the MATLAB representation.
 # Fields
 $(TYPEDFIELDS)
 """
-struct MATModel <: MetabolicModel
+struct MATModel <: AbstractMetabolicModel
     mat::Dict{String,Any}
 end
 
@@ -225,7 +225,7 @@ $(TYPEDSIGNATURES)
 
 Convert any metabolic model to `MATModel`.
 """
-function Base.convert(::Type{MATModel}, m::MetabolicModel)
+function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
     if typeof(m) == MATModel
         return m
     end

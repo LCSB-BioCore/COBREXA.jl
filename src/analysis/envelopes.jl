@@ -5,7 +5,7 @@ $(TYPEDSIGNATURES)
 Version of [`envelope_lattice`](@ref) that works on string reaction IDs instead
 of integer indexes.
 """
-envelope_lattice(model::MetabolicModel, rids::Vector{String}; kwargs...) =
+envelope_lattice(model::AbstractMetabolicModel, rids::Vector{String}; kwargs...) =
     envelope_lattice(model, Vector{Int}(indexin(rids, reactions(model))); kwargs...)
 
 """
@@ -16,7 +16,7 @@ model. Arguments `samples`, `ranges`, and `reaction_samples` may be optionally
 specified to customize the lattice creation process.
 """
 envelope_lattice(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     ridxs::Vector{Int};
     samples = 10,
     ranges = collect(zip(bounds(model)...))[ridxs],
@@ -32,7 +32,7 @@ $(TYPEDSIGNATURES)
 Version of [`objective_envelope`](@ref) that works on string reaction IDs
 instead of integer indexes.
 """
-objective_envelope(model::MetabolicModel, rids::Vector{String}, args...; kwargs...) =
+objective_envelope(model::AbstractMetabolicModel, rids::Vector{String}, args...; kwargs...) =
     objective_envelope(
         model,
         Vector{Int}(indexin(rids, reactions(model))),
@@ -93,7 +93,7 @@ julia> envelope.values   # the computed flux objective values for each reaction 
 ```
 """
 objective_envelope(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     ridxs::Vector{Int},
     optimizer;
     modifications = [],

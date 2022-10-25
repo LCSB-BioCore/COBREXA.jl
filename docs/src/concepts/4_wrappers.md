@@ -8,7 +8,7 @@ small layers that add or change the functionality of a given base models.
 Types [`Serialized`](@ref), [`CoreCoupling`](@ref), [`SMomentModel`](@ref), and
 [`GeckoModel`](@ref) all work in this manner -- add some extra functionality to
 the "base". Technically, they are all subtypes of the abstract type
-[`ModelWrapper`](@ref), which itself is a subtype of [`MetabolicModel`](@ref)
+[`ModelWrapper`](@ref), which itself is a subtype of [`AbstractMetabolicModel`](@ref)
 and can thus be used in all standard analysis functions.  Similarly, the model
 wraps can be stacked -- it is easy to e.g. serialize a [`GeckoModel`](@ref), or
 to add coupling to an existing [`SMomentModel`](@ref).
@@ -28,14 +28,14 @@ and fast -- we just discard the wrapper.
 Creating a model wrapper structure is simple -- by declaring it a subtype of
 [`ModelWrapper`](@ref) and implementing a single function
 [`unwrap_model`](@ref), we get default implementations of all accessors that
-should work for any [`MetabolicModel`](@ref).
+should work for any [`AbstractMetabolicModel`](@ref).
 
 As a technical example, we may make a minimal model wrapper that does not do
 anything:
 
 ```julia
 struct IdentityWrap <: ModelWrapper
-    mdl::MetabolicModel
+    mdl::AbstractMetabolicModel
 end
 
 COBREXA.unwrap_model(x::IdentityWrap) = x.mdl
@@ -62,7 +62,7 @@ of certain organism in a model.
 ```julia
 struct RateChangedModel <: ModelWrapper
     factor::Float64
-    mdl::MetabolicModel
+    mdl::AbstractMetabolicModel
 end
 ```
 
@@ -94,7 +94,7 @@ of the models.
 struct LeakyModel <: ModelWrapper
     leaking_metabolites::Vector{String}
     leak_rate::Float64
-    mdl::MetabolicModel
+    mdl::AbstractMetabolicModel
 end
 ```
 

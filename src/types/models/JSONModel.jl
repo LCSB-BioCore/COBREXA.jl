@@ -24,7 +24,7 @@ reactions(model) # see the list of reactions
 # Fields
 $(TYPEDFIELDS)
 """
-struct JSONModel <: MetabolicModel
+struct JSONModel <: AbstractMetabolicModel
     json::Dict{String,Any}
     rxn_index::Dict{String,Int}
     rxns::Vector{Any}
@@ -291,9 +291,9 @@ Accessors.gene_name(model::JSONModel, gid::String) =
 """
 $(TYPEDSIGNATURES)
 
-Convert any [`MetabolicModel`](@ref) to [`JSONModel`](@ref).
+Convert any [`AbstractMetabolicModel`](@ref) to [`JSONModel`](@ref).
 """
-function Base.convert(::Type{JSONModel}, mm::MetabolicModel)
+function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     if typeof(mm) == JSONModel
         return mm
     end

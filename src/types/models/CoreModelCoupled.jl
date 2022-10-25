@@ -11,7 +11,7 @@ flux `x` feasible in this model must satisfy:
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
+mutable struct CoreCoupling{M} <: ModelWrapper where {M<:AbstractMetabolicModel}
     lm::M
     C::SparseMat
     cl::Vector{Float64}
@@ -22,7 +22,7 @@ mutable struct CoreCoupling{M} <: ModelWrapper where {M<:MetabolicModel}
         C::MatType,
         cl::VecType,
         cu::VecType,
-    ) where {M<:MetabolicModel}
+    ) where {M<:AbstractMetabolicModel}
         length(cu) == length(cl) ||
             throw(DimensionMismatch("`cl` and `cu` need to have the same size"))
         size(C) == (length(cu), n_reactions(lm)) ||
@@ -69,7 +69,7 @@ Make a `CoreCoupling` out of any compatible model type.
 """
 function Base.convert(
     ::Type{CoreCoupling{M}},
-    mm::MetabolicModel;
+    mm::AbstractMetabolicModel;
     clone_coupling = true,
 ) where {M}
     if mm isa CoreCoupling{M}

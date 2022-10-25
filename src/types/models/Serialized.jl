@@ -9,12 +9,12 @@ internal model will be loaded on-demand by using any accessor, or by calling
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct Serialized{M} <: ModelWrapper where {M<:MetabolicModel}
+mutable struct Serialized{M} <: ModelWrapper where {M<:AbstractMetabolicModel}
     m::Maybe{M}
     filename::String
 
     Serialized{T}(filename::String) where {T} = new{T}(nothing, filename)
-    Serialized(model::T, filename::String) where {T<:MetabolicModel} =
+    Serialized(model::T, filename::String) where {T<:AbstractMetabolicModel} =
         new{T}(model, filename)
 end
 

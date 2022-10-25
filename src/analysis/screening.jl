@@ -110,7 +110,7 @@ $(TYPEDSIGNATURES)
 The actual implementation of [`screen`](@ref).
 """
 function _screen_impl(
-    model::MetabolicModel;
+    model::AbstractMetabolicModel;
     variants::Array{V,N},
     analysis,
     args::Array{A,N},
@@ -147,7 +147,7 @@ functions in `variant` to the `model` (in order from "first" to
 
 Can be used to test model variants locally.
 """
-function screen_variant(model::MetabolicModel, variant::Vector, analysis, args = ())
+function screen_variant(model::AbstractMetabolicModel, variant::Vector, analysis, args = ())
     for fn in variant
         model = fn(model)
     end
@@ -239,7 +239,7 @@ $(TYPEDSIGNATURES)
 The actual implementation of [`screen_optmodel_modifications`](@ref).
 """
 function _screen_optmodel_modifications_impl(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     optimizer;
     common_modifications::VF = [],
     modifications::Array{V,N},

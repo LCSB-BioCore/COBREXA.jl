@@ -3,7 +3,7 @@
 # IMPORTANT
 #
 # This file provides a list of "officially supported" accessors that should
-# work with all subtypes of [`MetabolicModel`](@ref). Keep this synced with the
+# work with all subtypes of [`AbstractMetabolicModel`](@ref). Keep this synced with the
 # automatically derived methods for [`ModelWrapper`](@ref).
 #
 
@@ -19,7 +19,7 @@ modeling, such as metabolite exchanges, separate forward and reverse reactions,
 supplies of enzymatic and genetic material and virtual cell volume, etc. To
 simplify the view of the model contents use [`reaction_flux`](@ref).
 """
-function reactions(a::MetabolicModel)::Vector{String}
+function reactions(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(reactions, (a,))
 end
 
@@ -32,7 +32,7 @@ corresponds to the rows in [`stoichiometry`](@ref) matrix.
 As with [`reactions`](@ref)s, some metabolites in models may be virtual,
 representing purely technical equality constraints.
 """
-function metabolites(a::MetabolicModel)::Vector{String}
+function metabolites(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(metabolites, (a,))
 end
 
@@ -41,7 +41,7 @@ $(TYPEDSIGNATURES)
 
 Get the number of reactions in a model.
 """
-function n_reactions(a::MetabolicModel)::Int
+function n_reactions(a::AbstractMetabolicModel)::Int
     length(reactions(a))
 end
 
@@ -50,7 +50,7 @@ $(TYPEDSIGNATURES)
 
 Get the number of metabolites in a model.
 """
-function n_metabolites(a::MetabolicModel)::Int
+function n_metabolites(a::AbstractMetabolicModel)::Int
     length(metabolites(a))
 end
 
@@ -65,7 +65,7 @@ model `m` is defined as satisfying the equations:
 - `y .<= ubs`
 - `(lbs, ubs) == bounds(m)
 """
-function stoichiometry(a::MetabolicModel)::SparseMat
+function stoichiometry(a::AbstractMetabolicModel)::SparseMat
     missing_impl_error(stoichiometry, (a,))
 end
 
@@ -74,7 +74,7 @@ $(TYPEDSIGNATURES)
 
 Get the lower and upper solution bounds of a model.
 """
-function bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
+function bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     missing_impl_error(bounds, (a,))
 end
 
@@ -83,7 +83,7 @@ $(TYPEDSIGNATURES)
 
 Get the sparse balance vector of a model.
 """
-function balance(a::MetabolicModel)::SparseVec
+function balance(a::AbstractMetabolicModel)::SparseVec
     return spzeros(n_metabolites(a))
 end
 
@@ -94,7 +94,7 @@ Get the objective vector of the model. Analysis functions, such as
 [`flux_balance_analysis`](@ref), are supposed to maximize `dot(objective, x)`
 where `x` is a feasible solution of the model.
 """
-function objective(a::MetabolicModel)::SparseVec
+function objective(a::AbstractMetabolicModel)::SparseVec
     missing_impl_error(objective, (a,))
 end
 
@@ -110,11 +110,11 @@ flux is decomposed into individual reactions.
 
 By default (and in most models), fluxes and reactions perfectly correspond.
 """
-function fluxes(a::MetabolicModel)::Vector{String}
+function fluxes(a::AbstractMetabolicModel)::Vector{String}
     reactions(a)
 end
 
-function n_fluxes(a::MetabolicModel)::Int
+function n_fluxes(a::AbstractMetabolicModel)::Int
     n_reactions(a)
 end
 
@@ -126,7 +126,7 @@ linear system to the fluxes (see [`fluxes`](@ref) for rationale). Returns a
 sparse matrix of size `(n_reactions(a), n_fluxes(a))`. For most models, this is
 an identity matrix.
 """
-function reaction_flux(a::MetabolicModel)::SparseMat
+function reaction_flux(a::AbstractMetabolicModel)::SparseMat
     nr = n_reactions(a)
     nf = n_fluxes(a)
     nr == nf || missing_impl_error(reaction_flux, (a,))
@@ -139,7 +139,7 @@ $(TYPEDSIGNATURES)
 Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
-function coupling(a::MetabolicModel)::SparseMat
+function coupling(a::AbstractMetabolicModel)::SparseMat
     return spzeros(0, n_reactions(a))
 end
 
@@ -148,7 +148,7 @@ $(TYPEDSIGNATURES)
 
 Get the number of coupling constraints in a model.
 """
-function n_coupling_constraints(a::MetabolicModel)::Int
+function n_coupling_constraints(a::AbstractMetabolicModel)::Int
     size(coupling(a), 1)
 end
 
@@ -158,7 +158,7 @@ $(TYPEDSIGNATURES)
 Get the lower and upper bounds for each coupling bound in a model, as specified
 by `coupling`. By default, the model does not have any coupling bounds.
 """
-function coupling_bounds(a::MetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
+function coupling_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     return (spzeros(0), spzeros(0))
 end
 
@@ -171,7 +171,7 @@ no genes.
 In SBML, these are usually called "gene products" but we write `genes` for
 simplicity.
 """
-function genes(a::MetabolicModel)::Vector{String}
+function genes(a::AbstractMetabolicModel)::Vector{String}
     return []
 end
 
@@ -182,7 +182,7 @@ Return the number of genes in the model (as returned by [`genes`](@ref)). If
 you just need the number of the genes, this may be much more efficient than
 calling [`genes`](@ref) and measuring the array.
 """
-function n_genes(a::MetabolicModel)::Int
+function n_genes(a::AbstractMetabolicModel)::Int
     return length(genes(a))
 end
 
@@ -196,7 +196,7 @@ For simplicity, `nothing` may be returned, meaning that the reaction always
 takes place. (in DNF, that would be equivalent to returning `[[]]`.)
 """
 function reaction_gene_association(
-    a::MetabolicModel,
+    a::AbstractMetabolicModel,
     reaction_id::String,
 )::Maybe{GeneAssociation}
     return nothing
@@ -208,7 +208,7 @@ $(TYPEDSIGNATURES)
 Return the subsystem of reaction `reaction_id` in `model` if it is assigned. If not,
 return `nothing`.
 """
-function reaction_subsystem(model::MetabolicModel, reaction_id::String)::Maybe{String}
+function reaction_subsystem(model::AbstractMetabolicModel, reaction_id::String)::Maybe{String}
     return nothing
 end
 
@@ -218,7 +218,7 @@ $(TYPEDSIGNATURES)
 Return the stoichiometry of reaction with ID `rid` in the model. The dictionary
 maps the metabolite IDs to their stoichiometric coefficients.
 """
-function reaction_stoichiometry(m::MetabolicModel, rid::String)::Dict{String,Float64}
+function reaction_stoichiometry(m::AbstractMetabolicModel, rid::String)::Dict{String,Float64}
     mets = metabolites(m)
     Dict(
         mets[k] => v for
@@ -233,7 +233,7 @@ Return the formula of metabolite `metabolite_id` in `model`.
 Return `nothing` in case the formula is not known or irrelevant.
 """
 function metabolite_formula(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     metabolite_id::String,
 )::Maybe{MetaboliteFormula}
     return nothing
@@ -245,7 +245,7 @@ $(TYPEDSIGNATURES)
 Return the charge associated with metabolite `metabolite_id` in `model`.
 Returns `nothing` if charge not present.
 """
-function metabolite_charge(model::MetabolicModel, metabolite_id::String)::Maybe{Int}
+function metabolite_charge(model::AbstractMetabolicModel, metabolite_id::String)::Maybe{Int}
     return nothing
 end
 
@@ -255,7 +255,7 @@ $(TYPEDSIGNATURES)
 Return the compartment of metabolite `metabolite_id` in `model` if it is assigned. If not,
 return `nothing`.
 """
-function metabolite_compartment(model::MetabolicModel, metabolite_id::String)::Maybe{String}
+function metabolite_compartment(model::AbstractMetabolicModel, metabolite_id::String)::Maybe{String}
     return nothing
 end
 
@@ -266,7 +266,7 @@ Return standardized names that may help identifying the reaction. The
 dictionary assigns vectors of possible identifiers to identifier system names,
 e.g. `"Reactome" => ["reactomeID123"]`.
 """
-function reaction_annotations(a::MetabolicModel, reaction_id::String)::Annotations
+function reaction_annotations(a::AbstractMetabolicModel, reaction_id::String)::Annotations
     return Dict()
 end
 
@@ -277,7 +277,7 @@ Return standardized names that may help to reliably identify the metabolite. The
 dictionary assigns vectors of possible identifiers to identifier system names,
 e.g. `"ChEMBL" => ["123"]` or `"PubChem" => ["CID123", "CID654645645"]`.
 """
-function metabolite_annotations(a::MetabolicModel, metabolite_id::String)::Annotations
+function metabolite_annotations(a::AbstractMetabolicModel, metabolite_id::String)::Annotations
     return Dict()
 end
 
@@ -288,7 +288,7 @@ Return standardized names that identify the corresponding gene or product. The
 dictionary assigns vectors of possible identifiers to identifier system names,
 e.g. `"PDB" => ["PROT01"]`.
 """
-function gene_annotations(a::MetabolicModel, gene_id::String)::Annotations
+function gene_annotations(a::AbstractMetabolicModel, gene_id::String)::Annotations
     return Dict()
 end
 
@@ -297,7 +297,7 @@ $(TYPEDSIGNATURES)
 
 Return the notes associated with reaction `reaction_id` in `model`.
 """
-function reaction_notes(model::MetabolicModel, reaction_id::String)::Notes
+function reaction_notes(model::AbstractMetabolicModel, reaction_id::String)::Notes
     return Dict()
 end
 
@@ -306,7 +306,7 @@ $(TYPEDSIGNATURES)
 
 Return the notes associated with metabolite `reaction_id` in `model`.
 """
-function metabolite_notes(model::MetabolicModel, metabolite_id::String)::Notes
+function metabolite_notes(model::AbstractMetabolicModel, metabolite_id::String)::Notes
     return Dict()
 end
 
@@ -315,7 +315,7 @@ $(TYPEDSIGNATURES)
 
 Return the notes associated with the gene `gene_id` in `model`.
 """
-function gene_notes(model::MetabolicModel, gene_id::String)::Notes
+function gene_notes(model::AbstractMetabolicModel, gene_id::String)::Notes
     return Dict()
 end
 
@@ -324,21 +324,21 @@ $(TYPEDSIGNATURES)
 
 Return the name of reaction with ID `rid`.
 """
-reaction_name(model::MetabolicModel, rid::String) = nothing
+reaction_name(model::AbstractMetabolicModel, rid::String) = nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Return the name of metabolite with ID `mid`.
 """
-metabolite_name(model::MetabolicModel, mid::String) = nothing
+metabolite_name(model::AbstractMetabolicModel, mid::String) = nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Return the name of gene with ID `gid`.
 """
-gene_name(model::MetabolicModel, gid::String) = nothing
+gene_name(model::AbstractMetabolicModel, gid::String) = nothing
 
 """
 $(TYPEDSIGNATURES)
@@ -354,6 +354,6 @@ are done in a good hope that the performance will be improved.
 
 By default, it should be safe to do nothing.
 """
-function precache!(a::MetabolicModel)::Nothing
+function precache!(a::AbstractMetabolicModel)::Nothing
     nothing
 end

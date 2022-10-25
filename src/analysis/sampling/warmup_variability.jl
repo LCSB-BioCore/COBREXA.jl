@@ -6,7 +6,7 @@ minimizing and maximizing reactions. Can not return more than 2 times the
 number of reactions in the model.
 """
 function warmup_from_variability(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     optimizer,
     n_points::Int,
     seed = rand(Int);
@@ -46,7 +46,7 @@ single column in the result.
     actual sampling functions, such as [`affine_hit_and_run`](@ref).
 """
 function warmup_from_variability(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     optimizer,
     min_reactions::AbstractVector{Int} = 1:n_reactions(model),
     max_reactions::AbstractVector{Int} = 1:n_reactions(model);

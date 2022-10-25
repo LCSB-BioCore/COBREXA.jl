@@ -20,7 +20,7 @@ Alternatively, all function arguments also accept dictionaries that are used to
 provide the same data lookup.
 """
 function make_smoment_model(
-    model::MetabolicModel;
+    model::AbstractMetabolicModel;
     reaction_isozyme::Union{Function,Dict{String,Isozyme}},
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},
     total_enzyme_capacity::Float64,

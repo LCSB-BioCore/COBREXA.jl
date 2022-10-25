@@ -48,7 +48,7 @@ value.(solution[:x])  # extract the flux from the optimizer
 ```
 """
 function parsimonious_flux_balance_analysis(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     optimizer;
     modifications = [],
     qp_modifications = [],
@@ -97,7 +97,7 @@ internally.
 This function is kept for backwards compatibility, use [`flux_vector`](@ref)
 instead.
 """
-parsimonious_flux_balance_analysis_vec(model::MetabolicModel, args...; kwargs...) =
+parsimonious_flux_balance_analysis_vec(model::AbstractMetabolicModel, args...; kwargs...) =
     flux_vector(model, parsimonious_flux_balance_analysis(model, args...; kwargs...))
 
 """
@@ -110,5 +110,5 @@ forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
 This function is kept for backwards compatibility, use [`flux_dict`](@ref)
 instead.
 """
-parsimonious_flux_balance_analysis_dict(model::MetabolicModel, args...; kwargs...) =
+parsimonious_flux_balance_analysis_dict(model::AbstractMetabolicModel, args...; kwargs...) =
     flux_dict(model, parsimonious_flux_balance_analysis(model, args...; kwargs...))

@@ -35,7 +35,7 @@ keys(model.reactions)
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct StandardModel <: MetabolicModel
+mutable struct StandardModel <: AbstractMetabolicModel
     id::String
     reactions::OrderedDict{String,Reaction}
     metabolites::OrderedDict{String,Metabolite}
@@ -49,7 +49,7 @@ mutable struct StandardModel <: MetabolicModel
     ) = new(id, reactions, metabolites, genes)
 end
 
-# MetabolicModel interface follows
+# AbstractMetabolicModel interface follows
 """
 $(TYPEDSIGNATURES)
 
@@ -296,11 +296,11 @@ Accessors.gene_name(m::StandardModel, gid::String) = m.genes[gid].name
 """
 $(TYPEDSIGNATURES)
 
-Convert any `MetabolicModel` into a `StandardModel`.
+Convert any `AbstractMetabolicModel` into a `StandardModel`.
 Note, some data loss may occur since only the generic interface is used during
 the conversion process.
 """
-function Base.convert(::Type{StandardModel}, model::MetabolicModel)
+function Base.convert(::Type{StandardModel}, model::AbstractMetabolicModel)
     if typeof(model) == StandardModel
         return model
     end

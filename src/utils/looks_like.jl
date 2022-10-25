@@ -42,7 +42,7 @@ $(TYPEDSIGNATURES)
 Shortcut for finding exchange reaction indexes in a model; arguments are
 forwarded to [`looks_like_exchange_reaction`](@ref).
 """
-find_exchange_reactions(m::MetabolicModel; kwargs...) =
+find_exchange_reactions(m::AbstractMetabolicModel; kwargs...) =
     findall(id -> looks_like_exchange_reaction(id; kwargs...), reactions(m))
 
 """
@@ -51,7 +51,7 @@ $(TYPEDSIGNATURES)
 Shortcut for finding exchange reaction identifiers in a model; arguments are
 forwarded to [`looks_like_exchange_reaction`](@ref).
 """
-find_exchange_reaction_ids(m::MetabolicModel; kwargs...) =
+find_exchange_reaction_ids(m::AbstractMetabolicModel; kwargs...) =
     filter(id -> looks_like_exchange_reaction(id, kwargs...), reactions(m))
 
 """
@@ -90,7 +90,7 @@ $(TYPEDSIGNATURES)
 Shortcut for finding biomass reaction indexes in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
 """
-find_biomass_reactions(m::MetabolicModel; kwargs...) =
+find_biomass_reactions(m::AbstractMetabolicModel; kwargs...) =
     findall(id -> looks_like_biomass_reaction(id; kwargs...), reactions(m))
 
 """
@@ -99,7 +99,7 @@ $(TYPEDSIGNATURES)
 Shortcut for finding biomass reaction identifiers in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
 """
-find_biomass_reaction_ids(m::MetabolicModel; kwargs...) =
+find_biomass_reaction_ids(m::AbstractMetabolicModel; kwargs...) =
     filter(id -> looks_like_biomass_reaction(id; kwargs...), reactions(m))
 
 """
@@ -128,7 +128,7 @@ $(TYPEDSIGNATURES)
 Shortcut for finding extracellular metabolite indexes in a model; arguments are
 forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
-find_extracellular_metabolites(m::MetabolicModel; kwargs...) =
+find_extracellular_metabolites(m::AbstractMetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
 
 """
@@ -137,7 +137,7 @@ $(TYPEDSIGNATURES)
 Shortcut for finding extracellular metabolite identifiers in a model; arguments are
 forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
-find_extracellular_metabolite_ids(m::MetabolicModel; kwargs...) =
+find_extracellular_metabolite_ids(m::AbstractMetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
 
 @_is_reaction_fn "exchange" Identifiers.EXCHANGE_REACTIONS

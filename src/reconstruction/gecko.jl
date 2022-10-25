@@ -24,7 +24,7 @@ Alternatively, all function arguments may be also supplied as dictionaries that
 provide the same data lookup.
 """
 function make_gecko_model(
-    model::MetabolicModel;
+    model::AbstractMetabolicModel;
     reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}},
     gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},

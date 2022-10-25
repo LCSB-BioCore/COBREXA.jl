@@ -47,7 +47,7 @@ optimization problems.
 `T` and `R` can be specified in the corresponding units; defaults are K and kJ/K/mol.
 """
 function max_min_driving_force(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     reaction_standard_gibbs_free_energies::Dict{String,Float64},
     optimizer;
     flux_solution::Dict{String,Float64} = Dict{String,Float64}(),
@@ -189,7 +189,7 @@ For the metabolite rows, the first column is the maximum concentration, and the 
 is the minimum concentration subject to the constraints above.
 """
 function max_min_driving_force_variability(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     reaction_standard_gibbs_free_energies::Dict{String,Float64},
     optimizer;
     workers = [myid()],

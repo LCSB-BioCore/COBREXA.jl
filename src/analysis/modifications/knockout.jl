@@ -29,11 +29,11 @@ knockout(gene_id::String) = knockout([gene_id])
 """
 $(TYPEDSIGNATURES)
 
-Internal helper for knockouts on generic MetabolicModels. This can be
+Internal helper for knockouts on generic AbstractMetabolicModels. This can be
 overloaded so that the knockouts may work differently (more efficiently) with
 other models.
 """
-function _do_knockout(model::MetabolicModel, opt_model, gene_ids::Vector{String})
+function _do_knockout(model::AbstractMetabolicModel, opt_model, gene_ids::Vector{String})
     for (rxn_num, rxn_id) in enumerate(reactions(model))
         rga = reaction_gene_association(model, rxn_id)
         if !isnothing(rga) &&

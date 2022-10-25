@@ -22,7 +22,7 @@ In case the `model` is not `MATModel`, it will be converted automatically.
 `model_name` is the identifier name for the whole model written to the MATLAB
 file; defaults to just "model".
 """
-function save_mat_model(model::MetabolicModel, file_path::String; model_name = "model")
+function save_mat_model(model::AbstractMetabolicModel, file_path::String; model_name = "model")
     m =
         typeof(model) == MATModel ? model :
         begin

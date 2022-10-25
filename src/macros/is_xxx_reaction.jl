@@ -23,7 +23,7 @@ macro _is_reaction_fn(anno_id, identifiers)
 
     docstring = """
         $fname(
-            model::MetabolicModel,
+            model::AbstractMetabolicModel,
             reaction_id::String;
             annotation_keys = ["sbo", "SBO"],
         )
@@ -41,7 +41,7 @@ macro _is_reaction_fn(anno_id, identifiers)
             docstring,
             :(
                 $fname(
-                    model::MetabolicModel,
+                    model::AbstractMetabolicModel,
                     reaction_id::String;
                     annotation_keys = ["sbo", "SBO"],
                 ) = $body

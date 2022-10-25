@@ -11,7 +11,7 @@ end
 #
 # IMPORTANT
 #
-# The list of inherited functions must be synced with the methods available for [`MetabolicModel`](@ref).
+# The list of inherited functions must be synced with the methods available for [`AbstractMetabolicModel`](@ref).
 #
 
 @inherit_model_methods_fn ModelWrapper () unwrap_model () reactions metabolites stoichiometry bounds balance objective fluxes n_fluxes reaction_flux coupling n_coupling_constraints coupling_bounds genes n_genes precache!

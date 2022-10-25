@@ -13,7 +13,7 @@ s.t. S x = b
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct CoreModel <: MetabolicModel
+mutable struct CoreModel <: AbstractMetabolicModel
     S::SparseMat
     b::SparseVec
     c::SparseVec
@@ -147,7 +147,7 @@ $(TYPEDSIGNATURES)
 
 Make a `CoreModel` out of any compatible model type.
 """
-function Base.convert(::Type{CoreModel}, m::M) where {M<:MetabolicModel}
+function Base.convert(::Type{CoreModel}, m::M) where {M<:AbstractMetabolicModel}
     if typeof(m) == CoreModel
         return m
     end
