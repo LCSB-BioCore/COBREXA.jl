@@ -3,7 +3,7 @@
     filename = model_paths["iJO1366.mat"]
 
     mm = load_mat_model(filename)
-    sm = convert(StandardModel, mm)
+    sm = convert(ObjectModel, mm)
     mm2 = convert(MATModel, sm)
 
     @test Set(reactions(mm)) == Set(reactions(sm))

@@ -2,7 +2,7 @@
 
     model = load_model(model_paths["e_coli_core.json"])
 
-    cm = CoreCoupling(model, zeros(1, n_reactions(model)), [17.0], [19.0])
+    cm = MatrixCoupling(model, zeros(1, n_reactions(model)), [17.0], [19.0])
 
     pfk, tala = indexin(["PFK", "TALA"], reactions(cm))
     cm.C[:, [pfk, tala]] .= 1.0

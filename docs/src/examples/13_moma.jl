@@ -17,7 +17,7 @@
 
 using COBREXA
 
-model = load_model(StandardModel, "e_coli_core.xml")
+model = load_model(ObjectModel, "e_coli_core.xml")
 
 # MOMA analysis requires solution of a quadratic model, we will thus use Clarabel as the main optimizer.
 

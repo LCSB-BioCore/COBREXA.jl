@@ -10,7 +10,7 @@
 
 using COBREXA, GLPK
 
-model = load_model(StandardModel, "e_coli_core.json")
+model = load_model(ObjectModel, "e_coli_core.json")
 
 # ## Disabling a reaction
 

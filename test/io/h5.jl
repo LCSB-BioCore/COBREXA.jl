@@ -1,6 +1,6 @@
 
 @testset "HDF5 model SBML model" begin
-    model = load_model(CoreModel, model_paths["e_coli_core.xml"])
+    model = load_model(MatrixModel, model_paths["e_coli_core.xml"])
     fn = "ecoli_test.h5"
     h5m = save_model(model, fn)
     @test h5m isa HDF5Model

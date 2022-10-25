@@ -5,25 +5,25 @@
 # and [`SBMLModel`](@ref)), and ones that are more easily accessible for users
 # and mimic the usual workflows in COBRA methodology:
 #
-# - [`StandardModel`](@ref), which contains and object-oriented representation
+# - [`ObjectModel`](@ref), which contains and object-oriented representation
 #   of model internals, built out of [`Reaction`](@ref), [`Metabolite`](@ref)
 #   and [`Gene`](@ref) structures, in a way similar to e.g.
 #   [COBRApy](https://github.com/opencobra/cobrapy/)
-# - [`CoreModel`](@ref), which contains array-oriented representation of the
+# - [`MatrixModel`](@ref), which contains array-oriented representation of the
 #   model structures, such as stoichiometry matrix and the bounds vector, in a
 #   way similar to e.g. [COBRA
 #   toolbox](https://github.com/opencobra/cobratoolbox)
 
-# The fields in [`StandardModel`](@ref) structure can be discovered using `fieldnames` as follows:
+# The fields in [`ObjectModel`](@ref) structure can be discovered using `fieldnames` as follows:
 
 using COBREXA
 
-fieldnames(StandardModel)
+fieldnames(ObjectModel)
 
 !isfile("e_coli_core.json") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json");
 
-sm = load_model(StandardModel, "e_coli_core.json")
+sm = load_model(ObjectModel, "e_coli_core.json")
 typeof(sm.reactions)
 
 fieldnames(Reaction)
@@ -40,11 +40,11 @@ sm.reactions["TALA"].subsystem
 #
 sm.reactions["TALA"].ub #upper rate bound
 
-# The same applies to [`CoreModel`](@ref):
+# The same applies to [`MatrixModel`](@ref):
 
-fieldnames(CoreModel)
+fieldnames(MatrixModel)
 #
-cm = load_model(CoreModel, "e_coli_core.json")
+cm = load_model(MatrixModel, "e_coli_core.json")
 #
 cm.S
 #

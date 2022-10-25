@@ -3,7 +3,7 @@
     module Analysis
 
 Contains the analysis functions of COBREXA.jl. Typically, these take a
-[`MetabolicModel`](@ref), convert it to the solver represenation and run
+[`AbstractMetabolicModel`](@ref), convert it to the solver represenation and run
 various optimization tasks on top of it, such as finding an optimum (e.g. in
 [`flux_balance_analysis`](@ref)) or multiple optima (e.g.,
 [`flux_variability_analysis`](@ref)).

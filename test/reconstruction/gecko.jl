@@ -1,5 +1,5 @@
 @testset "GECKO" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     get_reaction_isozymes =
         rid ->
@@ -72,7 +72,7 @@ end
     original GECKO paper. This model is nice to troubleshoot with,
     because the stoich matrix is small.
     =#
-    m = StandardModel("gecko")
+    m = ObjectModel("gecko")
     m1 = Metabolite("m1")
     m2 = Metabolite("m2")
     m3 = Metabolite("m3")

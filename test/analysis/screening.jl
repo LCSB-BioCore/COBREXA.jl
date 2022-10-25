@@ -27,7 +27,7 @@
     @test screen(m, analysis = (a, b) -> b, args = [(1,), (2,)]) == [1, 2]
 
     # test modifying some reactions
-    quad_rxn(i) = (m::CoreModel) -> begin
+    quad_rxn(i) = (m::MatrixModel) -> begin
         mm = copy(m)
         mm.S = copy(m.S)
         mm.S[:, i] .^= 2

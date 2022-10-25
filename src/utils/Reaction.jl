@@ -49,12 +49,12 @@ function is_boundary(rxn_dict::Dict{String,Float64})::Bool
     length(keys(rxn_dict)) == 1
 end
 
-is_boundary(model::MetabolicModel, rxn_id::String) =
+is_boundary(model::AbstractMetabolicModel, rxn_id::String) =
     is_boundary(reaction_stoichiometry(model, rxn_id))
 
 is_boundary(rxn::Reaction) = is_boundary(rxn.metabolites)
 
-is_boundary(model::StandardModel, rxn::Reaction) = is_boundary(rxn) # for consistency with functions below
+is_boundary(model::ObjectModel, rxn::Reaction) = is_boundary(rxn) # for consistency with functions below
 
 """
 $(TYPEDSIGNATURES)
@@ -65,7 +65,10 @@ dictionary, a reaction string id or a `Reaction` as an argument for `rxn`.
 
 See also: [`reaction_mass_balanced`](@ref)
 """
-function reaction_atom_balance(model::MetabolicModel, reaction_dict::Dict{String,Float64})
+function reaction_atom_balance(
+    model::AbstractMetabolicModel,
+    reaction_dict::Dict{String,Float64},
+)
     atom_balances = Dict{String,Float64}()
     for (met, stoich_rxn) in reaction_dict
         adict = metabolite_formula(model, met)
@@ -79,11 +82,11 @@ function reaction_atom_balance(model::MetabolicModel, reaction_dict::Dict{String
     return atom_balances
 end
 
-function reaction_atom_balance(model::MetabolicModel, rxn_id::String)
+function reaction_atom_balance(model::AbstractMetabolicModel, rxn_id::String)
     reaction_atom_balance(model, reaction_stoichiometry(model, rxn_id))
 end
 
-reaction_atom_balance(model::StandardModel, rxn::Reaction) =
+reaction_atom_balance(model::ObjectModel, rxn::Reaction) =
     reaction_atom_balance(model, rxn.id)
 
 """
@@ -95,13 +98,13 @@ and the associated balance of atoms for convenience (useful if not balanced). Ca
 
 See also: [`check_duplicate_reaction`](@ref), [`reaction_atom_balance`](@ref)
 """
-reaction_mass_balanced(model::StandardModel, rxn_id::String) =
+reaction_mass_balanced(model::ObjectModel, rxn_id::String) =
     all(values(reaction_atom_balance(model, rxn_id)) .== 0)
 
-reaction_mass_balanced(model::StandardModel, rxn::Reaction) =
+reaction_mass_balanced(model::ObjectModel, rxn::Reaction) =
     reaction_mass_balanced(model, rxn.id)
 
-reaction_mass_balanced(model::StandardModel, reaction_dict::Dict{String,Float64}) =
+reaction_mass_balanced(model::ObjectModel, reaction_dict::Dict{String,Float64}) =
     all(values(reaction_atom_balance(model, reaction_dict)) .== 0)
 
 """

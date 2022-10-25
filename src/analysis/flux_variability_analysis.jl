@@ -46,7 +46,7 @@ flux_variability_analysis(model, [1, 2, 3, 42], GLPK.optimizer)
 ```
 """
 function flux_variability_analysis(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     fluxes::SparseMat,
     optimizer;
     modifications = [],
@@ -104,7 +104,7 @@ $(TYPEDSIGNATURES)
 An overload of [`flux_variability_analysis`](@ref) that explores the fluxes specified by integer indexes
 """
 function flux_variability_analysis(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     flux_indexes::Vector{Int},
     optimizer;
     kwargs...,
@@ -127,7 +127,7 @@ $(TYPEDSIGNATURES)
 A simpler version of [`flux_variability_analysis`](@ref) that maximizes and
 minimizes all declared fluxes in the model. Arguments are forwarded.
 """
-flux_variability_analysis(model::MetabolicModel, optimizer; kwargs...) =
+flux_variability_analysis(model::AbstractMetabolicModel, optimizer; kwargs...) =
     flux_variability_analysis(model, reaction_flux(model), optimizer; kwargs...)
 
 """
@@ -150,7 +150,7 @@ mins, maxs = flux_variability_analysis_dict(
 )
 ```
 """
-function flux_variability_analysis_dict(model::MetabolicModel, optimizer; kwargs...)
+function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer; kwargs...)
     vs = flux_variability_analysis(
         model,
         optimizer;
@@ -184,7 +184,7 @@ fluxes. This may be useful for models where the sets of reactions and fluxes
 differ.
 """
 function reaction_variability_analysis(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     reaction_indexes::Vector{Int},
     optimizer;
     kwargs...,
@@ -212,7 +212,7 @@ $(TYPEDSIGNATURES)
 
 Shortcut for [`reaction_variability_analysis`](@ref) that examines all reactions.
 """
-reaction_variability_analysis(model::MetabolicModel, optimizer; kwargs...) =
+reaction_variability_analysis(model::AbstractMetabolicModel, optimizer; kwargs...) =
     reaction_variability_analysis(
         model,
         collect(1:n_reactions(model)),

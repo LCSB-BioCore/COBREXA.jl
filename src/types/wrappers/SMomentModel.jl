@@ -36,7 +36,7 @@ The model is constructed as follows:
   maximum.
 
 The `SMomentModel` structure contains a worked-out representation of the
-optimization problem atop a wrapped [`MetabolicModel`](@ref), in particular the
+optimization problem atop a wrapped [`AbstractMetabolicModel`](@ref), in particular the
 separation of certain reactions into unidirectional forward and reverse parts,
 an "enzyme capacity" required for each reaction, and the value of the maximum
 capacity constraint. Original coupling in the inner model is retained.
@@ -54,11 +54,11 @@ are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 # Fields
 $(TYPEDFIELDS)
 """
-struct SMomentModel <: ModelWrapper
+struct SMomentModel <: AbstractModelWrapper
     columns::Vector{_SMomentColumn}
     total_enzyme_capacity::Float64
 
-    inner::MetabolicModel
+    inner::AbstractMetabolicModel
 end
 
 Accessors.unwrap_model(model::SMomentModel) = model.inner

@@ -7,7 +7,7 @@ SBML to any other model format.
 # Fields
 $(TYPEDFIELDS)
 """
-struct SBMLModel <: MetabolicModel
+struct SBMLModel <: AbstractMetabolicModel
     sbml::SBML.Model
 end
 
@@ -278,7 +278,7 @@ $(TYPEDSIGNATURES)
 
 Convert any metabolic model to [`SBMLModel`](@ref).
 """
-function Base.convert(::Type{SBMLModel}, mm::MetabolicModel)
+function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     if typeof(mm) == SBMLModel
         return mm
     end

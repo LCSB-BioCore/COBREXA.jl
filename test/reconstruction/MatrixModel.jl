@@ -192,7 +192,7 @@ end
     cp = remove_reactions(cp, ["r2"])
     @test size(cp.S) == (4, 1)
 
-    lp = CoreModel(
+    lp = MatrixModel(
         [1.0 1 1 0; 1 1 1 0; 1 1 1 0; 0 0 0 1],
         collect(1.0:4),
         collect(1.0:4),
@@ -213,7 +213,7 @@ end
 end
 
 @testset "Remove metabolites" begin
-    model = load_model(CoreModel, model_paths["e_coli_core.json"])
+    model = load_model(MatrixModel, model_paths["e_coli_core.json"])
 
     m1 = remove_metabolites(model, ["glc__D_e", "for_c"])
     m2 = remove_metabolite(model, "glc__D_e")

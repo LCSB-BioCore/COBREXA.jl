@@ -26,7 +26,7 @@
 
     rxns = [r1, r2]
 
-    model = StandardModel()
+    model = ObjectModel()
     model.id = "model"
     model.reactions = OrderedDict(r.id => r for r in rxns)
     model.metabolites = OrderedDict(m.id => m for m in mets)

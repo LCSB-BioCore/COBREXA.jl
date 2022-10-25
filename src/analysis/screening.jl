@@ -77,14 +77,14 @@ Note: this function is a thin argument-handling wrapper around
 # Example
 ```
 function reverse_reaction(i::Int)
-    (model::CoreModel) -> begin
+    (model::MatrixModel) -> begin
         mod = copy(model)
         mod.S[:,i] .*= -1   # this is unrealistic but sufficient for demonstration
         mod
     end
 end
 
-m = load_model(CoreModel, "e_coli_core.xml")
+m = load_model(MatrixModel, "e_coli_core.xml")
 
 screen(m,
     variants = [
@@ -110,7 +110,7 @@ $(TYPEDSIGNATURES)
 The actual implementation of [`screen`](@ref).
 """
 function _screen_impl(
-    model::MetabolicModel;
+    model::AbstractMetabolicModel;
     variants::Array{V,N},
     analysis,
     args::Array{A,N},
@@ -147,7 +147,7 @@ functions in `variant` to the `model` (in order from "first" to
 
 Can be used to test model variants locally.
 """
-function screen_variant(model::MetabolicModel, variant::Vector, analysis, args = ())
+function screen_variant(model::AbstractMetabolicModel, variant::Vector, analysis, args = ())
     for fn in variant
         model = fn(model)
     end
@@ -239,7 +239,7 @@ $(TYPEDSIGNATURES)
 The actual implementation of [`screen_optmodel_modifications`](@ref).
 """
 function _screen_optmodel_modifications_impl(
-    model::MetabolicModel,
+    model::AbstractMetabolicModel,
     optimizer;
     common_modifications::VF = [],
     modifications::Array{V,N},

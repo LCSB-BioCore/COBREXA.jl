@@ -14,7 +14,7 @@ of [`screen`](@ref) that is called [`screen_variants`](@ref), which works as
 follows:
 
 ```julia
-m = load_model(StandardModel, "e_coli_core.json")
+m = load_model(ObjectModel, "e_coli_core.json")
 
 screen_variants(
     m,    # the model for screening
@@ -162,7 +162,7 @@ model where this change is easy to perform (generally, not all variants may be
 feasible on all model types).
 
 ```julia
-with_disabled_oxygen_transport = (model::StandardModel) -> begin
+with_disabled_oxygen_transport = (model::ObjectModel) -> begin
 
     # make "as shallow as possible" copy of the `model`.
     # Utilizing `deepcopy` is also possible, but inefficient.
@@ -180,7 +180,7 @@ Finally, the whole definition may be parameterized as a normal function. The
 following variant removes any user-selected reaction:
 
 ```julia
-with_disabled_reaction(reaction_id) = (model::StandardModel) -> begin
+with_disabled_reaction(reaction_id) = (model::ObjectModel) -> begin
     new_model = copy(model)
     new_model.reactions = copy(model.reactions)
     delete!(new_model.reactions, reaction_id) # use the parameter from the specification

@@ -74,14 +74,14 @@ The related constraints are implemented using [`coupling`](@ref) and
 # Fields
 $(TYPEDFIELDS)
 """
-struct GeckoModel <: ModelWrapper
+struct GeckoModel <: AbstractModelWrapper
     objective::SparseVec
     columns::Vector{_GeckoReactionColumn}
     coupling_row_reaction::Vector{Int}
     coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
     coupling_row_mass_group::Vector{_GeckoCapacity}
 
-    inner::MetabolicModel
+    inner::AbstractMetabolicModel
 end
 
 Accessors.unwrap_model(model::GeckoModel) = model.inner

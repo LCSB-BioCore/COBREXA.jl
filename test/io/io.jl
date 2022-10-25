@@ -18,7 +18,7 @@
           Set("r_" .* lowercase.(reactions(jsonmodel)))
 
     # specifically test parsing of gene-reaction associations in Recon
-    reconmodel = load_model(StandardModel, model_paths["Recon3D.json"])
+    reconmodel = load_model(ObjectModel, model_paths["Recon3D.json"])
     @test n_reactions(reconmodel) == 10600
     recon_grrs = [r.grr for (i, r) in reconmodel.reactions if !isnothing(r.grr)]
     @test length(recon_grrs) == 5938

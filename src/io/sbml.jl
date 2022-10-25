@@ -13,7 +13,7 @@ $(TYPEDSIGNATURES)
 
 Write a given SBML model to `file_name`.
 """
-function save_sbml_model(model::MetabolicModel, file_name::String)
+function save_sbml_model(model::AbstractMetabolicModel, file_name::String)
     m =
         typeof(model) == SBMLModel ? model :
         begin

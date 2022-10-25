@@ -1,4 +1,4 @@
-@testset "StandardModel generic interface" begin
+@testset "ObjectModel generic interface" begin
     # create a small model
     m1 = Metabolite("m1")
     m1.formula = "C2H3"
@@ -37,13 +37,13 @@
     gs = [g1, g2, g3]
     rxns = [r1, r2, r3, r4]
 
-    model = StandardModel()
+    model = ObjectModel()
     model.id = "model"
     model.reactions = OrderedDict(r.id => r for r in rxns)
     model.metabolites = OrderedDict(m.id => m for m in mets)
     model.genes = OrderedDict(g.id => g for g in gs)
 
-    @test contains(sprint(show, MIME("text/plain"), model), "StandardModel")
+    @test contains(sprint(show, MIME("text/plain"), model), "ObjectModel")
 
     @test "r1" in reactions(model)
     @test "m4" in metabolites(model)
@@ -116,11 +116,11 @@
     @test reaction_stoichiometry(model, "r1") == Dict("m1" => -1.0, "m2" => 1.0)
 
     # To do: test convert
-    same_model = convert(StandardModel, model)
+    same_model = convert(ObjectModel, model)
     @test same_model == model
 
     jsonmodel = convert(JSONModel, model)
-    stdmodel = convert(StandardModel, jsonmodel)
+    stdmodel = convert(ObjectModel, jsonmodel)
     @test issetequal(reactions(jsonmodel), reactions(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))

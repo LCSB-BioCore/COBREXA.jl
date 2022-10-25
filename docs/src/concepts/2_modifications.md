@@ -2,7 +2,7 @@
 # Writing custom optimizer modifications
 
 Functions such as [`flux_balance_analysis`](@ref) internally create a JuMP
-model out of the [`MetabolicModel`](@ref), and run the optimizer on that. To be
+model out of the [`AbstractMetabolicModel`](@ref), and run the optimizer on that. To be
 able to make some modifications on the JuMP model before the optimizer is
 started, most of the functions accept a `modifications` argument, where one can
 list callbacks that do the changes to the prepared optimization model.
@@ -24,8 +24,8 @@ changes by carelessly adding the modifications.
 
 Here, we show how to construct the modifications. Their semantics is similar to
 the [variant-generating functions](1_screen.md), which receive a model (of type
-[`MetabolicModel`](@ref)), and are expected to create another (modified) model.
-Contrary to that, modifications receive both the [`MetabolicModel`](@ref) and a
+[`AbstractMetabolicModel`](@ref)), and are expected to create another (modified) model.
+Contrary to that, modifications receive both the [`AbstractMetabolicModel`](@ref) and a
 JuMP model structure, and are expected to cause a side effect on the latter.
 
 A trivial modification that does not do anything can thus be written as:

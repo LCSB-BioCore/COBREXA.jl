@@ -20,7 +20,7 @@
     g3.annotations = Dict("sboterm" => ["sbo3"], "ncbigene" => ["ads"])
     g4 = Gene("g4")
     g4.annotations = Dict("sboterm" => ["sbo4"], "ncbigene" => ["ads22", "asd22s"])
-    gdict = OrderedDict(g.id => g for g in [g, g2, g3, g4]) # this is how genes are stored in StandardModel
+    gdict = OrderedDict(g.id => g for g in [g, g2, g3, g4]) # this is how genes are stored in ObjectModel
 
     idx = annotation_index(gdict)
     @test length(idx["ncbigene"]["ads"]) > 1

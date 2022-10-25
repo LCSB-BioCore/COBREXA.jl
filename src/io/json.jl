@@ -14,7 +14,7 @@ Save a [`JSONModel`](@ref) in `model` to a JSON file `file_name`.
 
 In case the `model` is not `JSONModel`, it will be converted automatically.
 """
-function save_json_model(model::MetabolicModel, file_name::String)
+function save_json_model(model::AbstractMetabolicModel, file_name::String)
     m =
         typeof(model) == JSONModel ? model :
         begin

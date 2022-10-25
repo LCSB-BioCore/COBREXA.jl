@@ -31,7 +31,7 @@ fluxes = reaction_flux(model)' * samples
 ```
 """
 function affine_hit_and_run(
-    m::MetabolicModel,
+    m::AbstractMetabolicModel,
     warmup_points::Matrix{Float64};
     sample_iters = 100 .* (1:5),
     workers = [myid()],

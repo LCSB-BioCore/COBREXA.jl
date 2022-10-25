@@ -1,9 +1,9 @@
-# # Basic usage of `StandardModel`
+# # Basic usage of `ObjectModel`
 
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__/notebooks/@__NAME__.ipynb)
 
-# In this tutorial we will use `COBREXA`'s `StandardModel` and functions that
+# In this tutorial we will use `COBREXA`'s `ObjectModel` and functions that
 # specifically operate on it. As usual we will use the toy model of *E. coli*
 # for demonstration.
 
@@ -12,26 +12,26 @@
 
 using COBREXA
 
-# ## Loading a model in the StandardModel format
+# ## Loading a model in the ObjectModel format
 
-model = load_model(StandardModel, "e_coli_core.json") # we specifically want to load a StandardModel from the model file
+model = load_model(ObjectModel, "e_coli_core.json") # we specifically want to load a ObjectModel from the model file
 
-#md # !!! note "Note: Loading `StandardModel`s implicitly uses `convert`"
-#md #       When using `load_model(StandardModel, file_location)` the model at
+#md # !!! note "Note: Loading `ObjectModel`s implicitly uses `convert`"
+#md #       When using `load_model(ObjectModel, file_location)` the model at
 #md #       `file_location` is first loaded into its inferred format and is then
-#md #       converted to a `StandardModel` using the generic accessor interface.
+#md #       converted to a `ObjectModel` using the generic accessor interface.
 #md #       Thus, data loss may occur. Always check your model to ensure that
 #md #       nothing important has been lost.
 
-#nb # When using `load_model(StandardModel, file_location)` the model at
+#nb # When using `load_model(ObjectModel, file_location)` the model at
 #nb # `file_location` is first loaded into its inferred format and is then
-#nb # converted to a `StandardModel` using the generic accessor interface.
+#nb # converted to a `ObjectModel` using the generic accessor interface.
 #nb # Thus, data loss may occur. Always check your model to ensure that
 #nb # nothing important has been lost.
 
-# ## Internals of `StandardModel`
+# ## Internals of `ObjectModel`
 
-# A benefit of `StandardModel` is that it supports a richer internal
+# A benefit of `ObjectModel` is that it supports a richer internal
 # infrastructure that can be used to manipulate internal model attributes in a
 # systematic way. Specifically, the genes, reactions, and metabolites with of a
 # model each have a type. This is particularly useful when modifying or even
@@ -39,22 +39,22 @@ model = load_model(StandardModel, "e_coli_core.json") # we specifically want to 
 
 # ## `Gene`s, `Reaction`s, and `Metabolite`s
 
-# `StandardModel` is composed of ordered dictionaries of `Gene`s, `Metabolite`s
+# `ObjectModel` is composed of ordered dictionaries of `Gene`s, `Metabolite`s
 # and `Reaction`s. Ordered dictionaries are used because the order of the
 # reactions and metabolites are important for constructing a stoichiometric
 # matrix since the rows and columns should correspond to the order of the metabolites
 # and reactions returned by calling the accessors `metabolites` and `reactions`.
 
-# Each `StandardModel` is composed of the following fields:
+# Each `ObjectModel` is composed of the following fields:
 
-fieldnames(StandardModel) # fields of a StandardModel
+fieldnames(ObjectModel) # fields of a ObjectModel
 
-# The `:genes` field of a `StandardModel` contains an ordered dictionary of gene ids mapped to `Gene`s.
+# The `:genes` field of a `ObjectModel` contains an ordered dictionary of gene ids mapped to `Gene`s.
 
 model.genes # the keys of this dictionary are the same as genes(model)
 
 # The `Gene` type is a struct that can be used to store information about genes
-# in a `StandardModel`. Each `Gene` is composed of the following fields:
+# in a `ObjectModel`. Each `Gene` is composed of the following fields:
 
 fieldnames(Gene)
 
@@ -82,12 +82,12 @@ model.metabolites[random_metabolite_id]
 random_reaction_id = reactions(model)[rand(1:n_reactions(model))]
 model.reactions[random_reaction_id]
 
-# `StandardModel` can be used to build your own metabolic model or modify an
-# existing one. One of the main use cases for `StandardModel` is that it can be
+# `ObjectModel` can be used to build your own metabolic model or modify an
+# existing one. One of the main use cases for `ObjectModel` is that it can be
 # used to merge multiple models or parts of multiple models together. Since the
-# internals are uniform inside each `StandardModel`, attributes of other model
+# internals are uniform inside each `ObjectModel`, attributes of other model
 # types are squashed into the required format (using the generic accessors).
-# This ensures that the internals of all `StandardModel`s are the same -
+# This ensures that the internals of all `ObjectModel`s are the same -
 # allowing easy systematic evaluation.
 
 #md # !!! warning "Warning: Combining models with different namespaces is tricky"
@@ -97,7 +97,7 @@ model.reactions[random_reaction_id]
 #md #       manually addressed to prevent duplicates, e.g. reactions,
 #md #       from being added.
 
-# ## Checking the internals of `StandardModel`s: `annotation_index`
+# ## Checking the internals of `ObjectModel`s: `annotation_index`
 
 # Often when models are automatically reconstructed duplicate genes, reactions
 # or metabolites end up in a model. `COBREXA` exports `annotation_index` to
@@ -113,7 +113,7 @@ rxn_annotations["ec-code"]
 # The `annotation_index` function can also be used on `Reaction`s and
 # `Gene`s in the same way.
 
-# ## Checking the internals of `StandardModel`s: `check_duplicate_reaction`
+# ## Checking the internals of `ObjectModel`s: `check_duplicate_reaction`
 
 # Another useful function is `check_duplicate_reaction`, which checks for
 # reactions that have duplicate (or similar) reaction equations.
@@ -125,7 +125,7 @@ pgm_duplicate
 #
 check_duplicate_reaction(pgm_duplicate, model.reactions; only_metabolites = false) # can also just check if only the metabolites are the same but different stoichiometry is used
 
-# ## Checking the internals of `StandardModel`s: `reaction_mass_balanced`
+# ## Checking the internals of `ObjectModel`s: `reaction_mass_balanced`
 
 # Finally, [`reaction_mass_balanced`](@ref) can be used to check if a reaction is mass
 # balanced based on the formulas of the reaction equation.

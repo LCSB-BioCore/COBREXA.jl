@@ -1,7 +1,7 @@
-@testset "Test conversion from JSONModel to StandardModel" begin
+@testset "Test conversion from JSONModel to ObjectModel" begin
 
     jsonmodel = load_model(model_paths["e_coli_core.json"])
-    stdmodel = convert(StandardModel, jsonmodel)
+    stdmodel = convert(ObjectModel, jsonmodel)
 
     # test if same reaction ids
     @test issetequal(reactions(jsonmodel), reactions(stdmodel))
@@ -16,9 +16,9 @@
 end
 
 @testset "Save JSON model" begin
-    model = load_model(CoreModel, model_paths["e_coli_core.json"])
+    model = load_model(MatrixModel, model_paths["e_coli_core.json"])
     testpath = tmpfile("modeltest.json")
     save_model(model, testpath)
-    wrote = convert(CoreModel, load_json_model(testpath))
+    wrote = convert(MatrixModel, load_json_model(testpath))
     @test isequal(model, wrote)
 end

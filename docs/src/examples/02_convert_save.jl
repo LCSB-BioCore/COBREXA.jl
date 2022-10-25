@@ -29,12 +29,12 @@ save_model(sbml_model, "converted_e_coli.mat")
 # package `Serialization`.
 #
 # This way, you can use `serialize` to save any model format (even the
-# complicated [`StandardModel`](@ref), which does not have a "native" file format
+# complicated [`ObjectModel`](@ref), which does not have a "native" file format
 # representation):
 
 using Serialization
 
-sm = convert(StandardModel, sbml_model)
+sm = convert(ObjectModel, sbml_model)
 
 open(f -> serialize(f, sm), "myModel.stdmodel", "w")
 
@@ -59,23 +59,23 @@ t = @elapsed deserialize("myModel.stdmodel")
 # ## Converting and saving a modified model
 
 # To modify the models easily, it is useful to convert them to a format that
-# simplifies this modification. You may use e.g. [`CoreModel`](@ref) that
+# simplifies this modification. You may use e.g. [`MatrixModel`](@ref) that
 # exposes the usual matrix-and-vectors structure of models as used in MATLAB
-# COBRA implementations, and [`StandardModel`](@ref) that contains structures,
+# COBRA implementations, and [`ObjectModel`](@ref) that contains structures,
 # lists and dictionaries of model contents, as typical in Python COBRA
-# implementations. The object-oriented nature of [`StandardModel`](@ref) is
+# implementations. The object-oriented nature of [`ObjectModel`](@ref) is
 # better for making small modifications that utilize known identifiers of model
 # contents.
 #
-# Conversion of any model to [`StandardModel`](@ref) can be performed using the
+# Conversion of any model to [`ObjectModel`](@ref) can be performed using the
 # standard Julia `convert`:
 
-sm = convert(StandardModel, sbml_model)
+sm = convert(ObjectModel, sbml_model)
 
 # The conversion can be also achieved right away when loading the model, using
 # an extra parameter of [`load_model`](@ref):
 
-sm = load_model(StandardModel, "e_coli_core.json")
+sm = load_model(ObjectModel, "e_coli_core.json")
 
 # As an example, we change an upper bound on one of the reactions:
 
@@ -87,5 +87,5 @@ sm.reactions["PFK"].ub = 10.0
 save_model(sm, "modified_e_coli.json")
 save_model(sm, "modified_e_coli.mat")
 
-# More information about [`StandardModel`](@ref) internals is available [in a
+# More information about [`ObjectModel`](@ref) internals is available [in a
 # separate example](04_standardmodel.md).

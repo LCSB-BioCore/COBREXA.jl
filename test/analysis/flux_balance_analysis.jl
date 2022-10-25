@@ -1,4 +1,4 @@
-@testset "Flux balance analysis with CoreModel" begin
+@testset "Flux balance analysis with MatrixModel" begin
     cp = test_simpleLP()
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
     @test termination_status(lp) == MOI.OPTIMAL
@@ -13,7 +13,7 @@
     @test sol ≈ [-1.0, 2.0]
 
     # test with a more biologically meaningfull model
-    cp = load_model(CoreModel, model_paths["iJR904.mat"])
+    cp = load_model(MatrixModel, model_paths["iJR904.mat"])
     expected_optimum = 0.9219480950504393
 
     lp = flux_balance_analysis(cp, Tulip.Optimizer)
@@ -30,9 +30,9 @@
     @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
 
-@testset "Flux balance analysis with StandardModel" begin
+@testset "Flux balance analysis with ObjectModel" begin
 
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     sol = flux_balance_analysis_dict(
         model,
@@ -85,9 +85,9 @@ end
     )
 end
 
-@testset "Flux balance analysis with CoreModelCoupled" begin
+@testset "Flux balance analysis with MatrixModelWithCoupling" begin
 
-    model = load_model(CoreModel, model_paths["e_coli_core.json"])
+    model = load_model(MatrixModel, model_paths["e_coli_core.json"])
 
     # assume coupling constraints of the form:
     # -γ ≤ vᵢ/μ  ≤ γ
@@ -112,7 +112,7 @@ end
     cub = spzeros(2 * nr)
     cub[nr+1:end] .= 1000
 
-    cmodel = CoreModelCoupled(model, C, clb, cub) # construct
+    cmodel = MatrixModelWithCoupling(model, C, clb, cub) # construct
 
     dc = flux_balance_analysis_dict(cmodel, Tulip.Optimizer)
     @test isapprox(dc["BIOMASS_Ecoli_core_w_GAM"], 0.665585699298256, atol = TEST_TOLERANCE)

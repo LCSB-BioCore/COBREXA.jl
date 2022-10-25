@@ -1,5 +1,5 @@
 @testset "SMOMENT" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
 
