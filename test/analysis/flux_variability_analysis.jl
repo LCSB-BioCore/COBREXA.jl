@@ -18,7 +18,7 @@
     @test isapprox(fluxes, [2 2], atol = TEST_TOLERANCE)
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
-    cp = CoreModel(
+    cp = MatrixModel(
         [-1.0 -1.0 -1.0],
         [0.0],
         [1.0, 0.0, 0.0],
@@ -77,8 +77,8 @@ end
     )
 end
 
-@testset "Flux variability analysis with StandardModel" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+@testset "Flux variability analysis with ObjectModel" begin
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
     mins, maxs = flux_variability_analysis_dict(
         model,
         Tulip.Optimizer;

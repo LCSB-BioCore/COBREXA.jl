@@ -1,5 +1,5 @@
 @testset "Flux utilities" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     fluxes = flux_balance_analysis_dict(
         model,

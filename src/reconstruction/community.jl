@@ -14,7 +14,7 @@ add_community_objective!(model, Dict("met1"=>1.0, "met2"=>2.0))
 See also: [`update_community_objective!`](@ref)
 """
 function add_community_objective!(
-    community::CoreModel,
+    community::MatrixModel,
     objective_mets_weights::Dict{String,Float64};
     objective_id = "community_biomass",
 )
@@ -39,10 +39,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Variant of [`add_community_objective!`] that takes a `StandardModel` community model as input.
+Variant of [`add_community_objective!`] that takes a `ObjectModel` community model as input.
 """
 function add_community_objective!(
-    community::StandardModel,
+    community::ObjectModel,
     objective_mets_weights::Dict{String,Float64};
     objective_id = "community_biomass",
 )
@@ -77,7 +77,7 @@ update_community_objective!(model, "community_biomass", Dict("met1"=>1.0, "met2"
 See also: [`add_community_objective!`](@ref)
 """
 function update_community_objective!(
-    community::CoreModel,
+    community::MatrixModel,
     objective_id::String,
     objective_mets_weights::Dict{String,Float64},
 )
@@ -100,10 +100,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Variant of [`update_community_objective!`] that takes a `StandardModel` community model as input.
+Variant of [`update_community_objective!`] that takes a `ObjectModel` community model as input.
 """
 function update_community_objective!(
-    community::StandardModel,
+    community::ObjectModel,
     objective_id::String,
     objective_mets_weights::Dict{String,Float64},
 )
@@ -116,7 +116,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Return a `CoreModel` representing the community model of `models` joined through their
+Return a `MatrixModel` representing the community model of `models` joined through their
 exchange reactions and metabolites in the dictionary `exchange_rxn_mets`, which maps
 exchange reactions to their associated metabolite. These exchange reactions and metabolites
 link model metabolites to environmental metabolites and reactions. Optionally specify
@@ -160,7 +160,7 @@ this is unclear.
 # Example
 ```
 m1 = load_model(core_model_path)
-m2 = load_model(CoreModel, core_model_path)
+m2 = load_model(MatrixModel, core_model_path)
 
 # need to list ALL the exchanges that will form part of the entire model
 exchange_rxn_mets = Dict(k => first(keys(reaction_stoichiometry(m1, ex_rxn)))
@@ -169,7 +169,7 @@ exchange_rxn_mets = Dict(k => first(keys(reaction_stoichiometry(m1, ex_rxn)))
 biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
 community = join_with_exchanges(
-    CoreModel,
+    MatrixModel,
     [m1, m2],
     exchange_rxn_mets;
     biomass_ids = biomass_ids,
@@ -177,7 +177,7 @@ community = join_with_exchanges(
 ```
 """
 function join_with_exchanges(
-    ::Type{CoreModel},
+    ::Type{MatrixModel},
     models::Vector{M},
     exchange_rxn_mets::Dict{String,String};
     biomass_ids = String[],
@@ -298,23 +298,23 @@ function join_with_exchanges(
         end
     end
 
-    return CoreModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
+    return MatrixModel(S, spzeros(size(S, 1)), spzeros(size(S, 2)), lbs, ubs, rxns, mets)
 end
 
 """
 $(TYPEDSIGNATURES)
 
-A variant of [`join_with_exchanges`](@ref) that returns a `StandardModel`.
+A variant of [`join_with_exchanges`](@ref) that returns a `ObjectModel`.
 """
 function join_with_exchanges(
-    ::Type{StandardModel},
+    ::Type{ObjectModel},
     models::Vector{M},
     exchange_rxn_mets::Dict{String,String};
     biomass_ids = [],
     model_names = [],
-)::StandardModel where {M<:AbstractMetabolicModel}
+)::ObjectModel where {M<:AbstractMetabolicModel}
 
-    community = StandardModel()
+    community = ObjectModel()
     rxns = OrderedDict{String,Reaction}()
     mets = OrderedDict{String,Metabolite}()
     genes = OrderedDict{String,Gene}()
@@ -368,7 +368,7 @@ unit coefficient. The exchange reactions and metabolites in `exchange_rxn_mets` 
 exist in `community`. Always returns a new community model because it is more efficient than
 resizing all the matrices.
 
-No in-place variant for `CoreModel`s exists yet.
+No in-place variant for `MatrixModel`s exists yet.
 
 # Example
 ```
@@ -380,7 +380,7 @@ community = add_model_with_exchanges(community,
 ```
 """
 function add_model_with_exchanges(
-    community::CoreModel,
+    community::MatrixModel,
     model::AbstractMetabolicModel,
     exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",
@@ -463,22 +463,22 @@ function add_model_with_exchanges(
     I, V = findnz(objective(community))
     c = sparsevec(I, V, n_reactions_total)
 
-    return CoreModel(S, b, c, lbs, ubs, rxns, mets)
+    return MatrixModel(S, b, c, lbs, ubs, rxns, mets)
 end
 
 """
 $(TYPEDSIGNATURES)
 
-The `StandardModel` variant of [`add_model_with_exchanges`](@ref), but is in-place.
+The `ObjectModel` variant of [`add_model_with_exchanges`](@ref), but is in-place.
 """
 function add_model_with_exchanges!(
-    community::StandardModel,
+    community::ObjectModel,
     model::AbstractMetabolicModel,
     exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",
     biomass_id = nothing,
 )
-    stdm = model isa StandardModel ? deepcopy(model) : convert(StandardModel, model)
+    stdm = model isa ObjectModel ? deepcopy(model) : convert(ObjectModel, model)
     model_name = model_name * "_"
 
     for met in values(stdm.metabolites)
@@ -520,11 +520,11 @@ end
 """
 $(TYPEDSIGNATURES)
 
-The `StandardModel` variant of [`add_model_with_exchanges`](@ref). Makes a deepcopy of
+The `ObjectModel` variant of [`add_model_with_exchanges`](@ref). Makes a deepcopy of
 `community` and calls the inplace variant of this function on that copy.
 """
 function add_model_with_exchanges(
-    community::StandardModel,
+    community::ObjectModel,
     model::AbstractMetabolicModel,
     exchange_rxn_mets::Dict{String,String};
     model_name = "unknown_species",

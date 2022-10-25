@@ -2,7 +2,7 @@
     json_model = model_paths["iJO1366.json"]
 
     jm = load_json_model(json_model)
-    sm = convert(StandardModel, jm)
+    sm = convert(ObjectModel, jm)
     jm2 = convert(JSONModel, sm)
 
     @test Set(reactions(jm)) == Set(reactions(sm))

@@ -1,5 +1,5 @@
 @testset "Warm up point generation" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     rid = "EX_glc__D_e"
     pts = warmup_from_variability(

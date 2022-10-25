@@ -5,7 +5,7 @@ To simplify doing (and undoing) simple modifications to the existing model
 structure, COBREXA.jl supports a class of model _wrappers_, which are basically
 small layers that add or change the functionality of a given base models.
 
-Types [`Serialized`](@ref), [`CoreCoupling`](@ref), [`SMomentModel`](@ref), and
+Types [`Serialized`](@ref), [`MatrixCoupling`](@ref), [`SMomentModel`](@ref), and
 [`GeckoModel`](@ref) all work in this manner -- add some extra functionality to
 the "base". Technically, they are all subtypes of the abstract type
 [`AbstractModelWrapper`](@ref), which itself is a subtype of [`AbstractMetabolicModel`](@ref)

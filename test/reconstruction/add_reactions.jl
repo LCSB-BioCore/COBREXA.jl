@@ -1,5 +1,5 @@
 @testset "@add_reactions! helper" begin
-    mod = StandardModel()
+    mod = ObjectModel()
     A = Metabolite("A")
     B = Metabolite("B")
     C = Metabolite("C")

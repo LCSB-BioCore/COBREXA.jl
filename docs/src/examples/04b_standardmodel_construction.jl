@@ -1,16 +1,16 @@
 # # Model construction and modification
 
 # `COBREXA` can load models stored in `.mat`, `.json`, and `.xml` formats; and convert
-# these into `StandardModel`s. However, it is also possible to construct models
+# these into `ObjectModel`s. However, it is also possible to construct models
 # from scratch, and modify existing models. This will be demonstrated
 # here.
 
 using COBREXA
 
-# In `COBREXA`, model construction is primarily supported through `StandardModel`s.
-# To begin, create an empty `StandardModel`.
+# In `COBREXA`, model construction is primarily supported through `ObjectModel`s.
+# To begin, create an empty `ObjectModel`.
 
-model = StandardModel("FirstModel") # assign model id = "FirstModel"
+model = ObjectModel("FirstModel") # assign model id = "FirstModel"
 
 # Next, genes, metabolites and reactions need to be added to the model.
 

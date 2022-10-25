@@ -1,11 +1,11 @@
-@testset "Looks like in CoreModel, detailed test" begin
+@testset "Looks like in MatrixModel, detailed test" begin
     cp = test_LP()
     @test isempty(filter(looks_like_exchange_reaction, reactions(cp)))
 
     cp = test_simpleLP()
     @test isempty(filter(looks_like_exchange_reaction, reactions(cp)))
 
-    cp = CoreModel(
+    cp = MatrixModel(
         [-1.0 -1 -2; 0 -1 0; 0 0 0],
         zeros(3),
         ones(3),
@@ -16,7 +16,7 @@
     )
     @test filter(looks_like_exchange_reaction, reactions(cp)) == ["EX_m1"]
 
-    cp = CoreModel(
+    cp = MatrixModel(
         [-1.0 0 0; 0 0 -1; 0 -1 0],
         zeros(3),
         ones(3),
@@ -66,19 +66,19 @@ end
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
     @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 
-    model = convert(StandardModel, model)
+    model = convert(ObjectModel, model)
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
     @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 
-    model = convert(CoreModelCoupled, model)
+    model = convert(MatrixModelWithCoupling, model)
     @test length(filter(looks_like_exchange_reaction, reactions(model))) == 20
     @test length(filter(looks_like_biomass_reaction, reactions(model))) == 1
     @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
 end
 
 @testset "Ontology usage in is_xxx_reaction" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     # macro generated, so only test positive and negative case
     @test !is_biomass_reaction(model, "PFL")

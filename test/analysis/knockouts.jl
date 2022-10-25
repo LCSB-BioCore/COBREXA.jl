@@ -1,5 +1,5 @@
 @testset "single_knockout" begin
-    m = StandardModel()
+    m = ObjectModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
 
@@ -47,7 +47,7 @@
 end
 
 @testset "multiple_knockouts" begin
-    m = StandardModel()
+    m = ObjectModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
     add_gene!(m, Gene("g1"))
@@ -95,7 +95,7 @@ end
 
 @testset "Knockouts on realistic models" begin
     for model in [
-        load_model(StandardModel, model_paths["e_coli_core.json"]), #test on standardModel
+        load_model(ObjectModel, model_paths["e_coli_core.json"]), #test on standardModel
         load_model(model_paths["e_coli_core.json"]), #then on JSONModel with the same contents
     ]
 

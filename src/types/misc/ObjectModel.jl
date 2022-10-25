@@ -2,9 +2,9 @@
 """
 $(TYPEDSIGNATURES)
 
-Shallow copy of a [`StandardModel`](@ref)
+Shallow copy of a [`ObjectModel`](@ref)
 """
-Base.copy(m::StandardModel) = StandardModel(
+Base.copy(m::ObjectModel) = ObjectModel(
     m.id,
     reactions = m.reactions,
     metabolites = m.metabolites,
@@ -55,7 +55,7 @@ $(TYPEDSIGNATURES)
 Return the lower bounds for all reactions in `model`.
 Order matches that of the reaction IDs returned by [`reactions`](@ref).
 """
-lower_bounds(model::StandardModel)::Vector{Float64} =
+lower_bounds(model::ObjectModel)::Vector{Float64} =
     [model.reactions[rxn].lower_bound for rxn in reactions(model)]
 
 """
@@ -64,5 +64,5 @@ $(TYPEDSIGNATURES)
 Return the upper bounds for all reactions in `model`.
 Order matches that of the reaction IDs returned in [`reactions`](@ref).
 """
-upper_bounds(model::StandardModel)::Vector{Float64} =
+upper_bounds(model::ObjectModel)::Vector{Float64} =
     [model.reactions[rxn].upper_bound for rxn in reactions(model)]

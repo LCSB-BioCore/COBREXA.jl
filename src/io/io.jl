@@ -35,7 +35,7 @@ converted to `type`.
 
 # Example:
 
-    load_model(CoreModel, "mySBMLModel.xml")
+    load_model(MatrixModel, "mySBMLModel.xml")
 """
 function load_model(type::Type{T}, file_name::String)::T where {T<:AbstractMetabolicModel}
     convert(type, load_model(file_name))

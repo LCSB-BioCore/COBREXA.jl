@@ -1,7 +1,7 @@
 """
 $(TYPEDEF)
 
-A structure for representing a single reaction in a [`StandardModel`](@ref).
+A structure for representing a single reaction in a [`ObjectModel`](@ref).
 
 # Fields
 $(TYPEDFIELDS)

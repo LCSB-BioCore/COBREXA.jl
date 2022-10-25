@@ -1,4 +1,4 @@
-@testset "Parsimonious flux balance analysis with StandardModel" begin
+@testset "Parsimonious flux balance analysis with ObjectModel" begin
     model = test_toyModel()
 
     d = parsimonious_flux_balance_analysis_dict(

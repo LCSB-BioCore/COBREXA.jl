@@ -77,14 +77,14 @@ Note: this function is a thin argument-handling wrapper around
 # Example
 ```
 function reverse_reaction(i::Int)
-    (model::CoreModel) -> begin
+    (model::MatrixModel) -> begin
         mod = copy(model)
         mod.S[:,i] .*= -1   # this is unrealistic but sufficient for demonstration
         mod
     end
 end
 
-m = load_model(CoreModel, "e_coli_core.xml")
+m = load_model(MatrixModel, "e_coli_core.xml")
 
 screen(m,
     variants = [

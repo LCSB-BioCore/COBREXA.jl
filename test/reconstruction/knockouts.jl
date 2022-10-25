@@ -6,7 +6,7 @@ is available, but inside a group all of the genes need to be available
 """
 
 @testset "knockout_single_gene" begin
-    m = StandardModel()
+    m = ObjectModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
     add_gene!(m, Gene("g1"))
@@ -40,7 +40,7 @@ is available, but inside a group all of the genes need to be available
 end
 
 @testset "knockout_multiple_genes" begin
-    m = StandardModel()
+    m = ObjectModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
     add_gene!(m, Gene("g1"))

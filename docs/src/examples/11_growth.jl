@@ -13,7 +13,7 @@ using COBREXA, GLPK
 !isfile("e_coli_core.xml") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml")
 
-model = load_model(StandardModel, "e_coli_core.xml")
+model = load_model(ObjectModel, "e_coli_core.xml")
 
 # ## What nutrients does my model need to grow?
 

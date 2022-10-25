@@ -1,4 +1,4 @@
-test_LP() = CoreModel(
+test_LP() = MatrixModel(
     zeros(4, 3),
     zeros(4),
     ones(3),
@@ -8,7 +8,7 @@ test_LP() = CoreModel(
     ["m$x" for x = 1:4],
 )
 
-test_simpleLP() = CoreModel(
+test_simpleLP() = MatrixModel(
     [
         1.0 1.0
         -1.0 1.0
@@ -21,7 +21,7 @@ test_simpleLP() = CoreModel(
     ["m$x" for x = 1:2],
 )
 
-test_simpleLP2() = CoreModel(
+test_simpleLP2() = MatrixModel(
     zeros(2, 2),
     [0.0, 0.0],
     [-0.25, 1.0],
@@ -31,7 +31,7 @@ test_simpleLP2() = CoreModel(
     ["m$x" for x = 1:2],
 )
 
-test_sparseLP() = CoreModel(
+test_sparseLP() = MatrixModel(
     sprand(4000, 3000, 0.5),
     sprand(4000, 0.5),
     sprand(3000, 0.5),
@@ -41,8 +41,8 @@ test_sparseLP() = CoreModel(
     ["m$x" for x = 1:4000],
 )
 
-test_coupledLP() = CoreModelCoupled(
-    CoreModel(
+test_coupledLP() = MatrixModelWithCoupling(
+    MatrixModel(
         sprand(4000, 3000, 0.5),
         sprand(4000, 0.5),
         sprand(3000, 0.5),
@@ -56,7 +56,7 @@ test_coupledLP() = CoreModelCoupled(
     sprand(2000, 0.5),
 )
 
-test_toyModel() = CoreModel(
+test_toyModel() = MatrixModel(
     [
         -1.0 1.0 0.0 0.0 0.0 0.0 0.0
         -2.0 0.0 1.0 0.0 0.0 0.0 0.0

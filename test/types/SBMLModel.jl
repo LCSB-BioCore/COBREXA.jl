@@ -1,7 +1,7 @@
 
 @testset "Conversion from and to SBML model" begin
     sbmlm = load_sbml_model(model_paths["ecoli_core_model.xml"])
-    sm = convert(StandardModel, sbmlm)
+    sm = convert(ObjectModel, sbmlm)
     sbmlm2 = convert(SBMLModel, sm)
 
     @test Set(reactions(sbmlm)) == Set(reactions(sbmlm2))

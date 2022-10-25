@@ -4,7 +4,7 @@ $(TYPEDSIGNATURES)
 Add `rxns` to `model` efficiently. The model must already contain the metabolites used by
 `rxns` in the model.
 """
-function add_reactions!(model::CoreModel, rxns::Vector{Reaction})
+function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
     I = Int64[] # rows
     J = Int64[] # cols
     V = Float64[] # values
@@ -37,15 +37,15 @@ $(TYPEDSIGNATURES)
 Add `rxn` to `model`. The model must already contain the metabolites used by
 `rxn` in the model.
 """
-add_reaction!(model::CoreModel, rxn::Reaction) = add_reactions!(model, [rxn])
+add_reaction!(model::MatrixModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
 $(TYPEDSIGNATURES)
 
-Add reaction(s) to a `CoreModel` model `m`.
+Add reaction(s) to a `MatrixModel` model `m`.
 """
 function add_reactions(
-    m::CoreModel,
+    m::MatrixModel,
     s::VecType,
     b::VecType,
     c::AbstractFloat,
@@ -68,7 +68,7 @@ end
 $(TYPEDSIGNATURES)
 """
 function add_reactions(
-    m::CoreModel,
+    m::MatrixModel,
     s::VecType,
     b::VecType,
     c::AbstractFloat,
@@ -95,7 +95,7 @@ end
 $(TYPEDSIGNATURES)
 """
 function add_reactions(
-    m::CoreModel,
+    m::MatrixModel,
     Sp::MatType,
     b::VecType,
     c::VecType,
@@ -123,7 +123,7 @@ $(TYPEDSIGNATURES)
 
 Add all reactions from `m2` to `m1`.
 """
-function add_reactions(m1::CoreModel, m2::CoreModel; check_consistency = false)
+function add_reactions(m1::MatrixModel, m2::MatrixModel; check_consistency = false)
     return add_reactions(
         m1,
         m2.S,
@@ -141,7 +141,7 @@ end
 $(TYPEDSIGNATURES)
 """
 function add_reactions(
-    m::CoreModel,
+    m::MatrixModel,
     Sp::MatType,
     b::VecType,
     c::VecType,
@@ -199,7 +199,7 @@ function add_reactions(
     newxl = vcat(m.xl, xl[new_reactions])
     newxu = vcat(m.xu, xu[new_reactions])
     new_rxns = vcat(m.rxns, rxns[new_reactions])
-    new_lp = CoreModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
+    new_lp = MatrixModel(new_s, newb, newc, newxl, newxu, new_rxns, new_mets)
 
     if check_consistency
         return (new_lp, new_reactions, new_metabolites)
@@ -216,7 +216,7 @@ Check the consistency of given reactions with existing reactions in `m`.
 TODO: work in progress, doesn't return consistency status.
 """
 function verify_consistency(
-    m::CoreModel,
+    m::MatrixModel,
     Sp::M,
     b::V,
     c::V,
@@ -255,23 +255,23 @@ function verify_consistency(
     return (new_reactions, new_metabolites)
 end
 
-@_change_bounds_fn CoreModel Int inplace begin
+@_change_bounds_fn MatrixModel Int inplace begin
     isnothing(lower) || (model.xl[rxn_idx] = lower)
     isnothing(upper) || (model.xu[rxn_idx] = upper)
     nothing
 end
 
-@_change_bounds_fn CoreModel Int inplace plural begin
+@_change_bounds_fn MatrixModel Int inplace plural begin
     for (i, l, u) in zip(rxn_idxs, lower, upper)
         change_bound!(model, i, lower = l, upper = u)
     end
 end
 
-@_change_bounds_fn CoreModel Int begin
+@_change_bounds_fn MatrixModel Int begin
     change_bounds(model, [rxn_idx], lower = [lower], upper = [upper])
 end
 
-@_change_bounds_fn CoreModel Int plural begin
+@_change_bounds_fn MatrixModel Int plural begin
     n = copy(model)
     n.xl = copy(n.xl)
     n.xu = copy(n.xu)
@@ -279,11 +279,11 @@ end
     n
 end
 
-@_change_bounds_fn CoreModel String inplace begin
+@_change_bounds_fn MatrixModel String inplace begin
     change_bounds!(model, [rxn_id], lower = [lower], upper = [upper])
 end
 
-@_change_bounds_fn CoreModel String inplace plural begin
+@_change_bounds_fn MatrixModel String inplace plural begin
     change_bounds!(
         model,
         Vector{Int}(indexin(rxn_ids, reactions(model))),
@@ -292,11 +292,11 @@ end
     )
 end
 
-@_change_bounds_fn CoreModel String begin
+@_change_bounds_fn MatrixModel String begin
     change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
 end
 
-@_change_bounds_fn CoreModel String plural begin
+@_change_bounds_fn MatrixModel String plural begin
     change_bounds(
         model,
         Int.(indexin(rxn_ids, reactions(model))),
@@ -305,11 +305,11 @@ end
     )
 end
 
-@_remove_fn reaction CoreModel Int inplace begin
+@_remove_fn reaction MatrixModel Int inplace begin
     remove_reactions!(model, [reaction_idx])
 end
 
-@_remove_fn reaction CoreModel Int inplace plural begin
+@_remove_fn reaction MatrixModel Int inplace plural begin
     mask = .!in.(1:n_reactions(model), Ref(reaction_idxs))
     model.S = model.S[:, mask]
     model.c = model.c[mask]
@@ -319,37 +319,37 @@ end
     nothing
 end
 
-@_remove_fn reaction CoreModel Int begin
+@_remove_fn reaction MatrixModel Int begin
     remove_reactions(model, [reaction_idx])
 end
 
-@_remove_fn reaction CoreModel Int plural begin
+@_remove_fn reaction MatrixModel Int plural begin
     n = copy(model)
     remove_reactions!(n, reaction_idxs)
     return n
 end
 
-@_remove_fn reaction CoreModel String inplace begin
+@_remove_fn reaction MatrixModel String inplace begin
     remove_reactions!(model, [reaction_id])
 end
 
-@_remove_fn reaction CoreModel String inplace plural begin
+@_remove_fn reaction MatrixModel String inplace plural begin
     remove_reactions!(model, Int.(indexin(reaction_ids, reactions(model))))
 end
 
-@_remove_fn reaction CoreModel String begin
+@_remove_fn reaction MatrixModel String begin
     remove_reactions(model, [reaction_id])
 end
 
-@_remove_fn reaction CoreModel String plural begin
+@_remove_fn reaction MatrixModel String plural begin
     remove_reactions(model, Int.(indexin(reaction_ids, reactions(model))))
 end
 
-@_remove_fn metabolite CoreModel Int inplace begin
+@_remove_fn metabolite MatrixModel Int inplace begin
     remove_metabolites!(model, [metabolite_idx])
 end
 
-@_remove_fn metabolite CoreModel Int plural inplace begin
+@_remove_fn metabolite MatrixModel Int plural inplace begin
     remove_reactions!(
         model,
         [
@@ -364,29 +364,29 @@ end
     nothing
 end
 
-@_remove_fn metabolite CoreModel Int begin
+@_remove_fn metabolite MatrixModel Int begin
     remove_metabolites(model, [metabolite_idx])
 end
 
-@_remove_fn metabolite CoreModel Int plural begin
+@_remove_fn metabolite MatrixModel Int plural begin
     n = deepcopy(model) #everything gets changed anyway
     remove_metabolites!(n, metabolite_idxs)
     return n
 end
 
-@_remove_fn metabolite CoreModel String inplace begin
+@_remove_fn metabolite MatrixModel String inplace begin
     remove_metabolites!(model, [metabolite_id])
 end
 
-@_remove_fn metabolite CoreModel String inplace plural begin
+@_remove_fn metabolite MatrixModel String inplace plural begin
     remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end
 
-@_remove_fn metabolite CoreModel String begin
+@_remove_fn metabolite MatrixModel String begin
     remove_metabolites(model, [metabolite_id])
 end
 
-@_remove_fn metabolite CoreModel String plural begin
+@_remove_fn metabolite MatrixModel String plural begin
     remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
 end
 
@@ -397,7 +397,7 @@ Change the objective to reactions at given indexes, optionally specifying their
 `weights` in the same order. By default, all set weights are 1.
 """
 function change_objective!(
-    model::CoreModel,
+    model::MatrixModel,
     rxn_idxs::Vector{Int};
     weights = ones(length(rxn_idxs)),
 )
@@ -409,10 +409,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Change objective function of a CoreModel to a single `1` at reaction index
+Change objective function of a MatrixModel to a single `1` at reaction index
 `rxn_idx`.
 """
-change_objective!(model::CoreModel, rxn_idx::Int) = change_objective!(model, [rxn_idx])
+change_objective!(model::MatrixModel, rxn_idx::Int) = change_objective!(model, [rxn_idx])
 
 """
 $(TYPEDSIGNATURES)
@@ -421,7 +421,7 @@ Change objective of given reaction IDs, optionally specifying objective
 `weights` in the same order as `rxn_ids`. By default, all set weights are 1.
 """
 function change_objective!(
-    model::CoreModel,
+    model::MatrixModel,
     rxn_ids::Vector{String};
     weights = ones(length(rxn_ids)),
 )
@@ -434,7 +434,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Change objective function of a CoreModel to a single `1` at the given reaction
+Change objective function of a MatrixModel to a single `1` at the given reaction
 ID.
 """
-change_objective!(model::CoreModel, rxn_id::String) = change_objective!(model, [rxn_id])
+change_objective!(model::MatrixModel, rxn_id::String) = change_objective!(model, [rxn_id])

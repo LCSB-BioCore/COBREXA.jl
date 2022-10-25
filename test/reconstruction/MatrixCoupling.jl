@@ -1,7 +1,7 @@
 @testset "Coupling constraints" begin
-    cp = convert(CoreModelCoupled, test_LP())
+    cp = convert(MatrixModelWithCoupling, test_LP())
     @test size(cp.lm.S) == (4, 3)
-    @test size(stoichiometry(convert(CoreModel, cp))) == (4, 3)
+    @test size(stoichiometry(convert(MatrixModel, cp))) == (4, 3)
     new_cp = add_coupling_constraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
     @test n_coupling_constraints(cp) + 1 == n_coupling_constraints(new_cp)
 
@@ -45,11 +45,11 @@
 end
 
 @testset "Add reactions" begin
-    cp = convert(CoreModelCoupled, test_LP())
+    cp = convert(MatrixModelWithCoupling, test_LP())
     cp = add_coupling_constraints(cp, stoichiometry(cp)[end, :], -1.0, 1.0)
 
     new_cp = add_reactions(cp, 2.0 * ones(4), 3 .* ones(4), 2.0, -1.0, 1.0)
-    @test new_cp isa CoreModelCoupled
+    @test new_cp isa MatrixModelWithCoupling
     @test cp.C == new_cp.C[:, 1:end-1]
     @test cp.cl == new_cp.cl
     @test cp.cu == new_cp.cu
@@ -100,7 +100,7 @@ end
     @test cp.cl == new_cp.cl
     @test cp.cu == new_cp.cu
 
-    cm = CoreModel(
+    cm = MatrixModel(
         2.0 * ones(4, 10),
         3 .* ones(4),
         2 .* ones(10),
@@ -116,11 +116,11 @@ end
 end
 
 @testset "Remove reactions" begin
-    cp = convert(CoreModelCoupled, test_LP())
+    cp = convert(MatrixModelWithCoupling, test_LP())
     cp = add_coupling_constraints(cp, 1.0 .* collect(1:n_reactions(cp)), -1.0, 1.0)
 
     new_cp = remove_reactions(cp, [3, 2])
-    @test new_cp isa CoreModelCoupled
+    @test new_cp isa MatrixModelWithCoupling
     @test new_cp.C[:] == cp.C[:, 1]
     @test new_cp.cl == cp.cl
     @test new_cp.cu == cp.cu
@@ -148,8 +148,8 @@ end
 end
 
 @testset "Change bounds" begin
-    cp = convert(CoreModelCoupled, test_LP())
-    @test cp isa CoreModelCoupled
+    cp = convert(MatrixModelWithCoupling, test_LP())
+    @test cp isa MatrixModelWithCoupling
 
     change_bound!(cp, 1, lower = -10, upper = 10)
     @test cp.lm.xl[1] == -10

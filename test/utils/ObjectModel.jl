@@ -1,5 +1,5 @@
-@testset "StandardModel utilities" begin
-    model = load_model(StandardModel, model_paths["e_coli_core.json"])
+@testset "ObjectModel utilities" begin
+    model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     # FBA
     fluxes = flux_balance_analysis_dict(

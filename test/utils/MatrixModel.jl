@@ -1,4 +1,4 @@
-@testset "CoreModel utilities" begin
+@testset "MatrixModel utilities" begin
     cp = test_LP()
     @test n_reactions(cp) == 3
     @test n_metabolites(cp) == 4

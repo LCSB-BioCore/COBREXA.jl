@@ -7,8 +7,8 @@
 # functions can work on any data.
 
 # For example, you can check the reactions and metabolites contained in any
-# model type ([`SBMLModel`](@ref), [`JSONModel`](@ref), [`CoreModel`](@ref),
-# [`StandardModel`](@ref), and any other) using the same accessor:
+# model type ([`SBMLModel`](@ref), [`JSONModel`](@ref), [`MatrixModel`](@ref),
+# [`ObjectModel`](@ref), and any other) using the same accessor:
 
 using COBREXA
 
@@ -18,7 +18,7 @@ using COBREXA
 js = load_model("e_coli_core.json")
 reactions(js)
 #
-std = convert(CoreModel, js)
+std = convert(MatrixModel, js)
 reactions(std)
 
 # All accessors allow systematic access to information about reactions,

@@ -84,8 +84,8 @@ function COBREXA.stoichiometry(m::CircularModel)
 end
 ```
 
-You may check that the result now works just as with [`CoreModel`](@ref) and
-[`StandardModel`](@ref):
+You may check that the result now works just as with [`MatrixModel`](@ref) and
+[`ObjectModel`](@ref):
 
 ```julia
 julia> m = CircularModel(5)

@@ -1,9 +1,9 @@
-@testset "CoreModel: Detailed community stoichiometrix matrix check" begin
+@testset "MatrixModel: Detailed community stoichiometrix matrix check" begin
     m1 = test_toyModel()
     m2 = test_toyModel()
     ex_rxn_mets = Dict("EX_m1(e)" => "m1[e]", "EX_m3(e)" => "m3[e]")
 
-    c1 = join_with_exchanges(CoreModel, [m1, m2], ex_rxn_mets)
+    c1 = join_with_exchanges(MatrixModel, [m1, m2], ex_rxn_mets)
 
     # test of stoichs are the same
     @test all(c1.S[1:6, 1:7] .== c1.S[7:12, 8:14])
@@ -32,7 +32,7 @@
     @test c1.S[12, end] == -1.0
 
     c2 = join_with_exchanges(
-        CoreModel,
+        MatrixModel,
         [m1, m2],
         ex_rxn_mets;
         biomass_ids = ["biomass1", "biomass1"],
@@ -53,9 +53,9 @@
     @test c2.S[16, end] == -0.9
 end
 
-@testset "CoreModel: Small model join" begin
+@testset "MatrixModel: Small model join" begin
     m1 = load_model(model_paths["e_coli_core.json"])
-    m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
+    m2 = load_model(MatrixModel, model_paths["e_coli_core.json"])
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
@@ -65,7 +65,7 @@ end
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
     community = join_with_exchanges(
-        CoreModel,
+        MatrixModel,
         [m1, m2],
         exchange_rxn_mets;
         biomass_ids = biomass_ids,
@@ -88,9 +88,9 @@ end
     @test isapprox(d["community_biomass"], 0.41559777495618294, atol = TEST_TOLERANCE)
 end
 
-@testset "CoreModel: Heterogenous model join" begin
-    m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
-    m2 = load_model(CoreModel, model_paths["iJO1366.mat"])
+@testset "MatrixModel: Heterogenous model join" begin
+    m1 = load_model(MatrixModel, model_paths["e_coli_core.json"])
+    m2 = load_model(MatrixModel, model_paths["iJO1366.mat"])
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m2, ex_rxn))) for
@@ -100,7 +100,7 @@ end
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ec_iJO1366_core_53p95M"]
 
     community = join_with_exchanges(
-        CoreModel,
+        MatrixModel,
         [m1, m2],
         exchange_rxn_mets;
         biomass_ids = biomass_ids,
@@ -138,8 +138,8 @@ end
     @test isapprox(d["community_biomass"], 0.8739215069675402, atol = TEST_TOLERANCE)
 end
 
-@testset "CoreModel: Community model modifications" begin
-    m1 = load_model(CoreModel, model_paths["e_coli_core.json"])
+@testset "MatrixModel: Community model modifications" begin
+    m1 = load_model(MatrixModel, model_paths["e_coli_core.json"])
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m1, ex_rxn))) for
@@ -149,14 +149,14 @@ end
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM"]
 
     community =
-        join_with_exchanges(CoreModel, [m1], exchange_rxn_mets; biomass_ids = biomass_ids)
+        join_with_exchanges(MatrixModel, [m1], exchange_rxn_mets; biomass_ids = biomass_ids)
 
     env_ex_inds = indexin(keys(exchange_rxn_mets), reactions(community))
     m1_ex_inds = indexin(keys(exchange_rxn_mets), reactions(m1))
     community.xl[env_ex_inds] .= m1.xl[m1_ex_inds]
     community.xu[env_ex_inds] .= m1.xu[m1_ex_inds]
 
-    m2 = load_model(CoreModel, model_paths["e_coli_core.json"])
+    m2 = load_model(MatrixModel, model_paths["e_coli_core.json"])
 
     community = add_model_with_exchanges(
         community,
@@ -179,12 +179,12 @@ end
     @test isapprox(d["community_biomass"], 0.41559777495618294, atol = TEST_TOLERANCE)
 end
 
-@testset "StandardModel: Detailed community stoichiometrix matrix check" begin
+@testset "ObjectModel: Detailed community stoichiometrix matrix check" begin
     m1 = test_toyModel()
     m2 = test_toyModel()
     ex_rxn_mets = Dict("EX_m1(e)" => "m1[e]", "EX_m3(e)" => "m3[e]")
 
-    c1 = join_with_exchanges(StandardModel, [m1, m2], ex_rxn_mets)
+    c1 = join_with_exchanges(ObjectModel, [m1, m2], ex_rxn_mets)
     @test size(stoichiometry(c1)) == (14, 16)
 
     # test if each models exchange reactions have been added to the environmental exchange properly
@@ -214,7 +214,7 @@ end
     @test c1.reactions["community_biomass"].metabolites["species_1_biomass[c]"] == -1
 
     c2 = join_with_exchanges(
-        StandardModel,
+        ObjectModel,
         [m1, m2],
         ex_rxn_mets;
         biomass_ids = ["biomass1", "biomass1"],
@@ -225,8 +225,8 @@ end
     @test isempty(c2.reactions["community_biomass"].metabolites)
 end
 
-@testset "StandardModel: coarse community models checks" begin
-    m1 = load_model(StandardModel, model_paths["e_coli_core.json"])
+@testset "ObjectModel: coarse community models checks" begin
+    m1 = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     exchange_rxn_mets = Dict(
         ex_rxn => first(keys(reaction_stoichiometry(m1, ex_rxn))) for
@@ -236,7 +236,7 @@ end
     biomass_ids = ["BIOMASS_Ecoli_core_w_GAM", "BIOMASS_Ecoli_core_w_GAM"]
 
     c = join_with_exchanges(
-        StandardModel,
+        ObjectModel,
         [m1, m1],
         exchange_rxn_mets;
         biomass_ids = biomass_ids,

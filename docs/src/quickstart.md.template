@@ -11,7 +11,7 @@ perform if some reactions were disabled independently:
 
 ```julia
 # convert to a model type that is efficient to modify
-m = convert(StandardModel, model)
+m = convert(ObjectModel, model)
 
 # find the model objective value if oxygen or carbon dioxide transports are disabled
 screen(m, # the base model

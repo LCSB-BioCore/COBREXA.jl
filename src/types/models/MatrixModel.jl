@@ -13,7 +13,7 @@ s.t. S x = b
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct CoreModel <: AbstractMetabolicModel
+mutable struct MatrixModel <: AbstractMetabolicModel
     S::SparseMat
     b::SparseVec
     c::SparseVec
@@ -23,7 +23,7 @@ mutable struct CoreModel <: AbstractMetabolicModel
     mets::Vector{String}
     grrs::Vector{Maybe{GeneAssociation}}
 
-    function CoreModel(
+    function MatrixModel(
         S::MatType,
         b::VecType,
         c::VecType,
@@ -50,53 +50,53 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the reactions in a `CoreModel`.
+Get the reactions in a `MatrixModel`.
 """
-Accessors.reactions(a::CoreModel)::Vector{String} = a.rxns
+Accessors.reactions(a::MatrixModel)::Vector{String} = a.rxns
 
 """
 $(TYPEDSIGNATURES)
 
-Metabolites in a `CoreModel`.
+Metabolites in a `MatrixModel`.
 """
-Accessors.metabolites(a::CoreModel)::Vector{String} = a.mets
+Accessors.metabolites(a::MatrixModel)::Vector{String} = a.mets
 
 """
 $(TYPEDSIGNATURES)
 
-`CoreModel` stoichiometry matrix.
+`MatrixModel` stoichiometry matrix.
 """
-Accessors.stoichiometry(a::CoreModel)::SparseMat = a.S
+Accessors.stoichiometry(a::MatrixModel)::SparseMat = a.S
 
 """
 $(TYPEDSIGNATURES)
 
-`CoreModel` flux bounds.
+`MatrixModel` flux bounds.
 """
-Accessors.bounds(a::CoreModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
+Accessors.bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
 
 """
 $(TYPEDSIGNATURES)
 
-`CoreModel` target flux balance.
+`MatrixModel` target flux balance.
 """
-Accessors.balance(a::CoreModel)::SparseVec = a.b
+Accessors.balance(a::MatrixModel)::SparseVec = a.b
 
 """
 $(TYPEDSIGNATURES)
 
-`CoreModel` objective vector.
+`MatrixModel` objective vector.
 """
-Accessors.objective(a::CoreModel)::SparseVec = a.c
+Accessors.objective(a::MatrixModel)::SparseVec = a.c
 
 """
 $(TYPEDSIGNATURES)
 
-Collect all genes contained in the [`CoreModel`](@ref). The call is expensive
+Collect all genes contained in the [`MatrixModel`](@ref). The call is expensive
 for large models, because the vector is not stored and instead gets rebuilt
 each time this function is called.
 """
-function Accessors.genes(a::CoreModel)::Vector{String}
+function Accessors.genes(a::MatrixModel)::Vector{String}
     res = Set{String}()
     for grr in a.grrs
         isnothing(grr) && continue
@@ -114,7 +114,7 @@ $(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 Accessors."""
-Accessors.reaction_stoichiometry(m::CoreModel, rid::String)::Dict{String,Float64} =
+Accessors.reaction_stoichiometry(m::MatrixModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
 """
@@ -122,38 +122,38 @@ $(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction at index `ridx`.
 """
-Accessors.reaction_stoichiometry(m::CoreModel, ridx)::Dict{String,Float64} =
+Accessors.reaction_stoichiometry(m::MatrixModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction
+Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction
 index.
 """
-Accessors.reaction_gene_association(model::CoreModel, ridx::Int)::Maybe{GeneAssociation} =
+Accessors.reaction_gene_association(model::MatrixModel, ridx::Int)::Maybe{GeneAssociation} =
     model.grrs[ridx]
 
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the [`GeneAssociation`](@ref) from [`CoreModel`](@ref) by reaction ID.
+Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction ID.
 """
-Accessors.reaction_gene_association(model::CoreModel, rid::String)::Maybe{GeneAssociation} =
+Accessors.reaction_gene_association(model::MatrixModel, rid::String)::Maybe{GeneAssociation} =
     model.grrs[first(indexin([rid], model.rxns))]
 
 """
 $(TYPEDSIGNATURES)
 
-Make a `CoreModel` out of any compatible model type.
+Make a `MatrixModel` out of any compatible model type.
 """
-function Base.convert(::Type{CoreModel}, m::M) where {M<:AbstractMetabolicModel}
-    if typeof(m) == CoreModel
+function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicModel}
+    if typeof(m) == MatrixModel
         return m
     end
 
     (xl, xu) = bounds(m)
-    CoreModel(
+    MatrixModel(
         stoichiometry(m),
         balance(m),
         objective(m),

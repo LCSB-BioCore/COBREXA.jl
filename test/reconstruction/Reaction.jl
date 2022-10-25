@@ -1,5 +1,5 @@
 @testset "Construction overloading" begin
-    model = load_model(StandardModel, model_paths["iJO1366.json"])
+    model = load_model(ObjectModel, model_paths["iJO1366.json"])
 
     rxn_original = model.reactions["NADH16pp"]
     nadh = model.metabolites["nadh_c"]
