@@ -1,33 +1,31 @@
 @testset "ObjectModel generic interface" begin
     # create a small model
-    m1 = Metabolite("m1")
+    m1 = Metabolite(id="m1")
     m1.formula = "C2H3"
     m1.compartment = "cytosol"
-    m2 = Metabolite("m2")
+    m2 = Metabolite(id="m2")
     m2.formula = "H3C2"
-    m3 = Metabolite("m3")
+    m3 = Metabolite(id="m3")
     m3.charge = -1
-    m4 = Metabolite("m4")
+    m4 = Metabolite(id="m4")
     m4.notes = Dict("confidence" => ["iffy"])
     m4.annotations = Dict("sbo" => ["blah"])
 
-    g1 = Gene("g1")
-    g2 = Gene("g2")
+    g1 = Gene(id="g1")
+    g2 = Gene(id="g2")
     g2.notes = Dict("confidence" => ["iffy"])
     g2.annotations = Dict("sbo" => ["blah"])
-    g3 = Gene("g3")
+    g3 = Gene(id="g3")
 
-    r1 = Reaction()
-    r1.id = "r1"
+    r1 = Reaction(id = "r1")
     r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
     r1.lower_bound = -100.0
     r1.upper_bound = 100.0
-    r1.grr = [["g1", "g2"], ["g3"]]
+    r1.gene_associations = [Isozyme(stoichiometry=Dict("g1"=>1, "g2"=>1)) , Isozyme(stoichiometry = Dict("g3"=>1))]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
     r1.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
-    r1.objective_coefficient = 1.0
-
+    
     r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
     r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
@@ -37,11 +35,11 @@
     gs = [g1, g2, g3]
     rxns = [r1, r2, r3, r4]
 
-    model = ObjectModel()
-    model.id = "model"
+    model = ObjectModel(id = "model")
     model.reactions = OrderedDict(r.id => r for r in rxns)
     model.metabolites = OrderedDict(m.id => m for m in mets)
     model.genes = OrderedDict(g.id => g for g in gs)
+    model.objective = Dict("r1" => 1.0)
 
     @test contains(sprint(show, MIME("text/plain"), model), "ObjectModel")
 
@@ -83,7 +81,7 @@
     obj_test[1] = 1.0
     @test objective(model) == obj_test
 
-    @test [["g1", "g2"], ["g3"]] == reaction_gene_association(model, "r1")
+    @test all(occursin.(["g1", "g2", "g3"], Ref(COBREXA.Internal.unparse_grr(String, reaction_gene_association(model, "r1")))))
     @test isnothing(reaction_gene_association(model, "r2"))
 
     @test metabolite_formula(model, "m2")["C"] == 2

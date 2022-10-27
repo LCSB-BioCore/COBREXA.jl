@@ -21,11 +21,10 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
         push!(model.rxns, rxn.id)
         lbs[j] = rxn.lower_bound
         ubs[j] = rxn.upper_bound
-        cs[j] = rxn.objective_coefficient
     end
     Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))
     model.S = [model.S Sadd]
-    model.c = dropzeros([model.c; cs])
+    model.c = spzeros(size(model.S, 2)) # does not add an objective
     model.xu = ubs
     model.xl = lbs
     return nothing

@@ -28,16 +28,6 @@ const VecType = AbstractVector{Float64}
 const StringVecType = AbstractVector{String}
 
 """
-    GeneAssociation = Vector{Vector{String}}
-
-An association to genes, represented as a logical formula in a positive
-disjunctive normal form (DNF). (The 2nd-level vectors of strings are connected
-by "and" to form conjunctions, and the 1st-level vectors of these conjunctions
-are connected by "or" to form the DNF.)
-"""
-const GeneAssociation = Vector{Vector{String}}
-
-"""
     MetaboliteFormula = Dict{String,Int}
 
 Dictionary of atoms and their abundances in a molecule.

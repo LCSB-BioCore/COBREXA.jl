@@ -1,8 +1,8 @@
 @testset "@add_reactions! helper" begin
-    mod = ObjectModel()
-    A = Metabolite("A")
-    B = Metabolite("B")
-    C = Metabolite("C")
+    mod = ObjectModel(id="testmodel")
+    A = Metabolite(id="A")
+    B = Metabolite(id="B")
+    C = Metabolite(id="C")
     add_metabolites!(mod, [A, B, C])
 
     @add_reactions! mod begin

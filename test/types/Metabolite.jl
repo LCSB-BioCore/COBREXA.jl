@@ -1,5 +1,5 @@
 @testset "Metabolite" begin
-    m1 = Metabolite()
+    m1 = Metabolite(id="testmetabolite")
     m1.id = "met1"
     m1.formula = "C6H12O6N"
     m1.charge = 1
@@ -14,15 +14,15 @@
         ),
     )
 
-    m2 = Metabolite("met2")
+    m2 = Metabolite(id="met2")
 
     m2.formula = "C6H12O6N"
 
-    m3 = Metabolite("met3")
+    m3 = Metabolite(id="met3")
     m3.formula = "X"
     m3.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["ad2s", "asds"])
 
-    m4 = Metabolite("met4")
+    m4 = Metabolite(id="met4")
     m4.formula = "X"
     m4.annotations = Dict("sboterm" => ["sbo"], "kegg.compound" => ["adxxx2s", "asdxxxs"])
 

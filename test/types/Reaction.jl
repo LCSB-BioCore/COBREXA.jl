@@ -1,38 +1,36 @@
 @testset "Reaction" begin
-    m1 = Metabolite("m1")
+    m1 = Metabolite(id="m1")
     m1.formula = "C2H3"
-    m2 = Metabolite("m2")
+    m2 = Metabolite(id="m2")
     m2.formula = "H3C2"
-    m3 = Metabolite("m3")
-    m4 = Metabolite("m4")
-    m5 = Metabolite("m5")
-    m6 = Metabolite("m6")
-    m7 = Metabolite("m7")
-    m8 = Metabolite("m8")
-    m9 = Metabolite("m9")
-    m10 = Metabolite("m10")
-    m11 = Metabolite("m11")
-    m12 = Metabolite("m12")
+    m3 = Metabolite(id="m3")
+    m4 = Metabolite(id="m4")
+    m5 = Metabolite(id="m5")
+    m6 = Metabolite(id="m6")
+    m7 = Metabolite(id="m7")
+    m8 = Metabolite(id="m8")
+    m9 = Metabolite(id="m9")
+    m10 = Metabolite(id="m10")
+    m11 = Metabolite(id="m11")
+    m12 = Metabolite(id="m12")
 
-    g1 = Gene("g1")
-    g2 = Gene("g2")
-    g3 = Gene("g3")
+    g1 = Gene(id="g1")
+    g2 = Gene(id="g2")
+    g3 = Gene(id="g3")
 
-    r1 = Reaction()
-    r1.id = "r1"
+    r1 = Reaction(id = "r1")
     r1.metabolites = Dict(m1.id => -1.0, m2.id => 1.0)
     r1.lower_bound = -100.0
     r1.upper_bound = 100.0
-    r1.grr = [["g1", "g2"], ["g3"]]
+    r1.gene_associations = [Isozyme(stoichiometry=Dict("g1"=>1, "g2"=>1)) , Isozyme(stoichiometry = Dict("g3"=>1))]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
     r1.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
-    r1.objective_coefficient = 1.0
 
     @test all(
         contains.(
             sprint(show, MIME("text/plain"), r1),
-            ["r1", "100.0", "g1 and g2", "glycolysis", "blah", "biocyc"],
+            ["r1", "100.0", "glycolysis", "blah", "biocyc", "Isozyme[Isozyme(Dict(\"g2\" => 1.0, \"g1\" => 1.0)"],
         ),
     )
 

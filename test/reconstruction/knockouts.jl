@@ -6,29 +6,29 @@ is available, but inside a group all of the genes need to be available
 """
 
 @testset "knockout_single_gene" begin
-    m = ObjectModel()
+    m = ObjectModel(id="testmodel")
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
     add_gene!(m, Gene("g1"))
     add_gene!(m, Gene("g2"))
     add_reaction!(
         m,
-        Reaction("v1", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"]]),
+        Reaction("v1"; metabolites = Dict("A" => -1.0, "B" => 1.0), gene_associations = [Isozyme(x) for x in [["g1"]]]),
     )
     add_reaction!(
         m,
-        Reaction("v2", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1", "g2"]]),
+        Reaction("v2", metabolites = Dict("A" => -1.0, "B" => 1.0), gene_associations = [Isozyme(x) for x in [["g1", "g2"]]]),
     )
     add_reaction!(
         m,
-        Reaction("v3", metabolites = Dict("A" => -1.0, "B" => 1.0), grr = [["g1"], ["g2"]]),
+        Reaction("v3", metabolites = Dict("A" => -1.0, "B" => 1.0), gene_associations = [Isozyme(x) for x in [["g1"], ["g2"]]]),
     )
     add_reaction!(
         m,
         Reaction(
             "v4",
             metabolites = Dict("A" => -1.0, "B" => 1.0),
-            grr = [["g1", "g2"], ["g2"]],
+            gene_associations = [Isozyme(x) for x in [["g1", "g2"], ["g2"]]],
         ),
     )
 
@@ -40,23 +40,23 @@ is available, but inside a group all of the genes need to be available
 end
 
 @testset "knockout_multiple_genes" begin
-    m = ObjectModel()
+    m = ObjectModel(id="testmodel")
     add_metabolite!(m, Metabolite("A"))
-    add_metabolite!(m, Metabolite("B"))
+    add_metabolite!(m, Metabolite(id="B"))
     add_gene!(m, Gene("g1"))
     add_gene!(m, Gene("g2"))
     add_gene!(m, Gene("g3"))
     add_reaction!(
         m,
         Reaction(
-            "v1",
+            "v1";
             metabolites = Dict("A" => -1.0, "B" => 1.0),
-            grr = [["g1"], ["g2"], ["g3"]],
+            gene_associations = [Isozyme(x) for x in [["g1"], ["g2"], ["g3"]]],
         ),
     )
     add_reaction!(
         m,
-        Reaction("v2", metabolites = Dict("A" => 1.0, "B" => -1.0), grr = [["g1"], ["g3"]]),
+        Reaction("v2"; metabolites = Dict("A" => 1.0, "B" => -1.0), gene_associations = [Isozyme(x) for x in [["g1"], ["g3"]]]),
     )
 
     remove_genes!(m, ["g1", "g3"], knockout_reactions = true)

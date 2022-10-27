@@ -1,5 +1,5 @@
 @testset "Gene: construction, printing, utils" begin
-    g = Gene()
+    g = Gene(id="testgene")
 
     # test defaults
     @test isempty(g.notes)
@@ -14,11 +14,11 @@
     @test all(contains.(sprint(show, MIME("text/plain"), g), ["gene1", "blah", "asds"]))
 
     # Test duplicate annotation finder
-    g2 = Gene("gene2")
+    g2 = Gene(id="gene2")
     g2.annotations = Dict("sboterm" => ["sbo2"], "ncbigene" => ["fff", "ggg"])
-    g3 = Gene("g3")
+    g3 = Gene(id="g3")
     g3.annotations = Dict("sboterm" => ["sbo3"], "ncbigene" => ["ads"])
-    g4 = Gene("g4")
+    g4 = Gene(id="g4")
     g4.annotations = Dict("sboterm" => ["sbo4"], "ncbigene" => ["ads22", "asd22s"])
     gdict = OrderedDict(g.id => g for g in [g, g2, g3, g4]) # this is how genes are stored in ObjectModel
 

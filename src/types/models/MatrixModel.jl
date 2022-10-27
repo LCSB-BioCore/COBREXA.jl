@@ -21,7 +21,7 @@ mutable struct MatrixModel <: AbstractMetabolicModel
     xu::Vector{Float64}
     rxns::Vector{String}
     mets::Vector{String}
-    grrs::Vector{Maybe{GeneAssociation}}
+    grrs::Vector{Maybe{Vector{Vector{String}}}}
 
     function MatrixModel(
         S::MatType,
@@ -31,7 +31,7 @@ mutable struct MatrixModel <: AbstractMetabolicModel
         xu::VecType,
         rxns::StringVecType,
         mets::StringVecType,
-        grrs::Vector{Maybe{GeneAssociation}} = Vector{Maybe{GeneAssociation}}(
+        grrs::Vector{Maybe{Vector{Vector{String}}}} = Vector{Maybe{Vector{Vector{String}}}}(
             nothing,
             length(rxns),
         ),
@@ -128,11 +128,13 @@ Accessors.reaction_stoichiometry(m::MatrixModel, ridx)::Dict{String,Float64} =
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction
+Retrieve the gene reaction associations from [`MatrixModel`](@ref) by reaction
 index.
 """
-Accessors.reaction_gene_association(model::MatrixModel, ridx::Int)::Maybe{GeneAssociation} =
-    model.grrs[ridx]
+Accessors.reaction_gene_association(
+    model::MatrixModel,
+    ridx::Int,
+)::Maybe{Vector{Vector{String}}} = model.grrs[ridx]
 
 """
 $(TYPEDSIGNATURES)
@@ -142,7 +144,7 @@ Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction ID
 Accessors.reaction_gene_association(
     model::MatrixModel,
     rid::String,
-)::Maybe{GeneAssociation} = model.grrs[first(indexin([rid], model.rxns))]
+)::Maybe{Vector{Vector{String}}} = model.grrs[first(indexin([rid], model.rxns))]
 
 """
 $(TYPEDSIGNATURES)
@@ -163,7 +165,7 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
         xu,
         reactions(m),
         metabolites(m),
-        Vector{Maybe{GeneAssociation}}([
+        Vector{Maybe{Vector{Vector{String}}}}([
             reaction_gene_association(m, id) for id in reactions(m)
         ]),
     )

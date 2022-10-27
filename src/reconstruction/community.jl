@@ -50,12 +50,14 @@ function add_community_objective!(
         throw(ArgumentError("Some objective metabolite(s) not found."))
 
     rdict = Dict(k => -float(v) for (k, v) in objective_mets_weights)
-    rxn = Reaction(objective_id)
+    rxn = Reaction(id=objective_id)
     rxn.metabolites = rdict
     rxn.lower_bound = 0.0
     rxn.upper_bound = constants.default_reaction_bound
-    rxn.objective_coefficient = 1.0
     community.reactions[rxn.id] = rxn
+    
+    community.objective = Dict(objective_id => 1.0)
+
 
     return nothing # stop annoying return value
 end
@@ -314,7 +316,7 @@ function join_with_exchanges(
     model_names = [],
 )::ObjectModel where {M<:AbstractMetabolicModel}
 
-    community = ObjectModel()
+    community = ObjectModel(id="communitymodel")
     rxns = OrderedDict{String,Reaction}()
     mets = OrderedDict{String,Metabolite}()
     genes = OrderedDict{String,Gene}()
@@ -345,11 +347,11 @@ function join_with_exchanges(
 
     # Add environmental exchange reactions and metabolites.TODO: add annotation details
     for (rid, mid) in exchange_rxn_mets
-        community.reactions[rid] = Reaction(rid)
+        community.reactions[rid] = Reaction(id=rid)
         community.reactions[rid].metabolites = Dict{String,Float64}(mid => -1.0)
         community.reactions[rid].lower_bound = 0.0
         community.reactions[rid].upper_bound = 0.0
-        community.metabolites[mid] = Metabolite(mid)
+        community.metabolites[mid] = Metabolite(id=mid)
         community.metabolites[mid].id = mid
     end
 
@@ -496,14 +498,12 @@ function add_model_with_exchanges!(
         # add biomass metabolite if applicable
         if rxn.id == biomass_id
             rxn.metabolites[model_name*rxn.id] = 1.0 # produces one biomass
-            community.metabolites[model_name*rxn.id] = Metabolite(model_name * rxn.id)
+            community.metabolites[model_name*rxn.id] = Metabolite(id = model_name * rxn.id)
         end
         # add environmental connection
         if rxn.id in keys(exchange_rxn_mets)
             rxn.metabolites[exchange_rxn_mets[rxn.id]] = -1.0
         end
-        # reset objective
-        rxn.objective_coefficient = 0.0
         rxn.id = model_name * rxn.id
         # add to community model
         community.reactions[rxn.id] = rxn

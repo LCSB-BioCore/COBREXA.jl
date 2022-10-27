@@ -3,18 +3,21 @@ $(TYPEDEF)
 
 # Fields
 $(TYPEDFIELDS)
+
+Default constructor requires the `id` keyword to be assigned.
 """
-mutable struct Gene
+Base.@kwdef mutable struct Gene
     id::String
-    name::Maybe{String}
-    notes::Notes
-    annotations::Annotations
+    name::Maybe{String} = nothing
+    sequence::Maybe{String} = nothing
+    notes::Notes = Notes()
+    annotations::Annotations = Annotations()
 end
 
 """
 $(TYPEDSIGNATURES)
 
-A convenient constructor for a `Gene`.
+A convenience constructor for [`Gene`](@ref) taking as first argument the id
+of the gene. All other kwargs are forwarded to the type constructor.
 """
-Gene(id = ""; name = nothing, notes = Notes(), annotations = Annotations()) =
-    Gene(String(id), name, notes, annotations)
+Gene(id; kwargs...) = Gene(;id, kwargs...)

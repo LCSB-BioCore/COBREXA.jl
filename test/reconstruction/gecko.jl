@@ -1,7 +1,7 @@
 @testset "GECKO" begin
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
-    get_reaction_isozymes =
+    get_reaction_isozyme_kcats =
         rid ->
             haskey(ecoli_core_reaction_kcats, rid) ?
             collect(

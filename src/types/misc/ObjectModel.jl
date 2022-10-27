@@ -5,7 +5,7 @@ $(TYPEDSIGNATURES)
 Shallow copy of a [`ObjectModel`](@ref)
 """
 Base.copy(m::ObjectModel) =
-    ObjectModel(m.id, reactions = m.reactions, metabolites = m.metabolites, genes = m.genes)
+    ObjectModel(id = m.id, reactions = m.reactions, metabolites = m.metabolites, genes = m.genes)
 
 """
 $(TYPEDSIGNATURES)
@@ -17,11 +17,10 @@ Base.copy(r::Reaction) = Reaction(
     metabolites = r.metabolites,
     lower_bound = r.lower_bound,
     upper_bound = r.upper_bound,
-    grr = r.grr,
+    gene_associations = r.gene_associations,
     subsystem = r.subsystem,
     notes = r.notes,
     annotations = r.annotations,
-    objective_coefficient = r.objective_coefficient,
 )
 
 """
