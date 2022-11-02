@@ -50,8 +50,8 @@ $(EXPORTS)
 """
 module Modifications
 # TODO move this into Solver
-using ..ModuleTools
-@dse
+    using ..ModuleTools
+    @dse
 end
 
 @export_locals

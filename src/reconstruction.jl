@@ -33,8 +33,8 @@ Functions that create model variants, typically for efficient use in
 $(EXPORTS)
 """
 module Modifications
-using ..ModuleTools
-@dse
+    using ..ModuleTools
+    @dse
 end
 
 @export_locals
