@@ -30,8 +30,8 @@ Internal IO helpers.
 $(EXPORTS)
 """
 module Internal
-using ..ModuleTools
-@dse
+    using ..ModuleTools
+    @dse
 end
 
 @export_locals
