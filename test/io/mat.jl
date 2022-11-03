@@ -13,3 +13,10 @@ end
     @test wrote isa CoreModel
     @test isequal(wrote, loaded)
 end
+
+@testset "Import yeast-GEM (mat)" begin
+    m = load_model(StandardModel, model_paths["yeast-GEM.mat"])
+    @test n_metabolites(m) == 2744
+    @test n_reactions(m) == 4063
+    @test n_genes(m) == 1160
+end
