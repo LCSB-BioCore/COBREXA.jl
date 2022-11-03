@@ -41,10 +41,10 @@ Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
 
     "Ordered dictionary of metabolites"
     metabolites::OrderedDict{String,Metabolite} = OrderedDict{String,Metabolite}()
-    
+
     "Ordered dictionary of genes"
     genes::OrderedDict{String,Gene} = OrderedDict{String,Gene}()
-    
+
     "Model objective"
     objective::Dict{String,Float64} = Dict{String,Float64}()
 end
@@ -168,7 +168,10 @@ $(TYPEDSIGNATURES)
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-function Accessors.reaction_gene_association(model::ObjectModel, id::String)::Maybe{GeneAssociationsDNF}
+function Accessors.reaction_gene_association(
+    model::ObjectModel,
+    id::String,
+)::Maybe{GeneAssociationsDNF}
     isnothing(model.reactions[id].gene_associations) && return nothing
     [collect(keys(rga.stoichiometry)) for rga in model.reactions[id].gene_associations]
 end

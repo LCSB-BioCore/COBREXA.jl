@@ -46,8 +46,7 @@ julia> parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
  ["YIL010W", "YGR209C"]
 ```
 """
-parse_grr(s::String) =
-    maybemap(parse_grr, parse_grr_to_sbml(s))::Maybe{GeneAssociationsDNF}
+parse_grr(s::String) = maybemap(parse_grr, parse_grr_to_sbml(s))::Maybe{GeneAssociationsDNF}
 
 """
 $(TYPEDSIGNATURES)
@@ -128,7 +127,16 @@ julia> unparse_grr(String, [["YIL010W", "YLR043C"], ["YIL010W", "YGR209C"]])
 "(YIL010W and YLR043C) or (YIL010W and YGR209C)"
 ```
 """
-function unparse_grr(::Type{String}, grr::GeneAssociationsDNF)::String
+unparse_grr(::Type{String}, grr::GeneAssociationsDNF)::String = unparse_grr_from_dnf(grr)
+unparse_grr(::Type{String}, isozymes::Vector{Isozyme})::String =
+    unparse_grr_from_dnf([collect(keys(iso.stoichiometry)) for iso in isozymes])
+
+"""
+$(TYPEDSIGNATURES)
+
+Internal helper for parsing the GRRs into their human readable versions.
+"""
+function unparse_grr_from_dnf(grr::GeneAssociationsDNF)
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")

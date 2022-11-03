@@ -39,7 +39,7 @@
                 "glycolysis",
                 "blah",
                 "biocyc",
-                "Isozyme[Isozyme(Dict(\"g2\" => 1.0, \"g1\" => 1.0)",
+                "(g2 and g1) or (g3)",
             ],
         ),
     )

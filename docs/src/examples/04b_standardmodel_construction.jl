@@ -56,7 +56,8 @@ m4 = metabolite_list[4]
     "r5", m4 → m2
 end
 
-model.reactions["r4"].gene_associations = [Isozyme(x) for x in [["g5"], ["g6", "g7"], ["g8"]]]
+model.reactions["r4"].gene_associations =
+    [Isozyme(x) for x in [["g5"], ["g6", "g7"], ["g8"]]]
 
 #md # !!! note "Note: Writing unicode arrows"
 #md #     The reaction arrows can be easily written by using the `LaTeX`
