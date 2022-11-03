@@ -1,14 +1,14 @@
 
 """
-    module Reconstruction
+    module Construction
 
-Reconstruction functionality of COBREXA; mainly functions that construct or
+Model construction functionality of COBREXA; mainly functions that construct or
 modify the model contents.
 
 # Exports
 $(EXPORTS)
 """
-module Reconstruction
+module Construction
 using ..ModuleTools
 @dse
 
@@ -21,7 +21,7 @@ using ..Types
 using SparseArrays, OrderedCollections
 using MacroTools
 
-@inc_dir reconstruction
+@inc_dir construction
 
 """
     module Modifications
@@ -40,10 +40,10 @@ end
 @export_locals
 end
 
-# this needs to import from Reconstruction
-@inject Reconstruction.Modifications begin
-    using ..Reconstruction
-    @inc_dir reconstruction modifications
+# this needs to import from construction
+@inject Construction.Modifications begin
+    using ..Construction
+    @inc_dir construction modifications
 
     @export_locals
 end

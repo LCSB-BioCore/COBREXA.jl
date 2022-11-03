@@ -4,8 +4,8 @@ using COBREXA.Types,
     COBREXA.Accessors,
     COBREXA.Analysis,
     COBREXA.Analysis.Modifications,
-    COBREXA.Reconstruction,
-    COBREXA.Reconstruction.Modifications,
+    COBREXA.Construction,
+    COBREXA.Construction.Modifications,
     COBREXA.Utils,
     COBREXA.IO,
     COBREXA.Solver
@@ -75,7 +75,7 @@ run_test_file("data_downloaded.jl")
     run_test_file("log.jl")
     run_test_dir("utils", "Utilities")
     run_test_dir("io", "I/O functions")
-    run_test_dir("reconstruction")
+    run_test_dir("construction")
     run_test_dir("analysis")
     run_test_dir(joinpath("analysis", "sampling"), "Sampling")
     run_test_file("aqua.jl")

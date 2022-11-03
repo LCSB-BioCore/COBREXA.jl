@@ -11,7 +11,7 @@ separate concerns:
 
 - How to allow the analysis functions to gather the required information from
   any user-specified model data structure?
-- How to make the reconstruction functions (i.e., reaction or gene deletions)
+- How to make the construction functions (i.e., reaction or gene deletions)
   work properly on any data structure?
 
 To solve the first concern, COBREXA.jl specifies a set of generic accessors

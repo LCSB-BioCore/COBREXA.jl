@@ -36,7 +36,7 @@ using StableRNGs
 
 @inc_dir analysis
 @inc_dir analysis sampling
-@inc_dir analysis reconstruction
+@inc_dir analysis construction
 
 """
     module Modifications
