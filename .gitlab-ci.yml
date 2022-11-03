@@ -72,7 +72,7 @@ variables:
 
 .global_julia18: &global_julia18
   variables:
-    JULIA_VER: "v1.8.0"
+    JULIA_VER: "v1.8.2"
 
 .global_julia16: &global_julia16
   variables:
