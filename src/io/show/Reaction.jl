@@ -36,11 +36,11 @@ function Base.show(io::Base.IO, ::MIME"text/plain", r::Reaction)
                 "Reaction.$(string(fname)): ",
                 _pretty_substances(substrates) * arrow * _pretty_substances(products),
             )
-        elseif fname == :grr
+        elseif fname == :gene_associations
             _pretty_print_keyvals(
                 io,
                 "Reaction.$(string(fname)): ",
-                maybemap(x -> unparse_grr(String, x), r.grr),
+                maybemap(x -> unparse_grr(String, x), r.gene_associations),
             )
         elseif fname in (:lower_bound, :upper_bound, :objective_coefficient)
             _pretty_print_keyvals(

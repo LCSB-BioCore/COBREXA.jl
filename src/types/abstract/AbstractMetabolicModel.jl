@@ -54,3 +54,16 @@ Free-form notes about something (e.g. a [`Gene`](@ref)), categorized by
 "topic".
 """
 const Notes = Dict{String,Vector{String}}
+
+"""
+    GeneAssociationsDNF = Vector{Vector{String}}
+
+Disjunctive normal form of simple gene associations. For example, `[[A, B],
+[B]]` represents two isozymes where the first requires both genes `A` and `B`,
+while the second isozyme only requires gene `C`.
+
+This string representation is typically used to represent gene reaction rules,
+but does not contain any subunit stoichiometry of kinetic information of the
+isozymes. See [`Isozyme`}(@ref) for a more complete structure.
+"""
+const GeneAssociationsDNF = Vector{Vector{String}}

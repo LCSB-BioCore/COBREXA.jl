@@ -22,4 +22,4 @@ $(TYPEDSIGNATURES)
 A convenience constructor for [`Metabolite`](@ref) taking as first argument the id
 of the metabolite. All other kwargs are forwarded to the type constructor.
 """
-Metabolite(id; kwargs...) = Metabolite(;id, kwargs...)
+Metabolite(id; kwargs...) = Metabolite(; id, kwargs...)

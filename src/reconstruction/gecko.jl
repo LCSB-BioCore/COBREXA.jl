@@ -7,7 +7,7 @@ GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
 # Arguments
 
 - `reaction_isozymes` is a function that returns a vector of [`Isozyme`](@ref)s
-  for each reaction, or empty vector if the reaction is not enzymatic.
+  for each reaction, or `nothing` if the reaction is not enzymatic.
 - `gene_product_bounds` is a function that returns lower and upper bound for
   concentration for a given gene product (specified by the same string gene ID as in
   `reaction_isozymes`), as `Tuple{Float64,Float64}`.
@@ -33,7 +33,7 @@ function make_gecko_model(
 )
     ris_ =
         reaction_isozymes isa Function ? reaction_isozymes :
-        (rid -> get(reaction_isozymes, rid, []))
+        (rid -> get(reaction_isozymes, rid, nothing))
     gpb_ =
         gene_product_bounds isa Function ? gene_product_bounds :
         (gid -> gene_product_bounds[gid])
@@ -61,15 +61,15 @@ function make_gecko_model(
 
     for i = 1:n_reactions(model)
         isozymes = ris_(rids[i])
-        if isempty(isozymes)
+        if isnothing(isozymes)
             push!(columns, Types._GeckoReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []))
             continue
         end
 
         # loop over both directions for all isozymes
         for (lb, ub, kcatf, dir) in [
-            (-ubs[i], -lbs[i], i -> i.kcat_reverse, -1),
-            (lbs[i], ubs[i], i -> i.kcat_forward, 1),
+            (-ubs[i], -lbs[i], x -> x.kcat_backward, -1),
+            (lbs[i], ubs[i], x -> x.kcat_forward, 1),
         ]
             # The coefficients in the coupling matrix will be categorized in
             # separate rows for negative and positive reactions. Surprisingly,
@@ -101,7 +101,7 @@ function make_gecko_model(
                                     length(coupling_row_gene_product)
                             end
                             (row_idx, stoich / kcat)
-                        end for (gene, stoich) in isozyme.gene_product_count if
+                        end for (gene, stoich) in isozyme.stoichiometry if
                         haskey(gene_name_lookup, gene)
                     )
 

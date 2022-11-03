@@ -4,8 +4,13 @@ $(TYPEDSIGNATURES)
 
 Shallow copy of a [`ObjectModel`](@ref)
 """
-Base.copy(m::ObjectModel) =
-    ObjectModel(id = m.id, reactions = m.reactions, metabolites = m.metabolites, genes = m.genes)
+Base.copy(m::ObjectModel) = ObjectModel(
+    id = m.id,
+    reactions = m.reactions,
+    metabolites = m.metabolites,
+    genes = m.genes,
+    objective = m.objective,
+)
 
 """
 $(TYPEDSIGNATURES)

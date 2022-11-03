@@ -128,8 +128,10 @@ function remove_genes!(
     if knockout_reactions
         rm_reactions = String[]
         for (rid, r) in model.reactions
-            if !isnothing(r.gene_associations) &&
-               all(any(in.(gids, Ref(conjunction))) for conjunction in reaction_gene_association(model, rid))
+            if !isnothing(r.gene_associations) && all(
+                any(in.(gids, Ref(conjunction))) for
+                conjunction in reaction_gene_association(model, rid)
+            )
                 push!(rm_reactions, rid)
             end
         end

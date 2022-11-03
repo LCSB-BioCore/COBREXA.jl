@@ -62,12 +62,14 @@ Compute a "score" for picking the most viable isozyme for
 [`make_smoment_model`](@ref), based on maximum kcat divided by relative mass of
 the isozyme. This is used because sMOMENT algorithm can not handle multiple
 isozymes for one reaction.
+
+# Note
+This function does not take the direction of the reaction into account, i.e. the
+maximum forward or reverse turnover number is used internally.
 """
 smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass) =
-    max(isozyme.kcat_forward, isozyme.kcat_reverse) / sum(
-        count * gene_product_molar_mass(gene) for
-        (gene, count) in isozyme.gene_product_count
-    )
+    max(isozyme.kcat_forward, isozyme.kcat_backward) /
+    sum(count * gene_product_molar_mass(gene) for (gene, count) in isozyme.stoichiometry)
 
 """
 $(TYPEDSIGNATURES)

@@ -1,29 +1,29 @@
 @testset "GECKO" begin
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
-    get_reaction_isozyme_kcats =
+    get_reaction_isozymes =
         rid ->
             haskey(ecoli_core_reaction_kcats, rid) ?
             collect(
                 Isozyme(
-                    Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
-                    ecoli_core_reaction_kcats[rid][i]...,
+                    stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                    kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
+                    kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
                 ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
-            ) : Isozyme[]
+            ) : nothing
 
     get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
 
     total_gene_product_mass = 100.0
 
-    bounded_model =
-        model |> with_changed_bounds(
+    gm =
+        model |>
+        with_changed_bounds(
             ["EX_glc__D_e", "GLCpts"];
             lower = [-1000.0, -1.0],
             upper = [nothing, 12.0],
-        )
-
-    gm =
-        bounded_model |> with_gecko(
+        ) |>
+        with_gecko(
             reaction_isozymes = get_reaction_isozymes,
             gene_product_bounds = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
             gene_product_molar_mass = get_gene_product_mass,
@@ -72,7 +72,7 @@ end
     original GECKO paper. This model is nice to troubleshoot with,
     because the stoich matrix is small.
     =#
-    m = ObjectModel("gecko")
+    m = ObjectModel(id = "gecko")
     m1 = Metabolite("m1")
     m2 = Metabolite("m2")
     m3 = Metabolite("m3")
@@ -89,21 +89,25 @@ end
 
     gs = [Gene("g$i") for i = 1:5]
 
-    m.reactions["r2"].grr = [["g5"]]
-    m.reactions["r3"].grr = [["g1"]]
-    m.reactions["r4"].grr = [["g1"], ["g2"]]
-    m.reactions["r5"].grr = [["g3", "g4"]]
-    m.reactions["r6"].objective_coefficient = 1.0
+    m.reactions["r2"].gene_associations = [Isozyme(["g5"])]
+    m.reactions["r3"].gene_associations =
+        [Isozyme(["g1"]; kcat_forward = 1.0, kcat_backward = 1.0)]
+    m.reactions["r4"].gene_associations = [
+        Isozyme(["g1"]; kcat_forward = 2.0, kcat_backward = 2.0),
+        Isozyme(["g2"]; kcat_forward = 3.0, kcat_backward = 3.0),
+    ]
+    m.reactions["r5"].gene_associations = [
+        Isozyme(;
+            stoichiometry = Dict("g3" => 1, "g4" => 2),
+            kcat_forward = 70.0,
+            kcat_backward = 70.0,
+        ),
+    ]
+    m.objective = Dict("r6" => 1.0)
 
     add_genes!(m, gs)
     add_metabolites!(m, [m1, m2, m3, m4])
 
-    reaction_isozymes = Dict(
-        "r3" => [Isozyme(Dict("g1" => 1), 1.0, 1.0)],
-        "r4" =>
-            [Isozyme(Dict("g1" => 1), 2.0, 2.0), Isozyme(Dict("g2" => 1), 3.0, 3.0)],
-        "r5" => [Isozyme(Dict("g3" => 1, "g4" => 2), 70.0, 70.0)],
-    )
     gene_product_bounds = Dict(
         "g1" => (0.0, 10.0),
         "g2" => (0.0, 10.0),
@@ -117,7 +121,10 @@ end
 
     gm = make_gecko_model(
         m;
-        reaction_isozymes,
+        reaction_isozymes = Dict(
+            rid => r.gene_associations for (rid, r) in m.reactions if
+            !isnothing(reaction_gene_association(m, rid)) && rid in ["r3", "r4", "r5"]
+        ),
         gene_product_bounds,
         gene_product_molar_mass,
         gene_product_mass_group_bound,

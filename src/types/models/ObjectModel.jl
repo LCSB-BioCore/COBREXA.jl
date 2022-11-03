@@ -33,10 +33,19 @@ keys(model.reactions)
 $(TYPEDFIELDS)
 """
 Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
+    "Name of the model"
     id::String
+
+    "Ordered dictionary of reactions"
     reactions::OrderedDict{String,Reaction} = OrderedDict{String,Reaction}()
+
+    "Ordered dictionary of metabolites"
     metabolites::OrderedDict{String,Metabolite} = OrderedDict{String,Metabolite}()
+    
+    "Ordered dictionary of genes"
     genes::OrderedDict{String,Gene} = OrderedDict{String,Gene}()
+    
+    "Model objective"
     objective::Dict{String,Float64} = Dict{String,Float64}()
 end
 
@@ -56,7 +65,6 @@ $(TYPEDSIGNATURES)
 Return the number of reactions contained in `model`.
 """
 Accessors.n_reactions(model::ObjectModel)::Int = length(model.reactions)
-
 
 """
 $(TYPEDSIGNATURES)
@@ -160,10 +168,7 @@ $(TYPEDSIGNATURES)
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-function Accessors.reaction_gene_association(
-    model::ObjectModel,
-    id::String,
-)
+function Accessors.reaction_gene_association(model::ObjectModel, id::String)::Maybe{GeneAssociationsDNF}
     isnothing(model.reactions[id].gene_associations) && return nothing
     [collect(keys(rga.stoichiometry)) for rga in model.reactions[id].gene_associations]
 end
@@ -308,8 +313,8 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     rxnids = reactions(model)
 
     for gid in gids
-        modelgenes[gid] = Gene(;
-            id=gid,
+        modelgenes[gid] = Gene(
+            gid;
             name = gene_name(model, gid),
             notes = gene_notes(model, gid),
             annotations = gene_annotations(model, gid),
@@ -317,8 +322,8 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     end
 
     for mid in metids
-        modelmetabolites[mid] = Metabolite(;
-            id= mid,
+        modelmetabolites[mid] = Metabolite(
+            mid;
             name = metabolite_name(model, mid),
             charge = metabolite_charge(model, mid),
             formula = maybemap(unparse_formula, metabolite_formula(model, mid)),
@@ -330,7 +335,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
 
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
-    obj_idxs, obj_vals = findnz(objective(model)) 
+    obj_idxs, obj_vals = findnz(objective(model))
     modelobjective = Dict(k => v for (k, v) in zip(reactions(model)[obj_idxs], obj_vals))
     for (i, rid) in enumerate(rxnids)
         rmets = Dict{String,Float64}()
@@ -338,13 +343,16 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
             rmets[metids[j]] = stoich
         end
         rgas = reaction_gene_association(model, rid)
-        modelreactions[rid] = Reaction(;
-            id = rid,
+        modelreactions[rid] = Reaction(
+            rid;
             name = reaction_name(model, rid),
             metabolites = rmets,
             lower_bound = lbs[i],
             upper_bound = ubs[i],
-            gene_associations = isnothing(rgas) ? nothing : [Isozyme(; stoichiometry = Dict(k => 1.0 for k in rga) ) for rga in rgas],
+            gene_associations = isnothing(rgas) ? nothing :
+                                [
+                Isozyme(; stoichiometry = Dict(k => 1.0 for k in rga)) for rga in rgas
+            ],
             notes = reaction_notes(model, rid),
             annotations = reaction_annotations(model, rid),
             subsystem = reaction_subsystem(model, rid),

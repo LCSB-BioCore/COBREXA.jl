@@ -2,7 +2,7 @@
 $(TYPEDEF)
 
 Information about isozyme composition and annotations justifying the
-stoichiometry.
+stoichiometry or turnover numbers.
 
 # Fields
 $(TYPEDFIELDS)
@@ -10,6 +10,8 @@ $(TYPEDFIELDS)
 Base.@kwdef mutable struct Isozyme
     stoichiometry::Dict{String,Float64}
     annotation::Annotations = Annotations()
+    kcat_forward::Maybe{Float64} = nothing
+    kcat_backward::Maybe{Float64} = nothing
 end
 
 """
@@ -19,7 +21,8 @@ A convenience constructor for [`Isozyme`](@ref) that takes a string gene
 reaction rule and converts it into the appropriate format. Assumes the
 stoichiometry for each subunit is 1.
 """
-Isozyme(gids::Vector{String}) = Isozyme(stoichiometry=Dict(gid => 1.0 for gid in gids))
+Isozyme(gids::Vector{String}; kwargs...) =
+    Isozyme(; stoichiometry = Dict(gid => 1.0 for gid in gids), kwargs...)
 
 """
     const GeneAssociations

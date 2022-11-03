@@ -34,7 +34,7 @@ fieldnames(Reaction)
 
 sm.reactions["TALA"].name
 #
-sm.reactions["TALA"].grr #gene-reaction relationship
+sm.reactions["TALA"].gene_associations #gene-reaction relationship
 #
 sm.reactions["TALA"].subsystem
 #

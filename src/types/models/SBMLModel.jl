@@ -112,7 +112,7 @@ Retrieve the reaction gene associations from [`SBMLModel`](@ref).
 Accessors.reaction_gene_association(
     model::SBMLModel,
     rid::String,
-)::Maybe{Vector{Vector{String}}} =
+)::Maybe{GeneAssociationsDNF} =
     maybemap(parse_grr, model.sbml.reactions[rid].gene_product_association)
 
 """

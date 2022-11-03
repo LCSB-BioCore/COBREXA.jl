@@ -56,8 +56,8 @@ function Reaction(
     else
         throw(DomainError(dir, "unsupported direction"))
     end
-    Reaction(;
-        id,
+    Reaction(
+        id;
         metabolites = metabolites,
         lower_bound = lower_bound,
         upper_bound = upper_bound,

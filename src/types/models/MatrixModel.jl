@@ -21,7 +21,7 @@ mutable struct MatrixModel <: AbstractMetabolicModel
     xu::Vector{Float64}
     rxns::Vector{String}
     mets::Vector{String}
-    grrs::Vector{Maybe{Vector{Vector{String}}}}
+    grrs::Vector{Maybe{GeneAssociationsDNF}}
 
     function MatrixModel(
         S::MatType,
@@ -31,7 +31,7 @@ mutable struct MatrixModel <: AbstractMetabolicModel
         xu::VecType,
         rxns::StringVecType,
         mets::StringVecType,
-        grrs::Vector{Maybe{Vector{Vector{String}}}} = Vector{Maybe{Vector{Vector{String}}}}(
+        grrs::Vector{Maybe{GeneAssociationsDNF}} = Vector{Maybe{GeneAssociationsDNF}}(
             nothing,
             length(rxns),
         ),
@@ -134,7 +134,7 @@ index.
 Accessors.reaction_gene_association(
     model::MatrixModel,
     ridx::Int,
-)::Maybe{Vector{Vector{String}}} = model.grrs[ridx]
+)::Maybe{GeneAssociationsDNF} = model.grrs[ridx]
 
 """
 $(TYPEDSIGNATURES)
@@ -144,7 +144,7 @@ Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction ID
 Accessors.reaction_gene_association(
     model::MatrixModel,
     rid::String,
-)::Maybe{Vector{Vector{String}}} = model.grrs[first(indexin([rid], model.rxns))]
+)::Maybe{GeneAssociationsDNF} = model.grrs[first(indexin([rid], model.rxns))]
 
 """
 $(TYPEDSIGNATURES)
@@ -165,7 +165,7 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
         xu,
         reactions(m),
         metabolites(m),
-        Vector{Maybe{Vector{Vector{String}}}}([
+        Vector{Maybe{GeneAssociationsDNF}}([
             reaction_gene_association(m, id) for id in reactions(m)
         ]),
     )

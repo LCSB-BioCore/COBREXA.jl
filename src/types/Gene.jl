@@ -20,4 +20,4 @@ $(TYPEDSIGNATURES)
 A convenience constructor for [`Gene`](@ref) taking as first argument the id
 of the gene. All other kwargs are forwarded to the type constructor.
 """
-Gene(id; kwargs...) = Gene(;id, kwargs...)
+Gene(id; kwargs...) = Gene(; id, kwargs...)

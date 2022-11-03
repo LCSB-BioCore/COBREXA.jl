@@ -36,7 +36,7 @@ function save_h5_model(model::AbstractMetabolicModel, file_name::String)::HDF5Mo
             write(f, "upper_bounds", ubs[rxnp])
         end
     end
-    # TODO: genes, grrs, compartments. Perhaps chemistry and others?
+    # TODO: genes, gene_associations, compartments. Perhaps chemistry and others?
     HDF5Model(file_name)
 end
 
