@@ -8,7 +8,7 @@ Base.isequal(model1::MatrixModel, model2::MatrixModel) =
     isequal(model1.mets, model2.mets)
 
 Base.copy(model::MatrixModel) =
-    MatrixModel(model.S, model.b, model.c, model.xl, model.xu, model.rxns, model.mets)
+    MatrixModel(model.id, model.S, model.b, model.c, model.xl, model.xu, model.rxns, model.mets)
 
 Base.isequal(model1::MatrixModelWithCoupling, model2::MatrixModelWithCoupling) =
     isequal(model1.lm, model2.lm) &&

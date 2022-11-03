@@ -10,6 +10,8 @@ struct MATModel <: AbstractMetabolicModel
     mat::Dict{String,Any}
 end
 
+Accessors.model_id(model::MATModel)::String = model.mat["description"]
+
 Accessors.n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
 Accessors.n_reactions(m::MATModel)::Int = size(m.mat["S"], 2)
 
@@ -236,6 +238,7 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
     nm = n_metabolites(m)
     return MATModel(
         Dict(
+            "description" => model_id(m),
             "S" => stoichiometry(m),
             "rxns" => reactions(m),
             "mets" => metabolites(m),

@@ -6,6 +6,7 @@
     @test isempty(filter(looks_like_exchange_reaction, reactions(cp)))
 
     cp = MatrixModel(
+        "testmodel",
         [-1.0 -1 -2; 0 -1 0; 0 0 0],
         zeros(3),
         ones(3),
@@ -17,6 +18,7 @@
     @test filter(looks_like_exchange_reaction, reactions(cp)) == ["EX_m1"]
 
     cp = MatrixModel(
+        "testmodel",
         [-1.0 0 0; 0 0 -1; 0 -1 0],
         zeros(3),
         ones(3),

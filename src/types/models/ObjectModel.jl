@@ -49,6 +49,8 @@ Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
     objective::Dict{String,Float64} = Dict{String,Float64}()
 end
 
+Accessors.model_id(model::ObjectModel)::String = model.id
+
 # AbstractMetabolicModel interface follows
 """
 $(TYPEDSIGNATURES)
@@ -306,7 +308,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
         return model
     end
 
-    id = "" # TODO: add accessor to get model ID
+    id = model_id(model)
     modelreactions = OrderedDict{String,Reaction}()
     modelmetabolites = OrderedDict{String,Metabolite}()
     modelgenes = OrderedDict{String,Gene}()

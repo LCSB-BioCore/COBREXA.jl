@@ -71,6 +71,8 @@ end
 
 _parse_notes(x)::Notes = _parse_annotations(x)
 
+Accessors.model_id(model::JSONModel)::String = model.json["id"]
+
 Accessors.n_reactions(model::JSONModel) = length(model.rxns)
 Accessors.n_metabolites(model::JSONModel) = length(model.mets)
 Accessors.n_genes(model::JSONModel) = length(model.genes)
@@ -306,7 +308,7 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     ocs = objective(mm)
 
     json = Dict{String,Any}()
-    json["id"] = "model" # default
+    json["id"] = model_id(mm)
 
     json[first(constants.keynames.genes)] = [
         Dict([

@@ -19,6 +19,7 @@
 
     # a special testcase for slightly sub-optimal FVA (gamma<1)
     cp = MatrixModel(
+        "testmodel",
         [-1.0 -1.0 -1.0],
         [0.0],
         [1.0, 0.0, 0.0],

@@ -10,6 +10,15 @@
 """
 $(TYPEDSIGNATURES)
 
+Return the ID of the model.
+"""
+function model_id(a::AbstractMetabolicModel)::String
+    missing_impl_error(model_id, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Return a vector of reaction identifiers in a model. The vector precisely
 corresponds to the columns in [`stoichiometry`](@ref) matrix.
 

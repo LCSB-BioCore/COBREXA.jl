@@ -46,6 +46,8 @@
 
     @test contains(sprint(show, MIME("text/plain"), model), "ObjectModel")
 
+    @test model_id(model) == "model"
+
     @test "r1" in reactions(model)
     @test "m4" in metabolites(model)
     @test "g2" in genes(model)

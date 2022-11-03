@@ -1,4 +1,5 @@
 test_LP() = MatrixModel(
+    "test_LP",
     zeros(4, 3),
     zeros(4),
     ones(3),
@@ -9,6 +10,7 @@ test_LP() = MatrixModel(
 )
 
 test_simpleLP() = MatrixModel(
+    "test_simpleLP",
     [
         1.0 1.0
         -1.0 1.0
@@ -22,6 +24,7 @@ test_simpleLP() = MatrixModel(
 )
 
 test_simpleLP2() = MatrixModel(
+    "test_simpleLP2",
     zeros(2, 2),
     [0.0, 0.0],
     [-0.25, 1.0],
@@ -32,6 +35,7 @@ test_simpleLP2() = MatrixModel(
 )
 
 test_sparseLP() = MatrixModel(
+    "test_sparseLP",
     sprand(4000, 3000, 0.5),
     sprand(4000, 0.5),
     sprand(3000, 0.5),
@@ -43,6 +47,7 @@ test_sparseLP() = MatrixModel(
 
 test_coupledLP() = MatrixModelWithCoupling(
     MatrixModel(
+        "test_coupledLP",
         sprand(4000, 3000, 0.5),
         sprand(4000, 0.5),
         sprand(3000, 0.5),
@@ -57,6 +62,7 @@ test_coupledLP() = MatrixModelWithCoupling(
 )
 
 test_toyModel() = MatrixModel(
+    "test_toyModel",
     [
         -1.0 1.0 0.0 0.0 0.0 0.0 0.0
         -2.0 0.0 1.0 0.0 0.0 0.0 0.0

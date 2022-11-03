@@ -11,6 +11,8 @@ struct SBMLModel <: AbstractMetabolicModel
     sbml::SBML.Model
 end
 
+Accessors.model_id(model::SBMLModel)::String = model.sbml.id
+
 """
 $(TYPEDSIGNATURES)
 

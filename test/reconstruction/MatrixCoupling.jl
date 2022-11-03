@@ -101,6 +101,7 @@ end
     @test cp.cu == new_cp.cu
 
     cm = MatrixModel(
+        "testmodel",
         2.0 * ones(4, 10),
         3 .* ones(4),
         2 .* ones(10),

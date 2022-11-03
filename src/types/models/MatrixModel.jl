@@ -14,6 +14,7 @@ s.t. S x = b
 $(TYPEDFIELDS)
 """
 mutable struct MatrixModel <: AbstractMetabolicModel
+    id::String
     S::SparseMat
     b::SparseVec
     c::SparseVec
@@ -24,6 +25,7 @@ mutable struct MatrixModel <: AbstractMetabolicModel
     grrs::Vector{Maybe{GeneAssociationsDNF}}
 
     function MatrixModel(
+        id::String,
         S::MatType,
         b::VecType,
         c::VecType,
@@ -43,9 +45,11 @@ mutable struct MatrixModel <: AbstractMetabolicModel
             [length(c), length(xl), length(xu), length(rxns), length(grrs)] .== size(S, 2),
         ) || throw(DimensionMismatch("inconsistent number of reactions"))
 
-        new(sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets, grrs)
+        new(id, sparse(S), sparse(b), sparse(c), collect(xl), collect(xu), rxns, mets, grrs)
     end
 end
+
+Accessors.model_id(model::MatrixModel)::String = model.id
 
 """
 $(TYPEDSIGNATURES)
@@ -158,6 +162,7 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
 
     (xl, xu) = bounds(m)
     MatrixModel(
+        model_id(m),
         stoichiometry(m),
         balance(m),
         objective(m),
