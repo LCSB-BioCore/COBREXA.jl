@@ -27,6 +27,7 @@ const _constants = (
         metformulas = ["metFormula", "metFormulas"],
         metcharges = ["metCharge", "metCharges"],
         metcompartments = ["metCompartment", "metCompartments", "metComp", "metComps"],
+        metcomptables = ["comps", "compNames"],
         rxnnames = ["rxnNames"],
         metnames = ["metNames"],
     ),

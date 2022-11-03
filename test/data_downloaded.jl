@@ -68,4 +68,14 @@ model_paths = Dict{String,String}(
         df("Recon3D.json"),
         "aba925f17547a42f9fdb4c1f685d89364cbf4979bbe7862e9f793af7169b26d5",
     ),
+    "yeast-GEM.mat" => download_data_file(
+        "https://github.com/SysBioChalmers/yeast-GEM/raw/v8.6.2/model/yeast-GEM.mat",
+        df("yeast-GEM.mat"),
+        "c2587e258501737e0141cd47e0f854a60a47faee2d4c6ad582a00e437676b181",
+    ),
+    "yeast-GEM.xml" => download_data_file(
+        "https://github.com/SysBioChalmers/yeast-GEM/raw/v8.6.2/model/yeast-GEM.xml",
+        df("yeast-GEM.xml"),
+        "c728b09d849b744ec7640cbf15776d40fb2d9cbd0b76a840a8661b626c1bd4be",
+    ),
 )
