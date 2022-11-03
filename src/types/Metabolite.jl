@@ -3,28 +3,23 @@ $(TYPEDEF)
 
 # Fields
 $(TYPEDFIELDS)
+
+Default constructor requires the `id` keyword to be assigned.
 """
-mutable struct Metabolite
+Base.@kwdef mutable struct Metabolite
     id::String
-    name::Maybe{String}
-    formula::Maybe{String}
-    charge::Maybe{Int}
-    compartment::Maybe{String}
-    notes::Notes
-    annotations::Annotations
+    name::Maybe{String} = nothing
+    formula::Maybe{String} = nothing
+    charge::Maybe{Int} = nothing
+    compartment::Maybe{String} = nothing
+    notes::Notes = Notes()
+    annotations::Annotations = Annotations()
 end
 
 """
 $(TYPEDSIGNATURES)
 
-A constructor for `Metabolite`s.
+A convenience constructor for [`Metabolite`](@ref) taking as first argument the id
+of the metabolite. All other kwargs are forwarded to the type constructor.
 """
-Metabolite(
-    id = "";
-    name = nothing,
-    formula = nothing,
-    charge = nothing,
-    compartment = nothing,
-    notes = Notes(),
-    annotations = Annotations(),
-) = Metabolite(String(id), name, formula, charge, compartment, notes, annotations)
+Metabolite(id; kwargs...) = Metabolite(; id, kwargs...)

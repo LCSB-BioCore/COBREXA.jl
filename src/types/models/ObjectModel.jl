@@ -6,11 +6,9 @@ meta-information.  Meta-information is defined as annotation details, which
 include gene-reaction-rules, formulas, etc.
 
 This model type seeks to keep as much meta-information as possible, as opposed
-to `MatrixModel` and `MatrixModelWithCoupling`, which keep the bare neccessities only.
-When merging models and keeping meta-information is important, use this as the
-model type.  If meta-information is not important, use the more efficient core
-model types.  See [`MatrixModel`](@ref) and [`MatrixModelWithCoupling`](@ref) for
-comparison.
+to `MatrixModel` and `MatrixModelWithCoupling`, which keep the bare neccessities
+only. When merging models and keeping meta-information is important, use this as
+the model type.
 
 In this model, reactions, metabolites, and genes are stored in ordered
 dictionaries indexed by each struct's `id` field.  For example,
@@ -18,11 +16,10 @@ dictionaries indexed by each struct's `id` field.  For example,
 `"rxn1_id"`.  This makes adding and removing reactions efficient.
 
 Note that the stoichiometric matrix (or any other core data, e.g. flux bounds)
-is not stored directly as in `MatrixModel`.  When this model type is used in
-analysis functions, these core data structures are built from scratch each time
-an analysis function is called.  This can cause performance issues if you run
-many small analysis functions sequentially.  Consider using the core model
-types if performance is critical.
+is not stored directly as in [`MatrixModel`](@ref). When this model type is used
+in analysis functions, these core data structures are built from scratch each
+time an analysis function is called. This can cause performance issues if you
+run many small analysis functions sequentially.
 
 See also: [`Reaction`](@ref), [`Metabolite`](@ref), [`Gene`](@ref)
 
@@ -35,18 +32,21 @@ keys(model.reactions)
 # Fields
 $(TYPEDFIELDS)
 """
-mutable struct ObjectModel <: AbstractMetabolicModel
+Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
+    "Name of the model"
     id::String
-    reactions::OrderedDict{String,Reaction}
-    metabolites::OrderedDict{String,Metabolite}
-    genes::OrderedDict{String,Gene}
 
-    ObjectModel(
-        id = "";
-        reactions = OrderedDict{String,Reaction}(),
-        metabolites = OrderedDict{String,Metabolite}(),
-        genes = OrderedDict{String,Gene}(),
-    ) = new(id, reactions, metabolites, genes)
+    "Ordered dictionary of reactions"
+    reactions::OrderedDict{String,Reaction} = OrderedDict{String,Reaction}()
+
+    "Ordered dictionary of metabolites"
+    metabolites::OrderedDict{String,Metabolite} = OrderedDict{String,Metabolite}()
+
+    "Ordered dictionary of genes"
+    genes::OrderedDict{String,Gene} = OrderedDict{String,Gene}()
+
+    "Model objective"
+    objective::Dict{String,Float64} = Dict{String,Float64}()
 end
 
 # AbstractMetabolicModel interface follows
@@ -65,7 +65,6 @@ $(TYPEDSIGNATURES)
 Return the number of reactions contained in `model`.
 """
 Accessors.n_reactions(model::ObjectModel)::Int = length(model.reactions)
-
 
 """
 $(TYPEDSIGNATURES)
@@ -161,7 +160,7 @@ $(TYPEDSIGNATURES)
 Return sparse objective vector for `model`.
 """
 Accessors.objective(model::ObjectModel)::SparseVec =
-    sparse([model.reactions[rid].objective_coefficient for rid in keys(model.reactions)])
+    sparse([get(model.objective, rid, 0.0) for rid in keys(model.reactions)])
 
 """
 $(TYPEDSIGNATURES)
@@ -169,10 +168,13 @@ $(TYPEDSIGNATURES)
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-Accessors.reaction_gene_association(
+function Accessors.reaction_gene_association(
     model::ObjectModel,
     id::String,
-)::Maybe{GeneAssociation} = maybemap(identity, model.reactions[id].grr)
+)::Maybe{GeneAssociationsDNF}
+    isnothing(model.reactions[id].gene_associations) && return nothing
+    [collect(keys(rga.stoichiometry)) for rga in model.reactions[id].gene_associations]
+end
 
 """
 $(TYPEDSIGNATURES)
@@ -295,9 +297,9 @@ Accessors.gene_name(m::ObjectModel, gid::String) = m.genes[gid].name
 """
 $(TYPEDSIGNATURES)
 
-Convert any `AbstractMetabolicModel` into a `ObjectModel`.
-Note, some data loss may occur since only the generic interface is used during
-the conversion process.
+Convert any `AbstractMetabolicModel` into a `ObjectModel`. Note, some data loss
+may occur since only the generic interface is used during the conversion
+process. Additionally, assume the stoichiometry for each gene association is 1.
 """
 function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     if typeof(model) == ObjectModel
@@ -336,30 +338,35 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
 
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
-    ocs = objective(model)
+    obj_idxs, obj_vals = findnz(objective(model))
+    modelobjective = Dict(k => v for (k, v) in zip(reactions(model)[obj_idxs], obj_vals))
     for (i, rid) in enumerate(rxnids)
         rmets = Dict{String,Float64}()
         for (j, stoich) in zip(findnz(S[:, i])...)
             rmets[metids[j]] = stoich
         end
+        rgas = reaction_gene_association(model, rid)
         modelreactions[rid] = Reaction(
             rid;
             name = reaction_name(model, rid),
             metabolites = rmets,
             lower_bound = lbs[i],
             upper_bound = ubs[i],
-            grr = reaction_gene_association(model, rid),
-            objective_coefficient = ocs[i],
+            gene_associations = isnothing(rgas) ? nothing :
+                                [
+                Isozyme(; stoichiometry = Dict(k => 1.0 for k in rga)) for rga in rgas
+            ],
             notes = reaction_notes(model, rid),
             annotations = reaction_annotations(model, rid),
             subsystem = reaction_subsystem(model, rid),
         )
     end
 
-    return ObjectModel(
-        id;
+    return ObjectModel(;
+        id,
         reactions = modelreactions,
         metabolites = modelmetabolites,
         genes = modelgenes,
+        objective = modelobjective,
     )
 end

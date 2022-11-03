@@ -1,5 +1,5 @@
 @testset "Metabolite" begin
-    m1 = Metabolite()
+    m1 = Metabolite("testmetabolite")
     m1.id = "met1"
     m1.formula = "C6H12O6N"
     m1.charge = 1

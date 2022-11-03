@@ -198,7 +198,7 @@ takes place. (in DNF, that would be equivalent to returning `[[]]`.)
 function reaction_gene_association(
     a::AbstractMetabolicModel,
     reaction_id::String,
-)::Maybe{GeneAssociation}
+)::Maybe{GeneAssociationsDNF}
     return nothing
 end
 

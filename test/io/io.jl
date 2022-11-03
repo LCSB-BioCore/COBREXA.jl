@@ -20,7 +20,10 @@
     # specifically test parsing of gene-reaction associations in Recon
     reconmodel = load_model(ObjectModel, model_paths["Recon3D.json"])
     @test n_reactions(reconmodel) == 10600
-    recon_grrs = [r.grr for (i, r) in reconmodel.reactions if !isnothing(r.grr)]
+    recon_grrs = [
+        r.gene_associations for
+        (i, r) in reconmodel.reactions if !isnothing(r.gene_associations)
+    ]
     @test length(recon_grrs) == 5938
     @test sum(length.(recon_grrs)) == 13903
 end

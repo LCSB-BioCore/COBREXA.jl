@@ -128,8 +128,10 @@ function remove_genes!(
     if knockout_reactions
         rm_reactions = String[]
         for (rid, r) in model.reactions
-            if !isnothing(r.grr) &&
-               all(any(in.(gids, Ref(conjunction))) for conjunction in r.grr)
+            if !isnothing(r.gene_associations) && all(
+                any(in.(gids, Ref(conjunction))) for
+                conjunction in reaction_gene_association(model, rid)
+            )
                 push!(rm_reactions, rid)
             end
         end
@@ -248,13 +250,8 @@ function change_objective!(
 )
     all(!haskey(model.reactions, rid) for rid in rxn_ids) &&
         throw(DomainError(rxn_ids, "Some reaction ids were not found in model."))
-
-    for (_, rxn) in model.reactions # reset to zero
-        rxn.objective_coefficient = 0.0
-    end
-    for (k, rid) in enumerate(rxn_ids)
-        model.reactions[rid].objective_coefficient = weights[k]
-    end
+    model.objective = Dict(rxn_ids .=> weights)
+    nothing
 end
 
 change_objective!(model::ObjectModel, rxn_id::String) = change_objective!(model, [rxn_id])

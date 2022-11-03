@@ -2,10 +2,10 @@
 """
 $(TYPEDSIGNATURES)
 
-Parse `SBML.GeneProductAssociation` structure to the simpler GeneAssociation.
+Parse `SBML.GeneProductAssociation` structure to the simpler [`GeneAssociations`](@ref).
 The input must be (implicitly) in a positive DNF.
 """
-function parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
+function parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociationsDNF
     parse_ref(x) =
         typeof(x) == SBML.GPARef ? [x.gene_product] :
         begin
@@ -26,7 +26,7 @@ Convert a GeneAssociation to the corresponding `SBML.jl` structure.
 """
 function unparse_grr(
     ::Type{SBML.GeneProductAssociation},
-    x::GeneAssociation,
+    x::GeneAssociationsDNF,
 )::SBML.GeneProductAssociation
     SBML.GPAOr([SBML.GPAAnd([SBML.GPARef(j) for j in i]) for i in x])
 end
@@ -46,7 +46,7 @@ julia> parse_grr("(YIL010W and YLR043C) or (YIL010W and YGR209C)")
  ["YIL010W", "YGR209C"]
 ```
 """
-parse_grr(s::String)::Maybe{GeneAssociation} = maybemap(parse_grr, parse_grr_to_sbml(s))
+parse_grr(s::String) = maybemap(parse_grr, parse_grr_to_sbml(s))::Maybe{GeneAssociationsDNF}
 
 """
 $(TYPEDSIGNATURES)
@@ -118,7 +118,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Converts a nested string gene reaction array  back into a gene reaction rule
+Converts a nested string gene reaction array back into a gene reaction rule
 string.
 
 # Example
@@ -127,7 +127,16 @@ julia> unparse_grr(String, [["YIL010W", "YLR043C"], ["YIL010W", "YGR209C"]])
 "(YIL010W and YLR043C) or (YIL010W and YGR209C)"
 ```
 """
-function unparse_grr(::Type{String}, grr::GeneAssociation)::String
+unparse_grr(::Type{String}, grr::GeneAssociationsDNF)::String = unparse_grr_from_dnf(grr)
+unparse_grr(::Type{String}, isozymes::Vector{Isozyme})::String =
+    unparse_grr_from_dnf([collect(keys(iso.stoichiometry)) for iso in isozymes])
+
+"""
+$(TYPEDSIGNATURES)
+
+Internal helper for parsing the GRRs into their human readable versions.
+"""
+function unparse_grr_from_dnf(grr::GeneAssociationsDNF)
     grr_strings = String[]
     for gr in grr
         push!(grr_strings, "(" * join([g for g in gr], " and ") * ")")

@@ -1,5 +1,5 @@
 @testset "Gene: construction, printing, utils" begin
-    g = Gene()
+    g = Gene("testgene")
 
     # test defaults
     @test isempty(g.notes)

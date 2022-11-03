@@ -5,53 +5,28 @@ A structure for representing a single reaction in a [`ObjectModel`](@ref).
 
 # Fields
 $(TYPEDFIELDS)
+
+Default constructor requires the `id` keyword to be assigned.
 """
-mutable struct Reaction
+Base.@kwdef mutable struct Reaction
     id::String
-    name::Maybe{String}
-    metabolites::Dict{String,Float64}
-    lower_bound::Float64
-    upper_bound::Float64
-    grr::Maybe{GeneAssociation}
-    subsystem::Maybe{String}
-    notes::Notes
-    annotations::Annotations
-    objective_coefficient::Float64
+    name::Maybe{String} = nothing
+    metabolites::Dict{String,Float64} = Dict{String,Float64}()
+    lower_bound::Float64 = -constants.default_reaction_bound
+    upper_bound::Float64 = constants.default_reaction_bound
+    gene_associations::Maybe{GeneAssociations} = nothing
+    subsystem::Maybe{String} = nothing
+    notes::Notes = Notes()
+    annotations::Annotations = Annotations()
 end
 
 """
 $(TYPEDSIGNATURES)
 
-A constructor for Reaction that only takes a reaction `id` and
-assigns default/uninformative values to all the fields that are not
-explicitely assigned.
+A convenience constructor for [`Reaction`](@ref) taking as first argument the id
+of the reaction. All other kwargs are forwarded to the type constructor.
 """
-function Reaction(
-    id = "";
-    name = nothing,
-    metabolites = Dict{String,Float64}(),
-    lower_bound = -constants.default_reaction_bound,
-    upper_bound = constants.default_reaction_bound,
-    grr = nothing,
-    subsystem = nothing,
-    notes = Notes(),
-    annotations = Annotations(),
-    objective_coefficient = 0.0,
-)
-    mets = Dict(k => float(v) for (k, v) in metabolites)
-    return Reaction(
-        id,
-        name,
-        mets,
-        lower_bound,
-        upper_bound,
-        grr,
-        subsystem,
-        notes,
-        annotations,
-        objective_coefficient,
-    )
-end
+Reaction(id; kwargs...) = Reaction(; id, kwargs...)
 
 """
 $(TYPEDSIGNATURES)

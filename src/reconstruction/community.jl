@@ -54,8 +54,10 @@ function add_community_objective!(
     rxn.metabolites = rdict
     rxn.lower_bound = 0.0
     rxn.upper_bound = constants.default_reaction_bound
-    rxn.objective_coefficient = 1.0
     community.reactions[rxn.id] = rxn
+
+    community.objective = Dict(objective_id => 1.0)
+
 
     return nothing # stop annoying return value
 end
@@ -314,7 +316,7 @@ function join_with_exchanges(
     model_names = [],
 )::ObjectModel where {M<:AbstractMetabolicModel}
 
-    community = ObjectModel()
+    community = ObjectModel(id = "communitymodel")
     rxns = OrderedDict{String,Reaction}()
     mets = OrderedDict{String,Metabolite}()
     genes = OrderedDict{String,Gene}()
@@ -350,7 +352,6 @@ function join_with_exchanges(
         community.reactions[rid].lower_bound = 0.0
         community.reactions[rid].upper_bound = 0.0
         community.metabolites[mid] = Metabolite(mid)
-        community.metabolites[mid].id = mid
     end
 
     return community
@@ -502,8 +503,6 @@ function add_model_with_exchanges!(
         if rxn.id in keys(exchange_rxn_mets)
             rxn.metabolites[exchange_rxn_mets[rxn.id]] = -1.0
         end
-        # reset objective
-        rxn.objective_coefficient = 0.0
         rxn.id = model_name * rxn.id
         # add to community model
         community.reactions[rxn.id] = rxn

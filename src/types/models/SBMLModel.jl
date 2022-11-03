@@ -107,9 +107,12 @@ Accessors.n_genes(model::SBMLModel)::Int = length(model.sbml.gene_products)
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the [`GeneAssociation`](@ref) from [`SBMLModel`](@ref).
+Retrieve the reaction gene associations from [`SBMLModel`](@ref).
 """
-Accessors.reaction_gene_association(model::SBMLModel, rid::String)::Maybe{GeneAssociation} =
+Accessors.reaction_gene_association(
+    model::SBMLModel,
+    rid::String,
+)::Maybe{GeneAssociationsDNF} =
     maybemap(parse_grr, model.sbml.reactions[rid].gene_product_association)
 
 """

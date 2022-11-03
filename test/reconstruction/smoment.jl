@@ -9,8 +9,9 @@
             argmax(
                 smoment_isozyme_speed(get_gene_product_mass),
                 Isozyme(
-                    Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
-                    ecoli_core_reaction_kcats[rid][i]...,
+                    stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                    kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
+                    kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
                 ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
             ) : nothing
 
@@ -26,6 +27,7 @@
             gene_product_molar_mass = get_gene_product_mass,
             total_enzyme_capacity = 100.0,
         )
+    objective(smoment_model)
 
     rxn_fluxes = flux_balance_analysis_dict(
         smoment_model,

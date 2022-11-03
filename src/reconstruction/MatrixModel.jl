@@ -8,7 +8,6 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
     I = Int64[] # rows
     J = Int64[] # cols
     V = Float64[] # values
-    cs = zeros(length(rxns))
     lbs = zeros(length(rxns))
     ubs = zeros(length(rxns))
     for (j, rxn) in enumerate(rxns)
@@ -21,11 +20,10 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
         push!(model.rxns, rxn.id)
         lbs[j] = rxn.lower_bound
         ubs[j] = rxn.upper_bound
-        cs[j] = rxn.objective_coefficient
     end
     Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))
     model.S = [model.S Sadd]
-    model.c = dropzeros([model.c; cs])
+    model.c = dropzeros([model.c; zeros(length(rxns))]) # does not add an objective info from rxns
     model.xu = ubs
     model.xl = lbs
     return nothing

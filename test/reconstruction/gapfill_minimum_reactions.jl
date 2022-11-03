@@ -2,9 +2,9 @@
     #=
     Implement the small model that should be gapfilled.
     =#
-    model = ObjectModel("partial model")
+    model = ObjectModel(id = "partial model")
 
-    (m1, m2, m3, m4, m5, m6, m7, m8) = Metabolite.("m$i" for i = 1:8)
+    (m1, m2, m3, m4, m5, m6, m7, m8) = [Metabolite(id = "m$i") for i = 1:8]
 
     @add_reactions! model begin
         "r1", nothing → m1, 0, 1
@@ -21,7 +21,7 @@
         "r12", m3 → m5, -10, 10
     end
 
-    model.reactions["r11"].objective_coefficient = 1.0
+    model.objective = Dict("r11" => 1)
 
     add_metabolites!(model, [m1, m2, m3, m4, m5, m7, m8])
 
