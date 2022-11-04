@@ -24,7 +24,7 @@ using MacroTools
 @inc_dir construction
 
 """
-    module Modifications
+    module With
 
 Functions that create model variants, typically for efficient use in
 [`screen`](@ref) and similar functions.
@@ -32,7 +32,7 @@ Functions that create model variants, typically for efficient use in
 # Exports
 $(EXPORTS)
 """
-module Modifications
+module With
     using ..ModuleTools
     @dse
 end
@@ -41,7 +41,7 @@ end
 end
 
 # this needs to import from construction
-@inject Construction.Modifications begin
+@inject Construction.With begin
     using ..Construction
     @inc_dir construction with_modifications
 

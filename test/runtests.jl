@@ -5,7 +5,7 @@ using COBREXA.Types,
     COBREXA.Analysis,
     COBREXA.Analysis.Modifications,
     COBREXA.Construction,
-    COBREXA.Construction.Modifications,
+    COBREXA.Construction.With,
     COBREXA.Utils,
     COBREXA.IO,
     COBREXA.Solver
