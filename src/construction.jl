@@ -43,7 +43,7 @@ end
 # this needs to import from construction
 @inject Construction.Modifications begin
     using ..Construction
-    @inc_dir construction modifications
+    @inc_dir construction with_modifications
 
     @export_locals
 end
