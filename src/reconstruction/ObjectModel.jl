@@ -255,3 +255,35 @@ function change_objective!(
 end
 
 change_objective!(model::ObjectModel, rxn_id::String) = change_objective!(model, [rxn_id])
+
+"""
+$(TYPEDSIGNATURES)
+
+Add a biomass metabolite called `biomass_metabolite_id` with stoichiometry 1 to
+the biomass reaction, called `biomass_rxn_id` in `model`.
+"""
+function add_biomass_metabolite!(
+    model::ObjectModel,
+    biomass_rxn_id::String;
+    biomass_metabolite_id = "biomass",
+)
+    model.reactions[biomass_rxn_id].metabolites[biomass_metabolite_id] = 1.0
+    add_metabolite!(model, Metabolite(biomass_metabolite_id))
+end
+
+function add_biomass_metabolite(
+    model::ObjectModel,
+    biomass_rxn_id::String;
+    biomass_metabolite_id = "biomass",
+)
+    m = copy(model)
+    m.metabolites = copy(m.metabolites)
+    m.metabolites[biomass_metabolite_id] = Metabolite(biomass_metabolite_id)
+
+    m.reactions = copy(model.reactions)
+    m.reactions[biomass_rxn_id].metabolites =
+        copy(model.reactions[biomass_rxn_id].metabolites)
+    m.reactions[biomass_rxn_id].metabolites[biomass_metabolite_id] = 1.0
+
+    m
+end
