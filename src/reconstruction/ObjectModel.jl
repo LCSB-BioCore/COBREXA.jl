@@ -58,60 +58,6 @@ add_gene!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
 """
 $(TYPEDSIGNATURES)
 
-Shortcut to add multiple reactions and their lower and upper bounds
-
-Call variants
--------------
-```
-@add_reactions! model begin
-    reaction_name, reaction
-end
-
-@add_reactions! model begin
-    reaction_name, reaction, lower_bound
-end
-
-@add_reactions! model begin
-    reaction_name, reaction, lower_bound, upper_bound
-end
-```
-
-Examples
---------
-```
-@add_reactions! model begin
-    "v1", nothing → A, 0, 500
-    "v2", A ↔ B + C, -500
-    "v3", B + C → nothing
-end
-```
-"""
-macro add_reactions!(model::Symbol, ex::Expr)
-    model = esc(model)
-    all_reactions = Expr(:block)
-    for line in MacroTools.striplines(ex).args
-        args = line.args
-        id = esc(args[1])
-        reaction = esc(args[2])
-        push!(all_reactions.args, :(r = $reaction))
-        push!(all_reactions.args, :(r.id = $id))
-        if length(args) == 3
-            lb = args[3]
-            push!(all_reactions.args, :(r.lower_bound = $lb))
-        elseif length(args) == 4
-            lb = args[3]
-            ub = args[4]
-            push!(all_reactions.args, :(r.lower_bound = $lb))
-            push!(all_reactions.args, :(r.upper_bound = $ub))
-        end
-        push!(all_reactions.args, :(add_reaction!($model, r)))
-    end
-    return all_reactions
-end
-
-"""
-$(TYPEDSIGNATURES)
-
 Remove all genes with `ids` from `model`. If `knockout_reactions` is true, then also
 constrain reactions that require the genes to function to carry zero flux.
 
