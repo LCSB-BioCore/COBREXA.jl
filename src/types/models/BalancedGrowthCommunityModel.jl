@@ -91,7 +91,8 @@ respective underlying [`CommunityMember`](@ref) appended as a prefix with the
 delimiter `#`. The environmental metabolites have no prefix.
 """
 function Accessors.metabolites(cm::BalancedGrowthCommunityModel)
-    mets = [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
+    mets =
+        [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
     return [mets; "ENV_" .* get_env_mets(cm)]
 end
 
@@ -256,16 +257,31 @@ Return the semantically meaningful reactions of the model.
 Accessors.n_fluxes(cm::BalancedGrowthCommunityModel) =
     sum(n_fluxes(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
 
-"""
-$(TYPEDSIGNATURES)
-
-Returns the sets of genes that need to be present so that the reaction can work.
-"""
-Accessors.reaction_gene_association(
-    cm::BalancedGrowthCommunityModel,
-    reaction_id::String,
-) = access_community_member(cm, reaction_id, reaction_gene_association)
-
-# TODO make a macro that implements access_community_member for all the other
-# accessors. Might be a little trick since there are two levels: one upper
-# level/environmental and another lower level/species
+#=
+This loops implements the rest of the accssors through access_community_member.
+Since most of the environmental reactions are generated programmtically, they
+will not have things like annotations etc. For this reason, these methods will
+only work if they access something inside the community members.
+=#
+for (func, def) in (
+    (:reaction_gene_association, nothing),
+    (:reaction_subsystem, nothing),
+    (:reaction_stoichiometry, nothing),
+    (:metabolite_formula, nothing),
+    (:metabolite_charge, nothing),
+    (:metabolite_compartment, nothing),
+    (:reaction_annotations, Dict()),
+    (:metabolite_annotations, Dict()),
+    (:gene_annotations, Dict()),
+    (:reaction_notes, Dict()),
+    (:metabolite_notes, Dict()),
+    (:gene_notes, Dict()),
+    (:reaction_name, nothing),
+    (:metabolite_name, nothing),
+    (:gene_name, nothing),
+)
+    @eval begin # TODO add docstrings somehow
+        Accessors.$func(cm::BalancedGrowthCommunityModel, id::String) =
+            access_community_member(cm, id, $func; default = $def)
+    end
+end

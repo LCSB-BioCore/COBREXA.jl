@@ -66,10 +66,7 @@
         members = [cm1, cm2],
         env_met_flux_bounds = Dict("Ae" => (-10, 10)),
     )
-    @test contains(
-        sprint(show, MIME("text/plain"), cm),
-        "balanced growth",
-    )
+    @test contains(sprint(show, MIME("text/plain"), cm), "balanced growth")
 
     @test issetequal(
         reactions(cm),

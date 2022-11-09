@@ -282,7 +282,8 @@ function add_biomass_metabolite(
 
     m.reactions = copy(model.reactions)
     m.reactions[biomass_rxn_id] = copy(model.reactions[biomass_rxn_id])
-    m.reactions[biomass_rxn_id].metabolites = copy(model.reactions[biomass_rxn_id].metabolites)
+    m.reactions[biomass_rxn_id].metabolites =
+        copy(model.reactions[biomass_rxn_id].metabolites)
     m.reactions[biomass_rxn_id].metabolites[biomass_metabolite_id] = 1.0
 
     m

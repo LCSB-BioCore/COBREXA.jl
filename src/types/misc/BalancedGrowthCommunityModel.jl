@@ -39,10 +39,15 @@ $(TYPEDSIGNATURES)
 A helper function to find the index of the appropriate model. Assumes each `id`
 is delimited by `#` that separates the model ID prefix and the original id.
 """
-function access_community_member(cm::BalancedGrowthCommunityModel, id::String, accessor::Function)
+function access_community_member(
+    cm::BalancedGrowthCommunityModel,
+    id::String,
+    accessor::Function;
+    default = nothing,
+)
     id_split = split(id, "#")
     idx = findfirst(startswith(first(id_split)), m.id for m in cm.members)
-    isnothing(idx) && return nothing # can only access inside community member
+    isnothing(idx) && return default # can only access inside community member
     accessor(cm.members[idx].model, string(last(id_split)))
 end
 
