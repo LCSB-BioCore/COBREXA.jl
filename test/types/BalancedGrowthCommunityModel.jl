@@ -52,7 +52,7 @@
         exchange_reaction_ids = ["EX_A", "EX_B"],
         biomass_metabolite_id = "X1",
     )
-    @test contains(sprint(show, MIME("text/plain"), cm1), "A CommunityMember with")
+    @test contains(sprint(show, MIME("text/plain"), cm1), "community member")
 
     cm2 = CommunityMember(
         id = "m2",
@@ -68,7 +68,7 @@
     )
     @test contains(
         sprint(show, MIME("text/plain"), cm),
-        "A balanced growth community model with",
+        "balanced growth",
     )
 
     @test issetequal(
@@ -259,6 +259,10 @@ end
         d["ecoli1#EX_glc__D_e"] + d["ecoli2#EX_glc__D_e"],
         atol = TEST_TOLERANCE,
     )
+
+    # test if model can be converted to another type
+    om = convert(ObjectModel, cm)
+    @test n_reactions(om) == n_reactions(cm)
 end
 
 @testset "BalancedGrowthCommunityModel: enzyme constrained e coli" begin
@@ -325,9 +329,6 @@ end
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    @test isapprox(d[cm.objective_id], 0.9210848582802592, atol = TEST_TOLERANCE)
-
-    @test length(flux_dict(cm, opt_model)) == length(flux_vec(cm, opt_model))
-
-
+    f_d = flux_dict(cm, opt_model)
+    @test isapprox(f_d[cm.objective_id], 0.9210848582802592, atol = TEST_TOLERANCE)
 end

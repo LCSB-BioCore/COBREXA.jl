@@ -32,3 +32,24 @@ function env_ex_matrix(m::CommunityMember, env_mets)
     end
     return mat
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+A helper function to find the index of the appropriate model. Assumes each `id`
+is delimited by `#` that separates the model ID prefix and the original id.
+"""
+function access_community_member(cm::BalancedGrowthCommunityModel, id::String, accessor::Function)
+    id_split = split(id, "#")
+    idx = findfirst(startswith(first(id_split)), m.id for m in cm.members)
+    isnothing(idx) && return nothing # can only access inside community member
+    accessor(cm.members[idx].model, string(last(id_split)))
+end
+
+
+"""
+$(TYPEDSIGNATURES)
+
+A helper function to add the id of the community member as a prefix to some string.
+"""
+add_community_prefix(m::CommunityMember, str::String; delim = "#") = m.id * delim * str

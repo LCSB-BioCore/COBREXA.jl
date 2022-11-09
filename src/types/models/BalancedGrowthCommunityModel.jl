@@ -64,7 +64,7 @@ Consequently, exchange reactions of the original model will look like
 followed by the environmental metabolite id.
 """
 function Accessors.reactions(cm::BalancedGrowthCommunityModel)
-    rxns = [m.id * "#" * rid for m in cm.members for rid in reactions(m.model)]
+    rxns = [add_community_prefix(m, rid) for m in cm.members for rid in reactions(m.model)]
     env_exs = ["EX_" * env_met for env_met in get_env_mets(cm)]
     return [rxns; env_exs; cm.objective_id]
 end
@@ -91,8 +91,7 @@ respective underlying [`CommunityMember`](@ref) appended as a prefix with the
 delimiter `#`. The environmental metabolites have no prefix.
 """
 function Accessors.metabolites(cm::BalancedGrowthCommunityModel)
-    mets = [m.id * "#" * mid for m in cm.members for mid in metabolites(m.model)]
-
+    mets = [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
     return [mets; "ENV_" .* get_env_mets(cm)]
 end
 
@@ -117,7 +116,7 @@ genes have the `id` of the respective underlying [`CommunityMember`](@ref)
 appended as a prefix with the delimiter `#`.
 """
 Accessors.genes(cm::BalancedGrowthCommunityModel) =
-    [m.id * "#" * gid for m in cm.members for gid in genes(m.model)]
+    [add_community_prefix(m, gid) for m in cm.members for gid in genes(m.model)]
 
 """
 $(TYPEDSIGNATURES)
@@ -141,7 +140,7 @@ function Accessors.stoichiometry(cm::BalancedGrowthCommunityModel)
     zero_rxns = spzeros(size(model_S, 1), length(env_mets))
     obj_rxn = spzeros(size(model_S, 1))
     obj_rxn[indexin(
-        [m.id * "#" * m.biomass_metabolite_id for m in cm.members],
+        [add_community_prefix(m, m.biomass_metabolite_id) for m in cm.members],
         metabolites(cm),
     )] .= [-m.abundance for m in cm.members] # fix units of biomass
 
@@ -244,7 +243,7 @@ $(TYPEDSIGNATURES)
 Returns the semantically meaningful reactions of the model.
 """
 Accessors.fluxes(cm::BalancedGrowthCommunityModel) = [
-    vcat([fluxes(m.model) for m in cm.members]...)
+    vcat([add_community_prefix.(Ref(m), fluxes(m.model)) for m in cm.members]...)
     ["EX_" * env_met for env_met in get_env_mets(cm)]
     cm.objective_id
 ]
@@ -256,3 +255,17 @@ Return the semantically meaningful reactions of the model.
 """
 Accessors.n_fluxes(cm::BalancedGrowthCommunityModel) =
     sum(n_fluxes(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
+
+"""
+$(TYPEDSIGNATURES)
+
+Returns the sets of genes that need to be present so that the reaction can work.
+"""
+Accessors.reaction_gene_association(
+    cm::BalancedGrowthCommunityModel,
+    reaction_id::String,
+) = access_community_member(cm, reaction_id, reaction_gene_association)
+
+# TODO make a macro that implements access_community_member for all the other
+# accessors. Might be a little trick since there are two levels: one upper
+# level/environmental and another lower level/species
