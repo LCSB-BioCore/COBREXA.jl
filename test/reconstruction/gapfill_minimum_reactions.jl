@@ -6,11 +6,15 @@
 
     (m1, m2, m3, m4, m5, m6, m7, m8) = [Metabolite(id = "m$i") for i = 1:8]
 
+    #=
+    here reactions are added to the model, but some are commented out. The goal
+    of the gap filling is to identify these commented reactions.
+    =#
     add_reactions!(
         model,
         [
-            # Reaction("r1", Dict("m1" => 1), :forward; upper_bound = 1),
-            Reaction("r2", Dict("m1" => -1, "m2" => 1), :bidirectional; lower_bound = -10),
+            Reaction("r1", Dict("m1" => 1), :forward; default_bound = 1),
+            Reaction("r2", Dict("m1" => -1, "m2" => 1), :bidirectional; default_bound = 10),
             Reaction("r3", Dict("m1" => -1, "m3" => 1), :forward),
             Reaction("r4", Dict("m2" => -1, "m4" => 1), :bidirectional),
             # Reaction("r5", Dict("m3" => -1, "m4" => 1), :forward),
@@ -23,9 +27,8 @@
             Reaction(
                 "r12",
                 Dict("m3" => -1, "m5" => 1),
-                :forward;
-                lower_bound = -10,
-                upper_bound = 10,
+                :bidirectional;
+                default_bound = 10,
             ),
         ],
     )
