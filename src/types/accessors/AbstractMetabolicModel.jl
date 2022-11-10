@@ -141,6 +141,25 @@ groups collect these sets of enzymes for convenient analysis.
 """
 )
 
+@make_variable_semantics(
+    :metabolite_log_concentration,
+    "metabolite log concentration",
+    """
+Certain model types use metabolite concentrations instead of reaction fluxes are
+variables. This semantic grouping uses the log (base e) metabolite concentration
+to make thermodynamic calculations easier.
+"""
+)
+
+@make_variable_semantics(
+    :gibbs_free_energy_reaction,
+    "Gibbs free energy of reaction",
+    """
+Thermodynamic models need to ensure that the ΔG of each reaction is negative
+(2nd law of thermodynamics). This semantic grouping represents ΔGᵣ. 
+"""
+)
+
 """
 $(TYPEDSIGNATURES)
 
