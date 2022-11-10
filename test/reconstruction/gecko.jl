@@ -85,7 +85,7 @@ end
             Reaction("r2", Dict("m2" => 1), :forward),
             Reaction("r3", Dict("m1" => -1, "m2" => -1, "m3" => 1), :forward),
             Reaction("r4", Dict("m3" => -1, "m4" => 1), :forward),
-            Reaction("r5", Dict("m2" => -1, "m4" => -1), :bidirectional),
+            Reaction("r5", Dict("m2" => -1, "m4" => 1), :bidirectional),
             Reaction("r6", Dict("m4" => -1), :forward),
         ],
     )
