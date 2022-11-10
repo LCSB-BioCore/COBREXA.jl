@@ -20,9 +20,14 @@
             Reaction("r9", Dict("m8" => -1), :forward),
             # Reaction("r10", Dict("m6" => -1), :forward),
             Reaction("r11", Dict("m2" => -1, "m3" => -1, "m7" => -1), :forward),
-            Reaction("r12", Dict("m3" => -1, "m5" => 1), :forward; lower_bound = -10, upper_bound = 10),
-            
-        ]
+            Reaction(
+                "r12",
+                Dict("m3" => -1, "m5" => 1),
+                :forward;
+                lower_bound = -10,
+                upper_bound = 10,
+            ),
+        ],
     )
 
     model.objective = Dict("r11" => 1)

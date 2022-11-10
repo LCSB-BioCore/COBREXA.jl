@@ -87,7 +87,7 @@ end
             Reaction("r4"; Dict("m3" => -1, "m4" => 1), :forward),
             Reaction("r5"; Dict("m2" => -1, "m4" => -1), :bidirectional),
             Reaction("r6"; Dict("m4" => -1), :forward),
-        ]
+        ],
     )
 
     gs = [Gene("g$i") for i = 1:5]
