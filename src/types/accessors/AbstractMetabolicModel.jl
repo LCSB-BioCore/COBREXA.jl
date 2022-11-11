@@ -7,6 +7,123 @@
 # automatically derived methods for [`AbstractModelWrapper`](@ref).
 #
 
+#= 
+Optimizer interface
+
+These functions interface directly with the optimizer and are primarily used in
+make_optimization_model.
+=#
+"""
+$(TYPEDSIGNATURES)
+
+Return `Q`, the matrix used to construct the quadratic component of the
+objective in the optimization problem built by
+[`make_optimization_model`](@ref). In short, the full objective is `0.5 * x' * Q
+* x + q' * x`, where `x` corresponds to the variables in the order returned by
+[`variables`](@ref), and `Q` is returned here. Use [`linear_objective`](@ref) to
+get `q`.
+
+Returns `nothing` if there is no quadratic component in the model.
+"""
+function quadratic_objective(a::AbstractMetabolicModel)::Maybe{SparseMat}
+    missing_impl_error(quadratic_objective, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return `q`, the vector used to construct the linear component of the objective
+in the optimization problem built by [`make_optimization_model`](@ref). In
+short, the full objective is `0.5 * x' * Q * x + q' * x`, where `x` corresponds
+to the variables in the order returned by [`variables`](@ref), and `q` is
+returned here. Use [`quadratic_objective`](@ref) to get `Q`.
+
+Returns `nothing` if there is no linear component in the model.
+"""
+function linear_objective(a::AbstractMetabolicModel)::Maybe{SparseVec}
+    missing_impl_error(linear_objective, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return `A`, the matrix used to construct the equality constraints in the
+optimization problem built by [`make_optimization_model`](@ref). In short the
+equality constraints are `A * x == b` where `x` corresponds to the variables in
+the order returned by [`variables`](@ref). Use [`balance`](@ref) to get `b`.
+
+Return `nothing` if these constraints are absent in the model.
+"""
+function stoichiometry(a::AbstractMetabolicModel)::Maybe{SparseMat}
+    missing_impl_error(stoichiometry, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return `b`, the vector used to construct the equality constraints in the
+optimization problem built by [`make_optimization_model`](@ref). In short the
+equality constraints are `A * x == b` where `x` corresponds to the variables in
+the order returned by [`variables`](@ref). Use [`stoichiometry`](@ref) to get
+`A`.
+
+Return `nothing` if these constraints are absent in the model.
+"""
+function balance(a::AbstractMetabolicModel)::Maybe{SparseVec}
+    missing_impl_error(balance, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return `C`, the matrix used to construct the inequality constraints in the
+optimization problem built by [`make_optimization_model`](@ref). In short, the
+inequality constraints are `dₗ ≤ C * x ≤ dᵤ`, where `x` corresponds to the
+variables in the order returned by [`variables`](@ref). Use
+[`coupling_bounds`](@ref) to get `(dₗ, dᵤ)`.
+
+Return `nothing` if these constraints are absent in the model.
+"""
+function coupling(a::AbstractMetabolicModel)::Maybe{SparseMat}
+    missing_impl_error(coupling, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return `(dₗ, dᵤ)`, the bounds used to construct the inequality constraints in
+the optimization problem built by [`make_optimization_model`](@ref). In short,
+the inequality constraints are `dₗ ≤ C * x ≤ dᵤ`, where `x` corresponds to the
+variables in the order returned by [`variables`](@ref). Use [`coupling`](@ref)
+to get `C`.
+
+Return `nothing` if these constraints are absent in the model.
+"""
+function coupling_bounds(a::AbstractMetabolicModel)::Maybe{Tuple{SparseVec, SparseVec}}
+    missing_impl_error(coupling_bounds, (a,))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return `(xₗ, xᵤ)`, the vectors used to construct the simple inequality
+constraints (variable bounds) in the optimization problem built by
+[`make_optimization_model`](@ref). In short, these simple bounds are `xₗ ≤ x ≤
+xᵤ`, where `x` corresponds to the variables in the order returned by
+[`variables`](@ref).
+
+Return `nothing` if these constraints are absent in the model.
+"""
+function bounds(a::AbstractMetabolicModel)::Maybe{Tuple{Vector{Float64},Vector{Float64}}}
+    missing_impl_error(bounds, (a,))
+end
+
+#= 
+The model interface
+
+These functions are used to access the symantic information of the model.
+=#
+
 """
 $(TYPEDSIGNATURES)
 
@@ -26,6 +143,15 @@ end
 """
 $(TYPEDSIGNATURES)
 
+Get the number of reactions in a model.
+"""
+function n_reactions(a::AbstractMetabolicModel)::Int
+    length(reactions(a))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Return a vector of metabolite identifiers in a model. The vector precisely
 corresponds to the rows in [`stoichiometry`](@ref) matrix.
 
@@ -34,15 +160,6 @@ representing purely technical equality constraints.
 """
 function metabolites(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(metabolites, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of reactions in a model.
-"""
-function n_reactions(a::AbstractMetabolicModel)::Int
-    length(reactions(a))
 end
 
 """
@@ -57,114 +174,6 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the sparse stoichiometry matrix of a model. A feasible solution `x` of a
-model `m` is defined as satisfying the equations:
-
-- `stoichiometry(m) * x .== balance(m)`
-- `x .>= lbs`
-- `y .<= ubs`
-- `(lbs, ubs) == bounds(m)
-"""
-function stoichiometry(a::AbstractMetabolicModel)::SparseMat
-    missing_impl_error(stoichiometry, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the lower and upper solution bounds of a model.
-"""
-function bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    missing_impl_error(bounds, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the sparse balance vector of a model.
-"""
-function balance(a::AbstractMetabolicModel)::SparseVec
-    return spzeros(n_metabolites(a))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the objective vector of the model. Analysis functions, such as
-[`flux_balance_analysis`](@ref), are supposed to maximize `dot(objective, x)`
-where `x` is a feasible solution of the model.
-"""
-function objective(a::AbstractMetabolicModel)::SparseVec
-    missing_impl_error(objective, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-In some models, the [`reactions`](@ref) that correspond to the columns of
-[`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
-the model; for example, fluxes may be split into forward and reverse reactions,
-reactions catalyzed by distinct enzymes, etc. Together with
-[`reaction_flux`](@ref) (and [`n_fluxes`](@ref)) this specifies how the
-flux is decomposed into individual reactions.
-
-By default (and in most models), fluxes and reactions perfectly correspond.
-"""
-function fluxes(a::AbstractMetabolicModel)::Vector{String}
-    reactions(a)
-end
-
-function n_fluxes(a::AbstractMetabolicModel)::Int
-    n_reactions(a)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Retrieve a sparse matrix that describes the correspondence of a solution of the
-linear system to the fluxes (see [`fluxes`](@ref) for rationale). Returns a
-sparse matrix of size `(n_reactions(a), n_fluxes(a))`. For most models, this is
-an identity matrix.
-"""
-function reaction_flux(a::AbstractMetabolicModel)::SparseMat
-    nr = n_reactions(a)
-    nf = n_fluxes(a)
-    nr == nf || missing_impl_error(reaction_flux, (a,))
-    spdiagm(fill(1, nr))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get a matrix of coupling constraint definitions of a model. By default, there
-is no coupling in the models.
-"""
-function coupling(a::AbstractMetabolicModel)::SparseMat
-    return spzeros(0, n_reactions(a))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of coupling constraints in a model.
-"""
-function n_coupling_constraints(a::AbstractMetabolicModel)::Int
-    size(coupling(a), 1)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the lower and upper bounds for each coupling bound in a model, as specified
-by `coupling`. By default, the model does not have any coupling bounds.
-"""
-function coupling_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    return (spzeros(0), spzeros(0))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
 Return identifiers of all genes contained in the model. By default, there are
 no genes.
 
@@ -172,7 +181,7 @@ In SBML, these are usually called "gene products" but we write `genes` for
 simplicity.
 """
 function genes(a::AbstractMetabolicModel)::Vector{String}
-    return []
+    return String[]
 end
 
 """
@@ -336,22 +345,98 @@ $(TYPEDSIGNATURES)
 
 Return the name of reaction with ID `rid`.
 """
-reaction_name(model::AbstractMetabolicModel, rid::String) = nothing
+reaction_name(model::AbstractMetabolicModel, rid::String)::Maybe{String} = nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Return the name of metabolite with ID `mid`.
 """
-metabolite_name(model::AbstractMetabolicModel, mid::String) = nothing
+metabolite_name(model::AbstractMetabolicModel, mid::String)::Maybe{String} = nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Return the name of gene with ID `gid`.
 """
-gene_name(model::AbstractMetabolicModel, gid::String) = nothing
+gene_name(model::AbstractMetabolicModel, gid::String)::Maybe{String} = nothing
 
+#= 
+Output interface
+
+These functions are used to correctly associate optimizer variables with
+semantic model information.
+=#
+"""
+$(TYPEDSIGNATURES)
+
+In some models, the [`reactions`](@ref) that correspond to the columns of
+[`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
+the model; for example, fluxes may be split into forward and reverse reactions,
+reactions catalyzed by distinct enzymes, etc. By using the semantic variable
+types, [`EnzymeAbundances`](@ref), [`ReactionFluxes`](@ref), etc. with
+[`map_optimizer_to_semantic_variables`](@ref) values of the optimization model
+can be mapped to meaningful quantities.
+
+# Usage
+```
+gm = GeckoModel(...)
+opt_model = flux_balance_analysis(gm, ...)
+
+enzyme_abundances = Dict(
+    semantic_variables(gm, EnzymeAbundances) .=> map_optimizer_to_semantic_variables(gm, EnzymeAbundances, value.(opt_model))
+)
+```
+"""
+function semantic_variables(a::AbstractMetabolicModel, b::AbstractSemanticVariables)::Vector{String}
+    reactions(a)
+end
+
+function n_semantic_variables(a::AbstractMetabolicModel, b::AbstractSemanticVariables)::Int
+    n_reactions(a)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+The ids of the variables solved for by the optimization model. This corresponds
+to the ids of the columns returned by [`stoichiometry`](@ref). These do not
+necessarily need to correspond to semantically meaningful variables, but often
+they do.
+"""
+function optimizer_variables(a::AbastractMetabolicModel)
+    reactions(a)
+end
+
+function n_optimizer_variables(a::AbstractMetabolicModel)
+    n_reactions(a)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Transforms the output of the optimizer, `opt_output`, to some semantically
+meaningful variables, `b`, for model, `a`. Typically this will just be the
+identity transform. 
+
+This function becomes useful when special transformations on variables need to
+happen, e.g. for enzyme constrained models, bidirectional reactions are
+typically converted into two unidirectional reactions. Consequently, there are
+two optimizer variables, but still only one semantically important variable.
+"""
+function map_optimizer_to_semantic_variables(
+    a::AbstractMetabolicModel, 
+    b::AbstractSemanticVariables, 
+    opt_output::Vector{Float64},
+)::Vector{Float64}
+    opt_output
+end
+
+#= 
+Miscellaneous interface.
+
+These functions perform various other useful tasks.
+=#
 """
 $(TYPEDSIGNATURES)
 

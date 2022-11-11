@@ -1,40 +1,6 @@
 """
 $(TYPEDSIGNATURES)
 
-A variant of FBA that returns a vector of fluxes in the same order as reactions
-of the model, if the solution is found.
-
-Arguments are passed to [`flux_balance_analysis`](@ref).
-
-This function is kept for backwards compatibility, use [`flux_vector`](@ref)
-instead.
-"""
-flux_balance_analysis_vec(
-    model::AbstractMetabolicModel,
-    args...;
-    kwargs...,
-)::Maybe{Vector{Float64}} =
-    flux_vector(model, flux_balance_analysis(model, args...; kwargs...))
-
-"""
-$(TYPEDSIGNATURES)
-
-A variant of FBA that returns a dictionary assigning fluxes to reactions, if
-the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
-
-This function is kept for backwards compatibility, use [`flux_dict`](@ref)
-instead.
-"""
-flux_balance_analysis_dict(
-    model::AbstractMetabolicModel,
-    args...;
-    kwargs...,
-)::Maybe{Dict{String,Float64}} =
-    flux_dict(model, flux_balance_analysis(model, args...; kwargs...))
-
-"""
-$(TYPEDSIGNATURES)
-
 Run flux balance analysis (FBA) on the `model` optionally specifying
 `modifications` to the problem.  Basically, FBA solves this optimization problem:
 ```
@@ -80,5 +46,6 @@ function flux_balance_analysis(
     end
 
     optimize!(opt_model)
-    return opt_model
+
+    return Result{FluxBalanceAnalysis}(opt_model, model)
 end

@@ -19,10 +19,26 @@ using JuMP
 """
 $(TYPEDSIGNATURES)
 
-Convert `AbstractMetabolicModel`s to a JuMP model, place objectives and the equality
-constraint.
+Convert an [`AbstractMetabolicModel`](@ref) to a JuMP model for  the `optimizer`, but
+return it unsolved. The interface used to construct the optimization model occurs
+through the use of accessors. The complete problem is:
+```
+max 0.5 * x' * Q * x + q' * x
+s.t. A * x = b
+     dₗ ≤ C * x ≤ dᵤ
+     xₗ ≤ x ≤ xᵤ
+```
+where: 
+    1. `Q` is returned by [`quadratic_objective`](@ref)
+    2. `q` is returned by [`linear_objective`](@ref)
+    3. `A` is returned by [`stoichiometry`](@ref)
+    4. `b` is returned by [`balance`](@ref)
+    5. `C` is returned by [`coupling`](@ref)
+    6. `(dₗ, dᵤ)` is returned by [`coupling_bounds`](@ref)
+    7. `(xₗ, xᵤ)` is returned by [`bounds`](@ref)
 
-Here coupling means inequality constraints coupling multiple variables together.
+Additional integer constraints can be included only by modifying the returned
+optimization model through modifications.
 """
 function make_optimization_model(
     model::AbstractMetabolicModel,
@@ -31,25 +47,43 @@ function make_optimization_model(
 )
 
     precache!(model)
-
-    m, n = size(stoichiometry(model))
-    xl, xu = bounds(model)
-
-    optimization_model = Model(optimizer)
-    @variable(optimization_model, x[1:n])
-    @objective(optimization_model, sense, objective(model)' * x)
-    @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
-    @constraint(optimization_model, lbs, xl .<= x) # lower bounds
-    @constraint(optimization_model, ubs, x .<= xu) # upper bounds
-
-    C = coupling(model) # empty if no coupling
-    isempty(C) || begin
-        cl, cu = coupling_bounds(model)
-        @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
-        @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
+    
+    # get model from accessors
+    Q = quadratic_objective(model) 
+    q = linear_objective(model)
+    A = stoichiometry(model)
+    b = balance(model)
+    C = coupling(model)
+    d_lb_ub = coupling_bounds(model)
+    x_lb_ub = bounds(model)
+    
+    _, n = size(A)
+    
+    opt_model = Model(optimizer)
+    
+    @variable(opt_model, x[1:n])
+    
+    if isnothing(Q) && !isnothing(q) # linear only
+        @objective(opt_model, sense, q' * x)
+    elseif !isnothing(Q) && isnothing(q) # quadratic only
+        @objective(opt_model, sense, 0.5 * x' * Q * x )
+    elseif !isnothing(Q) && !isnothing(q) # linear and quadratic
+        @objective(opt_model, sense, 0.5 * x' * Q * x + q' * x)
+    end # can have not objective assigned -> feasibility problem
+    
+    isnothing(A) || @constraint(opt_model, mass_balance, A * x .== b) 
+    
+    if !isnothing(C) 
+        @constraint(opt_model, coupling_lower, first(d_lb_ub) .<= C * x )
+        @constraint(opt_model, coupling_upper, C * x .<= last(d_lb_ub))
+    end
+    
+    if !isnothing(x_lb_ub) 
+        @constraint(opt_model, variable_lower, first(x_lb_ub) .<= x)
+        @constraint(opt_model, variable_upper, x .<= last(x_lb_ub)) 
     end
 
-    return optimization_model
+    return opt_model
 end
 
 """
@@ -114,44 +148,6 @@ solved_objective_value(flux_balance_analysis(model, ...))
 solved_objective_value(opt_model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
 
-"""
-$(TYPEDSIGNATURES)
-
-Returns a vector of fluxes of the model, if solved.
-
-# Example
-```
-flux_vector(flux_balance_analysis(model, ...))
-```
-"""
-flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} =
-    is_solved(opt_model) ? reaction_flux(model)' * value.(opt_model[:x]) : nothing
-
-"""
-$(TYPEDSIGNATURES)
-
-Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
-
-# Example
-```
-flux_dict(model, flux_balance_analysis(model, ...))
-```
-"""
-flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
-    is_solved(opt_model) ?
-    Dict(fluxes(model) .=> reaction_flux(model)' * value.(opt_model[:x])) : nothing
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of `flux_dict`.
-
-# Example
-```
-flux_balance_analysis(model, ...) |> flux_dict(model)
-```
-"""
-flux_dict(model::AbstractMetabolicModel) = opt_model -> flux_dict(model, opt_model)
-
 @export_locals
+
 end

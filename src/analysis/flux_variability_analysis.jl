@@ -73,7 +73,7 @@ function flux_variability_analysis(
 
     flux_vector = [fluxes[:, i] for i = 1:size(fluxes, 2)]
 
-    return screen_optmodel_modifications(
+    fva = screen_optmodel_modifications(
         model,
         optimizer;
         common_modifications = vcat(
@@ -96,6 +96,8 @@ function flux_variability_analysis(
             _max_variability_flux(opt_model, flux, sense, ret),
         workers = workers,
     )
+
+    return Result{FluxVariabilityAnalysis}(fva, model)
 end
 
 """
@@ -130,38 +132,6 @@ minimizes all declared fluxes in the model. Arguments are forwarded.
 flux_variability_analysis(model::AbstractMetabolicModel, optimizer; kwargs...) =
     flux_variability_analysis(model, reaction_flux(model), optimizer; kwargs...)
 
-"""
-$(TYPEDSIGNATURES)
-A variant of [`flux_variability_analysis`](@ref) that returns the individual
-maximized and minimized fluxes as two dictionaries (of dictionaries). All
-keyword arguments except `ret` are passed through.
-
-# Example
-```
-mins, maxs = flux_variability_analysis_dict(
-    model,
-    Tulip.Optimizer;
-    bounds = objective_bounds(0.99),
-    modifications = [
-        change_optimizer_attribute("IPM_IterationsLimit", 500),
-        change_constraint("EX_glc__D_e"; lower_bound = -10, upper_bound = -10),
-        change_constraint("EX_o2_e"; lower_bound = 0, upper_bound = 0),
-    ],
-)
-```
-"""
-function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer; kwargs...)
-    vs = flux_variability_analysis(
-        model,
-        optimizer;
-        kwargs...,
-        ret = sol -> flux_vector(model, sol),
-    )
-    flxs = fluxes(model)
-    dicts = zip.(Ref(flxs), vs)
-
-    return (Dict(flxs .=> Dict.(dicts[:, 1])), Dict(flxs .=> Dict.(dicts[:, 2])))
-end
 
 """
 $(TYPEDSIGNATURES)
