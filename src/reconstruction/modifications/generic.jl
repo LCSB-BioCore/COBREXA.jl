@@ -54,3 +54,13 @@ Plural version of [`with_removed_reaction`](@ref), calls
 [`remove_reactions`](@ref) internally.
 """
 with_removed_reactions(args...; kwargs...) = m -> remove_reactions(m, args...; kwargs...)
+
+
+"""
+$(TYPEDSIGNATURES)
+
+Species a model variant that adds a biomass metabolite to the biomass reaction.
+Forwards arguments to [`add_biomass_metabolite`](@ref).
+"""
+with_added_biomass_metabolite(args...; kwargs...) =
+    m -> add_biomass_metabolite(m, args...; kwargs...)
