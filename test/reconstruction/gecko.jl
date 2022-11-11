@@ -78,14 +78,17 @@ end
     m3 = Metabolite("m3")
     m4 = Metabolite("m4")
 
-    @add_reactions! m begin
-        "r1", nothing → m1, 0, 100
-        "r2", nothing → m2, 0, 100
-        "r3", m1 + m2 → m3, 0, 100
-        "r4", m3 → m4, 0, 100
-        "r5", m2 ↔ m4, -100, 100
-        "r6", m4 → nothing, 0, 100
-    end
+    add_reactions!(
+        m,
+        [
+            Reaction("r1", Dict("m1" => 1), :forward),
+            Reaction("r2", Dict("m2" => 1), :forward),
+            Reaction("r3", Dict("m1" => -1, "m2" => -1, "m3" => 1), :forward),
+            Reaction("r4", Dict("m3" => -1, "m4" => 1), :forward),
+            Reaction("r5", Dict("m2" => -1, "m4" => 1), :bidirectional),
+            Reaction("r6", Dict("m4" => -1), :forward),
+        ],
+    )
 
     gs = [Gene("g$i") for i = 1:5]
 

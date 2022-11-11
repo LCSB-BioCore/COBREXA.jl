@@ -6,20 +6,32 @@
 
     (m1, m2, m3, m4, m5, m6, m7, m8) = [Metabolite(id = "m$i") for i = 1:8]
 
-    @add_reactions! model begin
-        "r1", nothing → m1, 0, 1
-        "r2", m1 ↔ m2, -10, 100
-        "r3", m1 → m3, 0, 100
-        "r4", m2 ↔ m4, 0, 100
-        # "r5", m3 → m4, 0, 100
-        "r6", m4 → nothing, 0, 100
-        # "r7", m2 → m7 + m6, 0, 100
-        "r8", m7 → m8, 0, 100
-        "r9", m8 → nothing, 0, 100
-        # "r10", m6 → nothing, 0, 100
-        "r11", m2 + m3 + m7 → nothing, 0, 100
-        "r12", m3 → m5, -10, 10
-    end
+    #=
+    here reactions are added to the model, but some are commented out. The goal
+    of the gap filling is to identify these commented reactions.
+    =#
+    add_reactions!(
+        model,
+        [
+            Reaction("r1", Dict("m1" => 1), :forward; default_bound = 1),
+            Reaction("r2", Dict("m1" => -1, "m2" => 1), :bidirectional; default_bound = 10),
+            Reaction("r3", Dict("m1" => -1, "m3" => 1), :forward),
+            Reaction("r4", Dict("m2" => -1, "m4" => 1), :bidirectional),
+            # Reaction("r5", Dict("m3" => -1, "m4" => 1), :forward),
+            Reaction("r6", Dict("m4" => -1), :forward),
+            # Reaction("r7", Dict("m2" => -1, "m7" => 1, "m6" => 1), :forward),
+            Reaction("r8", Dict("m7" => -1, "m8" => 1), :forward),
+            Reaction("r9", Dict("m8" => -1), :forward),
+            # Reaction("r10", Dict("m6" => -1), :forward),
+            Reaction("r11", Dict("m2" => -1, "m3" => -1, "m7" => -1), :forward),
+            Reaction(
+                "r12",
+                Dict("m3" => -1, "m5" => 1),
+                :bidirectional;
+                default_bound = 10,
+            ),
+        ],
+    )
 
     model.objective = Dict("r11" => 1)
 
