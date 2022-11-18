@@ -62,11 +62,11 @@ function bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
     getvalue = (val, _)::Tuple -> val
     getunit = (_, unit)::Tuple -> unit
 
-    allunits = unique([getunit.(lbu) getunit.(ubu)])
-    length(allunits) == 1 || throw(
+    units_in_sbml = filter(!isempty, unique([getunit.(lbu) getunit.(ubu)]))
+    length(units_in_sbml) <= 1 || throw(
         DomainError(
-            allunits,
-            "The SBML file uses multiple units; loading needs conversion",
+            units_in_sbml,
+            "The SBML file uses multiple units; loading would need conversion",
         ),
     )
 
