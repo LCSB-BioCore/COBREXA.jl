@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Growth media analysis · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../">Contents</a></li><li><a class="tocitem" href="../01_loading/">Loading models</a></li><li><a class="tocitem" href="../02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../06_fva/">Flux variability analysis (FVA)</a></li><li><a class="tocitem" href="../07_gene_deletion/">Gene knockouts</a></li><li><a class="tocitem" href="../07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../09_loopless/">Loopless FBA</a></li><li><a class="tocitem" href="../10_crowding/">FBA with crowding</a></li><li class="is-active"><a class="tocitem" href>Growth media analysis</a><ul class="internal"><li><a class="tocitem" href="#What-nutrients-does-my-model-need-to-grow?"><span>What nutrients does my model need to grow?</span></a></li><li><a class="tocitem" href="#What-is-the-minimal-flux-of-nutrients-for-my-model-to-grow?"><span>What is the minimal flux of nutrients for my model to grow?</span></a></li></ul></li><li><a class="tocitem" href="../12_mmdf/">Maximum-minimum driving force analysis</a></li><li><a class="tocitem" href="../13_moma/">Minimization of metabolic adjustment (MOMA)</a></li><li><a class="tocitem" href="../14_smoment/">sMOMENT</a></li><li><a class="tocitem" href="../15_gecko/">GECKO</a></li><li><a class="tocitem" href="../16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../../distributed/">Contents</a></li><li><a class="tocitem" href="../../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../../concepts/">Contents</a></li><li><a class="tocitem" href="../../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Growth media analysis</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Growth media analysis</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/examples/11_growth.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Growth-media-analysis"><a class="docs-heading-anchor" href="#Growth-media-analysis">Growth media analysis</a><a id="Growth-media-analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Growth-media-analysis" title="Permalink"></a></h1><p>Nutrient availability is a major driving factor for growth of microorganisms and energy production in cells. Here, we demonstrate two main ways to examine the nutrient consumption with COBREXA.jl: Simulating deficiency of nutrients, and finding the minimal flux of nutrients required to support certain model output.</p><p>As always, we work on the toy model of <em>E. coli</em>:</p><pre><code class="language-julia">using COBREXA, GLPK
+
+!isfile(&quot;e_coli_core.xml&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.xml&quot;, &quot;e_coli_core.xml&quot;)
+
+model = load_model(StandardModel, &quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
+sparse([41, 23, 51, 67, 61, 65, 1, 7, 19, 28  …  72, 3, 8, 33, 57, 66, 31, 45, 46, 57], [1, 2, 2, 2, 3, 3, 4, 4, 4, 4  …  93, 94, 94, 94, 94, 94, 95, 95, 95, 95], [-1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0  …  1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+Number of reactions: 95
+Number of metabolites: 72
+</pre><h2 id="What-nutrients-does-my-model-need-to-grow?"><a class="docs-heading-anchor" href="#What-nutrients-does-my-model-need-to-grow?">What nutrients does my model need to grow?</a><a id="What-nutrients-does-my-model-need-to-grow?-1"></a><a class="docs-heading-anchor-permalink" href="#What-nutrients-does-my-model-need-to-grow?" title="Permalink"></a></h2><p>The models usually ingest nutrients through exchange reactions. By changing the bounds on the exchange reactions, you can limit the intake of the nutrients and thus simulate the nutrient deficiency. If applied programatically to multiple exchanges, this can give you a good overview of what nutrients impact the model most.</p><p>To check the viability of a single nutrient, you can simply change a bound on a selected exchange reaction and simulate the model with a limited amount.</p><pre><code class="language-julia">biomass = &quot;R_BIOMASS_Ecoli_core_w_GAM&quot;
+
+model_limited = change_bound(model, &quot;R_EX_glc__D_e&quot;, lower = -1.0)</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
+sparse([41, 23, 51, 67, 61, 65, 1, 7, 19, 28  …  72, 3, 8, 33, 57, 66, 31, 45, 46, 57], [1, 2, 2, 2, 3, 3, 4, 4, 4, 4  …  93, 94, 94, 94, 94, 94, 95, 95, 95, 95], [-1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0  …  1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+Number of reactions: 95
+Number of metabolites: 72
+</pre><div class="admonition is-success"><header class="admonition-header">Exchange directions</header><div class="admonition-body"><p>By a convention, the direction of exchange reaction usually goes from the model into the environment, representing the &quot;production&quot;. Limiting the intake thus happens by disabling the &quot;negative production&quot;, i.e., placing a lower bound.</p></div></div><pre><code class="language-julia">original_production = flux_balance_analysis_dict(model, GLPK.Optimizer)[biomass]
+limited_production = flux_balance_analysis_dict(model_limited, GLPK.Optimizer)[biomass]
+
+original_production, limited_production</code></pre><pre class="documenter-example-output">(0.8739215069684418, 0.04838497229681532)</pre><p>Function <a href="../../functions/types/#COBREXA.flux_summary-Tuple{Union{Nothing, Dict{String, Float64}}}"><code>flux_summary</code></a> can help with quickly spotting what has changed:</p><pre><code class="language-julia">flux_summary(flux_balance_analysis_dict(model_limited, GLPK.Optimizer))</code></pre><pre class="documenter-example-output">Biomass
+  R_BIOMASS_Ecoli_core_w_GAM: 0.0484
+Import
+  R_EX_o2_e:                  -3.885
+  R_EX_glc__D_e:              -1.0
+  R_EX_nh4_e:                 -0.2638
+  R_EX_pi_e:                  -0.178
+Export
+  R_EX_h_e:                   0.9706
+  R_EX_co2_e:                 3.941
+  R_EX_h2o_e:                 4.2934
+</pre><p>Similarly, you can check that the model can survive without oxygen, at the cost of switching the metabolism to ethanol production:</p><pre><code class="language-julia">flux_summary(
+    flux_balance_analysis_dict(
+        change_bound(model, &quot;R_EX_o2_e&quot;, lower = 0.0),
+        GLPK.Optimizer,
+    ),
+)</code></pre><pre class="documenter-example-output">Biomass
+  R_BIOMASS_Ecoli_core_w_GAM: 0.2117
+Import
+  R_EX_glc__D_e:              -10.0
+  R_EX_h2o_e:                 -7.1158
+  R_EX_nh4_e:                 -1.1542
+  R_EX_pi_e:                  -0.7786
+  R_EX_co2_e:                 -0.3782
+Export
+  R_EX_etoh_e:                8.2795
+  R_EX_ac_e:                  8.5036
+  R_EX_for_e:                 17.8047
+  R_EX_h_e:                   30.5542
+</pre><p>The effect of all nutrients on the metabolism can be scanned using <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a>. The <a href="../../functions/reconstruction/#COBREXA.change_bound-Tuple{CoreModel, Int64}"><code>change_bound</code></a> function is, for this purpose, packed in a variant specified <a href="../../functions/reconstruction/#COBREXA.with_changed_bound-Tuple"><code>with_changed_bound</code></a>:</p><pre><code class="language-julia">exchanges = filter(looks_like_exchange_reaction, reactions(model))
+
+exchanges .=&gt; screen(
+    model,
+    variants = [[with_changed_bound(exchange, lower = 0.0)] for exchange in exchanges],
+    analysis = m -&gt; begin
+        res = flux_balance_analysis_dict(m, GLPK.Optimizer)
+        isnothing(res) ? nothing : res[biomass]
+    end,
+)</code></pre><pre class="documenter-example-output">20-element Vector{Pair{String}}:
+    &quot;R_EX_fum_e&quot; =&gt; 0.8739215069684418
+     &quot;R_EX_pi_e&quot; =&gt; 1.539376969610117e-16
+ &quot;R_EX_lac__D_e&quot; =&gt; 0.8739215069684418
+    &quot;R_EX_co2_e&quot; =&gt; 0.8739215069684346
+ &quot;R_EX_gln__L_e&quot; =&gt; 0.8739215069684418
+    &quot;R_EX_nh4_e&quot; =&gt; 5.004174630818401e-16
+    &quot;R_EX_akg_e&quot; =&gt; 0.8739215069684418
+    &quot;R_EX_pyr_e&quot; =&gt; 0.8739215069684418
+ &quot;R_EX_mal__L_e&quot; =&gt; 0.8739215069684418
+    &quot;R_EX_fru_e&quot; =&gt; 0.8739215069684418
+ &quot;R_EX_glu__L_e&quot; =&gt; 0.8739215069684418
+     &quot;R_EX_ac_e&quot; =&gt; 0.8739215069684418
+      &quot;R_EX_h_e&quot; =&gt; 0.8739215069684355
+   &quot;R_EX_succ_e&quot; =&gt; 0.8739215069684418
+  &quot;R_EX_acald_e&quot; =&gt; 0.8739215069684418
+    &quot;R_EX_for_e&quot; =&gt; 0.8739215069684418
+   &quot;R_EX_etoh_e&quot; =&gt; 0.8739215069684418
+ &quot;R_EX_glc__D_e&quot; =&gt; nothing
+    &quot;R_EX_h2o_e&quot; =&gt; 0.8739215069684374
+     &quot;R_EX_o2_e&quot; =&gt; 0.2116629497353111</pre><p>Similarly to gene knockouts, you can also examine the effect of combined nutrient deficiencies. To obtain a more interesting result, we may examine the effect of slight deficiencies of pairs of intake metabolites. For simplicity, we show the result only on a small subset of the exchanges:</p><pre><code class="language-julia">selected_exchanges = [
+    &quot;R_EX_pi_e&quot;,
+    &quot;R_EX_gln__L_e&quot;,
+    &quot;R_EX_nh4_e&quot;,
+    &quot;R_EX_pyr_e&quot;,
+    &quot;R_EX_fru_e&quot;,
+    &quot;R_EX_glu__L_e&quot;,
+    &quot;R_EX_glc__D_e&quot;,
+    &quot;R_EX_o2_e&quot;,
+]
+
+screen(
+    model,
+    variants = [
+        [with_changed_bounds([e1, e2], lower = [-1.0, -0.1])] for e1 in selected_exchanges,
+        e2 in selected_exchanges
+    ],
+    analysis = m -&gt; begin
+        res = flux_balance_analysis_dict(m, GLPK.Optimizer)
+        isnothing(res) ? nothing : res[biomass]
+    end,
+)</code></pre><pre class="documenter-example-output">8×8 Matrix{Union{Nothing, Float64}}:
+ 0.0271835  0.271835   0.0183392  …  0.271835    nothing   0.215263
+ 0.0271835  0.880924   0.385123      0.946959   0.0248973  0.222998
+ 0.0271835  0.22007    0.0183392     0.201731    nothing   0.183392
+ 0.0271835  0.915298   0.0183392     0.915171    nothing   0.22357
+ 0.0271835  0.972588   0.0183392     0.972461   0.0576796  0.245722
+ 0.0271835  0.949672   0.201731   …  0.880796   0.028908   0.227731
+ 0.0271835  0.0549658  0.0183392     0.0552895   nothing    nothing
+ 0.0271835  0.250863   0.0183392     0.250983    nothing   0.215263</pre><p>The result describes combinations of nutrient deficiencies – the nutrient that corresponds to the row is mildly deficient (limited to uptake 1.0), and the one that corresponds to the column is severely limited (to uptake 0.1).</p><div class="admonition is-success"><header class="admonition-header">Screening can be easily parallelized</header><div class="admonition-body"><p>To speed up larger analyses, remember that execution of <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a> can be <a href="../../distributed/1_functions/">parallelized to gain speedup</a>. Parallelization in <code>screen</code> is optimized to avoid unnecessary data transfers that may occur when using trivial <code>pmap</code>.</p></div></div><h2 id="What-is-the-minimal-flux-of-nutrients-for-my-model-to-grow?"><a class="docs-heading-anchor" href="#What-is-the-minimal-flux-of-nutrients-for-my-model-to-grow?">What is the minimal flux of nutrients for my model to grow?</a><a id="What-is-the-minimal-flux-of-nutrients-for-my-model-to-grow?-1"></a><a class="docs-heading-anchor-permalink" href="#What-is-the-minimal-flux-of-nutrients-for-my-model-to-grow?" title="Permalink"></a></h2><p>You can compute the minimal flux (i.e., mass per time) of required nutrients by constraining the model growth to a desired lower bound, and then optimize the model with an objective that minimizes intake of all exchanges (i.e., given the directionality convention of the exchanges, actually maximizes the flux through all exchange reactions along their direction).</p><pre><code class="language-julia">model_with_bounded_production = change_bound(model, biomass, lower = 0.1) #minimum required growth
+
+minimal_intake_production = flux_balance_analysis_dict(
+    model_with_bounded_production,
+    GLPK.Optimizer,
+    modifications = [change_objective(exchanges)],
+);</code></pre><p>Metabolite &quot;cost&quot; data may be supplemented using the <code>weights</code> argument of <a href="../../functions/analysis/#COBREXA.change_objective-Tuple{Union{String, Vector{String}}}"><code>change_objective</code></a>, to reflect e.g. the different molar masses or energetic values of different nutrients.</p><p>In our simple case, we obtain the following minimal required intake:</p><pre><code class="language-julia">flux_summary(minimal_intake_production)</code></pre><pre class="documenter-example-output">Biomass
+  R_BIOMASS_Ecoli_core_w_GAM: 0.1
+Import
+  R_EX_o2_e:                  -36.9074
+  R_EX_glc__D_e:              -10.0
+  R_EX_nh4_e:                 -0.5453
+  R_EX_pi_e:                  -0.3679
+Export
+  R_EX_co2_e:                 18.3015
+  R_EX_h2o_e:                 19.0299
+  R_EX_for_e:                 37.443
+  R_EX_h_e:                   39.449
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../10_crowding/">« FBA with crowding</a><a class="docs-footer-nextpage" href="../12_mmdf/">Maximum-minimum driving force analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 25 November 2022 11:21">Friday 25 November 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
