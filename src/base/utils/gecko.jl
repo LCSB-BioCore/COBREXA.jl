@@ -40,7 +40,7 @@ Compute the part of the coupling for [`GeckoModel`](@ref) that limits the
 _gecko_reaction_coupling(model::GeckoModel) =
     let tmp = [
             (col.reaction_coupling_row, i, col.direction) for
-            (i, col) = enumerate(model.columns) if col.reaction_coupling_row != 0
+            (i, col) in enumerate(model.columns) if col.reaction_coupling_row != 0
         ]
         sparse(
             [row for (row, _, _) in tmp],

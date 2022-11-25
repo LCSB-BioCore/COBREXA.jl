@@ -168,10 +168,19 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite compartment from `metCompartment` or `metCompartments`.
 """
-metabolite_compartment(m::MATModel, mid::String) = _maybemap(
-    x -> x[findfirst(==(mid), metabolites(m))],
-    gets(m.mat, nothing, _constants.keynames.metcompartments),
-)
+function metabolite_compartment(m::MATModel, mid::String)
+    res = _maybemap(
+        x -> x[findfirst(==(mid), metabolites(m))],
+        gets(m.mat, nothing, _constants.keynames.metcompartments),
+    )
+    # if the metabolite is an integer or a (very integerish) float, it is an
+    # index to a table of metabolite names (such as in the yeast GEM)
+    typeof(res) <: Real || return res
+    return _maybemap(
+        table -> table[Int(res)],
+        gets(m.mat, nothing, _constants.keynames.metcomptables),
+    )
+end
 
 """
 $(TYPEDSIGNATURES)

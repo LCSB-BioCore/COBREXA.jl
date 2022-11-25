@@ -3,18 +3,48 @@ on:
   push:
     branches:
       - master
-    tags: '*'
+      - develop
+
 jobs:
   test:
-    name: run tests on github CI
-    runs-on: ubuntu-latest
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - '1.6' # Oldest supported version for COBREXA.jl
+          - '1' # This is always the latest stable release in the 1.X series
+          #- 'nightly'
+        os:
+          - ubuntu-latest
+          #- macOS-latest
+          #- windows-latest
+        arch:
+          - x64
     steps:
-      - uses: actions/checkout@v2
-      - uses: addnab/docker-run-action@v3
+      - uses: actions/checkout@v3
+      - uses: julia-actions/setup-julia@v1
         with:
-          username: cylon-x
-          password: ${{ secrets.gitlab_access_token }}
-          registry: ${{ secrets.docker_registry }}
-          image: ${{ secrets.docker_img }}
-          options: -v ${{ github.workspace }}:/pkg
-          run: julia --check-bounds=yes --inline=yes --project=/pkg -e "import Pkg; Pkg.test();"
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - uses: actions/cache@v1
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
+      - uses: julia-actions/julia-buildpkg@latest
+      - run: |
+          git config --global user.name Tester
+          git config --global user.email te@st.er
+      - uses: julia-actions/julia-runtest@latest
+        continue-on-error: ${{ matrix.version == 'nightly' }}
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v1
+        with:
+          file: lcov.info
