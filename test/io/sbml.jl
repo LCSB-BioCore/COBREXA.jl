@@ -10,8 +10,8 @@
     @test length.(bounds(m)) == (95, 95)
     @test all([length(m.xl), length(m.xu), length(m.c)] .== 95)
 
-    @test metabolites(m)[1:3] == ["M_succoa_c", "M_ac_c", "M_fru_b"]
-    @test reactions(m)[1:3] == ["R_EX_fum_e", "R_ACONTb", "R_GLNS"]
+    @test metabolites(m)[1:3] == ["M_13dpg_c", "M_2pg_c", "M_3pg_c"]
+    @test reactions(m)[1:3] == ["R_ACALD", "R_ACALDt", "R_ACKr"]
 
     cm = convert(CoreModelCoupled, sbmlm)
     @test n_coupling_constraints(cm) == 0

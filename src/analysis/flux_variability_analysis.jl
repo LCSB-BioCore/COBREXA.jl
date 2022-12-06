@@ -42,7 +42,7 @@ reason.
 # Example
 ```
 model = load_model("e_coli_core.json")
-flux_variability_analysis(model, [1, 2, 3, 42], GLPK.optimizer)
+flux_variability_analysis(model, GLPK.optimizer)
 ```
 """
 function flux_variability_analysis(
