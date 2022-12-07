@@ -5,7 +5,7 @@
 using COBREXA, Tulip
 
 model = load_model(&quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type SBMLModel
-sparse([41, 23, 51, 67, 61, 65, 1, 7, 19, 28  …  72, 3, 8, 33, 57, 66, 31, 45, 46, 57], [1, 2, 2, 2, 3, 3, 4, 4, 4, 4  …  93, 94, 94, 94, 94, 94, 95, 95, 95, 95], [-1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0  …  1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+sparse([8, 10, 21, 43, 50, 51, 8, 9, 6, 12  …  33, 66, 68, 72, 23, 26, 33, 72, 22, 33], [1, 1, 1, 1, 1, 1, 2, 2, 3, 3  …  93, 93, 93, 93, 94, 94, 94, 94, 95, 95], [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0  …  1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
 Number of reactions: 95
 Number of metabolites: 72
 </pre><p>To describe the protein crowding, each of the enzymes that catalyze the reactions gets an associated weight per unit of reaction conversion rate. The total sum of all weights multiplied by the flux in the model must be lower than 1.</p><p>The weights are prepared in a dictionary; for simplicity we assume that the relative weight of all enzymes is random between 0.002 and 0.005. enzymes are of the same size. Reactions that are not present in the dictionary (typically exchanges) are ignored.</p><pre><code class="language-julia">import Random
@@ -15,59 +15,59 @@ rid_crowding_weight = Dict(
     rid =&gt; 0.002 + 0.003 * rand() for rid in reactions(model) if
     !looks_like_biomass_reaction(rid) &amp;&amp; !looks_like_exchange_reaction(rid)
 )</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 74 entries:
-  &quot;R_ACONTb&quot;   =&gt; 0.0022201
-  &quot;R_TPI&quot;      =&gt; 0.00304772
-  &quot;R_SUCOAS&quot;   =&gt; 0.00409648
-  &quot;R_GLNS&quot;     =&gt; 0.00388479
-  &quot;R_PPC&quot;      =&gt; 0.00474479
-  &quot;R_O2t&quot;      =&gt; 0.00257842
-  &quot;R_G6PDH2r&quot;  =&gt; 0.00431054
-  &quot;R_TALA&quot;     =&gt; 0.00434156
-  &quot;R_PPCK&quot;     =&gt; 0.00401079
-  &quot;R_PGL&quot;      =&gt; 0.00250314
-  &quot;R_H2Ot&quot;     =&gt; 0.00371326
-  &quot;R_GLNabc&quot;   =&gt; 0.00335843
-  &quot;R_MALt2_2&quot;  =&gt; 0.00290698
-  &quot;R_ME2&quot;      =&gt; 0.00200405
-  &quot;R_GAPD&quot;     =&gt; 0.00370107
-  &quot;R_CS&quot;       =&gt; 0.00384781
-  &quot;R_ETOHt2r&quot;  =&gt; 0.00258722
-  &quot;R_ACKr&quot;     =&gt; 0.00203739
-  &quot;R_PGK&quot;      =&gt; 0.00293598
+  &quot;R_ACONTb&quot;   =&gt; 0.00474479
+  &quot;R_GLNS&quot;     =&gt; 0.00419165
+  &quot;R_SUCOAS&quot;   =&gt; 0.00285974
+  &quot;R_TPI&quot;      =&gt; 0.00321767
+  &quot;R_PPC&quot;      =&gt; 0.00404847
+  &quot;R_O2t&quot;      =&gt; 0.00281663
+  &quot;R_G6PDH2r&quot;  =&gt; 0.00311648
+  &quot;R_TALA&quot;     =&gt; 0.00475675
+  &quot;R_PPCK&quot;     =&gt; 0.00471792
+  &quot;R_PGL&quot;      =&gt; 0.00362231
+  &quot;R_H2Ot&quot;     =&gt; 0.0025905
+  &quot;R_GLNabc&quot;   =&gt; 0.00329044
+  &quot;R_MALt2_2&quot;  =&gt; 0.00328254
+  &quot;R_ME2&quot;      =&gt; 0.0033115
+  &quot;R_GAPD&quot;     =&gt; 0.00460608
+  &quot;R_CS&quot;       =&gt; 0.00200405
+  &quot;R_ETOHt2r&quot;  =&gt; 0.00203739
+  &quot;R_ACKr&quot;     =&gt; 0.00409648
+  &quot;R_PGK&quot;      =&gt; 0.00241937
   ⋮            =&gt; ⋮</pre><p>With this, the crowding constraints are added with modification <a href="../../functions/analysis/#COBREXA.add_crowding_constraints-Tuple{Dict{Int64, Float64}}"><code>add_crowding_constraints</code></a>:</p><pre><code class="language-julia">loopless_crowding_fluxes = flux_balance_analysis_dict(
     model,
     Tulip.Optimizer;
     modifications = [add_crowding_constraints(rid_crowding_weight)],
 )</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
   &quot;R_EX_fum_e&quot;    =&gt; 0.0
-  &quot;R_ACONTb&quot;      =&gt; 0.641957
-  &quot;R_TPI&quot;         =&gt; 6.25052
-  &quot;R_SUCOAS&quot;      =&gt; -1.59844e-11
-  &quot;R_GLNS&quot;        =&gt; 0.152144
-  &quot;R_EX_pi_e&quot;     =&gt; -2.18886
-  &quot;R_PPC&quot;         =&gt; 1.70506
-  &quot;R_O2t&quot;         =&gt; 12.5638
-  &quot;R_G6PDH2r&quot;     =&gt; 5.10105
-  &quot;R_TALA&quot;        =&gt; 1.5939
-  &quot;R_PPCK&quot;        =&gt; 1.92339e-12
-  &quot;R_EX_lac__D_e&quot; =&gt; 4.00181e-12
-  &quot;R_PGL&quot;         =&gt; 5.10105
-  &quot;R_H2Ot&quot;        =&gt; -17.586
+  &quot;R_ACONTb&quot;      =&gt; 0.677983
+  &quot;R_GLNS&quot;        =&gt; 0.160683
+  &quot;R_SUCOAS&quot;      =&gt; -1.44063e-9
+  &quot;R_TPI&quot;         =&gt; 6.54899
+  &quot;R_EX_pi_e&quot;     =&gt; -2.3117
+  &quot;R_PPC&quot;         =&gt; 1.80075
+  &quot;R_O2t&quot;         =&gt; 13.1643
+  &quot;R_G6PDH2r&quot;     =&gt; 5.38733
+  &quot;R_TALA&quot;        =&gt; 1.68335
+  &quot;R_PPCK&quot;        =&gt; 1.48421e-10
+  &quot;R_EX_lac__D_e&quot; =&gt; 2.56015e-10
+  &quot;R_PGL&quot;         =&gt; 5.38733
+  &quot;R_H2Ot&quot;        =&gt; -18.4683
   &quot;R_GLNabc&quot;      =&gt; 0.0
-  &quot;R_EX_co2_e&quot;    =&gt; 13.2517
+  &quot;R_EX_co2_e&quot;    =&gt; 13.8908
   &quot;R_EX_gln__L_e&quot; =&gt; 0.0
-  &quot;R_EX_nh4_e&quot;    =&gt; -3.24447
+  &quot;R_EX_nh4_e&quot;    =&gt; -3.42655
   &quot;R_MALt2_2&quot;     =&gt; 0.0
   ⋮               =&gt; ⋮</pre><pre><code class="language-julia">flux_summary(loopless_crowding_fluxes)</code></pre><pre class="documenter-example-output">Biomass
-  R_BIOMASS_Ecoli_core_w_GAM: 0.595
+  R_BIOMASS_Ecoli_core_w_GAM: 0.6284
 Import
-  R_EX_o2_e:                  -12.5638
-  R_EX_glc__D_e:              -8.5427
-  R_EX_nh4_e:                 -3.2445
-  R_EX_pi_e:                  -2.1889
+  R_EX_o2_e:                  -13.1643
+  R_EX_glc__D_e:              -8.9698
+  R_EX_nh4_e:                 -3.4266
+  R_EX_pi_e:                  -2.3117
 Export
-  R_EX_ac_e:                  6.3418
-  R_EX_co2_e:                 13.2517
-  R_EX_h2o_e:                 17.586
-  R_EX_h_e:                   18.2778
-</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../09_loopless/">« Loopless FBA</a><a class="docs-footer-nextpage" href="../11_growth/">Growth media analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 25 November 2022 09:08">Friday 25 November 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  R_EX_ac_e:                  6.5931
+  R_EX_co2_e:                 13.8908
+  R_EX_h2o_e:                 18.4683
+  R_EX_h_e:                   19.1989
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../09_loopless/">« Loopless FBA</a><a class="docs-footer-nextpage" href="../11_growth/">Growth media analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 7 December 2022 08:59">Wednesday 7 December 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

@@ -5,7 +5,7 @@
 using COBREXA
 
 model = load_model(&quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type SBMLModel
-sparse([41, 23, 51, 67, 61, 65, 1, 7, 19, 28  …  72, 3, 8, 33, 57, 66, 31, 45, 46, 57], [1, 2, 2, 2, 3, 3, 4, 4, 4, 4  …  93, 94, 94, 94, 94, 94, 95, 95, 95, 95], [-1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0  …  1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+sparse([8, 10, 21, 43, 50, 51, 8, 9, 6, 12  …  33, 66, 68, 72, 23, 26, 33, 72, 22, 33], [1, 1, 1, 1, 1, 1, 2, 2, 3, 3  …  93, 93, 93, 93, 94, 94, 94, 94, 95, 95], [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0  …  1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
 Number of reactions: 95
 Number of metabolites: 72
 </pre><p>To perform any optimization-based analysis, we need to use a linear programming solver (also called an optimizer). Any of the <a href="https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers"><code>JuMP.jl</code>-supported optimizers</a> will work. Here, we will demonstrate <a href="https://github.com/ds4dm/Tulip.jl"><code>Tulip.jl</code></a> and <a href="https://www.gnu.org/software/glpk/">GLPK</a>; other solvers will likely work just as well.</p><pre><code class="language-julia">using Tulip
@@ -21,58 +21,58 @@ CachingOptimizer state: ATTACHED_OPTIMIZER
 Solver name: Tulip
 Names registered in the model: lbs, mb, ubs, x</pre><p><code>solved_model</code> is now an instance of optimized JuMP model. To get the variable values out manually, we can use <code>JuMP.value</code> function. Flux variables are stored as vector <code>x</code>:</p><pre><code class="language-julia">using JuMP
 value.(solved_model[:x])</code></pre><pre class="documenter-example-output">95-element Vector{Float64}:
-  -0.0
-   6.00724956649032
-   7.477381918907127
-  -5.064375360152338
-   0.2234617471432185
-  -3.214895030387032
-   2.504309432010867
-  21.799492758475754
-   4.959985078874371
-   1.496983802869297
+  -5.62439030120323e-9
+  -4.201129368838846e-9
+  -3.3923987790069394e-9
+   6.007249566759449
+   6.00724956675944
+  -3.3924030713751446e-9
+   2.8591669740742613e-8
+   5.064375361904729
+  -3.847904111734164e-9
+  -1.4232688663206453e-9
    ⋮
-   3.375438217960911e-7
-  29.175827202685298
-   9.054357964341115e-9
-   4.817965631705414e-8
-   9.959461594581987e-9
- -21.799492758475754
-  -0.0
-  -1.4340676616267298e-9
-   3.214895030387032</pre><p>To simplify things, there is a variant of the FBA function that does this for us automatically:</p><pre><code class="language-julia">flux_balance_analysis_vec(model, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">95-element Vector{Float64}:
-   0.0
-   6.00724956649032
-   7.477381918907127
-  -5.064375360152338
-   0.2234617471432185
-  -3.214895030387032
-   2.504309432010867
-  21.799492758475754
-   4.959985078874371
-   1.496983802869297
+   2.3807910379998874e-8
+   2.532925798014968e-8
+ 494.2414417548114
+  -5.064375361904718
+   1.4969838025832385
+   3.373717085310436e-7
+   1.4969838025832798
+   1.18149814026048
+   7.4773819191983355</pre><p>To simplify things, there is a variant of the FBA function that does this for us automatically:</p><pre><code class="language-julia">flux_balance_analysis_vec(model, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">95-element Vector{Float64}:
+  -5.62439030120323e-9
+  -4.201129368838846e-9
+  -3.3923987790069394e-9
+   6.007249566759449
+   6.00724956675944
+  -3.3924030713751446e-9
+   2.8591669740742613e-8
+   5.064375361904729
+  -3.847904111734164e-9
+  -1.4232688663206453e-9
    ⋮
-   3.375438217960911e-7
-  29.175827202685298
-   9.054357964341115e-9
-   4.817965631705414e-8
-   9.959461594581987e-9
- -21.799492758475754
-   0.0
-  -1.4340676616267298e-9
-   3.214895030387032</pre><p>Likewise, there is another variant that returns the fluxes annotated by reaction names, in a dictionary:</p><pre><code class="language-julia">flux_balance_analysis_dict(model, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+   2.3807910379998874e-8
+   2.532925798014968e-8
+ 494.2414417548114
+  -5.064375361904718
+   1.4969838025832385
+   3.373717085310436e-7
+   1.4969838025832798
+   1.18149814026048
+   7.4773819191983355</pre><p>Likewise, there is another variant that returns the fluxes annotated by reaction names, in a dictionary:</p><pre><code class="language-julia">flux_balance_analysis_dict(model, Tulip.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
   &quot;R_EX_fum_e&quot;    =&gt; 0.0
   &quot;R_ACONTb&quot;      =&gt; 6.00725
-  &quot;R_TPI&quot;         =&gt; 7.47738
-  &quot;R_SUCOAS&quot;      =&gt; -5.06438
   &quot;R_GLNS&quot;        =&gt; 0.223462
+  &quot;R_SUCOAS&quot;      =&gt; -5.06438
+  &quot;R_TPI&quot;         =&gt; 7.47738
   &quot;R_EX_pi_e&quot;     =&gt; -3.2149
   &quot;R_PPC&quot;         =&gt; 2.50431
   &quot;R_O2t&quot;         =&gt; 21.7995
   &quot;R_G6PDH2r&quot;     =&gt; 4.95999
   &quot;R_TALA&quot;        =&gt; 1.49698
-  &quot;R_PPCK&quot;        =&gt; 5.88317e-8
-  &quot;R_EX_lac__D_e&quot; =&gt; 2.39394e-9
+  &quot;R_PPCK&quot;        =&gt; 5.88441e-8
+  &quot;R_EX_lac__D_e&quot; =&gt; 2.37701e-9
   &quot;R_PGL&quot;         =&gt; 4.95999
   &quot;R_H2Ot&quot;        =&gt; -29.1758
   &quot;R_GLNabc&quot;      =&gt; 0.0
@@ -84,23 +84,23 @@ value.(solved_model[:x])</code></pre><pre class="documenter-example-output">95-e
 flux_balance_analysis_dict(model, GLPK.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
   &quot;R_EX_fum_e&quot;    =&gt; 0.0
   &quot;R_ACONTb&quot;      =&gt; 6.00725
-  &quot;R_TPI&quot;         =&gt; 7.47738
-  &quot;R_SUCOAS&quot;      =&gt; -5.06438
   &quot;R_GLNS&quot;        =&gt; 0.223462
+  &quot;R_SUCOAS&quot;      =&gt; -5.06438
+  &quot;R_TPI&quot;         =&gt; 7.47738
   &quot;R_EX_pi_e&quot;     =&gt; -3.2149
   &quot;R_PPC&quot;         =&gt; 2.50431
   &quot;R_O2t&quot;         =&gt; 21.7995
   &quot;R_G6PDH2r&quot;     =&gt; 4.95998
   &quot;R_TALA&quot;        =&gt; 1.49698
-  &quot;R_PPCK&quot;        =&gt; -9.9537e-15
-  &quot;R_EX_lac__D_e&quot; =&gt; -2.05011e-14
+  &quot;R_PPCK&quot;        =&gt; -7.10543e-15
+  &quot;R_EX_lac__D_e&quot; =&gt; 1.83673e-14
   &quot;R_PGL&quot;         =&gt; 4.95998
   &quot;R_H2Ot&quot;        =&gt; -29.1758
   &quot;R_GLNabc&quot;      =&gt; 0.0
   &quot;R_EX_co2_e&quot;    =&gt; 22.8098
   &quot;R_EX_gln__L_e&quot; =&gt; 0.0
   &quot;R_EX_nh4_e&quot;    =&gt; -4.76532
-  &quot;R_MALt2_2&quot;     =&gt; -1.30217e-14
+  &quot;R_MALt2_2&quot;     =&gt; 0.0
   ⋮               =&gt; ⋮</pre><p>To get a shortened but useful overview of what was found in the analysis, you can use <a href="../../functions/types/#COBREXA.flux_summary-Tuple{Union{Nothing, Dict{String, Float64}}}"><code>flux_summary</code></a> function:</p><pre><code class="language-julia">flux_summary(flux_balance_analysis_dict(model, GLPK.Optimizer))</code></pre><pre class="documenter-example-output">Biomass
   R_BIOMASS_Ecoli_core_w_GAM: 0.8739
 Import
@@ -112,4 +112,4 @@ Export
   R_EX_h_e:                   17.5309
   R_EX_co2_e:                 22.8098
   R_EX_h2o_e:                 29.1758
-</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../04b_standardmodel_construction/">« Model construction and modification</a><a class="docs-footer-nextpage" href="../05b_fba_mods/">Extending FBA with modifications »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 25 November 2022 09:08">Friday 25 November 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../04b_standardmodel_construction/">« Model construction and modification</a><a class="docs-footer-nextpage" href="../05b_fba_mods/">Extending FBA with modifications »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 7 December 2022 08:59">Wednesday 7 December 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
