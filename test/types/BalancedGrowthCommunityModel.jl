@@ -69,7 +69,7 @@
     @test contains(sprint(show, MIME("text/plain"), cm), "balanced growth")
 
     @test issetequal(
-        reactions(cm),
+        variables(cm),
         [
             "m1#EX_A"
             "m1#r1"
@@ -121,7 +121,7 @@
         ],
     )
 
-    @test n_reactions(cm) == 14
+    @test n_variables(cm) == 14
     @test n_metabolites(cm) == 13
     @test n_genes(cm) == 8
 
@@ -259,7 +259,7 @@ end
 
     # test if model can be converted to another type
     om = convert(ObjectModel, cm)
-    @test n_reactions(om) == n_reactions(cm)
+    @test n_variables(om) == n_variables(cm)
 end
 
 @testset "BalancedGrowthCommunityModel: enzyme constrained e coli" begin

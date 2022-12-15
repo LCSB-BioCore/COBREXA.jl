@@ -63,8 +63,8 @@ Consequently, exchange reactions of the original model will look like
 `species1#EX_...`. All exchange environmental reactions have `EX_` as a prefix
 followed by the environmental metabolite id.
 """
-function Accessors.reactions(cm::BalancedGrowthCommunityModel)
-    rxns = [add_community_prefix(m, rid) for m in cm.members for rid in reactions(m.model)]
+function Accessors.variables(cm::BalancedGrowthCommunityModel)
+    rxns = [add_community_prefix(m, rid) for m in cm.members for rid in variables(m.model)]
     env_exs = ["EX_" * env_met for env_met in get_env_mets(cm)]
     return [rxns; env_exs; cm.objective_id]
 end
@@ -75,8 +75,8 @@ $(TYPEDSIGNATURES)
 Return the number of reactions in `cm`, which is a
 [`BalancedGrowthCommunityModel`](@ref).
 """
-function Accessors.n_reactions(cm::BalancedGrowthCommunityModel)
-    num_model_reactions = sum(n_reactions(m.model) for m in cm.members)
+function Accessors.n_variables(cm::BalancedGrowthCommunityModel)
+    num_model_reactions = sum(n_variables(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
     num_env_metabolites = length(get_env_mets(cm))
     return num_model_reactions + num_env_metabolites + 1 # add 1 for the community biomass
@@ -188,7 +188,7 @@ rate/balanced growth objective. Consequently, the relation `community_growth *
 abundance_species_i = growth_species_i` should hold.
 """
 function Accessors.objective(cm::BalancedGrowthCommunityModel)
-    vec = spzeros(n_reactions(cm))
+    vec = spzeros(n_variables(cm))
     vec[end] = 1.0
     return vec
 end
@@ -200,7 +200,7 @@ Coupling constraint matrix for a [`BalancedGrowthCommunityModel`](@ref).
 """
 function Accessors.coupling(cm::BalancedGrowthCommunityModel)
     coups = blockdiag([coupling(m.model) for m in cm.members]...)
-    n = n_reactions(cm)
+    n = n_variables(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 
@@ -230,10 +230,10 @@ $(TYPEDSIGNATURES)
 
 Returns a matrix, which when multipled by the solution of a constraints based
 problem, yields the semantically meaningful fluxes that correspond to
-[`fluxes`](@ref).
+[`reactions`](@ref).
 """
-function Accessors.reaction_flux(cm::BalancedGrowthCommunityModel)
-    rfs = blockdiag([reaction_flux(m.model) for m in cm.members]...)
+function Accessors.reaction_variables(cm::BalancedGrowthCommunityModel)
+    rfs = blockdiag([reaction_variables(m.model) for m in cm.members]...)
     nr = length(get_env_mets(cm)) + 1 # env ex + obj
     blockdiag(rfs, spdiagm(fill(1, nr)))
 end
@@ -243,8 +243,8 @@ $(TYPEDSIGNATURES)
 
 Returns the semantically meaningful reactions of the model.
 """
-Accessors.fluxes(cm::BalancedGrowthCommunityModel) = [
-    vcat([add_community_prefix.(Ref(m), fluxes(m.model)) for m in cm.members]...)
+Accessors.reactions(cm::BalancedGrowthCommunityModel) = [
+    vcat([add_community_prefix.(Ref(m), reactions(m.model)) for m in cm.members]...)
     ["EX_" * env_met for env_met in get_env_mets(cm)]
     cm.objective_id
 ]
@@ -254,8 +254,8 @@ $(TYPEDSIGNATURES)
 
 Return the semantically meaningful reactions of the model.
 """
-Accessors.n_fluxes(cm::BalancedGrowthCommunityModel) =
-    sum(n_fluxes(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
+Accessors.n_reactions(cm::BalancedGrowthCommunityModel) =
+    sum(n_reactions(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
 
 #=
 This loops implements the rest of the accssors through access_community_member.

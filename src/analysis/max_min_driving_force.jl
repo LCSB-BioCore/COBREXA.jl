@@ -71,7 +71,7 @@ function max_min_driving_force(
     @variables opt_model begin
         mmdf
         logcs[1:n_metabolites(model)]
-        dgrs[1:n_reactions(model)]
+        dgrs[1:n_variables(model)]
     end
 
     # set proton log concentration to zero so that it won't impact any calculations (biothermodynamics assumption)
@@ -93,20 +93,20 @@ function max_min_driving_force(
             haskey(reaction_standard_gibbs_free_energies, rid) &&
                 abs(get(flux_solution, rid, small_flux_tol / 2)) > small_flux_tol &&
                 !(rid in ignore_reaction_ids),
-        reactions(model),
+        variables(model),
     )
-    active_ridxs = Int.(indexin(active_rids, reactions(model)))
+    active_ridxs = Int.(indexin(active_rids, variables(model)))
 
     # give dummy dG0 for reactions that don't have data
     dg0s =
-        [get(reaction_standard_gibbs_free_energies, rid, 0.0) for rid in reactions(model)]
+        [get(reaction_standard_gibbs_free_energies, rid, 0.0) for rid in variables(model)]
 
     S = stoichiometry(model)
 
     @constraint(opt_model, dgrs .== dg0s .+ (R * T) * S' * logcs)
 
     # thermodynamics should correspond to the fluxes
-    flux_signs = [sign(get(flux_solution, rid, 1.0)) for rid in reactions(model)]
+    flux_signs = [sign(get(flux_solution, rid, 1.0)) for rid in variables(model)]
 
     # only constrain reactions that have thermo data
     @constraint(opt_model, dgrs[active_ridxs] .* flux_signs[active_ridxs] .<= 0)
@@ -154,7 +154,7 @@ function max_min_driving_force(
     return (
         mmdf = value(opt_model[:mmdf]),
         dg_reactions = Dict(
-            rid => value(opt_model[:dgrs][i]) for (i, rid) in enumerate(reactions(model))
+            rid => value(opt_model[:dgrs][i]) for (i, rid) in enumerate(variables(model))
         ),
         concentrations = Dict(
             mid => exp(value(opt_model[:logcs][i])) for
@@ -215,7 +215,7 @@ function max_min_driving_force_variability(
 
     dgr_variants = [
         [[_mmdf_add_df_bound(lb, ub), _mmdf_dgr_objective(ridx, sense)]] for
-        ridx = 1:n_reactions(model), sense in [MAX_SENSE, MIN_SENSE]
+        ridx = 1:n_variables(model), sense in [MAX_SENSE, MIN_SENSE]
     ]
     concen_variants = [
         [[_mmdf_add_df_bound(lb, ub), _mmdf_concen_objective(midx, sense)]] for

@@ -16,7 +16,7 @@ $(TYPEDSIGNATURES)
 
 Get reactions from a [`SBMLModel`](@ref).
 """
-Accessors.reactions(model::SBMLModel)::Vector{String} =
+Accessors.variables(model::SBMLModel)::Vector{String} =
     [k for k in keys(model.sbml.reactions)]
 
 """
@@ -32,7 +32,7 @@ $(TYPEDSIGNATURES)
 
 Efficient counting of reactions in [`SBMLModel`](@ref).
 """
-Accessors.n_reactions(model::SBMLModel)::Int = length(model.sbml.reactions)
+Accessors.n_variables(model::SBMLModel)::Int = length(model.sbml.reactions)
 
 """
 $(TYPEDSIGNATURES)
@@ -164,7 +164,7 @@ function _sbml_export_cvterms(annotations::Annotations)::Vector{SBML.CVTerm}
             biological_qualifier = :is,
             resource_uris = [
                 id == "RESOURCE_URI" ? val : "http://identifiers.org/$id/$val" for
-                (id, vals) = annotations if id != "sbo" for val in vals
+                (id, vals) in annotations if id != "sbo" for val in vals
             ],
         ),
     ]
@@ -287,7 +287,7 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     end
 
     mets = metabolites(mm)
-    rxns = reactions(mm)
+    rxns = variables(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = bounds(mm)
     comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))

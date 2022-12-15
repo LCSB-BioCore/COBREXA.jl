@@ -57,12 +57,12 @@ typeof(sbml_model.sbml)
 mat_model.mat
 
 # In all cases, you can access the data in the model in the same way, e.g.,
-# using [`reactions`](@ref) to get a list of the reactions in the models:
+# using [`variables`](@ref) to get a list of the reactions in the models:
 
-reactions(mat_model)[1:5]
+variables(mat_model)[1:5]
 #
 
-reactions(json_model)[1:5]
+variables(json_model)[1:5]
 
 # You can use the [generic accessors](03_exploring.md) to gather more information about
 # the model contents, [convert the models](02_convert_save.md) into formats more suitable for

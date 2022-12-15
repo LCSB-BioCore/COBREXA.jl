@@ -36,7 +36,7 @@ import Random
 Random.seed!(1) # for repeatability of random numbers below
 
 rid_crowding_weight = Dict(
-    rid => 0.002 + 0.003 * rand() for rid in reactions(model) if
+    rid => 0.002 + 0.003 * rand() for rid in variables(model) if
     !looks_like_biomass_reaction(rid) && !looks_like_exchange_reaction(rid)
 )
 

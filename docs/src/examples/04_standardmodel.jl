@@ -43,7 +43,7 @@ model = load_model(ObjectModel, "e_coli_core.json") # we specifically want to lo
 # and `Reaction`s. Ordered dictionaries are used because the order of the
 # reactions and metabolites are important for constructing a stoichiometric
 # matrix since the rows and columns should correspond to the order of the metabolites
-# and reactions returned by calling the accessors `metabolites` and `reactions`.
+# and reactions returned by calling the accessors `metabolites` and `variables`.
 
 # Each `ObjectModel` is composed of the following fields:
 
@@ -79,7 +79,7 @@ model.genes[random_gene_id]
 random_metabolite_id = metabolites(model)[rand(1:n_metabolites(model))]
 model.metabolites[random_metabolite_id]
 #
-random_reaction_id = reactions(model)[rand(1:n_reactions(model))]
+random_reaction_id = variables(model)[rand(1:n_variables(model))]
 model.reactions[random_reaction_id]
 
 # `ObjectModel` can be used to build your own metabolic model or modify an

@@ -16,10 +16,10 @@ using COBREXA
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json");
 
 js = load_model("e_coli_core.json")
-reactions(js)
+variables(js)
 #
 std = convert(MatrixModel, js)
-reactions(std)
+variables(std)
 
 # All accessors allow systematic access to information about reactions,
 # stoichiometry, metabolite properties and chemistry, genes, and various model
@@ -27,7 +27,7 @@ reactions(std)
 #
 # The most notable ones include:
 #
-# - [`reactions`](@ref), [`metabolites`](@ref) and [`genes`](@ref) return
+# - [`variables`](@ref), [`metabolites`](@ref) and [`genes`](@ref) return
 #   respective vectors of identifiers of reactions, metabolites and genes present
 #   in the model,
 # - [`stoichiometry`](@ref) returns the S matrix

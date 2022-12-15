@@ -17,10 +17,10 @@ For technical reasons, the "reactions" may sometimes not be true reactions but
 various virtual and helper pseudo-reactions that are used in the metabolic
 modeling, such as metabolite exchanges, separate forward and reverse reactions,
 supplies of enzymatic and genetic material and virtual cell volume, etc. To
-simplify the view of the model contents use [`reaction_flux`](@ref).
+simplify the view of the model contents use [`reaction_variables`](@ref).
 """
-function reactions(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(reactions, (a,))
+function variables(a::AbstractMetabolicModel)::Vector{String}
+    missing_impl_error(variables, (a,))
 end
 
 """
@@ -29,7 +29,7 @@ $(TYPEDSIGNATURES)
 Return a vector of metabolite identifiers in a model. The vector precisely
 corresponds to the rows in [`stoichiometry`](@ref) matrix.
 
-As with [`reactions`](@ref)s, some metabolites in models may be virtual,
+As with [`variables`](@ref)s, some metabolites in models may be virtual,
 representing purely technical equality constraints.
 """
 function metabolites(a::AbstractMetabolicModel)::Vector{String}
@@ -41,8 +41,8 @@ $(TYPEDSIGNATURES)
 
 Get the number of reactions in a model.
 """
-function n_reactions(a::AbstractMetabolicModel)::Int
-    length(reactions(a))
+function n_variables(a::AbstractMetabolicModel)::Int
+    length(variables(a))
 end
 
 """
@@ -101,35 +101,35 @@ end
 """
 $(TYPEDSIGNATURES)
 
-In some models, the [`reactions`](@ref) that correspond to the columns of
+In some models, the [`variables`](@ref) that correspond to the columns of
 [`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
 the model; for example, fluxes may be split into forward and reverse reactions,
 reactions catalyzed by distinct enzymes, etc. Together with
-[`reaction_flux`](@ref) (and [`n_fluxes`](@ref)) this specifies how the
+[`reaction_variables`](@ref) (and [`n_reactions`](@ref)) this specifies how the
 flux is decomposed into individual reactions.
 
 By default (and in most models), fluxes and reactions perfectly correspond.
 """
-function fluxes(a::AbstractMetabolicModel)::Vector{String}
-    reactions(a)
+function reactions(a::AbstractMetabolicModel)::Vector{String}
+    variables(a)
 end
 
-function n_fluxes(a::AbstractMetabolicModel)::Int
-    n_reactions(a)
+function n_reactions(a::AbstractMetabolicModel)::Int
+    n_variables(a)
 end
 
 """
 $(TYPEDSIGNATURES)
 
 Retrieve a sparse matrix that describes the correspondence of a solution of the
-linear system to the fluxes (see [`fluxes`](@ref) for rationale). Returns a
-sparse matrix of size `(n_reactions(a), n_fluxes(a))`. For most models, this is
+linear system to the fluxes (see [`reactions`](@ref) for rationale). Returns a
+sparse matrix of size `(n_variables(a), n_reactions(a))`. For most models, this is
 an identity matrix.
 """
-function reaction_flux(a::AbstractMetabolicModel)::SparseMat
-    nr = n_reactions(a)
-    nf = n_fluxes(a)
-    nr == nf || missing_impl_error(reaction_flux, (a,))
+function reaction_variables(a::AbstractMetabolicModel)::SparseMat
+    nr = n_variables(a)
+    nf = n_reactions(a)
+    nr == nf || missing_impl_error(reaction_variables, (a,))
     spdiagm(fill(1, nr))
 end
 
@@ -140,7 +140,7 @@ Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
 function coupling(a::AbstractMetabolicModel)::SparseMat
-    return spzeros(0, n_reactions(a))
+    return spzeros(0, n_variables(a))
 end
 
 """
@@ -228,7 +228,7 @@ function reaction_stoichiometry(
     mets = metabolites(m)
     Dict(
         mets[k] => v for
-        (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rid], reactions(m)))])...)
+        (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rid], variables(m)))])...)
     )
 end
 

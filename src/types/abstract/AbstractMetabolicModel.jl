@@ -7,7 +7,7 @@ functions.
 
 If you want your model type to work with COBREXA, add the `AbstractMetabolicModel` as
 its supertype, and implement the accessor functions. Accessors
-[`reactions`](@ref), [`metabolites`](@ref), [`stoichiometry`](@ref),
+[`variables`](@ref), [`metabolites`](@ref), [`stoichiometry`](@ref),
 [`bounds`](@ref) and [`objective`](@ref) must be implemented; others are not
 mandatory and default to safe "empty" values.
 """

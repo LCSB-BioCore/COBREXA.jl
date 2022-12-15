@@ -1,7 +1,7 @@
 function Base.show(io::Base.IO, ::MIME"text/plain", cm::CommunityMember)
     println(
         io,
-        "A $(typeof(cm.model)) community member with $(n_reactions(cm.model)) reactions, $(n_metabolites(cm.model)) metabolites, and abundance $(cm.abundance*100)%.",
+        "A $(typeof(cm.model)) community member with $(n_variables(cm.model)) reactions, $(n_metabolites(cm.model)) metabolites, and abundance $(cm.abundance*100)%.",
     )
 end
 

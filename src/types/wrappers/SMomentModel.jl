@@ -47,8 +47,8 @@ columns to the stoichiometry and data of the internal wrapped model, and
 as specified in sMOMENT algorithm.
 
 This implementation allows easy access to fluxes from the split reactions
-(available in `reactions(model)`), while the original "simple" reactions from
-the wrapped model are retained as [`fluxes`](@ref). All additional constraints
+(available in `variables(model)`), while the original "simple" reactions from
+the wrapped model are retained as [`reactions`](@ref). All additional constraints
 are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 
 # Fields
@@ -87,8 +87,8 @@ Returns the internal reactions in a [`SMomentModel`](@ref) (these may be split
 to forward- and reverse-only parts; reactions IDs are mangled accordingly with
 suffixes).
 """
-Accessors.reactions(model::SMomentModel) =
-    let inner_reactions = reactions(model.inner)
+Accessors.variables(model::SMomentModel) =
+    let inner_reactions = variables(model.inner)
         [
             smoment_reaction_name(inner_reactions[col.reaction_idx], col.direction) for
             col in model.columns
@@ -100,7 +100,7 @@ $(TYPEDSIGNATURES)
 
 The number of reactions (including split ones) in [`SMomentModel`](@ref).
 """
-Accessors.n_reactions(model::SMomentModel) = length(model.columns)
+Accessors.n_variables(model::SMomentModel) = length(model.columns)
 
 """
 $(TYPEDSIGNATURES)
@@ -116,8 +116,8 @@ $(TYPEDSIGNATURES)
 Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-Accessors.reaction_flux(model::SMomentModel) =
-    smoment_column_reactions(model)' * reaction_flux(model.inner)
+Accessors.reaction_variables(model::SMomentModel) =
+    smoment_column_reactions(model)' * reaction_variables(model.inner)
 
 """
 $(TYPEDSIGNATURES)

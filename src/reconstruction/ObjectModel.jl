@@ -129,7 +129,7 @@ end
 end
 
 @_remove_fn reaction ObjectModel String inplace begin
-    if !(reaction_id in reactions(model))
+    if !(reaction_id in variables(model))
         @models_log @info "Reaction $reaction_id not found in model."
     else
         delete!(model.reactions, reaction_id)

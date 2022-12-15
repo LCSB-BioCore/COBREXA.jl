@@ -50,7 +50,7 @@
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    pyk_idx = first(indexin(["PYK"], reactions(model)))
+    pyk_idx = first(indexin(["PYK"], variables(model)))
     @test isapprox(
         sols[pyk_idx, 1].dg_reactions["PYK"],
         -1.5895040002691128;

@@ -53,16 +53,16 @@ Base.copy(g::Gene) = Gene(g.id; notes = g.notes, annotations = g.annotations)
 $(TYPEDSIGNATURES)
 
 Return the lower bounds for all reactions in `model`.
-Order matches that of the reaction IDs returned by [`reactions`](@ref).
+Order matches that of the reaction IDs returned by [`variables`](@ref).
 """
 lower_bounds(model::ObjectModel)::Vector{Float64} =
-    [model.reactions[rxn].lower_bound for rxn in reactions(model)]
+    [model.reactions[rxn].lower_bound for rxn in variables(model)]
 
 """
 $(TYPEDSIGNATURES)
 
 Return the upper bounds for all reactions in `model`.
-Order matches that of the reaction IDs returned in [`reactions`](@ref).
+Order matches that of the reaction IDs returned in [`variables`](@ref).
 """
 upper_bounds(model::ObjectModel)::Vector{Float64} =
-    [model.reactions[rxn].upper_bound for rxn in reactions(model)]
+    [model.reactions[rxn].upper_bound for rxn in variables(model)]

@@ -54,12 +54,12 @@ function make_gecko_model(
 
     gids = genes(model)
     (lbs, ubs) = bounds(model)
-    rids = reactions(model)
+    rids = variables(model)
 
     gene_name_lookup = Dict(gids .=> 1:length(gids))
     gene_row_lookup = Dict{Int,Int}()
 
-    for i = 1:n_reactions(model)
+    for i = 1:n_variables(model)
         isozymes = ris_(rids[i])
         if isnothing(isozymes)
             push!(columns, Types._GeckoReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []))

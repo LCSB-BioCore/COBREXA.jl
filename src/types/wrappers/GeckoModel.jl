@@ -66,8 +66,8 @@ stoichiometry, not in [`coupling`](@ref)), and `inner`, which is the original
 wrapped model. The `objective` of the model includes also the extra columns for
 individual genes, as held by `coupling_row_gene_product`.
 
-Implementation exposes the split reactions (available as `reactions(model)`),
-but retains the original "simple" reactions accessible by [`fluxes`](@ref).
+Implementation exposes the split reactions (available as `variables(model)`),
+but retains the original "simple" reactions accessible by [`reactions`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
 
@@ -106,7 +106,7 @@ end
 $(TYPEDSIGNATURES)
 
 Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
-respect to the internal variables, i.e. [`reactions(model)`](@ref), which are
+respect to the internal variables, i.e. [`variables(model)`](@ref), which are
 the unidirectional reactions and the genes involved in enzymatic reactions that
 have kinetic data.
 """
@@ -119,8 +119,8 @@ Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
 to forward- and reverse-only parts with different isozyme indexes; reactions
 IDs are mangled accordingly with suffixes).
 """
-function Accessors.reactions(model::GeckoModel)
-    inner_reactions = reactions(model.inner)
+function Accessors.variables(model::GeckoModel)
+    inner_reactions = variables(model.inner)
     mangled_reactions = [
         gecko_reaction_name(
             inner_reactions[col.reaction_idx],
@@ -137,7 +137,7 @@ $(TYPEDSIGNATURES)
 Returns the number of all irreversible reactions in `model` as well as the
 number of gene products that take part in enzymatic reactions.
 """
-Accessors.n_reactions(model::GeckoModel) = length(model.columns) + n_genes(model)
+Accessors.n_variables(model::GeckoModel) = length(model.columns) + n_genes(model)
 
 """
 $(TYPEDSIGNATURES)
@@ -162,8 +162,8 @@ $(TYPEDSIGNATURES)
 Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-function Accessors.reaction_flux(model::GeckoModel)
-    rxnmat = gecko_column_reactions(model)' * reaction_flux(model.inner)
+function Accessors.reaction_variables(model::GeckoModel)
+    rxnmat = gecko_column_reactions(model)' * reaction_variables(model.inner)
     [
         rxnmat
         spzeros(n_genes(model), size(rxnmat, 2))

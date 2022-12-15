@@ -33,12 +33,12 @@ function Accessors.precache!(model::HDF5Model)::Nothing
     nothing
 end
 
-function Accessors.n_reactions(model::HDF5Model)::Int
+function Accessors.n_variables(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["reactions"])
 end
 
-function Accessors.reactions(model::HDF5Model)::Vector{String}
+function Accessors.variables(model::HDF5Model)::Vector{String}
     precache!(model)
     # TODO is there any reasonable method to mmap strings from HDF5?
     read(model.h5["reactions"])

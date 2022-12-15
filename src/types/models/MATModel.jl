@@ -11,18 +11,18 @@ struct MATModel <: AbstractMetabolicModel
 end
 
 Accessors.n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
-Accessors.n_reactions(m::MATModel)::Int = size(m.mat["S"], 2)
+Accessors.n_variables(m::MATModel)::Int = size(m.mat["S"], 2)
 
 """
 $(TYPEDSIGNATURES)
 
 Extracts reaction names from `rxns` key in the MAT file.
 """
-function Accessors.reactions(m::MATModel)::Vector{String}
+function Accessors.variables(m::MATModel)::Vector{String}
     if haskey(m.mat, "rxns")
-        reshape(m.mat["rxns"], n_reactions(m))
+        reshape(m.mat["rxns"], n_variables(m))
     else
-        "rxn" .* string.(1:n_reactions(m))
+        "rxn" .* string.(1:n_variables(m))
     end
 end
 
@@ -62,8 +62,8 @@ $(TYPEDSIGNATURES)
 Extracts bounds from the MAT file, saved under `lb` and `ub`.
 """
 Accessors.bounds(m::MATModel) = (
-    reshape(get(m.mat, "lb", fill(-Inf, n_reactions(m), 1)), n_reactions(m)),
-    reshape(get(m.mat, "ub", fill(Inf, n_reactions(m), 1)), n_reactions(m)),
+    reshape(get(m.mat, "lb", fill(-Inf, n_variables(m), 1)), n_variables(m)),
+    reshape(get(m.mat, "ub", fill(Inf, n_variables(m), 1)), n_variables(m)),
 )
 
 """
@@ -85,7 +85,7 @@ $(TYPEDSIGNATURES)
 Extracts the objective from the MAT model (defaults to zeroes).
 """
 Accessors.objective(m::MATModel) =
-    sparse(reshape(get(m.mat, "c", zeros(n_reactions(m), 1)), n_reactions(m)))
+    sparse(reshape(get(m.mat, "c", zeros(n_variables(m), 1)), n_variables(m)))
 
 """
 $(TYPEDSIGNATURES)
@@ -93,8 +93,8 @@ $(TYPEDSIGNATURES)
 Extract coupling matrix stored, in `C` key.
 """
 Accessors.coupling(m::MATModel) =
-    _mat_has_squashed_coupling(m.mat) ? sparse(m.mat["A"][n_reactions(m)+1:end, :]) :
-    sparse(get(m.mat, "C", zeros(0, n_reactions(m))))
+    _mat_has_squashed_coupling(m.mat) ? sparse(m.mat["A"][n_variables(m)+1:end, :]) :
+    sparse(get(m.mat, "C", zeros(0, n_variables(m))))
 
 """
 $(TYPEDSIGNATURES)
@@ -106,7 +106,7 @@ function Accessors.coupling_bounds(m::MATModel)
     if _mat_has_squashed_coupling(m.mat)
         (
             sparse(fill(-Inf, nc)),
-            sparse(reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end]),
+            sparse(reshape(m.mat["b"], length(m.mat["b"]))[n_variables(m)+1:end]),
         )
     else
         (
@@ -133,7 +133,7 @@ Extracts the associations from `grRules` key, if present.
 """
 function Accessors.reaction_gene_association(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
-        grr = m.mat["grRules"][findfirst(==(rid), reactions(m))]
+        grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
         typeof(grr) == String ? parse_grr(grr) : nothing
     else
         nothing
@@ -199,7 +199,7 @@ $(TYPEDSIGNATURES)
 Extract reaction name from `rxnNames`.
 """
 Accessors.reaction_name(m::MATModel, rid::String) = maybemap(
-    x -> x[findfirst(==(rid), reactions(m))],
+    x -> x[findfirst(==(rid), variables(m))],
     gets(m.mat, nothing, constants.keynames.rxnnames),
 )
 
@@ -232,12 +232,12 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
 
     lb, ub = bounds(m)
     cl, cu = coupling_bounds(m)
-    nr = n_reactions(m)
+    nr = n_variables(m)
     nm = n_metabolites(m)
     return MATModel(
         Dict(
             "S" => stoichiometry(m),
-            "rxns" => reactions(m),
+            "rxns" => variables(m),
             "mets" => metabolites(m),
             "lb" => Vector(lb),
             "ub" => Vector(ub),
@@ -252,7 +252,7 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
                     "",
                     maybemap.(
                         x -> unparse_grr(String, x),
-                        reaction_gene_association.(Ref(m), reactions(m)),
+                        reaction_gene_association.(Ref(m), variables(m)),
                     ),
                 ),
             "metFormulas" =>

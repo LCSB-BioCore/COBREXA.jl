@@ -12,9 +12,9 @@ end
     sm = convert(ObjectModel, cm)
     cm2 = convert(MatrixModelWithCoupling, sm)
 
-    @test Set(reactions(cm)) == Set(reactions(sm))
-    @test Set(reactions(cm)) == Set(reactions(cm2))
+    @test Set(variables(cm)) == Set(variables(sm))
+    @test Set(variables(cm)) == Set(variables(cm2))
 
-    @test reaction_gene_association(sm, reactions(sm)[1]) ==
-          reaction_gene_association(cm, reactions(sm)[1])
+    @test reaction_gene_association(sm, variables(sm)[1]) ==
+          reaction_gene_association(cm, variables(sm)[1])
 end

@@ -35,9 +35,9 @@ function make_smoment_model(
     columns = Vector{Types._SMomentColumn}()
 
     (lbs, ubs) = bounds(model)
-    rids = reactions(model)
+    rids = variables(model)
 
-    for i = 1:n_reactions(model)
+    for i = 1:n_variables(model)
         isozyme = ris_(rids[i])
         if isnothing(isozyme)
             # non-enzymatic reaction (or a totally ignored one)

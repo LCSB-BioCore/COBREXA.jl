@@ -52,7 +52,7 @@ $(TYPEDSIGNATURES)
 
 Get the reactions in a `MatrixModel`.
 """
-Accessors.reactions(a::MatrixModel)::Vector{String} = a.rxns
+Accessors.variables(a::MatrixModel)::Vector{String} = a.rxns
 
 """
 $(TYPEDSIGNATURES)
@@ -163,10 +163,10 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
         objective(m),
         xl,
         xu,
-        reactions(m),
+        variables(m),
         metabolites(m),
         Vector{Maybe{GeneAssociationsDNF}}([
-            reaction_gene_association(m, id) for id in reactions(m)
+            reaction_gene_association(m, id) for id in variables(m)
         ]),
     )
 end
