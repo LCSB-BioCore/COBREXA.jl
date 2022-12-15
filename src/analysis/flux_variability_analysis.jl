@@ -2,7 +2,7 @@
 $(TYPEDSIGNATURES)
 
 Flux variability analysis solves a pair of optimization problems in `model` for
-each flux `f` described in `fluxes`:
+each flux `f` described in `reactions`:
 ```
 min,max fᵀxᵢ
 s.t. S x = b
@@ -109,13 +109,13 @@ function flux_variability_analysis(
     optimizer;
     kwargs...,
 )
-    if any((flux_indexes .< 1) .| (flux_indexes .> n_fluxes(model)))
+    if any((flux_indexes .< 1) .| (flux_indexes .> n_reactions(model)))
         throw(DomainError(flux_indexes, "Flux index out of range"))
     end
 
     flux_variability_analysis(
         model,
-        reaction_flux(model)[:, flux_indexes],
+        reaction_variables(model)[:, flux_indexes],
         optimizer;
         kwargs...,
     )
@@ -128,7 +128,7 @@ A simpler version of [`flux_variability_analysis`](@ref) that maximizes and
 minimizes all declared fluxes in the model. Arguments are forwarded.
 """
 flux_variability_analysis(model::AbstractMetabolicModel, optimizer; kwargs...) =
-    flux_variability_analysis(model, reaction_flux(model), optimizer; kwargs...)
+    flux_variability_analysis(model, reaction_variables(model), optimizer; kwargs...)
 
 """
 $(TYPEDSIGNATURES)
@@ -157,7 +157,7 @@ function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer
         kwargs...,
         ret = sol -> flux_vector(model, sol),
     )
-    flxs = fluxes(model)
+    flxs = reactions(model)
     dicts = zip.(Ref(flxs), vs)
 
     return (Dict(flxs .=> Dict.(dicts[:, 1])), Dict(flxs .=> Dict.(dicts[:, 2])))

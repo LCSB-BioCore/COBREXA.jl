@@ -67,7 +67,7 @@ wrapped model. The `objective` of the model includes also the extra columns for
 individual genes, as held by `coupling_row_gene_product`.
 
 Implementation exposes the split reactions (available as `variables(model)`),
-but retains the original "simple" reactions accessible by [`fluxes`](@ref).
+but retains the original "simple" reactions accessible by [`reactions`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
 
@@ -162,8 +162,8 @@ $(TYPEDSIGNATURES)
 Get the mapping of the reaction rates in [`GeckoModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-function Accessors.reaction_flux(model::GeckoModel)
-    rxnmat = gecko_column_reactions(model)' * reaction_flux(model.inner)
+function Accessors.reaction_variables(model::GeckoModel)
+    rxnmat = gecko_column_reactions(model)' * reaction_variables(model.inner)
     [
         rxnmat
         spzeros(n_genes(model), size(rxnmat, 2))

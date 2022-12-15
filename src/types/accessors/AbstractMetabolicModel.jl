@@ -17,7 +17,7 @@ For technical reasons, the "reactions" may sometimes not be true reactions but
 various virtual and helper pseudo-reactions that are used in the metabolic
 modeling, such as metabolite exchanges, separate forward and reverse reactions,
 supplies of enzymatic and genetic material and virtual cell volume, etc. To
-simplify the view of the model contents use [`reaction_flux`](@ref).
+simplify the view of the model contents use [`reaction_variables`](@ref).
 """
 function variables(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(variables, (a,))
@@ -105,16 +105,16 @@ In some models, the [`variables`](@ref) that correspond to the columns of
 [`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
 the model; for example, fluxes may be split into forward and reverse reactions,
 reactions catalyzed by distinct enzymes, etc. Together with
-[`reaction_flux`](@ref) (and [`n_fluxes`](@ref)) this specifies how the
+[`reaction_variables`](@ref) (and [`n_reactions`](@ref)) this specifies how the
 flux is decomposed into individual reactions.
 
 By default (and in most models), fluxes and reactions perfectly correspond.
 """
-function fluxes(a::AbstractMetabolicModel)::Vector{String}
+function reactions(a::AbstractMetabolicModel)::Vector{String}
     variables(a)
 end
 
-function n_fluxes(a::AbstractMetabolicModel)::Int
+function n_reactions(a::AbstractMetabolicModel)::Int
     n_variables(a)
 end
 
@@ -122,14 +122,14 @@ end
 $(TYPEDSIGNATURES)
 
 Retrieve a sparse matrix that describes the correspondence of a solution of the
-linear system to the fluxes (see [`fluxes`](@ref) for rationale). Returns a
-sparse matrix of size `(n_variables(a), n_fluxes(a))`. For most models, this is
+linear system to the fluxes (see [`reactions`](@ref) for rationale). Returns a
+sparse matrix of size `(n_variables(a), n_reactions(a))`. For most models, this is
 an identity matrix.
 """
-function reaction_flux(a::AbstractMetabolicModel)::SparseMat
+function reaction_variables(a::AbstractMetabolicModel)::SparseMat
     nr = n_variables(a)
-    nf = n_fluxes(a)
-    nr == nf || missing_impl_error(reaction_flux, (a,))
+    nf = n_reactions(a)
+    nr == nf || missing_impl_error(reaction_variables, (a,))
     spdiagm(fill(1, nr))
 end
 

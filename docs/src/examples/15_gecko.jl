@@ -97,4 +97,4 @@ flux_variability_analysis(gecko_model, GLPK.Optimizer, bounds = gamma_bounds(0.9
 
 # ...and sampling:
 affine_hit_and_run(gecko_model, warmup_from_variability(gecko_model, GLPK.Optimizer))' *
-reaction_flux(gecko_model)
+reaction_variables(gecko_model)

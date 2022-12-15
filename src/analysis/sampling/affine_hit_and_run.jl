@@ -27,7 +27,7 @@ warmup_points = warmup_from_variability(model, GLPK.Optimizer)
 samples = affine_hit_and_run(model, warmup_points, sample_iters = 101:105)
 
 # convert the result to flux (for models where the distinction matters):
-fluxes = reaction_flux(model)' * samples
+fluxes = reaction_variables(model)' * samples
 ```
 """
 function affine_hit_and_run(

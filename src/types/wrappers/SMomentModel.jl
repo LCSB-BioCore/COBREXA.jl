@@ -48,7 +48,7 @@ as specified in sMOMENT algorithm.
 
 This implementation allows easy access to fluxes from the split reactions
 (available in `variables(model)`), while the original "simple" reactions from
-the wrapped model are retained as [`fluxes`](@ref). All additional constraints
+the wrapped model are retained as [`reactions`](@ref). All additional constraints
 are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 
 # Fields
@@ -116,8 +116,8 @@ $(TYPEDSIGNATURES)
 Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-Accessors.reaction_flux(model::SMomentModel) =
-    smoment_column_reactions(model)' * reaction_flux(model.inner)
+Accessors.reaction_variables(model::SMomentModel) =
+    smoment_column_reactions(model)' * reaction_variables(model.inner)
 
 """
 $(TYPEDSIGNATURES)
