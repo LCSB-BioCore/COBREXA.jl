@@ -54,7 +54,7 @@ change_objective(
         )
 
         # Initialize weights
-        opt_weights = spzeros(n_reactions(model))
+        opt_weights = spzeros(n_variables(model))
 
         isempty(weights) && (weights = ones(length(objective_indices))) # equal weights
 

@@ -71,7 +71,7 @@ end
 
 _parse_notes(x)::Notes = _parse_annotations(x)
 
-Accessors.n_reactions(model::JSONModel) = length(model.rxns)
+Accessors.n_variables(model::JSONModel) = length(model.rxns)
 Accessors.n_metabolites(model::JSONModel) = length(model.mets)
 Accessors.n_genes(model::JSONModel) = length(model.genes)
 

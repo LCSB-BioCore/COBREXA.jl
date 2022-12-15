@@ -12,7 +12,7 @@ function warmup_from_variability(
     seed = rand(Int);
     kwargs...,
 )
-    nr = n_reactions(model)
+    nr = n_variables(model)
 
     n_points > 2 * nr && throw(
         DomainError(
@@ -48,8 +48,8 @@ single column in the result.
 function warmup_from_variability(
     model::AbstractMetabolicModel,
     optimizer,
-    min_reactions::AbstractVector{Int} = 1:n_reactions(model),
-    max_reactions::AbstractVector{Int} = 1:n_reactions(model);
+    min_reactions::AbstractVector{Int} = 1:n_variables(model),
+    max_reactions::AbstractVector{Int} = 1:n_variables(model);
     modifications = [],
     workers::Vector{Int} = [myid()],
 )::Matrix{Float64}

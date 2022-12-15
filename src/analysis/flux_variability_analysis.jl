@@ -55,7 +55,7 @@ function flux_variability_analysis(
     bounds = z -> (z, Inf),
     ret = objective_value,
 )
-    if size(fluxes, 1) != n_reactions(model)
+    if size(fluxes, 1) != n_variables(model)
         throw(
             DomainError(
                 size(fluxes, 1),
@@ -189,7 +189,7 @@ function reaction_variability_analysis(
     optimizer;
     kwargs...,
 )
-    if any((reaction_indexes .< 1) .| (reaction_indexes .> n_reactions(model)))
+    if any((reaction_indexes .< 1) .| (reaction_indexes .> n_variables(model)))
         throw(DomainError(reaction_indexes, "Flux index out of range"))
     end
 
@@ -199,7 +199,7 @@ function reaction_variability_analysis(
             reaction_indexes,
             1:length(reaction_indexes),
             1.0,
-            n_reactions(model),
+            n_variables(model),
             length(reaction_indexes),
         ),
         optimizer;
@@ -215,7 +215,7 @@ Shortcut for [`reaction_variability_analysis`](@ref) that examines all reactions
 reaction_variability_analysis(model::AbstractMetabolicModel, optimizer; kwargs...) =
     reaction_variability_analysis(
         model,
-        collect(1:n_reactions(model)),
+        collect(1:n_variables(model)),
         optimizer;
         kwargs...,
     )

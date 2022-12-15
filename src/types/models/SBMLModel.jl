@@ -32,7 +32,7 @@ $(TYPEDSIGNATURES)
 
 Efficient counting of reactions in [`SBMLModel`](@ref).
 """
-Accessors.n_reactions(model::SBMLModel)::Int = length(model.sbml.reactions)
+Accessors.n_variables(model::SBMLModel)::Int = length(model.sbml.reactions)
 
 """
 $(TYPEDSIGNATURES)

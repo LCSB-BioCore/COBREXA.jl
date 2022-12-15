@@ -96,7 +96,7 @@ end
     γ = 40
 
     # construct coupling bounds
-    nr = n_reactions(model)
+    nr = n_variables(model)
     biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model)))
 
     Cf = sparse(1.0I, nr, nr)

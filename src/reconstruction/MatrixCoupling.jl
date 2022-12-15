@@ -16,7 +16,7 @@ function add_reactions(
     new_lm = add_reactions(m.lm, s, b, c, xl, xu, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
         m.cl,
         m.cu,
     )
@@ -50,7 +50,7 @@ function add_reactions(
     )
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
         m.cl,
         m.cu,
     )
@@ -71,7 +71,7 @@ function add_reactions(
     new_lm = add_reactions(m.lm, Sp, b, c, xl, xu, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
         m.cl,
         m.cu,
     )
@@ -90,7 +90,7 @@ function add_reactions(
     new_lm = add_reactions(m1.lm, m2, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m1.C, spzeros(size(m1.C, 1), n_reactions(new_lm) - n_reactions(m1.lm))),
+        hcat(m1.C, spzeros(size(m1.C, 1), n_variables(new_lm) - n_variables(m1.lm))),
         m1.cl,
         m1.cu,
     )
@@ -123,7 +123,7 @@ function add_reactions(
     )
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_reactions(new_lm) - n_reactions(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
         m.cl,
         m.cu,
     )
@@ -182,7 +182,7 @@ function add_coupling_constraints!(
 
     all([length(cu), length(cl)] .== size(C, 1)) ||
         throw(DimensionMismatch("mismatched numbers of constraints"))
-    size(C, 2) == n_reactions(m) ||
+    size(C, 2) == n_variables(m) ||
         throw(DimensionMismatch("mismatched number of reactions"))
 
     m.C = vcat(m.C, sparse(C))

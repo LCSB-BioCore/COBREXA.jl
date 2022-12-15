@@ -27,7 +27,7 @@ gecko_column_reactions(columns, inner) = sparse(
     [col.reaction_idx for col in columns],
     1:length(columns),
     [col.direction >= 0 ? 1 : -1 for col in columns],
-    n_reactions(inner),
+    n_variables(inner),
     length(columns),
 )
 

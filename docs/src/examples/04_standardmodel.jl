@@ -79,7 +79,7 @@ model.genes[random_gene_id]
 random_metabolite_id = metabolites(model)[rand(1:n_metabolites(model))]
 model.metabolites[random_metabolite_id]
 #
-random_reaction_id = reactions(model)[rand(1:n_reactions(model))]
+random_reaction_id = reactions(model)[rand(1:n_variables(model))]
 model.reactions[random_reaction_id]
 
 # `ObjectModel` can be used to build your own metabolic model or modify an

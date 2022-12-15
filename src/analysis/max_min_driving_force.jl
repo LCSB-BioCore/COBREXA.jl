@@ -71,7 +71,7 @@ function max_min_driving_force(
     @variables opt_model begin
         mmdf
         logcs[1:n_metabolites(model)]
-        dgrs[1:n_reactions(model)]
+        dgrs[1:n_variables(model)]
     end
 
     # set proton log concentration to zero so that it won't impact any calculations (biothermodynamics assumption)
@@ -215,7 +215,7 @@ function max_min_driving_force_variability(
 
     dgr_variants = [
         [[_mmdf_add_df_bound(lb, ub), _mmdf_dgr_objective(ridx, sense)]] for
-        ridx = 1:n_reactions(model), sense in [MAX_SENSE, MIN_SENSE]
+        ridx = 1:n_variables(model), sense in [MAX_SENSE, MIN_SENSE]
     ]
     concen_variants = [
         [[_mmdf_add_df_bound(lb, ub), _mmdf_concen_objective(midx, sense)]] for

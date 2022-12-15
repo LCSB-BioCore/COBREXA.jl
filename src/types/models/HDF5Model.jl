@@ -33,7 +33,7 @@ function Accessors.precache!(model::HDF5Model)::Nothing
     nothing
 end
 
-function Accessors.n_reactions(model::HDF5Model)::Int
+function Accessors.n_variables(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["reactions"])
 end

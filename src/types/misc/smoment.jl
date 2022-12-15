@@ -18,6 +18,6 @@ smoment_column_reactions(model::SMomentModel) = sparse(
     [col.reaction_idx for col in model.columns],
     1:length(model.columns),
     [col.direction >= 0 ? 1 : -1 for col in model.columns],
-    n_reactions(model.inner),
+    n_variables(model.inner),
     length(model.columns),
 )

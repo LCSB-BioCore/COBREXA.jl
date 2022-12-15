@@ -64,7 +64,7 @@ $(TYPEDSIGNATURES)
 
 Return the number of reactions contained in `model`.
 """
-Accessors.n_reactions(model::ObjectModel)::Int = length(model.reactions)
+Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
 
 """
 $(TYPEDSIGNATURES)
@@ -134,7 +134,7 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
             push!(SV, coeff)
         end
     end
-    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), n_reactions(model))
+    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), n_variables(model))
 end
 
 """

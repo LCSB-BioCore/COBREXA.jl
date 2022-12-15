@@ -60,7 +60,7 @@ function gapfill_minimum_reactions(
     # stoichiometry
     extended_stoichiometry = [[
         stoichiometry(model)
-        spzeros(length(univs.new_mids), n_reactions(model))
+        spzeros(length(univs.new_mids), n_variables(model))
     ] univs.stoichiometry]
 
     # make the model anew (we can't really use make_optimization_model because
@@ -69,7 +69,7 @@ function gapfill_minimum_reactions(
     # tiny temporary wrapper for this.
     # keep this in sync with src/base/solver.jl, except for adding balances.
     opt_model = Model(optimizer)
-    @variable(opt_model, x[1:n_reactions(model)])
+    @variable(opt_model, x[1:n_variables(model)])
     xl, xu = bounds(model)
     @constraint(opt_model, lbs, xl .<= x)
     @constraint(opt_model, ubs, x .<= xu)

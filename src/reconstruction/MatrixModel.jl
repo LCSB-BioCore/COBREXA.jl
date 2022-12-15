@@ -180,7 +180,7 @@ function add_reactions(
 
     new_mets = vcat(m.mets, mets[new_metabolites])
 
-    zero_block = spzeros(length(new_metabolites), n_reactions(m))
+    zero_block = spzeros(length(new_metabolites), n_variables(m))
     ext_s = vcat(sparse(m.S), zero_block)
 
     mapping = [findfirst(isequal(met), new_mets) for met in mets]
@@ -308,7 +308,7 @@ end
 end
 
 @_remove_fn reaction MatrixModel Int inplace plural begin
-    mask = .!in.(1:n_reactions(model), Ref(reaction_idxs))
+    mask = .!in.(1:n_variables(model), Ref(reaction_idxs))
     model.S = model.S[:, mask]
     model.c = model.c[mask]
     model.xl = model.xl[mask]
@@ -351,7 +351,7 @@ end
     remove_reactions!(
         model,
         [
-            ridx for ridx in 1:n_reactions(model) if
+            ridx for ridx in 1:n_variables(model) if
             any(in.(findnz(model.S[:, ridx])[1], Ref(metabolite_idxs)))
         ],
     )

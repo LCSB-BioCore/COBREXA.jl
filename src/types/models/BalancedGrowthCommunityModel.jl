@@ -75,8 +75,8 @@ $(TYPEDSIGNATURES)
 Return the number of reactions in `cm`, which is a
 [`BalancedGrowthCommunityModel`](@ref).
 """
-function Accessors.n_reactions(cm::BalancedGrowthCommunityModel)
-    num_model_reactions = sum(n_reactions(m.model) for m in cm.members)
+function Accessors.n_variables(cm::BalancedGrowthCommunityModel)
+    num_model_reactions = sum(n_variables(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
     num_env_metabolites = length(get_env_mets(cm))
     return num_model_reactions + num_env_metabolites + 1 # add 1 for the community biomass
@@ -188,7 +188,7 @@ rate/balanced growth objective. Consequently, the relation `community_growth *
 abundance_species_i = growth_species_i` should hold.
 """
 function Accessors.objective(cm::BalancedGrowthCommunityModel)
-    vec = spzeros(n_reactions(cm))
+    vec = spzeros(n_variables(cm))
     vec[end] = 1.0
     return vec
 end
@@ -200,7 +200,7 @@ Coupling constraint matrix for a [`BalancedGrowthCommunityModel`](@ref).
 """
 function Accessors.coupling(cm::BalancedGrowthCommunityModel)
     coups = blockdiag([coupling(m.model) for m in cm.members]...)
-    n = n_reactions(cm)
+    n = n_variables(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 

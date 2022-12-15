@@ -137,7 +137,7 @@ $(TYPEDSIGNATURES)
 Returns the number of all irreversible reactions in `model` as well as the
 number of gene products that take part in enzymatic reactions.
 """
-Accessors.n_reactions(model::GeckoModel) = length(model.columns) + n_genes(model)
+Accessors.n_variables(model::GeckoModel) = length(model.columns) + n_genes(model)
 
 """
 $(TYPEDSIGNATURES)

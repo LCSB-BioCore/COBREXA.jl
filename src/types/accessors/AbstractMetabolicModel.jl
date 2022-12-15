@@ -41,7 +41,7 @@ $(TYPEDSIGNATURES)
 
 Get the number of reactions in a model.
 """
-function n_reactions(a::AbstractMetabolicModel)::Int
+function n_variables(a::AbstractMetabolicModel)::Int
     length(reactions(a))
 end
 
@@ -115,7 +115,7 @@ function fluxes(a::AbstractMetabolicModel)::Vector{String}
 end
 
 function n_fluxes(a::AbstractMetabolicModel)::Int
-    n_reactions(a)
+    n_variables(a)
 end
 
 """
@@ -123,11 +123,11 @@ $(TYPEDSIGNATURES)
 
 Retrieve a sparse matrix that describes the correspondence of a solution of the
 linear system to the fluxes (see [`fluxes`](@ref) for rationale). Returns a
-sparse matrix of size `(n_reactions(a), n_fluxes(a))`. For most models, this is
+sparse matrix of size `(n_variables(a), n_fluxes(a))`. For most models, this is
 an identity matrix.
 """
 function reaction_flux(a::AbstractMetabolicModel)::SparseMat
-    nr = n_reactions(a)
+    nr = n_variables(a)
     nf = n_fluxes(a)
     nr == nf || missing_impl_error(reaction_flux, (a,))
     spdiagm(fill(1, nr))
@@ -140,7 +140,7 @@ Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
 function coupling(a::AbstractMetabolicModel)::SparseMat
-    return spzeros(0, n_reactions(a))
+    return spzeros(0, n_variables(a))
 end
 
 """

@@ -49,7 +49,7 @@
     @test "r1" in reactions(model)
     @test "m4" in metabolites(model)
     @test "g2" in genes(model)
-    @test n_reactions(model) == 4
+    @test n_variables(model) == 4
     @test n_metabolites(model) == 4
     @test n_genes(model) == 3
 

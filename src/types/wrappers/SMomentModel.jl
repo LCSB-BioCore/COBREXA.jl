@@ -100,7 +100,7 @@ $(TYPEDSIGNATURES)
 
 The number of reactions (including split ones) in [`SMomentModel`](@ref).
 """
-Accessors.n_reactions(model::SMomentModel) = length(model.columns)
+Accessors.n_variables(model::SMomentModel) = length(model.columns)
 
 """
 $(TYPEDSIGNATURES)
