@@ -19,7 +19,7 @@ gene_list = [Gene(string("g", num)) for num = 1:8]
 
 #md # !!! warning "Warning: Don't accidentally overwrite the generic accessors"
 #md #       It may be tempting to call a variable `genes`, `metabolites`, or
-#md #       `reactions`. However, these names conflict with generic accessors
+#md #       `variables`. However, these names conflict with generic accessors
 #md #       functions and will create problems downstream.
 
 add_genes!(model, gene_list)

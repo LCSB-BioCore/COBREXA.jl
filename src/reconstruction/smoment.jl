@@ -35,7 +35,7 @@ function make_smoment_model(
     columns = Vector{Types._SMomentColumn}()
 
     (lbs, ubs) = bounds(model)
-    rids = reactions(model)
+    rids = variables(model)
 
     for i = 1:n_variables(model)
         isozyme = ris_(rids[i])

@@ -19,7 +19,7 @@ Change the lower and upper bounds (`lower_bound` and `upper_bound` respectively)
 """
 change_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
     (model, opt_model) -> begin
-        ind = first(indexin([id], reactions(model)))
+        ind = first(indexin([id], variables(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
         set_optmodel_bound!(ind, opt_model, lower = lower_bound, upper = upper_bound)
     end
@@ -43,10 +43,10 @@ change_objective(
 
         # Construct objective_indices array
         if typeof(new_objective) == String
-            objective_indices = indexin([new_objective], reactions(model))
+            objective_indices = indexin([new_objective], variables(model))
         else
             objective_indices =
-                [first(indexin([rxnid], reactions(model))) for rxnid in new_objective]
+                [first(indexin([rxnid], variables(model))) for rxnid in new_objective]
         end
 
         any(isnothing.(objective_indices)) && throw(

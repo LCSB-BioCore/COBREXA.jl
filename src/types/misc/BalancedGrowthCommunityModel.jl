@@ -27,7 +27,7 @@ function env_ex_matrix(m::CommunityMember, env_mets)
         !(env_met in metabolites(m.model)) && continue
         rex = first(indexin([env_met], get_exchange_mets(m)))
         isnothing(rex) && continue
-        ex_ridx = first(indexin([m.exchange_reaction_ids[rex]], reactions(m.model)))
+        ex_ridx = first(indexin([m.exchange_reaction_ids[rex]], variables(m.model)))
         mat[env_met_idx, ex_ridx] = 1.0
     end
     return mat

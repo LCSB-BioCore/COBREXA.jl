@@ -179,7 +179,7 @@ end
 $(TYPEDSIGNATURES)
 
 A variant for [`flux_variability_analysis`](@ref) that examines actual
-reactions (selected by their indexes in `reactions` argument) instead of whole
+reactions (selected by their indexes in `variables` argument) instead of whole
 fluxes. This may be useful for models where the sets of reactions and fluxes
 differ.
 """

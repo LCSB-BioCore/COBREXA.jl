@@ -18,7 +18,7 @@ $(TYPEDSIGNATURES)
 
 Extracts reaction names from `rxns` key in the MAT file.
 """
-function Accessors.reactions(m::MATModel)::Vector{String}
+function Accessors.variables(m::MATModel)::Vector{String}
     if haskey(m.mat, "rxns")
         reshape(m.mat["rxns"], n_variables(m))
     else
@@ -133,7 +133,7 @@ Extracts the associations from `grRules` key, if present.
 """
 function Accessors.reaction_gene_association(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
-        grr = m.mat["grRules"][findfirst(==(rid), reactions(m))]
+        grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
         typeof(grr) == String ? parse_grr(grr) : nothing
     else
         nothing
@@ -199,7 +199,7 @@ $(TYPEDSIGNATURES)
 Extract reaction name from `rxnNames`.
 """
 Accessors.reaction_name(m::MATModel, rid::String) = maybemap(
-    x -> x[findfirst(==(rid), reactions(m))],
+    x -> x[findfirst(==(rid), variables(m))],
     gets(m.mat, nothing, constants.keynames.rxnnames),
 )
 
@@ -237,7 +237,7 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
     return MATModel(
         Dict(
             "S" => stoichiometry(m),
-            "rxns" => reactions(m),
+            "rxns" => variables(m),
             "mets" => metabolites(m),
             "lb" => Vector(lb),
             "ub" => Vector(ub),
@@ -252,7 +252,7 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
                     "",
                     maybemap.(
                         x -> unparse_grr(String, x),
-                        reaction_gene_association.(Ref(m), reactions(m)),
+                        reaction_gene_association.(Ref(m), variables(m)),
                     ),
                 ),
             "metFormulas" =>

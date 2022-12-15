@@ -34,7 +34,7 @@ overloaded so that the knockouts may work differently (more efficiently) with
 other models.
 """
 function _do_knockout(model::AbstractMetabolicModel, opt_model, gene_ids::Vector{String})
-    for (rxn_num, rxn_id) in enumerate(reactions(model))
+    for (rxn_num, rxn_id) in enumerate(variables(model))
         rga = reaction_gene_association(model, rxn_id)
         if !isnothing(rga) &&
            all([any(in.(gene_ids, Ref(conjunction))) for conjunction in rga])

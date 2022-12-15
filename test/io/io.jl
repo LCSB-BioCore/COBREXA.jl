@@ -12,10 +12,10 @@
     @test jsonmodel isa JSONModel
     @test n_variables(jsonmodel) == 2583
 
-    @test Set(lowercase.(reactions(sbmlmodel))) ==
-          Set("r_" .* lowercase.(reactions(matlabmodel)))
-    @test Set(lowercase.(reactions(sbmlmodel))) ==
-          Set("r_" .* lowercase.(reactions(jsonmodel)))
+    @test Set(lowercase.(variables(sbmlmodel))) ==
+          Set("r_" .* lowercase.(variables(matlabmodel)))
+    @test Set(lowercase.(variables(sbmlmodel))) ==
+          Set("r_" .* lowercase.(variables(jsonmodel)))
 
     # specifically test parsing of gene-reaction associations in Recon
     reconmodel = load_model(ObjectModel, model_paths["Recon3D.json"])

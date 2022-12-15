@@ -208,7 +208,7 @@ end
     @test objective(modLp) == objective(lp)[2:3]
     @test bounds(modLp)[1] == bounds(lp)[1][2:3]
     @test bounds(modLp)[2] == bounds(lp)[2][2:3]
-    @test reactions(modLp) == reactions(lp)[2:3]
+    @test variables(modLp) == variables(lp)[2:3]
     @test metabolites(modLp) == metabolites(lp)
 end
 

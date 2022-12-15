@@ -19,8 +19,8 @@ modeling, such as metabolite exchanges, separate forward and reverse reactions,
 supplies of enzymatic and genetic material and virtual cell volume, etc. To
 simplify the view of the model contents use [`reaction_flux`](@ref).
 """
-function reactions(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(reactions, (a,))
+function variables(a::AbstractMetabolicModel)::Vector{String}
+    missing_impl_error(variables, (a,))
 end
 
 """
@@ -29,7 +29,7 @@ $(TYPEDSIGNATURES)
 Return a vector of metabolite identifiers in a model. The vector precisely
 corresponds to the rows in [`stoichiometry`](@ref) matrix.
 
-As with [`reactions`](@ref)s, some metabolites in models may be virtual,
+As with [`variables`](@ref)s, some metabolites in models may be virtual,
 representing purely technical equality constraints.
 """
 function metabolites(a::AbstractMetabolicModel)::Vector{String}
@@ -42,7 +42,7 @@ $(TYPEDSIGNATURES)
 Get the number of reactions in a model.
 """
 function n_variables(a::AbstractMetabolicModel)::Int
-    length(reactions(a))
+    length(variables(a))
 end
 
 """
@@ -101,7 +101,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-In some models, the [`reactions`](@ref) that correspond to the columns of
+In some models, the [`variables`](@ref) that correspond to the columns of
 [`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
 the model; for example, fluxes may be split into forward and reverse reactions,
 reactions catalyzed by distinct enzymes, etc. Together with
@@ -111,7 +111,7 @@ flux is decomposed into individual reactions.
 By default (and in most models), fluxes and reactions perfectly correspond.
 """
 function fluxes(a::AbstractMetabolicModel)::Vector{String}
-    reactions(a)
+    variables(a)
 end
 
 function n_fluxes(a::AbstractMetabolicModel)::Int
@@ -228,7 +228,7 @@ function reaction_stoichiometry(
     mets = metabolites(m)
     Dict(
         mets[k] => v for
-        (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rid], reactions(m)))])...)
+        (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rid], variables(m)))])...)
     )
 end
 

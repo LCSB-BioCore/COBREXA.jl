@@ -2,7 +2,7 @@
 $(TYPEDSIGNATURES)
 
 Run minimization of metabolic adjustment (MOMA) on `model` with respect to
-`flux_ref`, which is a vector of fluxes in the order of `reactions(model)`.
+`flux_ref`, which is a vector of fluxes in the order of `variables(model)`.
 MOMA finds the shortest Euclidian distance between `flux_ref` and `model` with
 `modifications`:
 ```
@@ -70,7 +70,7 @@ dictionary of fluxes.
 """
 minimize_metabolic_adjustment(flux_ref_dict::Dict{String,Float64}) =
     (model, opt_model) ->
-        minimize_metabolic_adjustment([flux_ref_dict[rid] for rid in reactions(model)])(
+        minimize_metabolic_adjustment([flux_ref_dict[rid] for rid in variables(model)])(
             model,
             opt_model,
         )

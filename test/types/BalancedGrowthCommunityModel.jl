@@ -69,7 +69,7 @@
     @test contains(sprint(show, MIME("text/plain"), cm), "balanced growth")
 
     @test issetequal(
-        reactions(cm),
+        variables(cm),
         [
             "m1#EX_A"
             "m1#r1"

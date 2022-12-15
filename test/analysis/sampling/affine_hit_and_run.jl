@@ -4,7 +4,7 @@
 
     cm = MatrixCoupling(model, zeros(1, n_variables(model)), [17.0], [19.0])
 
-    pfk, tala = indexin(["PFK", "TALA"], reactions(cm))
+    pfk, tala = indexin(["PFK", "TALA"], variables(cm))
     cm.C[:, [pfk, tala]] .= 1.0
 
     warmup = warmup_from_variability(cm, Tulip.Optimizer; workers = W)

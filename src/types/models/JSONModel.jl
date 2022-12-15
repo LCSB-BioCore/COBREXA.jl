@@ -18,7 +18,7 @@ changes in `json` invalidate the cache.
 ````
 model = load_json_model("some_model.json")
 model.json # see the actual underlying JSON
-reactions(model) # see the list of reactions
+variables(model) # see the list of reactions
 ````
 
 # Fields
@@ -80,7 +80,7 @@ $(TYPEDSIGNATURES)
 
 Extract reaction names (stored as `.id`) from JSON model.
 """
-Accessors.reactions(model::JSONModel) =
+Accessors.variables(model::JSONModel) =
     [_json_rxn_name(r, i) for (i, r) in enumerate(model.rxns)]
 
 """
@@ -106,7 +106,7 @@ Get the stoichiometry. Assuming the information is stored in reaction object
 under key `.metabolites`.
 """
 function Accessors.stoichiometry(model::JSONModel)
-    rxn_ids = reactions(model)
+    rxn_ids = variables(model)
     met_ids = metabolites(model)
 
     n_entries = 0
@@ -298,7 +298,7 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
         return mm
     end
 
-    rxn_ids = reactions(mm)
+    rxn_ids = variables(mm)
     met_ids = metabolites(mm)
     gene_ids = genes(mm)
     S = stoichiometry(mm)

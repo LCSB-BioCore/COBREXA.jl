@@ -63,8 +63,8 @@ Consequently, exchange reactions of the original model will look like
 `species1#EX_...`. All exchange environmental reactions have `EX_` as a prefix
 followed by the environmental metabolite id.
 """
-function Accessors.reactions(cm::BalancedGrowthCommunityModel)
-    rxns = [add_community_prefix(m, rid) for m in cm.members for rid in reactions(m.model)]
+function Accessors.variables(cm::BalancedGrowthCommunityModel)
+    rxns = [add_community_prefix(m, rid) for m in cm.members for rid in variables(m.model)]
     env_exs = ["EX_" * env_met for env_met in get_env_mets(cm)]
     return [rxns; env_exs; cm.objective_id]
 end

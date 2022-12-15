@@ -66,7 +66,7 @@ stoichiometry, not in [`coupling`](@ref)), and `inner`, which is the original
 wrapped model. The `objective` of the model includes also the extra columns for
 individual genes, as held by `coupling_row_gene_product`.
 
-Implementation exposes the split reactions (available as `reactions(model)`),
+Implementation exposes the split reactions (available as `variables(model)`),
 but retains the original "simple" reactions accessible by [`fluxes`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
@@ -106,7 +106,7 @@ end
 $(TYPEDSIGNATURES)
 
 Return the objective of the [`GeckoModel`](@ref). Note, the objective is with
-respect to the internal variables, i.e. [`reactions(model)`](@ref), which are
+respect to the internal variables, i.e. [`variables(model)`](@ref), which are
 the unidirectional reactions and the genes involved in enzymatic reactions that
 have kinetic data.
 """
@@ -119,8 +119,8 @@ Returns the internal reactions in a [`GeckoModel`](@ref) (these may be split
 to forward- and reverse-only parts with different isozyme indexes; reactions
 IDs are mangled accordingly with suffixes).
 """
-function Accessors.reactions(model::GeckoModel)
-    inner_reactions = reactions(model.inner)
+function Accessors.variables(model::GeckoModel)
+    inner_reactions = variables(model.inner)
     mangled_reactions = [
         gecko_reaction_name(
             inner_reactions[col.reaction_idx],

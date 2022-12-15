@@ -284,7 +284,7 @@ end
 @_change_bounds_fn MatrixModel String inplace plural begin
     change_bounds!(
         model,
-        Vector{Int}(indexin(rxn_ids, reactions(model))),
+        Vector{Int}(indexin(rxn_ids, variables(model))),
         lower = lower,
         upper = upper,
     )
@@ -297,7 +297,7 @@ end
 @_change_bounds_fn MatrixModel String plural begin
     change_bounds(
         model,
-        Int.(indexin(rxn_ids, reactions(model))),
+        Int.(indexin(rxn_ids, variables(model))),
         lower = lower,
         upper = upper,
     )
@@ -332,7 +332,7 @@ end
 end
 
 @_remove_fn reaction MatrixModel String inplace plural begin
-    remove_reactions!(model, Int.(indexin(reaction_ids, reactions(model))))
+    remove_reactions!(model, Int.(indexin(reaction_ids, variables(model))))
 end
 
 @_remove_fn reaction MatrixModel String begin
@@ -340,7 +340,7 @@ end
 end
 
 @_remove_fn reaction MatrixModel String plural begin
-    remove_reactions(model, Int.(indexin(reaction_ids, reactions(model))))
+    remove_reactions(model, Int.(indexin(reaction_ids, variables(model))))
 end
 
 @_remove_fn metabolite MatrixModel Int inplace begin
@@ -423,7 +423,7 @@ function change_objective!(
     rxn_ids::Vector{String};
     weights = ones(length(rxn_ids)),
 )
-    idxs = indexin(rxn_ids, reactions(model))
+    idxs = indexin(rxn_ids, variables(model))
     any(isnothing(idx) for idx in idxs) &&
         throw(DomainError(rxn_ids, "Some reaction ids not found in the model"))
     change_objective!(model, Int.(idxs); weights)

@@ -14,13 +14,13 @@
     # briefly test that the loading is okay
     @test n_variables(model) == n_variables(h5)
     @test n_metabolites(model) == n_metabolites(h5)
-    @test issetequal(reactions(model), reactions(h5))
+    @test issetequal(variables(model), variables(h5))
     @test issetequal(metabolites(model), metabolites(h5))
     @test issorted(metabolites(h5))
-    @test issorted(reactions(h5))
+    @test issorted(variables(h5))
     @test size(stoichiometry(model)) == size(stoichiometry(h5))
     @test isapprox(sum(stoichiometry(model)), sum(stoichiometry(h5)))
-    rxnp = sortperm(reactions(model))
+    rxnp = sortperm(variables(model))
     @test bounds(model)[1][rxnp] == bounds(h5)[1]
     @test bounds(model)[2][rxnp] == bounds(h5)[2]
     @test objective(model)[rxnp] == objective(h5)

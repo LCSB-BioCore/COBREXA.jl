@@ -16,7 +16,7 @@ $(TYPEDSIGNATURES)
 
 Get reactions from a [`SBMLModel`](@ref).
 """
-Accessors.reactions(model::SBMLModel)::Vector{String} =
+Accessors.variables(model::SBMLModel)::Vector{String} =
     [k for k in keys(model.sbml.reactions)]
 
 """
@@ -287,7 +287,7 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     end
 
     mets = metabolites(mm)
-    rxns = reactions(mm)
+    rxns = variables(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = bounds(mm)
     comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))

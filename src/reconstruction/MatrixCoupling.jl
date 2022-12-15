@@ -304,9 +304,9 @@ end
 end
 
 @_remove_fn reaction MatrixCoupling Int inplace plural begin
-    orig_rxns = reactions(model.lm)
+    orig_rxns = variables(model.lm)
     remove_reactions!(model.lm, reaction_idxs)
-    model.C = model.C[:, in.(orig_rxns, Ref(Set(reactions(model.lm))))]
+    model.C = model.C[:, in.(orig_rxns, Ref(Set(variables(model.lm))))]
     nothing
 end
 
@@ -317,7 +317,7 @@ end
 @_remove_fn reaction MatrixCoupling Int plural begin
     n = copy(model)
     n.lm = remove_reactions(n.lm, reaction_idxs)
-    n.C = n.C[:, in.(reactions(model.lm), Ref(Set(reactions(n.lm))))]
+    n.C = n.C[:, in.(variables(model.lm), Ref(Set(variables(n.lm))))]
     return n
 end
 
@@ -326,7 +326,7 @@ end
 end
 
 @_remove_fn reaction MatrixCoupling String inplace plural begin
-    remove_reactions!(model, Int.(indexin(reaction_ids, reactions(model))))
+    remove_reactions!(model, Int.(indexin(reaction_ids, variables(model))))
 end
 
 @_remove_fn reaction MatrixCoupling String begin
@@ -334,7 +334,7 @@ end
 end
 
 @_remove_fn reaction MatrixCoupling String plural begin
-    remove_reactions(model, Int.(indexin(reaction_ids, reactions(model))))
+    remove_reactions(model, Int.(indexin(reaction_ids, variables(model))))
 end
 
 @_remove_fn metabolite MatrixCoupling Int inplace begin
@@ -342,9 +342,9 @@ end
 end
 
 @_remove_fn metabolite MatrixCoupling Int plural inplace begin
-    orig_rxns = reactions(model.lm)
+    orig_rxns = variables(model.lm)
     model.lm = remove_metabolites(model.lm, metabolite_idxs)
-    model.C = model.C[:, in.(orig_rxns, Ref(Set(reactions(model.lm))))]
+    model.C = model.C[:, in.(orig_rxns, Ref(Set(variables(model.lm))))]
     nothing
 end
 

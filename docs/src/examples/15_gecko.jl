@@ -35,7 +35,7 @@ rxns = filter(
         !looks_like_biomass_reaction(x) &&
             !looks_like_exchange_reaction(x) &&
             !isnothing(reaction_gene_association(model, x)),
-    reactions(model),
+    variables(model),
 )
 
 # The main difference from sMOMENT comes from allowing multiple isozymes per

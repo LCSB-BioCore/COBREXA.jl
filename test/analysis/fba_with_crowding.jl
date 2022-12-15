@@ -1,7 +1,7 @@
 @testset "FBA with crowding constraints" begin
     model = load_model(model_paths["e_coli_core.json"])
     rid_weight = Dict(
-        rid => 0.004 for rid in reactions(model) if
+        rid => 0.004 for rid in variables(model) if
         !looks_like_biomass_reaction(rid) && !looks_like_exchange_reaction(rid)
     )
 

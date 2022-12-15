@@ -54,7 +54,7 @@ function make_gecko_model(
 
     gids = genes(model)
     (lbs, ubs) = bounds(model)
-    rids = reactions(model)
+    rids = variables(model)
 
     gene_name_lookup = Dict(gids .=> 1:length(gids))
     gene_row_lookup = Dict{Int,Int}()

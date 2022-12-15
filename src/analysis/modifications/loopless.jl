@@ -28,7 +28,7 @@ add_loopless_constraints(;
     (model, opt_model) -> begin
 
         internal_rxn_idxs = [
-            ridx for (ridx, rid) in enumerate(reactions(model)) if
+            ridx for (ridx, rid) in enumerate(variables(model)) if
             !is_boundary(reaction_stoichiometry(model, rid))
         ]
 

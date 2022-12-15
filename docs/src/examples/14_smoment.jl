@@ -37,7 +37,7 @@ rxns = filter(
         !looks_like_biomass_reaction(x) &&
             !looks_like_exchange_reaction(x) &&
             !isnothing(reaction_gene_association(model, x)),
-    reactions(model),
+    variables(model),
 )
 
 # The information about each enzyme and its capabilities is stored in an

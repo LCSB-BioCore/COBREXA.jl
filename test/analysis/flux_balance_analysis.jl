@@ -26,7 +26,7 @@
     fluxes_vec = flux_balance_analysis_vec(cp, Tulip.Optimizer)
     @test all(fluxes_vec .== sol)
     fluxes_dict = flux_balance_analysis_dict(cp, Tulip.Optimizer)
-    rxns = reactions(cp)
+    rxns = variables(cp)
     @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
 
@@ -97,7 +97,7 @@ end
 
     # construct coupling bounds
     nr = n_variables(model)
-    biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], reactions(model)))
+    biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], variables(model)))
 
     Cf = sparse(1.0I, nr, nr)
     Cf[:, biomass_index] .= -γ

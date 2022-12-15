@@ -58,7 +58,7 @@ flux_summary(
 
 # The effect of all nutrients on the metabolism can be scanned using [`screen`](@ref). The [`change_bound`](@ref) function is, for this purpose, packed in a variant specified [`with_changed_bound`](@ref):
 
-exchanges = filter(looks_like_exchange_reaction, reactions(model))
+exchanges = filter(looks_like_exchange_reaction, variables(model))
 
 exchanges .=> screen(
     model,

@@ -11,7 +11,7 @@
     @test all([length(m.xl), length(m.xu), length(m.c)] .== 95)
 
     @test metabolites(m)[1:3] == ["M_succoa_c", "M_ac_c", "M_fru_b"]
-    @test reactions(m)[1:3] == ["R_EX_fum_e", "R_ACONTb", "R_GLNS"]
+    @test variables(m)[1:3] == ["R_EX_fum_e", "R_ACONTb", "R_GLNS"]
 
     cm = convert(MatrixModelWithCoupling, sbmlm)
     @test n_coupling_constraints(cm) == 0

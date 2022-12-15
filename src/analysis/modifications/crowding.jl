@@ -30,7 +30,7 @@ instead of reaction indices mapped to weights.
 """
 add_crowding_constraints(weights::Dict{String,Float64}) =
     (model, opt_model) -> begin
-        idxs = indexin(keys(weights), reactions(model))
+        idxs = indexin(keys(weights), variables(model))
         nothing in idxs && throw(ArgumentError("Reaction id not found in model."))
         add_crowding_constraints(Dict(zip(Int.(idxs), values(weights))))(model, opt_model)
     end

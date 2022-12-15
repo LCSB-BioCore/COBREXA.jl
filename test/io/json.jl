@@ -4,7 +4,7 @@
     stdmodel = convert(ObjectModel, jsonmodel)
 
     # test if same reaction ids
-    @test issetequal(reactions(jsonmodel), reactions(stdmodel))
+    @test issetequal(variables(jsonmodel), variables(stdmodel))
     @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     # not the best tests since it is possible that error could cancel each other out:
