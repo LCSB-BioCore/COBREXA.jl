@@ -6,7 +6,7 @@ a solved optimization model built from the `community_model`. Removes the
 `community_member` prefix in the string ids of the returned dictionary.
 """
 get_solution(community_member::CommunityMember, opt_model, community_model::BalancedGrowthCommunityModel) = is_solved(opt_model) ? Dict(
-    string(last(split(rid, community_member.id*"#"))) => val for (rid, val) in zip(reactions(community_model), reaction_variables(model)' * value.(opt_model[:x])) if startswith(rid, community_member.id*"#")
+    string(last(split(rid, community_member.id*"#"))) => val for (rid, val) in zip(reactions(community_model), reaction_variables(community_model)' * value.(opt_model[:x])) if startswith(rid, community_member.id*"#")
 ) : nothing
 
 
