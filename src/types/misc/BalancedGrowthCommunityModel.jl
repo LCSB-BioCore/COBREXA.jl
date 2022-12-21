@@ -13,7 +13,7 @@ $(TYPEDSIGNATURES)
 A helper function to get the unique environmental metabolites.
 """
 get_env_mets(cm::BalancedGrowthCommunityModel) =
-    unique(hcat([get_exchange_mets(m) for m in cm.members]...))
+    unique(vcat([get_exchange_mets(m) for m in cm.members]...))
 
 """
 $(TYPEDSIGNATURES)
