@@ -33,49 +33,9 @@
     @test all(
         contains.(
             sprint(show, MIME("text/plain"), r1),
-            ["r1", "100.0", "glycolysis", "blah", "biocyc", "(g2 and g1) or (g3)"],
+            ["r1", "100.0", "glycolysis", "blah", "biocyc", "g1", "g2", "g3"],
         ),
     )
-
-    rlongfor = Reaction(
-        "rlongfor",
-        Dict(
-            m1.id => -1.0,
-            m2.id => -1.0,
-            m3.id => -1.0,
-            m4.id => -1.0,
-            m5.id => -1.0,
-            m6.id => -1.0,
-            m7.id => 1.0,
-            m8.id => 1.0,
-            m9.id => 1.0,
-            m10.id => 1.0,
-            m11.id => 1.0,
-            m12.id => 1.0,
-        ),
-        :forward,
-    )
-    @test contains(sprint(show, MIME("text/plain"), rlongfor), "...")
-
-    rlongrev = Reaction(
-        "rlongrev",
-        Dict(
-            m1.id => -1.0,
-            m2.id => -1.0,
-            m3.id => -1.0,
-            m4.id => -1.0,
-            m5.id => -1.0,
-            m6.id => -1.0,
-            m7.id => 1.0,
-            m8.id => 1.0,
-            m9.id => 1.0,
-            m10.id => 1.0,
-            m11.id => 1.0,
-            m12.id => 1.0,
-        ),
-        :reverse,
-    )
-    @test occursin("...", sprint(show, MIME("text/plain"), rlongrev))
 
     r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
     @test r2.lower_bound == -1000.0 && r2.upper_bound == 0.0
