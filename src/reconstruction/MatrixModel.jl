@@ -351,7 +351,7 @@ end
     remove_reactions!(
         model,
         [
-            ridx for ridx in 1:n_reactions(model) if
+            ridx for ridx = 1:n_reactions(model) if
             any(in.(findnz(model.S[:, ridx])[1], Ref(metabolite_idxs)))
         ],
     )

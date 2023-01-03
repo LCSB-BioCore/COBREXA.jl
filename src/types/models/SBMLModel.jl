@@ -164,7 +164,7 @@ function _sbml_export_cvterms(annotations::Annotations)::Vector{SBML.CVTerm}
             biological_qualifier = :is,
             resource_uris = [
                 id == "RESOURCE_URI" ? val : "http://identifiers.org/$id/$val" for
-                (id, vals) = annotations if id != "sbo" for val in vals
+                (id, vals) in annotations if id != "sbo" for val in vals
             ],
         ),
     ]
