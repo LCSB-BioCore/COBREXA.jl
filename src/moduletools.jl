@@ -60,7 +60,7 @@ using COBREXA.Types,
     COBREXA.Solver
 ```
 """
-macro using_all()    
+macro using_all()
     quote
         using COBREXA.Types,
             COBREXA.Accessors,
