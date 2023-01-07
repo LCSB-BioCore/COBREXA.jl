@@ -41,3 +41,35 @@ end
 
 @export_locals
 end
+
+"""
+@using_all()
+
+A convenience macro that brings the names of all the COBREXA modules into scope.
+
+When calling `COBREXA.@using_all` the following code gets injected:
+```
+using COBREXA.Types,
+    COBREXA.Accessors,
+    COBREXA.Analysis,
+    COBREXA.Analysis.Modifications,
+    COBREXA.Reconstruction,
+    COBREXA.Reconstruction.Modifications,
+    COBREXA.Utils,
+    COBREXA.IO,
+    COBREXA.Solver
+```
+"""
+macro using_all()    
+    quote
+        using COBREXA.Types,
+            COBREXA.Accessors,
+            COBREXA.Analysis,
+            COBREXA.Analysis.Modifications,
+            COBREXA.Reconstruction,
+            COBREXA.Reconstruction.Modifications,
+            COBREXA.Utils,
+            COBREXA.IO,
+            COBREXA.Solver
+    end
+end
