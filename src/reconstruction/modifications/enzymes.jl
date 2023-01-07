@@ -17,3 +17,12 @@ giving a [`EnzymeConstrainedModel`](@ref). The arguments are forwarded to
 """
 with_enzyme_constrained(; kwargs...) =
     model -> make_enzyme_constrained_model(model; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that adds a pseudoribosome to a model. Args and kwargs
+are forwarded to [`add_pseudoribosome`](@ref).
+"""
+with_pseudoribosome(args...; kwargs...) =
+    model -> add_pseudoribosome(model, args...; kwargs...)
