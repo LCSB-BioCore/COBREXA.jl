@@ -6,11 +6,11 @@ structure, COBREXA.jl supports a class of model _wrappers_, which are basically
 small layers that add or change the functionality of a given base models.
 
 Types [`Serialized`](@ref), [`MatrixCoupling`](@ref), [`SMomentModel`](@ref), and
-[`GeckoModel`](@ref) all work in this manner -- add some extra functionality to
+[`EnzymeConstrainedModel`](@ref) all work in this manner -- add some extra functionality to
 the "base". Technically, they are all subtypes of the abstract type
 [`AbstractModelWrapper`](@ref), which itself is a subtype of [`AbstractMetabolicModel`](@ref)
 and can thus be used in all standard analysis functions.  Similarly, the model
-wraps can be stacked -- it is easy to e.g. serialize a [`GeckoModel`](@ref), or
+wraps can be stacked -- it is easy to e.g. serialize a [`EnzymeConstrainedModel`](@ref), or
 to add coupling to an existing [`SMomentModel`](@ref).
 
 As the main benefit of the approach, creating model variants using the wrapper

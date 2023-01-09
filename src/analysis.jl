@@ -24,7 +24,7 @@ using ..Internal: constants
 using ..Log.Internal: @models_log
 using ..Solver
 using ..Types
-using ..Types: _GeckoReactionColumn, _SMomentColumn
+using ..Types: _EnzymeConstrainedReactionColumn, _SMomentColumn
 
 using Distributed
 using DistributedData

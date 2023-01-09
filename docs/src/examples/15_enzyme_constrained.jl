@@ -57,8 +57,8 @@ gene_product_bounds = Dict(genes(model) .=> Ref((0.0, 10.0)))
 # With this, the construction of the model constrained by all enzymatic
 # information is straightforward:
 
-gecko_model =
-    model |> with_gecko(;
+enzyme_constrained_model =
+    model |> with_enzyme_constrained(;
         reaction_isozymes = rxn_isozymes,
         gene_product_bounds,
         gene_product_molar_mass = gene_product_masses,
@@ -66,35 +66,35 @@ gecko_model =
         gene_product_mass_group_bound = _ -> 100.0, # the total limit of mass in the single category
     )
 
-# (Alternatively, you may use [`make_gecko_model`](@ref), which does the same
+# (Alternatively, you may use [`make_enzyme_constrained_model`](@ref), which does the same
 # without piping by `|>`.)
 
-# The stoichiometry and coupling in the gecko model is noticeably more complex;
+# The stoichiometry and coupling in the enzyme_constrained model is noticeably more complex;
 # you may notice new "reactions" added that simulate the gene product
 # utilization:
 
-[stoichiometry(gecko_model); coupling(gecko_model)]
+[stoichiometry(enzyme_constrained_model); coupling(enzyme_constrained_model)]
 
 # Again, the resulting model can be used in any type of analysis. For example, flux balance analysis:
 
-opt_model = flux_balance_analysis(gecko_model, GLPK.Optimizer)
+opt_model = flux_balance_analysis(enzyme_constrained_model, GLPK.Optimizer)
 
 # Get the fluxes
 
-flux_sol = flux_dict(gecko_model, opt_model)
+flux_sol = flux_dict(enzyme_constrained_model, opt_model)
 
 # Get the gene product concentrations
 
-gp_concs = gene_product_dict(gecko_model, opt_model)
+gp_concs = gene_product_dict(enzyme_constrained_model, opt_model)
 
 # Get the total masses assigned to each mass group
 
-gene_product_mass_group_dict(gecko_model, opt_model)
+gene_product_mass_group_dict(enzyme_constrained_model, opt_model)
 
 # Variability:
 
-flux_variability_analysis(gecko_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))
+flux_variability_analysis(enzyme_constrained_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))
 
 # ...and sampling:
-affine_hit_and_run(gecko_model, warmup_from_variability(gecko_model, GLPK.Optimizer))' *
-reaction_variables(gecko_model)
+affine_hit_and_run(enzyme_constrained_model, warmup_from_variability(enzyme_constrained_model, GLPK.Optimizer))' *
+reaction_variables(enzyme_constrained_model)

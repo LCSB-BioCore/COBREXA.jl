@@ -291,7 +291,7 @@ end
         ecoli |>
         with_added_biomass_metabolite("BIOMASS_Ecoli_core_w_GAM") |>
         with_changed_bounds(["EX_glc__D_e"]; lower = [-1000.0], upper = [0]) |>
-        with_gecko(
+        with_enzyme_constrained(
             reaction_isozymes = get_reaction_isozymes,
             gene_product_bounds = g -> (0.0, 10.0),
             gene_product_molar_mass = get_gene_product_mass,

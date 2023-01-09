@@ -2,9 +2,9 @@
 """
 $(TYPEDSIGNATURES)
 
-Internal helper for systematically naming reactions in [`GeckoModel`](@ref).
+Internal helper for systematically naming reactions in [`EnzymeConstrainedModel`](@ref).
 """
-gecko_reaction_name(original_name::String, direction::Int, isozyme_idx::Int) =
+enzyme_constrained_reaction_name(original_name::String, direction::Int, isozyme_idx::Int) =
     direction == 0 ? original_name :
     direction > 0 ? "$original_name#forward#$isozyme_idx" :
     "$original_name#reverse#$isozyme_idx"
@@ -15,15 +15,15 @@ $(TYPEDSIGNATURES)
 Retrieve a utility mapping between reactions and split reactions; rows
 correspond to "original" reactions, columns correspond to "split" reactions.
 """
-gecko_column_reactions(model::GeckoModel) =
-    gecko_column_reactions(model.columns, model.inner)
+enzyme_constrained_column_reactions(model::EnzymeConstrainedModel) =
+    enzyme_constrained_column_reactions(model.columns, model.inner)
 
 """
 $(TYPEDSIGNATURES)
 
-Helper method that doesn't require the whole [`GeckoModel`](@ref).
+Helper method that doesn't require the whole [`EnzymeConstrainedModel`](@ref).
 """
-gecko_column_reactions(columns, inner) = sparse(
+enzyme_constrained_column_reactions(columns, inner) = sparse(
     [col.reaction_idx for col in columns],
     1:length(columns),
     [col.direction >= 0 ? 1 : -1 for col in columns],
@@ -34,10 +34,10 @@ gecko_column_reactions(columns, inner) = sparse(
 """
 $(TYPEDSIGNATURES)
 
-Compute the part of the coupling for [`GeckoModel`](@ref) that limits the
+Compute the part of the coupling for [`EnzymeConstrainedModel`](@ref) that limits the
 "arm" reactions (which group the individual split unidirectional reactions).
 """
-gecko_reaction_coupling(model::GeckoModel) =
+enzyme_constrained_reaction_coupling(model::EnzymeConstrainedModel) =
     let tmp = [
             (col.reaction_coupling_row, i, col.direction) for
             (i, col) in enumerate(model.columns) if col.reaction_coupling_row != 0
@@ -54,10 +54,10 @@ gecko_reaction_coupling(model::GeckoModel) =
 """
 $(TYPEDSIGNATURES)
 
-Compute the part of the coupling for GeckoModel that limits the amount of each
+Compute the part of the coupling for EnzymeConstrainedModel that limits the amount of each
 kind of protein available.
 """
-gecko_gene_product_coupling(model::GeckoModel) =
+enzyme_constrained_gene_product_coupling(model::EnzymeConstrainedModel) =
     let
         tmp = [
             (row, i, val) for (i, col) in enumerate(model.columns) for
@@ -75,10 +75,10 @@ gecko_gene_product_coupling(model::GeckoModel) =
 """
 $(TYPEDSIGNATURES)
 
-Compute the part of the coupling for [`GeckoModel`](@ref) that limits the total
+Compute the part of the coupling for [`EnzymeConstrainedModel`](@ref) that limits the total
 mass of each group of gene products.
 """
-function gecko_mass_group_coupling(model::GeckoModel)
+function enzyme_constrained_mass_group_coupling(model::EnzymeConstrainedModel)
     tmp = [ # mm = molar mass, mg = mass group, i = row idx, j = col idx
         (i, j, mm) for (i, mg) in enumerate(model.coupling_row_mass_group) for
         (j, mm) in zip(mg.gene_product_idxs, mg.gene_product_molar_masses)
