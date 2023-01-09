@@ -42,9 +42,9 @@ gene_product_mass_group_dict(model::EnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
-Extract the total mass utilization in a solved [`SMomentModel`](@ref).
+Extract the total mass utilization in a solved [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
-gene_product_mass(model::SMomentModel, opt_model) =
+gene_product_mass(model::SimplifiedEnzymeConstrainedModel, opt_model) =
     is_solved(opt_model) ?
     sum((col.capacity_required for col in model.columns) .* value.(opt_model[:x])) : nothing
 
@@ -53,13 +53,14 @@ $(TYPEDSIGNATURES)
 
 A pipe-able variant of [`gene_product_mass`](@ref).
 """
-gene_product_mass(model::SMomentModel) = x -> gene_product_mass(model, x)
+gene_product_mass(model::SimplifiedEnzymeConstrainedModel) =
+    x -> gene_product_mass(model, x)
 
 """
 $(TYPEDSIGNATURES)
 
 Compute a "score" for picking the most viable isozyme for
-[`make_smoment_model`](@ref), based on maximum kcat divided by relative mass of
+[`make_simplified_enzyme_constrained_model`](@ref), based on maximum kcat divided by relative mass of
 the isozyme. This is used because sMOMENT algorithm can not handle multiple
 isozymes for one reaction.
 
@@ -67,24 +68,24 @@ isozymes for one reaction.
 This function does not take the direction of the reaction into account, i.e. the
 maximum forward or reverse turnover number is used internally.
 """
-smoment_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass) =
+simplified_enzyme_constrained_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass) =
     max(isozyme.kcat_forward, isozyme.kcat_backward) /
     sum(count * gene_product_molar_mass(gene) for (gene, count) in isozyme.stoichiometry)
 
 """
 $(TYPEDSIGNATURES)
 
-A piping- and argmax-friendly overload of [`smoment_isozyme_speed`](@ref).
+A piping- and argmax-friendly overload of [`simplified_enzyme_constrained_isozyme_speed`](@ref).
 
 # Example
 ```
 gene_mass_function = gid -> 1.234
 
-best_isozyme_for_smoment = argmax(
-    smoment_isozyme_speed(gene_mass_function),
+best_isozyme_for_simplified_enzyme_constrained = argmax(
+    simplified_enzyme_constrained_isozyme_speed(gene_mass_function),
     my_isozyme_vector,
 )
 ```
 """
-smoment_isozyme_speed(gene_product_molar_mass::Function) =
-    isozyme -> smoment_isozyme_speed(isozyme, gene_product_molar_mass)
+simplified_enzyme_constrained_isozyme_speed(gene_product_molar_mass::Function) =
+    isozyme -> simplified_enzyme_constrained_isozyme_speed(isozyme, gene_product_molar_mass)

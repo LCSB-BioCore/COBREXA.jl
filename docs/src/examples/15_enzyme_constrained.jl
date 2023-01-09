@@ -10,13 +10,13 @@
 # 2017](https://doi.org/10.15252/msb.20167411).
 #
 # The analysis method and implementation in COBREXA is similar to
-# [sMOMENT](14_smoment.md), but GECKO is able to process and represent much
+# [sMOMENT](14_simplified_enzyme_constrained.md), but GECKO is able to process and represent much
 # larger scale of the constraints -- mainly, it supports multiple isozymes for
 # each reaction, and the isozymes can be grouped into "enzyme mass groups" to
 # simplify interpretation of data from proteomics.
 
 # For demonstration, we will generate artificial random data in a way similar
-# to the [sMOMENT example](14_smoment.md):
+# to the [sMOMENT example](14_simplified_enzyme_constrained.md):
 
 !isfile("e_coli_core.json") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")

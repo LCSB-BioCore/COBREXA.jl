@@ -59,32 +59,35 @@ rxn_isozymes = Dict(
 # Once the data is gathered, we create a model that wraps the original model
 # with additional sMOMENT structure:
 
-smoment_model =
-    model |> with_smoment(
+simplified_enzyme_constrained_model =
+    model |> with_simplified_enzyme_constrained(
         reaction_isozyme = rxn_isozymes,
         gene_product_molar_mass = gene_product_masses,
         total_enzyme_capacity = 50.0,
     )
 
-# (You could alternatively use the [`make_smoment_model`](@ref) to create the
-# structure more manually; but [`with_smoment`](@ref) is easier to use e.g.
+# (You could alternatively use the [`make_simplified_enzyme_constrained_model`](@ref) to create the
+# structure more manually; but [`with_simplified_enzyme_constrained`](@ref) is easier to use e.g.
 # with [`screen`](@ref).)
 
 # In turn, you should have a complete model with unidirectional reactions and
 # additional coupling, as specified by the sMOMENT method:
 
-[stoichiometry(smoment_model); coupling(smoment_model)]
+[
+    stoichiometry(simplified_enzyme_constrained_model)
+    coupling(simplified_enzyme_constrained_model)
+]
 
-# the type (SMomentModel) is a model wrapper -- it is a thin additional layer
+# the type (SimplifiedEnzymeConstrainedModel) is a model wrapper -- it is a thin additional layer
 # that just adds the necessary sMOMENT-relevant information atop the original
 # model, which is unmodified. That makes the process very efficient and
 # suitable for large-scale data processing. You can still access the original
-# "base" model hidden in the SMomentModel using [`unwrap_model`](@ref).
+# "base" model hidden in the SimplifiedEnzymeConstrainedModel using [`unwrap_model`](@ref).
 
-# Other than that, the [`SMomentModel`](@ref) is a model type like any other,
+# Other than that, the [`SimplifiedEnzymeConstrainedModel`](@ref) is a model type like any other,
 # and you can run any analysis you want on it, such as FBA:
 
-flux_balance_analysis_dict(smoment_model, GLPK.Optimizer)
+flux_balance_analysis_dict(simplified_enzyme_constrained_model, GLPK.Optimizer)
 
 # (Notice that the total reaction fluxes are reported despite the fact that
 # reactions are indeed split in the model! The underlying mechanism is provided
@@ -92,14 +95,18 @@ flux_balance_analysis_dict(smoment_model, GLPK.Optimizer)
 
 # [Variability](06_fva.md) of the sMOMENT model can be explored as such:
 
-flux_variability_analysis(smoment_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))
+flux_variability_analysis(
+    simplified_enzyme_constrained_model,
+    GLPK.Optimizer,
+    bounds = gamma_bounds(0.95),
+)
 
 # ...and a sMOMENT model sample can be obtained [as usual with
 # sampling](16_hit_and_run.md):
 
 (
     affine_hit_and_run(
-        smoment_model,
-        warmup_from_variability(smoment_model, GLPK.Optimizer),
-    )' * reaction_variables(smoment_model)
+        simplified_enzyme_constrained_model,
+        warmup_from_variability(simplified_enzyme_constrained_model, GLPK.Optimizer),
+    )' * reaction_variables(simplified_enzyme_constrained_model)
 )

@@ -7,7 +7,7 @@
         rid ->
             haskey(ecoli_core_reaction_kcats, rid) ?
             argmax(
-                smoment_isozyme_speed(get_gene_product_mass),
+                simplified_enzyme_constrained_isozyme_speed(get_gene_product_mass),
                 Isozyme(
                     stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
                     kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
@@ -15,22 +15,22 @@
                 ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
             ) : nothing
 
-    smoment_model =
+    simplified_enzyme_constrained_model =
         model |>
         with_changed_bounds(
             ["EX_glc__D_e", "GLCpts"],
             lower = [-1000.0, -1.0],
             upper = [nothing, 12.0],
         ) |>
-        with_smoment(
+        with_simplified_enzyme_constrained(
             reaction_isozyme = get_reaction_isozyme,
             gene_product_molar_mass = get_gene_product_mass,
             total_enzyme_capacity = 100.0,
         )
-    objective(smoment_model)
+    objective(simplified_enzyme_constrained_model)
 
     rxn_fluxes = flux_balance_analysis_dict(
-        smoment_model,
+        simplified_enzyme_constrained_model,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )

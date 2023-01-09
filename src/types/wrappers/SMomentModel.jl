@@ -2,12 +2,12 @@
 """
 $(TYPEDEF)
 
-A helper type that describes the contents of [`SMomentModel`](@ref)s.
+A helper type that describes the contents of [`SimplifiedEnzymeConstrainedModel`](@ref)s.
 
 # Fields
 $(TYPEDFIELDS)
 """
-struct _SMomentColumn
+struct _SimplifiedEnzymeConstrainedColumn
     reaction_idx::Int # number of the corresponding reaction in the inner model
     direction::Int # 0 if "as is" and unique, -1 if reverse-only part, 1 if forward-only part
     lb::Float64 # must be 0 if the reaction is unidirectional (if direction!=0)
@@ -22,7 +22,7 @@ An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
 *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
 metabolic models with enzyme constraints" BMC bioinformatics, 2020*.
 
-Use [`make_smoment_model`](@ref) or [`with_smoment`](@ref) to construct the
+Use [`make_simplified_enzyme_constrained_model`](@ref) or [`with_simplified_enzyme_constrained`](@ref) to construct the
 models.
 
 The model is constructed as follows:
@@ -35,7 +35,7 @@ The model is constructed as follows:
 - the total consumption of the enzyme capacity is constrained to a fixed
   maximum.
 
-The `SMomentModel` structure contains a worked-out representation of the
+The `SimplifiedEnzymeConstrainedModel` structure contains a worked-out representation of the
 optimization problem atop a wrapped [`AbstractMetabolicModel`](@ref), in particular the
 separation of certain reactions into unidirectional forward and reverse parts,
 an "enzyme capacity" required for each reaction, and the value of the maximum
@@ -54,99 +54,101 @@ are implemented using [`coupling`](@ref) and [`coupling_bounds`](@ref).
 # Fields
 $(TYPEDFIELDS)
 """
-struct SMomentModel <: AbstractModelWrapper
-    columns::Vector{_SMomentColumn}
+struct SimplifiedEnzymeConstrainedModel <: AbstractModelWrapper
+    columns::Vector{_SimplifiedEnzymeConstrainedColumn}
     total_enzyme_capacity::Float64
 
     inner::AbstractMetabolicModel
 end
 
-Accessors.unwrap_model(model::SMomentModel) = model.inner
+Accessors.unwrap_model(model::SimplifiedEnzymeConstrainedModel) = model.inner
 
 """
 $(TYPEDSIGNATURES)
 
-Return a stoichiometry of the [`SMomentModel`](@ref). The enzymatic reactions
+Return a stoichiometry of the [`SimplifiedEnzymeConstrainedModel`](@ref). The enzymatic reactions
 are split into unidirectional forward and reverse ones.
 """
-Accessors.stoichiometry(model::SMomentModel) =
-    stoichiometry(model.inner) * smoment_column_reactions(model)
+Accessors.stoichiometry(model::SimplifiedEnzymeConstrainedModel) =
+    stoichiometry(model.inner) * simplified_enzyme_constrained_column_reactions(model)
 
 """
 $(TYPEDSIGNATURES)
 
-Reconstruct an objective of the [`SMomentModel`](@ref).
+Reconstruct an objective of the [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
-Accessors.objective(model::SMomentModel) =
-    smoment_column_reactions(model)' * objective(model.inner)
+Accessors.objective(model::SimplifiedEnzymeConstrainedModel) =
+    simplified_enzyme_constrained_column_reactions(model)' * objective(model.inner)
 
 """
 $(TYPEDSIGNATURES)
 
-Returns the internal reactions in a [`SMomentModel`](@ref) (these may be split
+Returns the internal reactions in a [`SimplifiedEnzymeConstrainedModel`](@ref) (these may be split
 to forward- and reverse-only parts; reactions IDs are mangled accordingly with
 suffixes).
 """
-Accessors.variables(model::SMomentModel) =
+Accessors.variables(model::SimplifiedEnzymeConstrainedModel) =
     let inner_reactions = variables(model.inner)
         [
-            smoment_reaction_name(inner_reactions[col.reaction_idx], col.direction) for
-            col in model.columns
+            simplified_enzyme_constrained_reaction_name(
+                inner_reactions[col.reaction_idx],
+                col.direction,
+            ) for col in model.columns
         ]
     end
 
 """
 $(TYPEDSIGNATURES)
 
-The number of reactions (including split ones) in [`SMomentModel`](@ref).
+The number of reactions (including split ones) in [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
-Accessors.n_variables(model::SMomentModel) = length(model.columns)
+Accessors.n_variables(model::SimplifiedEnzymeConstrainedModel) = length(model.columns)
 
 """
 $(TYPEDSIGNATURES)
 
-Return the variable bounds for [`SMomentModel`](@ref).
+Return the variable bounds for [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
-Accessors.bounds(model::SMomentModel) =
+Accessors.bounds(model::SimplifiedEnzymeConstrainedModel) =
     ([col.lb for col in model.columns], [col.ub for col in model.columns])
 
 """
 $(TYPEDSIGNATURES)
 
-Get the mapping of the reaction rates in [`SMomentModel`](@ref) to the original
+Get the mapping of the reaction rates in [`SimplifiedEnzymeConstrainedModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-Accessors.reaction_variables(model::SMomentModel) =
-    smoment_column_reactions(model)' * reaction_variables(model.inner)
+Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
+    simplified_enzyme_constrained_column_reactions(model)' * reaction_variables(model.inner)
 
 """
 $(TYPEDSIGNATURES)
 
-Return the coupling of [`SMomentModel`](@ref). That combines the coupling of
+Return the coupling of [`SimplifiedEnzymeConstrainedModel`](@ref). That combines the coupling of
 the wrapped model, coupling for split reactions, and the coupling for the total
 enzyme capacity.
 """
-Accessors.coupling(model::SMomentModel) = vcat(
-    coupling(model.inner) * smoment_column_reactions(model),
+Accessors.coupling(model::SimplifiedEnzymeConstrainedModel) = vcat(
+    coupling(model.inner) * simplified_enzyme_constrained_column_reactions(model),
     [col.capacity_required for col in model.columns]',
 )
 
 """
 $(TYPEDSIGNATURES)
 
-Count the coupling constraints in [`SMomentModel`](@ref) (refer to
+Count the coupling constraints in [`SimplifiedEnzymeConstrainedModel`](@ref) (refer to
 [`coupling`](@ref) for details).
 """
-Accessors.n_coupling_constraints(model::SMomentModel) =
+Accessors.n_coupling_constraints(model::SimplifiedEnzymeConstrainedModel) =
     n_coupling_constraints(model.inner) + 1
 
 """
 $(TYPEDSIGNATURES)
 
-The coupling bounds for [`SMomentModel`](@ref) (refer to [`coupling`](@ref) for
+The coupling bounds for [`SimplifiedEnzymeConstrainedModel`](@ref) (refer to [`coupling`](@ref) for
 details).
 """
-Accessors.coupling_bounds(model::SMomentModel) =
+Accessors.coupling_bounds(model::SimplifiedEnzymeConstrainedModel) =
     let (iclb, icub) = coupling_bounds(model.inner)
         (vcat(iclb, [0.0]), vcat(icub, [model.total_enzyme_capacity]))
     end
