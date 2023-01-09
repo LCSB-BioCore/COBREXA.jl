@@ -43,7 +43,7 @@ variability_with_knockout =
 # knockout modification. This knocks out all genes that can run the FBA
 # reaction:
 
-reaction_gene_association(model, "R_FBA")
+reaction_gene_associations(model, "R_FBA")
 #
 flux_with_double_knockout = flux_balance_analysis_dict(
     model,

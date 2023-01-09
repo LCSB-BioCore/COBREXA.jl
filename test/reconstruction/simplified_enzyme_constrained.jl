@@ -12,7 +12,7 @@
                     stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
                     kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
                     kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
-                ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
+                ) for (i, grr) in enumerate(reaction_gene_associations(model, rid))
             ) : nothing
 
     simplified_enzyme_constrained_model =

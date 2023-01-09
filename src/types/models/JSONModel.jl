@@ -165,7 +165,7 @@ $(TYPEDSIGNATURES)
 
 Parses the `.gene_reaction_rule` from reactions.
 """
-Accessors.reaction_gene_association(model::JSONModel, rid::String) = maybemap(
+Accessors.reaction_gene_associations(model::JSONModel, rid::String) = maybemap(
     parse_grr,
     get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
 )
@@ -338,7 +338,7 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
             res["annotation"] = reaction_annotations(mm, rid)
             res["notes"] = reaction_notes(mm, rid)
 
-            grr = reaction_gene_association(mm, rid)
+            grr = reaction_gene_associations(mm, rid)
             if !isnothing(grr)
                 res["gene_reaction_rule"] = unparse_grr(String, grr)
             end

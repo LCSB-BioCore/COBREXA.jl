@@ -9,7 +9,7 @@
                     stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
                     kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
                     kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
-                ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
+                ) for (i, grr) in enumerate(reaction_gene_associations(model, rid))
             ) : nothing
 
     get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
@@ -126,7 +126,7 @@ end
         m;
         reaction_isozymes = Dict(
             rid => r.gene_associations for (rid, r) in m.reactions if
-            !isnothing(reaction_gene_association(m, rid)) && rid in ["r3", "r4", "r5"]
+            !isnothing(reaction_gene_associations(m, rid)) && rid in ["r3", "r4", "r5"]
         ),
         gene_product_bounds,
         gene_product_molar_mass,

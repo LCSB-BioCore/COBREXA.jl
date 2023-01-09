@@ -109,7 +109,7 @@ $(TYPEDSIGNATURES)
 
 Retrieve the reaction gene associations from [`SBMLModel`](@ref).
 """
-Accessors.reaction_gene_association(
+Accessors.reaction_gene_associations(
     model::SBMLModel,
     rid::String,
 )::Maybe{GeneAssociationsDNF} =
@@ -344,7 +344,7 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
                     upper_bound = "UPPER_BOUND",
                     gene_product_association = maybemap(
                         x -> unparse_grr(SBML.GeneProductAssociation, x),
-                        reaction_gene_association(mm, rid),
+                        reaction_gene_associations(mm, rid),
                     ),
                     reversible = true,
                     sbo = _sbml_export_sbo(reaction_annotations(mm, rid)),

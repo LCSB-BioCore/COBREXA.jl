@@ -280,7 +280,7 @@ end
                     stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
                     kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
                     kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
-                ) for (i, grr) in enumerate(reaction_gene_association(ecoli, rid))
+                ) for (i, grr) in enumerate(reaction_gene_associations(ecoli, rid))
             ) : nothing
 
     get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)

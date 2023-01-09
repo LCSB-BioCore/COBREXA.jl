@@ -195,7 +195,7 @@ Returns the sets of genes that need to be present so that the reaction can work
 For simplicity, `nothing` may be returned, meaning that the reaction always
 takes place. (in DNF, that would be equivalent to returning `[[]]`.)
 """
-function reaction_gene_association(
+function reaction_gene_associations(
     a::AbstractMetabolicModel,
     reaction_id::String,
 )::Maybe{GeneAssociationsDNF}

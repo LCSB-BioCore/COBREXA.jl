@@ -90,12 +90,12 @@
             Ref(
                 COBREXA.Internal.unparse_grr(
                     String,
-                    reaction_gene_association(model, "r1"),
+                    reaction_gene_associations(model, "r1"),
                 ),
             ),
         ),
     )
-    @test isnothing(reaction_gene_association(model, "r2"))
+    @test isnothing(reaction_gene_associations(model, "r2"))
 
     @test metabolite_formula(model, "m2")["C"] == 2
     @test isnothing(metabolite_formula(model, "m3"))

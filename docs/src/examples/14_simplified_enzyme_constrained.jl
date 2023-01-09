@@ -36,7 +36,7 @@ rxns = filter(
     x ->
         !looks_like_biomass_reaction(x) &&
             !looks_like_exchange_reaction(x) &&
-            !isnothing(reaction_gene_association(model, x)),
+            !isnothing(reaction_gene_associations(model, x)),
     variables(model),
 )
 
@@ -47,7 +47,7 @@ rxns = filter(
 
 rxn_isozymes = Dict(
     rxn => Isozyme(
-        Dict(vcat(reaction_gene_association(model, rxn)...) .=> 1),
+        Dict(vcat(reaction_gene_associations(model, rxn)...) .=> 1),
         randn() * 100 + 600, #forward kcat
         randn() * 100 + 500, #reverse kcat
     ) for rxn in rxns
