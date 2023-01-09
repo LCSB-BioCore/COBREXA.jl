@@ -43,7 +43,7 @@
     rA = Reaction("rA", Dict("m1" => -1, "m2" => 1, "m3" => 1), :forward)
     rB = Reaction("rB", Dict("m2" => -1, "m9" => 1), :forward)
     rC = Reaction("rC", Dict("m9" => -1, "m10" => 1), :bidirectional)
-    rD = Reaction("rC", Dict("m10" => -1), :reverse)
+    rD = Reaction("rC", Dict("m10" => -1), :backward)
 
     universal_reactions = [r5, r7, r10, rA, rB, rC, rD]
 
