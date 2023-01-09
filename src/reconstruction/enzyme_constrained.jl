@@ -62,7 +62,10 @@ function make_enzyme_constrained_model(
     for i = 1:n_variables(model)
         isozymes = ris_(rids[i])
         if isnothing(isozymes)
-            push!(columns, Types._EnzymeConstrainedReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []))
+            push!(
+                columns,
+                Types._EnzymeConstrainedReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []),
+            )
             continue
         end
 
@@ -137,7 +140,10 @@ function make_enzyme_constrained_model(
     for (grp, gs) in mg_gid_lookup
         idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)
-        push!(coupling_row_mass_group, Types._EnzymeConstrainedCapacity(grp, idxs, mms, gmgb_(grp)))
+        push!(
+            coupling_row_mass_group,
+            Types._EnzymeConstrainedCapacity(grp, idxs, mms, gmgb_(grp)),
+        )
     end
 
     EnzymeConstrainedModel(

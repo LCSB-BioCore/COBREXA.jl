@@ -137,7 +137,8 @@ $(TYPEDSIGNATURES)
 Returns the number of all irreversible reactions in `model` as well as the
 number of gene products that take part in enzymatic reactions.
 """
-Accessors.n_variables(model::EnzymeConstrainedModel) = length(model.columns) + n_genes(model)
+Accessors.n_variables(model::EnzymeConstrainedModel) =
+    length(model.columns) + n_genes(model)
 
 """
 $(TYPEDSIGNATURES)
@@ -259,4 +260,5 @@ $(TYPEDSIGNATURES)
 
 Return the number of metabolites, both real and pseudo, for a [`EnzymeConstrainedModel`](@ref).
 """
-Accessors.n_metabolites(model::EnzymeConstrainedModel) = n_metabolites(model.inner) + n_genes(model)
+Accessors.n_metabolites(model::EnzymeConstrainedModel) =
+    n_metabolites(model.inner) + n_genes(model)

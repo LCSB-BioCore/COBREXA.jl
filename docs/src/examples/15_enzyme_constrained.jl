@@ -93,8 +93,14 @@ gene_product_mass_group_dict(enzyme_constrained_model, opt_model)
 
 # Variability:
 
-flux_variability_analysis(enzyme_constrained_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))
+flux_variability_analysis(
+    enzyme_constrained_model,
+    GLPK.Optimizer,
+    bounds = gamma_bounds(0.95),
+)
 
 # ...and sampling:
-affine_hit_and_run(enzyme_constrained_model, warmup_from_variability(enzyme_constrained_model, GLPK.Optimizer))' *
-reaction_variables(enzyme_constrained_model)
+affine_hit_and_run(
+    enzyme_constrained_model,
+    warmup_from_variability(enzyme_constrained_model, GLPK.Optimizer),
+)' * reaction_variables(enzyme_constrained_model)
