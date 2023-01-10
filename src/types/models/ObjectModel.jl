@@ -173,7 +173,7 @@ function Accessors.reaction_gene_associations(
     id::String,
 )::Maybe{GeneAssociationsDNF}
     isnothing(model.reactions[id].gene_associations) && return nothing
-    [collect(keys(rga.stoichiometry)) for rga in model.reactions[id].gene_associations]
+    [collect(keys(rga.gene_product_stoichiometry)) for rga in model.reactions[id].gene_associations]
 end
 
 """
@@ -299,31 +299,14 @@ $(TYPEDSIGNATURES)
 
 Return the molar mass of translated gene with ID `gid`.
 """
-Accessors.gene_protein_molar_mass(model::ObjectModel, gid::String) = model.genes[gid].protein_molar_mass
-
-"""
-$(TYPEDSIGNATURES)
-
-Return the enzyme turnover number of reaction with ID `rid` for the reaction in
-the forward direction.
-"""
-Accessors.reaction_kcat_forward(model::ObjectModel, rid::String) = model.reactions[rid].kcat_forward
-
-"""
-$(TYPEDSIGNATURES)
-
-Return the enzyme turnover number of reaction with ID `rid` for the reaction in
-the backward direction.
-"""
-Accessors.reaction_kcat_backward(model::ObjectModel, rid::String) = model.reactions[rid].kcat_backward
+Accessors.gene_product_molar_mass(model::ObjectModel, gid::String) = model.genes[gid].product_molar_mass
 
 """
 $(TYPEDSIGNATURES)
 
 Return the [`Isozyme`](@ref)s associated with the `model` and reaction `rid`.
 """
-Accessors.reaction_kcat_backward(model::ObjectModel, rid::String) = model.reactions[rid].gene_associations
-
+Accessors.reaction_isozymes(model::ObjectModel, rid::String) = model.reactions[rid].gene_associations
 
 """
 $(TYPEDSIGNATURES)
@@ -385,7 +368,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
             upper_bound = ubs[i],
             gene_associations = isnothing(rgas) ? nothing :
                                 [
-                Isozyme(; stoichiometry = Dict(k => 1.0 for k in rga)) for rga in rgas
+                Isozyme(; gene_product_stoichiometry = Dict(k => 1.0 for k in rga)) for rga in rgas
             ],
             notes = reaction_notes(model, rid),
             annotations = reaction_annotations(model, rid),

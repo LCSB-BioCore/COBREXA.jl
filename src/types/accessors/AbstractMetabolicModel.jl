@@ -375,27 +375,11 @@ $(TYPEDSIGNATURES)
 
 Return the molar mass of translated gene with ID `gid`.
 """
-gene_protein_molar_mass(model::AbstractMetabolicModel, gid::String) = nothing
-
-"""
-$(TYPEDSIGNATURES)
-
-Return the enzyme turnover number of reaction with ID `rid` for the reaction in
-the forward direction.
-"""
-reaction_kcat_forward(model::AbstractMetabolicModel, rid::String) = nothing
-
-"""
-$(TYPEDSIGNATURES)
-
-Return the enzyme turnover number of reaction with ID `rid` for the reaction in
-the backward direction.
-"""
-reaction_kcat_backward(model::AbstractMetabolicModel, rid::String) = nothing
+gene_product_molar_mass(model::AbstractMetabolicModel, gid::String)::Maybe{Float64} = nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Return all the [`Isozyme`](@ref)s associated with a `model` and reaction `rid`.
 """
-reaction_isozymes(model::AbstractMetabolicModel, rid::String) = nothing
+reaction_isozymes(model::AbstractMetabolicModel, rid::String)::Maybe{Vector{Isozyme}} = nothing
