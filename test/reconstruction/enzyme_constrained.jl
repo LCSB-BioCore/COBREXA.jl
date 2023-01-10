@@ -23,7 +23,7 @@
             lower = [-1000.0, -1.0],
             upper = [nothing, 12.0],
         ) |>
-        with_gecko(
+        with_enzyme_constrained(
             reaction_isozymes = get_reaction_isozymes,
             gene_product_bounds = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
             gene_product_molar_mass = get_gene_product_mass,
@@ -72,7 +72,7 @@ end
     original GECKO paper. This model is nice to troubleshoot with,
     because the stoich matrix is small.
     =#
-    m = ObjectModel(id = "gecko")
+    m = ObjectModel(id = "enzyme_constrained")
     m1 = Metabolite("m1")
     m2 = Metabolite("m2")
     m3 = Metabolite("m3")
@@ -122,7 +122,7 @@ end
 
     gene_product_mass_group_bound = Dict("uncategorized" => 0.5)
 
-    gm = make_gecko_model(
+    gm = make_enzyme_constrained_model(
         m;
         reaction_isozymes = Dict(
             rid => r.gene_associations for (rid, r) in m.reactions if

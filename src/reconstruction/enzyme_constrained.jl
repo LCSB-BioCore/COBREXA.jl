@@ -1,8 +1,8 @@
 """
 $(TYPEDSIGNATURES)
 
-Wrap a model into a [`GeckoModel`](@ref), following the structure given by
-GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
+Wrap a model into a [`EnzymeConstrainedModel`](@ref), following the structure given by
+GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation for details).
 
 # Arguments
 
@@ -23,7 +23,7 @@ GECKO algorithm (see [`GeckoModel`](@ref) documentation for details).
 Alternatively, all function arguments may be also supplied as dictionaries that
 provide the same data lookup.
 """
-function make_gecko_model(
+function make_enzyme_constrained_model(
     model::AbstractMetabolicModel;
     reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}},
     gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
@@ -48,7 +48,7 @@ function make_gecko_model(
         (grp -> gene_product_mass_group_bound[grp])
     # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
 
-    columns = Vector{Types._GeckoReactionColumn}()
+    columns = Vector{Types._EnzymeConstrainedReactionColumn}()
     coupling_row_reaction = Int[]
     coupling_row_gene_product = Int[]
 
@@ -62,7 +62,10 @@ function make_gecko_model(
     for i = 1:n_variables(model)
         isozymes = ris_(rids[i])
         if isnothing(isozymes)
-            push!(columns, Types._GeckoReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []))
+            push!(
+                columns,
+                Types._EnzymeConstrainedReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []),
+            )
             continue
         end
 
@@ -108,7 +111,7 @@ function make_gecko_model(
                     # make a new column
                     push!(
                         columns,
-                        Types._GeckoReactionColumn(
+                        Types._EnzymeConstrainedReactionColumn(
                             i,
                             iidx,
                             dir,
@@ -133,16 +136,19 @@ function make_gecko_model(
             mg_gid_lookup[mg] = [gid]
         end
     end
-    coupling_row_mass_group = Vector{Types._GeckoCapacity}()
+    coupling_row_mass_group = Vector{Types._EnzymeConstrainedCapacity}()
     for (grp, gs) in mg_gid_lookup
         idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)
-        push!(coupling_row_mass_group, Types._GeckoCapacity(grp, idxs, mms, gmgb_(grp)))
+        push!(
+            coupling_row_mass_group,
+            Types._EnzymeConstrainedCapacity(grp, idxs, mms, gmgb_(grp)),
+        )
     end
 
-    GeckoModel(
+    EnzymeConstrainedModel(
         [
-            Types.gecko_column_reactions(columns, model)' * objective(model)
+            Types.enzyme_constrained_column_reactions(columns, model)' * objective(model)
             spzeros(length(coupling_row_gene_product))
         ],
         columns,

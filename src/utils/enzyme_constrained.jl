@@ -6,7 +6,7 @@ argument `opt_model` is a solved optimization problem, typically returned by
 [`flux_balance_analysis`](@ref). See [`flux_dict`](@ref) for the corresponding
 function that returns a dictionary of solved fluxes.
 """
-gene_product_dict(model::GeckoModel, opt_model) =
+gene_product_dict(model::EnzymeConstrainedModel, opt_model) =
     is_solved(opt_model) ?
     Dict(genes(model) .=> value.(opt_model[:x])[(length(model.columns)+1):end]) : nothing
 
@@ -15,14 +15,14 @@ $(TYPEDSIGNATURES)
 
 A pipe-able variant of [`gene_product_dict`](@ref).
 """
-gene_product_dict(model::GeckoModel) = x -> gene_product_dict(model, x)
+gene_product_dict(model::EnzymeConstrainedModel) = x -> gene_product_dict(model, x)
 
 """
 $(TYPEDSIGNATURES)
 
-Extract the mass utilization in mass groups from a solved [`GeckoModel`](@ref).
+Extract the mass utilization in mass groups from a solved [`EnzymeConstrainedModel`](@ref).
 """
-gene_product_mass_group_dict(model::GeckoModel, opt_model) =
+gene_product_mass_group_dict(model::EnzymeConstrainedModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
         grp.group_id => dot(
@@ -36,7 +36,7 @@ $(TYPEDSIGNATURES)
 
 A pipe-able variant of [`gene_product_mass_group_dict`](@ref).
 """
-gene_product_mass_group_dict(model::GeckoModel) =
+gene_product_mass_group_dict(model::EnzymeConstrainedModel) =
     x -> gene_product_mass_group_dict(model, x)
 
 """

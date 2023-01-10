@@ -10,8 +10,9 @@ with_smoment(; kwargs...) = model -> make_smoment_model(model; kwargs...)
 """
 $(TYPEDSIGNATURES)
 
-Specifies a model variant which adds extra semantics of the Gecko algorithm,
-giving a [`GeckoModel`](@ref). The arguments are forwarded to
-[`make_gecko_model`](@ref). Intended for usage with [`screen`](@ref).
+Specifies a model variant which adds extra semantics of the EnzymeConstrained algorithm,
+giving a [`EnzymeConstrainedModel`](@ref). The arguments are forwarded to
+[`make_enzyme_constrained_model`](@ref). Intended for usage with [`screen`](@ref).
 """
-with_gecko(; kwargs...) = model -> make_gecko_model(model; kwargs...)
+with_enzyme_constrained(; kwargs...) =
+    model -> make_enzyme_constrained_model(model; kwargs...)
