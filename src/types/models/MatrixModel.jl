@@ -131,7 +131,7 @@ $(TYPEDSIGNATURES)
 Retrieve the gene reaction associations from [`MatrixModel`](@ref) by reaction
 index.
 """
-Accessors.reaction_gene_association(
+Accessors.reaction_gene_associations(
     model::MatrixModel,
     ridx::Int,
 )::Maybe{GeneAssociationsDNF} = model.grrs[ridx]
@@ -141,7 +141,7 @@ $(TYPEDSIGNATURES)
 
 Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction ID.
 """
-Accessors.reaction_gene_association(
+Accessors.reaction_gene_associations(
     model::MatrixModel,
     rid::String,
 )::Maybe{GeneAssociationsDNF} = model.grrs[first(indexin([rid], model.rxns))]
@@ -166,7 +166,7 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
         variables(m),
         metabolites(m),
         Vector{Maybe{GeneAssociationsDNF}}([
-            reaction_gene_association(m, id) for id in variables(m)
+            reaction_gene_associations(m, id) for id in variables(m)
         ]),
     )
 end

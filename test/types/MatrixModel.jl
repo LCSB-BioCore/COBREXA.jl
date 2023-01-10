@@ -14,6 +14,6 @@ end
     @test Set(variables(cm)) == Set(variables(sm))
     @test Set(variables(cm)) == Set(variables(cm2))
 
-    @test reaction_gene_association(sm, variables(sm)[1]) ==
-          reaction_gene_association(cm, variables(sm)[1])
+    @test reaction_gene_associations(sm, variables(sm)[1]) ==
+          reaction_gene_associations(cm, variables(sm)[1])
 end

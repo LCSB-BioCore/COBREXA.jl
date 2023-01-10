@@ -264,7 +264,7 @@ will not have things like annotations etc. For this reason, these methods will
 only work if they access something inside the community members.
 =#
 for (func, def) in (
-    (:reaction_gene_association, nothing),
+    (:reaction_gene_associations, nothing),
     (:reaction_subsystem, nothing),
     (:reaction_stoichiometry, nothing),
     (:metabolite_formula, nothing),

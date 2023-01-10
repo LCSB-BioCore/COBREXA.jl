@@ -168,7 +168,7 @@ $(TYPEDSIGNATURES)
 Return the gene reaction rule in string format for reaction with `id` in `model`.
 Return `nothing` if not available.
 """
-function Accessors.reaction_gene_association(
+function Accessors.reaction_gene_associations(
     model::ObjectModel,
     id::String,
 )::Maybe{GeneAssociationsDNF}
@@ -345,7 +345,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
         for (j, stoich) in zip(findnz(S[:, i])...)
             rmets[metids[j]] = stoich
         end
-        rgas = reaction_gene_association(model, rid)
+        rgas = reaction_gene_associations(model, rid)
         modelreactions[rid] = Reaction(
             rid;
             name = reaction_name(model, rid),

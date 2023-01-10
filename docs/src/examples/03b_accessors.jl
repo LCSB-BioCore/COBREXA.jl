@@ -35,7 +35,7 @@ variables(std)
 # - [`bounds`](@ref) return lower and upper bounds of reaction rates
 # - [`metabolite_charge`](@ref) and [`metabolite_formula`](@ref) return details about metabolites
 # - [`objective`](@ref) returns the objective of the model (usually labeled as `c`)
-# - [`reaction_gene_association`](@ref) describes the dependency of a reaction on gene products
+# - [`reaction_gene_associations`](@ref) describes the dependency of a reaction on gene products
 #
 # A complete, up-to-date list of accessors can be always generated using `methodswith`:
 

@@ -76,7 +76,7 @@ function remove_genes!(
         for (rid, r) in model.reactions
             if !isnothing(r.gene_associations) && all(
                 any(in.(gids, Ref(conjunction))) for
-                conjunction in reaction_gene_association(model, rid)
+                conjunction in reaction_gene_associations(model, rid)
             )
                 push!(rm_reactions, rid)
             end

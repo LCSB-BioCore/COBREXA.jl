@@ -131,7 +131,7 @@ $(TYPEDSIGNATURES)
 
 Extracts the associations from `grRules` key, if present.
 """
-function Accessors.reaction_gene_association(m::MATModel, rid::String)
+function Accessors.reaction_gene_associations(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
         grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
         typeof(grr) == String ? parse_grr(grr) : nothing
@@ -252,7 +252,7 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
                     "",
                     maybemap.(
                         x -> unparse_grr(String, x),
-                        reaction_gene_association.(Ref(m), variables(m)),
+                        reaction_gene_associations.(Ref(m), variables(m)),
                     ),
                 ),
             "metFormulas" =>
