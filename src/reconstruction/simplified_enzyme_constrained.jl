@@ -1,44 +1,46 @@
-
 """
 $(TYPEDSIGNATURES)
 
 Construct a model with a structure given by sMOMENT algorithm; returns a
 [`SimplifiedEnzymeConstrainedModel`](@ref) (see the documentation for details).
 
-# Arguments
-
-- `reaction_isozyme` parameter is a function that returns a single
-  [`Isozyme`](@ref) for each reaction, or `nothing` if the reaction is not
-  enzymatic. If the reaction has multiple isozymes, use
-  [`simplified_enzyme_constrained_isozyme_speed`](@ref) to select the fastest one, as recommended by
-  the sMOMENT paper.
-- `gene_product_molar_mass` parameter is a function that returns a molar mass
-  of each gene product as specified by sMOMENT.
+# Arguments  
+- a `model` that implements the accessors `gene_protein_molar_mass`,
+  `reaction_isozymes`, `reaction_kcat_forward`, and `reaction_kcat_backward`.
 - `total_enzyme_capacity` is the maximum "enzyme capacity" in the model.
 
-Alternatively, all function arguments also accept dictionaries that are used to
-provide the same data lookup.
+# Notes
+The SMOMENT algorithm only uses one isozyme per reaction. If multiple isozymes
+are present the "fastest" isozyme will be used. This is determined based on
+maximum kcat (forward or backward) divided by mass of the isozyme. 
+
+Reactions with no turnover number data, or non-enzymatic reactions that should
+be ignored should have `nothing` in the `gene_associations` field of the
+associated reaction.  
 """
 function make_simplified_enzyme_constrained_model(
     model::AbstractMetabolicModel;
-    reaction_isozyme::Union{Function,Dict{String,Isozyme}},
-    gene_product_molar_mass::Union{Function,Dict{String,Float64}},
     total_enzyme_capacity::Float64,
 )
-    ris_ =
-        reaction_isozyme isa Function ? reaction_isozyme :
-        (rid -> get(reaction_isozyme, rid, nothing))
-    gpmm_ =
-        gene_product_molar_mass isa Function ? gene_product_molar_mass :
-        (gid -> gene_product_molar_mass[gid])
+    # helper function to rank the isozymes by relative speed
+    speed_enzyme(model, rid, isozyme) = max(reaction_kcat_forward(model, rid), reaction_kcat_backward(model, rid)) /
+        sum(count * gene_protein_molar_mass(model, gid) for (gid, count) in isozyme.stoichiometry)
 
+    # helper function to return the fastest isozyme or nothing
+    ris_(model, rid) = begin
+        isozymes = reaction_isozymes(model, rid) 
+        isnothing(isozymes) && return nothing
+        argmax(isozyme -> speed_enzyme(model, rid, isozyme), isozymes)
+    end
+   
     columns = Vector{Types._SimplifiedEnzymeConstrainedColumn}()
 
     (lbs, ubs) = bounds(model)
     rids = variables(model)
 
     for i = 1:n_variables(model)
-        isozyme = ris_(rids[i])
+        isozyme = ris_(model, rids[i])
+
         if isnothing(isozyme)
             # non-enzymatic reaction (or a totally ignored one)
             push!(
@@ -48,9 +50,9 @@ function make_simplified_enzyme_constrained_model(
             continue
         end
 
-        mw = sum(gpmm_(gid) * ps for (gid, ps) in isozyme.stoichiometry)
+        mw = sum(gene_protein_molar_mass(model,gid) * ps for (gid, ps) in isozyme.stoichiometry)
 
-        if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_backward > constants.tolerance
+        if min(lbs[i], ubs[i]) < 0 && reaction_kcat_backward(model, rids[i]) > constants.tolerance
             # reaction can run in reverse
             push!(
                 columns,
@@ -59,12 +61,12 @@ function make_simplified_enzyme_constrained_model(
                     -1,
                     max(-ubs[i], 0),
                     -lbs[i],
-                    mw / isozyme.kcat_backward,
+                    mw / reaction_kcat_backward(model, rids[i]),
                 ),
             )
         end
 
-        if max(lbs[i], ubs[i]) > 0 && isozyme.kcat_forward > constants.tolerance
+        if max(lbs[i], ubs[i]) > 0 && reaction_kcat_forward(model, rids[i]) > constants.tolerance
             # reaction can run forward
             push!(
                 columns,
@@ -73,7 +75,7 @@ function make_simplified_enzyme_constrained_model(
                     1,
                     max(lbs[i], 0),
                     ubs[i],
-                    mw / isozyme.kcat_forward,
+                    mw / reaction_kcat_forward(model, rids[i]),
                 ),
             )
         end

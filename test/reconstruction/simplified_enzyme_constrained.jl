@@ -1,19 +1,19 @@
 @testset "SMOMENT" begin
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
-
-    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
-
-    get_reaction_isozyme =
-        rid ->
-            haskey(ecoli_core_reaction_kcats, rid) ?
-            argmax(
-                simplified_enzyme_constrained_isozyme_speed(get_gene_product_mass),
-                Isozyme(
-                    stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
-                    kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
-                    kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
-                ) for (i, grr) in enumerate(reaction_gene_associations(model, rid))
-            ) : nothing
+    for gid in genes(model)
+        model.genes[gid].protein_molar_mass = get(ecoli_core_gene_product_masses, gid, 0.0)
+    end
+    for rid in reactions(model)
+        if haskey(ecoli_core_reaction_kcats, rid) # if has kcat, then has grr
+            model.reactions[rid].kcat_forward = ecoli_core_reaction_kcats[rid][1][1] # all kcat forwards the same
+            model.reactions[rid].kcat_backward = ecoli_core_reaction_kcats[rid][1][2] # all kcat forwards the same
+            newisozymes = Isozyme[]
+            for (i, grr) in enumerate(reaction_gene_associations(model, rid))
+                push!(newisozymes, Isozyme(stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i])))
+            end
+            model.reactions[rid].gene_associations = newisozymes
+        end
+    end
 
     simplified_enzyme_constrained_model =
         model |>
@@ -23,8 +23,6 @@
             upper = [nothing, 12.0],
         ) |>
         with_simplified_enzyme_constrained(
-            reaction_isozyme = get_reaction_isozyme,
-            gene_product_molar_mass = get_gene_product_mass,
             total_enzyme_capacity = 100.0,
         )
     objective(simplified_enzyme_constrained_model)
