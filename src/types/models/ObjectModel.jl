@@ -297,6 +297,37 @@ Accessors.gene_name(m::ObjectModel, gid::String) = m.genes[gid].name
 """
 $(TYPEDSIGNATURES)
 
+Return the molar mass of translated gene with ID `gid`.
+"""
+Accessors.gene_protein_molar_mass(model::ObjectModel, gid::String) = model.genes[gid].protein_molar_mass
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the enzyme turnover number of reaction with ID `rid` for the reaction in
+the forward direction.
+"""
+Accessors.reaction_kcat_forward(model::ObjectModel, rid::String) = model.reactions[rid].kcat_forward
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the enzyme turnover number of reaction with ID `rid` for the reaction in
+the backward direction.
+"""
+Accessors.reaction_kcat_backward(model::ObjectModel, rid::String) = model.reactions[rid].kcat_backward
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the [`Isozyme`](@ref)s associated with the `model` and reaction `rid`.
+"""
+Accessors.reaction_kcat_backward(model::ObjectModel, rid::String) = model.reactions[rid].gene_associations
+
+
+"""
+$(TYPEDSIGNATURES)
+
 Convert any `AbstractMetabolicModel` into a `ObjectModel`. Note, some data loss
 may occur since only the generic interface is used during the conversion
 process. Additionally, assume the stoichiometry for each gene association is 1.

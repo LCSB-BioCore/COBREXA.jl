@@ -10,6 +10,7 @@ Base.@kwdef mutable struct Gene
     id::String
     name::Maybe{String} = nothing
     sequence::Maybe{String} = nothing
+    protein_molar_mass::Maybe{Float64} = nothing
     notes::Notes = Notes()
     annotations::Annotations = Annotations()
 end

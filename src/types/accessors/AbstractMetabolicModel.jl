@@ -369,3 +369,33 @@ By default, it should be safe to do nothing.
 function precache!(a::AbstractMetabolicModel)::Nothing
     nothing
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the molar mass of translated gene with ID `gid`.
+"""
+gene_protein_molar_mass(model::AbstractMetabolicModel, gid::String) = nothing
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the enzyme turnover number of reaction with ID `rid` for the reaction in
+the forward direction.
+"""
+reaction_kcat_forward(model::AbstractMetabolicModel, rid::String) = nothing
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the enzyme turnover number of reaction with ID `rid` for the reaction in
+the backward direction.
+"""
+reaction_kcat_backward(model::AbstractMetabolicModel, rid::String) = nothing
+
+"""
+$(TYPEDSIGNATURES)
+
+Return all the [`Isozyme`](@ref)s associated with a `model` and reaction `rid`.
+"""
+reaction_isozymes(model::AbstractMetabolicModel, rid::String) = nothing

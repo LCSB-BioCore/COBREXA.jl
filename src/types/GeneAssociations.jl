@@ -10,8 +10,6 @@ $(TYPEDFIELDS)
 Base.@kwdef mutable struct Isozyme
     stoichiometry::Dict{String,Float64}
     annotation::Annotations = Annotations()
-    kcat_forward::Maybe{Float64} = nothing
-    kcat_backward::Maybe{Float64} = nothing
 end
 
 """
