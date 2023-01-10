@@ -29,7 +29,7 @@
     r1.notes = Dict("notes" => ["blah", "blah"])
     r1.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
 
-    r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
+    r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :backward)
     r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
     r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])

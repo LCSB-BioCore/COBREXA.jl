@@ -37,7 +37,7 @@
         ),
     )
 
-    r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :reverse)
+    r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :backward)
     @test r2.lower_bound == -1000.0 && r2.upper_bound == 0.0
 
     r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)

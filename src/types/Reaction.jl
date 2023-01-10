@@ -34,7 +34,7 @@ $(TYPEDSIGNATURES)
 Convenience constructor for `Reaction`. The reaction equation is specified using
 `metabolites`, which is a dictionary mapping metabolite ids to stoichiometric
 coefficients. The direcion of the reaction is set through `dir` which can take
-`:bidirectional`, `:forward`, and `:reverse` as values. Finally, the
+`:bidirectional`, `:forward`, and `:backward` as values. Finally, the
 `default_bound` is the value taken to mean infinity in the context of constraint
 based models, often this is set to a very high flux value like 1000.
 """
@@ -47,7 +47,7 @@ function Reaction(
     if dir == :forward
         lower_bound = 0.0
         upper_bound = default_bound
-    elseif dir == :reverse
+    elseif dir == :backward
         lower_bound = -default_bound
         upper_bound = 0.0
     elseif dir == :bidirectional
