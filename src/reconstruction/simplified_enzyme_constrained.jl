@@ -3,14 +3,14 @@
 $(TYPEDSIGNATURES)
 
 Construct a model with a structure given by sMOMENT algorithm; returns a
-[`SMomentModel`](@ref) (see the documentation for details).
+[`SimplifiedEnzymeConstrainedModel`](@ref) (see the documentation for details).
 
 # Arguments
 
 - `reaction_isozyme` parameter is a function that returns a single
   [`Isozyme`](@ref) for each reaction, or `nothing` if the reaction is not
   enzymatic. If the reaction has multiple isozymes, use
-  [`smoment_isozyme_speed`](@ref) to select the fastest one, as recommended by
+  [`simplified_enzyme_constrained_isozyme_speed`](@ref) to select the fastest one, as recommended by
   the sMOMENT paper.
 - `gene_product_molar_mass` parameter is a function that returns a molar mass
   of each gene product as specified by sMOMENT.
@@ -19,7 +19,7 @@ Construct a model with a structure given by sMOMENT algorithm; returns a
 Alternatively, all function arguments also accept dictionaries that are used to
 provide the same data lookup.
 """
-function make_smoment_model(
+function make_simplified_enzyme_constrained_model(
     model::AbstractMetabolicModel;
     reaction_isozyme::Union{Function,Dict{String,Isozyme}},
     gene_product_molar_mass::Union{Function,Dict{String,Float64}},
@@ -32,7 +32,7 @@ function make_smoment_model(
         gene_product_molar_mass isa Function ? gene_product_molar_mass :
         (gid -> gene_product_molar_mass[gid])
 
-    columns = Vector{Types._SMomentColumn}()
+    columns = Vector{Types._SimplifiedEnzymeConstrainedColumn}()
 
     (lbs, ubs) = bounds(model)
     rids = variables(model)
@@ -41,7 +41,10 @@ function make_smoment_model(
         isozyme = ris_(rids[i])
         if isnothing(isozyme)
             # non-enzymatic reaction (or a totally ignored one)
-            push!(columns, Types._SMomentColumn(i, 0, lbs[i], ubs[i], 0))
+            push!(
+                columns,
+                Types._SimplifiedEnzymeConstrainedColumn(i, 0, lbs[i], ubs[i], 0),
+            )
             continue
         end
 
@@ -51,7 +54,7 @@ function make_smoment_model(
             # reaction can run in reverse
             push!(
                 columns,
-                Types._SMomentColumn(
+                Types._SimplifiedEnzymeConstrainedColumn(
                     i,
                     -1,
                     max(-ubs[i], 0),
@@ -65,7 +68,7 @@ function make_smoment_model(
             # reaction can run forward
             push!(
                 columns,
-                Types._SMomentColumn(
+                Types._SimplifiedEnzymeConstrainedColumn(
                     i,
                     1,
                     max(lbs[i], 0),
@@ -76,5 +79,5 @@ function make_smoment_model(
         end
     end
 
-    return SMomentModel(columns, total_enzyme_capacity, model)
+    return SimplifiedEnzymeConstrainedModel(columns, total_enzyme_capacity, model)
 end
