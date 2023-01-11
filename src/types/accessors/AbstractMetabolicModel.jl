@@ -171,7 +171,7 @@ $(TYPEDSIGNATURES)
 In some models, the [`constraints`](@ref) that correspond to the rows of
 [`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
 the model. For example, the constraints may include enzyme pseudo metabolites,
-etc. 
+etc.
 
 By default (and in most models), metabolites and constraints perfectly
 correspond.
