@@ -59,7 +59,7 @@ $(TYPEDSIGNATURES)
 
 Metabolites in a `MatrixModel`.
 """
-Accessors.metabolites(a::MatrixModel)::Vector{String} = a.mets
+Accessors.constraints(a::MatrixModel)::Vector{String} = a.mets
 
 """
 $(TYPEDSIGNATURES)

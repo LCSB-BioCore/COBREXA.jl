@@ -90,7 +90,7 @@ Return the metabolites in `cm`, which is a
 respective underlying [`CommunityMember`](@ref) appended as a prefix with the
 delimiter `#`. The environmental metabolites have no prefix.
 """
-function Accessors.metabolites(cm::BalancedGrowthCommunityModel)
+function Accessors.constraints(cm::BalancedGrowthCommunityModel)
     mets =
         [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
     return [mets; "ENV_" .* get_env_mets(cm)]
@@ -102,7 +102,7 @@ $(TYPEDSIGNATURES)
 Return the number of metabolites in `cm`, which is a
 [`BalancedGrowthCommunityModel`](@ref).
 """
-function Accessors.n_metabolites(cm::BalancedGrowthCommunityModel)
+function Accessors.n_constraints(cm::BalancedGrowthCommunityModel)
     num_model_reactions = sum(n_metabolites(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
     num_env_metabolites = length(get_env_mets(cm))

@@ -10,7 +10,7 @@ struct MATModel <: AbstractMetabolicModel
     mat::Dict{String,Any}
 end
 
-Accessors.n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
+Accessors.n_constraints(m::MATModel)::Int = size(m.mat["S"], 1)
 Accessors.n_variables(m::MATModel)::Int = size(m.mat["S"], 2)
 
 """
@@ -40,7 +40,7 @@ $(TYPEDSIGNATURES)
 
 Extracts metabolite names from `mets` key in the MAT file.
 """
-function Accessors.metabolites(m::MATModel)::Vector{String}
+function Accessors.constraints(m::MATModel)::Vector{String}
     nm = n_metabolites(m)
     if haskey(m.mat, "mets")
         reshape(m.mat["mets"], length(m.mat["mets"]))[begin:nm]

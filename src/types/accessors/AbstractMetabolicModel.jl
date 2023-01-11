@@ -46,7 +46,7 @@ equality constraints. Use [`metabolites`](@ref) to get all the metabolites in
 the model.
 """
 function constraints(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(metabolites, (a,))
+    missing_impl_error(constraints, (a,))
 end
 
 """
@@ -85,7 +85,7 @@ Get the sparse balance vector of a model. This vector has the same size as
 [`n_constraints`](@ref).
 """
 function balance(a::AbstractMetabolicModel)::SparseVec
-    return spzeros(n_metabolites(a))
+    return spzeros(n_constraints(a))
 end
 
 """

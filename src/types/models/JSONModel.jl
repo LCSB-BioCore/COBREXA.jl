@@ -72,7 +72,7 @@ end
 _parse_notes(x)::Notes = _parse_annotations(x)
 
 Accessors.n_variables(model::JSONModel) = length(model.rxns)
-Accessors.n_metabolites(model::JSONModel) = length(model.mets)
+Accessors.n_constraints(model::JSONModel) = length(model.mets)
 Accessors.n_genes(model::JSONModel) = length(model.genes)
 
 """
@@ -88,7 +88,7 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite names (stored as `.id`) from JSON model.
 """
-Accessors.metabolites(model::JSONModel) =
+Accessors.constraints(model::JSONModel) =
     [_json_met_name(m, i) for (i, m) in enumerate(model.mets)]
 
 """

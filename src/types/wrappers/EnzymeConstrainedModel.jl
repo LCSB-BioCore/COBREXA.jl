@@ -252,7 +252,7 @@ $(TYPEDSIGNATURES)
 
 Return the ids of all metabolites, both real and pseudo, for a [`EnzymeConstrainedModel`](@ref).
 """
-Accessors.metabolites(model::EnzymeConstrainedModel) =
+Accessors.constraints(model::EnzymeConstrainedModel) =
     [metabolites(model.inner); genes(model) .* "#enzyme_constrained"]
 
 """
@@ -260,5 +260,5 @@ $(TYPEDSIGNATURES)
 
 Return the number of metabolites, both real and pseudo, for a [`EnzymeConstrainedModel`](@ref).
 """
-Accessors.n_metabolites(model::EnzymeConstrainedModel) =
+Accessors.n_constraints(model::EnzymeConstrainedModel) =
     n_metabolites(model.inner) + n_genes(model)

@@ -44,12 +44,12 @@ function Accessors.variables(model::HDF5Model)::Vector{String}
     read(model.h5["reactions"])
 end
 
-function Accessors.n_metabolites(model::HDF5Model)::Int
+function Accessors.n_constraints(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["metabolites"])
 end
 
-function Accessors.metabolites(model::HDF5Model)::Vector{String}
+function Accessors.constraints(model::HDF5Model)::Vector{String}
     precache!(model)
     read(model.h5["metabolites"])
 end

@@ -24,7 +24,7 @@ $(TYPEDSIGNATURES)
 
 Get metabolites from a [`SBMLModel`](@ref).
 """
-Accessors.metabolites(model::SBMLModel)::Vector{String} =
+Accessors.constraints(model::SBMLModel)::Vector{String} =
     [k for k in keys(model.sbml.species)]
 
 """
@@ -39,7 +39,7 @@ $(TYPEDSIGNATURES)
 
 Efficient counting of metabolites in [`SBMLModel`](@ref).
 """
-Accessors.n_metabolites(model::SBMLModel)::Int = length(model.sbml.species)
+Accessors.n_constraints(model::SBMLModel)::Int = length(model.sbml.species)
 
 """
 $(TYPEDSIGNATURES)

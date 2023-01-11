@@ -15,7 +15,7 @@ end
 
 # optimizer based accessors
 
-@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () variables n_variables constraints n_constraints stoichiometry bounds balance objective coupling n_coupling_constraints coupling_bounds reactions n_reactions metabolites n_metabolites reaction_variables genes n_genes precache!
+@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () variables n_variables constraints n_constraints stoichiometry bounds balance objective coupling n_coupling_constraints coupling_bounds
 
 # model interface accessors
 
