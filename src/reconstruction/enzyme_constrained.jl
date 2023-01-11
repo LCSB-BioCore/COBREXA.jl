@@ -1,52 +1,49 @@
 """
 $(TYPEDSIGNATURES)
 
-Wrap a model into a [`EnzymeConstrainedModel`](@ref), following the structure given by
-GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation for details).
+Wrap a model into a [`EnzymeConstrainedModel`](@ref), following the structure
+given by GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation for
+details). Multiple capacity constraints can be placed on the model using the
+kwargs.
 
 # Arguments
-
-- `reaction_isozymes` is a function that returns a vector of [`Isozyme`](@ref)s
-  for each reaction, or `nothing` if the reaction is not enzymatic.
-- `gene_product_bounds` is a function that returns lower and upper bound for
-  concentration for a given gene product (specified by the same string gene ID as in
-  `reaction_isozymes`), as `Tuple{Float64,Float64}`.
-- `gene_product_molar_mass` is a function that returns a numeric molar mass of
-  a given gene product specified by string gene ID.
-- `gene_product_mass_group` is a function that returns a string group identifier for a
-  given gene product, again specified by string gene ID. By default, all gene
-  products belong to group `"uncategorized"` which is the behavior of original
+- a `model` that implements the accessors `gene_product_molar_mass`,
+  `reaction_isozymes`, `gene_product_lower_bound`, `gene_product_upper_bound`.
+- `gene_product_mass_group` is a dict that returns a vector of gene IDs
+  associated with each a named capacity constraint. By default, all gene
+  products belong to group `"uncategorized"`, which is the behavior of original
   GECKO.
-- `gene_product_mass_group_bound` is a function that returns the maximum mass for a given
-  mass group.
+- `gene_product_mass_group_bound` is a dict that returns the capacity
+  limitation for a given named capacity constraint.
 
-Alternatively, all function arguments may be also supplied as dictionaries that
-provide the same data lookup.
+# Example
+```
+ecmodel = make_enzyme_constrained_model(
+    model;
+    gene_product_mass_group = Dict(
+        "membrane" => ["e1", "e2"],
+        "total" => ["e1", "e2", "e3"],
+    ),
+    gene_product_mass_group_bound = Dict(
+        "membrane" => 0.2,
+        "total" => 0.5,
+    ),
+)
+```
+
+# Notes
+Reactions with no turnover number data, or non-enzymatic reactions that should
+be ignored, must have `nothing` in the `gene_associations` field of the
+associated reaction.
 """
 function make_enzyme_constrained_model(
     model::AbstractMetabolicModel;
-    reaction_isozymes::Union{Function,Dict{String,Vector{Isozyme}}},
-    gene_product_bounds::Union{Function,Dict{String,Tuple{Float64,Float64}}},
-    gene_product_molar_mass::Union{Function,Dict{String,Float64}},
-    gene_product_mass_group::Union{Function,Dict{String,String}} = _ -> "uncategorized",
-    gene_product_mass_group_bound::Union{Function,Dict{String,Float64}},
+    gene_product_mass_group::Dict{String, Vector{String}} = Dict("uncategorized" => genes(model)),
+    gene_product_mass_group_bound::Dict{String, Float64} = Dict("uncategorized" => 0.5),
 )
-    ris_ =
-        reaction_isozymes isa Function ? reaction_isozymes :
-        (rid -> get(reaction_isozymes, rid, nothing))
-    gpb_ =
-        gene_product_bounds isa Function ? gene_product_bounds :
-        (gid -> gene_product_bounds[gid])
-    gpmm_ =
-        gene_product_molar_mass isa Function ? gene_product_molar_mass :
-        (gid -> gene_product_molar_mass[gid])
-    gmg_ =
-        gene_product_mass_group isa Function ? gene_product_mass_group :
-        (gid -> gene_product_mass_group[gid])
-    gmgb_ =
-        gene_product_mass_group_bound isa Function ? gene_product_mass_group_bound :
-        (grp -> gene_product_mass_group_bound[grp])
-    # ...it would be nicer to have an overload for this, but kwargs can't be used for dispatch
+    gpb_(gid) = (gene_product_lower_bound(model, gid), gene_product_upper_bound(model, gid))
+        
+    gpmm_(gid) = gene_product_molar_mass(model, gid)
 
     columns = Vector{Types._EnzymeConstrainedReactionColumn}()
     coupling_row_reaction = Int[]
@@ -60,7 +57,8 @@ function make_enzyme_constrained_model(
     gene_row_lookup = Dict{Int,Int}()
 
     for i = 1:n_variables(model)
-        isozymes = ris_(rids[i])
+        isozymes = reaction_isozymes(model, rids[i])
+
         if isnothing(isozymes)
             push!(
                 columns,
@@ -104,7 +102,7 @@ function make_enzyme_constrained_model(
                                     length(coupling_row_gene_product)
                             end
                             (row_idx, stoich / kcat)
-                        end for (gene, stoich) in isozyme.stoichiometry if
+                        end for (gene, stoich) in isozyme.gene_product_stoichiometry if
                         haskey(gene_name_lookup, gene)
                     )
 
@@ -129,11 +127,13 @@ function make_enzyme_constrained_model(
     # prepare enzyme capacity constraints
     mg_gid_lookup = Dict{String,Vector{String}}()
     for gid in gids[coupling_row_gene_product]
-        mg = gmg_(gid)
-        if haskey(mg_gid_lookup, mg)
-            push!(mg_gid_lookup[mg], gid)
-        else
-            mg_gid_lookup[mg] = [gid]
+        for (mg, mg_gids) in gene_product_mass_group #  each gid can belong to multiple mass groups
+            gid ∉ mg_gids && continue
+            if haskey(mg_gid_lookup, mg)
+                push!(mg_gid_lookup[mg], gid)
+            else
+                mg_gid_lookup[mg] = [gid]
+            end
         end
     end
     coupling_row_mass_group = Vector{Types._EnzymeConstrainedCapacity}()
@@ -142,7 +142,7 @@ function make_enzyme_constrained_model(
         mms = gpmm_.(gs)
         push!(
             coupling_row_mass_group,
-            Types._EnzymeConstrainedCapacity(grp, idxs, mms, gmgb_(grp)),
+            Types._EnzymeConstrainedCapacity(grp, idxs, mms, gene_product_mass_group_bound[grp]),
         )
     end
 
