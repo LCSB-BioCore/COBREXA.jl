@@ -112,6 +112,13 @@ end
 """
 $(TYPEDSIGNATURES)
 
+Return the balance of `cm`, which is a [`BalancedGrowthCommunityModel`](@ref).
+"""
+Accessors.balance(cm::BalancedGrowthCommunityModel) = [vcat([balance(m.model) .* m.abundance for m in cm.members]...); spzeros(length(get_env_mets(cm)))]
+
+"""
+$(TYPEDSIGNATURES)
+
 Return the genes in `cm`, which is a [`BalancedGrowthCommunityModel`](@ref). All
 genes have the `id` of the respective underlying [`CommunityMember`](@ref)
 appended as a prefix with the delimiter `#`.
