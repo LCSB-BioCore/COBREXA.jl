@@ -311,6 +311,20 @@ Accessors.reaction_isozymes(model::ObjectModel, rid::String) = model.reactions[r
 """
 $(TYPEDSIGNATURES)
 
+Return the lower bound of the gene product concentration associated with the `model` and gene `gid`.
+"""
+Accessors.gene_product_lower_bound(model::ObjectModel, gid::String) = model.genes[gid].product_lower_bound
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the upper bound of the gene product concentration associated with the `model` and gene `gid`.
+"""
+Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) = model.genes[gid].product_upper_bound
+
+"""
+$(TYPEDSIGNATURES)
+
 Convert any `AbstractMetabolicModel` into a `ObjectModel`. Note, some data loss
 may occur since only the generic interface is used during the conversion
 process. Additionally, assume the stoichiometry for each gene association is 1.

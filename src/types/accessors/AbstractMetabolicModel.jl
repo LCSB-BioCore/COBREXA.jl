@@ -383,3 +383,17 @@ $(TYPEDSIGNATURES)
 Return all the [`Isozyme`](@ref)s associated with a `model` and reaction `rid`.
 """
 reaction_isozymes(model::AbstractMetabolicModel, rid::String)::Maybe{Vector{Isozyme}} = nothing
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the lower bound of the gene product concentration associated with the `model` and gene `gid`.
+"""
+gene_product_lower_bound(model::AbstractMetabolicModel, gid::String)::Float64 = 0.0
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the upper bound of the gene product concentration associated with the `model` and gene `gid`.
+"""
+gene_product_upper_bound(model::AbstractMetabolicModel, gid::String)::Float64 = constants.default_gene_product_bound

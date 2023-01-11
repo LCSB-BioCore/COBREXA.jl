@@ -5,6 +5,7 @@ whatever purposes.
 """
 const constants = (
     default_reaction_bound = 1e3,
+    default_gene_product_bound = 1e3,
     tolerance = 1e-6,
     sampling_keep_iters = 100,
     sampling_size = 1000,
