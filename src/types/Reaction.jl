@@ -16,8 +16,6 @@ Base.@kwdef mutable struct Reaction
     upper_bound::Float64 = constants.default_reaction_bound
     gene_associations::Maybe{GeneAssociations} = nothing
     subsystem::Maybe{String} = nothing
-    kcat_forward::Maybe{Float64} = nothing
-    kcat_backward::Maybe{Float64} = nothing
     notes::Notes = Notes()
     annotations::Annotations = Annotations()
 end
