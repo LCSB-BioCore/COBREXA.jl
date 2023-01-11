@@ -4,7 +4,7 @@ $(TYPEDSIGNATURES)
 Construct a model with a structure given by sMOMENT algorithm; returns a
 [`SimplifiedEnzymeConstrainedModel`](@ref) (see the documentation for details).
 
-# Arguments  
+# Arguments
 - a `model` that implements the accessors `gene_product_molar_mass`,
   `reaction_isozymes`.
 - `total_enzyme_capacity` is the maximum "enzyme capacity" in the model.
@@ -12,7 +12,7 @@ Construct a model with a structure given by sMOMENT algorithm; returns a
 # Notes
 The SMOMENT algorithm only uses one [`Isozyme`](@ref) per reaction. If multiple
 isozymes are present the "fastest" isozyme will be used. This is determined
-based on maximum kcat (forward or backward) divided by mass of the isozyme. 
+based on maximum kcat (forward or backward) divided by mass of the isozyme.
 
 Reactions with no turnover number data, or non-enzymatic reactions that should
 be ignored, must have `nothing` in the `gene_associations` field of the
@@ -23,16 +23,19 @@ function make_simplified_enzyme_constrained_model(
     total_enzyme_capacity::Float64,
 )
     # helper function to rank the isozymes by relative speed
-    speed_enzyme(model, isozyme) = max(isozyme.kcat_forward, isozyme.kcat_backward) /
-        sum(count * gene_product_molar_mass(model, gid) for (gid, count) in isozyme.gene_product_stoichiometry)
+    speed_enzyme(model, isozyme) =
+        max(isozyme.kcat_forward, isozyme.kcat_backward) / sum(
+            count * gene_product_molar_mass(model, gid) for
+            (gid, count) in isozyme.gene_product_stoichiometry
+        )
 
     # helper function to return the fastest isozyme or nothing
     ris_(model, rid) = begin
-        isozymes = reaction_isozymes(model, rid) 
+        isozymes = reaction_isozymes(model, rid)
         isnothing(isozymes) && return nothing
         argmax(isozyme -> speed_enzyme(model, isozyme), isozymes)
     end
-   
+
     columns = Vector{Types._SimplifiedEnzymeConstrainedColumn}()
 
     (lbs, ubs) = bounds(model)
@@ -51,7 +54,10 @@ function make_simplified_enzyme_constrained_model(
             continue
         end
 
-        mw = sum(gene_product_molar_mass(model,gid) * ps for (gid, ps) in isozyme.gene_product_stoichiometry)
+        mw = sum(
+            gene_product_molar_mass(model, gid) * ps for
+            (gid, ps) in isozyme.gene_product_stoichiometry
+        )
 
         if min(lbs[i], ubs[i]) < 0 && isozyme.kcat_backward > constants.tolerance
             # reaction can run in reverse

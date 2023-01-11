@@ -173,7 +173,10 @@ function Accessors.reaction_gene_associations(
     id::String,
 )::Maybe{GeneAssociationsDNF}
     isnothing(model.reactions[id].gene_associations) && return nothing
-    [collect(keys(rga.gene_product_stoichiometry)) for rga in model.reactions[id].gene_associations]
+    [
+        collect(keys(rga.gene_product_stoichiometry)) for
+        rga in model.reactions[id].gene_associations
+    ]
 end
 
 """
@@ -299,28 +302,32 @@ $(TYPEDSIGNATURES)
 
 Return the molar mass of translated gene with ID `gid`.
 """
-Accessors.gene_product_molar_mass(model::ObjectModel, gid::String) = model.genes[gid].product_molar_mass
+Accessors.gene_product_molar_mass(model::ObjectModel, gid::String) =
+    model.genes[gid].product_molar_mass
 
 """
 $(TYPEDSIGNATURES)
 
 Return the [`Isozyme`](@ref)s associated with the `model` and reaction `rid`.
 """
-Accessors.reaction_isozymes(model::ObjectModel, rid::String) = model.reactions[rid].gene_associations
+Accessors.reaction_isozymes(model::ObjectModel, rid::String) =
+    model.reactions[rid].gene_associations
 
 """
 $(TYPEDSIGNATURES)
 
 Return the lower bound of the gene product concentration associated with the `model` and gene `gid`.
 """
-Accessors.gene_product_lower_bound(model::ObjectModel, gid::String) = model.genes[gid].product_lower_bound
+Accessors.gene_product_lower_bound(model::ObjectModel, gid::String) =
+    model.genes[gid].product_lower_bound
 
 """
 $(TYPEDSIGNATURES)
 
 Return the upper bound of the gene product concentration associated with the `model` and gene `gid`.
 """
-Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) = model.genes[gid].product_upper_bound
+Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) =
+    model.genes[gid].product_upper_bound
 
 """
 $(TYPEDSIGNATURES)
@@ -382,7 +389,8 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
             upper_bound = ubs[i],
             gene_associations = isnothing(rgas) ? nothing :
                                 [
-                Isozyme(; gene_product_stoichiometry = Dict(k => 1.0 for k in rga)) for rga in rgas
+                Isozyme(; gene_product_stoichiometry = Dict(k => 1.0 for k in rga)) for
+                rga in rgas
             ],
             notes = reaction_notes(model, rid),
             annotations = reaction_annotations(model, rid),

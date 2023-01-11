@@ -11,7 +11,7 @@ Base.@kwdef mutable struct Gene
     name::Maybe{String} = nothing
     sequence::Maybe{String} = nothing
     product_molar_mass::Maybe{Float64} = nothing
-    product_lower_bound::Float64 = 0 
+    product_lower_bound::Float64 = 0
     product_upper_bound::Float64 = constants.default_gene_product_bound
     notes::Notes = Notes()
     annotations::Annotations = Annotations()

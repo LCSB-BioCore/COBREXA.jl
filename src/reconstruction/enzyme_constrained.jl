@@ -38,11 +38,13 @@ associated reaction.
 """
 function make_enzyme_constrained_model(
     model::AbstractMetabolicModel;
-    gene_product_mass_group::Dict{String, Vector{String}} = Dict("uncategorized" => genes(model)),
-    gene_product_mass_group_bound::Dict{String, Float64} = Dict("uncategorized" => 0.5),
+    gene_product_mass_group::Dict{String,Vector{String}} = Dict(
+        "uncategorized" => genes(model),
+    ),
+    gene_product_mass_group_bound::Dict{String,Float64} = Dict("uncategorized" => 0.5),
 )
     gpb_(gid) = (gene_product_lower_bound(model, gid), gene_product_upper_bound(model, gid))
-        
+
     gpmm_(gid) = gene_product_molar_mass(model, gid)
 
     columns = Vector{Types._EnzymeConstrainedReactionColumn}()
@@ -142,7 +144,12 @@ function make_enzyme_constrained_model(
         mms = gpmm_.(gs)
         push!(
             coupling_row_mass_group,
-            Types._EnzymeConstrainedCapacity(grp, idxs, mms, gene_product_mass_group_bound[grp]),
+            Types._EnzymeConstrainedCapacity(
+                grp,
+                idxs,
+                mms,
+                gene_product_mass_group_bound[grp],
+            ),
         )
     end
 

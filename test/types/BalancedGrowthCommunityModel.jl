@@ -265,37 +265,49 @@ end
 @testset "BalancedGrowthCommunityModel: enzyme constrained e coli" begin
     ecoli = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
+    # test added biomass metabolite
     modded_ecoli = ecoli |> with_added_biomass_metabolite("BIOMASS_Ecoli_core_w_GAM")
     @test "biomass" in metabolites(modded_ecoli)
     @test !("biomass" in metabolites(ecoli))
-
     @test haskey(modded_ecoli.reactions["BIOMASS_Ecoli_core_w_GAM"].metabolites, "biomass")
     @test !haskey(ecoli.reactions["BIOMASS_Ecoli_core_w_GAM"].metabolites, "biomass")
 
-    get_reaction_isozymes =
-        rid ->
-            haskey(ecoli_core_reaction_kcats, rid) ?
-            collect(
-                Isozyme(
-                    stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
-                    kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
-                    kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
-                ) for (i, grr) in enumerate(reaction_gene_associations(ecoli, rid))
-            ) : nothing
+    # add molar masses to gene products
+    for gid in genes(ecoli)
+        ecoli.genes[gid].product_molar_mass = get(ecoli_core_gene_product_masses, gid, 0.0)
+        ecoli.genes[gid].product_upper_bound = 10.0
+    end
+    ecoli.genes["s0001"] = Gene(id = "s0001"; product_molar_mass = 0.0)
+    ecoli.genes["s0001"].product_upper_bound = 10.0
 
-    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
-
-    total_gene_product_mass = 100.0
+    # update isozymes with kinetic information
+    for rid in reactions(ecoli)
+        if haskey(ecoli_core_reaction_kcats, rid) # if has kcat, then has grr
+            newisozymes = Isozyme[]
+            for (i, grr) in enumerate(reaction_gene_associations(ecoli, rid))
+                push!(
+                    newisozymes,
+                    Isozyme(
+                        gene_product_stoichiometry = Dict(
+                            grr .=> ecoli_core_protein_stoichiometry[rid][i],
+                        ),
+                        kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
+                        kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
+                    ),
+                )
+            end
+            ecoli.reactions[rid].gene_associations = newisozymes
+        else
+            ecoli.reactions[rid].gene_associations = nothing
+        end
+    end
 
     gm =
         ecoli |>
         with_added_biomass_metabolite("BIOMASS_Ecoli_core_w_GAM") |>
         with_changed_bounds(["EX_glc__D_e"]; lower = [-1000.0], upper = [0]) |>
         with_enzyme_constrained(
-            reaction_isozymes = get_reaction_isozymes,
-            gene_product_bounds = g -> (0.0, 10.0),
-            gene_product_molar_mass = get_gene_product_mass,
-            gene_product_mass_group_bound = _ -> total_gene_product_mass,
+            gene_product_mass_group_bound = Dict("uncategorized" => 100.0),
         )
 
     ex_rxns = find_exchange_reaction_ids(ecoli)

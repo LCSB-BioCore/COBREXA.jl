@@ -5,7 +5,7 @@
     for gid in genes(model)
         model.genes[gid].product_molar_mass = get(ecoli_core_gene_product_masses, gid, 0.0)
     end
-    model.genes["s0001"] = Gene(id="s0001"; product_molar_mass = 0.0)
+    model.genes["s0001"] = Gene(id = "s0001"; product_molar_mass = 0.0)
 
     # update isozymes with kinetic information
     for rid in reactions(model)
@@ -13,12 +13,14 @@
             newisozymes = Isozyme[]
             for (i, grr) in enumerate(reaction_gene_associations(model, rid))
                 push!(
-                    newisozymes, 
+                    newisozymes,
                     Isozyme(
-                        gene_product_stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                        gene_product_stoichiometry = Dict(
+                            grr .=> ecoli_core_protein_stoichiometry[rid][i],
+                        ),
                         kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
-                        kcat_backward = ecoli_core_reaction_kcats[rid][i][2]
-                    )
+                        kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
+                    ),
                 )
             end
             model.reactions[rid].gene_associations = newisozymes
@@ -44,7 +46,9 @@
             upper = [nothing, 12.0],
         ) |>
         with_enzyme_constrained(
-            gene_product_mass_group_bound = Dict("uncategorized" => total_gene_product_mass),
+            gene_product_mass_group_bound = Dict(
+                "uncategorized" => total_gene_product_mass,
+            ),
         )
 
     opt_model = flux_balance_analysis(
