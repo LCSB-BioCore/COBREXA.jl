@@ -1,4 +1,3 @@
-
 """
 $(TYPEDSIGNATURES)
 
@@ -14,7 +13,13 @@ end
 # The list of inherited functions must be synced with the methods available for [`AbstractMetabolicModel`](@ref).
 #
 
-@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () variables metabolites stoichiometry bounds balance objective reactions n_reactions reaction_variables coupling n_coupling_constraints coupling_bounds genes n_genes precache!
+# optimizer based accessors
+
+@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () variables n_variables constraints n_constraints stoichiometry bounds balance objective coupling n_coupling_constraints coupling_bounds reactions n_reactions metabolites n_metabolites reaction_variables genes n_genes precache!
+
+# model interface accessors
+
+@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () reactions n_reactions metabolites n_metabolites reaction_variables genes n_genes precache!
 
 @inherit_model_methods_fn AbstractModelWrapper (rid::String,) unwrap_model (rid,) reaction_gene_associations reaction_subsystem reaction_stoichiometry reaction_annotations reaction_notes
 

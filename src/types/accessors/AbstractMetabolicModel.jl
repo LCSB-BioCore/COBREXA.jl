@@ -1,4 +1,3 @@
-
 #
 # IMPORTANT
 #
@@ -7,17 +6,20 @@
 # automatically derived methods for [`AbstractModelWrapper`](@ref).
 #
 
+# Accessors that define the problem seen by the optimizer
+
 """
 $(TYPEDSIGNATURES)
 
-Return a vector of reaction identifiers in a model. The vector precisely
+Return a vector of variable identifiers in a model. The vector precisely
 corresponds to the columns in [`stoichiometry`](@ref) matrix.
 
-For technical reasons, the "reactions" may sometimes not be true reactions but
-various virtual and helper pseudo-reactions that are used in the metabolic
-modeling, such as metabolite exchanges, separate forward and reverse reactions,
-supplies of enzymatic and genetic material and virtual cell volume, etc. To
-simplify the view of the model contents use [`reaction_variables`](@ref).
+For technical reasons, variables may sometimes not be reactions but various
+virtual and helper pseudo-reactions that are used in the metabolic modeling,
+such as separate forward and reverse reactions, supplies of enzymatic and
+genetic material and virtual cell volume, etc. To get the classic reactions of a
+model use [`reactions`](@ref) (this includes exchanges, sink, demand, biomass
+and metabolic reactions).
 """
 function variables(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(variables, (a,))
@@ -26,20 +28,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Return a vector of metabolite identifiers in a model. The vector precisely
-corresponds to the rows in [`stoichiometry`](@ref) matrix.
-
-As with [`variables`](@ref)s, some metabolites in models may be virtual,
-representing purely technical equality constraints.
-"""
-function metabolites(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(metabolites, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of reactions in a model.
+Get the number of variables in a model.
 """
 function n_variables(a::AbstractMetabolicModel)::Int
     length(variables(a))
@@ -48,22 +37,33 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the number of metabolites in a model.
+Return a vector of constraint identifiers in a model. The vector precisely
+corresponds to the rows in [`stoichiometry`](@ref) matrix.
+
+As with [`variables`](@ref)s, in some models the constraints do not map to
+actual metabolites in model. Some may be virtual, representing purely technical
+equality constraints. Use [`metabolites`](@ref) to get all the metabolites in
+the model.
 """
-function n_metabolites(a::AbstractMetabolicModel)::Int
-    length(metabolites(a))
+function constraints(a::AbstractMetabolicModel)::Vector{String}
+    missing_impl_error(metabolites, (a,))
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Get the sparse stoichiometry matrix of a model. A feasible solution `x` of a
-model `m` is defined as satisfying the equations:
+Get the number of constraints in a model.
+"""
+function n_constraints(a::AbstractMetabolicModel)::Int
+    length(constraints(a))
+end
 
-- `stoichiometry(m) * x .== balance(m)`
-- `x .>= lbs`
-- `y .<= ubs`
-- `(lbs, ubs) == bounds(m)
+"""
+$(TYPEDSIGNATURES)
+
+Get the sparse stoichiometry (mass balance) matrix of a model used by the
+optimizer. This matrix includes virtual reactions and metabolites, and its
+dimensions correspond to `(n_constraints(a), n_variables(a))`.
 """
 function stoichiometry(a::AbstractMetabolicModel)::SparseMat
     missing_impl_error(stoichiometry, (a,))
@@ -72,7 +72,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the lower and upper solution bounds of a model.
+Get the lower and upper bounds of the variables in a model.
 """
 function bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
     missing_impl_error(bounds, (a,))
@@ -81,7 +81,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the sparse balance vector of a model.
+Get the sparse balance vector of a model. This vector has the same size as
+[`n_constraints`](@ref).
 """
 function balance(a::AbstractMetabolicModel)::SparseVec
     return spzeros(n_metabolites(a))
@@ -97,6 +98,37 @@ where `x` is a feasible solution of the model.
 function objective(a::AbstractMetabolicModel)::SparseVec
     missing_impl_error(objective, (a,))
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Get a matrix of coupling constraint definitions of a model. By default, there
+is no coupling in the models.
+"""
+function coupling(a::AbstractMetabolicModel)::SparseMat
+    return spzeros(0, n_variables(a))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the number of coupling constraints in a model.
+"""
+function n_coupling_constraints(a::AbstractMetabolicModel)::Int
+    size(coupling(a), 1)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the lower and upper bounds for each coupling bound in a model, as specified
+by `coupling`. By default, the model does not have any coupling bounds.
+"""
+function coupling_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
+    return (spzeros(0), spzeros(0))
+end
+
+# Accessors used to interact with a model
 
 """
 $(TYPEDSIGNATURES)
@@ -136,30 +168,20 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get a matrix of coupling constraint definitions of a model. By default, there
-is no coupling in the models.
+In some models, the [`constraints`](@ref) that correspond to the rows of
+[`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
+the model. For example, the constraints may include enzyme pseudo metabolites,
+etc. 
+
+By default (and in most models), metabolites and constraints perfectly
+correspond.
 """
-function coupling(a::AbstractMetabolicModel)::SparseMat
-    return spzeros(0, n_variables(a))
+function metabolites(a::AbstractMetabolicModel)::Vector{String}
+    constraints(a)
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of coupling constraints in a model.
-"""
-function n_coupling_constraints(a::AbstractMetabolicModel)::Int
-    size(coupling(a), 1)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the lower and upper bounds for each coupling bound in a model, as specified
-by `coupling`. By default, the model does not have any coupling bounds.
-"""
-function coupling_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    return (spzeros(0), spzeros(0))
+function n_metabolites(a::AbstractMetabolicModel)::Int
+    n_constraints(a)
 end
 
 """
