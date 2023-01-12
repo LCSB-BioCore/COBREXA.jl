@@ -13,7 +13,7 @@ tuning the optimizer, or change the raw values in the linear model, such as:
 - [`change_constraint`](@ref) and [`change_objective`](@ref)
 - [`change_sense`](@ref), [`change_optimizer`](@ref), [`change_optimizer_attribute`](@ref)
 - [`silence`](@ref)
-- [`knockout`](@ref), [`add_crowding_constraints`](@ref)
+- [`knockout`](@ref)
 - [`add_loopless_constraints`](@ref)
 
 Compared to the [variant system](1_screen.md) and the [model
