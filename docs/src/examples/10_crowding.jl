@@ -11,3 +11,5 @@ model = load_model("e_coli_core.xml")
 
 import Random
 Random.seed!(1) # for repeatability of random numbers below
+
+# TODO add crowding example via smoment
