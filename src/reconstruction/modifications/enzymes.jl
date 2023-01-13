@@ -33,5 +33,4 @@ $(TYPEDSIGNATURES)
 Specifies a model variant that overwrites the current isozymes associated with the
 model through calling [`add_isozymes`](@ref).
 """
-with_isozymes(args...) = 
-    model -> add_isozymes(model, args...)
+with_isozymes(args...) = model -> add_isozymes(model, args...)

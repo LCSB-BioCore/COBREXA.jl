@@ -348,11 +348,8 @@ $(TYPEDSIGNATURES)
 Add `isozymes` to `rxn_id` in `model`. Overwrites the currently stored isozymes. Assumes genes
 are already in `model`.
 """
-add_isozymes!(
-    model::ObjectModel,
-    rxn_id::String,
-    isozymes::Vector{Isozyme},
-) = model.reactions[rxn_id].gene_associations = isozymes
+add_isozymes!(model::ObjectModel, rxn_id::String, isozymes::Vector{Isozyme}) =
+    model.reactions[rxn_id].gene_associations = isozymes
 
 """
 $(TYPEDSIGNATURES)
@@ -375,13 +372,9 @@ end
 $(TYPEDSIGNATURES)
 
 Variant of [`add_isozymes!`](@ref) that returns a copied model instead of
-modifying the input. 
+modifying the input.
 """
-function add_isozymes(
-    model::ObjectModel,
-    rxn_id::String,
-    isozymes::Vector{Isozyme},
-)
+function add_isozymes(model::ObjectModel, rxn_id::String, isozymes::Vector{Isozyme})
 
     m = copy(model)
     m.reactions = copy(model.reactions)
@@ -413,7 +406,7 @@ function add_isozymes(
     m.reactions = copy(model.reactions)
 
     for (rxn_id, isozymes) in zip(rxn_id_vector, isozymes_vector)
-        
+
         m.reactions[rxn_id] = copy(model.reactions[rxn_id])
         if !isnothing(model.reactions[rxn_id].gene_associations)
             m.reactions[rxn_id].gene_associations =
