@@ -1,20 +1,42 @@
 @testset "GECKO" begin
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
-    get_reaction_isozymes =
-        rid ->
-            haskey(ecoli_core_reaction_kcats, rid) ?
-            collect(
-                Isozyme(
-                    stoichiometry = Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
-                    kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
-                    kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
-                ) for (i, grr) in enumerate(reaction_gene_associations(model, rid))
-            ) : nothing
+    # add molar masses to gene products
+    for gid in genes(model)
+        model.genes[gid].product_molar_mass = get(ecoli_core_gene_product_masses, gid, 0.0)
+    end
+    model.genes["s0001"] = Gene(id = "s0001"; product_molar_mass = 0.0)
 
-    get_gene_product_mass = gid -> get(ecoli_core_gene_product_masses, gid, 0.0)
+    # update isozymes with kinetic information
+    for rid in reactions(model)
+        if haskey(ecoli_core_reaction_kcats, rid) # if has kcat, then has grr
+            newisozymes = Isozyme[]
+            for (i, grr) in enumerate(reaction_gene_associations(model, rid))
+                push!(
+                    newisozymes,
+                    Isozyme(
+                        gene_product_stoichiometry = Dict(
+                            grr .=> ecoli_core_protein_stoichiometry[rid][i],
+                        ),
+                        kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
+                        kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
+                    ),
+                )
+            end
+            model.reactions[rid].gene_associations = newisozymes
+        else
+            model.reactions[rid].gene_associations = nothing
+        end
+    end
 
     total_gene_product_mass = 100.0
+
+    # set gene product bounds
+    for gid in genes(model)
+        lb, ub = gid == "b2779" ? (0.01, 0.06) : (0.0, 1.0)
+        model.genes[gid].product_lower_bound = lb
+        model.genes[gid].product_upper_bound = ub
+    end
 
     gm =
         model |>
@@ -24,10 +46,9 @@
             upper = [nothing, 12.0],
         ) |>
         with_enzyme_constrained(
-            reaction_isozymes = get_reaction_isozymes,
-            gene_product_bounds = g -> g == "b2779" ? (0.01, 0.06) : (0.0, 1.0),
-            gene_product_molar_mass = get_gene_product_mass,
-            gene_product_mass_group_bound = _ -> total_gene_product_mass,
+            gene_product_mass_group_bound = Dict(
+                "uncategorized" => total_gene_product_mass,
+            ),
         )
 
     opt_model = flux_balance_analysis(
@@ -90,9 +111,13 @@ end
         ],
     )
 
-    gs = [Gene("g$i") for i = 1:5]
+    gs = [
+        Gene(id = "g1", product_upper_bound = 10.0, product_molar_mass = 1.0)
+        Gene(id = "g2", product_upper_bound = 10.0, product_molar_mass = 2.0)
+        Gene(id = "g3", product_upper_bound = 10.0, product_molar_mass = 3.0)
+        Gene(id = "g4", product_upper_bound = 10.0, product_molar_mass = 4.0)
+    ]
 
-    m.reactions["r2"].gene_associations = [Isozyme(["g5"])]
     m.reactions["r3"].gene_associations =
         [Isozyme(["g1"]; kcat_forward = 1.0, kcat_backward = 1.0)]
     m.reactions["r4"].gene_associations = [
@@ -101,7 +126,7 @@ end
     ]
     m.reactions["r5"].gene_associations = [
         Isozyme(;
-            stoichiometry = Dict("g3" => 1, "g4" => 2),
+            gene_product_stoichiometry = Dict("g3" => 1, "g4" => 2),
             kcat_forward = 70.0,
             kcat_backward = 70.0,
         ),
@@ -111,26 +136,9 @@ end
     add_genes!(m, gs)
     add_metabolites!(m, [m1, m2, m3, m4])
 
-    gene_product_bounds = Dict(
-        "g1" => (0.0, 10.0),
-        "g2" => (0.0, 10.0),
-        "g3" => (0.0, 10.0),
-        "g4" => (0.0, 10.0),
-    )
-
-    gene_product_molar_mass = Dict("g1" => 1.0, "g2" => 2.0, "g3" => 3.0, "g4" => 4.0)
-
-    gene_product_mass_group_bound = Dict("uncategorized" => 0.5)
-
     gm = make_enzyme_constrained_model(
         m;
-        reaction_isozymes = Dict(
-            rid => r.gene_associations for (rid, r) in m.reactions if
-            !isnothing(reaction_gene_associations(m, rid)) && rid in ["r3", "r4", "r5"]
-        ),
-        gene_product_bounds,
-        gene_product_molar_mass,
-        gene_product_mass_group_bound,
+        gene_product_mass_group_bound = Dict("uncategorized" => 0.5),
     )
 
     opt_model = flux_balance_analysis(
@@ -147,5 +155,5 @@ end
     @test isapprox(gene_products["g4"], 0.09090909090607537, atol = TEST_TOLERANCE)
     @test isapprox(mass_groups["uncategorized"], 0.5, atol = TEST_TOLERANCE)
     @test length(genes(gm)) == 4
-    @test length(genes(gm.inner)) == 5
+    @test length(genes(gm.inner)) == 4
 end

@@ -55,37 +55,3 @@ A pipe-able variant of [`gene_product_mass`](@ref).
 """
 gene_product_mass(model::SimplifiedEnzymeConstrainedModel) =
     x -> gene_product_mass(model, x)
-
-"""
-$(TYPEDSIGNATURES)
-
-Compute a "score" for picking the most viable isozyme for
-[`make_simplified_enzyme_constrained_model`](@ref), based on maximum kcat divided by relative mass of
-the isozyme. This is used because sMOMENT algorithm can not handle multiple
-isozymes for one reaction.
-
-# Note
-This function does not take the direction of the reaction into account, i.e. the
-maximum forward or reverse turnover number is used internally.
-"""
-simplified_enzyme_constrained_isozyme_speed(isozyme::Isozyme, gene_product_molar_mass) =
-    max(isozyme.kcat_forward, isozyme.kcat_backward) /
-    sum(count * gene_product_molar_mass(gene) for (gene, count) in isozyme.stoichiometry)
-
-"""
-$(TYPEDSIGNATURES)
-
-A piping- and argmax-friendly overload of [`simplified_enzyme_constrained_isozyme_speed`](@ref).
-
-# Example
-```
-gene_mass_function = gid -> 1.234
-
-best_isozyme_for_simplified_enzyme_constrained = argmax(
-    simplified_enzyme_constrained_isozyme_speed(gene_mass_function),
-    my_isozyme_vector,
-)
-```
-"""
-simplified_enzyme_constrained_isozyme_speed(gene_product_molar_mass::Function) =
-    isozyme -> simplified_enzyme_constrained_isozyme_speed(isozyme, gene_product_molar_mass)

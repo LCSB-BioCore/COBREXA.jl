@@ -22,8 +22,8 @@
     r1.lower_bound = -100.0
     r1.upper_bound = 100.0
     r1.gene_associations = [
-        Isozyme(stoichiometry = Dict("g1" => 1, "g2" => 1)),
-        Isozyme(stoichiometry = Dict("g3" => 1)),
+        Isozyme(gene_product_stoichiometry = Dict("g1" => 1, "g2" => 1)),
+        Isozyme(gene_product_stoichiometry = Dict("g3" => 1)),
     ]
     r1.subsystem = "glycolysis"
     r1.notes = Dict("notes" => ["blah", "blah"])
