@@ -81,4 +81,27 @@
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
+
+    # test with_isozyme functions
+    iso1 = Isozyme(["g1"]; kcat_forward = 200.0, kcat_backward = 300.0)
+    iso2 = Isozyme(["g2"]; kcat_forward = 100.0, kcat_backward = 500.0)
+    m2 = m |> with_isozymes(
+        ["r3", "r4"],
+        [[iso1], [iso2]],
+    )
+    @test first(m2.reactions["r3"].gene_associations).kcat_backward == 300.0
+    @test first(m2.reactions["r4"].gene_associations).kcat_backward == 500.0
+    @test first(m.reactions["r3"].gene_associations).kcat_backward == 1.0
+    
+    m2 = m |> with_isozymes(
+        "r3",
+        [iso2],
+    )
+    @test first(m2.reactions["r3"].gene_associations).kcat_backward == 500.0
+    @test first(m.reactions["r3"].gene_associations).kcat_backward == 1.0
+    
+    add_isozymes!(m, ["r3", "r4"], [[iso1], [iso2]])
+    @test first(m.reactions["r3"].gene_associations).kcat_backward == 300.0
+    @test first(m.reactions["r4"].gene_associations).kcat_backward == 500.0
+    
 end

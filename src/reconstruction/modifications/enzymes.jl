@@ -26,3 +26,12 @@ are forwarded to [`add_pseudoribosome`](@ref).
 """
 with_pseudoribosome(args...; kwargs...) =
     model -> add_pseudoribosome(model, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that overwrites the current isozymes associated with the
+model through calling [`add_isozymes`](@ref).
+"""
+with_isozymes(args...) = 
+    model -> add_isozymes(model, args...)

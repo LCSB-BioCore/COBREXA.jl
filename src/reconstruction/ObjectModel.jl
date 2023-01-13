@@ -341,3 +341,87 @@ function add_pseudoribosome(
 
     m
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `isozymes` to `rxn_id` in `model`. Overwrites the currently stored isozymes. Assumes genes
+are already in `model`.
+"""
+add_isozymes!(
+    model::ObjectModel,
+    rxn_id::String,
+    isozymes::Vector{Isozyme},
+) = model.reactions[rxn_id].gene_associations = isozymes
+
+"""
+$(TYPEDSIGNATURES)
+
+For each pair of `isozymes` and `rxn_id` in `isozymes_vector` and
+`rxn_id_vector`, call [`add_isozymes!`](@ref) to add the isozymes to the
+`model`.
+"""
+function add_isozymes!(
+    model::ObjectModel,
+    rxn_id_vector::Vector{String},
+    isozymes_vector::Vector{Vector{Isozyme}},
+)
+    for (rid, isozymes) in zip(rxn_id_vector, isozymes_vector)
+        add_isozymes!(model, rid, isozymes)
+    end
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`add_isozymes!`](@ref) that returns a copied model instead of
+modifying the input. 
+"""
+function add_isozymes(
+    model::ObjectModel,
+    rxn_id::String,
+    isozymes::Vector{Isozyme},
+)
+
+    m = copy(model)
+    m.reactions = copy(model.reactions)
+
+    m.reactions[rxn_id] = copy(model.reactions[rxn_id])
+    if !isnothing(model.reactions[rxn_id].gene_associations)
+        m.reactions[rxn_id].gene_associations =
+            copy(model.reactions[rxn_id].gene_associations)
+    end
+    m.reactions[rxn_id].gene_associations = isozymes
+
+    m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+For each pair of `isozymes` and `rxn_id` in `isozymes_vector` and
+`rxn_id_vector`, call [`add_isozymes`](@ref) to add the isozymes to the
+`model`.
+"""
+function add_isozymes(
+    model::ObjectModel,
+    rxn_id_vector::Vector{String},
+    isozymes_vector::Vector{Vector{Isozyme}},
+)
+
+    m = copy(model)
+    m.reactions = copy(model.reactions)
+
+    for (rxn_id, isozymes) in zip(rxn_id_vector, isozymes_vector)
+        
+        m.reactions[rxn_id] = copy(model.reactions[rxn_id])
+        if !isnothing(model.reactions[rxn_id].gene_associations)
+            m.reactions[rxn_id].gene_associations =
+                copy(model.reactions[rxn_id].gene_associations)
+        end
+        m.reactions[rxn_id].gene_associations = isozymes
+
+    end
+
+    m
+end
