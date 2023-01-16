@@ -17,3 +17,20 @@ giving a [`EnzymeConstrainedModel`](@ref). The arguments are forwarded to
 """
 with_enzyme_constrained(; kwargs...) =
     model -> make_enzyme_constrained_model(model; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that adds a virtualribosome to a model. Args and kwargs
+are forwarded to [`add_virtualribosome`](@ref).
+"""
+with_virtualribosome(args...; kwargs...) =
+    model -> add_virtualribosome(model, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that overwrites the current isozymes associated with the
+model through calling [`add_isozymes`](@ref).
+"""
+with_isozymes(args...; kwargs...) = model -> add_isozymes(model, args...; kwargs...)
