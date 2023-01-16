@@ -297,7 +297,8 @@ function add_virtualribosome!(
     ]
 
     # add ribosome gene
-    model.genes[virtualribosome_id] = Gene(id = virtualribosome_id, product_molar_mass = 1.0)
+    model.genes[virtualribosome_id] =
+        Gene(id = virtualribosome_id, product_molar_mass = 1.0)
 
     nothing
 end
