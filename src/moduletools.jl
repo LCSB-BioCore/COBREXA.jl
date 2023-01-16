@@ -39,37 +39,22 @@ macro export_locals()
     end
 end
 
-@export_locals
+# re-export all imported things
+# (many thanks to Reexport.jl for inspiration here!)
+macro reexport(mods...)
+    importexpr = Expr(:import, Expr(:., :., :., mods...))
+    modulename = foldl((l,r)->Expr(:., l,QuoteNode(r)), mods)
+    esc(quote
+        $importexpr
+        for sym in names($modulename)
+            Base.isexported($modulename, sym) || continue
+            typeof($(Expr(:., modulename, :sym))) == Module && continue
+            sym in [:eval, :include] && continue
+            @eval const $(Expr(:$, :sym)) = ($modulename).$(Expr(:$, :sym))
+            @eval export $(Expr(:$, :sym))
+        end
+    end)
 end
 
-"""
-@using_all()
-
-A convenience macro that brings the names of all the COBREXA modules into scope.
-
-When calling `COBREXA.@using_all` the following code gets injected:
-```
-using COBREXA.Types,
-    COBREXA.Accessors,
-    COBREXA.Analysis,
-    COBREXA.Analysis.Modifications,
-    COBREXA.Reconstruction,
-    COBREXA.Reconstruction.Modifications,
-    COBREXA.Utils,
-    COBREXA.IO,
-    COBREXA.Solver
-```
-"""
-macro using_all()
-    quote
-        using COBREXA.Types,
-            COBREXA.Accessors,
-            COBREXA.Analysis,
-            COBREXA.Analysis.Modifications,
-            COBREXA.Reconstruction,
-            COBREXA.Reconstruction.Modifications,
-            COBREXA.Utils,
-            COBREXA.IO,
-            COBREXA.Solver
-    end
+@export_locals
 end
