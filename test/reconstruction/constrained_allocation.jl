@@ -50,9 +50,9 @@
     add_genes!(m, gs)
     add_metabolites!(m, [m1, m2, m3, m4])
 
-    ribomodel = m |> with_pseudoribosome("r6", 0.2)
+    ribomodel = m |> with_virtualribosome("r6", 0.2)
 
-    @test haskey(ribomodel.genes, "pseudoribosome")
+    @test haskey(ribomodel.genes, "virtualribosome")
     @test first(ribomodel.reactions["r6"].gene_associations).kcat_forward == 0.2
     @test first(m.reactions["r6"].gene_associations).kcat_forward == 10.0
 
@@ -70,7 +70,7 @@
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
 
     # test inplace variant
-    add_pseudoribosome!(m, "r6", 0.2)
+    add_virtualribosome!(m, "r6", 0.2)
     cam = make_simplified_enzyme_constrained_model(m; total_enzyme_capacity = 0.5)
 
     @test coupling(cam)[1, 7] == 5.0

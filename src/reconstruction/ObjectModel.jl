@@ -268,20 +268,20 @@ growth/weight`). The molar mass of the ribosome is `1`.
 
 # Note
 1. This modifications makes the underlying biomass reaction unidirectional.
-2. The `pseudoribosome_id` defaults to `pseudoribosome` and must be manually included
+2. The `virtualribosome_id` defaults to `virtualribosome` and must be manually included
    in any capacity bound later used in enzyme constrained models.
-3. This modification also adds a pseudogene called `pseudoribosome_id`.
+3. This modification also adds a pseudogene called `virtualribosome_id`.
 
 The pseudo-isozyme acts like a regular gene product,
 ```
 ribosome = weight * biomass_flux
 ```
 """
-function add_pseudoribosome!(
+function add_virtualribosome!(
     model::ObjectModel,
     biomass_rxn_id::String,
     weight::Float64;
-    pseudoribosome_id = "pseudoribosome",
+    virtualribosome_id = "virtualribosome",
 )
     # ensure unidirectional
     model.reactions[biomass_rxn_id].lower_bound = 0.0
@@ -292,12 +292,12 @@ function add_pseudoribosome!(
         Isozyme(
             kcat_forward = weight,
             kcat_backward = 0.0,
-            gene_product_stoichiometry = Dict(pseudoribosome_id => 1.0),
+            gene_product_stoichiometry = Dict(virtualribosome_id => 1.0),
         ),
     ]
 
     # add ribosome gene
-    model.genes[pseudoribosome_id] = Gene(id = pseudoribosome_id, product_molar_mass = 1.0)
+    model.genes[virtualribosome_id] = Gene(id = virtualribosome_id, product_molar_mass = 1.0)
 
     nothing
 end
@@ -305,14 +305,14 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Variant of [`add_pseudoribosome!`](@ref) that does not modify the original
+Variant of [`add_virtualribosome!`](@ref) that does not modify the original
 model, but makes a shallow copy with the modification included.
 """
-function add_pseudoribosome(
+function add_virtualribosome(
     model::ObjectModel,
     biomass_rxn_id::String,
     weight::Float64;
-    pseudoribosome_id = "pseudoribosome",
+    virtualribosome_id = "virtualribosome",
 )
     m = copy(model)
 
@@ -331,13 +331,13 @@ function add_pseudoribosome(
         Isozyme(
             kcat_forward = weight,
             kcat_backward = 0.0,
-            gene_product_stoichiometry = Dict(pseudoribosome_id => 1.0),
+            gene_product_stoichiometry = Dict(virtualribosome_id => 1.0),
         ),
     ]
 
     # add ribosome gene
     m.genes = copy(model.genes)
-    m.genes[pseudoribosome_id] = Gene(id = pseudoribosome_id, product_molar_mass = 1.0)
+    m.genes[virtualribosome_id] = Gene(id = virtualribosome_id, product_molar_mass = 1.0)
 
     m
 end

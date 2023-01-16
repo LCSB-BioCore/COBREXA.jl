@@ -21,11 +21,11 @@ with_enzyme_constrained(; kwargs...) =
 """
 $(TYPEDSIGNATURES)
 
-Specifies a model variant that adds a pseudoribosome to a model. Args and kwargs
-are forwarded to [`add_pseudoribosome`](@ref).
+Specifies a model variant that adds a virtualribosome to a model. Args and kwargs
+are forwarded to [`add_virtualribosome`](@ref).
 """
-with_pseudoribosome(args...; kwargs...) =
-    model -> add_pseudoribosome(model, args...; kwargs...)
+with_virtualribosome(args...; kwargs...) =
+    model -> add_virtualribosome(model, args...; kwargs...)
 
 """
 $(TYPEDSIGNATURES)
@@ -33,4 +33,4 @@ $(TYPEDSIGNATURES)
 Specifies a model variant that overwrites the current isozymes associated with the
 model through calling [`add_isozymes`](@ref).
 """
-with_isozymes(args...) = model -> add_isozymes(model, args...)
+with_isozymes(args...; kwargs...) = model -> add_isozymes(model, args...; kwargs...)
