@@ -14,7 +14,7 @@ From: cylon-x/lcsb-biocore/julia-base:latest
     cd project
     julia --project -e 'import Pkg; Pkg.add("Tulip"); Pkg.instantiate(); Pkg.build(); Pkg.precompile();'
 
-    echo 'using COBREXA; COBREXA._print_banner();' > /project/.startup.jl
+    echo 'using COBREXA;' > /project/.startup.jl
 
     chmod -R a+rX $JULIA_DEPOT_PATH
 
