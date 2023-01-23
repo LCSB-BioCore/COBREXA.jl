@@ -58,7 +58,7 @@ module Everything
     @reexport Analysis Modifications
     @reexport IO
     @reexport Reconstruction
-    @reexport Reconstruction Modifications
+    @reexport Reconstruction Pipes
     @reexport Solver
     @reexport Utils
 end

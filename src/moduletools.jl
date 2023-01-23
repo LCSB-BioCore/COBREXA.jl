@@ -43,7 +43,7 @@ end
 # (many thanks to Reexport.jl for inspiration here!)
 macro reexport(mods...)
     importexpr = Expr(:import, Expr(:., :., :., mods...))
-    modulename = foldl((l,r)->Expr(:., l,QuoteNode(r)), mods)
+    modulename = foldl((l, r) -> Expr(:., l, QuoteNode(r)), mods)
     esc(quote
         $importexpr
         for sym in names($modulename)

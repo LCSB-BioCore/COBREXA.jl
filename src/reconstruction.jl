@@ -24,7 +24,7 @@ using MacroTools
 @inc_dir reconstruction
 
 """
-    module Modifications
+    module Pipes
 
 Functions that create model variants, typically for efficient use in
 [`screen`](@ref) and similar functions.
@@ -32,7 +32,7 @@ Functions that create model variants, typically for efficient use in
 # Exports
 $(EXPORTS)
 """
-module Modifications
+module Pipes
     using ..ModuleTools
     @dse
 end
@@ -41,9 +41,9 @@ end
 end
 
 # this needs to import from Reconstruction
-@inject Reconstruction.Modifications begin
+@inject Reconstruction.Pipes begin
     using ..Reconstruction
-    @inc_dir reconstruction modifications
+    @inc_dir reconstruction pipes
 
     @export_locals
 end
