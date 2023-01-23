@@ -60,6 +60,7 @@ module Everything
     @reexport Reconstruction
     @reexport Reconstruction Pipes
     @reexport Solver
+    @reexport Types
     @reexport Utils
 end
 
