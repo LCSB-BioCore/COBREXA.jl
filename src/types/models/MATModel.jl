@@ -168,7 +168,7 @@ $(TYPEDSIGNATURES)
 
 Extract metabolite compartment from `metCompartment` or `metCompartments`.
 """
-function metabolite_compartment(m::MATModel, mid::String)
+function Accessors.metabolite_compartment(m::MATModel, mid::String)
     res = maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
         gets(m.mat, nothing, constants.keynames.metcompartments),
