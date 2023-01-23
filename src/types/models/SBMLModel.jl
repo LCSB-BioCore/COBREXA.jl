@@ -41,9 +41,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get reactions from a [`SBMLModel`](@ref).
+Get variables (aka reactions) from a [`SBMLModel`](@ref).
 """
-Accessors.reactions(model::SBMLModel)::Vector{String} = model.reaction_ids
+Accessors.variables(model::SBMLModel)::Vector{String} = model.reaction_ids
 
 """
 $(TYPEDSIGNATURES)
@@ -55,9 +55,9 @@ Accessors.metabolites(model::SBMLModel)::Vector{String} = model.metabolite_ids
 """
 $(TYPEDSIGNATURES)
 
-Efficient counting of reactions in [`SBMLModel`](@ref).
+Efficient counting of variables (aka reactions) in [`SBMLModel`](@ref).
 """
-Accessors.n_reactions(model::SBMLModel)::Int = length(model.reaction_ids)
+Accessors.n_variables(model::SBMLModel)::Int = length(model.reaction_ids)
 
 """
 $(TYPEDSIGNATURES)

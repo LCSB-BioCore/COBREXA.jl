@@ -5,7 +5,7 @@
     rxns = [1, 2, 3]
 
     lat = collect.(envelope_lattice(m, rxns; samples = 3))
-    @test lat == [[0, 500, 1000], [-1000, 0, 1000], [-1000, 0, 1000]]
+    @test lat == [[-1000.0, 0.0, 1000.0], [-1000.0, 0.0, 1000.0], [-1000.0, 0.0, 1000.0]]
     @test lat == collect.(envelope_lattice(m, variables(m)[rxns]; samples = 3))
 
     vals =
