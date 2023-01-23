@@ -1,14 +1,6 @@
 using COBREXA, Test
 
-using COBREXA.Types,
-    COBREXA.Accessors,
-    COBREXA.Analysis,
-    COBREXA.Analysis.Modifications,
-    COBREXA.Reconstruction,
-    COBREXA.Reconstruction.Modifications,
-    COBREXA.Utils,
-    COBREXA.IO,
-    COBREXA.Solver
+using COBREXA.Everything
 
 using Aqua
 using Clarabel
