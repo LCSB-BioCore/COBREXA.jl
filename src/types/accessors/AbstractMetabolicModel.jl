@@ -3,8 +3,10 @@
 # IMPORTANT
 #
 # This file provides a list of "officially supported" accessors that should
-# work with all subtypes of [`AbstractMetabolicModel`](@ref). Keep this synced with the
-# automatically derived methods for [`AbstractModelWrapper`](@ref).
+# work with all subtypes of [`AbstractMetabolicModel`](@ref).
+#
+# Keep this synced with the automatically derived methods for
+# [`AbstractModelWrapper`](@ref).
 #
 
 """
@@ -26,6 +28,15 @@ end
 """
 $(TYPEDSIGNATURES)
 
+Get the number of reactions in a model.
+"""
+function n_variables(a::AbstractMetabolicModel)::Int
+    length(variables(a))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Return a vector of metabolite identifiers in a model. The vector precisely
 corresponds to the rows in [`stoichiometry`](@ref) matrix.
 
@@ -34,15 +45,6 @@ representing purely technical equality constraints.
 """
 function metabolites(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(metabolites, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of reactions in a model.
-"""
-function n_variables(a::AbstractMetabolicModel)::Int
-    length(variables(a))
 end
 
 """
@@ -108,12 +110,18 @@ reactions catalyzed by distinct enzymes, etc. Together with
 [`reaction_variables`](@ref) (and [`n_reactions`](@ref)) this specifies how the
 flux is decomposed into individual reactions.
 
-By default (and in most models), fluxes and reactions perfectly correspond.
+By default (and in most models), variables and reactions correspond one-to-one.
 """
 function reactions(a::AbstractMetabolicModel)::Vector{String}
     variables(a)
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+The number of recations in the model. The overload may be much more efficient
+than measuring `length(reactions(model))`.
+"""
 function n_reactions(a::AbstractMetabolicModel)::Int
     n_variables(a)
 end
