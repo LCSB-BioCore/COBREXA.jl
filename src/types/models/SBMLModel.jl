@@ -9,6 +9,33 @@ $(TYPEDFIELDS)
 """
 struct SBMLModel <: AbstractMetabolicModel
     sbml::SBML.Model
+    reaction_ids::Vector{String}
+    reaction_idx::Dict{String,Int}
+    metabolite_ids::Vector{String}
+    metabolite_idx::Dict{String,Int}
+    gene_ids::Vector{String}
+    active_objective::String
+end
+
+"""
+$(TYPEDEF)
+
+Construct the SBML model and add the necessary cached indexes, possibly choosing an active objective.
+"""
+function SBMLModel(sbml::SBML.Model, active_objective::String = "")
+    rxns = sort(collect(keys(sbml.reactions)))
+    mets = sort(collect(keys(sbml.species)))
+    genes = sort(collect(keys(sbml.gene_products)))
+
+    SBMLModel(
+        sbml,
+        rxns,
+        Dict(rxns .=> eachindex(rxns)),
+        mets,
+        Dict(mets .=> eachindex(mets)),
+        genes,
+        active_objective,
+    )
 end
 
 """
@@ -16,30 +43,28 @@ $(TYPEDSIGNATURES)
 
 Get reactions from a [`SBMLModel`](@ref).
 """
-Accessors.variables(model::SBMLModel)::Vector{String} =
-    [k for k in keys(model.sbml.reactions)]
+Accessors.reactions(model::SBMLModel)::Vector{String} = model.reaction_ids
 
 """
 $(TYPEDSIGNATURES)
 
 Get metabolites from a [`SBMLModel`](@ref).
 """
-Accessors.metabolites(model::SBMLModel)::Vector{String} =
-    [k for k in keys(model.sbml.species)]
+Accessors.metabolites(model::SBMLModel)::Vector{String} = model.metabolite_ids
 
 """
 $(TYPEDSIGNATURES)
 
 Efficient counting of reactions in [`SBMLModel`](@ref).
 """
-Accessors.n_variables(model::SBMLModel)::Int = length(model.sbml.reactions)
+Accessors.n_reactions(model::SBMLModel)::Int = length(model.reaction_ids)
 
 """
 $(TYPEDSIGNATURES)
 
 Efficient counting of metabolites in [`SBMLModel`](@ref).
 """
-Accessors.n_metabolites(model::SBMLModel)::Int = length(model.sbml.species)
+Accessors.n_metabolites(model::SBMLModel)::Int = length(model.metabolite_ids)
 
 """
 $(TYPEDSIGNATURES)
@@ -47,8 +72,40 @@ $(TYPEDSIGNATURES)
 Recreate the stoichiometry matrix from the [`SBMLModel`](@ref).
 """
 function Accessors.stoichiometry(model::SBMLModel)::SparseMat
-    _, _, S = SBML.stoichiometry_matrix(model.sbml)
-    return S
+
+    # find the vector size for preallocation
+    nnz = 0
+    for (_, r) in model.sbml.reactions
+        for _ in r.reactants
+            nnz += 1
+        end
+        for _ in r.products
+            nnz += 1
+        end
+    end
+
+    Rows = Int[]
+    Cols = Int[]
+    Vals = Float64[]
+    sizehint!(Rows, nnz)
+    sizehint!(Cols, nnz)
+    sizehint!(Vals, nnz)
+
+    row_idx = Dict(k => i for (i, k) in enumerate(model.metabolite_ids))
+    for (ridx, rid) in enumerate(model.reaction_ids)
+        r = model.sbml.reactions[rid]
+        for sr in r.reactants
+            push!(Rows, model.metabolite_idx[sr.species])
+            push!(Cols, ridx)
+            push!(Vals, isnothing(sr.stoichiometry) ? -1.0 : -sr.stoichiometry)
+        end
+        for sr in r.products
+            push!(Rows, model.metabolite_idx[sr.species])
+            push!(Cols, ridx)
+            push!(Vals, isnothing(sr.stoichiometry) ? 1.0 : sr.stoichiometry)
+        end
+    end
+    return sparse(Rows, Cols, Vals, n_metabolites(model), n_reactions(model))
 end
 
 """
@@ -58,21 +115,56 @@ Get the lower and upper flux bounds of model [`SBMLModel`](@ref). Throws `Domain
 case if the SBML contains mismatching units.
 """
 function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
-    lbu, ubu = SBML.flux_bounds(model.sbml)
+    # There are multiple ways in SBML to specify a lower/upper bound. There are
+    # the "global" model bounds that we completely ignore now because no one
+    # uses them. In reaction, you can specify the bounds using "LOWER_BOUND"
+    # and "UPPER_BOUND" parameters, but also there may be a FBC plugged-in
+    # parameter name that refers to the parameters.  We extract these, using
+    # the units from the parameters. For unbounded reactions we use -Inf or Inf
+    # as a default.
 
-    unit = lbu[1][2]
-    getvalue = (val, _)::Tuple -> val
-    getunit = (_, unit)::Tuple -> unit
+    common_unit = ""
 
-    allunits = unique([getunit.(lbu) getunit.(ubu)])
-    length(allunits) == 1 || throw(
-        DomainError(
-            allunits,
-            "The SBML file uses multiple units; loading needs conversion",
+    function get_bound(rid, fld, param, default)
+        rxn = model.sbml.reactions[rid]
+        param_name = SBML.mayfirst(getfield(rxn, fld), param)
+        param = get(
+            rxn.kinetic_parameters,
+            param_name,
+            get(model.sbml.parameters, param_name, default),
+        )
+        unit = SBML.mayfirst(param.units, "")
+        if unit != ""
+            if common_unit != ""
+                if unit != common_unit
+                    throw(
+                        DomainError(
+                            units_in_sbml,
+                            "The SBML file uses multiple units; loading would need conversion",
+                        ),
+                    )
+                end
+            else
+                common_unit = unit
+            end
+        end
+        return param.value
+    end
+
+    return (
+        get_bound.(
+            model.reaction_ids,
+            :lower_bound,
+            "LOWER_BOUND",
+            Ref(SBML.Parameter(value = -Inf)),
+        ),
+        get_bound.(
+            model.reaction_ids,
+            :upper_bound,
+            "UPPER_BOUND",
+            Ref(SBML.Parameter(value = Inf)),
         ),
     )
-
-    return (getvalue.(lbu), getvalue.(ubu))
 end
 
 """
@@ -87,22 +179,41 @@ $(TYPEDSIGNATURES)
 
 Objective of the [`SBMLModel`](@ref).
 """
-Accessors.objective(model::SBMLModel)::SparseVec = SBML.flux_objective(model.sbml)
+function Accessors.objective(model::SBMLModel)::SparseVec
+    res = sparsevec([], [], n_reactions(model))
+
+    objective = get(model.sbml.objectives, model.active_objective, nothing)
+    if isnothing(objective) && length(model.sbml.objectives) == 1
+        objective = first(values(model.sbml.objectives))
+    end
+    if !isnothing(objective)
+        direction = objective.type == "maximize" ? 1.0 : -1.0
+        for (rid, coef) in objective.flux_objectives
+            res[model.reaction_idx[rid]] = float(direction * coef)
+        end
+    else
+        # old-style objectives
+        for (rid, r) in model.sbml.reactions
+            oc = get(r.kinetic_parameters, "OBJECTIVE_COEFFICIENT", nothing)
+            isnothing(oc) || (res[model.reaction_idx[rid]] = float(oc.value))
+        end
+    end
+    return res
+end
 
 """
 $(TYPEDSIGNATURES)
 
 Get genes of a [`SBMLModel`](@ref).
 """
-Accessors.genes(model::SBMLModel)::Vector{String} =
-    [k for k in keys(model.sbml.gene_products)]
+Accessors.genes(model::SBMLModel)::Vector{String} = model.gene_ids
 
 """
 $(TYPEDSIGNATURES)
 
 Get number of genes in [`SBMLModel`](@ref).
 """
-Accessors.n_genes(model::SBMLModel)::Int = length(model.sbml.gene_products)
+Accessors.n_genes(model::SBMLModel)::Int = length(model.gene_ids)
 
 """
 $(TYPEDSIGNATURES)

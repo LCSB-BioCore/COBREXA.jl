@@ -1,13 +1,13 @@
 
 @testset "HDF5 model SBML model" begin
     model = load_model(MatrixModel, model_paths["e_coli_core.xml"])
-    fn = "ecoli_test.h5"
-    h5m = save_model(model, fn)
+    fn = "ecoli_test.h5.noextension"
+    h5m = save_model(model, fn, extension = ".h5")
     @test h5m isa HDF5Model
     @test h5m.filename == fn
     @test h5m.h5 == nothing #the file should not be open by default
 
-    h5 = load_model(fn)
+    h5 = load_model(fn, extension = ".h5")
     precache!(h5)
     @test !isnothing(h5.h5)
 

@@ -10,8 +10,8 @@
     @test length.(bounds(m)) == (95, 95)
     @test all([length(m.xl), length(m.xu), length(m.c)] .== 95)
 
-    @test metabolites(m)[1:3] == ["M_succoa_c", "M_ac_c", "M_fru_b"]
-    @test variables(m)[1:3] == ["R_EX_fum_e", "R_ACONTb", "R_GLNS"]
+    @test metabolites(m)[1:3] == ["M_13dpg_c", "M_2pg_c", "M_3pg_c"]
+    @test reactions(m)[1:3] == ["R_ACALD", "R_ACALDt", "R_ACKr"]
 
     cm = convert(MatrixModelWithCoupling, sbmlm)
     @test n_coupling_constraints(cm) == 0
@@ -23,4 +23,11 @@ end
     save_model(convert(SBMLModel, model), testpath)
     wrote = convert(MatrixModel, load_sbml_model(testpath))
     @test isequal(model, wrote)
+end
+
+@testset "Import yeast-GEM (sbml)" begin
+    m = load_model(StandardModel, model_paths["yeast-GEM.xml"])
+    @test n_metabolites(m) == 2744
+    @test n_reactions(m) == 4063
+    @test n_genes(m) == 1160
 end

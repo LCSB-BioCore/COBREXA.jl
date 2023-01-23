@@ -71,9 +71,9 @@ variables:
   before_script:
     - docker login -u $CI_USER_NAME -p $GITLAB_ACCESS_TOKEN $CI_REGISTRY
 
-.global_julia17: &global_julia17
+.global_julia18: &global_julia18
   variables:
-    JULIA_VER: "v1.7.0"
+    JULIA_VER: "v1.8.3"
 
 .global_julia16: &global_julia16
   variables:
@@ -103,7 +103,7 @@ variables:
   tags:
     - mac
   script:
-    - $ARTENOLIS_SOFT_PATH/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
+    - $ARTENOLIS_SOFT_PATH_MAC/julia/$JULIA_VER/Contents/Resources/julia/bin/julia --inline=yes --check-bounds=yes --color=yes --project=@. -e 'import Pkg; Pkg.test(; coverage = true)'
 
 .global_build_apptainer: &global_build_apptainer
   image:
@@ -120,7 +120,7 @@ variables:
 # any available docker and current julia
 #
 
-docker:julia1.7:
+docker:julia1.8:
   stage: test
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
@@ -134,12 +134,12 @@ docker:julia1.7:
 # built & deployed
 #
 
-linux:julia1.7:
+linux:julia1.8:
   stage: test
   tags:
     - slave01
   <<: *global_trigger_full_tests
-  <<: *global_julia17
+  <<: *global_julia18
   <<: *global_env_linux
 
 linux:julia1.6:
@@ -154,22 +154,22 @@ linux:julia1.6:
 # Additional platform&environment compatibility tests
 #
 
-windows8:julia1.7:
+windows8:julia1.8:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_julia17
+  <<: *global_julia18
   <<: *global_env_win8
 
-windows10:julia1.7:
+windows10:julia1.8:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_julia17
+  <<: *global_julia18
   <<: *global_env_win10
 
-mac:julia1.7:
+mac:julia1.8:
   stage: test-compat
   <<: *global_trigger_compat_tests
-  <<: *global_julia17
+  <<: *global_julia18
   <<: *global_env_mac
 
 windows8:julia1.6:
