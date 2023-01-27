@@ -27,21 +27,22 @@ module COBREXA
 
 using Distributed
 using DistributedData
+using DocStringExtensions
 using HDF5
 using JSON
 using JuMP
 using LinearAlgebra
-using MAT
 using MacroTools
+using MAT
 using OrderedCollections
 using Random
 using Serialization
 using SparseArrays
 using StableRNGs
 using Statistics
-using DocStringExtensions
 
 import Base: findfirst, getindex, show
+import PikaParser as PP
 import Pkg
 import SBML # conflict with Reaction struct name
 
