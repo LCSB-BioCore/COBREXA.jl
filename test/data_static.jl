@@ -300,93 +300,11 @@ const ecoli_core_gene_product_masses = Dict{String,Float64}(
     "b2279" => 10.845,
 )
 
-const ecoli_core_protein_stoichiometry = Dict{String,Vector{Vector{Float64}}}(
-    #=
-    Data made up, each isozyme is assumed to be composed of
-    only one subunit each.
-    =#
-    "ACALD" => [[1.0], [1.0]],
-    "PTAr" => [[1.0], [1.0]],
-    "ALCD2x" => [[1.0], [1.0], [1.0]],
-    "PDH" => [[1.0, 1.0, 1.0]],
-    "PYK" => [[1.0], [1.0]],
-    "CO2t" => [[1.0]],
-    "MALt2_2" => [[1.0]],
-    "CS" => [[1.0]],
-    "PGM" => [[1.0], [1.0], [1.0]],
-    "TKT1" => [[1.0], [1.0]],
-    "ACONTa" => [[1.0], [1.0]],
-    "GLNS" => [[1.0], [1.0]],
-    "ICL" => [[1.0]],
-    "FBA" => [[1.0], [1.0], [1.0]],
-    "FORt2" => [[1.0], [1.0]],
-    "G6PDH2r" => [[1.0]],
-    "AKGDH" => [[1.0, 1.0, 1.0]],
-    "TKT2" => [[1.0], [1.0]],
-    "FRD7" => [[1.0, 1.0, 1.0, 1.0]],
-    "SUCOAS" => [[1.0, 1.0]],
-    "FBP" => [[1.0], [1.0]],
-    "ICDHyr" => [[1.0]],
-    "AKGt2r" => [[1.0]],
-    "GLUSy" => [[1.0, 1.0]],
-    "TPI" => [[1.0]],
-    "FORt" => [[1.0], [1.0]],
-    "ACONTb" => [[1.0], [1.0]],
-    "GLNabc" => [[1.0, 1.0, 1.0]],
-    "RPE" => [[1.0], [1.0]],
-    "ACKr" => [[1.0], [1.0], [1.0]],
-    "THD2" => [[1.0, 1.0]],
-    "PFL" => [[1.0, 1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
-    "RPI" => [[1.0], [1.0]],
-    "D_LACt2" => [[1.0], [1.0]],
-    "TALA" => [[1.0], [1.0]],
-    "PPCK" => [[1.0]],
-    "ACt2r" => [[1.0]],
-    "NH4t" => [[1.0], [1.0]],
-    "PGL" => [[1.0]],
-    "NADTRHD" => [[1.0], [1.0, 1.0]],
-    "PGK" => [[1.0]],
-    "LDH_D" => [[1.0], [1.0]],
-    "ME1" => [[1.0]],
-    "PIt2r" => [[1.0], [1.0]],
-    "ATPS4r" => [
-        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-    ],
-    "GLCpts" => [[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]],
-    "GLUDy" => [[1.0]],
-    "CYTBD" => [[1.0, 1.0], [1.0, 1.0]],
-    "FUMt2_2" => [[1.0]],
-    "FRUpts2" => [[1.0, 1.0, 1.0, 1.0, 1.0]],
-    "GAPD" => [[1.0]],
-    "H2Ot" => [[1.0], [1.0]],
-    "PPC" => [[1.0]],
-    "NADH16" => [[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]],
-    "PFK" => [[1.0], [1.0]],
-    "MDH" => [[1.0]],
-    "PGI" => [[1.0]],
-    "O2t" => [[1.0]],
-    "ME2" => [[1.0]],
-    "GND" => [[1.0]],
-    "SUCCt2_2" => [[1.0]],
-    "GLUN" => [[1.0], [1.0], [1.0]],
-    "ETOHt2r" => [[1.0]],
-    "ADK1" => [[1.0]],
-    "ACALDt" => [[1.0]],
-    "SUCDi" => [[1.0, 1.0, 1.0, 1.0]],
-    "ENO" => [[1.0]],
-    "MALS" => [[1.0], [1.0]],
-    "GLUt2r" => [[1.0]],
-    "PPS" => [[1.0]],
-    "FUM" => [[1.0], [1.0], [1.0]],
-)
-
 const ecoli_core_reaction_kcats = Dict{String,Vector{Tuple{Float64,Float64}}}(
     #=
     Data taken from Heckmann, David, et al. "Machine learning applied to enzyme
     turnover numbers reveals protein structural correlates and improves metabolic
-    models." Nature communications 9.1 (2018): 1-10. Assume forward and reverse
-    kcats are the same, and each isozyme has the same kcat.
+    models." Nature communications 9.1 (2018): 1-10.
     =#
     "ACALD" =>
         [(568.1130792316333, 568.1130792316333), (568.856126503717, 568.856126503717)],
