@@ -43,7 +43,7 @@ function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
     end
 
     dnf(x::SBML.GPARef) = [[x.gene_product]]
-    dnf(x::SBML.GPAOr) = collect(Set(vcat(dnf.(x.terms)...)))
+    dnf(x::SBML.GPAOr) = _sortunique(vcat(dnf.(x.terms)...))
     dnf(x::SBML.GPAAnd) = fold_and(dnf.(x.terms))
     dnf(x) = throw(
         DomainError(

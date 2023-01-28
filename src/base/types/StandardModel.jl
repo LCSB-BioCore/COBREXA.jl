@@ -187,7 +187,7 @@ Return the gene reaction rule in string format for reaction with `id` in `model`
 Return `nothing` if not available.
 """
 reaction_gene_association(model::StandardModel, id::String)::Maybe{GeneAssociation} =
-    _maybemap(identity, model.reactions[id].grr)
+    model.reactions[id].grr
 
 """
 $(TYPEDSIGNATURES)
