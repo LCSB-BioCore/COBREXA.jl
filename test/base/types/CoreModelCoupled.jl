@@ -15,8 +15,10 @@ end
     @test Set(reactions(cm)) == Set(reactions(sm))
     @test Set(reactions(cm)) == Set(reactions(cm2))
 
-    @test reaction_gene_association(sm, reactions(sm)[1]) ==
-          reaction_gene_association(cm, reactions(sm)[1])
+    @test all(
+        reaction_gene_association.(Ref(sm), reactions(sm)) .==
+        reaction_gene_association.(Ref(cm), reactions(sm)),
+    )
 
     @test reaction_gene_association_vec(cm)[1:3] == [
         [["b1723"], ["b3916"]],
