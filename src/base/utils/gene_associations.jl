@@ -2,6 +2,30 @@
 """
 $(TYPEDSIGNATURES)
 
+A helper for producing predictable unique sequences. Might be faster if
+compacting would be done directly in sort().
+"""
+function _sortunique(x)
+    o = collect(x)
+    sort!(o)
+    put = prevind(o, firstindex(o))
+    for i in eachindex(o)
+        if put >= firstindex(o) && o[i] == o[put]
+            # we already have this one
+            continue
+        else
+            put = nextind(o, put)
+            if put != i
+                o[put] = o[i]
+            end
+        end
+    end
+    o[begin:put]
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Parse `SBML.GeneProductAssociation` structure and convert it to a strictly
 positive DNF [`GeneAssociation`](@ref). Negation (`SBML.GPANot`) is not
 supported.
@@ -12,7 +36,9 @@ function _parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
         if isempty(dnfs)
             [String[]]
         else
-            unique(unique(String[l; r]) for l in dnfs[1] for r in fold_and(dnfs[2:end]))
+            _sortunique(
+                _sortunique(String[l; r]) for l in dnfs[1] for r in fold_and(dnfs[2:end])
+            )
         end
     end
 
