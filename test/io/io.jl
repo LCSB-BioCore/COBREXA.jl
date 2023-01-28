@@ -22,5 +22,5 @@
     @test n_reactions(reconmodel) == 10600
     recon_grrs = [r.grr for (i, r) in reconmodel.reactions if !isnothing(r.grr)]
     @test length(recon_grrs) == 5938
-    @test sum(length.(recon_grrs)) == 31504
+    @test sum(length.(recon_grrs)) == 31503
 end

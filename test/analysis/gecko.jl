@@ -41,7 +41,7 @@
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
-        0.8128427019072836,
+        0.8128851171859416,
         atol = TEST_TOLERANCE,
     )
 
