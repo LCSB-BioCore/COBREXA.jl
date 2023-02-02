@@ -24,7 +24,7 @@ using SparseArrays
 
 @inc_dir types abstract
 @export_locals
-end
+end # module Types
 
 """
     module Accessors
@@ -65,7 +65,7 @@ using .Internal
 
 @inc_dir types accessors
 @export_locals
-end
+end # module Accessors
 
 # the modules depend on each other so we have to inject the stuff like this
 @inject Types begin
