@@ -55,6 +55,7 @@ module Internal
     using ..ModuleTools
     @dse
     import ..Accessors
+    using SparseArrays
     @inc_dir types accessors bits
     @export_locals
 end

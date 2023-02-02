@@ -54,6 +54,8 @@ Get the reactions in a `MatrixModel`.
 """
 Accessors.variables(a::MatrixModel)::Vector{String} = a.rxns
 
+Accessors.Internal.@all_variables_are_reactions MatrixModel
+
 """
 $(TYPEDSIGNATURES)
 

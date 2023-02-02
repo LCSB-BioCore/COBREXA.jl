@@ -66,6 +66,8 @@ Return the number of reactions contained in `model`.
 """
 Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
 
+Accessors.Internal.@all_variables_are_reactions ObjectModel
+
 """
 $(TYPEDSIGNATURES)
 

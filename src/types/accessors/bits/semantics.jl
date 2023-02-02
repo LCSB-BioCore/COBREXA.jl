@@ -133,3 +133,14 @@ macro make_variable_semantics(sym, name, example)
         $make_variable_semantics($Accessors, $src, $sym, $name, $example)
     end
 end
+
+macro all_variables_are_reactions(mt)
+    m = esc(mt)
+    # TODO docs
+    quote
+        $Accessors.reactions(model::$m) = $Accessors.variables(model)
+        $Accessors.n_reactions(model::$m) = $Accessors.n_variables(model)
+        $Accessors.reactions_variables(model::$m) = Dict(var => Dict(var, 1.0) for var=variables(model))
+        $Accessors.reactions_variables_matrix(model::$m) = $SparseArrays.spdiagm(fill(1, $Accessors.n_variables(model)))
+    end
+end
