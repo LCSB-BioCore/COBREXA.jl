@@ -54,10 +54,8 @@ $(EXPORTS)
 module Internal
     using ..ModuleTools
     @dse
-    # TODO: Note to self: we might be a bit more systematic here -- these are
-    # "pre-includes" (might go into bits/), contrasting to "post-includes" (which
-    # may stay in misc/)
-    @inc_dir types accessors misc
+    import ..Accessors
+    @inc_dir types accessors bits
     @export_locals
 end
 
