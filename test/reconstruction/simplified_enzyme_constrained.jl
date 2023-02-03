@@ -36,7 +36,7 @@
             lower = [-1000.0, -1.0],
             upper = [nothing, 12.0],
         ) |>
-        with_simplified_enzyme_constrained(total_enzyme_capacity = 100.0)
+        with_simplified_enzyme_constraints(total_enzyme_capacity = 100.0)
 
     rxn_fluxes = flux_balance_analysis_dict(
         simplified_enzyme_constrained_model,

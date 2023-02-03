@@ -60,14 +60,14 @@ rxn_isozymes = Dict(
 # with additional sMOMENT structure:
 
 simplified_enzyme_constrained_model =
-    model |> with_simplified_enzyme_constrained(
+    model |> with_simplified_enzyme_constraints(
         reaction_isozyme = rxn_isozymes,
         gene_product_molar_mass = gene_product_masses,
         total_enzyme_capacity = 50.0,
     )
 
 # (You could alternatively use the [`make_simplified_enzyme_constrained_model`](@ref) to create the
-# structure more manually; but [`with_simplified_enzyme_constrained`](@ref) is easier to use e.g.
+# structure more manually; but [`with_simplified_enzyme_constraints`](@ref) is easier to use e.g.
 # with [`screen`](@ref).)
 
 # In turn, you should have a complete model with unidirectional reactions and

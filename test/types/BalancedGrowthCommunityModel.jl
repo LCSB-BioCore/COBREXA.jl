@@ -306,7 +306,7 @@ end
         ecoli |>
         with_added_biomass_metabolite("BIOMASS_Ecoli_core_w_GAM") |>
         with_changed_bounds(["EX_glc__D_e"]; lower = [-1000.0], upper = [0]) |>
-        with_enzyme_constrained(
+        with_enzyme_constraints(
             gene_product_mass_group_bound = Dict("uncategorized" => 100.0),
         )
 

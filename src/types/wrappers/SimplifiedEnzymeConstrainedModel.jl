@@ -22,7 +22,7 @@ An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
 *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
 metabolic models with enzyme constraints" BMC bioinformatics, 2020*.
 
-Use [`make_simplified_enzyme_constrained_model`](@ref) or [`with_simplified_enzyme_constrained`](@ref) to construct the
+Use [`make_simplified_enzyme_constrained_model`](@ref) or [`with_simplified_enzyme_constraints`](@ref) to construct the
 models.
 
 The model is constructed as follows:

@@ -45,7 +45,7 @@
             lower = [-1000.0, -1.0],
             upper = [nothing, 12.0],
         ) |>
-        with_enzyme_constrained(
+        with_enzyme_constraints(
             gene_product_mass_group_bound = Dict(
                 "uncategorized" => total_gene_product_mass,
             ),

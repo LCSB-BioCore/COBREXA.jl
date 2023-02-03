@@ -40,7 +40,7 @@ A model with complex enzyme concentration and capacity bounds, as described in
 genome-scale metabolic model by incorporating enzymatic constraints." Molecular
 systems biology 13.8 (2017): 935.*
 
-Use [`make_enzyme_constrained_model`](@ref) or [`with_enzyme_constrained`](@ref) to construct this kind
+Use [`make_enzyme_constrained_model`](@ref) or [`with_enzyme_constraints`](@ref) to construct this kind
 of model.
 
 The model wraps another "internal" model, and adds following modifications:
