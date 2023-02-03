@@ -14,7 +14,7 @@ get_solution(
     Dict(
         string(last(split(rid, community_member.id * "#"))) => val for (rid, val) in zip(
             reactions(community_model),
-            reaction_variables(community_model)' * value.(opt_model[:x]),
+            reaction_variables_matrix(community_model)' * value.(opt_model[:x]),
         ) if startswith(rid, community_member.id * "#")
     ) : nothing
 
@@ -30,6 +30,6 @@ get_environmental_exchanges(community_model::BalancedGrowthCommunityModel, opt_m
     Dict(
         rid => val for (rid, val) in zip(
             reactions(community_model),
-            reaction_variables(community_model)' * value.(opt_model[:x]),
+            reaction_variables_matrix(community_model)' * value.(opt_model[:x]),
         ) if !any(startswith(rid, cm.id * "#") for cm in community_model.members)
     ) : nothing

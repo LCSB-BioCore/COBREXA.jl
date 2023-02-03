@@ -118,8 +118,10 @@ $(TYPEDSIGNATURES)
 Get the mapping of the reaction rates in [`SimplifiedEnzymeConstrainedModel`](@ref) to the original
 fluxes in the wrapped model.
 """
-Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
-    simplified_enzyme_constrained_column_reactions(model)' * reaction_variables(model.inner)
+Accessors.reaction_variables_matrix(model::SimplifiedEnzymeConstrainedModel) =
+    simplified_enzyme_constrained_column_reactions(model)' *
+    reaction_variables_matrix(model.inner)
+# TODO: convert to dict representation!!!
 
 """
 $(TYPEDSIGNATURES)

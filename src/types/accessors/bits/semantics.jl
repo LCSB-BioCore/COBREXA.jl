@@ -30,8 +30,8 @@ function make_variable_semantics(
 )
     plural = Symbol(sym, :s)
     count = Symbol(:n_, plural)
-    mapping = Symbol(plural, :_variables)
-    mapping_mtx = Symbol(plural, :_variables_matrix)
+    mapping = Symbol(sym, :_variables)
+    mapping_mtx = Symbol(sym, :_variables_matrix)
     push!(themodule.Internal.variable_semantics, sym)
 
     pluralfn = Expr(
@@ -140,9 +140,9 @@ macro all_variables_are_reactions(mt)
     quote
         $Accessors.reactions(model::$m) = $Accessors.variables(model)
         $Accessors.n_reactions(model::$m) = $Accessors.n_variables(model)
-        $Accessors.reactions_variables(model::$m) =
-            Dict(var => Dict(var, 1.0) for var in variables(model))
-        $Accessors.reactions_variables_matrix(model::$m) =
-            $SparseArrays.spdiagm(fill(1, $Accessors.n_variables(model)))
+        $Accessors.reaction_variables(model::$m) =
+            Dict(var => Dict(var => 1.0) for var in variables(model))
+        $Accessors.reaction_variables_matrix(model::$m) =
+            $SparseArrays.spdiagm(fill(1.0, $Accessors.n_variables(model)))
     end
 end

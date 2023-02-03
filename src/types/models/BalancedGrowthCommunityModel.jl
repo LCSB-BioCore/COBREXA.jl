@@ -232,8 +232,9 @@ Returns a matrix, which when multipled by the solution of a constraints based
 problem, yields the semantically meaningful fluxes that correspond to
 [`reactions`](@ref).
 """
-function Accessors.reaction_variables(cm::BalancedGrowthCommunityModel)
-    rfs = blockdiag([reaction_variables(m.model) for m in cm.members]...)
+function Accessors.reaction_variables_matrix(cm::BalancedGrowthCommunityModel)
+    # TODO add the non-matrix form!
+    rfs = blockdiag([reaction_variables_matrix(m.model) for m in cm.members]...)
     nr = length(get_env_mets(cm)) + 1 # env ex + obj
     blockdiag(rfs, spdiagm(fill(1, nr)))
 end

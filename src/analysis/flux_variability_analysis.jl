@@ -115,7 +115,7 @@ function flux_variability_analysis(
 
     flux_variability_analysis(
         model,
-        reaction_variables(model)[:, flux_indexes],
+        reaction_variables_matrix(model)[:, flux_indexes],
         optimizer;
         kwargs...,
     )
@@ -128,7 +128,7 @@ A simpler version of [`flux_variability_analysis`](@ref) that maximizes and
 minimizes all declared fluxes in the model. Arguments are forwarded.
 """
 flux_variability_analysis(model::AbstractMetabolicModel, optimizer; kwargs...) =
-    flux_variability_analysis(model, reaction_variables(model), optimizer; kwargs...)
+    flux_variability_analysis(model, reaction_variables_matrix(model), optimizer; kwargs...)
 
 """
 $(TYPEDSIGNATURES)
