@@ -30,7 +30,18 @@ end
 
 const variable_semantics = Symbol[]
 
-using ..Accessors
+function get_semantics(
+    ::Val{Semantics},
+)::Maybe{Tuple{Function,Function,Function,Function}} where {Semantics}
+    if Semantics in variable_semantics
+        return (
+            Base.eval(Accessors, Symbol(Semantics, :s)),
+            Base.eval(Accessors, Symbol(:n_, Semantics, :s)),
+            Base.eval(Accessors, Symbol(Semantics, :_variables)),
+            Base.eval(Accessors, Symbol(Semantics, :_variables_matrix)),
+        )
+    end
+end
 
 function make_variable_semantics(
     themodule::Module,
@@ -39,6 +50,8 @@ function make_variable_semantics(
     name::String,
     example::String,
 )
+    sym in themodule.Internal.variable_semantics && return
+
     plural = Symbol(sym, :s)
     count = Symbol(:n_, plural)
     mapping = Symbol(sym, :_variables)
@@ -139,7 +152,7 @@ end
 
 macro make_variable_semantics(sym, name, example)
     src = __source__
-    # TODO actually use the source
+    # TODO actually use the source, or evade macro if impossible
     quote
         $make_variable_semantics($Accessors, $src, $sym, $name, $example)
     end
