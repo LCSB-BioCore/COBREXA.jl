@@ -74,7 +74,7 @@ function variability_analysis(
         idxs = if isnothing(ids)
             collect(1:n_ids(model))
         else
-            findindex(ids, sem_ids(model))
+            indexin(ids, sem_ids(model))
         end
         any(isnothing.(idxs)) &&
             throw(DomainError(ids[isnothing(idxs)], "Unknown IDs specified"))
