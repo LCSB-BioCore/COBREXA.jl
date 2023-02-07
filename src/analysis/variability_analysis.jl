@@ -138,7 +138,7 @@ function variability_analysis(
     bounds = z -> (z, Inf),
     ret = objective_value,
 )
-    if size(objectives, 1) != n_variables(model)
+    if size(directions, 1) != n_variables(model)
         throw(
             DomainError(
                 size(directions, 1),
