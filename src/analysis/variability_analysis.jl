@@ -33,7 +33,7 @@ function flux_variability_analysis(
     kwargs...,
 )
     variability_analysis(
-        Val{:reaction},
+        Val(:reaction),
         model,
         optimizer;
         ids = reaction_ids,
