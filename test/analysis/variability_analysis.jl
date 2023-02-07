@@ -12,7 +12,7 @@
     rates = reaction_variability_analysis(cp, optimizer)
     @test fluxes == rates
 
-    fluxes = flux_variability_analysis(cp, [2], optimizer)
+    fluxes = flux_variability_analysis(cp, optimizer, reaction_indexes = [2])
 
     @test size(fluxes) == (1, 2)
     @test isapprox(fluxes, [2 2], atol = TEST_TOLERANCE)
@@ -58,15 +58,24 @@
         atol = TEST_TOLERANCE,
     )
 
-    @test isempty(flux_variability_analysis(cp, Vector{Int}(), Tulip.Optimizer))
-    @test_throws DomainError flux_variability_analysis(cp, [-1], Tulip.Optimizer)
-    @test_throws DomainError flux_variability_analysis(cp, [99999999], Tulip.Optimizer)
+    @test isempty(flux_variability_analysis(cp, Tulip.Optimizer, reaction_ids = String[]))
+    @test_throws DomainError flux_variability_analysis(
+        cp,
+        Tulip.Optimizer,
+        reaction_indexes = [-1],
+    )
+    @test_throws DomainError flux_variability_analysis(
+        cp,
+        Tulip.Optimizer,
+        reaction_ids = ["not a reaction!"],
+    )
 end
 
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
 
-    fluxes = flux_variability_analysis(cp, [1, 2], Tulip.Optimizer; workers = W)
+    fluxes =
+        flux_variability_analysis(cp, Tulip.Optimizer; workers = W, reaction_ids = [1, 2])
     @test isapprox(
         fluxes,
         [
