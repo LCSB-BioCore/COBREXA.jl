@@ -74,8 +74,12 @@ end
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
 
-    fluxes =
-        flux_variability_analysis(cp, Tulip.Optimizer; workers = W, reaction_ids = [1, 2])
+    fluxes = flux_variability_analysis(
+        cp,
+        Tulip.Optimizer;
+        workers = W,
+        reaction_indexes = [1, 2],
+    )
     @test isapprox(
         fluxes,
         [

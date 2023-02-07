@@ -32,7 +32,7 @@ const variable_semantics = Symbol[]
 
 function get_semantics(
     ::Val{Semantics},
-)::Maybe{Tuple{Function,Function,Function,Function}} where {Semantics}
+)::Types.Maybe{Tuple{Function,Function,Function,Function}} where {Semantics}
     if Semantics in variable_semantics
         return (
             Base.eval(Accessors, Symbol(Semantics, :s)),
@@ -165,7 +165,7 @@ macro all_variables_are_reactions(mt)
         $Accessors.reactions(model::$m) = $Accessors.variables(model)
         $Accessors.n_reactions(model::$m) = $Accessors.n_variables(model)
         $Accessors.reaction_variables(model::$m) =
-            Dict(var => Dict(var => 1.0) for var in variables(model))
+            Dict(var => Dict(var => 1.0) for var in $Accessors.variables(model))
         $Accessors.reaction_variables_matrix(model::$m) =
             $SparseArrays.spdiagm(fill(1.0, $Accessors.n_variables(model)))
     end
