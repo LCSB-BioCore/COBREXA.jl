@@ -77,7 +77,7 @@ function variability_analysis(
             indexin(ids, sem_ids(model))
         end
         any(isnothing.(idxs)) &&
-            throw(DomainError(ids[isnothing(idxs)], "Unknown IDs specified"))
+            throw(DomainError(ids[isnothing.(idxs)], "Unknown IDs specified"))
         indexes = Int.(idxs)
     end
 
