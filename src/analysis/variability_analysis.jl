@@ -131,7 +131,7 @@ reason.
 function variability_analysis(
     model::AbstractMetabolicModel,
     optimizer;
-    directions::SparseMat,
+    directions::SparseMat = spdiagm(fill(1.0, n_variables(model))),
     modifications = [],
     workers = [myid()],
     optimal_objective_value = nothing,
