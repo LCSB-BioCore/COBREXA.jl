@@ -160,11 +160,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to the original
-fluxes in the wrapped model.
+Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
+the original fluxes in the wrapped model (as a matrix).
 """
 function Accessors.reaction_variables_matrix(model::EnzymeConstrainedModel)
-    # TODO this needs the normal reaction_variables overload
     rxnmat =
         enzyme_constrained_column_reactions(model)' * reaction_variables_matrix(model.inner)
     [
@@ -172,6 +171,19 @@ function Accessors.reaction_variables_matrix(model::EnzymeConstrainedModel)
         spzeros(n_genes(model), size(rxnmat, 2))
     ]
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
+the original fluxes in the wrapped model
+"""
+Accessors.reaction_variables(model::EnzymeConstrainedModel) =
+    Accessors.Internal.make_mapping_dict(
+        variables(model),
+        semantics(model),
+        reaction_variables_matrix(model),
+    ) # TODO currently inefficient
 
 """
 $(TYPEDSIGNATURES)

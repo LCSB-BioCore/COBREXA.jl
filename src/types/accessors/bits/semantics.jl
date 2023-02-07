@@ -17,6 +17,17 @@ function make_mapping_mtx(rows, cols, col_row_val)
     sparse(R, C, V, length(rows), length(cols))
 end
 
+function make_mapping_dict(
+    vars,
+    semantics,
+    mtx::Types.SparseMat,
+)::Dict{String,Dict{String,Float64}}
+    Dict(
+        sid => Dict(vars[vidx] => val for (vidx, val) in zip(findnz(mtx[:, sidx])...)) for
+        (sidx, sid) in enumerate(semantics)
+    )
+end
+
 const variable_semantics = Symbol[]
 
 using ..Accessors
