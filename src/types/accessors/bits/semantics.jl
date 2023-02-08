@@ -1,12 +1,22 @@
-function make_mapping_mtx(rows, cols, col_row_val)
-    rowidx = Dict(rows .=> 1:length(rows))
-    colidx = Dict(cols .=> 1:length(cols))
-    n = sum(length.(values(col_row_val)))
+"""
+$(TYPEDSIGNATURES)
+
+A helper function to quickly create a sparse matrix from a dictionary that
+describes it. Reverse of [`make_mapping_dict`](@ref).
+"""
+function make_mapping_mtx(
+    vars::Vector{String},
+    semantics::Vector{String},
+    var_sem_val::Dict{String,Dict{String,Float64}},
+)::Types.SparseMat
+    rowidx = Dict(vars .=> 1:length(vars))
+    colidx = Dict(semantics .=> 1:length(semantics))
+    n = sum(length.(values(var_sem_val)))
     R = Vector{Int}(undef, n)
     C = Vector{Int}(undef, n)
     V = Vector{Float64}(undef, n)
     i = 1
-    for (cid, col_val) in col_row_val
+    for (cid, col_val) in var_sem_val
         for (rid, val) in col_val
             R[i] = rowidx[rid]
             C[i] = colidx[cid]
@@ -14,12 +24,18 @@ function make_mapping_mtx(rows, cols, col_row_val)
             i += 1
         end
     end
-    sparse(R, C, V, length(rows), length(cols))
+    sparse(R, C, V, length(vars), length(semantics))
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+A helper function to quickly create a sparse matrix from a dictionary that
+describes it. Reverse of [`make_mapping_mtx`](@ref).
+"""
 function make_mapping_dict(
-    vars,
-    semantics,
+    vars::Vector{String},
+    semantics::Vector{String},
     mtx::Types.SparseMat,
 )::Dict{String,Dict{String,Float64}}
     Dict(
@@ -30,6 +46,12 @@ end
 
 const variable_semantics = Symbol[]
 
+"""
+$(TYPEDSIGNATURES)
+
+Get a tuple of functions that work with the given semantics, or `nothing` if
+the semantics doesn't exist.
+"""
 function get_semantics(
     ::Val{Semantics},
 )::Types.Maybe{Tuple{Function,Function,Function,Function}} where {Semantics}
@@ -43,6 +65,16 @@ function get_semantics(
     end
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Inject a new functionality for variable semantics defined by `sym` into
+`themodule` (which should ideally be COBREXA.Accessors).
+
+`name` is a human readable description of the semantic object. `example` is a
+string that closer describes the semantics, which is inserted into the main
+semantic-accessing function.
+"""
 function make_variable_semantics(
     themodule::Module,
     source,
@@ -150,17 +182,26 @@ safety reasons, this is never automatically inherited by wrappers.
     Base.eval(themodule, code)
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Convenience macro for running [`make_variable_semantics`](@ref).
+"""
 macro make_variable_semantics(sym, name, example)
     src = __source__
-    # TODO actually use the source, or evade macro if impossible
     quote
         $make_variable_semantics($Accessors, $src, $sym, $name, $example)
     end
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Convenience helper -- many models carry no other variable semantics than the
+reactions; this macro declares precisely the same about the model type.
+"""
 macro all_variables_are_reactions(mt)
     m = esc(mt)
-    # TODO docs
     quote
         $Accessors.reactions(model::$m) = $Accessors.variables(model)
         $Accessors.n_reactions(model::$m) = $Accessors.n_variables(model)
