@@ -58,7 +58,7 @@ gene_product_bounds = Dict(genes(model) .=> Ref((0.0, 10.0)))
 # information is straightforward:
 
 enzyme_constrained_model =
-    model |> with_enzyme_constrained(;
+    model |> with_enzyme_constraints(;
         reaction_isozymes = rxn_isozymes,
         gene_product_bounds,
         gene_product_molar_mass = gene_product_masses,

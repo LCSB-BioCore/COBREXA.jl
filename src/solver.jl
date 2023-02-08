@@ -125,7 +125,8 @@ flux_vector(flux_balance_analysis(model, ...))
 ```
 """
 flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} =
-    is_solved(opt_model) ? reaction_variables(model)' * value.(opt_model[:x]) : nothing
+    is_solved(opt_model) ? reaction_variables_matrix(model)' * value.(opt_model[:x]) :
+    nothing
 
 """
 $(TYPEDSIGNATURES)
@@ -139,7 +140,8 @@ flux_dict(model, flux_balance_analysis(model, ...))
 """
 flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
     is_solved(opt_model) ?
-    Dict(reactions(model) .=> reaction_variables(model)' * value.(opt_model[:x])) : nothing
+    Dict(reactions(model) .=> reaction_variables_matrix(model)' * value.(opt_model[:x])) :
+    nothing
 
 """
 $(TYPEDSIGNATURES)

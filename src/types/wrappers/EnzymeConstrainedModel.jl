@@ -40,7 +40,7 @@ A model with complex enzyme concentration and capacity bounds, as described in
 genome-scale metabolic model by incorporating enzymatic constraints." Molecular
 systems biology 13.8 (2017): 935.*
 
-Use [`make_enzyme_constrained_model`](@ref) or [`with_enzyme_constrained`](@ref) to construct this kind
+Use [`make_enzyme_constrained_model`](@ref) or [`with_enzyme_constraints`](@ref) to construct this kind
 of model.
 
 The model wraps another "internal" model, and adds following modifications:
@@ -160,16 +160,30 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to the original
-fluxes in the wrapped model.
+Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
+the original fluxes in the wrapped model (as a matrix).
 """
-function Accessors.reaction_variables(model::EnzymeConstrainedModel)
-    rxnmat = enzyme_constrained_column_reactions(model)' * reaction_variables(model.inner)
+function Accessors.reaction_variables_matrix(model::EnzymeConstrainedModel)
+    rxnmat =
+        enzyme_constrained_column_reactions(model)' * reaction_variables_matrix(model.inner)
     [
         rxnmat
         spzeros(n_genes(model), size(rxnmat, 2))
     ]
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
+the original fluxes in the wrapped model
+"""
+Accessors.reaction_variables(model::EnzymeConstrainedModel) =
+    Accessors.Internal.make_mapping_dict(
+        variables(model),
+        semantics(model),
+        reaction_variables_matrix(model),
+    ) # TODO currently inefficient
 
 """
 $(TYPEDSIGNATURES)

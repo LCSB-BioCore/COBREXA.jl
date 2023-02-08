@@ -26,6 +26,8 @@ function Accessors.variables(m::MATModel)::Vector{String}
     end
 end
 
+Accessors.Internal.@all_variables_are_reactions MATModel
+
 """
 $(TYPEDSIGNATURES)
 

@@ -22,7 +22,7 @@ An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
 *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
 metabolic models with enzyme constraints" BMC bioinformatics, 2020*.
 
-Use [`make_simplified_enzyme_constrained_model`](@ref) or [`with_simplified_enzyme_constrained`](@ref) to construct the
+Use [`make_simplified_enzyme_constrained_model`](@ref) or [`with_simplified_enzyme_constraints`](@ref) to construct the
 models.
 
 The model is constructed as follows:
@@ -115,11 +115,27 @@ Accessors.bounds(model::SimplifiedEnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
-Get the mapping of the reaction rates in [`SimplifiedEnzymeConstrainedModel`](@ref) to the original
-fluxes in the wrapped model.
+Get the mapping of the reaction rates in
+[`SimplifiedEnzymeConstrainedModel`](@ref) to the original fluxes in the
+wrapped model (as a matrix).
+"""
+Accessors.reaction_variables_matrix(model::SimplifiedEnzymeConstrainedModel) =
+    simplified_enzyme_constrained_column_reactions(model)' *
+    reaction_variables_matrix(model.inner)
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the mapping of the reaction rates in
+[`SimplifiedEnzymeConstrainedModel`](@ref) to the original fluxes in the
+wrapped model.
 """
 Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
-    simplified_enzyme_constrained_column_reactions(model)' * reaction_variables(model.inner)
+    Accessors.Internal.make_mapping_dict(
+        variables(model),
+        semantics(model),
+        reaction_variables_matrix(model),
+    ) # TODO currently inefficient
 
 """
 $(TYPEDSIGNATURES)

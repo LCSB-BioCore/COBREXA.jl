@@ -100,46 +100,26 @@ function objective(a::AbstractMetabolicModel)::SparseVec
     missing_impl_error(objective, (a,))
 end
 
+@make_variable_semantics(
+    :reaction,
+    "reaction fluxes",
+    """
+Typically, one variable describes one reaction flux; but in specific cases the
+variables may have separate meanings (as with enzyme supply reactions and
+various helper values), and multiple variables may combine into one reaction
+flux, such as with separate bidirectional reactions.
 """
-$(TYPEDSIGNATURES)
+)
 
-In some models, the [`variables`](@ref) that correspond to the columns of
-[`stoichiometry`](@ref) matrix do not fully represent the semantic contents of
-the model; for example, fluxes may be split into forward and reverse reactions,
-reactions catalyzed by distinct enzymes, etc. Together with
-[`reaction_variables`](@ref) (and [`n_reactions`](@ref)) this specifies how the
-flux is decomposed into individual reactions.
-
-By default (and in most models), variables and reactions correspond one-to-one.
+@make_variable_semantics(
+    :enzymes,
+    "enzyme supplies",
+    """
+Certain model types define a supply of enzymes that is typically required to
+"run" the reactions; enzyme supplies define variables that are used to model
+these values.
 """
-function reactions(a::AbstractMetabolicModel)::Vector{String}
-    variables(a)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-The number of recations in the model. The overload may be much more efficient
-than measuring `length(reactions(model))`.
-"""
-function n_reactions(a::AbstractMetabolicModel)::Int
-    n_variables(a)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Retrieve a sparse matrix that describes the correspondence of a solution of the
-linear system to the fluxes (see [`reactions`](@ref) for rationale). Returns a
-sparse matrix of size `(n_variables(a), n_reactions(a))`. For most models, this is
-an identity matrix.
-"""
-function reaction_variables(a::AbstractMetabolicModel)::SparseMat
-    nr = n_variables(a)
-    nf = n_reactions(a)
-    nr == nf || missing_impl_error(reaction_variables, (a,))
-    spdiagm(fill(1, nr))
-end
+)
 
 """
 $(TYPEDSIGNATURES)

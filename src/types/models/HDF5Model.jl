@@ -44,6 +44,8 @@ function Accessors.variables(model::HDF5Model)::Vector{String}
     read(model.h5["reactions"])
 end
 
+Accessors.Internal.@all_variables_are_reactions HDF5Model
+
 function Accessors.n_metabolites(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["metabolites"])

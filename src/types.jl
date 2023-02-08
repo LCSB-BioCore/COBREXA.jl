@@ -24,7 +24,7 @@ using SparseArrays
 
 @inc_dir types abstract
 @export_locals
-end
+end # module Types
 
 """
     module Accessors
@@ -54,10 +54,10 @@ $(EXPORTS)
 module Internal
     using ..ModuleTools
     @dse
-    # TODO: Note to self: we might be a bit more systematic here -- these are
-    # "pre-includes" (might go into bits/), contrasting to "post-includes" (which
-    # may stay in misc/)
-    @inc_dir types accessors misc
+    import ...Types
+    import ..Accessors
+    using SparseArrays
+    @inc_dir types accessors bits
     @export_locals
 end
 
@@ -65,7 +65,7 @@ using .Internal
 
 @inc_dir types accessors
 @export_locals
-end
+end # module Accessors
 
 # the modules depend on each other so we have to inject the stuff like this
 @inject Types begin

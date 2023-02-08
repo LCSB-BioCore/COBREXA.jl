@@ -5,7 +5,7 @@ Specifies a model variant which adds extra semantics of the sMOMENT algorithm,
 giving a [`SimplifiedEnzymeConstrainedModel`](@ref). The arguments are forwarded to
 [`make_simplified_enzyme_constrained_model`](@ref). Intended for usage with [`screen`](@ref).
 """
-with_simplified_enzyme_constrained(; kwargs...) =
+with_simplified_enzyme_constraints(; kwargs...) =
     model -> make_simplified_enzyme_constrained_model(model; kwargs...)
 
 """
@@ -15,7 +15,7 @@ Specifies a model variant which adds extra semantics of the EnzymeConstrained al
 giving a [`EnzymeConstrainedModel`](@ref). The arguments are forwarded to
 [`make_enzyme_constrained_model`](@ref). Intended for usage with [`screen`](@ref).
 """
-with_enzyme_constrained(; kwargs...) =
+with_enzyme_constraints(; kwargs...) =
     model -> make_enzyme_constrained_model(model; kwargs...)
 
 """

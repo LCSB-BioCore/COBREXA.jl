@@ -45,26 +45,14 @@ Get variables (aka reactions) from a [`SBMLModel`](@ref).
 """
 Accessors.variables(model::SBMLModel)::Vector{String} = model.reaction_ids
 
+Accessors.Internal.@all_variables_are_reactions SBMLModel
+
 """
 $(TYPEDSIGNATURES)
 
 Get metabolites from a [`SBMLModel`](@ref).
 """
 Accessors.metabolites(model::SBMLModel)::Vector{String} = model.metabolite_ids
-
-"""
-$(TYPEDSIGNATURES)
-
-Efficient counting of variables (aka reactions) in [`SBMLModel`](@ref).
-"""
-Accessors.n_variables(model::SBMLModel)::Int = length(model.reaction_ids)
-
-"""
-$(TYPEDSIGNATURES)
-
-Efficient counting of metabolites in [`SBMLModel`](@ref).
-"""
-Accessors.n_metabolites(model::SBMLModel)::Int = length(model.metabolite_ids)
 
 """
 $(TYPEDSIGNATURES)
@@ -207,13 +195,6 @@ $(TYPEDSIGNATURES)
 Get genes of a [`SBMLModel`](@ref).
 """
 Accessors.genes(model::SBMLModel)::Vector{String} = model.gene_ids
-
-"""
-$(TYPEDSIGNATURES)
-
-Get number of genes in [`SBMLModel`](@ref).
-"""
-Accessors.n_genes(model::SBMLModel)::Int = length(model.gene_ids)
 
 """
 $(TYPEDSIGNATURES)
