@@ -27,4 +27,4 @@ end
 Accessors.unwrap_model(m::MinimizeAdjustmentModel) = m.inner
 
 Accessors.objective(m::MinimizeAdjustmentModel)::SparseMat =
-    [spdiagm(fill(-0.5, n_variables(m))) m.reference_assignment]
+    COBREXA.Utils.negative_squared_distance_objective(m.reference_assignment)

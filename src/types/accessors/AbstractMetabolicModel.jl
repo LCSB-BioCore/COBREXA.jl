@@ -103,8 +103,8 @@ case the objective is a sparse matrix).
 The objective matrix is extended by 1 column to allow affine quadratic form
 objectives. Symmetry is not required.
 
-Use [`affine_quadratic_objective`](@ref) to simplify creation of the quadratic
-matrices.
+Use [`negative_squared_distance_objective`](@ref) to simplify creation of the
+common nearest-feasible-solution objectives.
 """
 function objective(a::AbstractMetabolicModel)::Union{SparseVec,SparseMat}
     missing_impl_error(objective, (a,))
