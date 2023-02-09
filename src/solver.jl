@@ -37,7 +37,13 @@ function make_optimization_model(
 
     optimization_model = Model(optimizer)
     @variable(optimization_model, x[1:n])
-    @objective(optimization_model, sense, objective(model)' * x)
+    let obj = objective(model)
+        if obj isa AbstractVector
+            @objective(optimization_model, sense, obj' * x)
+        else
+            @objective(optimization_model, sense, x' * obj * [x; 1])
+        end
+    end
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
     @constraint(optimization_model, lbs, xl .<= x) # lower bounds
     @constraint(optimization_model, ubs, x .<= xu) # upper bounds

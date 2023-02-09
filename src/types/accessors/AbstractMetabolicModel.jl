@@ -92,11 +92,21 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the objective vector of the model. Analysis functions, such as
-[`flux_balance_analysis`](@ref), are supposed to maximize `dot(objective, x)`
-where `x` is a feasible solution of the model.
+Get the linear objective vector or the quadratic objective affine matrix of the
+model.
+
+Analysis functions, such as [`flux_balance_analysis`](@ref), are supposed to
+maximize `objective' * x` where `x` is a feasible solution of the model (in
+case the objective is a sparse vector), or `x' * objective * [x; 1]` (in
+case the objective is a sparse matrix).
+
+The objective matrix is extended by 1 column to allow affine quadratic form
+objectives. Symmetry is not required.
+
+Use [`negative_squared_distance_objective`](@ref) to simplify creation of the
+common nearest-feasible-solution objectives.
 """
-function objective(a::AbstractMetabolicModel)::SparseVec
+function objective(a::AbstractMetabolicModel)::Union{SparseVec,SparseMat}
     missing_impl_error(objective, (a,))
 end
 
