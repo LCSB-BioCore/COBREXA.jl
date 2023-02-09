@@ -43,7 +43,10 @@ end
 # this needs to import from Reconstruction
 @inject Reconstruction.Pipes begin
     using ..Reconstruction
+    using ..Types
     @inc_dir reconstruction pipes
 
     @export_locals
 end
+
+@inject Analysis import ..Reconstruction

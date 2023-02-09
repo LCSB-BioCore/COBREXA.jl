@@ -39,7 +39,7 @@ minimize_metabolic_adjustment_analysis(
     optimizer;
     kwargs...,
 ) = flux_balance_analysis(
-    model |> COBREXA.Reconstruction.Pipes.minimize_adjustment(reference_flux),
+    model |> Reconstruction.Pipes.minimize_adjustment(reference_flux),
     optimizer;
     kwargs...,
 )
