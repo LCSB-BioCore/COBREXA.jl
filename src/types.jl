@@ -1,5 +1,4 @@
 
-# make the module for types and load basic abstract types
 """
     module Types
 
@@ -46,7 +45,7 @@ using SparseArrays
 """
     module Internal
 
-Internal helpers for types.
+Internal helpers for accessors.
 
 # Exports
 $(EXPORTS)
@@ -81,6 +80,7 @@ end # module Accessors
 end
 
 @inject Types.Internal begin
+    # TODO where is this declared?
     using ..Types
     using ..Accessors
     using ..Log.Internal: @models_log
