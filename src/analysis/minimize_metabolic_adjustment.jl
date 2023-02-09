@@ -35,7 +35,7 @@ value.(solution[:x])  # extract the flux from the optimizer
 """
 minimize_metabolic_adjustment_analysis(
     model::AbstractMetabolicModel,
-    flux_ref::Union{Vector{Float64}},
+    reference_flux::Union{Vector{Float64}},
     optimizer;
     kwargs...,
 ) = flux_balance_analysis(
