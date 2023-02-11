@@ -2,7 +2,7 @@
 $(TYPEDSIGNATURES)
 
 Specifies a model variant with reactions added. Forwards the arguments to
-[`add_reactions`](@ref). 
+[`add_reactions`](@ref).
 """
 with_added_reactions(args...; kwargs...) = m -> add_reactions(m, args...; kwargs...)
 
@@ -18,7 +18,7 @@ with_added_reaction(args...; kwargs...) = m -> add_reaction(m, args...; kwargs..
 $(TYPEDSIGNATURES)
 
 Specifies a model variant with metabolites added. Forwards the arguments to
-[`add_metabolites`](@ref). 
+[`add_metabolites`](@ref).
 """
 with_added_metabolites(args...; kwargs...) = m -> add_metabolites(m, args...; kwargs...)
 
@@ -34,7 +34,7 @@ with_added_metabolite(args...; kwargs...) = m -> add_metabolite(m, args...; kwar
 $(TYPEDSIGNATURES)
 
 Specifies a model variant with genes added. Forwards the arguments to
-[`add_genes`](@ref). 
+[`add_genes`](@ref).
 """
 with_added_genes(args...; kwargs...) = m -> add_genes(m, args...; kwargs...)
 
@@ -66,7 +66,7 @@ with_changed_bounds(args...; kwargs...) = m -> change_bounds(m, args...; kwargs.
 $(TYPEDSIGNATURES)
 
 Specifies a model variant without a certain metabolite. Forwards arguments to
-[`remove_metabolite`](@ref). 
+[`remove_metabolite`](@ref).
 """
 with_removed_metabolite(args...; kwargs...) = m -> remove_metabolite(m, args...; kwargs...)
 
@@ -83,7 +83,7 @@ with_removed_metabolites(args...; kwargs...) =
 $(TYPEDSIGNATURES)
 
 Specifies a model variant without a certain reaction. Forwards arguments to
-[`remove_reaction`](@ref). 
+[`remove_reaction`](@ref).
 """
 with_removed_reaction(args...; kwargs...) = m -> remove_reaction(m, args...; kwargs...)
 
@@ -103,5 +103,3 @@ Forwards arguments to [`add_biomass_metabolite`](@ref).
 """
 with_added_biomass_metabolite(args...; kwargs...) =
     m -> add_biomass_metabolite(m, args...; kwargs...)
-
-
