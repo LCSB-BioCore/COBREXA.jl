@@ -37,13 +37,13 @@
         ),
     )
 
-    r2 = Reaction("r2", Dict(m1.id => -2.0, m4.id => 1.0), :backward)
+    r2 = ReactionBackward("r2", Dict(m1.id => -2.0, m4.id => 1.0))
     @test r2.lower_bound == -1000.0 && r2.upper_bound == 0.0
 
-    r3 = Reaction("r3", Dict(m3.id => -1.0, m4.id => 1.0), :forward)
+    r3 = ReactionForward("r3", Dict(m3.id => -1.0, m4.id => 1.0))
     @test r3.lower_bound == 0.0 && r3.upper_bound == 1000.0
 
-    r4 = Reaction("r4", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
+    r4 = ReactionBidirectional("r4", Dict(m3.id => -1.0, m4.id => 1.0))
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lower_bound == -1000.0 && r4.upper_bound == 1000.0
 
@@ -53,15 +53,15 @@
     id = check_duplicate_reaction(r4, rd)
     @test id == "r3"
 
-    r5 = Reaction("r5", Dict(m3.id => -11.0, m4.id => 1.0), :bidirectional)
+    r5 = ReactionBidirectional("r5", Dict(m3.id => -11.0, m4.id => 1.0))
     id = check_duplicate_reaction(r5, rd)
     @test id == "r3"
 
-    r5 = Reaction("r5", Dict(m3.id => -11.0, m4.id => 1.0), :bidirectional)
+    r5 = ReactionBidirectional("r5", Dict(m3.id => -11.0, m4.id => 1.0))
     id = check_duplicate_reaction(r5, rd; only_metabolites = false)
     @test isnothing(id)
 
-    r5 = Reaction("r5", Dict(m3.id => -1.0, m4.id => 1.0), :bidirectional)
+    r5 = ReactionBidirectional("r5", Dict(m3.id => -1.0, m4.id => 1.0))
     id = check_duplicate_reaction(r5, rd; only_metabolites = false)
     @test id == "r3"
 end

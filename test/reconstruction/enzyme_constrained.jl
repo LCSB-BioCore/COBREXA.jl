@@ -102,12 +102,12 @@ end
     add_reactions!(
         m,
         [
-            Reaction("r1", Dict("m1" => 1), :forward),
-            Reaction("r2", Dict("m2" => 1), :forward),
-            Reaction("r3", Dict("m1" => -1, "m2" => -1, "m3" => 1), :forward),
-            Reaction("r4", Dict("m3" => -1, "m4" => 1), :forward),
-            Reaction("r5", Dict("m2" => -1, "m4" => 1), :bidirectional),
-            Reaction("r6", Dict("m4" => -1), :forward),
+            ReactionForward("r1", Dict("m1" => 1)),
+            ReactionForward("r2", Dict("m2" => 1)),
+            ReactionForward("r3", Dict("m1" => -1, "m2" => -1, "m3" => 1)),
+            ReactionForward("r4", Dict("m3" => -1, "m4" => 1)),
+            ReactionBidirectional("r5", Dict("m2" => -1, "m4" => 1)),
+            ReactionForward("r6", Dict("m4" => -1)),
         ],
     )
 
