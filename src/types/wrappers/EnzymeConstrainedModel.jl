@@ -188,6 +188,16 @@ Accessors.reaction_variables(model::EnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
+Get a mapping of enzyme variables to variables - for enzyme constrained models,
+this is just a direct mapping.
+"""
+Accessors.enzyme_variables(model::EnzymeConstrainedModel) = Dict(
+    gid => Dict(gid => 1.0) for gid in genes(model)
+) # this is enough for all the semantics to work
+
+"""
+$(TYPEDSIGNATURES)
+
 Return the coupling of [`EnzymeConstrainedModel`](@ref). That combines the coupling of the
 wrapped model, coupling for split (arm) reactions, and the coupling for the total
 enzyme capacity.
