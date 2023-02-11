@@ -24,11 +24,7 @@
             ReactionForward("r9", Dict("m8" => -1)),
             # ReactionForward("r10", Dict("m6" => -1)),
             ReactionForward("r11", Dict("m2" => -1, "m3" => -1, "m7" => -1)),
-            ReactionBidirectional(
-                "r12",
-                Dict("m3" => -1, "m5" => 1);
-                default_bound = 10,
-            ),
+            ReactionBidirectional("r12", Dict("m3" => -1, "m5" => 1); default_bound = 10),
         ],
     )
 

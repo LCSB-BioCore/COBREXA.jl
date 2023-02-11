@@ -37,7 +37,7 @@ a dictionary mapping metabolite ids to stoichiometric coefficients. The
 `default_bound` is the value taken to mean infinity in the context of constraint
 based models, often this is set to a very high flux value like 1000.
 
-See also: [`Reaction`](@ref), [`ReactionBackward`](@ref), [`ReactionBidirectional`](@ref) 
+See also: [`Reaction`](@ref), [`ReactionBackward`](@ref), [`ReactionBidirectional`](@ref)
 """
 ReactionForward(id::String, metabolites; default_bound = constants.default_reaction_bound) =
     Reaction(id; metabolites = metabolites, lower_bound = 0.0, upper_bound = default_bound)
@@ -51,7 +51,7 @@ a dictionary mapping metabolite ids to stoichiometric coefficients. The
 `default_bound` is the value taken to mean infinity in the context of constraint
 based models, often this is set to a very high flux value like 1000.
 
-See also: [`Reaction`](@ref), [`ReactionForward`](@ref), [`ReactionBidirectional`](@ref) 
+See also: [`Reaction`](@ref), [`ReactionForward`](@ref), [`ReactionBidirectional`](@ref)
 """
 ReactionBackward(
     id::String,
@@ -69,7 +69,7 @@ coefficients. The `default_bound` is the value taken to mean infinity in the
 context of constraint based models, often this is set to a very high flux value
 like 1000.
 
-See also: [`Reaction`](@ref), [`ReactionForward`](@ref), [`ReactionBackward`](@ref) 
+See also: [`Reaction`](@ref), [`ReactionForward`](@ref), [`ReactionBackward`](@ref)
 """
 ReactionBidirectional(
     id::String,
