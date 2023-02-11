@@ -122,7 +122,7 @@ flux, such as with separate bidirectional reactions.
 )
 
 @make_variable_semantics(
-    :enzymes,
+    :enzyme,
     "enzyme supplies",
     """
 Certain model types define a supply of enzymes that is typically required to
