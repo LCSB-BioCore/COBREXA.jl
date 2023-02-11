@@ -15,7 +15,7 @@ $(TYPEDSIGNATURES)
 
 Add `rxn` to `model` based on reaction `id`.
 """
-add_reaction!(model::ObjectModel, rxn::Reaction) = add_reactions!(model, [rxn,])
+add_reaction!(model::ObjectModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
 $(TYPEDSIGNATURES)
@@ -38,7 +38,7 @@ $(TYPEDSIGNATURES)
 
 Add `rxn` to `model`, and return a shallow copied version of the model.
 """
-add_reaction(model::ObjectModel, rxn::Reaction) = add_reactions(model, [rxn,]) 
+add_reaction(model::ObjectModel, rxn::Reaction) = add_reactions(model, [rxn])
 
 """
 $(TYPEDSIGNATURES)
@@ -57,7 +57,7 @@ $(TYPEDSIGNATURES)
 
 Add `met` to `model` based on metabolite `id`.
 """
-add_metabolite!(model::ObjectModel, met::Metabolite) = add_metabolites!(model, [met,])
+add_metabolite!(model::ObjectModel, met::Metabolite) = add_metabolites!(model, [met])
 
 """
 $(TYPEDSIGNATURES)
@@ -80,7 +80,7 @@ $(TYPEDSIGNATURES)
 
 Add `met` to `model` and return a shallow copied version of the model.
 """
-add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [met,])
+add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [met])
 
 """
 $(TYPEDSIGNATURES)
@@ -122,7 +122,7 @@ $(TYPEDSIGNATURES)
 
 Add `gene` to `model` and return a shallow copied version of the model.
 """
-add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene,])
+add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene])
 
 """
 $(TYPEDSIGNATURES)
