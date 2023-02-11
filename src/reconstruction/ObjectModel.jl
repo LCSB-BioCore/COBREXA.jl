@@ -99,7 +99,7 @@ $(TYPEDSIGNATURES)
 
 Add `gene` to `model` based on gene `id`.
 """
-add_genes!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
+add_gene!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
 
 """
 $(TYPEDSIGNATURES)
@@ -122,7 +122,7 @@ $(TYPEDSIGNATURES)
 
 Add `gene` to `model` and return a shallow copied version of the model.
 """
-add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene])
+add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene,])
 
 """
 $(TYPEDSIGNATURES)
