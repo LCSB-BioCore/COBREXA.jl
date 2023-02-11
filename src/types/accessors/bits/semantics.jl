@@ -109,7 +109,7 @@ definition of the correspondence of $name and model variables.
 """,
         ),
         :(function $plural(a::AbstractMetabolicModel)::Vector{String}
-            x = collect(keys($mapping))
+            x = collect(keys($mapping(a)))
             sort!(x)
             x
         end),
@@ -129,7 +129,7 @@ vector returned by [`$plural`].
 """,
         ),
         :(function $count(a::AbstractMetabolicModel)::Int
-            length($mapping)
+            length($mapping(a))
         end),
     )
 
