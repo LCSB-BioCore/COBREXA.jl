@@ -15,7 +15,30 @@ $(TYPEDSIGNATURES)
 
 Add `rxn` to `model` based on reaction `id`.
 """
-add_reaction!(model::ObjectModel, rxn::Reaction) = add_reactions!(model, [rxn])
+add_reaction!(model::ObjectModel, rxn::Reaction) = add_reactions!(model, [rxn,])
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `rxns` to `model` and return a shallow copied version of the model.
+"""
+function add_reactions(model::ObjectModel, rxns::Vector{Reaction})
+    m = copy(model)
+
+    m.reactions = copy(m.reactions)
+    for rxn in rxns
+        m.reactions[rxn.id] = rxn
+    end
+
+    return m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `rxn` to `model`, and return a shallow copied version of the model.
+"""
+add_reaction(model::ObjectModel, rxn::Reaction) = add_reactions(model, [rxn,]) 
 
 """
 $(TYPEDSIGNATURES)
@@ -34,7 +57,30 @@ $(TYPEDSIGNATURES)
 
 Add `met` to `model` based on metabolite `id`.
 """
-add_metabolite!(model::ObjectModel, met::Metabolite) = add_metabolites!(model, [met])
+add_metabolite!(model::ObjectModel, met::Metabolite) = add_metabolites!(model, [met,])
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `mets` to `model` and return a shallow copied version of the model.
+"""
+function add_metabolites(model::ObjectModel, mets::Vector{Metabolite})
+    m = copy(model)
+
+    m.metabolites = copy(m.metabolites)
+    for met in mets
+        m.metabolites[met.id] = met
+    end
+
+    return m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `met` to `model` and return a shallow copied version of the model.
+"""
+add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [met,])
 
 """
 $(TYPEDSIGNATURES)
@@ -53,7 +99,30 @@ $(TYPEDSIGNATURES)
 
 Add `gene` to `model` based on gene `id`.
 """
-add_gene!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
+add_genes!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `gns` to `model` and return a shallow copied version of the model.
+"""
+function add_genes(model::ObjectModel, genes::Vector{Gene})
+    m = copy(model)
+
+    m.genes = copy(m.genes)
+    for gn in genes
+        m.genes[gn.id] = gn
+    end
+
+    return m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `gene` to `model` and return a shallow copied version of the model.
+"""
+add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene,])
 
 """
 $(TYPEDSIGNATURES)
