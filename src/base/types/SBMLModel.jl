@@ -139,7 +139,7 @@ function bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
                 if unit != common_unit
                     throw(
                         DomainError(
-                            units_in_sbml,
+                            unit,
                             "The SBML file uses multiple units; loading would need conversion",
                         ),
                     )
