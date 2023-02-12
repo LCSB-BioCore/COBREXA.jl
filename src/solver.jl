@@ -127,13 +127,13 @@ function get_solution(semantics::Val{Semantics}, model::AbstractMetabolicModel, 
     is_solved(opt_model) ? sem_varmtx(model)' * value.(opt_model[:x]) : nothing
 end
 
-get_solution(semantics::Symbol, model::AbstractMetabolicModel, opt_model) = get_solution(Val(semantics), model, opt_model)
+get_solution(semantics::Symbol, model::AbstractMetabolicModel) = opt_model -> get_solution(Val(semantics), model, opt_model)
 
 function get_solution_dict(semantics::Val{Semantics}, model::AbstractMetabolicModel, opt_model) where {Semantics}
     sem = Accessors.Internal.get_semantics(semantics)
     isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
     (ids, _, _, sem_varmtx) = sem
-    is_solved(opt_model) ? Dict(ids .=> sem_varmtx(model)' * value.(opt_model[:x])) : nothing
+    is_solved(opt_model) ? Dict(ids(model) .=> sem_varmtx(model)' * value.(opt_model[:x])) : nothing
 end
 
 get_solution_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) = get_solution_dict(Val(semantics), model, opt_model)

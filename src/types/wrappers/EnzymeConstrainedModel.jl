@@ -188,7 +188,7 @@ Accessors.reaction_variables(model::EnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
-Get a mapping of enzyme variables to variables - for enzyme constrained models,
+Get a mapping of enzyme variables to variables -- for enzyme constrained models,
 this is just a direct mapping.
 """
 Accessors.enzyme_variables(model::EnzymeConstrainedModel) = Dict(
