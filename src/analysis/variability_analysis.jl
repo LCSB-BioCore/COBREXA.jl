@@ -208,7 +208,7 @@ function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer
         model,
         optimizer;
         kwargs...,
-        ret = sol -> flux_vector(model, sol),
+        ret = sol -> values(:reaction, model, sol),
     )
     flxs = reactions(model)
     dicts = zip.(Ref(flxs), vs)

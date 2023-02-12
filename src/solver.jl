@@ -120,6 +120,17 @@ solved_objective_value(flux_balance_analysis(model, ...))
 solved_objective_value(opt_model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
 
+"""
+$(TYPEDSIGNATURES)
+
+From the optimized model, returns a vector of values for the selected
+`semantics`. If the model did not solve, returns `nothing`.
+
+# Example
+```
+values(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+```
+"""
 function values(
     semantics::Val{Semantics},
     model::AbstractMetabolicModel,
@@ -131,9 +142,31 @@ function values(
     is_solved(opt_model) ? sem_varmtx(model)' * value.(opt_model[:x]) : nothing
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Convenience variant of [`values`](@ref).
+
+# Example
+```
+values(:reaction, model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+```
+"""
 values(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
     values(Val(semantics), model, opt_model)
 
+"""
+$(TYPEDSIGNATURES)
+
+From the optimized model, returns a dictionary mapping semantic IDs to their
+solved values for the selected `semantics`. If the model did not solve, returns
+`nothing`.
+
+# Example
+```
+values_dict(Val(:reaction), model, flux_balance_analysis(model, ...))
+```
+"""
 function values_dict(
     semantics::Val{Semantics},
     model::AbstractMetabolicModel,
@@ -146,46 +179,30 @@ function values_dict(
     nothing
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Convenience variant of [`values_dict`](@ref).
+
+# Example
+```
+values_dict(:reaction, model, flux_balance_analysis(model, ...))
+```
+"""
 values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
     values_dict(Val(semantics), model, opt_model)
 
 """
 $(TYPEDSIGNATURES)
 
-Returns a vector of fluxes of the model, if solved.
+A pipeable variant of the convenience variant of [`values_dict`](@ref).
 
 # Example
 ```
-flux_vector(flux_balance_analysis(model, ...))
+flux_balance_analysis(model, ...) |> values_dict(:reaction, model)
 ```
 """
-flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} =
-    get_solution(:reaction, model, opt_model)
-
-"""
-$(TYPEDSIGNATURES)
-
-Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
-
-# Example
-```
-flux_dict(model, flux_balance_analysis(model, ...))
-```
-"""
-flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
-    get_solution_dict(:reaction, model, opt_model)
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of `flux_dict`.
-
-# Example
-```
-flux_balance_analysis(model, ...) |> flux_dict(model)
-```
-"""
-flux_dict(model::AbstractMetabolicModel) = opt_model -> flux_dict(model, opt_model)
+values_dict(semantics::Symbol, model::AbstractMetabolicModel) = opt_model -> values_dict(Val(semantics), model, opt_model)
 
 @export_locals
 end

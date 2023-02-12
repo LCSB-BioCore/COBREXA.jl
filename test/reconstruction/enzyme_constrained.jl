@@ -57,8 +57,8 @@
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    rxn_fluxes = flux_dict(gm, opt_model)
-    prot_concens = gene_product_dict(gm, opt_model)
+    rxn_fluxes = values_dict(:reaction, (gm, opt_model))
+    prot_concens = values(gm, opt_model)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
@@ -147,8 +147,8 @@ end
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    rxn_fluxes = flux_dict(gm, opt_model)
-    gene_products = gene_product_dict(gm, opt_model)
+    rxn_fluxes = values_dict(:reaction, gm, opt_model)
+    gene_products = values_dict(:enzyme, gm, opt_model)
     mass_groups = gene_product_mass_group_dict(gm, opt_model)
 
     @test isapprox(rxn_fluxes["r6"], 3.181818181753438, atol = TEST_TOLERANCE)

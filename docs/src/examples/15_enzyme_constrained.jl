@@ -81,11 +81,11 @@ opt_model = flux_balance_analysis(enzyme_constrained_model, GLPK.Optimizer)
 
 # Get the fluxes
 
-flux_sol = flux_dict(enzyme_constrained_model, opt_model)
+flux_sol = values_dict(:reaction, enzyme_constrained_model, opt_model)
 
 # Get the gene product concentrations
 
-gp_concs = gene_product_dict(enzyme_constrained_model, opt_model)
+gp_concs = values_dict(:enzyme, enzyme_constrained_model, opt_model)
 
 # Get the total masses assigned to each mass group
 
