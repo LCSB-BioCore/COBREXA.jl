@@ -31,35 +31,53 @@ Reaction(id; kwargs...) = Reaction(; id, kwargs...)
 """
 $(TYPEDSIGNATURES)
 
-Convenience constructor for `Reaction`. The reaction equation is specified using
-`metabolites`, which is a dictionary mapping metabolite ids to stoichiometric
-coefficients. The direcion of the reaction is set through `dir` which can take
-`:bidirectional`, `:forward`, and `:backward` as values. Finally, the
+Convenience constructor for `Reaction` that generates a reaction constrained to
+carry flux only in the forward direction relative to the `metabolites`, which is
+a dictionary mapping metabolite ids to stoichiometric coefficients. The
 `default_bound` is the value taken to mean infinity in the context of constraint
 based models, often this is set to a very high flux value like 1000.
+
+See also: [`Reaction`](@ref), [`ReactionBackward`](@ref), [`ReactionBidirectional`](@ref)
 """
-function Reaction(
+ReactionForward(id::String, metabolites; default_bound = constants.default_reaction_bound) =
+    Reaction(id; metabolites = metabolites, lower_bound = 0.0, upper_bound = default_bound)
+
+"""
+$(TYPEDSIGNATURES)
+
+Convenience constructor for `Reaction` that generates a reaction constrained to
+carry flux only in the backward direction relative to the `metabolites`, which is
+a dictionary mapping metabolite ids to stoichiometric coefficients. The
+`default_bound` is the value taken to mean infinity in the context of constraint
+based models, often this is set to a very high flux value like 1000.
+
+See also: [`Reaction`](@ref), [`ReactionForward`](@ref), [`ReactionBidirectional`](@ref)
+"""
+ReactionBackward(
     id::String,
-    metabolites,
-    dir = :bidirectional;
+    metabolites;
     default_bound = constants.default_reaction_bound,
+) = Reaction(id; metabolites = metabolites, lower_bound = -default_bound, upper_bound = 0.0)
+
+"""
+$(TYPEDSIGNATURES)
+
+Convenience constructor for `Reaction` that generates a reaction constrained to
+carry flux in both the forward and backward direction relative to the
+`metabolites`, which is a dictionary mapping metabolite ids to stoichiometric
+coefficients. The `default_bound` is the value taken to mean infinity in the
+context of constraint based models, often this is set to a very high flux value
+like 1000.
+
+See also: [`Reaction`](@ref), [`ReactionForward`](@ref), [`ReactionBackward`](@ref)
+"""
+ReactionBidirectional(
+    id::String,
+    metabolites;
+    default_bound = constants.default_reaction_bound,
+) = Reaction(
+    id;
+    metabolites = metabolites,
+    lower_bound = -default_bound,
+    upper_bound = default_bound,
 )
-    if dir == :forward
-        lower_bound = 0.0
-        upper_bound = default_bound
-    elseif dir == :backward
-        lower_bound = -default_bound
-        upper_bound = 0.0
-    elseif dir == :bidirectional
-        lower_bound = -default_bound
-        upper_bound = default_bound
-    else
-        throw(DomainError(dir, "unsupported direction"))
-    end
-    Reaction(
-        id;
-        metabolites = metabolites,
-        lower_bound = lower_bound,
-        upper_bound = upper_bound,
-    )
-end

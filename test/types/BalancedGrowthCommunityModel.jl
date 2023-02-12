@@ -14,11 +14,11 @@
     add_reactions!(
         m1,
         [
-            Reaction("EX_A", Dict("Ae" => -1), :bidirectional),
-            Reaction("r1", Dict("Ae" => -1, "A" => 1), :bidirectional),
-            Reaction("r2", Dict("A" => -1, "B" => 1, "X1" => 1), :bidirectional),
-            Reaction("r3", Dict("B" => -1, "Be" => 1), :forward),
-            Reaction("EX_B", Dict("Be" => -1), :forward),
+            ReactionBidirectional("EX_A", Dict("Ae" => -1)),
+            ReactionBidirectional("r1", Dict("Ae" => -1, "A" => 1)),
+            ReactionBidirectional("r2", Dict("A" => -1, "B" => 1, "X1" => 1)),
+            ReactionForward("r3", Dict("B" => -1, "Be" => 1)),
+            ReactionForward("EX_B", Dict("Be" => -1)),
         ],
     )
 
@@ -37,11 +37,11 @@
     add_reactions!(
         m2,
         [
-            Reaction("r3", Dict("C" => -1, "Ce" => 1), :forward),
-            Reaction("EX_C", Dict("Ce" => -1), :forward),
-            Reaction("EX_A", Dict("Ae" => -1), :bidirectional),
-            Reaction("r1", Dict("Ae" => -1, "A" => 1), :bidirectional),
-            Reaction("r2", Dict("A" => -1, "C" => 1, "X2" => 1), :bidirectional),
+            ReactionForward("r3", Dict("C" => -1, "Ce" => 1)),
+            ReactionForward("EX_C", Dict("Ce" => -1)),
+            ReactionBidirectional("EX_A", Dict("Ae" => -1)),
+            ReactionBidirectional("r1", Dict("Ae" => -1, "A" => 1)),
+            ReactionBidirectional("r2", Dict("A" => -1, "C" => 1, "X2" => 1)),
         ],
     )
 

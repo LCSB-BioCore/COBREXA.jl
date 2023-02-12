@@ -13,23 +13,18 @@
     add_reactions!(
         model,
         [
-            Reaction("r1", Dict("m1" => 1), :forward; default_bound = 1),
-            Reaction("r2", Dict("m1" => -1, "m2" => 1), :bidirectional; default_bound = 10),
-            Reaction("r3", Dict("m1" => -1, "m3" => 1), :forward),
-            Reaction("r4", Dict("m2" => -1, "m4" => 1), :bidirectional),
-            # Reaction("r5", Dict("m3" => -1, "m4" => 1), :forward),
-            Reaction("r6", Dict("m4" => -1), :forward),
-            # Reaction("r7", Dict("m2" => -1, "m7" => 1, "m6" => 1), :forward),
-            Reaction("r8", Dict("m7" => -1, "m8" => 1), :forward),
-            Reaction("r9", Dict("m8" => -1), :forward),
-            # Reaction("r10", Dict("m6" => -1), :forward),
-            Reaction("r11", Dict("m2" => -1, "m3" => -1, "m7" => -1), :forward),
-            Reaction(
-                "r12",
-                Dict("m3" => -1, "m5" => 1),
-                :bidirectional;
-                default_bound = 10,
-            ),
+            ReactionForward("r1", Dict("m1" => 1); default_bound = 1),
+            ReactionBidirectional("r2", Dict("m1" => -1, "m2" => 1); default_bound = 10),
+            ReactionForward("r3", Dict("m1" => -1, "m3" => 1)),
+            ReactionBidirectional("r4", Dict("m2" => -1, "m4" => 1)),
+            # ReactionForward("r5", Dict("m3" => -1, "m4" => 1)),
+            ReactionForward("r6", Dict("m4" => -1)),
+            # ReactionForward("r7", Dict("m2" => -1, "m7" => 1, "m6" => 1)),
+            ReactionForward("r8", Dict("m7" => -1, "m8" => 1)),
+            ReactionForward("r9", Dict("m8" => -1)),
+            # ReactionForward("r10", Dict("m6" => -1)),
+            ReactionForward("r11", Dict("m2" => -1, "m3" => -1, "m7" => -1)),
+            ReactionBidirectional("r12", Dict("m3" => -1, "m5" => 1); default_bound = 10),
         ],
     )
 
@@ -37,13 +32,13 @@
 
     add_metabolites!(model, [m1, m2, m3, m4, m5, m7, m8])
 
-    r5 = Reaction("r5", Dict("m3" => -1, "m4" => 1), :forward)
-    r7 = Reaction("r7", Dict("m2" => -1, "m7" => 1, "m6" => 1), :forward)
-    r10 = Reaction("r10", Dict("m6" => -1), :forward)
-    rA = Reaction("rA", Dict("m1" => -1, "m2" => 1, "m3" => 1), :forward)
-    rB = Reaction("rB", Dict("m2" => -1, "m9" => 1), :forward)
-    rC = Reaction("rC", Dict("m9" => -1, "m10" => 1), :bidirectional)
-    rD = Reaction("rC", Dict("m10" => -1), :backward)
+    r5 = ReactionForward("r5", Dict("m3" => -1, "m4" => 1))
+    r7 = ReactionForward("r7", Dict("m2" => -1, "m7" => 1, "m6" => 1))
+    r10 = ReactionForward("r10", Dict("m6" => -1))
+    rA = ReactionForward("rA", Dict("m1" => -1, "m2" => 1, "m3" => 1))
+    rB = ReactionForward("rB", Dict("m2" => -1, "m9" => 1))
+    rC = ReactionBidirectional("rC", Dict("m9" => -1, "m10" => 1))
+    rD = ReactionBackward("rC", Dict("m10" => -1))
 
     universal_reactions = [r5, r7, r10, rA, rB, rC, rD]
 

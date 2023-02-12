@@ -34,17 +34,17 @@ add_metabolites!(model, metabolite_list)
 
 # ### Add reactions to the model
 
-r_m1 = Reaction("EX_m1", Dict("m1" => -1.0), :bidirectional) # exchange reaction: m1 <-> (is the same as m1 ↔ nothing)
-r1 = Reaction("r1", Dict("m1" => -1.0, "m2" => 1.0), :forward)
+r_m1 = ReactionBidirectional("EX_m1", Dict("m1" => -1.0)) # exchange reaction: m1 <-> (is the same as m1 ↔ nothing)
+r1 = ReactionForward("r1", Dict("m1" => -1.0, "m2" => 1.0))
 r1.gene_associations = [Isozyme(["g1", "g2"]), Isozyme(["g3"])] # add some gene reaction rules
-r2 = Reaction("r2", Dict("m2" => -1.0, "m1" => 1.0), :backward)
-r3 = Reaction("r3", Dict("m2" => -1.0, "m3" => 1.0), :bidirectional)
-r4 = Reaction("r3", Dict("m2" => -1.0, "m4" => 1.0), :forward)
-r_m3 = Reaction("r3", Dict("m3" => -1.0), :bidirectional)
-r_m4 = Reaction("r3", Dict("m4" => -1.0), :forward)
-r5 = Reaction("r5", Dict("m4" => -1.0, "m2" => 1.0), :forward)
+r2 = ReactionBackward("r2", Dict("m2" => -1.0, "m1" => 1.0))
+r3 = ReactionBidirectional("r3", Dict("m2" => -1.0, "m3" => 1.0))
+r4 = ReactionForward("r3", Dict("m2" => -1.0, "m4" => 1.0))
+r_m3 = ReactionBidirectional("r3", Dict("m3" => -1.0))
+r_m4 = ReactionForward("r3", Dict("m4" => -1.0))
+r5 = ReactionForward("r5", Dict("m4" => -1.0, "m2" => 1.0))
 
-add_reactions!(model, [r1, r2, r3, r_m1, r4, r_m3, r_m4, r5]) # function approach
+add_reactions!(model, [r1, r2, r3, r_m1, r4, r_m3, r_m4, r5])
 
 m1 = metabolite_list[1]
 m2 = metabolite_list[2]

@@ -17,12 +17,12 @@
     g6 = Gene("g6")
     g7 = Gene("g7")
 
-    r1 = Reaction("r1", Dict(m1.id => -1.0, m2.id => 1.0), :forward)
-    r2 = Reaction("r2", Dict(m2.id => -2.0, m3.id => 1.0), :bidirectional)
+    r1 = ReactionForward("r1", Dict(m1.id => -1.0, m2.id => 1.0))
+    r2 = ReactionBidirectional("r2", Dict(m2.id => -2.0, m3.id => 1.0))
     r2.gene_associations = [Isozyme(x) for x in [["g2"], ["g1", "g3"]]]
-    r3 = Reaction("r3", Dict(m1.id => -1.0, m4.id => 2.0), :backward)
-    r4 = Reaction("r4", Dict(m1.id => -5.0, m4.id => 2.0), :backward)
-    r5 = Reaction("r5", Dict(m1.id => -11.0, m4.id => 2.0, m3.id => 2.0), :backward)
+    r3 = ReactionBackward("r3", Dict(m1.id => -1.0, m4.id => 2.0))
+    r4 = ReactionBackward("r4", Dict(m1.id => -5.0, m4.id => 2.0))
+    r5 = ReactionBackward("r5", Dict(m1.id => -11.0, m4.id => 2.0, m3.id => 2.0))
 
     rxns = [r1, r2]
 
