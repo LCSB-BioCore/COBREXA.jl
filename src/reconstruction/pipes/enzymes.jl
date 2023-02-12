@@ -15,8 +15,8 @@ Specifies a model variant which adds extra semantics of the EnzymeConstrained al
 giving a [`EnzymeConstrainedModel`](@ref). The arguments are forwarded to
 [`make_enzyme_constrained_model`](@ref). Intended for usage with [`screen`](@ref).
 """
-with_enzyme_constraints(; kwargs...) =
-    model -> make_enzyme_constrained_model(model; kwargs...)
+with_enzyme_constraints(args...; kwargs...) =
+    model -> make_enzyme_constrained_model(model, args...; kwargs...)
 
 """
 $(TYPEDSIGNATURES)
