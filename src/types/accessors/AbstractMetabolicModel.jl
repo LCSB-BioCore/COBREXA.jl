@@ -156,7 +156,7 @@ to make thermodynamic calculations easier.
     "Gibbs free energy of reaction",
     """
 Thermodynamic models need to ensure that the ΔG of each reaction is negative
-(2nd law of thermodynamics). This semantic grouping represents ΔGᵣ. 
+(2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
 """
 )
 

@@ -34,43 +34,41 @@ $(TYPEDFIELDS)
 Base.@kwdef mutable struct MaxMinDrivingForceModel <: AbstractModelWrapper
     "A dictionary mapping ΔrG⁰ to reactions."
     reaction_standard_gibbs_free_energies::Dict{String,Float64} = Dict{String,Float64}()
-    
+
     "A cycle-free reference flux solution that is used to set the directions of the reactions."
     flux_solution::Dict{String,Float64} = Dict{String,Float64}()
-    
+
     "Metabolite ids of protons."
     proton_ids::Vector{String} = ["h_c", "h_e"]
-    
+
     "Metabolite ids of water."
     water_ids::Vector{String} = ["h2o_c", "h2o_e"]
-    
+
     "A dictionationay mapping metabolite ids to concentrations that are held constant."
     constant_concentrations::Dict{String,Float64} = Dict{String,Float64}()
-    
+
     "A dictionary mapping metabolite ids to constant concentration ratios in the form `(m1, m2) = r === m1/m2 = r`."
-    concentration_ratios::Dict{Tuple{String,String},Float64} = Dict{
-        Tuple{String,String},
-        Float64,
-    }()
-    
+    concentration_ratios::Dict{Tuple{String,String},Float64} =
+        Dict{Tuple{String,String},Float64}()
+
     "Global metabolite concentration lower bound."
     concentration_lb = 1e-9
-    
+
     "Global metabolite concentration upper bound."
     concentration_ub = 100e-3
-    
+
     "Thermodynamic temperature."
     T::Float64 = constants.T
-    
+
     "Real gas constant."
     R::Float64 = constants.R
-    
+
     "Tolerance use to distinguish flux carrying reactions from zero flux reactions."
     small_flux_tol::Float64 = 1e-6
 
     "Maximum absolute ΔG bound allowed by a reaction."
     max_dg_bound::Float64 = 1000.0
-    
+
     "Reaction ids that are ignored internally during thermodynamic calculations. This should include water and proton importers."
     ignore_reaction_ids::Vector{String} = String[]
 
@@ -87,14 +85,16 @@ The variables for max-min driving force analysis are the actual maximum minimum
 driving force of the model, the log metabolite concentrations, and the gibbs
 free energy reaction potentials across each reaction.
 """
-Accessors.variables(model::MaxMinDrivingForceModel) = ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
+Accessors.variables(model::MaxMinDrivingForceModel) =
+    ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
 
 """
 $(TYPEDSIGNATURES)
 
 Helper function that returns the unmangled variable IDs.
 """
-get_unmangled_variables(model::MaxMinDrivingForceModel) = ["mmdf"; metabolites(model); reactions(model)]
+get_unmangled_variables(model::MaxMinDrivingForceModel) =
+    ["mmdf"; metabolites(model); reactions(model)]
 
 """
 $(TYPEDSIGNATURES)
@@ -102,7 +102,8 @@ $(TYPEDSIGNATURES)
 The number of variables is 1 + the number of metabolites + the number of
 reactions, where the 1 comes from the total max-min driving force.
 """
-Accessors.n_variables(model::MaxMinDrivingForceModel) = 1 + n_metabolites(model) + n_reactions(model)
+Accessors.n_variables(model::MaxMinDrivingForceModel) =
+    1 + n_metabolites(model) + n_reactions(model)
 
 """
 $(TYPEDSIGNATURES)
@@ -120,13 +121,15 @@ Gibbs free energy of reaction mapping to model variables.
 Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
     Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reactions(model))
 
+
 """
 $(TYPEDSIGNATURES)
 
 For this kind of the model, the objective is the the max-min-driving force which
 is at index 1 in the variables.
 """
-Accessors.objective(model::MaxMinDrivingForceModel) = [1.0; fill(0.0, n_variables(model)-1)]
+Accessors.objective(model::MaxMinDrivingForceModel) =
+    [1.0; fill(0.0, n_variables(model) - 1)]
 
 """
 $(TYPEDSIGNATURES)
@@ -145,7 +148,10 @@ function Accessors.balance(model::MaxMinDrivingForceModel)
     const_ratio_vec = log.(collect(values(model.concentration_ratios)))
 
     # give dummy dG0 for reactions that don't have data
-    dg0s = [get(model.reaction_standard_gibbs_free_energies, rid, 0.0) for rid in reactions(model)]
+    dg0s = [
+        get(model.reaction_standard_gibbs_free_energies, rid, 0.0) for
+        rid in reactions(model)
+    ]
 
     return [
         proton_water_vec
@@ -177,7 +183,8 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     ids = collect(keys(model.constant_concentrations))
     idxs = indexin(ids, var_ids)
     for (i, j) in enumerate(idxs)
-        isnothing(j) && throw(DomainError(ids[j], "Constant metabolite ID not found in model."))
+        isnothing(j) &&
+            throw(DomainError(ids[j], "Constant metabolite ID not found in model."))
         const_conc_mat[i, j] = 1.0
     end
 
@@ -185,7 +192,8 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     const_ratio_mat = spzeros(length(model.concentration_ratios), n_variables(model))
     for (i, (mid1, mid2)) in enumerate(keys(model.concentration_ratios))
         idxs = indexin([mid1, mid2], var_ids)
-        any(isnothing.(idxs)) && throw(DomainError((mid1, mid2), "Metabolite ratio pair not found in model."))
+        any(isnothing.(idxs)) &&
+            throw(DomainError((mid1, mid2), "Metabolite ratio pair not found in model."))
         const_ratio_mat[i, first(idxs)] = 1.0
         const_ratio_mat[i, last(idxs)] = -1.0
     end
@@ -218,7 +226,7 @@ function Accessors.bounds(model::MaxMinDrivingForceModel)
     # mmdf must be positive for problem to be feasible (it is defined as -ΔG)
     lbs[1] = 0.0
     ubs[1] = 1000.0
-    
+
     # log concentrations
     lbs[2:(1+n_metabolites(model))] .= log(model.concentration_lb)
     ubs[2:(1+n_metabolites(model))] .= log(model.concentration_ub)
@@ -243,7 +251,8 @@ ignored.
 _get_active_reaction_ids(model::MaxMinDrivingForceModel) = filter(
     rid ->
         haskey(model.reaction_standard_gibbs_free_energies, rid) &&
-            abs(get(model.flux_solution, rid, model.small_flux_tol / 2)) > model.small_flux_tol &&
+            abs(get(model.flux_solution, rid, model.small_flux_tol / 2)) >
+            model.small_flux_tol &&
             !(rid in model.ignore_reaction_ids),
     reactions(model),
 )
@@ -251,7 +260,7 @@ _get_active_reaction_ids(model::MaxMinDrivingForceModel) = filter(
 """
 $(TYPEDSIGNATURES)
 
-Return the coupling of a max-min driving force model. 
+Return the coupling of a max-min driving force model.
 """
 function Accessors.coupling(model::MaxMinDrivingForceModel)
 
@@ -264,7 +273,7 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
     for (i, j) in enumerate(idxs)
         flux_signs[i, j] = sign(model.flux_solution[reactions(model)[j]])
     end
-    
+
     neg_dg_mat = [
         spzeros(length(idxs)) spzeros(length(idxs), n_metabolites(model)) flux_signs
     ]
@@ -272,9 +281,9 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
     mmdf_mat = sparse(
         [
             -ones(length(idxs)) spzeros(length(idxs), n_metabolites(model)) -flux_signs
-        ]
+        ],
     )
-    
+
     return [
         neg_dg_mat
         mmdf_mat
@@ -294,120 +303,5 @@ function Accessors.coupling_bounds(model::MaxMinDrivingForceModel)
     mmdf_lb = fill(0.0, n)
     mmdf_ub = fill(model.max_dg_bound, n)
 
-    return (
-        [neg_dg_lb; mmdf_lb],
-        [neg_dg_ub; mmdf_ub]
-    )
+    return ([neg_dg_lb; mmdf_lb], [neg_dg_ub; mmdf_ub])
 end
-
-# function Accessors.
-
-# """
-# $(TYPEDSIGNATURES)
-
-# Perform a variant of flux variability analysis on a max min driving force type problem.
-# Arguments are forwarded to [`max_min_driving_force`](@ref). Calls [`screen`](@ref)
-# internally and possibly distributes computation across `workers`. If
-# `optimal_objective_value = nothing`, the function first performs regular max min driving
-# force analysis to find the max min driving force of the model and sets this to
-# `optimal_objective_value`. Then iteratively maximizes and minimizes the driving force across
-# each reaction, and then the concentrations while staying close to the original max min
-# driving force as specified in `bounds`.
-
-# The `bounds` is a user-supplied function that specifies the max min driving force bounds for
-# the variability optimizations, by default it restricts the flux objective value to the
-# precise optimum reached in the normal max min driving force analysis. It can return `-Inf`
-# and `Inf` in first and second pair to remove the limit. Use [`gamma_bounds`](@ref) and
-# [`objective_bounds`](@ref) for simple bounds.
-
-# Returns a matrix of solutions to [`max_min_driving_force`](@ref) additionally constrained as
-# described above, where the rows are in the order of the reactions and then the metabolites
-# of the `model`. For the reaction rows the first column is the maximum dG of that reaction,
-# and the second column is the minimum dG of that reaction subject to the above constraints.
-# For the metabolite rows, the first column is the maximum concentration, and the second column
-# is the minimum concentration subject to the constraints above.
-# """
-# function max_min_driving_force_variability(
-#     model::AbstractMetabolicModel,
-#     reaction_standard_gibbs_free_energies::Dict{String,Float64},
-#     optimizer;
-#     workers = [myid()],
-#     optimal_objective_value = nothing,
-#     bounds = z -> (z, Inf),
-#     modifications = [],
-#     kwargs...,
-# )
-#     if isnothing(optimal_objective_value)
-#         initsol = max_min_driving_force(
-#             model,
-#             reaction_standard_gibbs_free_energies,
-#             optimizer;
-#             modifications,
-#             kwargs...,
-#         )
-#         mmdf = initsol.mmdf
-#     else
-#         mmdf = optimal_objective_value
-#     end
-
-#     lb, ub = bounds(mmdf)
-
-#     dgr_variants = [
-#         [[_mmdf_add_df_bound(lb, ub), _mmdf_dgr_objective(ridx, sense)]] for
-#         ridx = 1:n_variables(model), sense in [MAX_SENSE, MIN_SENSE]
-#     ]
-#     concen_variants = [
-#         [[_mmdf_add_df_bound(lb, ub), _mmdf_concen_objective(midx, sense)]] for
-#         midx = 1:n_metabolites(model), sense in [MAX_SENSE, MIN_SENSE]
-#     ]
-
-#     return screen(
-#         model;
-#         args = [dgr_variants; concen_variants],
-#         analysis = (m, args) -> max_min_driving_force(
-#             m,
-#             reaction_standard_gibbs_free_energies,
-#             optimizer;
-#             modifications = [args; modifications],
-#             kwargs...,
-#         ),
-#         workers,
-#     )
-# end
-
-# """
-# $(TYPEDSIGNATURES)
-
-# Helper function to change the objective to optimizing some dG.
-# """
-# function _mmdf_dgr_objective(ridx, sense)
-#     (model, opt_model) -> begin
-#         @objective(opt_model, sense, opt_model[:dgrs][ridx])
-#     end
-# end
-
-# """
-# $(TYPEDSIGNATURES)
-
-# Helper function to change the objective to optimizing some concentration.
-# """
-# function _mmdf_concen_objective(midx, sense)
-#     (model, opt_model) -> begin
-#         @objective(opt_model, sense, opt_model[:logcs][midx])
-#     end
-# end
-
-# """
-# $(TYPEDSIGNATURES)
-
-# Helper function to add a new constraint on the driving force.
-# """
-# function _mmdf_add_df_bound(lb, ub)
-#     (model, opt_model) -> begin
-#         if lb == ub
-#             fix(opt_model[:mmdf], lb; force = true)
-#         else
-#             @constraint(opt_model, lb <= opt_model[:mmdf] <= ub)
-#         end
-#     end
-# end
