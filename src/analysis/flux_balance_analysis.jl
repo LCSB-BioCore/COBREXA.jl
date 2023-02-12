@@ -22,7 +22,7 @@ $(TYPEDSIGNATURES)
 A variant of FBA that returns a dictionary assigning fluxes to reactions, if
 the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
 
-This function is kept for backwards compatibility, use [`values_vec_dict`](@ref)
+This function is kept for backwards compatibility, use [`values_dict`](@ref)
 instead.
 """
 flux_balance_analysis_dict(

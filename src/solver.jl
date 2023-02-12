@@ -182,7 +182,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Convenience variant of [`values_vec_dict`](@ref).
+Convenience variant of [`values_dict`](@ref).
 
 # Example
 ```
@@ -195,7 +195,7 @@ values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
 """
 $(TYPEDSIGNATURES)
 
-A pipeable variant of the convenience variant of [`values_vec_dict`](@ref).
+A pipeable variant of the convenience variant of [`values_dict`](@ref).
 
 # Example
 ```

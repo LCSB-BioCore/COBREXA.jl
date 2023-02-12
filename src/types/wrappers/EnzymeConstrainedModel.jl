@@ -197,6 +197,21 @@ Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
+Get a mapping of enzyme groups to variables.
+"""
+function Accessors.enzyme_group_variables(model::EnzymeConstrainedModel)
+    enz_ids = genes(model)
+    Dict(
+        grp.group_id => Dict(
+            enz_ids[idx] => mm for
+            (idx, mm) in zip(grp.gene_product_idxs, grp.gene_product_molar_masses)
+        ) for grp in model.coupling_row_mass_group
+    )
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Return the coupling of [`EnzymeConstrainedModel`](@ref). That combines the coupling of the
 wrapped model, coupling for split (arm) reactions, and the coupling for the total
 enzyme capacity.

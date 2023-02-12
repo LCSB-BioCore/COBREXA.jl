@@ -89,7 +89,7 @@ gp_concs = values_dict(:enzyme, enzyme_constrained_model, opt_model)
 
 # Get the total masses assigned to each mass group
 
-gene_product_mass_group_dict(enzyme_constrained_model, opt_model)
+values_dict(:enzyme_group, enzyme_constrained_model, opt_model)
 
 # Variability:
 

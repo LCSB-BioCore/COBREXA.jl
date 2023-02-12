@@ -131,6 +131,16 @@ these values.
 """
 )
 
+@make_variable_semantics(
+    :enzyme_group,
+    "enzyme group",
+    """
+Certain model types use enzymes to catalyze reactions. These enzymes typically
+have capacity limitations (e.g. membrane or cytosol density constraints). Enzyme
+groups collect these sets of enzymes for convenient analysis.
+"""
+)
+
 """
 $(TYPEDSIGNATURES)
 

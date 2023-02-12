@@ -58,7 +58,7 @@
     )
 
     rxn_fluxes = values_dict(:reaction, gm, opt_model)
-    prot_concens = values(gm, opt_model)
+    prot_concens = values_dict(:enzyme, gm, opt_model)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
@@ -67,7 +67,7 @@
     )
 
     prot_mass = sum(ecoli_core_gene_product_masses[gid] * c for (gid, c) in prot_concens)
-    mass_groups = gene_product_mass_group_dict(gm, opt_model)
+    mass_groups = values_dict(:enzyme_group, gm, opt_model)
 
     @test isapprox(prot_mass, total_gene_product_mass, atol = TEST_TOLERANCE)
     @test isapprox(prot_mass, mass_groups["uncategorized"], atol = TEST_TOLERANCE)
@@ -83,7 +83,7 @@
             change_optimizer_attribute("IPM_IterationsLimit", 1000),
         ],
     )
-    mass_groups_min = gene_product_mass_group_dict(gm, opt_model)
+    mass_groups_min = values_dict(:enzyme_group, gm, opt_model)
     @test mass_groups_min["uncategorized"] < mass_groups["uncategorized"]
 end
 
@@ -149,7 +149,7 @@ end
 
     rxn_fluxes = values_dict(:reaction, gm, opt_model)
     gene_products = values_dict(:enzyme, gm, opt_model)
-    mass_groups = gene_product_mass_group_dict(gm, opt_model)
+    mass_groups = values_dict(:enzyme_group, gm, opt_model)
 
     @test isapprox(rxn_fluxes["r6"], 3.181818181753438, atol = TEST_TOLERANCE)
     @test isapprox(gene_products["g4"], 0.09090909090607537, atol = TEST_TOLERANCE)
