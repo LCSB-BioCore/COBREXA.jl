@@ -45,7 +45,6 @@ function flux_balance_analysis(model::AbstractMetabolicModel, optimizer; modific
     ModelWithResult(model, opt_model)
 end
 
-
 """
 $(TYPEDSIGNATURES)
 
