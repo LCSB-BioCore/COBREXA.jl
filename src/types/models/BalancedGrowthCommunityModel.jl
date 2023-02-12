@@ -123,7 +123,10 @@ Accessors.genes(cm::BalancedGrowthCommunityModel) =
 $(TYPEDSIGNATURES)
 Return the balance of `cm`, which is a [`BalancedGrowthCommunityModel`](@ref).
 """
-Accessors.balance(cm::BalancedGrowthCommunityModel) = [vcat([balance(m.model) .* m.abundance for m in cm.members]...); spzeros(length(get_env_mets(cm)))]
+Accessors.balance(cm::BalancedGrowthCommunityModel) = [
+    vcat([balance(m.model) .* m.abundance for m in cm.members]...)
+    spzeros(length(get_env_mets(cm)))
+]
 
 """
 $(TYPEDSIGNATURES)
