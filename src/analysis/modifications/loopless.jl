@@ -28,11 +28,14 @@ add_loopless_constraints(;
     (model, opt_model) -> begin
 
         internal_rxn_idxs = [
-            ridx for (ridx, rid) in enumerate(variables(model)) if
+            ridx for (ridx, rid) in enumerate(reactions(model)) if
             !is_boundary(reaction_stoichiometry(model, rid))
         ]
+        
+        metabolite_ids = metabolites(model)
+        metaboite_idxs = indexin(metabolite_ids, constraints(model)) # TODO need a function that names all the constraints
 
-        N_int = nullspace(Array(stoichiometry(model)[:, internal_rxn_idxs])) # no sparse nullspace function
+        N_int = nullspace(Array(stoichiometry(model)[metabolite_idxs, internal_rxn_idxs])) # no sparse nullspace function
 
         y = @variable(opt_model, y[1:length(internal_rxn_idxs)], Bin)
         G = @variable(opt_model, G[1:length(internal_rxn_idxs)]) # approx ΔG for internal reactions
