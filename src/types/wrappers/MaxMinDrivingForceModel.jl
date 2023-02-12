@@ -35,7 +35,7 @@ Base.@kwdef mutable struct MaxMinDrivingForceModel <: AbstractModelWrapper
     "A dictionary mapping ΔrG⁰ to reactions."
     reaction_standard_gibbs_free_energies::Dict{String,Float64} = Dict{String,Float64}()
 
-    "A cycle-free reference flux solution that is used to set the directions of the reactions."
+    "A cycle-free reference reaction flux solution that is used to set the directions of the reactions. For example, this could be generated this using loopless FBA."
     flux_solution::Dict{String,Float64} = Dict{String,Float64}()
 
     "Metabolite ids of protons."
@@ -87,14 +87,6 @@ free energy reaction potentials across each reaction.
 """
 Accessors.variables(model::MaxMinDrivingForceModel) =
     ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
-
-"""
-$(TYPEDSIGNATURES)
-
-Helper function that returns the unmangled variable IDs.
-"""
-get_unmangled_variables(model::MaxMinDrivingForceModel) =
-    ["mmdf"; metabolites(model); reactions(model)]
 
 """
 $(TYPEDSIGNATURES)
@@ -167,7 +159,7 @@ $(TYPEDSIGNATURES)
 Get the equality constraint lhs of `model`.
 """
 function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
-    var_ids = get_unmangled_variables(model)
+    var_ids = Internal.original_variables(model)
 
     # set proton and water equality constraints
     num_proton_water = length(model.proton_ids) + length(model.water_ids)
@@ -218,7 +210,7 @@ $(TYPEDSIGNATURES)
 Get the simple variable bounds of `model`.
 """
 function Accessors.bounds(model::MaxMinDrivingForceModel)
-    var_ids = get_unmangled_variables(model)
+    var_ids = Internal.original_variables(model)
 
     lbs = fill(-model.max_dg_bound, n_variables(model))
     ubs = fill(model.max_dg_bound, n_variables(model))
@@ -244,28 +236,12 @@ end
 """
 $(TYPEDSIGNATURES)
 
-A helper function that returns the reaction ids that are active. Active reaction
-have thermodynamic data AND a flux bigger than `small_flux_tol` AND are not
-ignored.
-"""
-_get_active_reaction_ids(model::MaxMinDrivingForceModel) = filter(
-    rid ->
-        haskey(model.reaction_standard_gibbs_free_energies, rid) &&
-            abs(get(model.flux_solution, rid, model.small_flux_tol / 2)) >
-            model.small_flux_tol &&
-            !(rid in model.ignore_reaction_ids),
-    reactions(model),
-)
-
-"""
-$(TYPEDSIGNATURES)
-
 Return the coupling of a max-min driving force model.
 """
 function Accessors.coupling(model::MaxMinDrivingForceModel)
 
     # only constrain reactions that have thermo data
-    active_rids = _get_active_reaction_ids(model)
+    active_rids = Internal.active_reaction_ids(model)
     idxs = Int.(indexin(active_rids, reactions(model)))
 
     # thermodynamic sign should correspond to the fluxes
@@ -296,7 +272,7 @@ $(TYPEDSIGNATURES)
 Return the coupling bounds of a max-min driving force model.
 """
 function Accessors.coupling_bounds(model::MaxMinDrivingForceModel)
-    n = length(_get_active_reaction_ids(model))
+    n = length(Internal.active_reaction_ids(model))
     neg_dg_lb = fill(-model.max_dg_bound, n)
     neg_dg_ub = fill(0.0, n)
 
