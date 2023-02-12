@@ -32,7 +32,7 @@ model = load_model(ObjectModel, "e_coli_core.json")
 # faster) in certain situations:
 
 flux1 = flux_balance_analysis_vec(
-    model |> with_changed_bound("FBA", lower = 0.0, upper = 0.0),
+    model |> with_changed_bound("FBA", lower_bound = 0.0, upper_bound = 0.0),
     GLPK.Optimizer,
 );
 
@@ -77,8 +77,8 @@ running_reactions = [(rid, x) for (rid, x) in original_flux if abs(x) > 1e-3]
 screen(
     model,
     variants = [
-        [with_changed_bound(rid, lower = -0.5 * abs(x), upper = 0.5 * abs(x))] for
-        (rid, x) in running_reactions
+        [with_changed_bound(rid, lower_bound = -0.5 * abs(x), upper_bound = 0.5 * abs(x))]
+        for (rid, x) in running_reactions
     ],
     args = running_reactions,
     analysis = (m, rid, _) ->
@@ -106,8 +106,16 @@ biomass_mtx = screen(
     model,
     variants = [
         [
-            with_changed_bound(rid1, lower = -0.5 * abs(x1), upper = 0.5 * abs(x1)),
-            with_changed_bound(rid2, lower = -0.5 * abs(x2), upper = 0.5 * abs(x2)),
+            with_changed_bound(
+                rid1,
+                lower_bound = -0.5 * abs(x1),
+                upper_bound = 0.5 * abs(x1),
+            ),
+            with_changed_bound(
+                rid2,
+                lower_bound = -0.5 * abs(x2),
+                upper_bound = 0.5 * abs(x2),
+            ),
         ] for (rid1, rid2, x1, x2) in running_reaction_combinations
     ],
     analysis = m ->

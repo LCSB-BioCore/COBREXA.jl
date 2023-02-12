@@ -38,7 +38,7 @@ function _do_knockout(model::AbstractMetabolicModel, opt_model, gene_ids::Vector
         rga = reaction_gene_associations(model, rxn_id)
         if !isnothing(rga) &&
            all([any(in.(gene_ids, Ref(conjunction))) for conjunction in rga])
-            set_optmodel_bound!(rxn_num, opt_model, lower = 0, upper = 0)
+            set_optmodel_bound!(rxn_num, opt_model, lower_bound = 0, upper_bound = 0)
         end
     end
 end

@@ -172,19 +172,19 @@ remove_gene!(model::ObjectModel, gid::String; knockout_reactions::Bool = false) 
 
 
 @_change_bounds_fn ObjectModel String inplace begin
-    isnothing(lower) || (model.reactions[rxn_id].lower_bound = lower)
-    isnothing(upper) || (model.reactions[rxn_id].upper_bound = upper)
+    isnothing(lower_bound) || (model.reactions[rxn_id].lower_bound = lower_bound)
+    isnothing(upper_bound) || (model.reactions[rxn_id].upper_bound = upper_bound)
     nothing
 end
 
 @_change_bounds_fn ObjectModel String inplace plural begin
-    for (i, l, u) in zip(rxn_ids, lower, upper)
-        change_bound!(model, i, lower = l, upper = u)
+    for (i, l, u) in zip(rxn_ids, lower_bound, upper_bound)
+        change_bound!(model, i, lower_bound = l, upper_bound = u)
     end
 end
 
 @_change_bounds_fn ObjectModel String begin
-    change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
+    change_bounds(model, [rxn_id], lower_bound = [lower_bound], upper_bound = [upper_bound])
 end
 
 @_change_bounds_fn ObjectModel String plural begin
@@ -193,7 +193,7 @@ end
     for i in rxn_ids
         n.reactions[i] = copy(n.reactions[i])
     end
-    change_bounds!(n, rxn_ids, lower = lower, upper = upper)
+    change_bounds!(n, rxn_ids, lower_bound = lower_bound, upper_bound = upper_bound)
     return n
 end
 

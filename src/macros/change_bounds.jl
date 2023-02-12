@@ -34,8 +34,8 @@ macro _change_bounds_fn(model_type, idx_type, args...)
         $fname(
             model::$model_type,
             $idx_var::$idx_type;
-            lower = $missing_default,
-            upper = $missing_default,
+            lower_bound =$missing_default,
+            upper_bound =$missing_default,
         )
 
     Change the specified reaction flux bound$(plural_s) in the model
@@ -43,7 +43,7 @@ macro _change_bounds_fn(model_type, idx_type, args...)
 
     # Example
     ```
-    $(inplace ? "new_model = " : "")$fname(model, $example_idx, lower=$(-0.5 .* example_val), upper=$example_val)
+    $(inplace ? "new_model = " : "")$fname(model, $example_idx, lower_bound =$(-0.5 .* example_val), upper_bound =$example_val)
     ```
     """
 
@@ -57,8 +57,8 @@ macro _change_bounds_fn(model_type, idx_type, args...)
                 $fname(
                     model::$model_type,
                     $idx_var::$idx_type;
-                    lower = $missing_default,
-                    upper = $missing_default,
+                    lower_bound = $missing_default,
+                    upper_bound = $missing_default,
                 ) = $body
             ),
         ),

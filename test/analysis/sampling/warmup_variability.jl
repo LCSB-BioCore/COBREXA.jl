@@ -3,7 +3,7 @@
 
     rid = "EX_glc__D_e"
     pts = warmup_from_variability(
-        model |> with_changed_bound(rid; lower = -2, upper = 2),
+        model |> with_changed_bound(rid; lower_bound = -2, upper_bound = 2),
         Tulip.Optimizer,
         100;
         workers = W,

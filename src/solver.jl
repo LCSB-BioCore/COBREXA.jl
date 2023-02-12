@@ -100,11 +100,11 @@ not be changed.
 function set_optmodel_bound!(
     vidx,
     opt_model;
-    lower::Maybe{Real} = nothing,
-    upper::Maybe{Real} = nothing,
+    lower_bound::Maybe{Real} = nothing,
+    upper_bound::Maybe{Real} = nothing,
 )
-    isnothing(lower) || set_normalized_rhs(opt_model[:lbs][vidx], -lower)
-    isnothing(upper) || set_normalized_rhs(opt_model[:ubs][vidx], upper)
+    isnothing(lower_bound) || set_normalized_rhs(opt_model[:lbs][vidx], -lower_bound)
+    isnothing(upper_bound) || set_normalized_rhs(opt_model[:ubs][vidx], upper_bound)
 end
 
 """

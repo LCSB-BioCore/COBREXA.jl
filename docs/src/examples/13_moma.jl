@@ -29,7 +29,7 @@ reference_flux =
     flux_balance_analysis_dict(model, Clarabel.Optimizer; modifications = [silence])
 
 # As the change here, we manually knock out CYTBD reaction:
-changed_model = change_bound(model, "R_CYTBD", lower = 0.0, upper = 0.0);
+changed_model = change_bound(model, "R_CYTBD", lower_bound = 0.0, upper_bound = 0.0);
 
 # Now, let's find a flux that minimizes the organism's metabolic adjustment for
 # this model:
