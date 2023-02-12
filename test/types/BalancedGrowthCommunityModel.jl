@@ -338,6 +338,6 @@ end
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    f_d = flux_dict(cm, opt_model)
+    f_d = values_dict(:reaction, cm, opt_model)
     @test isapprox(f_d[cm.objective_id], 0.9210848582802592, atol = TEST_TOLERANCE)
 end

@@ -123,43 +123,87 @@ solved_objective_value(opt_model)::Maybe{Float64} =
 """
 $(TYPEDSIGNATURES)
 
-Returns a vector of fluxes of the model, if solved.
+From the optimized model, returns a vector of values for the selected
+`semantics`. If the model did not solve, returns `nothing`.
 
 # Example
 ```
-flux_vector(flux_balance_analysis(model, ...))
+values_vec(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
 ```
 """
-flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} =
-    is_solved(opt_model) ? reaction_variables_matrix(model)' * value.(opt_model[:x]) :
-    nothing
+function values_vec(
+    semantics::Val{Semantics},
+    model::AbstractMetabolicModel,
+    opt_model,
+) where {Semantics}
+    sem = Accessors.Internal.get_semantics(semantics)
+    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
+    (_, _, _, sem_varmtx) = sem
+    is_solved(opt_model) ? sem_varmtx(model)' * value.(opt_model[:x]) : nothing
+end
 
 """
 $(TYPEDSIGNATURES)
 
-Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
+Convenience variant of [`values_vec`](@ref).
 
 # Example
 ```
-flux_dict(model, flux_balance_analysis(model, ...))
+values_vec(:reaction, model, flux_balance_analysis(model, ...)) # in order of reactions(model)
 ```
 """
-flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
-    is_solved(opt_model) ?
-    Dict(reactions(model) .=> reaction_variables_matrix(model)' * value.(opt_model[:x])) :
-    nothing
+values_vec(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
+    values_vec(Val(semantics), model, opt_model)
 
 """
 $(TYPEDSIGNATURES)
 
-A pipeable variant of `flux_dict`.
+From the optimized model, returns a dictionary mapping semantic IDs to their
+solved values for the selected `semantics`. If the model did not solve, returns
+`nothing`.
 
 # Example
 ```
-flux_balance_analysis(model, ...) |> flux_dict(model)
+values_dict(Val(:reaction), model, flux_balance_analysis(model, ...))
 ```
 """
-flux_dict(model::AbstractMetabolicModel) = opt_model -> flux_dict(model, opt_model)
+function values_dict(
+    semantics::Val{Semantics},
+    model::AbstractMetabolicModel,
+    opt_model,
+) where {Semantics}
+    sem = Accessors.Internal.get_semantics(semantics)
+    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
+    (ids, _, _, sem_varmtx) = sem
+    is_solved(opt_model) ? Dict(ids(model) .=> sem_varmtx(model)' * value.(opt_model[:x])) :
+    nothing
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Convenience variant of [`values_dict`](@ref).
+
+# Example
+```
+values_dict(:reaction, model, flux_balance_analysis(model, ...))
+```
+"""
+values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
+    values_dict(Val(semantics), model, opt_model)
+
+"""
+$(TYPEDSIGNATURES)
+
+A pipeable variant of the convenience variant of [`values_dict`](@ref).
+
+# Example
+```
+flux_balance_analysis(model, ...) |> values_dict(:reaction, model)
+```
+"""
+values_dict(semantics::Symbol, model::AbstractMetabolicModel) =
+    opt_model -> values_dict(Val(semantics), model, opt_model)
 
 @export_locals
 end

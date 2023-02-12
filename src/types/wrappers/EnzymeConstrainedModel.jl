@@ -181,9 +181,33 @@ the original fluxes in the wrapped model
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
         variables(model),
-        semantics(model),
+        reactions(model),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
+
+"""
+$(TYPEDSIGNATURES)
+
+Get a mapping of enzyme variables to variables -- for enzyme constrained models,
+this is just a direct mapping.
+"""
+Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
+    Dict(gid => Dict(gid => 1.0) for gid in genes(model)) # this is enough for all the semantics to work
+
+"""
+$(TYPEDSIGNATURES)
+
+Get a mapping of enzyme groups to variables.
+"""
+function Accessors.enzyme_group_variables(model::EnzymeConstrainedModel)
+    enz_ids = genes(model)
+    Dict(
+        grp.group_id => Dict(
+            enz_ids[idx] => mm for
+            (idx, mm) in zip(grp.gene_product_idxs, grp.gene_product_molar_masses)
+        ) for grp in model.coupling_row_mass_group
+    )
+end
 
 """
 $(TYPEDSIGNATURES)
