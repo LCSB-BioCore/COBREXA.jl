@@ -21,7 +21,12 @@ change_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
     (model, opt_model) -> begin
         ind = first(indexin([id], variables(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
-        set_optmodel_bound!(ind, opt_model, lower = lower_bound, upper = upper_bound)
+        set_optmodel_bound!(
+            ind,
+            opt_model,
+            lower_bound = lower_bound,
+            upper_bound = upper_bound,
+        )
     end
 
 """

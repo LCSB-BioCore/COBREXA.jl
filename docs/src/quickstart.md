@@ -73,10 +73,10 @@ m = convert(ObjectModel, model)
 screen(m, # the base model
     variants=[ # this specifies how to generate the desired model variants
         [], # one with no modifications, i.e. the base case
-        [with_changed_bound("R_O2t", lower=0.0, upper=0.0)], # disable oxygen
-        [with_changed_bound("R_CO2t", lower=0.0, upper=0.0)], # disable CO2
-        [with_changed_bound("R_O2t", lower=0.0, upper=0.0),
-	        with_changed_bound("R_CO2t", lower=0.0, upper=0.0)], # disable both
+        [with_changed_bound("R_O2t", lower_bound =0.0, upper_bound =0.0)], # disable oxygen
+        [with_changed_bound("R_CO2t", lower_bound =0.0, upper_bound =0.0)], # disable CO2
+        [with_changed_bound("R_O2t", lower_bound =0.0, upper_bound =0.0),
+	        with_changed_bound("R_CO2t", lower_bound =0.0, upper_bound =0.0)], # disable both
     ],
     # this specifies what to do with the model variants (received as the argument `x`)
     analysis = x ->
@@ -113,7 +113,7 @@ worker_list = workers()
 res = screen(m,
     variants=[
 	# create one variant for each reaction in the model, with that reaction knocked out
-        [with_changed_bound(reaction_id, lower=0.0, upper=0.0)]
+        [with_changed_bound(reaction_id, lower_bound =0.0, upper_bound =0.0)]
 	for reaction_id in reactions(m)
     ],
     analysis = model -> begin

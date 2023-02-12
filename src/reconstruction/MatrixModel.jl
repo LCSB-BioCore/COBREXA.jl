@@ -254,53 +254,58 @@ function verify_consistency(
 end
 
 @_change_bounds_fn MatrixModel Int inplace begin
-    isnothing(lower) || (model.xl[rxn_idx] = lower)
-    isnothing(upper) || (model.xu[rxn_idx] = upper)
+    isnothing(lower_bound) || (model.xl[rxn_idx] = lower_bound)
+    isnothing(upper_bound) || (model.xu[rxn_idx] = upper_bound)
     nothing
 end
 
 @_change_bounds_fn MatrixModel Int inplace plural begin
-    for (i, l, u) in zip(rxn_idxs, lower, upper)
-        change_bound!(model, i, lower = l, upper = u)
+    for (i, l, u) in zip(rxn_idxs, lower_bound, upper_bound)
+        change_bound!(model, i, lower_bound = l, upper_bound = u)
     end
 end
 
 @_change_bounds_fn MatrixModel Int begin
-    change_bounds(model, [rxn_idx], lower = [lower], upper = [upper])
+    change_bounds(
+        model,
+        [rxn_idx],
+        lower_bound = [lower_bound],
+        upper_bound = [upper_bound],
+    )
 end
 
 @_change_bounds_fn MatrixModel Int plural begin
     n = copy(model)
     n.xl = copy(n.xl)
     n.xu = copy(n.xu)
-    change_bounds!(n, rxn_idxs, lower = lower, upper = upper)
+    change_bounds!(n, rxn_idxs; lower_bound, upper_bound)
     n
 end
 
 @_change_bounds_fn MatrixModel String inplace begin
-    change_bounds!(model, [rxn_id], lower = [lower], upper = [upper])
+    change_bounds!(
+        model,
+        [rxn_id],
+        lower_bound = [lower_bound],
+        upper_bound = [upper_bound],
+    )
 end
 
 @_change_bounds_fn MatrixModel String inplace plural begin
     change_bounds!(
         model,
-        Vector{Int}(indexin(rxn_ids, variables(model))),
-        lower = lower,
-        upper = upper,
+        Vector{Int}(indexin(rxn_ids, variables(model)));
+        lower_bound,
+        upper_bound,
     )
 end
 
 @_change_bounds_fn MatrixModel String begin
-    change_bounds(model, [rxn_id], lower = [lower], upper = [upper])
+    change_bounds(model, [rxn_id], lower_bound = [lower_bound], upper_bound = [upper_bound])
 end
 
 @_change_bounds_fn MatrixModel String plural begin
-    change_bounds(
-        model,
-        Int.(indexin(rxn_ids, variables(model))),
-        lower = lower,
-        upper = upper,
-    )
+    change_bounds(model, Int.(indexin(rxn_ids, variables(model))); lower_bound, upper_bound)
 end
 
 @_remove_fn reaction MatrixModel Int inplace begin

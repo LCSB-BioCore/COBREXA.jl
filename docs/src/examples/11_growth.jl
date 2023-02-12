@@ -28,7 +28,7 @@ model = load_model(ObjectModel, "e_coli_core.xml")
 
 biomass = "R_BIOMASS_Ecoli_core_w_GAM"
 
-model_limited = change_bound(model, "R_EX_glc__D_e", lower = -1.0)
+model_limited = change_bound(model, "R_EX_glc__D_e", lower_bound = -1.0)
 
 #md # !!! tip "Exchange directions"
 #md #     By a convention, the direction of exchange reaction usually goes from the
@@ -51,7 +51,7 @@ flux_summary(flux_balance_analysis_dict(model_limited, GLPK.Optimizer))
 
 flux_summary(
     flux_balance_analysis_dict(
-        change_bound(model, "R_EX_o2_e", lower = 0.0),
+        change_bound(model, "R_EX_o2_e", lower_bound = 0.0),
         GLPK.Optimizer,
     ),
 )
@@ -62,7 +62,9 @@ exchanges = filter(looks_like_exchange_reaction, variables(model))
 
 exchanges .=> screen(
     model,
-    variants = [[with_changed_bound(exchange, lower = 0.0)] for exchange in exchanges],
+    variants = [
+        [with_changed_bound(exchange, lower_bound = 0.0)] for exchange in exchanges
+    ],
     analysis = m -> begin
         res = flux_balance_analysis_dict(m, GLPK.Optimizer)
         isnothing(res) ? nothing : res[biomass]
@@ -89,8 +91,8 @@ selected_exchanges = [
 screen(
     model,
     variants = [
-        [with_changed_bounds([e1, e2], lower = [-1.0, -0.1])] for e1 in selected_exchanges,
-        e2 in selected_exchanges
+        [with_changed_bounds([e1, e2], lower_bound = [-1.0, -0.1])] for
+        e1 in selected_exchanges, e2 in selected_exchanges
     ],
     analysis = m -> begin
         res = flux_balance_analysis_dict(m, GLPK.Optimizer)
@@ -115,7 +117,7 @@ screen(
 # given the directionality convention of the exchanges, actually maximizes the
 # flux through all exchange reactions along their direction).
 
-model_with_bounded_production = change_bound(model, biomass, lower = 0.1) #minimum required growth
+model_with_bounded_production = change_bound(model, biomass, lower_bound = 0.1) #minimum required growth
 
 minimal_intake_production = flux_balance_analysis_dict(
     model_with_bounded_production,
