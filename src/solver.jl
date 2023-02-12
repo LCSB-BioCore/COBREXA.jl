@@ -120,23 +120,34 @@ solved_objective_value(flux_balance_analysis(model, ...))
 solved_objective_value(opt_model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
 
-function get_solution(semantics::Val{Semantics}, model::AbstractMetabolicModel, opt_model) where {Semantics}
+function values(
+    semantics::Val{Semantics},
+    model::AbstractMetabolicModel,
+    opt_model,
+) where {Semantics}
     sem = Accessors.Internal.get_semantics(semantics)
     isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
     (_, _, _, sem_varmtx) = sem
     is_solved(opt_model) ? sem_varmtx(model)' * value.(opt_model[:x]) : nothing
 end
 
-get_solution(semantics::Symbol, model::AbstractMetabolicModel) = opt_model -> get_solution(Val(semantics), model, opt_model)
+values(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
+    values(Val(semantics), model, opt_model)
 
-function get_solution_dict(semantics::Val{Semantics}, model::AbstractMetabolicModel, opt_model) where {Semantics}
+function values_dict(
+    semantics::Val{Semantics},
+    model::AbstractMetabolicModel,
+    opt_model,
+) where {Semantics}
     sem = Accessors.Internal.get_semantics(semantics)
     isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
     (ids, _, _, sem_varmtx) = sem
-    is_solved(opt_model) ? Dict(ids(model) .=> sem_varmtx(model)' * value.(opt_model[:x])) : nothing
+    is_solved(opt_model) ? Dict(ids(model) .=> sem_varmtx(model)' * value.(opt_model[:x])) :
+    nothing
 end
 
-get_solution_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) = get_solution_dict(Val(semantics), model, opt_model)
+values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
+    values_dict(Val(semantics), model, opt_model)
 
 """
 $(TYPEDSIGNATURES)
@@ -148,7 +159,8 @@ Returns a vector of fluxes of the model, if solved.
 flux_vector(flux_balance_analysis(model, ...))
 ```
 """
-flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} = get_solution(:reaction, model, opt_model)
+flux_vector(model::AbstractMetabolicModel, opt_model)::Maybe{Vector{Float64}} =
+    get_solution(:reaction, model, opt_model)
 
 """
 $(TYPEDSIGNATURES)
@@ -160,7 +172,8 @@ Returns the fluxes of the model as a reaction-keyed dictionary, if solved.
 flux_dict(model, flux_balance_analysis(model, ...))
 ```
 """
-flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} = get_solution_dict(:reaction, model, opt_model)
+flux_dict(model::AbstractMetabolicModel, opt_model)::Maybe{Dict{String,Float64}} =
+    get_solution_dict(:reaction, model, opt_model)
 
 """
 $(TYPEDSIGNATURES)

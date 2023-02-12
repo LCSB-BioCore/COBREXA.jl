@@ -191,9 +191,8 @@ $(TYPEDSIGNATURES)
 Get a mapping of enzyme variables to variables -- for enzyme constrained models,
 this is just a direct mapping.
 """
-Accessors.enzyme_variables(model::EnzymeConstrainedModel) = Dict(
-    gid => Dict(gid => 1.0) for gid in genes(model)
-) # this is enough for all the semantics to work
+Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
+    Dict(gid => Dict(gid => 1.0) for gid in genes(model)) # this is enough for all the semantics to work
 
 """
 $(TYPEDSIGNATURES)
