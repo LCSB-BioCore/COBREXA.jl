@@ -193,7 +193,7 @@ end
     for i in rxn_ids
         n.reactions[i] = copy(n.reactions[i])
     end
-    change_bounds!(n, rxn_ids, lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bounds!(n, rxn_ids; lower_bound, upper_bound)
     return n
 end
 

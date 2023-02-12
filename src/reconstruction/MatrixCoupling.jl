@@ -260,58 +260,42 @@ end
 
 # TODO see if some of these can be derived from AbstractModelWrapper
 @_change_bounds_fn MatrixCoupling Int inplace begin
-    change_bound!(model.lm, rxn_idx, lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bound!(model.lm, rxn_idx; lower_bound, upper_bound)
 end
 
 @_change_bounds_fn MatrixCoupling Int inplace plural begin
-    change_bounds!(model.lm, rxn_idxs, lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bounds!(model.lm, rxn_idxs; lower_bound, upper_bound)
 end
 
 @_change_bounds_fn MatrixCoupling String inplace begin
-    change_bound!(model.lm, rxn_id, lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bound!(model.lm, rxn_id; lower_bound, upper_bound)
 end
 
 @_change_bounds_fn MatrixCoupling String inplace plural begin
-    change_bounds!(model.lm, rxn_ids, lower_bound = lower_bound, upper_bound = upper_bound)
+    change_bounds!(model.lm, rxn_ids; lower_bound, upper_bound)
 end
 
 @_change_bounds_fn MatrixCoupling Int begin
     n = copy(model)
-    n.lm = change_bound(
-        model.lm,
-        rxn_idx,
-        lower_bound = lower_bound,
-        upper_bound = upper_bound,
-    )
+    n.lm = change_bound(model.lm, rxn_idx; lower_bound, upper_bound)
     n
 end
 
 @_change_bounds_fn MatrixCoupling Int plural begin
     n = copy(model)
-    n.lm = change_bounds(
-        model.lm,
-        rxn_idxs,
-        lower_bound = lower_bound,
-        upper_bound = upper_bound,
-    )
+    n.lm = change_bounds(model.lm, rxn_idxs; lower_bound, upper_bound)
     n
 end
 
 @_change_bounds_fn MatrixCoupling String begin
     n = copy(model)
-    n.lm =
-        change_bound(model.lm, rxn_id, lower_bound = lower_bound, upper_bound = upper_bound)
+    n.lm = change_bound(model.lm, rxn_id; lower_bound, upper_bound)
     n
 end
 
 @_change_bounds_fn MatrixCoupling String plural begin
     n = copy(model)
-    n.lm = change_bounds(
-        model.lm,
-        rxn_ids,
-        lower_bound = lower_bound,
-        upper_bound = upper_bound,
-    )
+    n.lm = change_bounds(model.lm, rxn_ids; lower_bound, upper_bound)
     n
 end
 
