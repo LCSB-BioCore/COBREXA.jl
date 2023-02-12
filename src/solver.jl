@@ -128,10 +128,10 @@ From the optimized model, returns a vector of values for the selected
 
 # Example
 ```
-values(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+values_vec(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
 ```
 """
-function values(
+function values_vec(
     semantics::Val{Semantics},
     model::AbstractMetabolicModel,
     opt_model,
@@ -145,15 +145,15 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Convenience variant of [`values`](@ref).
+Convenience variant of [`values_vec`](@ref).
 
 # Example
 ```
-values(:reaction, model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+values_vec(:reaction, model, flux_balance_analysis(model, ...)) # in order of reactions(model)
 ```
 """
-values(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
-    values(Val(semantics), model, opt_model)
+values_vec(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
+    values_vec(Val(semantics), model, opt_model)
 
 """
 $(TYPEDSIGNATURES)
@@ -182,7 +182,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Convenience variant of [`values_dict`](@ref).
+Convenience variant of [`values_vec_dict`](@ref).
 
 # Example
 ```
@@ -195,14 +195,15 @@ values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
 """
 $(TYPEDSIGNATURES)
 
-A pipeable variant of the convenience variant of [`values_dict`](@ref).
+A pipeable variant of the convenience variant of [`values_vec_dict`](@ref).
 
 # Example
 ```
 flux_balance_analysis(model, ...) |> values_dict(:reaction, model)
 ```
 """
-values_dict(semantics::Symbol, model::AbstractMetabolicModel) = opt_model -> values_dict(Val(semantics), model, opt_model)
+values_dict(semantics::Symbol, model::AbstractMetabolicModel) =
+    opt_model -> values_dict(Val(semantics), model, opt_model)
 
 @export_locals
 end

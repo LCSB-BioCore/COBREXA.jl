@@ -94,11 +94,15 @@ Returns a vector of fluxes in the same order as the reactions in `model`.
 Arguments are forwarded to [`parsimonious_flux_balance_analysis`](@ref)
 internally.
 
-This function is kept for backwards compatibility, use [`values`](@ref)
+This function is kept for backwards compatibility, use [`values_vec`](@ref)
 instead.
 """
 parsimonious_flux_balance_analysis_vec(model::AbstractMetabolicModel, args...; kwargs...) =
-    values(:reaction, model, parsimonious_flux_balance_analysis(model, args...; kwargs...))
+    values_vec(
+        :reaction,
+        model,
+        parsimonious_flux_balance_analysis(model, args...; kwargs...),
+    )
 
 """
 $(TYPEDSIGNATURES)
@@ -107,8 +111,12 @@ Perform parsimonious flux balance analysis on `model` using `optimizer`.
 Returns a dictionary mapping the reaction IDs to fluxes. Arguments are
 forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
 
-This function is kept for backwards compatibility, use [`values_dict`](@ref)
+This function is kept for backwards compatibility, use [`values_vec_dict`](@ref)
 instead.
 """
 parsimonious_flux_balance_analysis_dict(model::AbstractMetabolicModel, args...; kwargs...) =
-    values_dict(:reaction, model, parsimonious_flux_balance_analysis(model, args...; kwargs...))
+    values_dict(
+        :reaction,
+        model,
+        parsimonious_flux_balance_analysis(model, args...; kwargs...),
+    )

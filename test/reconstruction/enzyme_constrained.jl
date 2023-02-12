@@ -57,7 +57,7 @@
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    rxn_fluxes = values_dict(:reaction, (gm, opt_model))
+    rxn_fluxes = values_dict(:reaction, gm, opt_model)
     prot_concens = values(gm, opt_model)
 
     @test isapprox(
