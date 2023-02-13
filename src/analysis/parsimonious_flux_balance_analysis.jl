@@ -120,3 +120,16 @@ parsimonious_flux_balance_analysis_dict(model::AbstractMetabolicModel, args...; 
         model,
         parsimonious_flux_balance_analysis(model, args...; kwargs...),
     )
+ 
+"""
+$(TYPEDSIGNATURES)
+
+Pipe friendly variant of [`parsimonious_flux_balance_analysis`](@ref). Forwards all arguments. 
+
+# Example
+```
+model |> parsimonious_flux_balance_analysis(Clarabel.Optimizer; modifications = [...])
+```
+"""
+parsimonious_flux_balance_analysis(optimizer; kwargs...) =
+    model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)

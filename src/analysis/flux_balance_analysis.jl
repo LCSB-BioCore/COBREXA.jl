@@ -82,3 +82,16 @@ function flux_balance_analysis(
     optimize!(opt_model)
     return opt_model
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Pipe friendly variant of [`flux_balance_analysis`](@ref). Forwards all arguments. 
+
+# Example
+```
+model |> flux_balance_analysis(Tulip.Optimizer; modifications = [...])
+```
+"""
+flux_balance_analysis(optimizer; kwargs...) =
+    model -> flux_balance_analysis(model, optimizer; kwargs...)
