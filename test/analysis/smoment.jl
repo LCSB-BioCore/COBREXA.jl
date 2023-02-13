@@ -9,7 +9,7 @@
             argmax(
                 smoment_isozyme_speed(get_gene_product_mass),
                 Isozyme(
-                    Dict(grr .=> ecoli_core_protein_stoichiometry[rid][i]),
+                    Dict(grr .=> fill(1.0, size(grr))),
                     ecoli_core_reaction_kcats[rid][i]...,
                 ) for (i, grr) in enumerate(reaction_gene_association(model, rid))
             ) : nothing
@@ -35,7 +35,7 @@
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
-        0.8907273630431708,
+        0.8907796509479097,
         atol = TEST_TOLERANCE,
     )
 end
