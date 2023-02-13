@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Minimization of metabolic adjustment (MOMA) · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../">Contents</a></li><li><a class="tocitem" href="../01_loading/">Loading models</a></li><li><a class="tocitem" href="../02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../06_fva/">Flux variability analysis (FVA)</a></li><li><a class="tocitem" href="../07_gene_deletion/">Gene knockouts</a></li><li><a class="tocitem" href="../07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../09_loopless/">Loopless FBA</a></li><li><a class="tocitem" href="../10_crowding/">FBA with crowding</a></li><li><a class="tocitem" href="../11_growth/">Growth media analysis</a></li><li><a class="tocitem" href="../12_mmdf/">Maximum-minimum driving force analysis</a></li><li class="is-active"><a class="tocitem" href>Minimization of metabolic adjustment (MOMA)</a></li><li><a class="tocitem" href="../14_smoment/">sMOMENT</a></li><li><a class="tocitem" href="../15_gecko/">GECKO</a></li><li><a class="tocitem" href="../16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../../distributed/">Contents</a></li><li><a class="tocitem" href="../../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../../concepts/">Contents</a></li><li><a class="tocitem" href="../../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Minimization of metabolic adjustment (MOMA)</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Minimization of metabolic adjustment (MOMA)</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/examples/13_moma.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Minimization-of-metabolic-adjustment-(MOMA)"><a class="docs-heading-anchor" href="#Minimization-of-metabolic-adjustment-(MOMA)">Minimization of metabolic adjustment (MOMA)</a><a id="Minimization-of-metabolic-adjustment-(MOMA)-1"></a><a class="docs-heading-anchor-permalink" href="#Minimization-of-metabolic-adjustment-(MOMA)" title="Permalink"></a></h1><p>MOMA allows you to find a feasible solution of the model that is closest (in an Euclidean metric) to a reference solution. Often this gives a realistic estimate of the organism behavior that has undergone a radical change (such as a gene knockout) that prevents it from metabolizing optimally, but the rest of the metabolism has not yet adjusted to compensate for the change.</p><p>The original description of MOMA is by <a href="https://doi.org/10.1073/pnas.232349399">Segre, Vitkup, and Church, &quot;Analysis of optimality in natural and perturbed metabolic networks&quot;, Proceedings of the National Academy of Sciences, 2002</a>.</p><p>As always, let&#39;s start with downloading a model.</p><pre><code class="language-julia">!isfile(&quot;e_coli_core.xml&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.xml&quot;, &quot;e_coli_core.xml&quot;)
+
+using COBREXA
+
+model = load_model(StandardModel, &quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type StandardModel
+sparse([8, 10, 21, 43, 50, 51, 8, 9, 6, 12  …  33, 66, 68, 72, 23, 26, 33, 72, 22, 33], [1, 1, 1, 1, 1, 1, 2, 2, 3, 3  …  93, 93, 93, 93, 94, 94, 94, 94, 95, 95], [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0  …  1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+Number of reactions: 95
+Number of metabolites: 72
+</pre><p>MOMA analysis requires solution of a quadratic model, we will thus use Clarabel as the main optimizer.</p><pre><code class="language-julia">using Clarabel</code></pre><p>We will need a reference solution, which represents the original state of the organism before the change.</p><pre><code class="language-julia">reference_flux =
+    flux_balance_analysis_dict(model, Clarabel.Optimizer; modifications = [silence])</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; -6.7812e-12
+  &quot;R_ACONTb&quot;      =&gt; 6.00725
+  &quot;R_GLNS&quot;        =&gt; 0.223462
+  &quot;R_SUCOAS&quot;      =&gt; -5.06438
+  &quot;R_TPI&quot;         =&gt; 7.47738
+  &quot;R_EX_pi_e&quot;     =&gt; -3.2149
+  &quot;R_PPC&quot;         =&gt; 2.50431
+  &quot;R_O2t&quot;         =&gt; 21.7995
+  &quot;R_G6PDH2r&quot;     =&gt; 4.95998
+  &quot;R_TALA&quot;        =&gt; 1.49698
+  &quot;R_PPCK&quot;        =&gt; 3.96203e-9
+  &quot;R_EX_lac__D_e&quot; =&gt; 5.58955e-10
+  &quot;R_PGL&quot;         =&gt; 4.95998
+  &quot;R_H2Ot&quot;        =&gt; -29.1758
+  &quot;R_GLNabc&quot;      =&gt; 2.25337e-12
+  &quot;R_EX_co2_e&quot;    =&gt; 22.8098
+  &quot;R_EX_gln__L_e&quot; =&gt; -2.25168e-12
+  &quot;R_EX_nh4_e&quot;    =&gt; -4.76532
+  &quot;R_MALt2_2&quot;     =&gt; 1.11042e-11
+  ⋮               =&gt; ⋮</pre><p>As the change here, we manually knock out CYTBD reaction:</p><pre><code class="language-julia">changed_model = change_bound(model, &quot;R_CYTBD&quot;, lower = 0.0, upper = 0.0);</code></pre><p>Now, let&#39;s find a flux that minimizes the organism&#39;s metabolic adjustment for this model:</p><pre><code class="language-julia">flux_summary(
+    minimize_metabolic_adjustment_analysis_dict(
+        changed_model,
+        reference_flux,
+        Clarabel.Optimizer;
+        modifications = [silence],
+    ),
+)</code></pre><pre class="documenter-example-output">Biomass
+  R_BIOMASS_Ecoli_core_w_GAM: 0.06
+Import
+  R_EX_glc__D_e:              -9.1553
+  R_EX_nh4_e:                 -1.3091
+  R_EX_pi_e:                  -0.2209
+Export
+  R_EX_glu__L_e:              0.9817
+  R_EX_acald_e:               1.7139
+  R_EX_co2_e:                 5.1126
+  R_EX_h2o_e:                 5.7937
+  R_EX_succ_e:                5.9147
+  R_EX_etoh_e:                7.6345
+  R_EX_h_e:                   14.9973
+</pre><p>For illustration, you can compare the result to the flux that is found by simple optimization:</p><pre><code class="language-julia">flux_summary(
+    flux_balance_analysis_dict(
+        changed_model,
+        Clarabel.Optimizer;
+        modifications = [silence],
+    ),
+)</code></pre><pre class="documenter-example-output">Biomass
+  R_BIOMASS_Ecoli_core_w_GAM: 0.2117
+Import
+  R_EX_glc__D_e:              -10.0
+  R_EX_h2o_e:                 -7.1158
+  R_EX_nh4_e:                 -1.1542
+  R_EX_pi_e:                  -0.7786
+  R_EX_co2_e:                 -0.3782
+Export
+  R_EX_etoh_e:                8.2795
+  R_EX_ac_e:                  8.5036
+  R_EX_for_e:                 17.8047
+  R_EX_h_e:                   30.5542
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../12_mmdf/">« Maximum-minimum driving force analysis</a><a class="docs-footer-nextpage" href="../14_smoment/">sMOMENT »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 13 February 2023 11:16">Monday 13 February 2023</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
