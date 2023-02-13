@@ -33,20 +33,26 @@ keys(model.reactions)
 $(TYPEDFIELDS)
 """
 Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
-    "Name of the model"
+    "Name of the model."
     id::String
 
-    "Ordered dictionary of reactions"
+    "Ordered dictionary of reactions."
     reactions::OrderedDict{String,Reaction} = OrderedDict{String,Reaction}()
 
-    "Ordered dictionary of metabolites"
+    "Ordered dictionary of metabolites."
     metabolites::OrderedDict{String,Metabolite} = OrderedDict{String,Metabolite}()
 
-    "Ordered dictionary of genes"
+    "Ordered dictionary of genes."
     genes::OrderedDict{String,Gene} = OrderedDict{String,Gene}()
 
-    "Model objective"
+    "Model objective."
     objective::Dict{String,Float64} = Dict{String,Float64}()
+
+    "Machine readable reference to organism embedded via MIRIAM annotation. This should include species name, taxonomy ID, and url to the genome."
+    annotations::Vector{Tuple{String, String, String}} = Vector{Tuple{String, String, String}}()
+
+    "Reference information for the model. This should include the DOI and author contact information."
+    references::Dict{String, String} = Dict{String, String}()
 end
 
 # AbstractMetabolicModel interface follows
