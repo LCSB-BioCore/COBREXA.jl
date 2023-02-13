@@ -49,10 +49,10 @@ Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
     objective::Dict{String,Float64} = Dict{String,Float64}()
 
     "Machine readable reference to organism embedded via MIRIAM annotation. This should include species name, taxonomy ID, and url to the genome."
-    annotations::Vector{Tuple{String, String, String}} = Vector{Tuple{String, String, String}}()
+    annotations::Annotations = Annotations()
 
     "Reference information for the model. This should include the DOI and author contact information."
-    references::Dict{String, String} = Dict{String, String}()
+    notes::Notes = Notes()
 end
 
 # AbstractMetabolicModel interface follows
