@@ -6,7 +6,7 @@ thermodynamically infeasible internal cycles can occur. The function
 `metabolite_idx` takes a metabolite ID and the model, and returns the row index
 in the stoichiometric matrix (generated using `stoichiometry(model)`)
 corresponding to the mass balance around this metabolite. For most models this
-will just be `(mid, model) -> indexin([mid], metabolites(model))`. Notable
+will just be `(mid, model) -> first(indexin([mid], metabolites(model)))`. Notable
 exceptions include enzyme constrained models, which include virtual enzyme
 balances. The latter should not be included in thermodynamic calculations.
 
@@ -30,7 +30,8 @@ For more details about the algorithm, see `Schellenberger, Lewis, and, Palsson.
 "Elimination of thermodynamically infeasible loops in steady-state metabolic
 models.", Biophysical journal, 2011`.
 """
-add_loopless_constraints(metabolite_idx;
+add_loopless_constraints(
+    metabolite_idx;
     max_flux_bound = constants.default_reaction_bound, # needs to be an order of magnitude bigger, big M method heuristic
     strict_inequality_tolerance = constants.loopless_strict_inequality_tolerance,
 ) =
@@ -40,10 +41,11 @@ add_loopless_constraints(metabolite_idx;
             ridx for (ridx, rid) in enumerate(reactions(model)) if
             !is_boundary(reaction_stoichiometry(model, rid))
         ]
-        
-        metabolite_idxs = first.(metabolite_idx.(metabolites(model), Ref(model))) # TODO need a function that names all the constraints
 
-        N_int = nullspace(Array(stoichiometry(model)[metabolite_idxs, internal_rxn_idxs])) # no sparse nullspace function
+        metabolite_idxs = metabolite_idx.(metabolites(model), Ref(model)) # TODO need a function that names all the constraints
+
+        N_int =
+            nullspace(Array(stoichiometry(model)[metabolite_idxs, internal_rxn_idxs])) # no sparse nullspace function
 
         y = @variable(opt_model, y[1:length(internal_rxn_idxs)], Bin)
         G = @variable(opt_model, G[1:length(internal_rxn_idxs)]) # approx ΔG for internal reactions
@@ -73,5 +75,9 @@ $(TYPEDSIGNATURES)
 A convenience wrapper around [`add_loopless_constraints`](@ref), which assumes
 that the model being modified only has metabolites in its stoichiometric matrix,
 and not, e.g. virtual enzymes. 
+
+Supplies `metabolite_idx = (x, m) -> first(indexin([x], metabolites(m)))` to the
+base method.
 """
-add_loopless_constraints(; kwargs...) = add_loopless_constraints((x, m) -> indexin([x], metabolites(m)); kwargs...)
+add_loopless_constraints(; kwargs...) =
+    add_loopless_constraints((x, m) -> first(indexin([x], metabolites(m))); kwargs...)
