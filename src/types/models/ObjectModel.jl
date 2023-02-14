@@ -347,7 +347,7 @@ $(TYPEDSIGNATURES)
 
 Return the annotations associated with a `model`. Typically, these should be
 encoded in MIRIAM format. At minimum it should include the full species name
-with relevant identifiers, taxonomy ID, strain ID, and URL to the genome. 
+with relevant identifiers, taxonomy ID, strain ID, and URL to the genome.
 """
 Accessors.model_annotations(model::ObjectModel)::Annotations = model.annotations
 
