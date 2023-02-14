@@ -138,7 +138,8 @@ end
 
     gm = make_enzyme_constrained_model(
         m;
-        gene_product_mass_group_bound = Dict("uncategorized" => 0.5),
+        gene_product_mass_group = Dict("uncategorized" => genes(m), "bound2" => ["g3"]),
+        gene_product_mass_group_bound = Dict("uncategorized" => 0.5, "bound2" => 0.04),
     )
 
     opt_model = flux_balance_analysis(
@@ -151,9 +152,10 @@ end
     gene_products = values_dict(:enzyme, gm, opt_model)
     mass_groups = values_dict(:enzyme_group, gm, opt_model)
 
-    @test isapprox(rxn_fluxes["r6"], 3.181818181753438, atol = TEST_TOLERANCE)
-    @test isapprox(gene_products["g4"], 0.09090909090607537, atol = TEST_TOLERANCE)
+    @test isapprox(rxn_fluxes["r6"], 1.1688888886502442, atol = TEST_TOLERANCE)
+    @test isapprox(gene_products["g4"], 0.02666666666304931, atol = TEST_TOLERANCE)
     @test isapprox(mass_groups["uncategorized"], 0.5, atol = TEST_TOLERANCE)
+    @test isapprox(mass_groups["bound2"], 0.04, atol = TEST_TOLERANCE)
     @test length(genes(gm)) == 4
     @test length(genes(gm.inner)) == 4
 end
