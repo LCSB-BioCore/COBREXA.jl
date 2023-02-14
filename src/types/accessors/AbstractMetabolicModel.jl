@@ -462,3 +462,20 @@ Return the upper bound of the gene product concentration associated with the `mo
 """
 gene_product_upper_bound(model::AbstractMetabolicModel, gid::String)::Float64 =
     constants.default_gene_product_bound
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the notes associated with a `model`. At minimum this should include the
+model authors, contact information, and DOI of the associated publication.
+"""
+model_notes(model::AbstractMetabolicModel)::Notes = Dict()
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the annotations associated with a `model`. Typically, these should be
+encoded in MIRIAM format. At minimum it should include the full species name
+with relevant identifiers, taxonomy ID, strain ID, and URL to the genome. 
+"""
+model_annotations(model::AbstractMetabolicModel)::Annotations = Dict()

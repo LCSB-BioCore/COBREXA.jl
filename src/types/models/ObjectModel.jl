@@ -340,6 +340,23 @@ Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) =
 """
 $(TYPEDSIGNATURES)
 
+Return the notes associated with a `model`. At minimum this should include the
+model authors, contact information, and DOI of the associated publication.
+"""
+model_notes(model::ObjectModel)::Notes = model.notes
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the annotations associated with a `model`. Typically, these should be
+encoded in MIRIAM format. At minimum it should include the full species name
+with relevant identifiers, taxonomy ID, strain ID, and URL to the genome. 
+"""
+model_annotations(model::ObjectModel)::Annotations = model.annotations    
+
+"""
+$(TYPEDSIGNATURES)
+
 Convert any `AbstractMetabolicModel` into a `ObjectModel`. Note, some data loss
 may occur since only the generic interface is used during the conversion
 process. Additionally, assume the stoichiometry for each gene association is 1.
