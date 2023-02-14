@@ -33,9 +33,6 @@ keys(model.reactions)
 $(TYPEDFIELDS)
 """
 Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
-    "Name of the model."
-    id::String
-
     "Ordered dictionary of reactions."
     reactions::OrderedDict{String,Reaction} = OrderedDict{String,Reaction}()
 
@@ -343,7 +340,7 @@ $(TYPEDSIGNATURES)
 Return the notes associated with a `model`. At minimum this should include the
 model authors, contact information, and DOI of the associated publication.
 """
-model_notes(model::ObjectModel)::Notes = model.notes
+Accessors.model_notes(model::ObjectModel)::Notes = model.notes
 
 """
 $(TYPEDSIGNATURES)
@@ -352,7 +349,7 @@ Return the annotations associated with a `model`. Typically, these should be
 encoded in MIRIAM format. At minimum it should include the full species name
 with relevant identifiers, taxonomy ID, strain ID, and URL to the genome. 
 """
-model_annotations(model::ObjectModel)::Annotations = model.annotations
+Accessors.model_annotations(model::ObjectModel)::Annotations = model.annotations
 
 """
 $(TYPEDSIGNATURES)
@@ -366,7 +363,9 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
         return model
     end
 
-    id = "" # TODO: add accessor to get model ID
+    modelnotes = model_notes(model)
+    model_annotations = model_annotations(model)
+
     modelreactions = OrderedDict{String,Reaction}()
     modelmetabolites = OrderedDict{String,Metabolite}()
     modelgenes = OrderedDict{String,Gene}()
@@ -424,10 +423,11 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     end
 
     return ObjectModel(;
-        id,
         reactions = modelreactions,
         metabolites = modelmetabolites,
         genes = modelgenes,
         objective = modelobjective,
+        notes = modelnotes,
+        annotations = modelannotations,
     )
 end
