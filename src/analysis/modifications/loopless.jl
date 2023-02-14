@@ -74,7 +74,7 @@ $(TYPEDSIGNATURES)
 
 A convenience wrapper around [`add_loopless_constraints`](@ref), which assumes
 that the model being modified only has metabolites in its stoichiometric matrix,
-and not, e.g. virtual enzymes. 
+and not, e.g. virtual enzymes.
 
 Supplies `metabolite_idx = (x, m) -> first(indexin([x], metabolites(m)))` to the
 base method.
