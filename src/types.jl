@@ -87,6 +87,7 @@ end
 
     using SBML
     using SparseArrays
+    import PikaParser as PP
 
     @inc_dir types misc
     @export_locals

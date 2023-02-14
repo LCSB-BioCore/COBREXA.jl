@@ -33,7 +33,7 @@
     @test all(
         contains.(
             sprint(show, MIME("text/plain"), r1),
-            ["r1", "100.0", "glycolysis", "blah", "biocyc", "g1", "g2", "g3"],
+            ["r1", "100.0", "g1 && g2", "glycolysis", "blah", "biocyc", "g3"],
         ),
     )
 

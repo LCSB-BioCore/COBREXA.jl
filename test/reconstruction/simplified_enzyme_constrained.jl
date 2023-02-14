@@ -15,9 +15,7 @@
                 push!(
                     newisozymes,
                     Isozyme(
-                        gene_product_stoichiometry = Dict(
-                            grr .=> ecoli_core_protein_stoichiometry[rid][i],
-                        ),
+                        gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))),
                         kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
                         kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
                     ),
@@ -46,7 +44,7 @@
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
-        0.8907273630431708,
+        0.8907347602586123,
         atol = TEST_TOLERANCE,
     )
 end
