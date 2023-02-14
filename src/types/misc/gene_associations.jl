@@ -22,6 +22,29 @@ end
 """
 $(TYPEDSIGNATURES)
 
+Evaluate the SBML `GeneProductAssociation` in the same way as
+[`Accessors.eval_reaction_gene_association`](@ref).
+"""
+function eval_grr(
+    gpa::SBML.GeneProductAssociation;
+    falses::Maybe{AbstractSet{String}} = nothing,
+    trues::Maybe{AbstractSet{String}} = nothing,
+)::Bool
+    @assert !(isnothing(falses) && isnothing(trues)) "at least one of 'trues' and 'falses' must be defined"
+
+    e(x::SBML.GeneProductAssociation) =
+        throw(DomainError(x, "evaluating unsupported GeneProductAssociation contents"))
+    e(x::SBML.GPARef) =
+        !isnothing(falses) ? !(x.gene_product in falses) : (x.gene_product in trues)
+    e(x::SBML.GPAAnd) = all(e, x.terms)
+    e(x::SBML.GPAOr) = any(e, x.terms)
+
+    e(gpa)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Convert a GeneAssociation to the corresponding `SBML.jl` structure.
 """
 function unparse_grr(

@@ -175,6 +175,17 @@ Accessors.reaction_gene_associations(model::JSONModel, rid::String) = maybemap(
 """
 $(TYPEDSIGNATURES)
 
+Parse and directly evaluate the `.gene_reaction_rule` in the reaction.
+"""
+Accessors.eval_reaction_gene_association(model::JSONModel, rid::String; kwargs...) =
+    maybemap(
+        x -> eval_grr(parse_grr_to_sbml(x); kwargs...),
+        get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
+    )
+
+"""
+$(TYPEDSIGNATURES)
+
 Parses the `.subsystem` out from reactions.
 """
 Accessors.reaction_subsystem(model::JSONModel, rid::String) =

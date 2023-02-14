@@ -131,12 +131,26 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Extracts the associations from `grRules` key, if present.
+Extract and parse the associations from `grRules` key, if present.
 """
 function Accessors.reaction_gene_associations(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
         grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
         typeof(grr) == String ? parse_grr(grr) : nothing
+    else
+        nothing
+    end
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Extract and directly evaluate the associations from `grRules` key, if present.
+"""
+function Accessors.eval_reaction_gene_association(m::MATModel, rid::String; kwargs...)
+    if haskey(m.mat, "grRules")
+        grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
+        typeof(grr) == String ? eval_grr(parse_grr_to_sbml(grr); kwargs...) : nothing
     else
         nothing
     end
