@@ -165,3 +165,19 @@ function make_enzyme_constrained_model(
         model,
     )
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+A convenience wrapper around [`make_enzyme_constrained_model`](@ref) that
+enforces a global enzyme capacity limitation across all genes in the model with
+`total_capacity_limitation` being the bound.
+"""
+make_enzyme_constrained_model(
+    model::AbstractMetabolicModel,
+    total_capacity_limitation::Float64,
+) = make_enzyme_constrained_model(
+    model;
+    gene_product_mass_group = Dict("uncategorized" => genes(model)),
+    gene_product_mass_group_bound = Dict("uncategorized" => total_capacity_limitation),
+)
