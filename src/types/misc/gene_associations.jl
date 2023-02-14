@@ -2,10 +2,10 @@
 """
 $(TYPEDSIGNATURES)
 Parse `SBML.GeneProductAssociation` structure and convert it to a strictly
-positive DNF [`GeneAssociation`](@ref). Negation (`SBML.GPANot`) is not
+positive DNF [`GeneAssociationsDNF`](@ref). Negation (`SBML.GPANot`) is not
 supported.
 """
-function parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociation
+function parse_grr(gpa::SBML.GeneProductAssociation)::GeneAssociationsDNF
 
     function fold_and(dnfs::Vector{Vector{Vector{String}}})::Vector{Vector{String}}
         if isempty(dnfs)
@@ -53,7 +53,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Convert a GeneAssociation to the corresponding `SBML.jl` structure.
+Convert [`GeneAssociationsDNF`](@ref) to the corresponding `SBML.jl` structure.
 """
 function unparse_grr(
     ::Type{SBML.GeneProductAssociation},
@@ -66,7 +66,7 @@ end
 $(TYPEDSIGNATURES)
 
 Parse a DNF gene association rule in format `(YIL010W and YLR043C) or (YIL010W
-and YGR209C)` to `GeneAssociation. Also accepts `OR`, `|`, `||`, `AND`, `&`,
+and YGR209C)` to `GeneAssociationsDNF`. Also accepts `OR`, `|`, `||`, `AND`, `&`,
 and `&&`.
 
 # Example
@@ -200,12 +200,12 @@ julia> unparse_grr(String, [["YIL010W", "YLR043C"], ["YIL010W", "YGR209C"]])
 """
 function unparse_grr(
     ::Type{String},
-    grr::GeneAssociationDNF;
+    grr::GeneAssociationsDNF;
     and = " && ",
     or = " || ",
 )::String
     return join(("(" * join(gr, and) * ")" for gr in grr), or)
 end
 
-unparse_grr(::Type{String}, isozymes::Vector{Isozyme}; kwargs...)::String =
+unparse_grr(::Type{String}, isozymes::GeneAssociations; kwargs...)::String =
     unparse_grr(String, [collect(keys(iso.stoichiometry)) for iso in isozymes]; kwargs...)

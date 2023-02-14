@@ -251,12 +251,12 @@ function eval_reaction_gene_association(
     falses::Maybe{AbstractSet{String}} = nothing,
     trues::Maybe{AbstractSet{String}} = nothing,
 )
-    isnothing(falses) || return maybemap(
+    isnothing(falses) || return Types.Internal.maybemap(
         grr -> any(!any(in(falses), clause) for clause in grr),
         reaction_gene_associations(a, reaction_id),
     )
 
-    isnothing(trues) || return maybemap(
+    isnothing(trues) || return Types.Internal.maybemap(
         grr -> any(all(in(trues), clause) for clause in grr),
         reaction_gene_associations(a, reaction_id),
     )

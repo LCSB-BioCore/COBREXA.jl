@@ -179,8 +179,11 @@ Parse and directly evaluate the `.gene_reaction_rule` in the reaction.
 """
 Accessors.eval_reaction_gene_association(model::JSONModel, rid::String; kwargs...) =
     maybemap(
-        x -> eval_grr(parse_grr_to_sbml(x); kwargs...),
-        get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
+        x -> eval_grr(x; kwargs...),
+        maybemap(
+            parse_grr_to_sbml,
+            get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
+        ),
     )
 
 """

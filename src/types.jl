@@ -81,7 +81,7 @@ end
 
 @inject Types.Internal begin
     # TODO where is this declared?
-    using ..Types
+    using ...Types
     using ..Accessors
     using ..Log.Internal: @models_log
 
