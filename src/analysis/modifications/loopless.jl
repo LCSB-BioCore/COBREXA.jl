@@ -41,7 +41,7 @@ add_loopless_constraints(metabolite_idx;
             !is_boundary(reaction_stoichiometry(model, rid))
         ]
         
-        metabolite_idxs = metabolite_idx.(metabolites(model), Ref(model)) # TODO need a function that names all the constraints
+        metabolite_idxs = first.(metabolite_idx.(metabolites(model), Ref(model))) # TODO need a function that names all the constraints
 
         N_int = nullspace(Array(stoichiometry(model)[metabolite_idxs, internal_rxn_idxs])) # no sparse nullspace function
 
@@ -74,4 +74,4 @@ A convenience wrapper around [`add_loopless_constraints`](@ref), which assumes
 that the model being modified only has metabolites in its stoichiometric matrix,
 and not, e.g. virtual enzymes. 
 """
-add_loopless_constraints(; kwargs...) = add_loopless_constraints((x, m) -> indexin([x], metabolites(m); kwargs...))
+add_loopless_constraints(; kwargs...) = add_loopless_constraints((x, m) -> indexin([x], metabolites(m)); kwargs...)
