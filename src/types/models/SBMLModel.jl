@@ -210,6 +210,17 @@ Accessors.reaction_gene_associations(
 """
 $(TYPEDSIGNATURES)
 
+Evaluate the gene association formula directly from the SBML Math structure.
+"""
+Accessors.eval_reaction_gene_association(model::SBMLModel, rid::String; kwargs...) =
+    maybemap(
+        x -> eval_grr(x; kwargs...),
+        model.sbml.reactions[rid].gene_product_association,
+    )
+
+"""
+$(TYPEDSIGNATURES)
+
 Get [`MetaboliteFormula`](@ref) from a chosen metabolite from [`SBMLModel`](@ref).
 """
 Accessors.metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =

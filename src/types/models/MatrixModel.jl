@@ -141,7 +141,7 @@ Accessors.reaction_gene_associations(
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the [`GeneAssociation`](@ref) from [`MatrixModel`](@ref) by reaction ID.
+Retrieve the [`GeneAssociations`](@ref) from [`MatrixModel`](@ref) by reaction ID.
 """
 Accessors.reaction_gene_associations(
     model::MatrixModel,

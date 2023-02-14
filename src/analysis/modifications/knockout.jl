@@ -34,11 +34,11 @@ overloaded so that the knockouts may work differently (more efficiently) with
 other models.
 """
 function _do_knockout(model::AbstractMetabolicModel, opt_model, gene_ids::Vector{String})
-    for (rxn_num, rxn_id) in enumerate(variables(model))
-        rga = reaction_gene_associations(model, rxn_id)
-        if !isnothing(rga) &&
-           all([any(in.(gene_ids, Ref(conjunction))) for conjunction in rga])
-            set_optmodel_bound!(rxn_num, opt_model, lower_bound = 0, upper_bound = 0)
+    #TODO this should preferably work on reactions. Make it a wrapper.
+    KOs = Set(gene_ids)
+    for (ridx, rid) in enumerate(variables(model))
+        if eval_reaction_gene_association(model, rid, falses = KOs) == false # also tests for nothing!
+            set_optmodel_bound!(ridx, opt_model, lower_bound = 0, upper_bound = 0)
         end
     end
 end

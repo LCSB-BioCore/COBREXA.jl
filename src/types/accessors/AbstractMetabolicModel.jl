@@ -232,6 +232,41 @@ end
 """
 $(TYPEDSIGNATURES)
 
+Directly evaluate the reaction-gene-association from the data available in the
+model. The default implementation evaluates the GRR over the DNF formula
+available from [`reaction_gene_associations`](@ref), which may be detrimental
+in models where the DNF formula gets exceedingly big while it is in fact not
+required for the given analysis, such as for calculating the gene knockouts. In
+such cases, users may provide overload of
+[`eval_reaction_gene_association`](@ref) to skip the DNF conversion.
+
+The evaluation takes the first set of gene identifiers of `falses` and `trues`
+that isn't `nothing` and considers these to be evaluated as such, while all
+other identifiers form the complement with the negated evaluation; at least one
+must be supplied.
+"""
+function eval_reaction_gene_association(
+    a::AbstractMetabolicModel,
+    reaction_id::String;
+    falses::Maybe{AbstractSet{String}} = nothing,
+    trues::Maybe{AbstractSet{String}} = nothing,
+)
+    isnothing(falses) || return Types.Internal.maybemap(
+        grr -> any(!any(in(falses), clause) for clause in grr),
+        reaction_gene_associations(a, reaction_id),
+    )
+
+    isnothing(trues) || return Types.Internal.maybemap(
+        grr -> any(all(in(trues), clause) for clause in grr),
+        reaction_gene_associations(a, reaction_id),
+    )
+
+    throw(ArgumentError("at least one of 'falses' and 'trues' must be specified"))
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Return the subsystem of reaction `reaction_id` in `model` if it is assigned. If not,
 return `nothing`.
 """

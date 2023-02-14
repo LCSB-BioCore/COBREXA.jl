@@ -25,5 +25,5 @@
         (i, r) in reconmodel.reactions if !isnothing(r.gene_associations)
     ]
     @test length(recon_grrs) == 5938
-    @test sum(length.(recon_grrs)) == 13903
+    @test sum(length.(recon_grrs)) == 31504
 end
