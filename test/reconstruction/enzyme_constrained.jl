@@ -87,7 +87,7 @@ end
     original GECKO paper. This model is nice to troubleshoot with,
     because the stoich matrix is small.
     =#
-    m = ObjectModel(id = "enzyme_constrained")
+    m = ObjectModel()
     m1 = Metabolite("m1")
     m2 = Metabolite("m2")
     m3 = Metabolite("m3")

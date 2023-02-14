@@ -26,7 +26,7 @@
 
     rxns = [r1, r2]
 
-    model = ObjectModel(id = "model")
+    model = ObjectModel()
     model.reactions = OrderedDict(r.id => r for r in rxns)
     model.metabolites = OrderedDict(m.id => m for m in mets)
     model.genes = OrderedDict(g.id => g for g in gene_vec)
