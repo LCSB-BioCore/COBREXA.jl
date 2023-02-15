@@ -49,8 +49,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Get the reactions in a `MatrixModel`.
 """
 Accessors.variables(a::MatrixModel)::Vector{String} = a.rxns
 
@@ -58,45 +56,31 @@ Accessors.Internal.@all_variables_are_reactions MatrixModel
 
 """
 $(TYPEDSIGNATURES)
-
-Metabolites in a `MatrixModel`.
 """
 Accessors.metabolites(a::MatrixModel)::Vector{String} = a.mets
 
 """
 $(TYPEDSIGNATURES)
-
-`MatrixModel` stoichiometry matrix.
 """
 Accessors.stoichiometry(a::MatrixModel)::SparseMat = a.S
 
 """
 $(TYPEDSIGNATURES)
-
-`MatrixModel` flux bounds.
 """
 Accessors.bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
 
 """
 $(TYPEDSIGNATURES)
-
-`MatrixModel` target flux balance.
 """
 Accessors.balance(a::MatrixModel)::SparseVec = a.b
 
 """
 $(TYPEDSIGNATURES)
-
-`MatrixModel` objective vector.
 """
 Accessors.objective(a::MatrixModel)::SparseVec = a.c
 
 """
 $(TYPEDSIGNATURES)
-
-Collect all genes contained in the [`MatrixModel`](@ref). The call is expensive
-for large models, because the vector is not stored and instead gets rebuilt
-each time this function is called.
 """
 function Accessors.genes(a::MatrixModel)::Vector{String}
     res = Set{String}()
@@ -113,26 +97,18 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Return the stoichiometry of reaction with ID `rid`.
-Accessors."""
+"""
 Accessors.reaction_stoichiometry(m::MatrixModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
 """
 $(TYPEDSIGNATURES)
-
-Return the stoichiometry of reaction at index `ridx`.
 """
 Accessors.reaction_stoichiometry(m::MatrixModel, ridx)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """
 $(TYPEDSIGNATURES)
-
-Retrieve the [`GeneAssociationsDNF`](@ref) from [`MatrixModel`](@ref) by
-reaction index (for [`MatrixModel`](@ref) this is typically faster than
-retrieving by ID).
 """
 Accessors.reaction_gene_associations(
     model::MatrixModel,
@@ -141,9 +117,6 @@ Accessors.reaction_gene_associations(
 
 """
 $(TYPEDSIGNATURES)
-
-Retrieve the [`GeneAssociationsDNF`](@ref) from [`MatrixModel`](@ref) by
-reaction ID.
 """
 Accessors.reaction_gene_associations(
     model::MatrixModel,
@@ -152,8 +125,6 @@ Accessors.reaction_gene_associations(
 
 """
 $(TYPEDSIGNATURES)
-
-Make a `MatrixModel` out of any compatible model type.
 """
 function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicModel}
     if typeof(m) == MatrixModel
