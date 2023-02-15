@@ -74,18 +74,12 @@ Accessors.stoichiometry(model::SimplifiedEnzymeConstrainedModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-Reconstruct an objective of the [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
 Accessors.objective(model::SimplifiedEnzymeConstrainedModel) =
     simplified_enzyme_constrained_column_reactions(model)' * objective(model.inner)
 
 """
 $(TYPEDSIGNATURES)
-
-Returns the internal reactions in a [`SimplifiedEnzymeConstrainedModel`](@ref) (these may be split
-to forward- and reverse-only parts; reactions IDs are mangled accordingly with
-suffixes).
 """
 Accessors.variables(model::SimplifiedEnzymeConstrainedModel) =
     let inner_reactions = variables(model.inner)
@@ -99,15 +93,11 @@ Accessors.variables(model::SimplifiedEnzymeConstrainedModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-The number of reactions (including split ones) in [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
 Accessors.n_variables(model::SimplifiedEnzymeConstrainedModel) = length(model.columns)
 
 """
 $(TYPEDSIGNATURES)
-
-Return the variable bounds for [`SimplifiedEnzymeConstrainedModel`](@ref).
 """
 Accessors.bounds(model::SimplifiedEnzymeConstrainedModel) =
     ([col.lb for col in model.columns], [col.ub for col in model.columns])
@@ -140,9 +130,10 @@ Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
-Return the coupling of [`SimplifiedEnzymeConstrainedModel`](@ref). That combines the coupling of
-the wrapped model, coupling for split reactions, and the coupling for the total
-enzyme capacity.
+Return the coupling of a [`SimplifiedEnzymeConstrainedModel`](@ref). This
+combines the coupling of the wrapped model, coupling for split reactions, and
+the coupling for the total enzyme capacity, which is added as a
+[`coupling_bounds`](@ref).
 """
 Accessors.coupling(model::SimplifiedEnzymeConstrainedModel) = vcat(
     coupling(model.inner) * simplified_enzyme_constrained_column_reactions(model),
@@ -151,18 +142,12 @@ Accessors.coupling(model::SimplifiedEnzymeConstrainedModel) = vcat(
 
 """
 $(TYPEDSIGNATURES)
-
-Count the coupling constraints in [`SimplifiedEnzymeConstrainedModel`](@ref) (refer to
-[`coupling`](@ref) for details).
 """
 Accessors.n_coupling_constraints(model::SimplifiedEnzymeConstrainedModel) =
     n_coupling_constraints(model.inner) + 1
 
 """
 $(TYPEDSIGNATURES)
-
-The coupling bounds for [`SimplifiedEnzymeConstrainedModel`](@ref) (refer to [`coupling`](@ref) for
-details).
 """
 Accessors.coupling_bounds(model::SimplifiedEnzymeConstrainedModel) =
     let (iclb, icub) = coupling_bounds(model.inner)
