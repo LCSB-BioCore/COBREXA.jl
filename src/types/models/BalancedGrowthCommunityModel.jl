@@ -71,9 +71,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Return the number of reactions in `cm`, which is a
-[`BalancedGrowthCommunityModel`](@ref).
 """
 function Accessors.n_variables(cm::BalancedGrowthCommunityModel)
     num_model_reactions = sum(n_variables(m.model) for m in cm.members)
@@ -98,9 +95,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Return the number of metabolites in `cm`, which is a
-[`BalancedGrowthCommunityModel`](@ref).
 """
 function Accessors.n_metabolites(cm::BalancedGrowthCommunityModel)
     num_model_reactions = sum(n_metabolites(m.model) for m in cm.members)
@@ -121,7 +115,6 @@ Accessors.genes(cm::BalancedGrowthCommunityModel) =
 
 """
 $(TYPEDSIGNATURES)
-Return the balance of `cm`, which is a [`BalancedGrowthCommunityModel`](@ref).
 """
 Accessors.balance(cm::BalancedGrowthCommunityModel) = [
     vcat([balance(m.model) .* m.abundance for m in cm.members]...)
@@ -130,8 +123,6 @@ Accessors.balance(cm::BalancedGrowthCommunityModel) = [
 
 """
 $(TYPEDSIGNATURES)
-
-Return the number of metabolites in `cm`, which is a [`BalancedGrowthCommunityModel`](@ref).
 """
 Accessors.n_genes(cm::BalancedGrowthCommunityModel) =
     sum(n_genes(m.model) for m in cm.members)
@@ -139,8 +130,8 @@ Accessors.n_genes(cm::BalancedGrowthCommunityModel) =
 """
 $(TYPEDSIGNATURES)
 
-Return the overall stoichiometric matrix for a [`BalancedGrowthCommunityModel`](@ref), built
-from the underlying models.
+Return the overall stoichiometric matrix for a
+[`BalancedGrowthCommunityModel`](@ref), built from the underlying models.
 """
 function Accessors.stoichiometry(cm::BalancedGrowthCommunityModel)
     env_mets = get_env_mets(cm)
@@ -204,8 +195,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Coupling constraint matrix for a [`BalancedGrowthCommunityModel`](@ref).
 """
 function Accessors.coupling(cm::BalancedGrowthCommunityModel)
     coups = blockdiag([coupling(m.model) for m in cm.members]...)
@@ -215,8 +204,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-The number of coupling constraints in a [`BalancedGrowthCommunityModel`](@ref).
 """
 Accessors.n_coupling_constraints(cm::BalancedGrowthCommunityModel) =
     sum(n_coupling_constraints(m.model) for m in cm.members)
@@ -250,8 +237,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Returns the semantically meaningful reactions of the model.
 """
 Accessors.reactions(cm::BalancedGrowthCommunityModel) = [
     vcat([add_community_prefix.(Ref(m), reactions(m.model)) for m in cm.members]...)
@@ -261,8 +246,6 @@ Accessors.reactions(cm::BalancedGrowthCommunityModel) = [
 
 """
 $(TYPEDSIGNATURES)
-
-Return the semantically meaningful reactions of the model.
 """
 Accessors.n_reactions(cm::BalancedGrowthCommunityModel) =
     sum(n_reactions(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
