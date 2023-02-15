@@ -363,9 +363,6 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
         return model
     end
 
-    modelnotes = model_notes(model)
-    modelannotations = model_annotations(model)
-
     modelreactions = OrderedDict{String,Reaction}()
     modelmetabolites = OrderedDict{String,Metabolite}()
     modelgenes = OrderedDict{String,Gene}()
@@ -427,7 +424,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
         metabolites = modelmetabolites,
         genes = modelgenes,
         objective = modelobjective,
-        notes = modelnotes,
-        annotations = modelannotations,
+        notes = model_notes(model),
+        annotations = model_annotations(model),
     )
 end
