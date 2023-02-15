@@ -89,9 +89,10 @@ Accessors.unwrap_model(model::EnzymeConstrainedModel) = model.inner
 """
 $(TYPEDSIGNATURES)
 
-Return a stoichiometry of the [`EnzymeConstrainedModel`](@ref). The enzymatic reactions are
-split into unidirectional forward and reverse ones, each of which may have
-multiple variants per isozyme.
+Return a stoichiometry of the [`EnzymeConstrainedModel`](@ref). The enzymatic
+reactions are split into unidirectional forward and reverse ones, each of which
+may have multiple variants per isozyme. The matrix includes the virtual enzyme
+balances.
 """
 function Accessors.stoichiometry(model::EnzymeConstrainedModel)
     irrevS = stoichiometry(model.inner) * enzyme_constrained_column_reactions(model)
@@ -105,10 +106,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Return the objective of the [`EnzymeConstrainedModel`](@ref). Note, the objective is with
-respect to the internal variables, i.e. [`variables(model)`](@ref), which are
-the unidirectional reactions and the genes involved in enzymatic reactions that
-have kinetic data.
+Return the objective of the [`EnzymeConstrainedModel`](@ref). Note, by default
+the objective is inferred from the underlying model.
 """
 Accessors.objective(model::EnzymeConstrainedModel) = model.objective
 
@@ -133,17 +132,12 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Returns the number of all irreversible reactions in `model` as well as the
-number of gene products that take part in enzymatic reactions.
 """
 Accessors.n_variables(model::EnzymeConstrainedModel) =
     length(model.columns) + n_genes(model)
 
 """
 $(TYPEDSIGNATURES)
-
-Return variable bounds for [`EnzymeConstrainedModel`](@ref).
 """
 function Accessors.bounds(model::EnzymeConstrainedModel)
     lbs = [
@@ -212,9 +206,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Return the coupling of [`EnzymeConstrainedModel`](@ref). That combines the coupling of the
-wrapped model, coupling for split (arm) reactions, and the coupling for the total
-enzyme capacity.
+Return the coupling of [`EnzymeConstrainedModel`](@ref). That combines the
+coupling of the wrapped model, coupling for split (arm) reactions with enzymes,
+and the coupling for the total enzyme capacity.
 """
 function Accessors.coupling(model::EnzymeConstrainedModel)
     innerC = coupling(model.inner) * enzyme_constrained_column_reactions(model)
@@ -229,9 +223,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Count the coupling constraints in [`EnzymeConstrainedModel`](@ref) (refer to
-[`coupling`](@ref) for details).
 """
 Accessors.n_coupling_constraints(model::EnzymeConstrainedModel) =
     n_coupling_constraints(model.inner) +
@@ -240,9 +231,6 @@ Accessors.n_coupling_constraints(model::EnzymeConstrainedModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-The coupling bounds for [`EnzymeConstrainedModel`](@ref) (refer to [`coupling`](@ref) for
-details).
 """
 function Accessors.coupling_bounds(model::EnzymeConstrainedModel)
     (iclb, icub) = coupling_bounds(model.inner)
@@ -272,8 +260,6 @@ Accessors.balance(model::EnzymeConstrainedModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-Return the number of genes that have enzymatic constraints associated with them.
 """
 Accessors.n_genes(model::EnzymeConstrainedModel) = length(model.coupling_row_gene_product)
 
@@ -295,8 +281,6 @@ Accessors.metabolites(model::EnzymeConstrainedModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-Return the number of metabolites, both real and pseudo, for a [`EnzymeConstrainedModel`](@ref).
 """
 Accessors.n_metabolites(model::EnzymeConstrainedModel) =
     n_metabolites(model.inner) + n_genes(model)
