@@ -64,9 +64,6 @@ $(TYPEDSIGNATURES)
 """
 Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
 """
