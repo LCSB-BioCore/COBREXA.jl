@@ -90,9 +90,6 @@ Accessors.variables(model::MaxMinDrivingForceModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-The number of variables is 1 + the number of metabolites + the number of
-reactions, where the 1 comes from the total max-min driving force.
 """
 Accessors.n_variables(model::MaxMinDrivingForceModel) =
     1 + n_metabolites(model) + n_reactions(model)
@@ -125,8 +122,6 @@ Accessors.objective(model::MaxMinDrivingForceModel) =
 
 """
 $(TYPEDSIGNATURES)
-
-Get the equality constraint rhs of `model`.
 """
 function Accessors.balance(model::MaxMinDrivingForceModel)
     # proton water balance
@@ -155,8 +150,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Get the equality constraint lhs of `model`.
 """
 function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
@@ -206,8 +199,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Get the simple variable bounds of `model`.
 """
 function Accessors.bounds(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
@@ -235,8 +226,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Return the coupling of a max-min driving force model.
 """
 function Accessors.coupling(model::MaxMinDrivingForceModel)
 
@@ -268,8 +257,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Return the coupling bounds of a max-min driving force model.
 """
 function Accessors.coupling_bounds(model::MaxMinDrivingForceModel)
     n = length(Internal.active_reaction_ids(model))
