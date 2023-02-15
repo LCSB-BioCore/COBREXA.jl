@@ -5,11 +5,12 @@ $(TYPEDSIGNATURES)
 Shallow copy of a [`ObjectModel`](@ref)
 """
 Base.copy(m::ObjectModel) = ObjectModel(
-    id = m.id,
     reactions = m.reactions,
     metabolites = m.metabolites,
     genes = m.genes,
     objective = m.objective,
+    notes = m.notes,
+    annotations = m.annotations,
 )
 
 """
@@ -53,16 +54,16 @@ Base.copy(g::Gene) = Gene(g.id; notes = g.notes, annotations = g.annotations)
 $(TYPEDSIGNATURES)
 
 Return the lower bounds for all reactions in `model`.
-Order matches that of the reaction IDs returned by [`variables`](@ref).
+Order matches that of the reaction IDs returned by [`reactions`](@ref).
 """
 lower_bounds(model::ObjectModel)::Vector{Float64} =
-    [model.reactions[rxn].lower_bound for rxn in variables(model)]
+    [model.reactions[rxn].lower_bound for rxn in reactions(model)]
 
 """
 $(TYPEDSIGNATURES)
 
 Return the upper bounds for all reactions in `model`.
-Order matches that of the reaction IDs returned in [`variables`](@ref).
+Order matches that of the reaction IDs returned in [`reactions`](@ref).
 """
 upper_bounds(model::ObjectModel)::Vector{Float64} =
-    [model.reactions[rxn].upper_bound for rxn in variables(model)]
+    [model.reactions[rxn].upper_bound for rxn in reactions(model)]

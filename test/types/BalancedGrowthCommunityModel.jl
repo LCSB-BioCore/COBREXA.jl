@@ -1,5 +1,5 @@
 @testset "BalancedGrowthCommunityModel: simple model" begin
-    m1 = ObjectModel(id = "Model1")
+    m1 = ObjectModel()
     add_metabolites!(
         m1,
         [
@@ -22,7 +22,7 @@
         ],
     )
 
-    m2 = ObjectModel(id = "Model2")
+    m2 = ObjectModel()
     add_metabolites!(
         m2,
         [

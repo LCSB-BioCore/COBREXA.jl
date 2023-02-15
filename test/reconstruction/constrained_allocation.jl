@@ -1,6 +1,6 @@
 @testset "Constrained allocation FBA" begin
 
-    m = ObjectModel(id = "")
+    m = ObjectModel()
     m1 = Metabolite("m1")
     m2 = Metabolite("m2")
     m3 = Metabolite("m3")

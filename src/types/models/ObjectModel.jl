@@ -33,20 +33,23 @@ keys(model.reactions)
 $(TYPEDFIELDS)
 """
 Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
-    "Name of the model"
-    id::String
-
-    "Ordered dictionary of reactions"
+    "Ordered dictionary of reactions."
     reactions::OrderedDict{String,Reaction} = OrderedDict{String,Reaction}()
 
-    "Ordered dictionary of metabolites"
+    "Ordered dictionary of metabolites."
     metabolites::OrderedDict{String,Metabolite} = OrderedDict{String,Metabolite}()
 
-    "Ordered dictionary of genes"
+    "Ordered dictionary of genes."
     genes::OrderedDict{String,Gene} = OrderedDict{String,Gene}()
 
-    "Model objective"
+    "Model objective."
     objective::Dict{String,Float64} = Dict{String,Float64}()
+
+    "Machine readable reference to organism embedded via MIRIAM annotation. This should include species name, taxonomy ID, and url to the genome."
+    annotations::Annotations = Annotations()
+
+    "Reference information for the model. This should include the DOI and author contact information."
+    notes::Notes = Notes()
 end
 
 # AbstractMetabolicModel interface follows
@@ -334,6 +337,23 @@ Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) =
 """
 $(TYPEDSIGNATURES)
 
+Return the notes associated with a `model`. At minimum this should include the
+model authors, contact information, and DOI of the associated publication.
+"""
+Accessors.model_notes(model::ObjectModel)::Notes = model.notes
+
+"""
+$(TYPEDSIGNATURES)
+
+Return the annotations associated with a `model`. Typically, these should be
+encoded in MIRIAM format. At minimum it should include the full species name
+with relevant identifiers, taxonomy ID, strain ID, and URL to the genome.
+"""
+Accessors.model_annotations(model::ObjectModel)::Annotations = model.annotations
+
+"""
+$(TYPEDSIGNATURES)
+
 Convert any `AbstractMetabolicModel` into a `ObjectModel`. Note, some data loss
 may occur since only the generic interface is used during the conversion
 process. Additionally, assume the stoichiometry for each gene association is 1.
@@ -343,7 +363,6 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
         return model
     end
 
-    id = "" # TODO: add accessor to get model ID
     modelreactions = OrderedDict{String,Reaction}()
     modelmetabolites = OrderedDict{String,Metabolite}()
     modelgenes = OrderedDict{String,Gene}()
@@ -401,10 +420,11 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     end
 
     return ObjectModel(;
-        id,
         reactions = modelreactions,
         metabolites = modelmetabolites,
         genes = modelgenes,
         objective = modelobjective,
+        notes = model_notes(model),
+        annotations = model_annotations(model),
     )
 end

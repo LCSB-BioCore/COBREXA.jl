@@ -2,7 +2,7 @@
     #=
     Implement the small model that should be gapfilled.
     =#
-    model = ObjectModel(id = "partial model")
+    model = ObjectModel()
 
     (m1, m2, m3, m4, m5, m6, m7, m8) = [Metabolite(id = "m$i") for i = 1:8]
 

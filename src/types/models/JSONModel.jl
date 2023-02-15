@@ -304,6 +304,11 @@ Return the name of gene with ID `gid`.
 Accessors.gene_name(model::JSONModel, gid::String) =
     get(model.genes[model.gene_index[gid]], "name", nothing)
 
+Accessors.model_annotations(model::JSONModel)::Annotations =
+    get(model.json, "annotation", Annotations())
+
+Accessors.model_notes(model::JSONModel)::Notes = get(model.json, "notes", Notes())
+
 """
 $(TYPEDSIGNATURES)
 
@@ -322,7 +327,9 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     ocs = objective(mm)
 
     json = Dict{String,Any}()
-    json["id"] = "model" # default
+
+    json["annotation"] = model_annotation(mm)
+    json["notes"] = model_nodes(mm)
 
     json[first(constants.keynames.genes)] = [
         Dict([

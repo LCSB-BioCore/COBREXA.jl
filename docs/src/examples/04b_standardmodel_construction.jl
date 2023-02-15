@@ -10,7 +10,7 @@ using COBREXA
 # In `COBREXA`, model construction is primarily supported through `ObjectModel`s.
 # To begin, create an empty `ObjectModel`.
 
-model = ObjectModel("FirstModel") # assign model id = "FirstModel"
+model = ObjectModel()
 
 # Next, genes, metabolites and reactions need to be added to the model.
 

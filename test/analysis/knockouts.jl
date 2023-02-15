@@ -1,5 +1,5 @@
 @testset "single_knockout" begin
-    m = ObjectModel(id = "testmodel")
+    m = ObjectModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
 
@@ -59,7 +59,7 @@
 end
 
 @testset "multiple_knockouts" begin
-    m = ObjectModel(id = "testmodel")
+    m = ObjectModel()
     add_metabolite!(m, Metabolite("A"))
     add_metabolite!(m, Metabolite("B"))
     add_gene!(m, Gene("g1"))
