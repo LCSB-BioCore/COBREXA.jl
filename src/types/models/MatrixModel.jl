@@ -104,7 +104,7 @@ Accessors.reaction_stoichiometry(m::MatrixModel, rid::String)::Dict{String,Float
 """
 $(TYPEDSIGNATURES)
 """
-Accessors.reaction_stoichiometry(m::MatrixModel, ridx::Int64)::Dict{String,Float64} =
+Accessors.reaction_stoichiometry(m::MatrixModel, ridx::Int)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
 """

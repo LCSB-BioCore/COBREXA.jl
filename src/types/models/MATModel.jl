@@ -179,7 +179,7 @@ end
 """
 $(TYPEDSIGNATURES)
 """
-function Accessors.reaction_stoichiometry(m::MATModel, ridx)::Dict{String,Float64}
+function Accessors.reaction_stoichiometry(m::MATModel, ridx::Int)::Dict{String,Float64}
     met_inds = findall(m.mat["S"][:, ridx] .!= 0.0)
     Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, ridx] for met_ind in met_inds)
 end
