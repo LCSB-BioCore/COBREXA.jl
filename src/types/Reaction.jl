@@ -14,7 +14,7 @@ Base.@kwdef mutable struct Reaction
     metabolites::Dict{String,Float64} = Dict{String,Float64}()
     lower_bound::Float64 = -constants.default_reaction_bound
     upper_bound::Float64 = constants.default_reaction_bound
-    gene_associations::Maybe{GeneAssociations} = nothing
+    gene_associations::Maybe{Vector{Isozyme}} = nothing
     subsystem::Maybe{String} = nothing
     notes::Notes = Notes()
     annotations::Annotations = Annotations()

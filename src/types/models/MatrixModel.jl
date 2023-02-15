@@ -130,8 +130,9 @@ Accessors.reaction_stoichiometry(m::MatrixModel, ridx)::Dict{String,Float64} =
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the gene reaction associations from [`MatrixModel`](@ref) by reaction
-index.
+Retrieve the [`GeneAssociationsDNF`](@ref) from [`MatrixModel`](@ref) by
+reaction index (for [`MatrixModel`](@ref) this is typically faster than
+retrieving by ID).
 """
 Accessors.reaction_gene_associations(
     model::MatrixModel,
@@ -141,7 +142,8 @@ Accessors.reaction_gene_associations(
 """
 $(TYPEDSIGNATURES)
 
-Retrieve the [`GeneAssociations`](@ref) from [`MatrixModel`](@ref) by reaction ID.
+Retrieve the [`GeneAssociationsDNF`](@ref) from [`MatrixModel`](@ref) by
+reaction ID.
 """
 Accessors.reaction_gene_associations(
     model::MatrixModel,

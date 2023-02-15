@@ -207,5 +207,5 @@ function unparse_grr(
     return join(("(" * join(gr, and) * ")" for gr in grr), or)
 end
 
-unparse_grr(::Type{String}, isozymes::GeneAssociations; kwargs...)::String =
+unparse_grr(::Type{String}, isozymes::AbstractVector{Isozyme}; kwargs...)::String =
     unparse_grr(String, [collect(keys(iso.stoichiometry)) for iso in isozymes]; kwargs...)
