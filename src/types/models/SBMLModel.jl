@@ -379,6 +379,11 @@ Return the notes about gene with ID `gid`.
 Accessors.gene_notes(model::SBMLModel, gid::String) =
     _sbml_import_notes(model.sbml.gene_products[gid].notes)
 
+Accessors.model_annotations(model::SBMLModel) =
+    _sbml_import_cvterms(model.sbo, model.cv_terms)
+
+Accessors.model_notes(model::SBMLModel) = _sbml_import_notes(model.notes)
+
 """
 $(TYPEDSIGNATURES)
 
@@ -473,6 +478,9 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
                     Dict(rid => oc for (rid, oc) in zip(rxns, objective(mm)) if oc != 0),
                 ),
             ),
+            notes = _sbml_export_notes(model.notes(mm)),
+            sbo = _sbml_export_sbo(model.annotations),
+            cv_terms = _sbml_export_cvterms(model.annotations),
         ),
     )
 end
