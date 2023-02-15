@@ -328,8 +328,8 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
 
     json = Dict{String,Any}()
 
-    json["annotation"] = model_annotation(mm)
-    json["notes"] = model_nodes(mm)
+    json["annotation"] = model_annotations(mm)
+    json["notes"] = model_notes(mm)
 
     json[first(constants.keynames.genes)] = [
         Dict([
