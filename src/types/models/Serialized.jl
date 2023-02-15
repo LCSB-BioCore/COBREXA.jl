@@ -20,8 +20,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Unwrap the serialized model (precaching it transparently).
 """
 function Accessors.unwrap_model(m::Serialized)
     precache!(m)
@@ -30,8 +28,6 @@ end
 
 """
 $(TYPEDSIGNATURES)
-
-Load the `Serialized` model from disk in case it's not alreadly loaded.
 """
 function Accessors.precache!(model::Serialized)::Nothing
     if isnothing(model.m)
