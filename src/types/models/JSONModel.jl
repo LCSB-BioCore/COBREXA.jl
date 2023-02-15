@@ -322,7 +322,6 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     ocs = objective(mm)
 
     json = Dict{String,Any}()
-    json["id"] = get(model_notes(mm), "id", "missing model ID")
 
     json[first(constants.keynames.genes)] = [
         Dict([
