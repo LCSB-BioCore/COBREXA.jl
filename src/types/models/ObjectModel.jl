@@ -53,59 +53,21 @@ Base.@kwdef mutable struct ObjectModel <: AbstractMetabolicModel
 end
 
 # AbstractMetabolicModel interface follows
-"""
-$(TYPEDSIGNATURES)
 
-Return a vector of reaction id strings contained in `model`.
-The order of reaction ids returned here matches the order used to construct the
-stoichiometric matrix.
-"""
 Accessors.variables(model::ObjectModel)::StringVecType = collect(keys(model.reactions))
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the number of reactions contained in `model`.
-"""
 Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
 
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
-"""
-$(TYPEDSIGNATURES)
-
-Return a vector of metabolite id strings contained in `model`.
-The order of metabolite strings returned here matches the order used to construct
-the stoichiometric matrix.
-"""
 Accessors.metabolites(model::ObjectModel)::StringVecType = collect(keys(model.metabolites))
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the number of metabolites in `model`.
-"""
 Accessors.n_metabolites(model::ObjectModel)::Int = length(model.metabolites)
 
-"""
-$(TYPEDSIGNATURES)
-
-Return a vector of gene id strings in `model`.
-"""
 Accessors.genes(model::ObjectModel)::StringVecType = collect(keys(model.genes))
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the number of genes in `model`.
-"""
 Accessors.n_genes(model::ObjectModel)::Int = length(model.genes)
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the stoichiometric matrix associated with `model` in sparse format.
-"""
 function Accessors.stoichiometry(model::ObjectModel)::SparseMat
     n_entries = 0
     for (_, r) in model.reactions
@@ -142,37 +104,14 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
     return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), n_variables(model))
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the lower and upper bounds, respectively, for reactions in `model`.
-Order matches that of the reaction ids returned in `variables()`.
-"""
 Accessors.bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the balance of the linear problem, i.e. b in Sv = 0 where S is the stoichiometric matrix
-and v is the flux vector.
-"""
 Accessors.balance(model::ObjectModel)::SparseVec = spzeros(length(model.metabolites))
 
-"""
-$(TYPEDSIGNATURES)
-
-Return sparse objective vector for `model`.
-"""
 Accessors.objective(model::ObjectModel)::SparseVec =
     sparse([get(model.objective, rid, 0.0) for rid in keys(model.reactions)])
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the gene reaction rule in string format for reaction with `id` in `model`.
-Return `nothing` if not available.
-"""
 function Accessors.reaction_gene_associations(
     model::ObjectModel,
     id::String,
@@ -184,180 +123,60 @@ function Accessors.reaction_gene_associations(
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the formula of reaction `id` in `model`.
-Return `nothing` if not present.
-"""
 Accessors.metabolite_formula(model::ObjectModel, id::String)::Maybe{MetaboliteFormula} =
     maybemap(parse_formula, model.metabolites[id].formula)
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the charge associated with metabolite `id` in `model`.
-Return nothing if not present.
-"""
 Accessors.metabolite_charge(model::ObjectModel, id::String)::Maybe{Int} =
     model.metabolites[id].charge
 
-"""
-$(TYPEDSIGNATURES)
-
-Return compartment associated with metabolite `id` in `model`.
-Return `nothing` if not present.
-"""
 Accessors.metabolite_compartment(model::ObjectModel, id::String)::Maybe{String} =
     model.metabolites[id].compartment
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the subsystem associated with reaction `id` in `model`.
-Return `nothing` if not present.
-"""
 Accessors.reaction_subsystem(model::ObjectModel, id::String)::Maybe{String} =
     model.reactions[id].subsystem
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the notes associated with metabolite `id` in `model`.
-Return an empty Dict if not present.
-"""
 Accessors.metabolite_notes(model::ObjectModel, id::String)::Maybe{Notes} =
     model.metabolites[id].notes
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the annotation associated with metabolite `id` in `model`.
-Return an empty Dict if not present.
-"""
 Accessors.metabolite_annotations(model::ObjectModel, id::String)::Maybe{Annotations} =
     model.metabolites[id].annotations
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the notes associated with gene `id` in `model`.
-Return an empty Dict if not present.
-"""
 Accessors.gene_notes(model::ObjectModel, gid::String) = model.genes[gid].notes
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the annotation associated with gene `id` in `model`.
-Return an empty Dict if not present.
-"""
 Accessors.gene_annotations(model::ObjectModel, id::String)::Maybe{Annotations} =
     model.genes[id].annotations
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the notes associated with reaction `id` in `model`.
-Return an empty Dict if not present.
-"""
 Accessors.reaction_notes(model::ObjectModel, id::String)::Maybe{Notes} =
     model.reactions[id].notes
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the annotation associated with reaction `id` in `model`.
-Return an empty Dict if not present.
-"""
 Accessors.reaction_annotations(model::ObjectModel, id::String)::Maybe{Annotations} =
     model.reactions[id].annotations
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the stoichiometry of reaction with ID `rid`.
-"""
 Accessors.reaction_stoichiometry(m::ObjectModel, rid::String)::Dict{String,Float64} =
     m.reactions[rid].metabolites
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the name of reaction with ID `id`.
-"""
 Accessors.reaction_name(m::ObjectModel, rid::String) = m.reactions[rid].name
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the name of metabolite with ID `id`.
-"""
 Accessors.metabolite_name(m::ObjectModel, mid::String) = m.metabolites[mid].name
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the name of gene with ID `id`.
-"""
 Accessors.gene_name(m::ObjectModel, gid::String) = m.genes[gid].name
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the molar mass of translated gene with ID `gid`.
-"""
 Accessors.gene_product_molar_mass(model::ObjectModel, gid::String) =
     model.genes[gid].product_molar_mass
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the [`Isozyme`](@ref)s associated with the `model` and reaction `rid`.
-"""
 Accessors.reaction_isozymes(model::ObjectModel, rid::String) =
     model.reactions[rid].gene_associations
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the lower bound of the gene product concentration associated with the `model` and gene `gid`.
-"""
 Accessors.gene_product_lower_bound(model::ObjectModel, gid::String) =
     model.genes[gid].product_lower_bound
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the upper bound of the gene product concentration associated with the `model` and gene `gid`.
-"""
 Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) =
     model.genes[gid].product_upper_bound
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the notes associated with a `model`. At minimum this should include the
-model authors, contact information, and DOI of the associated publication.
-"""
 Accessors.model_notes(model::ObjectModel)::Notes = model.notes
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the annotations associated with a `model`. Typically, these should be
-encoded in MIRIAM format. At minimum it should include the full species name
-with relevant identifiers, taxonomy ID, strain ID, and URL to the genome.
-"""
 Accessors.model_annotations(model::ObjectModel)::Annotations = model.annotations
 
-"""
-$(TYPEDSIGNATURES)
-
-Convert any `AbstractMetabolicModel` into a `ObjectModel`. Note, some data loss
-may occur since only the generic interface is used during the conversion
-process. Additionally, assume the stoichiometry for each gene association is 1.
-"""
 function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     if typeof(model) == ObjectModel
         return model
