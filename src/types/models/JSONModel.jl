@@ -104,9 +104,6 @@ $(TYPEDSIGNATURES)
 Accessors.genes(model::JSONModel) =
     [_json_gene_name(g, i) for (i, g) in enumerate(model.genes)]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.Internal.@all_variables_are_reactions JSONModel
 
 """
