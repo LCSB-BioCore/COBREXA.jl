@@ -7,10 +7,13 @@ thermodynamics highlights kinetic obstacles in central metabolism.", PLoS
 computational biology, 2014.
 
 When [`flux_balance_analysis`](@ref) is called in this type of model, the
-max-min driving force algorithm is solved. It returns the Gibbs free energy of
-the reactions, the concentrations of metabolites, and the actual maximum minimum
-driving force across all reactions in the model. The optimization problem solved
-is:
+max-min driving force algorithm is solved i.e. the objective of the model is to
+find the maximum minimum Gibbs free energy of reaction across all reactions in
+the model by changing the metabolite concentrations. The variables for max-min
+driving force analysis are the actual maximum minimum driving force of the
+model, the log metabolite concentrations, and the gibbs free energy reaction
+potentials across each reaction. Reaction fluxes are assumed constant.The
+optimization problem solved is:
 ```
 max min -ΔᵣG
 s.t. ΔᵣG = ΔrG⁰ + R T S' ln(C)
@@ -78,22 +81,9 @@ end
 
 Accessors.unwrap_model(model::MaxMinDrivingForceModel) = model.inner
 
-"""
-$(TYPEDSIGNATURES)
-
-The variables for max-min driving force analysis are the actual maximum minimum
-driving force of the model, the log metabolite concentrations, and the gibbs
-free energy reaction potentials across each reaction.
-"""
 Accessors.variables(model::MaxMinDrivingForceModel) =
     ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
 
-"""
-$(TYPEDSIGNATURES)
-
-The number of variables is 1 + the number of metabolites + the number of
-reactions, where the 1 comes from the total max-min driving force.
-"""
 Accessors.n_variables(model::MaxMinDrivingForceModel) =
     1 + n_metabolites(model) + n_reactions(model)
 
@@ -114,20 +104,9 @@ Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
     Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reactions(model))
 
 
-"""
-$(TYPEDSIGNATURES)
-
-For this kind of the model, the objective is the the max-min-driving force which
-is at index 1 in the variables.
-"""
 Accessors.objective(model::MaxMinDrivingForceModel) =
     [1.0; fill(0.0, n_variables(model) - 1)]
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the equality constraint rhs of `model`.
-"""
 function Accessors.balance(model::MaxMinDrivingForceModel)
     # proton water balance
     num_proton_water = length(model.proton_ids) + length(model.water_ids)
@@ -153,11 +132,6 @@ function Accessors.balance(model::MaxMinDrivingForceModel)
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the equality constraint lhs of `model`.
-"""
 function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
 
@@ -204,11 +178,6 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the simple variable bounds of `model`.
-"""
 function Accessors.bounds(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
 
@@ -233,11 +202,6 @@ function Accessors.bounds(model::MaxMinDrivingForceModel)
     return (lbs, ubs)
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the coupling of a max-min driving force model.
-"""
 function Accessors.coupling(model::MaxMinDrivingForceModel)
 
     # only constrain reactions that have thermo data
@@ -266,11 +230,6 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the coupling bounds of a max-min driving force model.
-"""
 function Accessors.coupling_bounds(model::MaxMinDrivingForceModel)
     n = length(Internal.active_reaction_ids(model))
     neg_dg_lb = fill(-model.max_dg_bound, n)

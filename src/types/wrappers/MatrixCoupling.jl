@@ -32,41 +32,16 @@ mutable struct MatrixCoupling{M} <: AbstractModelWrapper where {M<:AbstractMetab
     end
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the internal [`MatrixModel`](@ref) out of [`MatrixCoupling`](@ref).
-"""
 Accessors.unwrap_model(a::MatrixCoupling) = a.lm
 
-"""
-$(TYPEDSIGNATURES)
-
-Coupling constraint matrix for a `MatrixCoupling`.
-"""
 Accessors.coupling(a::MatrixCoupling)::SparseMat = vcat(coupling(a.lm), a.C)
 
-"""
-$(TYPEDSIGNATURES)
-
-The number of coupling constraints in a `MatrixCoupling`.
-"""
 Accessors.n_coupling_constraints(a::MatrixCoupling)::Int =
     n_coupling_constraints(a.lm) + size(a.C, 1)
 
-"""
-$(TYPEDSIGNATURES)
-
-Coupling bounds for a `MatrixCoupling`.
-"""
 Accessors.coupling_bounds(a::MatrixCoupling)::Tuple{Vector{Float64},Vector{Float64}} =
     vcat.(coupling_bounds(a.lm), (a.cl, a.cu))
 
-"""
-$(TYPEDSIGNATURES)
-
-Make a `MatrixCoupling` out of any compatible model type.
-"""
 function Base.convert(
     ::Type{MatrixCoupling{M}},
     mm::AbstractMetabolicModel;

@@ -12,14 +12,15 @@
 """
 $(TYPEDSIGNATURES)
 
-Return a vector of reaction identifiers in a model. The vector precisely
+Return a vector of variable identifiers in a model. The vector precisely
 corresponds to the columns in [`stoichiometry`](@ref) matrix.
 
-For technical reasons, the "reactions" may sometimes not be true reactions but
-various virtual and helper pseudo-reactions that are used in the metabolic
-modeling, such as metabolite exchanges, separate forward and reverse reactions,
-supplies of enzymatic and genetic material and virtual cell volume, etc. To
-simplify the view of the model contents use [`reaction_variables`](@ref).
+Usually, variables correspond to reactions. However, for technical reasons, the
+reactions may sometimes not be true reactions, but various virtual and helper
+pseudo-reactions that are used in the metabolic modeling, such as metabolite
+exchanges, separate forward and reverse reactions, supplies of enzymatic and
+genetic material and virtual cell volume, etc. To simplify the view of the model
+contents use [`reaction_variables`](@ref).
 """
 function variables(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(variables, (a,))
@@ -59,13 +60,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get the sparse stoichiometry matrix of a model. A feasible solution `x` of a
-model `m` is defined as satisfying the equations:
-
-- `stoichiometry(m) * x .== balance(m)`
-- `x .>= lbs`
-- `y .<= ubs`
-- `(lbs, ubs) == bounds(m)
+Get the sparse stoichiometry matrix of a model.
 """
 function stoichiometry(a::AbstractMetabolicModel)::SparseMat
     missing_impl_error(stoichiometry, (a,))
