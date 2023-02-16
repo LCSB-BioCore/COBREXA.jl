@@ -42,6 +42,23 @@ $(TYPEDFIELDS)
 3. The objective created by this model is the equal growth rate/balanced growth
    objective. In short, all biomass metabolites are produced at the same rate.
 4. The flux units are `mmol X/gDW_total/h` for some metabolite `X`.
+
+# Implementation notes
+1. All reactions have the `id` of each respective underlying
+    [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
+    Consequently, exchange reactions of the original model will look like
+    `species1#EX_...`. All exchange environmental reactions have `EX_` as a
+    prefix followed by the environmental metabolite id.
+2. All metabolites have the `id` of each respective underlying
+    [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`. The
+    environmental metabolites have no prefix.
+3. All genes have the `id` of the respective underlying
+    [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
+4.  Each bound from the underlying community members is multiplied by the
+    abundance of that member.
+5. This objective is assumed to be the equal growth rate/balanced growth
+    objective. Consequently, the relation `community_growth *
+    abundance_species_i = growth_species_i` should hold.
 """
 Base.@kwdef mutable struct BalancedGrowthCommunityModel <: AbstractMetabolicModel
     "Models making up the community."
@@ -53,25 +70,12 @@ Base.@kwdef mutable struct BalancedGrowthCommunityModel <: AbstractMetabolicMode
         Dict{String,Tuple{Float64,Float64}}()
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the reactions in `cm`, which is a [`BalancedGrowthCommunityModel`](@ref).
-All reactions have the `id` of each respective underlying
-[`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
-Consequently, exchange reactions of the original model will look like
-`species1#EX_...`. All exchange environmental reactions have `EX_` as a prefix
-followed by the environmental metabolite id.
-"""
 function Accessors.variables(cm::BalancedGrowthCommunityModel)
     rxns = [add_community_prefix(m, rid) for m in cm.members for rid in variables(m.model)]
     env_exs = ["EX_" * env_met for env_met in get_env_mets(cm)]
     return [rxns; env_exs; cm.objective_id]
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.n_variables(cm::BalancedGrowthCommunityModel)
     num_model_reactions = sum(n_variables(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
@@ -79,23 +83,12 @@ function Accessors.n_variables(cm::BalancedGrowthCommunityModel)
     return num_model_reactions + num_env_metabolites + 1 # add 1 for the community biomass
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the metabolites in `cm`, which is a
-[`BalancedGrowthCommunityModel`](@ref). All metabolites have the `id` of each
-respective underlying [`CommunityMember`](@ref) appended as a prefix with the
-delimiter `#`. The environmental metabolites have no prefix.
-"""
 function Accessors.metabolites(cm::BalancedGrowthCommunityModel)
     mets =
         [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
     return [mets; "ENV_" .* get_env_mets(cm)]
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.n_metabolites(cm::BalancedGrowthCommunityModel)
     num_model_reactions = sum(n_metabolites(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
@@ -103,36 +96,17 @@ function Accessors.n_metabolites(cm::BalancedGrowthCommunityModel)
     return num_model_reactions + num_env_metabolites
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the genes in `cm`, which is a [`BalancedGrowthCommunityModel`](@ref). All
-genes have the `id` of the respective underlying [`CommunityMember`](@ref)
-appended as a prefix with the delimiter `#`.
-"""
 Accessors.genes(cm::BalancedGrowthCommunityModel) =
     [add_community_prefix(m, gid) for m in cm.members for gid in genes(m.model)]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.balance(cm::BalancedGrowthCommunityModel) = [
     vcat([balance(m.model) .* m.abundance for m in cm.members]...)
     spzeros(length(get_env_mets(cm)))
 ]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_genes(cm::BalancedGrowthCommunityModel) =
     sum(n_genes(m.model) for m in cm.members)
 
-"""
-$(TYPEDSIGNATURES)
-
-Return the overall stoichiometric matrix for a
-[`BalancedGrowthCommunityModel`](@ref), built from the underlying models.
-"""
 function Accessors.stoichiometry(cm::BalancedGrowthCommunityModel)
     env_mets = get_env_mets(cm)
 
@@ -155,14 +129,6 @@ function Accessors.stoichiometry(cm::BalancedGrowthCommunityModel)
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Returns the simple variable bounds on `cm`. Assumes the objective can only go
-forward at maximum rate `constants.default_reaction_bound`. Note, each bound
-from the underlying community members is multiplied by the abundance of that
-member.
-"""
 function Accessors.bounds(cm::BalancedGrowthCommunityModel)
     models_lbs = vcat([first(bounds(m.model)) .* m.abundance for m in cm.members]...)
     models_ubs = vcat([last(bounds(m.model)) .* m.abundance for m in cm.members]...)
@@ -180,41 +146,21 @@ function Accessors.bounds(cm::BalancedGrowthCommunityModel)
     )
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Returns the objective of `cm`. This objective is assumed to be the equal growth
-rate/balanced growth objective. Consequently, the relation `community_growth *
-abundance_species_i = growth_species_i` should hold.
-"""
 function Accessors.objective(cm::BalancedGrowthCommunityModel)
     vec = spzeros(n_variables(cm))
     vec[end] = 1.0
     return vec
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.coupling(cm::BalancedGrowthCommunityModel)
     coups = blockdiag([coupling(m.model) for m in cm.members]...)
     n = n_variables(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_coupling_constraints(cm::BalancedGrowthCommunityModel) =
     sum(n_coupling_constraints(m.model) for m in cm.members)
 
-"""
-$(TYPEDSIGNATURES)
-
-Coupling bounds for a [`BalancedGrowthCommunityModel`](@ref). Note, each bound
-from the underlying community members is multiplied by the abundance of that
-member.
-"""
 function Accessors.coupling_bounds(cm::BalancedGrowthCommunityModel)
     lbs = vcat([first(coupling_bounds(m.model)) .* m.abundance for m in cm.members]...)
     ubs = vcat([last(coupling_bounds(m.model)) .* m.abundance for m in cm.members]...)
@@ -235,18 +181,12 @@ function Accessors.reaction_variables_matrix(cm::BalancedGrowthCommunityModel)
     blockdiag(rfs, spdiagm(fill(1, nr)))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reactions(cm::BalancedGrowthCommunityModel) = [
     vcat([add_community_prefix.(Ref(m), reactions(m.model)) for m in cm.members]...)
     ["EX_" * env_met for env_met in get_env_mets(cm)]
     cm.objective_id
 ]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_reactions(cm::BalancedGrowthCommunityModel) =
     sum(n_reactions(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
 
@@ -273,7 +213,7 @@ for (func, def) in (
     (:metabolite_name, nothing),
     (:gene_name, nothing),
 )
-    @eval begin # TODO add docstrings somehow
+    @eval begin
         Accessors.$func(cm::BalancedGrowthCommunityModel, id::String) =
             access_community_member(cm, id, $func; default = $def)
     end
