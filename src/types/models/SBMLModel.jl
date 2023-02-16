@@ -38,21 +38,12 @@ function SBMLModel(sbml::SBML.Model, active_objective::String = "")
     )
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.variables(model::SBMLModel)::Vector{String} = model.reaction_ids
 
 Accessors.Internal.@all_variables_are_reactions SBMLModel
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolites(model::SBMLModel)::Vector{String} = model.metabolite_ids
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.stoichiometry(model::SBMLModel)::SparseMat
 
     # find the vector size for preallocation
@@ -90,9 +81,6 @@ function Accessors.stoichiometry(model::SBMLModel)::SparseMat
     return sparse(Rows, Cols, Vals, n_metabolites(model), n_reactions(model))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
     # There are multiple ways in SBML to specify a lower/upper bound. There are
     # the "global" model bounds that we completely ignore now because no one
@@ -146,14 +134,8 @@ function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float6
     )
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.objective(model::SBMLModel)::SparseVec
     res = sparsevec([], [], n_reactions(model))
 
@@ -176,44 +158,26 @@ function Accessors.objective(model::SBMLModel)::SparseVec
     return res
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.genes(model::SBMLModel)::Vector{String} = model.gene_ids
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_gene_associations(
     model::SBMLModel,
     rid::String,
 )::Maybe{GeneAssociationsDNF} =
     maybemap(parse_grr, model.sbml.reactions[rid].gene_product_association)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.eval_reaction_gene_association(model::SBMLModel, rid::String; kwargs...) =
     maybemap(
         x -> eval_grr(x; kwargs...),
         model.sbml.reactions[rid].gene_product_association,
     )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_formula(model::SBMLModel, mid::String)::Maybe{MetaboliteFormula} =
     maybemap(parse_formula, model.sbml.species[mid].formula)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_compartment(model::SBMLModel, mid::String) =
     model.sbml.species[mid].compartment
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int} =
     model.sbml.species[mid].charge
 
@@ -266,9 +230,7 @@ function _sbml_export_notes(notes::Notes)::Maybe{String}
     nothing
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
+
 function Accessors.reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{String,Float64}
     s = Dict{String,Float64}()
     default1(x) = isnothing(x) ? 1 : x
@@ -281,70 +243,37 @@ function Accessors.reaction_stoichiometry(m::SBMLModel, rid::String)::Dict{Strin
     return s
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_name(model::SBMLModel, rid::String) = model.sbml.reactions[rid].name
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_name(model::SBMLModel, mid::String) = model.sbml.species[mid].name
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_name(model::SBMLModel, gid::String) = model.sbml.gene_products[gid].name
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_annotations(model::SBMLModel, rid::String) =
     _sbml_import_cvterms(model.sbml.reactions[rid].sbo, model.sbml.reactions[rid].cv_terms)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_annotations(model::SBMLModel, mid::String) =
     _sbml_import_cvterms(model.sbml.species[mid].sbo, model.sbml.species[mid].cv_terms)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_annotations(model::SBMLModel, gid::String) = _sbml_import_cvterms(
     model.sbml.gene_products[gid].sbo,
     model.sbml.gene_products[gid].cv_terms,
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_notes(model::SBMLModel, rid::String) =
     _sbml_import_notes(model.sbml.reactions[rid].notes)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_notes(model::SBMLModel, mid::String) =
     _sbml_import_notes(model.sbml.species[mid].notes)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_notes(model::SBMLModel, gid::String) =
     _sbml_import_notes(model.sbml.gene_products[gid].notes)
 
 Accessors.model_annotations(model::SBMLModel) =
     _sbml_import_cvterms(model.sbml.sbo, model.sbml.cv_terms)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.model_notes(model::SBMLModel) = _sbml_import_notes(model.sbml.notes)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     if typeof(mm) == SBMLModel
         return mm

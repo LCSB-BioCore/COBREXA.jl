@@ -47,41 +47,20 @@ mutable struct MatrixModel <: AbstractMetabolicModel
     end
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.variables(a::MatrixModel)::Vector{String} = a.rxns
 
 Accessors.Internal.@all_variables_are_reactions MatrixModel
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolites(a::MatrixModel)::Vector{String} = a.mets
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.stoichiometry(a::MatrixModel)::SparseMat = a.S
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.balance(a::MatrixModel)::SparseVec = a.b
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.objective(a::MatrixModel)::SparseVec = a.c
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.genes(a::MatrixModel)::Vector{String}
     res = Set{String}()
     for grr in a.grrs
@@ -95,37 +74,22 @@ function Accessors.genes(a::MatrixModel)::Vector{String}
     sort(collect(res))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_stoichiometry(m::MatrixModel, rid::String)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, first(indexin([rid], m.rxns))])...))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_stoichiometry(m::MatrixModel, ridx::Int)::Dict{String,Float64} =
     Dict(m.mets[k] => v for (k, v) in zip(findnz(m.S[:, ridx])...))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_gene_associations(
     model::MatrixModel,
     ridx::Int,
 )::Maybe{GeneAssociationsDNF} = model.grrs[ridx]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_gene_associations(
     model::MatrixModel,
     rid::String,
 )::Maybe{GeneAssociationsDNF} = model.grrs[first(indexin([rid], model.rxns))]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicModel}
     if typeof(m) == MatrixModel
         return m

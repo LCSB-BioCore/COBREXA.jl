@@ -33,17 +33,11 @@ function Accessors.precache!(model::HDF5Model)::Nothing
     nothing
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.n_variables(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["reactions"])
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.variables(model::HDF5Model)::Vector{String}
     precache!(model)
     # TODO is there any reasonable method to mmap strings from HDF5?
@@ -52,49 +46,31 @@ end
 
 Accessors.Internal.@all_variables_are_reactions HDF5Model
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.n_metabolites(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["metabolites"])
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.metabolites(model::HDF5Model)::Vector{String}
     precache!(model)
     read(model.h5["metabolites"])
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.stoichiometry(model::HDF5Model)::SparseMat
     precache!(model)
     h5_read_sparse(SparseMat, model.h5["stoichiometry"])
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
     precache!(model)
     (HDF5.readmmap(model.h5["lower_bounds"]), HDF5.readmmap(model.h5["upper_bounds"]))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.balance(model::HDF5Model)::SparseVec
     precache!(model)
     h5_read_sparse(SparseVec, model.h5["balance"])
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.objective(model::HDF5Model)::SparseVec
     precache!(model)
     h5_read_sparse(SparseVec, model.h5["objective"])

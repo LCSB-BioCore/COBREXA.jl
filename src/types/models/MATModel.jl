@@ -13,9 +13,6 @@ end
 Accessors.n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
 Accessors.n_variables(m::MATModel)::Int = size(m.mat["S"], 2)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.variables(m::MATModel)::Vector{String}
     if haskey(m.mat, "rxns")
         reshape(m.mat["rxns"], n_variables(m))
@@ -26,16 +23,10 @@ end
 
 Accessors.Internal.@all_variables_are_reactions MATModel
 
-"""
-$(TYPEDSIGNATURES)
-"""
 _mat_has_squashed_coupling(mat) =
     haskey(mat, "A") && haskey(mat, "b") && length(mat["b"]) == size(mat["A"], 1)
 
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.metabolites(m::MATModel)::Vector{String}
     nm = n_metabolites(m)
     if haskey(m.mat, "mets")
@@ -45,22 +36,13 @@ function Accessors.metabolites(m::MATModel)::Vector{String}
     end
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.stoichiometry(m::MATModel) = sparse(m.mat["S"])
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.bounds(m::MATModel) = (
     reshape(get(m.mat, "lb", fill(-Inf, n_variables(m), 1)), n_variables(m)),
     reshape(get(m.mat, "ub", fill(Inf, n_variables(m), 1)), n_variables(m)),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.balance(m::MATModel)
     b = get(m.mat, "b", spzeros(n_metabolites(m), 1))
     if _mat_has_squashed_coupling(m.mat)
@@ -69,22 +51,13 @@ function Accessors.balance(m::MATModel)
     sparse(reshape(b, n_metabolites(m)))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.objective(m::MATModel) =
     sparse(reshape(get(m.mat, "c", zeros(n_variables(m), 1)), n_variables(m)))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.coupling(m::MATModel) =
     _mat_has_squashed_coupling(m.mat) ? sparse(m.mat["A"][n_variables(m)+1:end, :]) :
     sparse(get(m.mat, "C", zeros(0, n_variables(m))))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.coupling_bounds(m::MATModel)
     nc = n_coupling_constraints(m)
     if _mat_has_squashed_coupling(m.mat)
@@ -100,17 +73,11 @@ function Accessors.coupling_bounds(m::MATModel)
     end
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.genes(m::MATModel)
     x = get(m.mat, "genes", [])
     reshape(x, length(x))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.reaction_gene_associations(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
         grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
@@ -120,9 +87,6 @@ function Accessors.reaction_gene_associations(m::MATModel, rid::String)
     end
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.eval_reaction_gene_association(m::MATModel, rid::String; kwargs...)
     if haskey(m.mat, "grRules")
         grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
@@ -132,17 +96,11 @@ function Accessors.eval_reaction_gene_association(m::MATModel, rid::String; kwar
     end
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_formula(m::MATModel, mid::String) = maybemap(
     x -> parse_formula(x[findfirst(==(mid), metabolites(m))]),
     gets(m.mat, nothing, constants.keynames.metformulas),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
     met_charge = maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
@@ -151,9 +109,6 @@ function Accessors.metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
     maybemap(Int, isnan(met_charge) ? nothing : met_charge)
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.metabolite_compartment(m::MATModel, mid::String)
     res = maybemap(
         x -> x[findfirst(==(mid), metabolites(m))],
@@ -168,33 +123,21 @@ function Accessors.metabolite_compartment(m::MATModel, mid::String)
     )
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.reaction_stoichiometry(m::MATModel, rid::String)::Dict{String,Float64}
     ridx = first(indexin([rid], m.mat["rxns"]))[1] # get the index out of the cartesian index
     reaction_stoichiometry(m, ridx)
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.reaction_stoichiometry(m::MATModel, ridx::Int)::Dict{String,Float64}
     met_inds = findall(m.mat["S"][:, ridx] .!= 0.0)
     Dict(m.mat["mets"][met_ind] => m.mat["S"][met_ind, ridx] for met_ind in met_inds)
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_name(m::MATModel, rid::String) = maybemap(
     x -> x[findfirst(==(rid), variables(m))],
     gets(m.mat, nothing, constants.keynames.rxnnames),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_name(m::MATModel, mid::String) = maybemap(
     x -> x[findfirst(==(mid), metabolites(m))],
     gets(m.mat, nothing, constants.keynames.metnames),
@@ -207,9 +150,6 @@ Accessors.metabolite_name(m::MATModel, mid::String) = maybemap(
 # here are very likely completely incompatible with >50% of the MATLAB models
 # out there.
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
     if typeof(m) == MATModel
         return m

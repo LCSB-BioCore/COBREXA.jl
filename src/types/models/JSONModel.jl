@@ -71,44 +71,23 @@ end
 
 _parse_notes(x)::Notes = _parse_annotations(x)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_variables(model::JSONModel) = length(model.rxns)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_metabolites(model::JSONModel) = length(model.mets)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_genes(model::JSONModel) = length(model.genes)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.variables(model::JSONModel) =
     [_json_rxn_name(r, i) for (i, r) in enumerate(model.rxns)]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolites(model::JSONModel) =
     [_json_met_name(m, i) for (i, m) in enumerate(model.mets)]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.genes(model::JSONModel) =
     [_json_gene_name(g, i) for (i, g) in enumerate(model.genes)]
 
 Accessors.Internal.@all_variables_are_reactions JSONModel
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.stoichiometry(model::JSONModel)
     rxn_ids = variables(model)
     met_ids = metabolites(model)
@@ -145,31 +124,19 @@ function Accessors.stoichiometry(model::JSONModel)
     return SparseArrays.sparse(MI, RI, SV, length(met_ids), length(rxn_ids))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.bounds(model::JSONModel) = (
     [get(rxn, "lower_bound", -constants.default_reaction_bound) for rxn in model.rxns],
     [get(rxn, "upper_bound", constants.default_reaction_bound) for rxn in model.rxns],
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.objective(model::JSONModel) =
     sparse([float(get(rxn, "objective_coefficient", 0.0)) for rxn in model.rxns])
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_gene_associations(model::JSONModel, rid::String) = maybemap(
     parse_grr,
     get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.eval_reaction_gene_association(model::JSONModel, rid::String; kwargs...) =
     maybemap(
         x -> eval_grr(x; kwargs...),
@@ -182,104 +149,56 @@ Accessors.eval_reaction_gene_association(model::JSONModel, rid::String; kwargs..
 Accessors.reaction_subsystem(model::JSONModel, rid::String) =
     get(model.rxns[model.rxn_index[rid]], "subsystem", nothing)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_formula(model::JSONModel, mid::String) =
     maybemap(parse_formula, get(model.mets[model.met_index[mid]], "formula", nothing))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_charge(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "charge", 0)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_compartment(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "compartment", nothing)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_annotations(model::JSONModel, gid::String)::Annotations = maybemap(
     _parse_annotations,
     get(model.genes[model.gene_index[gid]], "annotation", nothing),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_notes(model::JSONModel, gid::String)::Notes =
     maybemap(_parse_notes, get(model.genes[model.gene_index[gid]], "notes", nothing))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_annotations(model::JSONModel, rid::String)::Annotations = maybemap(
     _parse_annotations,
     get(model.rxns[model.rxn_index[rid]], "annotation", nothing),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_notes(model::JSONModel, rid::String)::Notes =
     maybemap(_parse_notes, get(model.rxns[model.rxn_index[rid]], "notes", nothing))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_annotations(model::JSONModel, mid::String)::Annotations = maybemap(
     _parse_annotations,
     get(model.mets[model.met_index[mid]], "annotation", nothing),
 )
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_notes(model::JSONModel, mid::String)::Notes =
     maybemap(_parse_notes, get(model.mets[model.met_index[mid]], "notes", nothing))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_name(model::JSONModel, rid::String) =
     get(model.rxns[model.rxn_index[rid]], "name", nothing)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_name(model::JSONModel, mid::String) =
     get(model.mets[model.met_index[mid]], "name", nothing)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_name(model::JSONModel, gid::String) =
     get(model.genes[model.gene_index[gid]], "name", nothing)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.model_annotations(model::JSONModel)::Annotations =
     get(model.json, "annotation", Annotations())
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.model_notes(model::JSONModel)::Notes = get(model.json, "notes", Notes())
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     if typeof(mm) == JSONModel
         return mm

@@ -54,41 +54,20 @@ end
 
 # AbstractMetabolicModel interface follows
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.variables(model::ObjectModel)::StringVecType = collect(keys(model.reactions))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
 
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolites(model::ObjectModel)::StringVecType = collect(keys(model.metabolites))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_metabolites(model::ObjectModel)::Int = length(model.metabolites)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.genes(model::ObjectModel)::StringVecType = collect(keys(model.genes))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.n_genes(model::ObjectModel)::Int = length(model.genes)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.stoichiometry(model::ObjectModel)::SparseMat
     n_entries = 0
     for (_, r) in model.reactions
@@ -125,26 +104,14 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
     return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), n_variables(model))
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.balance(model::ObjectModel)::SparseVec = spzeros(length(model.metabolites))
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.objective(model::ObjectModel)::SparseVec =
     sparse([get(model.objective, rid, 0.0) for rid in keys(model.reactions)])
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.reaction_gene_associations(
     model::ObjectModel,
     id::String,
@@ -156,123 +123,60 @@ function Accessors.reaction_gene_associations(
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_formula(model::ObjectModel, id::String)::Maybe{MetaboliteFormula} =
     maybemap(parse_formula, model.metabolites[id].formula)
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_charge(model::ObjectModel, id::String)::Maybe{Int} =
     model.metabolites[id].charge
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_compartment(model::ObjectModel, id::String)::Maybe{String} =
     model.metabolites[id].compartment
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_subsystem(model::ObjectModel, id::String)::Maybe{String} =
     model.reactions[id].subsystem
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_notes(model::ObjectModel, id::String)::Maybe{Notes} =
     model.metabolites[id].notes
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_annotations(model::ObjectModel, id::String)::Maybe{Annotations} =
     model.metabolites[id].annotations
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_notes(model::ObjectModel, gid::String) = model.genes[gid].notes
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_annotations(model::ObjectModel, id::String)::Maybe{Annotations} =
     model.genes[id].annotations
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_notes(model::ObjectModel, id::String)::Maybe{Notes} =
     model.reactions[id].notes
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_annotations(model::ObjectModel, id::String)::Maybe{Annotations} =
     model.reactions[id].annotations
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_stoichiometry(m::ObjectModel, rid::String)::Dict{String,Float64} =
     m.reactions[rid].metabolites
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_name(m::ObjectModel, rid::String) = m.reactions[rid].name
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.metabolite_name(m::ObjectModel, mid::String) = m.metabolites[mid].name
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_name(m::ObjectModel, gid::String) = m.genes[gid].name
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_product_molar_mass(model::ObjectModel, gid::String) =
     model.genes[gid].product_molar_mass
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.reaction_isozymes(model::ObjectModel, rid::String) =
     model.reactions[rid].gene_associations
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_product_lower_bound(model::ObjectModel, gid::String) =
     model.genes[gid].product_lower_bound
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.gene_product_upper_bound(model::ObjectModel, gid::String) =
     model.genes[gid].product_upper_bound
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.model_notes(model::ObjectModel)::Notes = model.notes
 
-"""
-$(TYPEDSIGNATURES)
-"""
 Accessors.model_annotations(model::ObjectModel)::Annotations = model.annotations
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     if typeof(model) == ObjectModel
         return model

@@ -18,17 +18,11 @@ mutable struct Serialized{M} <: AbstractModelWrapper where {M<:AbstractMetabolic
         new{T}(model, filename)
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.unwrap_model(m::Serialized)
     precache!(m)
     m.m
 end
 
-"""
-$(TYPEDSIGNATURES)
-"""
 function Accessors.precache!(model::Serialized)::Nothing
     if isnothing(model.m)
         model.m = deserialize(model.filename)
