@@ -16,6 +16,9 @@ using ..Types
 using ..Accessors
 using JuMP
 
+const MAX_SENSE = JuMP.MAX_SENSE
+const MIN_SENSE = JuMP.MIN_SENSE
+
 """
 $(TYPEDSIGNATURES)
 
