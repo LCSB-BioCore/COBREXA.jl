@@ -172,7 +172,7 @@ end
 $(TYPEDSIGNATURES)
 """
 function Accessors.reaction_stoichiometry(m::MATModel, rid::String)::Dict{String,Float64}
-    ridx = first(indexin([rid], m.mat["rxns"]))
+    ridx = first(indexin([rid], m.mat["rxns"]))[1] # get the index out of the cartesian index
     reaction_stoichiometry(m, ridx)
 end
 
