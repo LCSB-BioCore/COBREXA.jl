@@ -53,7 +53,7 @@
             Tulip.Optimizer;
             modifications = [change_sense(sense)],
         ),
-        args = [(MIN_SENSE,), (MAX_SENSE,)],
+        args = [(COBREXA.MIN_SENSE,), (COBREXA.MAX_SENSE,)],
     ) == [
         [-500.0, -500.0, -1000.0, 500.0, 1000.0, -500.0, -500.0],
         [500.0, 500.0, 1000.0, -500.0, -1000.0, 500.0, 500.0],

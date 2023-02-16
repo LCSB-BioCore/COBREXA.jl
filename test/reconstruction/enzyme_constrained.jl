@@ -72,7 +72,7 @@
         gm,
         Tulip.Optimizer;
         modifications = [
-            change_objective(genes(gm); weights = [], sense = MIN_SENSE),
+            change_objective(genes(gm); weights = [], sense = COBREXA.MIN_SENSE),
             change_constraint("BIOMASS_Ecoli_core_w_GAM", lower_bound = growth_lb),
             change_optimizer_attribute("IPM_IterationsLimit", 1000),
         ],
