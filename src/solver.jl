@@ -16,9 +16,6 @@ using ..Types
 using ..Accessors
 using JuMP
 
-const MAX_SENSE = JuMP.MAX_SENSE
-const MIN_SENSE = JuMP.MIN_SENSE
-
 """
 $(TYPEDSIGNATURES)
 
@@ -209,4 +206,7 @@ values_dict(semantics::Symbol, model::AbstractMetabolicModel) =
     opt_model -> values_dict(Val(semantics), model, opt_model)
 
 @export_locals
+
+export MAX_SENSE, MIN_SENSE
+
 end
