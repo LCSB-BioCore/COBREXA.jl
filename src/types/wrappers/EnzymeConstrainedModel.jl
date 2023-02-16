@@ -189,10 +189,10 @@ Accessors.reaction_variables(model::EnzymeConstrainedModel) =
 $(TYPEDSIGNATURES)
 
 Get a mapping of enzyme variables to variables -- for enzyme constrained models,
-this is just a direct mapping.
+this is proportional to the molar mass of each gene product.
 """
 Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
-    Dict(gid => Dict(gid => 1.0) for gid in genes(model)) # this is enough for all the semantics to work
+    Dict(gid => Dict(gid => gene_product_molar_mass(model, gid)) for gid in genes(model)) # this is enough for all the semantics to work
 
 """
 $(TYPEDSIGNATURES)

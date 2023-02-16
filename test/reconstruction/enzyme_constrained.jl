@@ -60,11 +60,18 @@
         atol = TEST_TOLERANCE,
     )
 
-    prot_mass = sum(ecoli_core_gene_product_masses[gid] * c for (gid, c) in prot_concens)
     mass_groups = values_dict(:enzyme_group, gm, opt_model)
 
-    @test isapprox(prot_mass, total_gene_product_mass, atol = TEST_TOLERANCE)
-    @test isapprox(prot_mass, mass_groups["uncategorized"], atol = TEST_TOLERANCE)
+    @test isapprox(
+        sum(values(prot_concens)),
+        total_gene_product_mass,
+        atol = TEST_TOLERANCE,
+    )
+    @test isapprox(
+        sum(values(prot_concens)),
+        mass_groups["uncategorized"],
+        atol = TEST_TOLERANCE,
+    )
 
     # test enzyme objective
     growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"] * 0.9
@@ -147,7 +154,7 @@ end
     mass_groups = values_dict(:enzyme_group, gm, opt_model)
 
     @test isapprox(rxn_fluxes["r6"], 1.1688888886502442, atol = TEST_TOLERANCE)
-    @test isapprox(gene_products["g4"], 0.02666666666304931, atol = TEST_TOLERANCE)
+    @test isapprox(gene_products["g4"], 0.02666666666304931 * 4.0, atol = TEST_TOLERANCE)
     @test isapprox(mass_groups["uncategorized"], 0.5, atol = TEST_TOLERANCE)
     @test isapprox(mass_groups["bound2"], 0.04, atol = TEST_TOLERANCE)
     @test length(genes(gm)) == 4
