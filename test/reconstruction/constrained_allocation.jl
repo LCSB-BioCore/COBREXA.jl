@@ -71,7 +71,7 @@
 
     # test inplace variant
     add_virtualribosome!(m, "r6", 0.2)
-    cam = make_simplified_enzyme_constrained_model(m; total_enzyme_capacity = 0.5)
+    cam = m |> with_simplified_enzyme_constraints(total_enzyme_capacity = 0.5)
 
     @test coupling(cam)[1, 7] == 5.0
 

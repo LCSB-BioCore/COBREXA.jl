@@ -27,7 +27,7 @@
         end
     end
 
-    total_gene_product_mass = 100.0
+    total_enzyme_capacity = 100.0
 
     # set gene product bounds
     for gid in genes(model)
@@ -43,7 +43,7 @@
             lower_bounds = [-1000.0, -1.0],
             upper_bounds = [nothing, 12.0],
         ) |>
-        with_enzyme_constraints(total_gene_product_mass)
+        with_enzyme_constraints(; total_enzyme_capacity)
 
     opt_model = flux_balance_analysis(
         gm,

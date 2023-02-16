@@ -20,7 +20,7 @@ associated reaction.
 """
 function make_simplified_enzyme_constrained_model(
     model::AbstractMetabolicModel;
-    total_enzyme_capacity::Float64,
+    total_enzyme_capacity::Float64 = 0.5,
 )
     # helper function to rank the isozymes by relative speed
     speed_enzyme(model, isozyme) =
