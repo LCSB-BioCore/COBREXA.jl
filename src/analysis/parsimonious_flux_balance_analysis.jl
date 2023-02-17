@@ -120,3 +120,60 @@ parsimonious_flux_balance_analysis_dict(model::AbstractMetabolicModel, args...; 
         model,
         parsimonious_flux_balance_analysis(model, args...; kwargs...),
     )
+
+"""
+$(TYPEDSIGNATURES)
+
+Find the parsimonious solution of `res`.
+"""
+function parsimonious_refinement(
+    res::AbstractResult, 
+    optimizer; 
+    relaxation_factor = 1.0,
+    semantics::Union{Symbol, Val{Semantics}}, 
+    modifications = [],
+) where {Semantics}
+    
+    is_solved(res.opt_model) || return res
+
+    original_sense = objective_sense(res.opt_model)
+
+    # get the objective
+    Z = objective_value(res.opt_model)
+    original_objective = objective_function(res.opt_model)
+
+    set_optimizer(res.opt_model, optimizer)
+
+    for mod in modifications
+        mod(res.model, res.opt_model)
+    end
+
+    # add the minimization constraint for total flux
+    _semantics = semantics isa Symbol ? Val(semantics) : semantics
+    sem = Accessors.Internal.get_semantics(_semantics)
+    isnothing(sem) && throw(DomainError(_semantics, "Unknown semantics"))
+    (_, _, _, sem_varmtx) = sem
+    v = sem_varmtx(res.model)' * res.opt_model[:x]
+    @objective(res.opt_model, Min, sum(dot(v, v)))
+
+    lb, ub = objective_bounds(relaxation_factor)(Z)
+
+    @constraint(res.opt_model, pfba_constraint, lb <= original_objective <= ub)
+
+    optimize!(res.opt_model)
+    
+    # revert model
+    delete(res.opt_model, pfba_constraint)
+    unregister(res.opt_model, :pfba_constraint)
+    @objective(res.opt_model, original_sense, original_objective)
+    # TODO reset optimizer
+
+    res
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+A pipe-friendly variant of [`parsimonious_refinement`](@ref)
+"""
+parsimonious_refinement(optimizer; kwargs...) = res -> parsimonious_refinement(res, optimizer; kwargs...)
