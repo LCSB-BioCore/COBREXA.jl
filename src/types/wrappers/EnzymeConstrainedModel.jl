@@ -188,10 +188,8 @@ Accessors.reaction_variables(model::EnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
-Get a mapping of enzyme variables to variables -- for enzyme constrained models,
-this is proportional to the molar mass of each gene product. Effectively the
-concentration of each enzyme is then reported in mass units relative to the dry
-cell mass.
+Get a mapping of enzyme concentration (on a mass basis, i.e. mass enzyme/mass
+cell) variables to inner variables.
 """
 Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
     Dict(gid => Dict(gid => gene_product_molar_mass(model, gid)) for gid in genes(model)) # this is enough for all the semantics to work
