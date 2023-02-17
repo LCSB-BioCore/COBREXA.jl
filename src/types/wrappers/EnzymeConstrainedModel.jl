@@ -176,7 +176,7 @@ end
 $(TYPEDSIGNATURES)
 
 Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
-the original fluxes in the wrapped model
+the original fluxes in the wrapped model.
 """
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
@@ -199,7 +199,7 @@ Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
 """
 $(TYPEDSIGNATURES)
 
-Get a mapping of enzyme groups to variables.
+Get a mapping of enzyme groups to variables. See [`enzyme_variables`](@ref).
 """
 function Accessors.enzyme_group_variables(model::EnzymeConstrainedModel)
     enz_ids = genes(model)
