@@ -14,7 +14,7 @@ flux_balance_analysis_vec(
     args...;
     kwargs...,
 )::Maybe{Vector{Float64}} =
-    values_vec(:reaction, model, flux_balance_analysis(model, args...; kwargs...))
+    values_vec(:reaction, flux_balance_analysis(model, args...; kwargs...))
 
 """
 $(TYPEDSIGNATURES)
@@ -30,7 +30,7 @@ flux_balance_analysis_dict(
     args...;
     kwargs...,
 )::Maybe{Dict{String,Float64}} =
-    values_dict(:reaction, model, flux_balance_analysis(model, args...; kwargs...))
+    values_dict(:reaction, flux_balance_analysis(model, args...; kwargs...))
 
 """
 $(TYPEDSIGNATURES)
@@ -80,5 +80,18 @@ function flux_balance_analysis(
     end
 
     optimize!(opt_model)
-    return opt_model
+
+    return Result(model, opt_model)
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+A pipeable variant of [`flux_balance_analysis`](@ref).
+
+# Example
+```
+flux_balance_analysis(Tulip.Optimizer) |> values_dict(:reaction)
+```
+"""
+flux_balance_analysis(args...; kwargs...) = model -> flux_balance_analysis(model, args...; kwargs...)

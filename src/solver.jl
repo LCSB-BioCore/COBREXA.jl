@@ -131,15 +131,11 @@ From the optimized model, returns a vector of values for the selected
 values_vec(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
 ```
 """
-function values_vec(
-    semantics::Val{Semantics},
-    model::AbstractMetabolicModel,
-    opt_model,
-) where {Semantics}
+function values_vec(semantics::Val{Semantics}, res::AbstractResult) where {Semantics}
     sem = Accessors.Internal.get_semantics(semantics)
     isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
     (_, _, _, sem_varmtx) = sem
-    is_solved(opt_model) ? sem_varmtx(model)' * value.(opt_model[:x]) : nothing
+    is_solved(res.opt_model) ? sem_varmtx(res.model)' * value.(res.opt_model[:x]) : nothing
 end
 
 """
@@ -152,8 +148,19 @@ Convenience variant of [`values_vec`](@ref).
 values_vec(:reaction, model, flux_balance_analysis(model, ...)) # in order of reactions(model)
 ```
 """
-values_vec(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
-    values_vec(Val(semantics), model, opt_model)
+values_vec(semantics::Symbol, res::AbstractResult) = values_vec(Val(semantics), res)
+
+"""
+$(TYPEDSIGNATURES)
+
+A pipeable variant of the convenience variant of [`values_vec`](@ref).
+
+# Example
+```
+flux_balance_analysis(model, ...) |> values_vec(:reaction)
+```
+"""
+values_vec(semantics::Symbol) = res -> values_vec(Val(semantics), res)
 
 """
 $(TYPEDSIGNATURES)
@@ -164,19 +171,15 @@ solved values for the selected `semantics`. If the model did not solve, returns
 
 # Example
 ```
-values_dict(Val(:reaction), model, flux_balance_analysis(model, ...))
+values_dict(Val(:reaction), flux_balance_analysis(model, ...))
 ```
 """
-function values_dict(
-    semantics::Val{Semantics},
-    model::AbstractMetabolicModel,
-    opt_model,
-) where {Semantics}
+function values_dict(semantics::Val{Semantics}, res::AbstractResult) where {Semantics}
     sem = Accessors.Internal.get_semantics(semantics)
     isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
     (ids, _, _, sem_varmtx) = sem
-    is_solved(opt_model) ? Dict(ids(model) .=> sem_varmtx(model)' * value.(opt_model[:x])) :
-    nothing
+    is_solved(res.opt_model) ?
+    Dict(ids(res.model) .=> sem_varmtx(res.model)' * value.(res.opt_model[:x])) : nothing
 end
 
 """
@@ -189,8 +192,7 @@ Convenience variant of [`values_dict`](@ref).
 values_dict(:reaction, model, flux_balance_analysis(model, ...))
 ```
 """
-values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
-    values_dict(Val(semantics), model, opt_model)
+values_dict(semantics::Symbol, res::AbstractResult) = values_dict(Val(semantics), res)
 
 """
 $(TYPEDSIGNATURES)
@@ -199,11 +201,10 @@ A pipeable variant of the convenience variant of [`values_dict`](@ref).
 
 # Example
 ```
-flux_balance_analysis(model, ...) |> values_dict(:reaction, model)
+flux_balance_analysis(model, ...) |> values_dict(:reaction)
 ```
 """
-values_dict(semantics::Symbol, model::AbstractMetabolicModel) =
-    opt_model -> values_dict(Val(semantics), model, opt_model)
+values_dict(semantics::Symbol) = res -> values_dict(Val(semantics), res)
 
 @export_locals
 end
