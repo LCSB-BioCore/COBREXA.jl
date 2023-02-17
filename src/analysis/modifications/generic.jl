@@ -15,7 +15,8 @@ constrain_objective_value(tolerance) =
 """
 $(TYPEDSIGNATURES)
 
-Change the lower and upper bounds (`lower_bound` and `upper_bound` respectively) of reaction `id` if supplied.
+Change the lower and upper bounds (`lower_bound` and `upper_bound` respectively)
+of reaction `id` if supplied.
 """
 change_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
     (model, opt_model) -> begin
@@ -27,6 +28,26 @@ change_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
             lower_bound = lower_bound,
             upper_bound = upper_bound,
         )
+    end
+
+"""
+$(TYPEDSIGNATURES)
+
+Change the lower and upper bounds (`lower_bounds` and `upper_bounds`
+respectively) of reactions in `ids` if supplied.
+"""
+change_constraint(ids::Vector{String}; lower_bounds = nothing, upper_bounds = nothing) =
+    (model, opt_model) -> begin
+        for id in ids
+            ind = first(indexin([id], variables(model)))
+            isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
+            set_optmodel_bound!(
+                ind,
+                opt_model,
+                lower_bound = lower_bound,
+                upper_bound = upper_bound,
+            )
+        end
     end
 
 """

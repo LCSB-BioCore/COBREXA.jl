@@ -18,6 +18,9 @@ macro _change_bounds_fn(model_type, idx_type, args...)
         throw(DomainError(idx_type, "unsupported index type for change_bound macro")),
         plural_s,
     )
+    lower_bound_s = Symbol(:lower_bound, plural_s)
+    upper_bound_s = Symbol(:upper_bound, plural_s)
+
     example_idx =
         plural ? (idx_type == :Int ? [123, 234] : ["ReactionA", "ReactionC"]) :
         (idx_type == :Int ? 123 : "\"ReactionB\"") #= unquoting is hard =#
@@ -34,8 +37,8 @@ macro _change_bounds_fn(model_type, idx_type, args...)
         $fname(
             model::$model_type,
             $idx_var::$idx_type;
-            lower_bound =$missing_default,
-            upper_bound =$missing_default,
+            lower_bound$(plural_s) =$missing_default,
+            upper_bound$(plural_s) =$missing_default,
         )
 
     Change the specified reaction flux bound$(plural_s) in the model
@@ -57,8 +60,8 @@ macro _change_bounds_fn(model_type, idx_type, args...)
                 $fname(
                     model::$model_type,
                     $idx_var::$idx_type;
-                    lower_bound = $missing_default,
-                    upper_bound = $missing_default,
+                    $lower_bound_s = $missing_default,
+                    $upper_bound_s = $missing_default,
                 ) = $body
             ),
         ),

@@ -264,7 +264,7 @@ end
 end
 
 @_change_bounds_fn MatrixCoupling Int inplace plural begin
-    change_bounds!(model.lm, rxn_idxs; lower_bound, upper_bound)
+    change_bounds!(model.lm, rxn_idxs; lower_bounds, upper_bounds)
 end
 
 @_change_bounds_fn MatrixCoupling String inplace begin
@@ -272,7 +272,7 @@ end
 end
 
 @_change_bounds_fn MatrixCoupling String inplace plural begin
-    change_bounds!(model.lm, rxn_ids; lower_bound, upper_bound)
+    change_bounds!(model.lm, rxn_ids; lower_bounds, upper_bounds)
 end
 
 @_change_bounds_fn MatrixCoupling Int begin
@@ -283,7 +283,7 @@ end
 
 @_change_bounds_fn MatrixCoupling Int plural begin
     n = copy(model)
-    n.lm = change_bounds(model.lm, rxn_idxs; lower_bound, upper_bound)
+    n.lm = change_bounds(model.lm, rxn_idxs; lower_bounds, upper_bounds)
     n
 end
 
@@ -295,7 +295,7 @@ end
 
 @_change_bounds_fn MatrixCoupling String plural begin
     n = copy(model)
-    n.lm = change_bounds(model.lm, rxn_ids; lower_bound, upper_bound)
+    n.lm = change_bounds(model.lm, rxn_ids; lower_bounds, upper_bounds)
     n
 end
 

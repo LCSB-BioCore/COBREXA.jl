@@ -154,7 +154,7 @@ end
     change_bound!(cp, 1, lower_bound = -10, upper_bound = 10)
     @test cp.lm.xl[1] == -10
     @test cp.lm.xu[1] == 10
-    change_bounds!(cp, [1, 2]; lower_bound = [-11, -12.2], upper_bound = [11, 23.0])
+    change_bounds!(cp, [1, 2]; lower_bounds = [-11, -12.2], upper_bounds = [11, 23.0])
     @test cp.lm.xl[2] == -12.2
     @test cp.lm.xu[1] == 11
 
@@ -164,8 +164,8 @@ end
     change_bounds!(
         cp,
         ["r1", "r2"];
-        lower_bound = [-113, -12.23],
-        upper_bound = [113, 233.0],
+        lower_bounds = [-113, -12.23],
+        upper_bounds = [113, 233.0],
     )
     @test cp.lm.xl[2] == -12.23
     @test cp.lm.xu[1] == 113
@@ -174,7 +174,7 @@ end
     @test new_model.lm.xl[1] == -10
     @test new_model.lm.xu[1] == 10
     new_model =
-        change_bounds(cp, [1, 2]; lower_bound = [-11, -12.2], upper_bound = [11, 23.0])
+        change_bounds(cp, [1, 2]; lower_bounds = [-11, -12.2], upper_bounds = [11, 23.0])
     @test new_model.lm.xl[2] == -12.2
     @test new_model.lm.xu[1] == 11
 
@@ -184,8 +184,8 @@ end
     new_model = change_bounds(
         cp,
         ["r1", "r2"];
-        lower_bound = [-113, -12.23],
-        upper_bound = [113, 233.0],
+        lower_bounds = [-113, -12.23],
+        upper_bounds = [113, 233.0],
     )
     @test new_model.lm.xl[2] == -12.23
     @test new_model.lm.xu[1] == 113

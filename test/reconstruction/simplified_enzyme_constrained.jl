@@ -31,8 +31,8 @@
         model |>
         with_changed_bounds(
             ["EX_glc__D_e", "GLCpts"],
-            lower_bound = [-1000.0, -1.0],
-            upper_bound = [nothing, 12.0],
+            lower_bounds = [-1000.0, -1.0],
+            upper_bounds = [nothing, 12.0],
         ) |>
         with_simplified_enzyme_constraints(total_enzyme_capacity = 100.0)
 
