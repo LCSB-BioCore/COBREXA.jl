@@ -36,17 +36,16 @@ $(TYPEDSIGNATURES)
 Change the lower and upper bounds (`lower_bounds` and `upper_bounds`
 respectively) of reactions in `ids` if supplied.
 """
-change_constraints(ids::Vector{String}; lower_bounds = fill(nothing,length(ids)), upper_bounds = fill(nothing,length(ids))) =
+change_constraints(
+    ids::Vector{String};
+    lower_bounds = fill(nothing, length(ids)),
+    upper_bounds = fill(nothing, length(ids)),
+) =
     (model, opt_model) -> begin
         for (id, lb, ub) in zip(ids, lower_bounds, upper_bounds)
             ind = first(indexin([id], variables(model)))
             isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
-            set_optmodel_bound!(
-                ind,
-                opt_model,
-                lower_bound = lb,
-                upper_bound = ub,
-            )
+            set_optmodel_bound!(ind, opt_model, lower_bound = lb, upper_bound = ub)
         end
     end
 
