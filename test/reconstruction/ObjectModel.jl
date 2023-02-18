@@ -45,8 +45,8 @@
     change_bounds!(
         model,
         ["r1", "r2"];
-        lower_bound = [-110, -220],
-        upper_bound = [110.0, 220.0],
+        lower_bounds = [-110, -220],
+        upper_bounds = [110.0, 220.0],
     )
     @test model.reactions["r1"].lower_bound == -110
     @test model.reactions["r1"].upper_bound == 110
@@ -65,8 +65,8 @@
     new_model = change_bounds(
         model,
         ["r1", "r2"];
-        lower_bound = [-10, -20],
-        upper_bound = [10.0, 20.0],
+        lower_bounds = [-10, -20],
+        upper_bounds = [10.0, 20.0],
     )
     @test new_model.reactions["r1"].lower_bound == -10
     @test new_model.reactions["r1"].upper_bound == 10
@@ -76,8 +76,8 @@
     new_model = change_bounds(
         model,
         ["r1", "r2"];
-        lower_bound = [-10, nothing],
-        upper_bound = [nothing, 20.0],
+        lower_bounds = [-10, nothing],
+        upper_bounds = [nothing, 20.0],
     )
     @test new_model.reactions["r1"].lower_bound == -10
     @test new_model.reactions["r1"].upper_bound == 110

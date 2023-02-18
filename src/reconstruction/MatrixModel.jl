@@ -260,7 +260,7 @@ end
 end
 
 @_change_bounds_fn MatrixModel Int inplace plural begin
-    for (i, l, u) in zip(rxn_idxs, lower_bound, upper_bound)
+    for (i, l, u) in zip(rxn_idxs, lower_bounds, upper_bounds)
         change_bound!(model, i, lower_bound = l, upper_bound = u)
     end
 end
@@ -269,8 +269,8 @@ end
     change_bounds(
         model,
         [rxn_idx],
-        lower_bound = [lower_bound],
-        upper_bound = [upper_bound],
+        lower_bounds = [lower_bound],
+        upper_bounds = [upper_bound],
     )
 end
 
@@ -278,7 +278,7 @@ end
     n = copy(model)
     n.xl = copy(n.xl)
     n.xu = copy(n.xu)
-    change_bounds!(n, rxn_idxs; lower_bound, upper_bound)
+    change_bounds!(n, rxn_idxs; lower_bounds, upper_bounds)
     n
 end
 
@@ -286,8 +286,8 @@ end
     change_bounds!(
         model,
         [rxn_id],
-        lower_bound = [lower_bound],
-        upper_bound = [upper_bound],
+        lower_bounds = [lower_bound],
+        upper_bounds = [upper_bound],
     )
 end
 
@@ -295,17 +295,27 @@ end
     change_bounds!(
         model,
         Vector{Int}(indexin(rxn_ids, variables(model)));
-        lower_bound,
-        upper_bound,
+        lower_bounds,
+        upper_bounds,
     )
 end
 
 @_change_bounds_fn MatrixModel String begin
-    change_bounds(model, [rxn_id], lower_bound = [lower_bound], upper_bound = [upper_bound])
+    change_bounds(
+        model,
+        [rxn_id],
+        lower_bounds = [lower_bound],
+        upper_bounds = [upper_bound],
+    )
 end
 
 @_change_bounds_fn MatrixModel String plural begin
-    change_bounds(model, Int.(indexin(rxn_ids, variables(model))); lower_bound, upper_bound)
+    change_bounds(
+        model,
+        Int.(indexin(rxn_ids, variables(model)));
+        lower_bounds,
+        upper_bounds,
+    )
 end
 
 @_remove_fn reaction MatrixModel Int inplace begin
