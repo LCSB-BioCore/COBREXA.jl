@@ -37,8 +37,8 @@ macro _change_bounds_fn(model_type, idx_type, args...)
         $fname(
             model::$model_type,
             $idx_var::$idx_type;
-            lower_bound$(plural_s) =$missing_default,
-            upper_bound$(plural_s) =$missing_default,
+            $lower_bound_s =$missing_default,
+            $upper_bound_s =$missing_default,
         )
 
     Change the specified reaction flux bound$(plural_s) in the model
