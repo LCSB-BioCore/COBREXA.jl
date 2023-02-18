@@ -308,9 +308,7 @@ end
             lower_bounds = [-1000.0],
             upper_bounds = [0],
         ) |>
-        with_enzyme_constraints(
-            gene_product_mass_group_bound = Dict("uncategorized" => 100.0),
-        )
+        with_enzyme_constraints(total_gene_product_mass_bound = 100.0)
 
     ex_rxns = find_exchange_reaction_ids(ecoli)
 

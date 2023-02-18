@@ -74,6 +74,13 @@ but retains the original "simple" reactions accessible by [`reactions`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
 
+To implement this wrapper for a model, the accessors
+[`reaction_isozymes`](@ref), [`gene_product_lower_bound`](@ref),
+[`gene_product_upper_bound](@ref), [`gene_product_molar_mass`](@ref), need to be
+available. Additionally, the model needs to associate [`Isozyme`](@ref)s with
+reactions. Reactions without enzymes, or those that should be ignored need to
+return `nothing` when [`reaction_isozymes`](@ref) is called on them.
+
 # Fields
 $(TYPEDFIELDS)
 """

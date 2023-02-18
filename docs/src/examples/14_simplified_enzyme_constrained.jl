@@ -63,7 +63,7 @@ simplified_enzyme_constrained_model =
     model |> with_simplified_enzyme_constraints(
         reaction_isozyme = rxn_isozymes,
         gene_product_molar_mass = gene_product_masses,
-        total_enzyme_capacity = 50.0,
+        total_gene_product_mass_bound = 50.0,
     )
 
 # (You could alternatively use the [`make_simplified_enzyme_constrained_model`](@ref) to create the
