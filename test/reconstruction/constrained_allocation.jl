@@ -57,7 +57,10 @@
     @test first(m.reactions["r6"].gene_associations).kcat_forward == 10.0
 
 
-    cam = make_simplified_enzyme_constrained_model(ribomodel; total_enzyme_capacity = 0.5)
+    cam = make_simplified_enzyme_constrained_model(
+        ribomodel;
+        total_gene_product_mass_bound = 0.5,
+    )
 
     @test coupling(cam)[1, 7] == 5.0
 
@@ -71,7 +74,7 @@
 
     # test inplace variant
     add_virtualribosome!(m, "r6", 0.2)
-    cam = m |> with_simplified_enzyme_constraints(total_enzyme_capacity = 0.5)
+    cam = m |> with_simplified_enzyme_constraints(total_gene_product_mass_bound = 0.5)
 
     @test coupling(cam)[1, 7] == 5.0
 

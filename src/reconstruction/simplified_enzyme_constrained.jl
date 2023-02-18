@@ -7,7 +7,7 @@ Construct a model with a structure given by sMOMENT algorithm; returns a
 # Arguments
 - a `model` that implements the accessors `gene_product_molar_mass`,
   `reaction_isozymes`.
-- `total_enzyme_capacity` is the maximum "enzyme capacity" in the model.
+- `total_gene_product_mass_bound` is the maximum "enzyme capacity" in the model.
 
 # Notes
 The SMOMENT algorithm only uses one [`Isozyme`](@ref) per reaction. If multiple
@@ -20,7 +20,7 @@ associated reaction.
 """
 function make_simplified_enzyme_constrained_model(
     model::AbstractMetabolicModel;
-    total_enzyme_capacity::Float64 = 0.5,
+    total_gene_product_mass_bound::Float64 = 0.5,
 )
     # helper function to rank the isozymes by relative speed
     speed_enzyme(model, isozyme) =
@@ -88,5 +88,5 @@ function make_simplified_enzyme_constrained_model(
         end
     end
 
-    return SimplifiedEnzymeConstrainedModel(columns, total_enzyme_capacity, model)
+    return SimplifiedEnzymeConstrainedModel(columns, total_gene_product_mass_bound, model)
 end

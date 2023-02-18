@@ -1,15 +1,20 @@
 """
 $(TYPEDSIGNATURES)
 
-Wrap a model into a [`EnzymeConstrainedModel`](@ref), following the structure
-given by GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation for
-details). Multiple capacity constraints can be placed on the model using the
+Wrap a model into an [`EnzymeConstrainedModel`](@ref), following the structure
+given by the GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation
+for details). Multiple capacity constraints can be placed on the model using the
 kwargs.
 
-Parameters `gene_product_mass_group` and `gene_product_mass_group_bound` specify the groups of gene products and the respective total limit of total mass of the gene products for each group. Gene products not listed in any gene product mass group are ignored.
+Parameters `gene_product_mass_group` and `gene_product_mass_group_bound` specify
+the groups of gene products and the respective total capacity limit of the gene
+products for each group. Gene products not listed in any gene product mass group
+are ignored.
 
-For simplicity in many use cases, specifying the `total_enzyme_capacity` argument overrides the above arguments by specifying a single group called `uncategorized` of all gene products, with the corresponding mass bound.
-- `gene_product_mass_group` is a dict that returns a vector of gene IDs
+For simplicity, in many use cases specifying the `total_gene_product_mass_bound`
+argument overrides the above arguments by specifying a single group called
+`uncategorized` of all gene products, with the corresponding mass capacity
+bound.
 
 # Example
 ```
@@ -27,26 +32,31 @@ ecmodel = make_enzyme_constrained_model(
 
 ecmodel2 = make_enzyme_constrained_model(
     model;
-    total_enzyme_capacity = 0.5
-) 
+    total_gene_product_mass_bound = 0.5
+)
 ```
 # Notes
 Reactions with no turnover number data, or non-enzymatic reactions that should
 be ignored, *must* have `nothing` in the `gene_associations` field of the
 associated reaction.
+
+The capacity bound
 """
 function make_enzyme_constrained_model(
     model::AbstractMetabolicModel;
     gene_product_mass_group::Maybe{Dict{String,Vector{String}}} = nothing,
     gene_product_mass_group_bound::Maybe{Dict{String,Float64}} = nothing,
-    total_enzyme_capacity::Maybe{Float64} = nothing,
+    total_gene_product_mass_bound::Maybe{Float64} = nothing,
 )
-    if !isnothing(total_enzyme_capacity)
+    if !isnothing(total_gene_product_mass_bound)
         gene_product_mass_group = Dict("uncategorized" => genes(model))
-        gene_product_mass_group_bound = Dict("uncategorized" => total_enzyme_capacity)
+        gene_product_mass_group_bound =
+            Dict("uncategorized" => total_gene_product_mass_bound)
     end
-    isnothing(gene_product_mass_group) && throw(ArgumentError("missing mass group specification"))
-    isnothing(gene_product_mass_group_bound) && throw(ArgumentError("missing mass group bounds"))
+    isnothing(gene_product_mass_group) &&
+        throw(ArgumentError("missing mass group specification"))
+    isnothing(gene_product_mass_group_bound) &&
+        throw(ArgumentError("missing mass group bounds"))
 
     gpb_(gid) = (gene_product_lower_bound(model, gid), gene_product_upper_bound(model, gid))
 

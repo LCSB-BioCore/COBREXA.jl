@@ -45,7 +45,7 @@ is retained.
 
 In the structure, the field `columns` describes the correspondence of
 stoichiometry columns to the stoichiometry and data of the internal wrapped
-model, and `total_enzyme_capacity` is the total bound on the enzyme capacity
+model, and `total_gene_product_mass_bound` is the total bound on the enzyme capacity
 consumption as specified in sMOMENT algorithm.
 
 This implementation allows easy access to fluxes from the split reactions
@@ -59,7 +59,7 @@ $(TYPEDFIELDS)
 """
 struct SimplifiedEnzymeConstrainedModel <: AbstractModelWrapper
     columns::Vector{_SimplifiedEnzymeConstrainedColumn}
-    total_enzyme_capacity::Float64
+    total_gene_product_mass_bound::Float64
 
     inner::AbstractMetabolicModel
 end
@@ -122,5 +122,5 @@ Accessors.n_coupling_constraints(model::SimplifiedEnzymeConstrainedModel) =
 
 Accessors.coupling_bounds(model::SimplifiedEnzymeConstrainedModel) =
     let (iclb, icub) = coupling_bounds(model.inner)
-        (vcat(iclb, [0.0]), vcat(icub, [model.total_enzyme_capacity]))
+        (vcat(iclb, [0.0]), vcat(icub, [model.total_gene_product_mass_bound]))
     end
