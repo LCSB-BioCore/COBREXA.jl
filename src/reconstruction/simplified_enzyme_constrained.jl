@@ -1,22 +1,20 @@
 """
 $(TYPEDSIGNATURES)
 
-Construct a model with a structure given by sMOMENT algorithm; returns a
+Wrap a `model` with a structure given by sMOMENT algorithm; returns a
 [`SimplifiedEnzymeConstrainedModel`](@ref) (see the documentation for details).
+The sMOMENT algorithm only uses one [`Isozyme`](@ref) per reaction. If multiple
+isozymes are present in `model`, the "fastest" isozyme will be used. This is
+determined based on maximum kcat (forward or backward) divided by mass of the
+isozyme. The `total_gene_product_mass_bound` is the maximum "enzyme capacity" in
+the model.
 
-# Arguments
-- a `model` that implements the accessors `gene_product_molar_mass`,
-  `reaction_isozymes`.
-- `total_gene_product_mass_bound` is the maximum "enzyme capacity" in the model.
-
-# Notes
-The SMOMENT algorithm only uses one [`Isozyme`](@ref) per reaction. If multiple
-isozymes are present the "fastest" isozyme will be used. This is determined
-based on maximum kcat (forward or backward) divided by mass of the isozyme.
-
-Reactions with no turnover number data, or non-enzymatic reactions that should
-be ignored, must have `nothing` in the `gene_associations` field of the
-associated reaction.
+# Example
+```
+ecmodel = make_simplified_enzyme_constrained_model(
+    model;
+    total_gene_product_mass_bound = 0.5
+)
 """
 function make_simplified_enzyme_constrained_model(
     model::AbstractMetabolicModel;

@@ -1,20 +1,19 @@
 """
 $(TYPEDSIGNATURES)
 
-Wrap a model into an [`EnzymeConstrainedModel`](@ref), following the structure
+Wrap a `model` into an [`EnzymeConstrainedModel`](@ref), following the structure
 given by the GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation
-for details). Multiple capacity constraints can be placed on the model using the
-kwargs.
+for details). Multiple mass constraint groups can be placed on the model using
+the keyword arguments.
 
 Parameters `gene_product_mass_group` and `gene_product_mass_group_bound` specify
-the groups of gene products and the respective total capacity limit of the gene
-products for each group. Gene products not listed in any gene product mass group
-are ignored.
+the groups of gene products, and the respective total mass limit for each group.
+Gene products that are not listed in any gene product mass group are ignored.
 
-For simplicity, in many use cases specifying the `total_gene_product_mass_bound`
-argument overrides the above arguments by specifying a single group called
-`uncategorized` of all gene products, with the corresponding mass capacity
-bound.
+For simplicity, specifying the `total_gene_product_mass_bound` argument
+overrides the above arguments by internally specifying a single group called
+`uncategorized` of all gene products, and acts like the maximum "enzyme
+capacity" in the model.
 
 # Example
 ```
@@ -35,12 +34,6 @@ ecmodel2 = make_enzyme_constrained_model(
     total_gene_product_mass_bound = 0.5
 )
 ```
-# Notes
-Reactions with no turnover number data, or non-enzymatic reactions that should
-be ignored, *must* have `nothing` in the `gene_associations` field of the
-associated reaction.
-
-The capacity bound
 """
 function make_enzyme_constrained_model(
     model::AbstractMetabolicModel;
