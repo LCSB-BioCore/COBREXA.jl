@@ -81,18 +81,6 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Returns vectors of the lower and upper bounds of `opt_model` constraints, where
-`opt_model` is a JuMP model constructed by e.g.
-[`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
-"""
-get_optmodel_bounds(opt_model) = (
-    [-normalized_rhs(lb) for lb in opt_model[:lbs]],
-    [normalized_rhs(ub) for ub in opt_model[:ubs]],
-)
-
-"""
-$(TYPEDSIGNATURES)
-
 Helper function to set the bounds of a variable in the model. Internally calls
 `set_normalized_rhs` from JuMP. If the bounds are set to `nothing`, they will
 not be changed.
