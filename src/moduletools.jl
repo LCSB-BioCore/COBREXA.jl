@@ -50,7 +50,7 @@ macro reexport(mods...)
             Base.isexported($modulename, sym) || continue
             typeof($(Expr(:., modulename, :sym))) == Module && continue
             sym in [:eval, :include] && continue
-            @eval const $(Expr(:$, :sym)) = ($modulename).$(Expr(:$, :sym))
+            @eval $(Expr(:$, :sym)) = ($modulename).$(Expr(:$, :sym))
             @eval export $(Expr(:$, :sym))
         end
     end)
