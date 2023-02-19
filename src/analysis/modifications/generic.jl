@@ -18,7 +18,7 @@ $(TYPEDSIGNATURES)
 Change the lower and upper bounds (`lower_bound` and `upper_bound` respectively)
 of reaction `id` if supplied.
 """
-change_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
+modify_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
     (model, opt_model) -> begin
         ind = first(indexin([id], variables(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
@@ -36,7 +36,7 @@ $(TYPEDSIGNATURES)
 Change the lower and upper bounds (`lower_bounds` and `upper_bounds`
 respectively) of reactions in `ids` if supplied.
 """
-change_constraints(
+modify_constraints(
     ids::Vector{String};
     lower_bounds = fill(nothing, length(ids)),
     upper_bounds = fill(nothing, length(ids)),
@@ -59,7 +59,7 @@ array of reactions identifiers.
 Optionally, the objective can be weighted by a vector of `weights`, and a
 optimization `sense` can be set to either `MAX_SENSE` or `MIN_SENSE`.
 """
-change_objective(
+modify_objective(
     new_objective::Union{String,Vector{String}};
     weights = [],
     sense = MAX_SENSE,
