@@ -3,7 +3,8 @@
     module Solver
 
 Interface of COBREXA to JuMP solvers; mainly recreation of the
-`AbstractMetabolicModel`s into JuMP optimization models.
+`AbstractMetabolicModel`s as JuMP optimization models, and retrieval of solved
+values.
 
 # Exports
 $(EXPORTS)
@@ -56,6 +57,7 @@ function make_optimization_model(
     end
 
     return optimization_model
+    #TODO what about ModelWithResult right from this point? ;D
 end
 
 """
@@ -105,18 +107,41 @@ Returns the current objective value of a model, if solved.
 solved_objective_value(flux_balance_analysis(model, ...))
 ```
 """
-solved_objective_value(opt_model)::Maybe{Float64} =
+solved_objective_value(opt_model::Model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
-From the optimized model, returns a vector of values for the selected
-`semantics`. If the model did not solve, returns `nothing`.
+Pipeable variant of [`solved_objective_value`](@ref).
+"""
+solved_objective_value(x::ModelWithResult{<:Model}) =
+    ModelWithResult(x.model, solved_objective_value(x.result))
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a vector of all variable values from the solved model, in the same order
+given by [`variables`](@ref).
 
 # Example
 ```
-values_vec(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+flux_balance_analysis(model, ...) |> values_vec
+```
+"""
+function values_vec(res::ModelWithResult{<:Model})
+    is_solved(res.result) ? value.(res.result[:x]) : nothing
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a vector of all semantic variable values in the model, in the order
+given by the corresponding semantics.
+
+# Example
+```
+values_vec(:reaction, flux_balance_analysis(model, ...))
 ```
 """
 function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
@@ -127,14 +152,30 @@ end
 """
 $(TYPEDSIGNATURES)
 
-A pipeable variant of the convenience variant of [`values_vec`](@ref).
+A pipeable variant of [`values_vec`](@ref).
 
 # Example
 ```
 flux_balance_analysis(model, ...) |> values_vec(:reaction)
 ```
 """
-values_vec(semantics::Symbol) = res -> values_vec(semantics, res)
+values_vec(semantics::Symbol) =
+    (res::ModelWithResult{<:Model}) -> values_vec(semantics, res)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a dictionary of all variable values from the solved model mapped
+to their IDs.
+
+# Example
+```
+flux_balance_analysis(model, ...) |> values_dict
+```
+"""
+function values_dict(res::ModelWithResult{<:Model})
+    is_solved(res.result) ? Dict(variables(res.model) .=> value.(res.result[:x])) : nothing
+end
 
 """
 $(TYPEDSIGNATURES)
@@ -157,14 +198,15 @@ end
 """
 $(TYPEDSIGNATURES)
 
-A pipeable variant of the convenience variant of [`values_dict`](@ref).
+A pipeable variant of [`values_dict`](@ref).
 
 # Example
 ```
 flux_balance_analysis(model, ...) |> values_dict(:reaction)
 ```
 """
-values_dict(semantics::Symbol) = res -> values_dict(semantics, res)
+values_dict(semantics::Symbol) =
+    (res::ModelWithResult{<:Model}) -> values_dict(semantics, res)
 
 @export_locals
 end
