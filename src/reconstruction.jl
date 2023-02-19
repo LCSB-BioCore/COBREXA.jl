@@ -13,7 +13,7 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
-using ..Internal: constants
+using ..Internal: constants, throw_argerror_if_key_found, throw_argerror_if_key_missing
 using ..Internal.Macros
 using ..Log.Internal
 using ..Types

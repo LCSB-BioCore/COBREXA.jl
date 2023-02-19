@@ -3,14 +3,11 @@
 """
 $(TYPEDSIGNATURES)
 
-Add `rxns` to `model` based on reaction `id`.
+Add `rxns` to `model` based on reaction `id` if the `id` is not already in the
+model.
 """
 function add_reactions!(model::ObjectModel, rxns::Vector{Reaction})
-    rxn_ids = collect(keys(model.reactions))
-    idxs = filter(!isnothing, indexin([r.id for r in rxns], rxn_ids))
-    isempty(idxs) ||
-        throw(ArgumentError("Duplicated reaction IDs in model: $(rxn_ids[idxs])"))
-
+    throw_argerror_if_key_found(model, :reactions, rxns)
     for rxn in rxns
         model.reactions[rxn.id] = rxn
     end
@@ -19,44 +16,40 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `rxn` to `model` based on reaction `id`.
+Add `rxn` to `model` based on reaction `id` if the `id` is not already in the
+model
 """
 add_reaction!(model::ObjectModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
 $(TYPEDSIGNATURES)
 
-Add `rxns` to `model` and return a shallow copied version of the model.
+Add `rxns` to `model` and return a shallow copied version of the model. Only
+adds the `rxns` if their IDs are not already present in the model.
 """
 function add_reactions(model::ObjectModel, rxns::Vector{Reaction})
     m = copy(model)
-
     m.reactions = copy(m.reactions)
-    for rxn in rxns
-        m.reactions[rxn.id] = rxn
-    end
-
+    add_reactions!(m, rxns)
     m
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Add `rxn` to `model`, and return a shallow copied version of the model.
+Add `rxn` to `model`, and return a shallow copied version of the model. Only
+adds the `rxn` if its ID is not already present in the model.
 """
 add_reaction(model::ObjectModel, rxn::Reaction) = add_reactions(model, [rxn])
 
 @_remove_fn reaction ObjectModel String inplace begin
-    if !(reaction_id in variables(model))
-        @models_log @info "Reaction $reaction_id not found in model."
-    else
-        delete!(model.reactions, reaction_id)
-    end
+    remove_reactions!(model, [reaction_id])
     nothing
 end
 
 @_remove_fn reaction ObjectModel String inplace plural begin
-    remove_reaction!.(Ref(model), reaction_ids)
+    throw_argerror_if_key_missing(model, :reactions, reaction_ids)
+    delete!.(Ref(model.reactions), reaction_ids)
     nothing
 end
 
@@ -76,14 +69,11 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `mets` to `model` based on metabolite `id`.
+Add `mets` to `model` based on metabolite `id` if the `id` is not already in the
+model.
 """
 function add_metabolites!(model::ObjectModel, mets::Vector{Metabolite})
-    met_ids = collect(keys(model.metabolites))
-    idxs = filter(!isnothing, indexin([m.id for m in mets], met_ids))
-    isempty(idxs) ||
-        throw(ArgumentError("Duplicated metabolite IDs in model: $(met_ids[idxs])"))
-
+    throw_argerror_if_key_found(model, :metabolites, mets)
     for met in mets
         model.metabolites[met.id] = met
     end
@@ -92,30 +82,29 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `met` to `model` based on metabolite `id`.
+Add `met` to `model` based on metabolite `id` if the `id` is not already in the
+model.
 """
 add_metabolite!(model::ObjectModel, met::Metabolite) = add_metabolites!(model, [met])
 
 """
 $(TYPEDSIGNATURES)
 
-Add `mets` to `model` and return a shallow copied version of the model.
+Add `mets` to `model` and return a shallow copied version of the model. Only
+adds the `mets` if their IDs are not already present in the model.
 """
 function add_metabolites(model::ObjectModel, mets::Vector{Metabolite})
     m = copy(model)
-
     m.metabolites = copy(m.metabolites)
-    for met in mets
-        m.metabolites[met.id] = met
-    end
-
+    add_metabolites!(m, mets)
     m
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Add `met` to `model` and return a shallow copied version of the model.
+Add `met` to `model` and return a shallow copied version of the model.  Only
+adds the `met` if its ID is not already present in the model.
 """
 add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [met])
 
@@ -124,8 +113,7 @@ add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [me
 end
 
 @_remove_fn metabolite ObjectModel String inplace plural begin
-    !all(in.(metabolite_ids, Ref(metabolites(model)))) &&
-        @models_log @info "Some metabolites not found in model."
+    throw_argerror_if_key_missing(model, :metabolites, metabolite_ids)
     remove_reactions!(
         model,
         [
@@ -154,13 +142,11 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `genes` to `model` based on gene `id`.
+Add `genes` to `model` based on gene `id` if the `id` is not already in the
+model.
 """
 function add_genes!(model::ObjectModel, genes::Vector{Gene})
-    gene_ids = collect(keys(model.genes))
-    idxs = filter(!isnothing, indexin([g.id for g in genes], gene_ids))
-    isempty(idxs) || throw(ArgumentError("Duplicated gene IDs in model: $(gene_ids[idxs])"))
-
+    throw_argerror_if_key_found(model, :genes, genes)
     for gene in genes
         model.genes[gene.id] = gene
     end
@@ -169,30 +155,29 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `gene` to `model` based on gene `id`.
+Add `gene` to `model` based on gene `id` if the `id` is not already in the
+model.
 """
 add_gene!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
 
 """
 $(TYPEDSIGNATURES)
 
-Add `gns` to `model` and return a shallow copied version of the model.
+Add `genes` to `model` and return a shallow copied version of the model.  Only
+adds the `genes` if their IDs are not already present in the model.
 """
 function add_genes(model::ObjectModel, genes::Vector{Gene})
     m = copy(model)
-
     m.genes = copy(m.genes)
-    for gn in genes
-        m.genes[gn.id] = gn
-    end
-
+    add_genes!(m, genes)
     m
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Add `gene` to `model` and return a shallow copied version of the model.
+Add `gene` to `model` and return a shallow copied version of the model.  Only
+adds the `gene` if its ID is not already present in the model.
 """
 add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene])
 
@@ -211,7 +196,8 @@ function remove_genes!(
     model::ObjectModel,
     gids::Vector{String};
     knockout_reactions::Bool = false,
-)
+)   
+    throw_argerror_if_key_missing(model, :genes, gids)
     if knockout_reactions
         rm_reactions = String[]
         for (rid, r) in model.reactions
@@ -222,9 +208,9 @@ function remove_genes!(
                 push!(rm_reactions, rid)
             end
         end
-        pop!.(Ref(model.reactions), rm_reactions)
+        delete!.(Ref(model.reactions), rm_reactions)
     end
-    pop!.(Ref(model.genes), gids)
+    delete!.(Ref(model.genes), gids)
     nothing
 end
 
