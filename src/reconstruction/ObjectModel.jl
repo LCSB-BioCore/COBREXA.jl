@@ -211,6 +211,55 @@ constrain reactions that require the genes to function to carry zero flux.
 remove_gene!(model::ObjectModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
+"""
+$(TYPEDSIGNATURES)
+
+Plural variant of [`remove_gene`](@ref).
+"""
+function remove_genes(    
+    model::ObjectModel,
+    gids::Vector{String};
+    knockout_reactions::Bool = false,
+)
+    throw_argerror_if_key_missing(model, :genes, gids)
+    
+    m = copy(model)
+    m.genes = copy(model.genes)
+
+    if knockout_reactions
+        
+        rm_reactions = String[]
+        for (rid, r) in model.reactions
+            if !isnothing(r.gene_associations) && all(
+                any(in.(gids, Ref(conjunction))) for
+                conjunction in reaction_gene_associations(model, rid)
+            )
+                push!(rm_reactions, rid)
+            end
+        end
+
+        m.reactions = copy(reactions)
+        delete!.(Ref(m.reactions), rm_reactions)
+    end
+
+    delete!.(Ref(m.genes), gids)
+    
+    nothing
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a shallow copy of `model` with `gid` remove from `model`. If
+`knockout_reactions` is true, then also constrain reactions that require the
+genes to function to carry zero flux.
+"""
+remove_genes(    
+    model::ObjectModel,
+    gid::String;
+    knockout_reactions::Bool = false,
+) = remove_genes(model, [gid]; knockout_reactions) 
+
 # Change reaction bounds
 
 @_change_bounds_fn ObjectModel String inplace begin
@@ -248,8 +297,8 @@ end
         for field in fieldnames(typeof(model.reactions[rid]))
             setfield!(m.reactions[rid], field, getfield(model.reactions[rid], field))
         end
-        isnothing(lower) || (m.reactions[rxn_id].lower_bound = lower)
-        isnothing(upper) || (m.reactions[rxn_id].upper_bound = upper)
+        isnothing(lower) || (m.reactions[rid].lower_bound = lower)
+        isnothing(upper) || (m.reactions[rid].upper_bound = upper)
     end
     return m
 end
@@ -314,8 +363,8 @@ function change_gene_product_bounds(
         for field in fieldnames(typeof(model.genes[gid]))
             setfield!(m.genes[gid], field, getfield(model.genes[gid], field))
         end
-        isnothing(lower) || (model.genes[gid].product_lower_bound = lower)
-        isnothing(upper) || (model.genes[gid].product_upper_bound = upper)
+        isnothing(lower) || (m.genes[gid].product_lower_bound = lower)
+        isnothing(upper) || (m.genes[gid].product_upper_bound = upper)
     end
     m
 end
@@ -679,7 +728,7 @@ $(TYPEDSIGNATURES)
 
 Plural variant of [`remove_isozyme`](@ref).
 """
-function remove_isozymes!(model::ObjectModel, rids::Vector{String})
+function remove_isozymes(model::ObjectModel, rids::Vector{String})
     throw_argerror_if_key_missing(model, :reactions, rids)
 
     m = copy(model)

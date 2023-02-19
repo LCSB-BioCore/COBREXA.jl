@@ -147,4 +147,5 @@
     new_model = change_gene_product_bound(model, "g2"; lower_bound = -10, upper_bound = 10)
     @test new_model.genes["g2"].product_lower_bound == -10.0
     @test new_model.genes["g2"].product_upper_bound == 10.0
+    @test model.genes["g2"].product_lower_bound == 0.0
 end
