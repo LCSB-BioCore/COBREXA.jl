@@ -1,40 +1,6 @@
 """
 $(TYPEDSIGNATURES)
 
-A variant of FBA that returns a vector of fluxes in the same order as reactions
-of the model, if the solution is found.
-
-Arguments are passed to [`flux_balance_analysis`](@ref).
-
-This function is kept for backwards compatibility, use [`values_vec`](@ref)
-instead.
-"""
-flux_balance_analysis_vec(
-    model::AbstractMetabolicModel,
-    args...;
-    kwargs...,
-)::Maybe{Vector{Float64}} =
-    values_vec(:reaction, flux_balance_analysis(model, args...; kwargs...))
-
-"""
-$(TYPEDSIGNATURES)
-
-A variant of FBA that returns a dictionary assigning fluxes to reactions, if
-the solution is found. Arguments are passed to [`flux_balance_analysis`](@ref).
-
-This function is kept for backwards compatibility, use [`values_dict`](@ref)
-instead.
-"""
-flux_balance_analysis_dict(
-    model::AbstractMetabolicModel,
-    args...;
-    kwargs...,
-)::Maybe{Dict{String,Float64}} =
-    values_dict(:reaction, flux_balance_analysis(model, args...; kwargs...))
-
-"""
-$(TYPEDSIGNATURES)
-
 Run flux balance analysis (FBA) on the `model` optionally specifying
 `modifications` to the problem.  Basically, FBA solves this optimization problem:
 ```
@@ -67,12 +33,7 @@ modified_solution = flux_balance_analysis(model, GLPK.optimizer;
     modifications=[change_objective(biomass_reaction_id)])
 ```
 """
-function flux_balance_analysis(
-    model::M,
-    optimizer;
-    modifications = [],
-) where {M<:AbstractMetabolicModel}
-
+function flux_balance_analysis(model::AbstractMetabolicModel, optimizer; modifications = [])
     opt_model = make_optimization_model(model, optimizer)
 
     for mod in modifications
@@ -81,17 +42,14 @@ function flux_balance_analysis(
 
     optimize!(opt_model)
 
-    return Result(model, opt_model)
+    ModelWithResult(model, opt_model)
 end
+
 
 """
 $(TYPEDSIGNATURES)
 
-A pipeable variant of [`flux_balance_analysis`](@ref).
-
-# Example
-```
-flux_balance_analysis(Tulip.Optimizer) |> values_dict(:reaction)
-```
+Pipe-able variant of [`flux_balance_analysis`](@ref).
 """
-flux_balance_analysis(args...; kwargs...) = model -> flux_balance_analysis(model, args...; kwargs...)
+flux_balance_analysis(optimizer; modifications = []) =
+    model -> flux_balance_analysis(model, optimizer; modifications)

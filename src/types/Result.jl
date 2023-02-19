@@ -38,6 +38,6 @@ $(TYPEDSIGNATURES)
 Pipeable shortcut for extracting the result value out of
 [`ModelWithResult`](@ref).
 """
-function result(x::ModelWithResult{T})::T where T
+function result(x::ModelWithResult{T})::T where {T}
     x.result
 end
