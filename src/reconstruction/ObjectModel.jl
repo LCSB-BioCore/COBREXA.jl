@@ -170,7 +170,6 @@ remove_gene!(model, "g1")
 remove_gene!(model::ObjectModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
 
-
 @_change_bounds_fn ObjectModel String inplace begin
     isnothing(lower_bound) || (model.reactions[rxn_id].lower_bound = lower_bound)
     isnothing(upper_bound) || (model.reactions[rxn_id].upper_bound = upper_bound)
@@ -197,7 +196,7 @@ end
     n.reactions = copy(model.reactions)
     for rid in rxn_ids
         n.reactions[rid] = copy(model.reactions[rid])
-        for field in fieldnames(model.reactions[rid])
+        for field in fieldnames(typeof(model.reactions[rid]))
             setfield!(n.reactions[rid], field, getfield(model.reactions[rid], field))
         end
     end
@@ -263,8 +262,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Change the objective for `model` to reaction(s) with `rxn_ids`, optionally specifying their `weights`. By default,
-assume equal weights. If no objective exists in model, sets objective.
+Change the objective for `model` to reaction(s) with `rxn_ids`, optionally
+specifying their `weights`. By default, assume equal weights. If no objective
+exists in model, sets objective.
 """
 function change_objective!(
     model::ObjectModel,
@@ -277,7 +277,44 @@ function change_objective!(
     nothing
 end
 
-change_objective!(model::ObjectModel, rxn_id::String) = change_objective!(model, [rxn_id])
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`change_objective!`](@ref) that sets a single `rxn_id` as the
+objective weight with `weight` (defaults to 1.0).
+"""
+change_objective!(model::ObjectModel, rxn_id::String; weight::Float64 = 1.0) =
+    change_objective!(model, [rxn_id]; weights = [weight])
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`change_objective!`](@ref) that does not modify the original model,
+but makes a shallow copy with the modification included.
+"""
+function change_objective(
+    model::ObjectModel,
+    rxn_ids::Vector{String};
+    weights = ones(length(rxn_ids)),
+)
+    m = copy(model)
+    m.objective = copy(model.objective)
+    change_objective!(m, rxn_ids; weights)
+    m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`change_objective!`](@ref) that does not modify the original model,
+but makes a shallow copy with the modification included.
+"""
+function change_objective(model::ObjectModel, rxn_id::String; weight::Float64 = 1.0)
+    m = copy(model)
+    m.objective = copy(model.objective)
+    change_objective!(m, rxn_id; weight)
+    m
+end
 
 """
 $(TYPEDSIGNATURES)
@@ -485,14 +522,14 @@ $(TYPEDSIGNATURES)
 Changes the `product_lower_bound` or `product_upper_bound` for the
 [`Gene`][(ref)s listed in `gids` in the `model`, in place.
 """
-function change_gene_product_bounds!(    
+function change_gene_product_bounds!(
     model::ObjectModel,
     gids::Vector{String};
     lower_bounds = fill(nothing, length(gids)),
     upper_bounds = fill(nothing, length(gids)),
 )
     for (i, gid) in enumerate(gids)
-       
+
         isnothing(lower_bounds[i]) || begin
             (model.genes[gid].product_lower_bound = lower_bounds[i])
         end
@@ -515,7 +552,12 @@ function change_gene_product_bound!(
     lower_bound = nothing,
     upper_bound = nothing,
 )
-    change_gene_product_bounds!(model, [gid]; lower_bounds = [lower_bound], upper_bounds = [upper_bound])
+    change_gene_product_bounds!(
+        model,
+        [gid];
+        lower_bounds = [lower_bound],
+        upper_bounds = [upper_bound],
+    )
 end
 
 """

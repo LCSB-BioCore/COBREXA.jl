@@ -121,3 +121,11 @@ Plural version of [`with_changed_gene_product_bound`](@ref), calls
 """
 with_changed_gene_product_bounds(args...; kwargs...) =
     m -> change_gene_product_bounds(m, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant with the objective reaction(s) changed. Forwards the
+arguments to [`change_objective`](@ref).
+"""
+with_changed_objective(args...; kwargs...) = m -> change_objective(m, args...; kwargs...)
