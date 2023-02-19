@@ -67,7 +67,15 @@ Return `true` if `opt_model` solved successfully (solution is optimal or locally
 optimal).  Return `false` if any other termination status is reached.
 Termination status is defined in the documentation of `JuMP`.
 """
-is_solved(opt_model) = termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+is_solved(opt_model::Model) =
+    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of is_solved that works with [`ModelWithResult`](@ref).
+"""
+is_solved(r::ModelWithResult{<:Model}) = is_solved(r.result)
 
 """
 $(TYPEDSIGNATURES)
@@ -101,11 +109,6 @@ end
 $(TYPEDSIGNATURES)
 
 Returns the current objective value of a model, if solved.
-
-# Example
-```
-solved_objective_value(flux_balance_analysis(model, ...))
-```
 """
 solved_objective_value(opt_model::Model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
@@ -114,9 +117,13 @@ solved_objective_value(opt_model::Model)::Maybe{Float64} =
 $(TYPEDSIGNATURES)
 
 Pipeable variant of [`solved_objective_value`](@ref).
+
+# Example
+```
+flux_balance_analysis(model, ...) |> solved_objective_value
+```
 """
-solved_objective_value(x::ModelWithResult{<:Model}) =
-    ModelWithResult(x.model, solved_objective_value(x.result))
+solved_objective_value(x::ModelWithResult{<:Model}) = solved_objective_value(x.result)
 
 """
 $(TYPEDSIGNATURES)

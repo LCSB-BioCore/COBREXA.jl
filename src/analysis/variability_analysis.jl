@@ -136,12 +136,13 @@ function variability_analysis(
         )
     end
 
-    Z = bounds(
-        isnothing(optimal_objective_value) ?
-        objective_value(
-            flux_balance_analysis(model, optimizer; modifications = modifications),
-        ) : optimal_objective_value,
-    )
+    if isnothing(optimal_objective_value)
+        optimal_objective_value =
+            flux_balance_analysis(model, optimizer; modifications = modifications) |>
+            solved_objective_value
+    end
+    isnothing(optimal_objective_value) && error("model has no feasible solution for FVA")
+    Z = bounds(optimal_objective_value)
 
     flux_vector = [directions[:, i] for i = 1:size(directions, 2)]
 
@@ -200,15 +201,14 @@ function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer
         model,
         optimizer;
         kwargs...,
-        ret = sol -> values_vec(:reaction, model, sol),
+        ret = sol -> values_vec(:reaction, ModelWithResult(model, sol)),
     )
     flxs = reactions(res.model)
     dicts = zip.(Ref(flxs), res.result)
 
     ModelWithResult(
         res.model,
-        Dict(flxs .=> Dict.(dicts[:, 1])),
-        Dict(flxs .=> Dict.(dicts[:, 2])),
+        (Dict(flxs .=> Dict.(dicts[:, 1])), Dict(flxs .=> Dict.(dicts[:, 2]))),
     )
 end
 

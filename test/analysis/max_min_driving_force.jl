@@ -2,11 +2,12 @@
 
     model = load_model(model_paths["e_coli_core.json"])
 
-    flux_solution = flux_balance_analysis_dict(
-        model,
-        GLPK.Optimizer;
-        modifications = [add_loopless_constraints()],
-    )
+    flux_solution =
+        flux_balance_analysis(
+            model,
+            GLPK.Optimizer;
+            modifications = [add_loopless_constraints()],
+        ) |> values_dict
 
     mmdfm = make_max_min_driving_force_model(
         model;
@@ -24,30 +25,27 @@
         ignore_reaction_ids = ["H2Ot"],
     )
 
-    opt_model = flux_balance_analysis(
+    x = flux_balance_analysis(
         mmdfm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
     # get mmdf
-    @test isapprox(
-        solved_objective_value(opt_model),
-        1.7661155558545698,
-        atol = TEST_TOLERANCE,
-    )
+    @test isapprox(x |> solved_objective_value, 1.7661155558545698, atol = TEST_TOLERANCE)
 
     # values_dict(:reaction, mmdfm, opt_model) # TODO throw missing semantics error
-    @test length(values_dict(:metabolite_log_concentration, mmdfm, opt_model)) == 72
-    @test length(values_dict(:gibbs_free_energy_reaction, mmdfm, opt_model)) == 95
+    @test length(x |> values_dict(:metabolite_log_concentration)) == 72
+    @test length(x |> values_dict(:gibbs_free_energy_reaction)) == 95
 
-    sols = variability_analysis(
-        Val(:gibbs_free_energy_reaction),
-        mmdfm,
-        Tulip.Optimizer;
-        bounds = gamma_bounds(0.9),
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-    )
+    sols =
+        variability_analysis(
+            :gibbs_free_energy_reaction,
+            mmdfm,
+            Tulip.Optimizer;
+            bounds = gamma_bounds(0.9),
+            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        ) |> result
 
     pyk_idx = first(indexin(["ΔG PYK"], gibbs_free_energy_reactions(mmdfm)))
     @test isapprox(sols[pyk_idx, 2], -1.5895040002691128; atol = TEST_TOLERANCE)

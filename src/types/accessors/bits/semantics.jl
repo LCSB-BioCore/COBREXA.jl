@@ -44,7 +44,9 @@ function make_mapping_dict(
     )
 end
 
-const variable_semantics = Dict{Symbol}()
+const Semantic = Tuple{Function,Function,Function,Function}
+
+const variable_semantics = Dict{Symbol,Semantic}()
 
 """
 $(TYPEDSIGNATURES)
@@ -52,9 +54,7 @@ $(TYPEDSIGNATURES)
 Get a tuple of functions that work with the given semantics, or `nothing` if
 the semantics doesn't exist.
 """
-function get_semantics(
-    semantics::Symbol,
-)::Types.Maybe{Tuple{Function,Function,Function,Function}}
+function get_semantics(semantics::Symbol)::Types.Maybe{Semantic}
     get(variable_semantics, semantics, nothing)
 end
 
@@ -64,9 +64,7 @@ $(TYPEDSIGNATURES)
 Like [`get_semantics`](@ref) but throws a `DomainError` if the semantics is not
 available.
 """
-function semantics(
-    semantics::Symbol,
-)::Types.Maybe{Tuple{Function,Function,Function,Function}}
+function semantics(semantics::Symbol)::Types.Maybe{Semantic}
     res = get_semantics(semantics)
     isnothing(res) && throw(DomainError(semantics, "unknown semantics"))
     res
@@ -183,12 +181,9 @@ safety reasons, this is never automatically inherited by wrappers.
         end),
     )
 
-    themodule.Internal.variable_semantics[sym] = (
-        Base.eval(themodule, pluralfn),
-        Base.eval(themodule, countfn),
-        Base.eval(themodule, mappingfn),
-        Base.eval(themodule, mtxfn),
-    )
+    Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn])
+    themodule.Internal.variable_semantics[sym] =
+        Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx))
 end
 
 """

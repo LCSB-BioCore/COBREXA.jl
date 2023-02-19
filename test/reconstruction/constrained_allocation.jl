@@ -1,10 +1,6 @@
 @testset "Constrained allocation FBA" begin
 
     m = ObjectModel()
-    m1 = Metabolite("m1")
-    m2 = Metabolite("m2")
-    m3 = Metabolite("m3")
-    m4 = Metabolite("m4")
 
     add_reactions!(
         m,
@@ -17,13 +13,6 @@
             ReactionBidirectional("r6", Dict("m4" => -1)), # different!
         ],
     )
-
-    gs = [
-        Gene(id = "g1", product_upper_bound = 10.0, product_molar_mass = 1.0)
-        Gene(id = "g2", product_upper_bound = 10.0, product_molar_mass = 2.0)
-        Gene(id = "g3", product_upper_bound = 10.0, product_molar_mass = 3.0)
-        Gene(id = "g4", product_upper_bound = 10.0, product_molar_mass = 4.0)
-    ]
 
     m.reactions["r3"].gene_associations =
         [Isozyme(["g1"]; kcat_forward = 1.0, kcat_backward = 1.0)]
@@ -47,8 +36,15 @@
     ]
     m.objective = Dict("r6" => 1.0)
 
-    add_genes!(m, gs)
-    add_metabolites!(m, [m1, m2, m3, m4])
+    add_genes!(
+        m,
+        [
+            Gene(id = "g$i", product_upper_bound = 10.0, product_molar_mass = float(i)) for
+            i = 1:4
+        ],
+    )
+
+    add_metabolites!(m, [Metabolite("m$i") for i = 1:4])
 
     ribomodel = m |> with_virtualribosome("r6", 0.2)
 
@@ -61,12 +57,12 @@
 
     @test coupling(cam)[1, 7] == 5.0
 
-    rxn_fluxes = flux_balance_analysis_dict(
-        cam,
-        Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-    )
-
+    rxn_fluxes =
+        flux_balance_analysis(
+            cam,
+            Tulip.Optimizer;
+            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        ) |> values_dict(:reaction)
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
 
     # test inplace variant
@@ -75,11 +71,12 @@
 
     @test coupling(cam)[1, 7] == 5.0
 
-    rxn_fluxes = flux_balance_analysis_dict(
-        cam,
-        Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-    )
+    rxn_fluxes =
+        flux_balance_analysis(
+            cam,
+            Tulip.Optimizer;
+            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        ) |> values_dict(:reaction)
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
 
     # test with_isozyme functions

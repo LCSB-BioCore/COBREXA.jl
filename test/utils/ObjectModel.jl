@@ -2,13 +2,14 @@
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     # FBA
-    fluxes = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
-    )
+    fluxes =
+        flux_balance_analysis(
+            model,
+            Tulip.Optimizer;
+            modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
+        ) |> values_dict
 
-    # bounds setting
+    # bounds setting # TODO why is this here?
     cbm = make_optimization_model(model, Tulip.Optimizer)
     ubs = cbm[:ubs]
     lbs = cbm[:lbs]

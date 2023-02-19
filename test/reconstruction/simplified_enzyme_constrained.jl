@@ -36,11 +36,12 @@
         ) |>
         with_simplified_enzyme_constraints(total_enzyme_capacity = 100.0)
 
-    rxn_fluxes = flux_balance_analysis_dict(
-        simplified_enzyme_constrained_model,
-        Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
-    )
+    rxn_fluxes =
+        flux_balance_analysis(
+            simplified_enzyme_constrained_model,
+            Tulip.Optimizer;
+            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        ) |> values_dict
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],

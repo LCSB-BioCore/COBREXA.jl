@@ -1,7 +1,7 @@
 @testset "Flux variability analysis" begin
     cp = test_simpleLP()
     optimizer = Tulip.Optimizer
-    fluxes = flux_variability_analysis(cp, optimizer)
+    fluxes = flux_variability_analysis(cp, optimizer) |> result
 
     @test size(fluxes) == (2, 2)
     @test fluxes ≈ [
@@ -9,10 +9,10 @@
         2.0 2.0
     ]
 
-    rates = variability_analysis(cp, optimizer)
+    rates = variability_analysis(cp, optimizer) |> result
     @test fluxes == rates
 
-    fluxes = flux_variability_analysis(cp, optimizer, reaction_indexes = [2])
+    fluxes = flux_variability_analysis(cp, optimizer, reaction_indexes = [2]) |> result
 
     @test size(fluxes) == (1, 2)
     @test isapprox(fluxes, [2 2], atol = TEST_TOLERANCE)
@@ -27,7 +27,7 @@
         ["r$x" for x = 1:3],
         ["m1"],
     )
-    fluxes = flux_variability_analysis(cp, optimizer)
+    fluxes = flux_variability_analysis(cp, optimizer) |> result
     @test isapprox(
         fluxes,
         [
@@ -37,7 +37,7 @@
         ],
         atol = TEST_TOLERANCE,
     )
-    fluxes = flux_variability_analysis(cp, optimizer; bounds = gamma_bounds(0.5))
+    fluxes = flux_variability_analysis(cp, optimizer; bounds = gamma_bounds(0.5)) |> result
     @test isapprox(
         fluxes,
         [
@@ -47,7 +47,7 @@
         ],
         atol = TEST_TOLERANCE,
     )
-    fluxes = flux_variability_analysis(cp, optimizer; bounds = _ -> (0, Inf))
+    fluxes = flux_variability_analysis(cp, optimizer; bounds = _ -> (0, Inf)) |> result
     @test isapprox(
         fluxes,
         [
@@ -58,7 +58,9 @@
         atol = TEST_TOLERANCE,
     )
 
-    @test isempty(flux_variability_analysis(cp, Tulip.Optimizer, reaction_ids = String[]))
+    @test isempty(
+        flux_variability_analysis(cp, Tulip.Optimizer, reaction_ids = String[]) |> result,
+    )
     @test_throws DomainError flux_variability_analysis(
         cp,
         Tulip.Optimizer,
@@ -74,12 +76,13 @@ end
 @testset "Parallel FVA" begin
     cp = test_simpleLP()
 
-    fluxes = flux_variability_analysis(
-        cp,
-        Tulip.Optimizer;
-        workers = W,
-        reaction_indexes = [1, 2],
-    )
+    fluxes =
+        flux_variability_analysis(
+            cp,
+            Tulip.Optimizer;
+            workers = W,
+            reaction_indexes = [1, 2],
+        ) |> result
     @test isapprox(
         fluxes,
         [
@@ -92,16 +95,17 @@ end
 
 @testset "Flux variability analysis with ObjectModel" begin
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
-    mins, maxs = flux_variability_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        bounds = objective_bounds(0.99),
-        modifications = [
-            change_optimizer_attribute("IPM_IterationsLimit", 500),
-            change_constraint("EX_glc__D_e"; lower_bound = -10, upper_bound = -10),
-            change_constraint("EX_o2_e"; lower_bound = 0.0, upper_bound = 0.0),
-        ],
-    )
+    mins, maxs =
+        flux_variability_analysis_dict(
+            model,
+            Tulip.Optimizer;
+            bounds = objective_bounds(0.99),
+            modifications = [
+                change_optimizer_attribute("IPM_IterationsLimit", 500),
+                change_constraint("EX_glc__D_e"; lower_bound = -10, upper_bound = -10),
+                change_constraint("EX_o2_e"; lower_bound = 0.0, upper_bound = 0.0),
+            ],
+        ) |> result
 
     @test isapprox(maxs["EX_ac_e"]["EX_ac_e"], 8.5185494, atol = TEST_TOLERANCE)
     @test isapprox(mins["EX_ac_e"]["EX_ac_e"], 7.4483887, atol = TEST_TOLERANCE)

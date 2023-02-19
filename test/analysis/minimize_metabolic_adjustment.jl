@@ -9,7 +9,7 @@
             sol,
             Clarabel.Optimizer;
             modifications = [silence],
-        ) |> values_dict(:reaction, model)
+        ) |> values_dict(:reaction)
 
     @test isapprox(moma["biomass1"], 0.07692307692307691, atol = QP_TEST_TOLERANCE)
 end

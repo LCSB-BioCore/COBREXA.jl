@@ -43,8 +43,7 @@ if something went wrong).
 # Example
 ```
 model = load_model("e_coli_core.json")
-optmodel = parsimonious_flux_balance_analysis(model, biomass, Gurobi.Optimizer)
-value.(solution[:x])  # extract the flux from the optimizer
+parsimonious_flux_balance_analysis(model, biomass, Gurobi.Optimizer) |> values_vec
 ```
 """
 function parsimonious_flux_balance_analysis(
@@ -55,8 +54,8 @@ function parsimonious_flux_balance_analysis(
     relax_bounds = [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
 )
     # Run FBA
-    opt_model = flux_balance_analysis(model, optimizer; modifications = modifications)
-    is_solved(opt_model) || return opt_model # FBA failed
+    opt_model = flux_balance_analysis(model, optimizer; modifications) |> result
+    is_solved(opt_model) || return ModelWithResult(model, opt_model) # FBA failed
 
     # get the objective
     Z = objective_value(opt_model)
@@ -83,40 +82,5 @@ function parsimonious_flux_balance_analysis(
         unregister(opt_model, :pfba_constraint)
     end
 
-    return opt_model
+    return ModelWithResult(model, opt_model)
 end
-
-"""
-$(TYPEDSIGNATURES)
-
-Perform parsimonious flux balance analysis on `model` using `optimizer`.
-Returns a vector of fluxes in the same order as the reactions in `model`.
-Arguments are forwarded to [`parsimonious_flux_balance_analysis`](@ref)
-internally.
-
-This function is kept for backwards compatibility, use [`values_vec`](@ref)
-instead.
-"""
-parsimonious_flux_balance_analysis_vec(model::AbstractMetabolicModel, args...; kwargs...) =
-    values_vec(
-        :reaction,
-        model,
-        parsimonious_flux_balance_analysis(model, args...; kwargs...),
-    )
-
-"""
-$(TYPEDSIGNATURES)
-
-Perform parsimonious flux balance analysis on `model` using `optimizer`.
-Returns a dictionary mapping the reaction IDs to fluxes. Arguments are
-forwarded to [`parsimonious_flux_balance_analysis`](@ref) internally.
-
-This function is kept for backwards compatibility, use [`values_dict`](@ref)
-instead.
-"""
-parsimonious_flux_balance_analysis_dict(model::AbstractMetabolicModel, args...; kwargs...) =
-    values_dict(
-        :reaction,
-        model,
-        parsimonious_flux_balance_analysis(model, args...; kwargs...),
-    )

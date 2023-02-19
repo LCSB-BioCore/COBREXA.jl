@@ -235,7 +235,7 @@ end
         env_met_flux_bounds = Dict("glc__D_e" => (-10, 10)),
     )
 
-    d = flux_balance_analysis_dict(cm, Tulip.Optimizer)
+    d = flux_balance_analysis(cm, Tulip.Optimizer) |> values_dict
 
     @test isapprox(d[cm.objective_id], 0.8739215069521299, atol = TEST_TOLERANCE)
 
@@ -330,12 +330,12 @@ end
 
     cm = BalancedGrowthCommunityModel(members = [cm1, cm2])
 
-    opt_model = flux_balance_analysis(
+    res = flux_balance_analysis(
         cm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    f_d = values_dict(:reaction, cm, opt_model)
+    f_d = values_dict(:reaction, res)
     @test isapprox(f_d[cm.objective_id], 0.9210848582802592, atol = TEST_TOLERANCE)
 end

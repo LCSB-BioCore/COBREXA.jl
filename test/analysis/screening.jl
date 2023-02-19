@@ -37,7 +37,8 @@
     @test screen_variants(
         m,
         [[quad_rxn(i)] for i = 1:3],
-        m -> Analysis.flux_balance_analysis_vec(m, Tulip.Optimizer);
+        m ->
+            Analysis.flux_balance_analysis(m, Tulip.Optimizer) |> COBREXA.Solver.values_vec;
         workers = W,
     ) == [
         [250.0, -250.0, -1000.0, 250.0, 1000.0, 250.0, 250.0],
@@ -48,11 +49,12 @@
     # test solver modifications
     @test screen(
         m;
-        analysis = (m, sense) -> Analysis.flux_balance_analysis_vec(
-            m,
-            Tulip.Optimizer;
-            modifications = [change_sense(sense)],
-        ),
+        analysis = (m, sense) ->
+            Analysis.flux_balance_analysis(
+                m,
+                Tulip.Optimizer;
+                modifications = [change_sense(sense)],
+            ) |> COBREXA.Solver.values_vec,
         args = [(MIN_SENSE,), (MAX_SENSE,)],
     ) == [
         [-500.0, -500.0, -1000.0, 500.0, 1000.0, -500.0, -500.0],

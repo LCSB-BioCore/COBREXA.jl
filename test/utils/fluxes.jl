@@ -1,11 +1,12 @@
 @testset "Flux utilities" begin
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
-    fluxes = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
-    )
+    fluxes =
+        flux_balance_analysis(
+            model,
+            Tulip.Optimizer;
+            modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
+        ) |> values_dict
 
     consuming, producing = metabolite_fluxes(model, fluxes)
     @test isapprox(consuming["atp_c"]["PFK"], -7.47738; atol = TEST_TOLERANCE)

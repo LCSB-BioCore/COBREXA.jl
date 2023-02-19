@@ -45,14 +45,14 @@
         ) |>
         with_enzyme_constraints(total_gene_product_mass)
 
-    opt_model = flux_balance_analysis(
+    res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    rxn_fluxes = values_dict(:reaction, gm, opt_model)
-    prot_concens = values_dict(:enzyme, gm, opt_model)
+    rxn_fluxes = values_dict(:reaction, res)
+    prot_concens = values_dict(:enzyme, res)
 
     @test isapprox(
         rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"],
@@ -60,7 +60,7 @@
         atol = TEST_TOLERANCE,
     )
 
-    mass_groups = values_dict(:enzyme_group, gm, opt_model)
+    mass_groups = values_dict(:enzyme_group, res)
 
     @test isapprox(
         sum(values(prot_concens)),
@@ -75,7 +75,7 @@
 
     # test enzyme objective
     growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"] * 0.9
-    opt_model = flux_balance_analysis(
+    res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
         modifications = [
@@ -84,7 +84,7 @@
             change_optimizer_attribute("IPM_IterationsLimit", 1000),
         ],
     )
-    mass_groups_min = values_dict(:enzyme_group, gm, opt_model)
+    mass_groups_min = values_dict(:enzyme_group, res)
     @test mass_groups_min["uncategorized"] < mass_groups["uncategorized"]
 end
 
@@ -143,15 +143,15 @@ end
         gene_product_mass_group_bound = Dict("uncategorized" => 0.5, "bound2" => 0.04),
     )
 
-    opt_model = flux_balance_analysis(
+    res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
         modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    rxn_fluxes = values_dict(:reaction, gm, opt_model)
-    gene_products = values_dict(:enzyme, gm, opt_model)
-    mass_groups = values_dict(:enzyme_group, gm, opt_model)
+    rxn_fluxes = values_dict(:reaction, res)
+    gene_products = values_dict(:enzyme, res)
+    mass_groups = values_dict(:enzyme_group, res)
 
     @test isapprox(rxn_fluxes["r6"], 1.1688888886502442, atol = TEST_TOLERANCE)
     @test isapprox(gene_products["g4"], 0.02666666666304931 * 4.0, atol = TEST_TOLERANCE)

@@ -1,12 +1,13 @@
 @testset "Flux variability summary" begin
     model = load_model(model_paths["e_coli_core.json"])
 
-    sol = flux_variability_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        bounds = objective_bounds(0.90),
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 2000)],
-    )
+    sol =
+        flux_variability_analysis_dict(
+            model,
+            Tulip.Optimizer;
+            bounds = objective_bounds(0.90),
+            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 2000)],
+        ) |> result
 
     fr = flux_variability_summary(sol)
     @test isapprox(

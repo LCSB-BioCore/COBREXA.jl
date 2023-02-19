@@ -1,13 +1,13 @@
 @testset "Flux balance analysis with MatrixModel" begin
     cp = test_simpleLP()
-    lp = flux_balance_analysis(cp, Tulip.Optimizer)
+    lp = flux_balance_analysis(cp, Tulip.Optimizer) |> result
     @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [1.0, 2.0]
 
     # test the maximization of the objective
     cp = test_simpleLP2()
-    lp = flux_balance_analysis(cp, Tulip.Optimizer)
+    lp = flux_balance_analysis(cp, Tulip.Optimizer) |> result
     @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test sol ≈ [-1.0, 2.0]
@@ -16,16 +16,16 @@
     cp = load_model(MatrixModel, model_paths["iJR904.mat"])
     expected_optimum = 0.9219480950504393
 
-    lp = flux_balance_analysis(cp, Tulip.Optimizer)
+    lp = flux_balance_analysis(cp, Tulip.Optimizer) |> result
     @test termination_status(lp) == MOI.OPTIMAL
     sol = JuMP.value.(lp[:x])
     @test isapprox(objective_value(lp), expected_optimum, atol = TEST_TOLERANCE)
     @test isapprox(cp.c' * sol, expected_optimum, atol = TEST_TOLERANCE)
 
     # test the "nicer output" variants
-    fluxes_vec = flux_balance_analysis_vec(cp, Tulip.Optimizer)
+    fluxes_vec = flux_balance_analysis(cp, Tulip.Optimizer) |> values_vec
     @test all(fluxes_vec .== sol)
-    fluxes_dict = flux_balance_analysis_dict(cp, Tulip.Optimizer)
+    fluxes_dict = flux_balance_analysis(cp, Tulip.Optimizer) |> values_dict
     rxns = variables(cp)
     @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
@@ -34,16 +34,18 @@ end
 
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
-    sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective("BIOMASS_Ecoli_core_w_GAM"),
-            change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
-            change_sense(MAX_SENSE),
-            change_optimizer_attribute("IPM_IterationsLimit", 110),
-        ],
-    )
+    sol =
+        flux_balance_analysis(
+            model,
+            Tulip.Optimizer;
+            modifications = [
+                change_objective("BIOMASS_Ecoli_core_w_GAM"),
+                change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
+                change_sense(MAX_SENSE),
+                change_optimizer_attribute("IPM_IterationsLimit", 110),
+            ],
+        ) |> values_dict
+
     @test isapprox(
         sol["BIOMASS_Ecoli_core_w_GAM"],
         1.0572509997013568,
@@ -52,33 +54,35 @@ end
 
     pfl_frac = 0.8
     biomass_frac = 0.2
-    sol_multi = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [
-            change_objective(
-                ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
-                weights = [biomass_frac, pfl_frac],
-            ),
-        ],
-    )
+    sol_multi =
+        flux_balance_analysis(
+            model,
+            Tulip.Optimizer;
+            modifications = [
+                change_objective(
+                    ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
+                    weights = [biomass_frac, pfl_frac],
+                ),
+            ],
+        ) |> values_dict
+
     @test isapprox(
         biomass_frac * sol_multi["BIOMASS_Ecoli_core_w_GAM"] + pfl_frac * sol_multi["PFL"],
         31.999999998962604,
         atol = TEST_TOLERANCE,
     )
 
-    @test_throws DomainError flux_balance_analysis_dict(
+    @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
         modifications = [change_constraint("gbbrsh"; lower_bound = -12, upper_bound = -12)],
-    )
-    @test_throws DomainError flux_balance_analysis_dict(
+    ) |> values_dict
+    @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
         modifications = [change_objective("gbbrsh")],
-    )
-    @test_throws DomainError flux_balance_analysis_dict(
+    ) |> values_dict
+    @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
         modifications = [change_objective(["BIOMASS_Ecoli_core_w_GAM"; "gbbrsh"])],
@@ -114,6 +118,6 @@ end
 
     cmodel = MatrixModelWithCoupling(model, C, clb, cub) # construct
 
-    dc = flux_balance_analysis_dict(cmodel, Tulip.Optimizer)
+    dc = flux_balance_analysis(cmodel, Tulip.Optimizer) |> values_dict
     @test isapprox(dc["BIOMASS_Ecoli_core_w_GAM"], 0.665585699298256, atol = TEST_TOLERANCE)
 end
