@@ -57,9 +57,7 @@ function variability_analysis(
     indexes::Maybe{Vector{Int}} = nothing,
     kwargs...,
 )
-    sem = Accessors.Internal.get_semantics(semantics)
-    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
-    (sem_ids, n_ids, _, sem_varmtx) = sem
+    (sem_ids, n_ids, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
 
     if isnothing(indexes)
         idxs = if isnothing(ids)

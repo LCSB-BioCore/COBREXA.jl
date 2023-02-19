@@ -120,9 +120,7 @@ values_vec(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order 
 ```
 """
 function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
-    sem = Accessors.Internal.get_semantics(semantics)
-    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
-    (_, _, _, sem_varmtx) = sem
+    (_, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
     is_solved(res.result) ? sem_varmtx(res.model)' * value.(res.result[:x]) : nothing
 end
 
@@ -151,9 +149,7 @@ values_dict(:reaction, flux_balance_analysis(model, ...))
 ```
 """
 function values_dict(semantics::Symbol, res::ModelWithResult{<:Model})
-    sem = Accessors.Internal.get_semantics(semantics)
-    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
-    (ids, _, _, sem_varmtx) = sem
+    (ids, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
     is_solved(res.result) ?
     Dict(ids(res.model) .=> sem_varmtx(res.model)' * value.(res.result[:x])) : nothing
 end
