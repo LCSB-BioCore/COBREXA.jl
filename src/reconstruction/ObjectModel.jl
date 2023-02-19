@@ -195,8 +195,11 @@ end
 @_change_bounds_fn ObjectModel String plural begin
     n = copy(model)
     n.reactions = copy(model.reactions)
-    for i in rxn_ids
-        n.reactions[i] = copy(n.reactions[i])
+    for rid in rxn_ids
+        n.reactions[rid] = copy(model.reactions[rid])
+        for field in fieldnames(model.reactions[rid])
+            setfield!(n.reactions[rid], field, getfield(model.reactions[rid], field))
+        end
     end
     change_bounds!(n, rxn_ids; lower_bounds, upper_bounds)
     return n
@@ -474,4 +477,87 @@ function add_isozymes(
     end
 
     m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Changes the `product_lower_bound` or `product_upper_bound` for the
+[`Gene`][(ref)s listed in `gids` in the `model`, in place.
+"""
+function change_gene_product_bounds!(    
+    model::ObjectModel,
+    gids::Vector{String};
+    lower_bounds = fill(nothing, length(gids)),
+    upper_bounds = fill(nothing, length(gids)),
+)
+    for (i, gid) in enumerate(gids)
+       
+        isnothing(lower_bounds[i]) || begin
+            (model.genes[gid].product_lower_bound = lower_bounds[i])
+        end
+
+        isnothing(upper_bounds[i]) || begin
+            (model.genes[gid].product_upper_bound = upper_bounds[i])
+        end
+    end
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Changes the `product_lower_bound` or `product_upper_bound` for the
+[`Gene`][(ref) `gid` in the `model`, in place.
+"""
+function change_gene_product_bound!(
+    model::ObjectModel,
+    gid::String;
+    lower_bound = nothing,
+    upper_bound = nothing,
+)
+    change_gene_product_bounds!(model, [gid]; lower_bounds = [lower_bound], upper_bounds = [upper_bound])
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`change_gene_product_bounds!`](@ref) that does not modify the
+original model, but makes a shallow copy with the modification included.
+"""
+function change_gene_product_bounds(
+    model::ObjectModel,
+    gids::Vector{String};
+    lower_bounds = fill(nothing, length(gids)),
+    upper_bounds = fill(nothing, length(gids)),
+)
+    m = copy(model)
+    m.genes = copy(model.genes)
+    for gid in gids
+        m.genes[gid] = copy(model.genes[gid])
+        for field in fieldnames(typeof(m.genes[gid]))
+            setfield!(m.genes[gid], field, getfield(model.genes[gid], field))
+        end
+    end
+    change_gene_product_bounds!(m, gids; lower_bounds, upper_bounds)
+    m
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`change_gene_product_bound!`](@ref) that does not modify the
+original model, but makes a shallow copy with the modification included.
+"""
+function change_gene_product_bound(
+    model::ObjectModel,
+    gid::String;
+    lower_bound = nothing,
+    upper_bound = nothing,
+)
+    change_gene_product_bounds(
+        model,
+        [gid];
+        lower_bounds = [lower_bound],
+        upper_bounds = [upper_bound],
+    )
 end

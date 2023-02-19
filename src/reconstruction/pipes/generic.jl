@@ -103,3 +103,21 @@ Forwards arguments to [`add_biomass_metabolite`](@ref).
 """
 with_added_biomass_metabolite(args...; kwargs...) =
     m -> add_biomass_metabolite(m, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant with the bounds changed for the gene product. Forwards
+the arguments to [`change_gene_product_bound`](@ref).
+"""
+with_changed_gene_product_bound(args...; kwargs...) =
+    m -> change_gene_product_bound(m, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Plural version of [`with_changed_gene_product_bound`](@ref), calls
+[`change_gene_product_bounds`](@ref) internally.
+"""
+with_changed_gene_product_bounds(args...; kwargs...) =
+    m -> change_gene_product_bounds(m, args...; kwargs...)
