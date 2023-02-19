@@ -71,7 +71,6 @@ end # module Accessors
     using ..Accessors
     using ..Internal.Macros
     using ..Log.Internal: @io_log
-    using JuMP
 
     @inc_dir types
     @inc_dir types models

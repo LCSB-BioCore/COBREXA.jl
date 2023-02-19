@@ -53,14 +53,15 @@ Get a tuple of functions that work with the given semantics, or `nothing` if
 the semantics doesn't exist.
 """
 function get_semantics(
-    ::Val{Semantics},
-)::Types.Maybe{Tuple{Function,Function,Function,Function}} where {Semantics}
-    if Semantics in variable_semantics
+    semantics::Symbol,
+)::Types.Maybe{Tuple{Function,Function,Function,Function}}
+    # TODO store the functions instead
+    if semantics in variable_semantics
         return (
-            Base.eval(Accessors, Symbol(Semantics, :s)),
-            Base.eval(Accessors, Symbol(:n_, Semantics, :s)),
-            Base.eval(Accessors, Symbol(Semantics, :_variables)),
-            Base.eval(Accessors, Symbol(Semantics, :_variables_matrix)),
+            Base.eval(Accessors, Symbol(semantics, :s)),
+            Base.eval(Accessors, Symbol(:n_, semantics, :s)),
+            Base.eval(Accessors, Symbol(semantics, :_variables)),
+            Base.eval(Accessors, Symbol(semantics, :_variables_matrix)),
         )
     end
 end

@@ -33,7 +33,7 @@ function flux_variability_analysis(
     kwargs...,
 )
     variability_analysis(
-        Val(:reaction),
+        :reaction,
         model,
         optimizer;
         ids = reaction_ids,
@@ -45,27 +45,18 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Run the variability analysis over a selected semantics defined by a symbol,
-such as `:reaction`. All other arguments are forwarded.
-"""
-variability_analysis(semantics::Symbol, args...; kwargs...) =
-    variability_analysis(Val(semantics), args...; kwargs...)
-
-"""
-$(TYPEDSIGNATURES)
-
 A variability analysis over a selected semantics, picking up only objects
 specified by IDs or indexes from the selected semantics. For semantics
-`Val(:reaction)`, this is equivalent to [`flux_variability_analysis`](@ref).
+`:reaction`, this is equivalent to [`flux_variability_analysis`](@ref).
 """
 function variability_analysis(
-    semantics::Val{Semantics},
+    semantics::Symbol,
     model::AbstractMetabolicModel,
     optimizer;
     ids::Maybe{Vector{String}} = nothing,
     indexes::Maybe{Vector{Int}} = nothing,
     kwargs...,
-) where {Semantics}
+)
     sem = Accessors.Internal.get_semantics(semantics)
     isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
     (sem_ids, n_ids, _, sem_varmtx) = sem
