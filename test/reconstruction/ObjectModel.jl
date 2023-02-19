@@ -84,6 +84,13 @@
     @test new_model.reactions["r2"].lower_bound == -220
     @test new_model.reactions["r2"].upper_bound == 20
 
+    ### objective
+    change_objective!(model, "r2")
+    @test model.objective["r2"] == 1.0
+
+    new_model = change_objective(model, "r1"; weight = 2.0)
+    @test new_model.objective["r1"] == 2.0
+
     ### reactions
     add_reactions!(model, [r3, r4])
     @test length(model.reactions) == 4
@@ -123,7 +130,12 @@
     remove_gene!(model, "g1")
     @test length(model.genes) == 4
 
-    ### objective
-    change_objective!(model, "r2")
-    @test model.objective["r2"] == 1.0
+    # change gene
+    change_gene_product_bound!(model, "g1"; lower_bound = -10, upper_bound = 10)
+    @test model.genes["g1"].product_lower_bound == -10.0
+    @test model.genes["g1"].product_upper_bound == 10.0
+
+    new_model = change_gene_product_bound(model, "g2"; lower_bound = -10, upper_bound = 10)
+    @test new_model.genes["g2"].product_lower_bound == -10.0
+    @test new_model.genes["g2"].product_upper_bound == 10.0
 end
