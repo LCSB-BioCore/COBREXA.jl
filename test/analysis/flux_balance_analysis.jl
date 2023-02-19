@@ -75,13 +75,15 @@ end
     @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        modifications = [modify_objective("gbbrsh"; lower_bound = -12, upper_bound = -12)],
+        modifications = [modify_constraint("gbbrsh"; lower_bound = -12, upper_bound = -12)],
     ) |> values_dict
+
     @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
         modifications = [modify_objective("gbbrsh")],
     ) |> values_dict
+
     @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;

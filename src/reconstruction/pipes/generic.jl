@@ -1,4 +1,4 @@
-# Reactions 
+# Reactions
 
 """
 $(TYPEDSIGNATURES)
@@ -86,25 +86,21 @@ Specifies a model variant with an added gene. Forwards the arguments to
 with_added_gene(args...; kwargs...) = m -> add_gene(m, args...; kwargs...)
 
 
-# Biomass
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant with removed genes. Forwards the arguments to
+[`remove_genes`](@ref).
+"""
+with_removed_genes(args...; kwargs...) = m -> remove_genes(m, args...; kwargs...)
 
 """
 $(TYPEDSIGNATURES)
 
-Specifies a model variant that adds a biomass metabolite to the biomass
-reaction. Forwards arguments to [`add_biomass_metabolite`](@ref).
+Specifies a model variant with a gene removed. Forwards the arguments to
+[`remove_gene`](@ref).
 """
-with_added_biomass_metabolite(args...; kwargs...) =
-    m -> add_biomass_metabolite(m, args...; kwargs...)
-
-"""
-$(TYPEDSIGNATURES)
-
-Specifies a model variant that removes a biomass metabolite from the biomass
-reaction. Forwards arguments to [`remove_biomass_metabolite`](@ref).
-"""
-with_removed_biomass_metabolite(args...; kwargs...) =
-    m -> remove_biomass_metabolite(m, args...; kwargs...)
+with_removed_gene(args...; kwargs...) = m -> remove_gene(m, args...; kwargs...)
 
 # Bounds
 
@@ -150,3 +146,53 @@ Specifies a model variant with the objective reaction(s) changed. Forwards the
 arguments to [`change_objective`](@ref).
 """
 with_changed_objective(args...; kwargs...) = m -> change_objective(m, args...; kwargs...)
+
+# Biomass
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that adds a biomass metabolite to the biomass
+reaction. Forwards arguments to [`add_biomass_metabolite`](@ref).
+"""
+with_added_biomass_metabolite(args...; kwargs...) =
+    m -> add_biomass_metabolite(m, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that removes a biomass metabolite from the biomass
+reaction. Forwards arguments to [`remove_biomass_metabolite`](@ref).
+"""
+with_removed_biomass_metabolite(args...; kwargs...) =
+    m -> remove_biomass_metabolite(m, args...; kwargs...)
+
+# Virtual ribosome
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that adds a virtualribosome to a model. Args and kwargs
+are forwarded to [`add_virtualribosome`](@ref).
+"""
+with_virtualribosome(args...; kwargs...) =
+    model -> add_virtualribosome(model, args...; kwargs...)
+
+# Isozymes
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that adds isozymes to the model through calling
+[`add_isozyme`](@ref).
+"""
+with_added_isozymes(args...; kwargs...) = model -> add_isozymes(model, args...; kwargs...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Specifies a model variant that removes isozymes to the model through calling
+[`remove_isozymes`](@ref).
+"""
+with_removed_isozymes(args...; kwargs...) =
+    model -> remove_isozymes(model, args...; kwargs...)

@@ -216,18 +216,18 @@ $(TYPEDSIGNATURES)
 
 Plural variant of [`remove_gene`](@ref).
 """
-function remove_genes(    
+function remove_genes(
     model::ObjectModel,
     gids::Vector{String};
     knockout_reactions::Bool = false,
 )
     throw_argerror_if_key_missing(model, :genes, gids)
-    
+
     m = copy(model)
     m.genes = copy(model.genes)
 
     if knockout_reactions
-        
+
         rm_reactions = String[]
         for (rid, r) in model.reactions
             if !isnothing(r.gene_associations) && all(
@@ -243,8 +243,8 @@ function remove_genes(
     end
 
     delete!.(Ref(m.genes), gids)
-    
-    nothing
+
+    m
 end
 
 """
@@ -254,11 +254,8 @@ Return a shallow copy of `model` with `gid` remove from `model`. If
 `knockout_reactions` is true, then also constrain reactions that require the
 genes to function to carry zero flux.
 """
-remove_genes(    
-    model::ObjectModel,
-    gid::String;
-    knockout_reactions::Bool = false,
-) = remove_genes(model, [gid]; knockout_reactions) 
+remove_gene(model::ObjectModel, gid::String; knockout_reactions::Bool = false) =
+    remove_genes(model, [gid]; knockout_reactions)
 
 # Change reaction bounds
 
@@ -389,7 +386,7 @@ function change_gene_product_bound(
     )
 end
 
-# Change objective 
+# Change objective
 
 """
 $(TYPEDSIGNATURES)
@@ -501,7 +498,7 @@ end
 $(TYPEDSIGNATURES)
 
 Remove a biomass metabolite called `biomass_metabolite_id` from
-the biomass reaction, called `biomass_rxn_id` in `model`. 
+the biomass reaction, called `biomass_rxn_id` in `model`.
 """
 function remove_biomass_metabolite!(
     model::ObjectModel,
@@ -586,9 +583,9 @@ function add_virtualribosome!(
 )
     haskey(model.reactions, biomass_rxn_id) ||
         throw(ArgumentError("$biomass_rxn_id not found in model."))
-    isnothing(model.reactions[biomass_rxn_id]) ||
+    isnothing(model.reactions[biomass_rxn_id].gene_associations) ||
         throw(ArgumentError("$biomass_rxn_id already has isozymes associated to it."))
-    haskey(model.genes, virtualribosome_id) ||
+    haskey(model.genes, virtualribosome_id) &&
         throw(ArgumentError("$virtualribosome_id already found in model."))
 
     # ensure unidirectional
@@ -625,9 +622,9 @@ function add_virtualribosome(
 )
     haskey(model.reactions, biomass_rxn_id) ||
         throw(ArgumentError("$biomass_rxn_id not found in model."))
-    isnothing(model.reactions[biomass_rxn_id]) ||
+    isnothing(model.reactions[biomass_rxn_id].gene_associations) ||
         throw(ArgumentError("$biomass_rxn_id already has isozymes associated to it."))
-    haskey(model.genes, virtualribosome_id) ||
+    haskey(model.genes, virtualribosome_id) &&
         throw(ArgumentError("$virtualribosome_id already found in model."))
 
     m = copy(model)
@@ -719,9 +716,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Remove all isozymes from `rid` in `model`.
+Remove all isozymes from `rid` in `model`. Note, this function removes all
+isozymes from `rid`.
 """
-remove_isozyme!(model::ObjectModel, rid::String) = remove_isozymes!(model, [rid])
+remove_isozymes!(model::ObjectModel, rid::String) = remove_isozymes!(model, [rid])
 
 """
 $(TYPEDSIGNATURES)
@@ -738,8 +736,9 @@ function remove_isozymes(model::ObjectModel, rids::Vector{String})
         for field in fieldnames(typeof(model.reactions[rid]))
             setfield!(m.reactions[rid], field, getfield(model.reactions[rid], field))
         end
-        model.reactions[rid].gene_associations = nothing
+        m.reactions[rid].gene_associations = nothing
     end
+    m
 end
 
 """
@@ -747,4 +746,4 @@ $(TYPEDSIGNATURES)
 
 Return a shallow copy of `model` with all isozymes of reaction `rid` removed.
 """
-remove_isozyme(model::ObjectModel, rid::String) = remove_isozymes(model, [rid])
+remove_isozymes(model::ObjectModel, rid::String) = remove_isozymes(model, [rid])

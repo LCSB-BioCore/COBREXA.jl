@@ -23,7 +23,7 @@ end
 Throw and ArgumentError if rxn_ids have isozymes associated with them.
 """
 function throw_argerror_if_isozymes_found(model, rxn_ids)
-    ids = filter(!isnothing, r.gene_associations for r in model.reactions[rxn_ids])
+    ids = [rid for rid in rxn_ids if !isnothing(model.reactions[rid].gene_associations)]
     isempty(ids) || throw(ArgumentError("Isozymes already assign to reactions: $ids"))
     nothing
 end

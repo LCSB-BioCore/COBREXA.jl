@@ -7,6 +7,7 @@
     m5 = Metabolite("m5")
     m6 = Metabolite("m6")
     m7 = Metabolite("m7")
+    mtest = Metabolite("mtest")
 
     g1 = Gene("g1")
     g2 = Gene("g2")
@@ -16,6 +17,7 @@
     g5 = Gene("g5")
     g6 = Gene("g6")
     g7 = Gene("g7")
+    gtest = Gene("gtest")
 
     r1 = ReactionForward("r1", Dict(m1.id => -1.0, m2.id => 1.0))
     r2 = ReactionBidirectional("r2", Dict(m2.id => -2.0, m3.id => 1.0))
@@ -23,6 +25,7 @@
     r3 = ReactionBackward("r3", Dict(m1.id => -1.0, m4.id => 2.0))
     r4 = ReactionBackward("r4", Dict(m1.id => -5.0, m4.id => 2.0))
     r5 = ReactionBackward("r5", Dict(m1.id => -11.0, m4.id => 2.0, m3.id => 2.0))
+    rtest = ReactionForward("rtest", Dict(m1.id => -1.0, m2.id => 1.0))
 
     rxns = [r1, r2]
 
@@ -104,6 +107,14 @@
     remove_reaction!(model, "r1")
     @test length(model.reactions) == 2
 
+    new_model = model |> with_added_reaction(rtest)
+    @test haskey(new_model.reactions, "rtest")
+    @test !haskey(model.reactions, "rtest")
+
+    new_model2 = new_model |> with_removed_reaction("rtest")
+    @test !haskey(new_model2.reactions, "rtest")
+    @test haskey(new_model.reactions, "rtest")
+
     @test_throws ArgumentError add_reaction!(model, r3)
     @test_throws ArgumentError remove_reaction!(model, "abc")
 
@@ -119,6 +130,14 @@
 
     remove_metabolite!(model, "m1")
     @test length(model.metabolites) == 4
+
+    new_model = model |> with_added_metabolite(mtest)
+    @test haskey(new_model.metabolites, "mtest")
+    @test !haskey(model.metabolites, "mtest")
+
+    new_model2 = new_model |> with_removed_metabolite("mtest")
+    @test !haskey(new_model2.metabolites, "mtest")
+    @test haskey(new_model.metabolites, "mtest")
 
     @test_throws ArgumentError add_metabolite!(model, m2)
     @test_throws ArgumentError remove_metabolite!(model, "abc")
@@ -136,6 +155,14 @@
     remove_gene!(model, "g1")
     @test length(model.genes) == 4
 
+    new_model = model |> with_added_gene(gtest)
+    @test haskey(new_model.genes, "gtest")
+    @test !haskey(model.genes, "gtest")
+
+    new_model2 = new_model |> with_removed_gene("gtest")
+    @test !haskey(new_model2.genes, "gtest")
+    @test haskey(new_model.genes, "gtest")
+
     @test_throws ArgumentError add_gene!(model, g7)
     @test_throws ArgumentError remove_gene!(model, "abc")
 
@@ -148,4 +175,14 @@
     @test new_model.genes["g2"].product_lower_bound == -10.0
     @test new_model.genes["g2"].product_upper_bound == 10.0
     @test model.genes["g2"].product_lower_bound == 0.0
+
+    # isozymes
+    isos = [Isozyme(["g1"])]
+    new_model = model |> with_removed_isozymes("r2")
+    @test isnothing(new_model.reactions["r2"].gene_associations)
+    @test !isnothing(model.reactions["r2"].gene_associations)
+
+    new_model2 = new_model |> with_added_isozymes("r2", isos)
+    @test !isnothing(new_model2.reactions["r2"].gene_associations)
+    @test isnothing(new_model.reactions["r2"].gene_associations)
 end
