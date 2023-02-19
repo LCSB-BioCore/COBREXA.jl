@@ -44,7 +44,7 @@ function make_mapping_dict(
     )
 end
 
-const variable_semantics = Symbol[]
+const variable_semantics = Dict{Symbol}()
 
 """
 $(TYPEDSIGNATURES)
@@ -55,15 +55,7 @@ the semantics doesn't exist.
 function get_semantics(
     semantics::Symbol,
 )::Types.Maybe{Tuple{Function,Function,Function,Function}}
-    # TODO store the functions instead
-    if semantics in variable_semantics
-        return (
-            Base.eval(Accessors, Symbol(semantics, :s)),
-            Base.eval(Accessors, Symbol(:n_, semantics, :s)),
-            Base.eval(Accessors, Symbol(semantics, :_variables)),
-            Base.eval(Accessors, Symbol(semantics, :_variables_matrix)),
-        )
-    end
+    get(variable_semantics, semantics, nothing)
 end
 
 """
@@ -97,13 +89,12 @@ function make_variable_semantics(
     name::String,
     example::String,
 )
-    sym in themodule.Internal.variable_semantics && return
+    haskey(themodule.Internal.variable_semantics, sym) && return
 
     plural = Symbol(sym, :s)
     count = Symbol(:n_, plural)
     mapping = Symbol(sym, :_variables)
     mapping_mtx = Symbol(sym, :_variables_matrix)
-    push!(themodule.Internal.variable_semantics, sym)
 
     pluralfn = Expr(
         :macrocall,
@@ -192,9 +183,12 @@ safety reasons, this is never automatically inherited by wrappers.
         end),
     )
 
-    code = Expr(:block, pluralfn, countfn, mappingfn, mtxfn)
-
-    Base.eval(themodule, code)
+    themodule.Internal.variable_semantics[sym] = (
+        Base.eval(themodule, pluralfn),
+        Base.eval(themodule, countfn),
+        Base.eval(themodule, mappingfn),
+        Base.eval(themodule, mtxfn),
+    )
 end
 
 """
