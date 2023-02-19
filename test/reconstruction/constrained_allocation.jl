@@ -64,7 +64,7 @@
         flux_balance_analysis(
             cam,
             Tulip.Optimizer;
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> values_dict(:reaction)
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
 
@@ -78,7 +78,7 @@
         flux_balance_analysis(
             cam,
             Tulip.Optimizer;
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> values_dict(:reaction)
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
 

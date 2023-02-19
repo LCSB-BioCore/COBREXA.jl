@@ -48,7 +48,7 @@
     res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
     rxn_fluxes = values_dict(:reaction, res)
@@ -79,9 +79,9 @@
         gm,
         Tulip.Optimizer;
         modifications = [
-            change_objective(genes(gm); weights = [], sense = MIN_SENSE),
-            change_constraint("BIOMASS_Ecoli_core_w_GAM", lower_bound = growth_lb),
-            change_optimizer_attribute("IPM_IterationsLimit", 1000),
+            modify_objective(genes(gm); weights = [], sense = MIN_SENSE),
+            modify_constraint("BIOMASS_Ecoli_core_w_GAM", lower_bound = growth_lb),
+            modify_optimizer_attribute("IPM_IterationsLimit", 1000),
         ],
     )
     mass_groups_min = values_dict(:enzyme_group, res)
@@ -146,7 +146,7 @@ end
     res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
     rxn_fluxes = values_dict(:reaction, res)

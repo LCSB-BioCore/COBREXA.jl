@@ -28,11 +28,11 @@ fluxes = flux_balance_analysis_dict(
     model,
     GLPK.Optimizer;
     modifications = [ # modifications are applied in order
-        change_objective("R_BIOMASS_Ecoli_core_w_GAM"), # maximize production
-        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix an exchange rate
+        modify_objective("R_BIOMASS_Ecoli_core_w_GAM"), # maximize production
+        modify_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix an exchange rate
         knockout(["b0978", "b0734"]), # knock out two genes
-        change_optimizer(Tulip.Optimizer), # ignore the above optimizer and switch to Tulip
-        change_optimizer_attribute("IPM_IterationsLimit", 1000), # customize Tulip
-        change_sense(JuMP.MAX_SENSE), # explicitly tell Tulip to maximize the objective
+        modify_optimizer(Tulip.Optimizer), # ignore the above optimizer and switch to Tulip
+        modify_optimizer_attribute("IPM_IterationsLimit", 1000), # customize Tulip
+        modify_sense(JuMP.MAX_SENSE), # explicitly tell Tulip to maximize the objective
     ],
 )

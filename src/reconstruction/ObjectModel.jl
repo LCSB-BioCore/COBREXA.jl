@@ -3,8 +3,7 @@
 """
 $(TYPEDSIGNATURES)
 
-Add `rxns` to `model` based on reaction `id` if the `id` is not already in the
-model.
+Plural variant of [`add_reaction!`](@ref).
 """
 function add_reactions!(model::ObjectModel, rxns::Vector{Reaction})
     throw_argerror_if_key_found(model, :reactions, rxns)
@@ -17,15 +16,14 @@ end
 $(TYPEDSIGNATURES)
 
 Add `rxn` to `model` based on reaction `id` if the `id` is not already in the
-model
+model.
 """
 add_reaction!(model::ObjectModel, rxn::Reaction) = add_reactions!(model, [rxn])
 
 """
 $(TYPEDSIGNATURES)
 
-Add `rxns` to `model` and return a shallow copied version of the model. Only
-adds the `rxns` if their IDs are not already present in the model.
+Plural variant of [`add_reaction`](@ref).
 """
 function add_reactions(model::ObjectModel, rxns::Vector{Reaction})
     m = copy(model)
@@ -37,15 +35,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `rxn` to `model`, and return a shallow copied version of the model. Only
-adds the `rxn` if its ID is not already present in the model.
+Return a shallow copied version of `model` with `rxn` added if it's ID is not
+already present in the model.
 """
 add_reaction(model::ObjectModel, rxn::Reaction) = add_reactions(model, [rxn])
-
-@_remove_fn reaction ObjectModel String inplace begin
-    remove_reactions!(model, [reaction_id])
-    nothing
-end
 
 @_remove_fn reaction ObjectModel String inplace plural begin
     throw_argerror_if_key_missing(model, :reactions, reaction_ids)
@@ -53,8 +46,9 @@ end
     nothing
 end
 
-@_remove_fn reaction ObjectModel String begin
-    remove_reactions(model, [reaction_id])
+@_remove_fn reaction ObjectModel String inplace begin
+    remove_reactions!(model, [reaction_id])
+    nothing
 end
 
 @_remove_fn reaction ObjectModel String plural begin
@@ -64,13 +58,16 @@ end
     return n
 end
 
+@_remove_fn reaction ObjectModel String begin
+    remove_reactions(model, [reaction_id])
+end
+
 # Add and remove metabolites
 
 """
 $(TYPEDSIGNATURES)
 
-Add `mets` to `model` based on metabolite `id` if the `id` is not already in the
-model.
+Plural variant of [`add_metabolite!`](@ref).
 """
 function add_metabolites!(model::ObjectModel, mets::Vector{Metabolite})
     throw_argerror_if_key_found(model, :metabolites, mets)
@@ -90,8 +87,7 @@ add_metabolite!(model::ObjectModel, met::Metabolite) = add_metabolites!(model, [
 """
 $(TYPEDSIGNATURES)
 
-Add `mets` to `model` and return a shallow copied version of the model. Only
-adds the `mets` if their IDs are not already present in the model.
+Plural variant of [`add_metabolite`](@ref).
 """
 function add_metabolites(model::ObjectModel, mets::Vector{Metabolite})
     m = copy(model)
@@ -103,14 +99,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `met` to `model` and return a shallow copied version of the model.  Only
-adds the `met` if its ID is not already present in the model.
+Return a shallow copied version of the `model` with `met` added.  Only adds
+`met` if its ID is not already present in the model.
 """
 add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [met])
-
-@_remove_fn metabolite ObjectModel String inplace begin
-    remove_metabolites!(model, [metabolite_id])
-end
 
 @_remove_fn metabolite ObjectModel String inplace plural begin
     throw_argerror_if_key_missing(model, :metabolites, metabolite_ids)
@@ -125,8 +117,8 @@ end
     nothing
 end
 
-@_remove_fn metabolite ObjectModel String begin
-    remove_metabolites(model, [metabolite_id])
+@_remove_fn metabolite ObjectModel String inplace begin
+    remove_metabolites!(model, [metabolite_id])
 end
 
 @_remove_fn metabolite ObjectModel String plural begin
@@ -137,13 +129,16 @@ end
     return n
 end
 
+@_remove_fn metabolite ObjectModel String begin
+    remove_metabolites(model, [metabolite_id])
+end
+
 # Add and remove genes
 
 """
 $(TYPEDSIGNATURES)
 
-Add `genes` to `model` based on gene `id` if the `id` is not already in the
-model.
+Plural variant of [`add_gene!`](@ref).
 """
 function add_genes!(model::ObjectModel, genes::Vector{Gene})
     throw_argerror_if_key_found(model, :genes, genes)
@@ -163,8 +158,7 @@ add_gene!(model::ObjectModel, gene::Gene) = add_genes!(model, [gene])
 """
 $(TYPEDSIGNATURES)
 
-Add `genes` to `model` and return a shallow copied version of the model.  Only
-adds the `genes` if their IDs are not already present in the model.
+Plural variant of [`add_gene`](@ref).
 """
 function add_genes(model::ObjectModel, genes::Vector{Gene})
     m = copy(model)
@@ -176,27 +170,21 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Add `gene` to `model` and return a shallow copied version of the model.  Only
-adds the `gene` if its ID is not already present in the model.
+Return a shallow copied version of the `model` with added `gene`. Only adds the
+`gene` if its ID is not already present in the model.
 """
 add_gene(model::ObjectModel, gene::Gene) = add_genes(model, [gene])
 
 """
 $(TYPEDSIGNATURES)
 
-Remove all genes with `ids` from `model`. If `knockout_reactions` is true, then also
-constrain reactions that require the genes to function to carry zero flux.
-
-# Example
-```
-remove_genes!(model, ["g1", "g2"])
-```
+Plural variant of [`remove_gene!`](@ref).
 """
 function remove_genes!(
     model::ObjectModel,
     gids::Vector{String};
     knockout_reactions::Bool = false,
-)   
+)
     throw_argerror_if_key_missing(model, :genes, gids)
     if knockout_reactions
         rm_reactions = String[]
@@ -219,11 +207,6 @@ $(TYPEDSIGNATURES)
 
 Remove gene with `id` from `model`. If `knockout_reactions` is true, then also
 constrain reactions that require the genes to function to carry zero flux.
-
-# Example
-```
-remove_gene!(model, "g1")
-```
 """
 remove_gene!(model::ObjectModel, gid::String; knockout_reactions::Bool = false) =
     remove_genes!(model, [gid]; knockout_reactions = knockout_reactions)
@@ -231,14 +214,19 @@ remove_gene!(model::ObjectModel, gid::String; knockout_reactions::Bool = false) 
 # Change reaction bounds
 
 @_change_bounds_fn ObjectModel String inplace begin
-    isnothing(lower_bound) || (model.reactions[rxn_id].lower_bound = lower_bound)
-    isnothing(upper_bound) || (model.reactions[rxn_id].upper_bound = upper_bound)
-    nothing
+    change_bounds!(
+        model,
+        [rxn_id];
+        lower_bounds = [lower_bound],
+        upper_bounds = [upper_bound],
+    )
 end
 
 @_change_bounds_fn ObjectModel String inplace plural begin
-    for (i, l, u) in zip(rxn_ids, lower_bounds, upper_bounds)
-        change_bound!(model, i, lower_bound = l, upper_bound = u)
+    throw_argerror_if_key_missing(model, :reactions, rxn_ids)
+    for (rxn_id, lower, upper) in zip(rxn_ids, lower_bounds, upper_bounds)
+        isnothing(lower) || (model.reactions[rxn_id].lower_bound = lower)
+        isnothing(upper) || (model.reactions[rxn_id].upper_bound = upper)
     end
 end
 
@@ -252,16 +240,18 @@ end
 end
 
 @_change_bounds_fn ObjectModel String plural begin
-    n = copy(model)
-    n.reactions = copy(model.reactions)
-    for rid in rxn_ids
-        n.reactions[rid] = copy(model.reactions[rid])
+    throw_argerror_if_key_missing(model, :reactions, rxn_ids)
+    m = copy(model)
+    m.reactions = copy(model.reactions)
+    for (rid, lower, upper) in zip(rxn_ids, lower_bounds, upper_bounds)
+        m.reactions[rid] = copy(model.reactions[rid])
         for field in fieldnames(typeof(model.reactions[rid]))
-            setfield!(n.reactions[rid], field, getfield(model.reactions[rid], field))
+            setfield!(m.reactions[rid], field, getfield(model.reactions[rid], field))
         end
+        isnothing(lower) || (m.reactions[rxn_id].lower_bound = lower)
+        isnothing(upper) || (m.reactions[rxn_id].upper_bound = upper)
     end
-    change_bounds!(n, rxn_ids; lower_bounds, upper_bounds)
-    return n
+    return m
 end
 
 # Change gene product bounds
@@ -269,8 +259,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Changes the `product_lower_bound` or `product_upper_bound` for the
-[`Gene`][(ref)s listed in `gids` in the `model`, in place.
+Plural variant of [`change_gene_product_bound!`](@ref).
 """
 function change_gene_product_bounds!(
     model::ObjectModel,
@@ -278,15 +267,10 @@ function change_gene_product_bounds!(
     lower_bounds = fill(nothing, length(gids)),
     upper_bounds = fill(nothing, length(gids)),
 )
-    for (i, gid) in enumerate(gids)
-
-        isnothing(lower_bounds[i]) || begin
-            (model.genes[gid].product_lower_bound = lower_bounds[i])
-        end
-
-        isnothing(upper_bounds[i]) || begin
-            (model.genes[gid].product_upper_bound = upper_bounds[i])
-        end
+    throw_argerror_if_key_missing(model, :genes, gids)
+    for (gid, lower, upper) in zip(gids, lower_bounds, upper_bounds)
+        isnothing(lower) || (model.genes[gid].product_lower_bound = lower)
+        isnothing(upper) || (model.genes[gid].product_upper_bound = upper)
     end
 end
 
@@ -294,7 +278,8 @@ end
 $(TYPEDSIGNATURES)
 
 Changes the `product_lower_bound` or `product_upper_bound` for the
-[`Gene`][(ref) `gid` in the `model`, in place.
+[`Gene`][(ref) `gid` in the `model`, in place. If either `lower_bound` or
+`upper_bound` is `nothing`, then that bound is not changed.
 """
 function change_gene_product_bound!(
     model::ObjectModel,
@@ -313,8 +298,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Variant of [`change_gene_product_bounds!`](@ref) that does not modify the
-original model, but makes a shallow copy with the modification included.
+Plural variant of [`change_gene_product_bound`](@ref).
 """
 function change_gene_product_bounds(
     model::ObjectModel,
@@ -322,15 +306,17 @@ function change_gene_product_bounds(
     lower_bounds = fill(nothing, length(gids)),
     upper_bounds = fill(nothing, length(gids)),
 )
+    throw_argerror_if_key_missing(model, :genes, gids)
     m = copy(model)
     m.genes = copy(model.genes)
-    for gid in gids
+    for (gid, lower, upper) in zip(gids, lower_bounds, upper_bounds)
         m.genes[gid] = copy(model.genes[gid])
-        for field in fieldnames(typeof(m.genes[gid]))
+        for field in fieldnames(typeof(model.genes[gid]))
             setfield!(m.genes[gid], field, getfield(model.genes[gid], field))
         end
+        isnothing(lower) || (model.genes[gid].product_lower_bound = lower)
+        isnothing(upper) || (model.genes[gid].product_upper_bound = upper)
     end
-    change_gene_product_bounds!(m, gids; lower_bounds, upper_bounds)
     m
 end
 
@@ -400,6 +386,7 @@ function change_objective(
     m
 end
 
+
 """
 $(TYPEDSIGNATURES)
 
@@ -427,6 +414,8 @@ function add_biomass_metabolite!(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
+    haskey(model.reactions, biomass_rxn_id) ||
+        throw(ArgumentError("$biomass_rxn_id not found in model."))
     model.reactions[biomass_rxn_id].metabolites[biomass_metabolite_id] = 1.0
     add_metabolite!(model, Metabolite(biomass_metabolite_id))
 end
@@ -443,6 +432,9 @@ function add_biomass_metabolite(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
+    haskey(model.reactions, biomass_rxn_id) ||
+        throw(ArgumentError("$biomass_rxn_id not found in model."))
+
     m = copy(model)
     m.metabolites = copy(m.metabolites)
     m.metabolites[biomass_metabolite_id] = Metabolite(biomass_metabolite_id)
@@ -467,6 +459,11 @@ function remove_biomass_metabolite!(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
+    haskey(model.reactions, biomass_rxn_id) ||
+        throw(ArgumentError("$biomass_rxn_id not found in model."))
+    haskey(model.reaction[biomass_rxn_id], biomass_metabolite_id) ||
+        throw(ArgumentError("$biomass_metabolite_id not found in $biomass_rxn_id."))
+
     delete!(model.reactions[biomass_rxn_id].metabolites, biomass_metabolite_id)
     remove_metabolite!(model, biomass_metabolite_id)
 end
@@ -482,9 +479,14 @@ function remove_biomass_metabolite(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
+    haskey(model.reactions, biomass_rxn_id) ||
+        throw(ArgumentError("$biomass_rxn_id not found in model."))
+    haskey(model.reaction[biomass_rxn_id], biomass_metabolite_id) ||
+        throw(ArgumentError("$biomass_metabolite_id not found in $biomass_rxn_id."))
+
     m = copy(model)
     m.metabolites = copy(m.metabolites)
-    remove_metabolite!(m, biomass_metabolite_id)
+    delete!(m.metabolites, biomass_metabolite_id)
 
     m.reactions = copy(model.reactions)
     m.reactions[biomass_rxn_id] = copy(model.reactions[biomass_rxn_id])
@@ -495,13 +497,13 @@ function remove_biomass_metabolite(
     m
 end
 
-# Add virtual ribosome for constrained allocation applications
+# Add virtual ribosome (assume no model already has one)
 
 """
 $(TYPEDSIGNATURES)
 
-To `biomass_rxn_id` in `model`, add a pseudo-isozyme that approximates the
-effect ribosome synthesis has on growth.
+To `biomass_rxn_id` in `model`, add a pseudo-isozyme and associated gene that
+approximates the effect ribosome synthesis has on growth.
 
 # Bacterial growth law models
 Numerous experimental studies have shown that during steady state growth the
@@ -516,21 +518,16 @@ over" for biosynthetic enzymes. See Mori, Matteo, et al. "Constrained allocation
 flux balance analysis." PLoS computational biology 12.6 (2016) for more details.
 
 # Implementation
-By adding a protein cost to biomass synthesis this effect can be simulated. The
-parameter `weight` needs to be estimated from data, but acts like a turnover
-number. Lower `weight` means more ribosome is required for growth (`ribosome =
-growth/weight`). The molar mass of the ribosome is `1`.
-
-# Note
-1. This modifications makes the underlying biomass reaction unidirectional.
-2. The `virtualribosome_id` defaults to `virtualribosome` and must be manually included
-   in any capacity bound later used in enzyme constrained models.
-3. This modification also adds a pseudogene called `virtualribosome_id`.
-
-The pseudo-isozyme acts like a regular gene product,
+This modification makes the underlying biomass reaction unidirectional. The
+`virtualribosome_id` defaults to `virtualribosome`, and corresponds to a
+pseudogene called `virtualribosome_id`. The parameter `weight` needs to be
+estimated from data, but acts like a turnover number. Lower `weight` means more
+ribosome is required for growth (`ribosome = growth/weight`). The molar mass of
+the ribosome is `1`. The pseudo-isozyme acts like a regular gene product,
 ```
 ribosome = weight * biomass_flux
 ```
+when simulating enzyme constrained models.
 """
 function add_virtualribosome!(
     model::ObjectModel,
@@ -538,6 +535,13 @@ function add_virtualribosome!(
     weight::Float64;
     virtualribosome_id = "virtualribosome",
 )
+    haskey(model.reactions, biomass_rxn_id) ||
+        throw(ArgumentError("$biomass_rxn_id not found in model."))
+    isnothing(model.reactions[biomass_rxn_id]) ||
+        throw(ArgumentError("$biomass_rxn_id already has isozymes associated to it."))
+    haskey(model.genes, virtualribosome_id) ||
+        throw(ArgumentError("$virtualribosome_id already found in model."))
+
     # ensure unidirectional
     model.reactions[biomass_rxn_id].lower_bound = 0.0
     model.reactions[biomass_rxn_id].upper_bound = constants.default_reaction_bound
@@ -570,6 +574,13 @@ function add_virtualribosome(
     weight::Float64;
     virtualribosome_id = "virtualribosome",
 )
+    haskey(model.reactions, biomass_rxn_id) ||
+        throw(ArgumentError("$biomass_rxn_id not found in model."))
+    isnothing(model.reactions[biomass_rxn_id]) ||
+        throw(ArgumentError("$biomass_rxn_id already has isozymes associated to it."))
+    haskey(model.genes, virtualribosome_id) ||
+        throw(ArgumentError("$virtualribosome_id already found in model."))
+
     m = copy(model)
     m.reactions = copy(model.reactions)
     m.reactions[biomass_rxn_id] = copy(model.reactions[biomass_rxn_id])
@@ -580,37 +591,59 @@ function add_virtualribosome(
     m
 end
 
-# Add, change, remove isozymes
+# Add, remove isozymes (no change because the order isozymes may appear in is not constant across models)
 
 """
 $(TYPEDSIGNATURES)
 
-Add `isozymes` to `rxn_id` in `model`.
-"""
-add_isozymes!(model::ObjectModel, rxn_id::String, isozymes::Vector{Isozyme}) =
-    add_isozymes!(model, [rxn_id], [isozymes])
-
-"""
-$(TYPEDSIGNATURES)
-
-For each reaction in `rxn_ids`, add the corresponding isozymes in
-`isozymes_vector` to `model`.
+Plural variant of [`add_isozymes!`](@ref).
 """
 function add_isozymes!(
     model::ObjectModel,
-    rxn_ids::Vector{String},
+    rids::Vector{String},
     isozymes_vector::Vector{Vector{Isozyme}},
 )
-    rxn_ids = keys(model.reactions)
-    idxs = filter(!isnothing, indexin(rxns, rxn_ids))
-    isempty(idxs) ||
-        throw(ArgumentError("Duplicated reaction IDs in model: $(rxn_ids[idxs])"))
-    isnothing(model.reactions[rxn_id].gene_associations) ||
-        throw(ArgumentError("$rxn_id already has isozymes."))
+    throw_argerror_if_key_missing(model, :reactions, rids)
+    throw_argerror_if_isozymes_found(model, rids)
 
-    for (rid, isozymes) in zip(rxn_id_vector, isozymes_vector)
-        add_isozymes!(model, rid, isozymes)
+    for (rid, isozymes) in zip(rids, isozymes_vector)
+        model.reactions[rid].gene_associations = isozymes
     end
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Add `isozymes` to `rid` in `model`. Only allowed if `rid` does not have isozymes assigned to it.
+"""
+add_isozymes!(model::ObjectModel, rid::String, isozymes::Vector{Isozyme}) =
+    add_isozymes!(model, [rid], [isozymes])
+
+"""
+$(TYPEDSIGNATURES)
+
+Plural variant of [`add_isozymes`](@ref).
+"""
+function add_isozymes(
+    model::ObjectModel,
+    rids::Vector{String},
+    isozymes_vector::Vector{Vector{Isozyme}},
+)
+    throw_argerror_if_key_missing(model, :reactions, rids)
+    throw_argerror_if_isozymes_found(model, rids)
+
+    m = copy(model)
+    m.reactions = copy(model.reactions)
+
+    for (rid, isozymes) in zip(rids, isozymes_vector)
+        m.reactions[rid] = copy(model.reactions[rid])
+        if !isnothing(model.reactions[rid].gene_associations)
+            m.reactions[rid].gene_associations =
+                copy(model.reactions[rid].gene_associations)
+        end
+        m.reactions[rid].gene_associations = isozymes
+    end
+    m
 end
 
 """
@@ -619,47 +652,50 @@ $(TYPEDSIGNATURES)
 Variant of [`add_isozymes!`](@ref) that returns a copied model instead of
 modifying the input.
 """
-function add_isozymes(model::ObjectModel, rxn_id::String, isozymes::Vector{Isozyme})
+add_isozymes(model::ObjectModel, rid::String, isozymes::Vector{Isozyme}) =
+    add_isozymes(model, [rid], [isozymes])
 
-    m = copy(model)
-    m.reactions = copy(model.reactions)
+"""
+$(TYPEDSIGNATURES)
 
-    m.reactions[rxn_id] = copy(model.reactions[rxn_id])
-    if !isnothing(model.reactions[rxn_id].gene_associations)
-        m.reactions[rxn_id].gene_associations =
-            copy(model.reactions[rxn_id].gene_associations)
+Plural variant of [`remove_isozyme!`](@ref).
+"""
+function remove_isozymes!(model::ObjectModel, rids::Vector{String})
+    throw_argerror_if_key_missing(model, :reactions, rids)
+    for rid in rids
+        model.reactions[rid].gene_associations = nothing
     end
-    m.reactions[rxn_id].gene_associations = isozymes
-
-    m
 end
 
 """
 $(TYPEDSIGNATURES)
 
-For each pair of `isozymes` and `rxn_id` in `isozymes_vector` and
-`rxn_id_vector`, call [`add_isozymes`](@ref) to add the isozymes to the
-`model`.
+Remove all isozymes from `rid` in `model`.
 """
-function add_isozymes(
-    model::ObjectModel,
-    rxn_id_vector::Vector{String},
-    isozymes_vector::Vector{Vector{Isozyme}},
-)
+remove_isozyme!(model::ObjectModel, rid::String) = remove_isozymes!(model, [rid])
+
+"""
+$(TYPEDSIGNATURES)
+
+Plural variant of [`remove_isozyme`](@ref).
+"""
+function remove_isozymes!(model::ObjectModel, rids::Vector{String})
+    throw_argerror_if_key_missing(model, :reactions, rids)
 
     m = copy(model)
     m.reactions = copy(model.reactions)
-
-    for (rxn_id, isozymes) in zip(rxn_id_vector, isozymes_vector)
-
-        m.reactions[rxn_id] = copy(model.reactions[rxn_id])
-        if !isnothing(model.reactions[rxn_id].gene_associations)
-            m.reactions[rxn_id].gene_associations =
-                copy(model.reactions[rxn_id].gene_associations)
+    for rid in rids
+        m.reactions[rid] = copy(model.reactions[rid])
+        for field in fieldnames(typeof(model.reactions[rid]))
+            setfield!(m.reactions[rid], field, getfield(model.reactions[rid], field))
         end
-        m.reactions[rxn_id].gene_associations = isozymes
-
+        model.reactions[rid].gene_associations = nothing
     end
-
-    m
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a shallow copy of `model` with all isozymes of reaction `rid` removed.
+"""
+remove_isozyme(model::ObjectModel, rid::String) = remove_isozymes(model, [rid])

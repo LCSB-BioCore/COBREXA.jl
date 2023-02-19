@@ -13,7 +13,11 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
-using ..Internal: constants, throw_argerror_if_key_found, throw_argerror_if_key_missing
+using ..Internal:
+    constants,
+    throw_argerror_if_key_found,
+    throw_argerror_if_key_missing,
+    throw_argerror_if_isozymes_found
 using ..Internal.Macros
 using ..Log.Internal
 using ..Types

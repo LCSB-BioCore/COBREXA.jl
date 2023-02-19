@@ -16,8 +16,8 @@ The `optimizer` must be set to a `JuMP`-compatible optimizer, such as
 `GLPK.Optimizer` or `Tulip.Optimizer`
 
 Optionally, you may specify one or more modifications to be applied to the
-model before the analysis, such as [`change_optimizer_attribute`](@ref),
-[`change_objective`](@ref), and [`change_sense`](@ref).
+model before the analysis, such as [`modify_optimizer_attribute`](@ref),
+[`change_objective`](@ref), and [`modify_sense`](@ref).
 
 Returns an optimized `JuMP` model.
 
@@ -30,7 +30,7 @@ value.(solution[:x])  # extract flux steady state from the optimizer
 biomass_reaction_id = findfirst(model.reactions, "BIOMASS_Ecoli_core_w_GAM")
 
 modified_solution = flux_balance_analysis(model, GLPK.optimizer;
-    modifications=[change_objective(biomass_reaction_id)])
+    modifications=[modify_objective(biomass_reaction_id)])
 ```
 """
 function flux_balance_analysis(model::AbstractMetabolicModel, optimizer; modifications = [])

@@ -335,7 +335,7 @@ end
     res = flux_balance_analysis(
         cm,
         Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
     f_d = values_dict(:reaction, res)

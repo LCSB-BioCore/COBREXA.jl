@@ -35,8 +35,8 @@ min_fluxes, max_fluxes = flux_variability_analysis_dict(
     GLPK.Optimizer;
     bounds = objective_bounds(0.99),
     modifications = [
-        change_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
-        change_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
+        modify_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
+        modify_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
     ],
 )
 
@@ -79,8 +79,8 @@ vs = flux_variability_analysis(
     GLPK.Optimizer;
     bounds = objective_bounds(0.50), # objective can vary by up to 50% of the optimum
     modifications = [
-        change_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
-        change_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
+        modify_constraint("R_EX_glc__D_e"; lb = -10, ub = -10),
+        modify_constraint("R_EX_o2_e"; lb = 0.0, ub = 0.0),
     ],
     ret = optimized_model -> (
         COBREXA.JuMP.objective_value(optimized_model),

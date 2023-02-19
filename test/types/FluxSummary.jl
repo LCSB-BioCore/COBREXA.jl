@@ -5,7 +5,7 @@
         flux_balance_analysis(
             model,
             Tulip.Optimizer;
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 200)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 200)],
         ) |> values_dict
 
     fr = flux_summary(sol; keep_unbounded = true, large_flux_bound = 25)

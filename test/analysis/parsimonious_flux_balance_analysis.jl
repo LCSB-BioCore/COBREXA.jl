@@ -6,8 +6,8 @@
             model,
             Tulip.Optimizer;
             modifications = [
-                change_constraint("EX_m1(e)", lower_bound = -10.0),
-                change_optimizer_attribute("IPM_IterationsLimit", 500),
+                modify_constraint("EX_m1(e)", lower_bound = -10.0),
+                modify_optimizer_attribute("IPM_IterationsLimit", 500),
             ],
             qp_modifications = [change_optimizer(Clarabel.Optimizer), silence],
         ) |> values_dict

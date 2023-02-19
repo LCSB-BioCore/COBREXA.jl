@@ -120,8 +120,8 @@
     remove_metabolite!(model, "m1")
     @test length(model.metabolites) == 4
 
-    @test_throws ArgumentError add_metabolite!(model, m2) 
-    @test_throws ArgumentError remove_metabolite!(model, "abc") 
+    @test_throws ArgumentError add_metabolite!(model, m2)
+    @test_throws ArgumentError remove_metabolite!(model, "abc")
 
     ### genes
     add_genes!(model, [g5, g6])
@@ -138,7 +138,7 @@
 
     @test_throws ArgumentError add_gene!(model, g7)
     @test_throws ArgumentError remove_gene!(model, "abc")
-    
+
     # change gene
     change_gene_product_bound!(model, "g3"; lower_bound = -10, upper_bound = 10)
     @test model.genes["g3"].product_lower_bound == -10.0

@@ -53,7 +53,7 @@
             Analysis.flux_balance_analysis(
                 m,
                 Tulip.Optimizer;
-                modifications = [change_sense(sense)],
+                modifications = [modify_sense(sense)],
             ) |> COBREXA.Solver.values_vec,
         args = [(MIN_SENSE,), (MAX_SENSE,)],
     ) == [

@@ -222,7 +222,7 @@ Both the modification functions (in vectors) and the analysis function here
 have 2 base parameters (as opposed to 1 with [`screen`](@ref)): first is the
 `model` (carried through as-is), second is the prepared JuMP optimization model
 that may be modified and acted upon. As an example, you can use modification
-[`change_constraint`](@ref) and analysis [`screen_optimize_objective`](@ref).
+[`modify_constraint`](@ref) and analysis [`screen_optimize_objective`](@ref).
 
 Note: This function is a thin argument-handling wrapper around
 [`_screen_optmodel_modifications_impl`](@ref).
