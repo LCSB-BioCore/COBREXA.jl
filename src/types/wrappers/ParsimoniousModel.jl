@@ -4,13 +4,18 @@ $(TYPEDEF)
 
 A wrapper that adds a quadratic objective that minimizes the sum of a set of
 squared variables. If the bounds of the growth rate of the model are fixed, this
-corresponds to finding a parsimonious solution (i.e. pFBA).
+corresponds to finding a parsimonious solution (i.e. pFBA). Note, the sense of
+the optimization problem should be `MAX_SENSE`, because internally the objective
+is negated.
 
 This is used to implement [`parsimonious_flux_balance_analysis`](@ref).
 
 # Example
 ```
-model |> with_changed_bound("biomass", lower_bound = 0.1) |> with_parsimonious_solution(:enzymes) |> flux_balance_analysis(Clarabel.Optimizer)
+res = model |> 
+    with_changed_bound("biomass", lower_bound = 0.1) |> 
+    with_parsimonious_solution(:enzymes) |> 
+    flux_balance_analysis(Clarabel.Optimizer)
 ```
 """
 struct ParsimoniousModel <: AbstractModelWrapper
@@ -46,3 +51,8 @@ function Accessors.objective(model::ParsimoniousModel)::SparseMat
     end
     obj
 end
+
+# need to manually inherit these
+Accessors.enzyme_variables(model::ParsimoniousModel) = enzyme_variables(model.inner)
+Accessors.enzyme_group_variables(model::ParsimoniousModel) =
+    enzyme_group_variables(model.inner)

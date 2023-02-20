@@ -16,15 +16,15 @@
     # here, we therefore tolerate a wide range of results.
     @test isapprox(d["biomass1"], 10.0, atol = QP_TEST_TOLERANCE)
 
-    sol =
+    d2 =
         model |>
         with_changed_bound("biomass1", lower_bound = 10.0) |>
         with_parsimonious_solution(:reaction) |>
-        flux_balance_analysis(Clarabel.Optimizer)
+        flux_balance_analysis(Clarabel.Optimizer) |>
+        values_dict
 
-    @test isapprox(
-        values_dict(:reaction, model, sol)["biomass1"],
-        10.0,
-        atol = QP_TEST_TOLERANCE,
-    )
+    @test all(isapprox(d[k], d2[k], atol = QP_TEST_TOLERANCE) for k in keys(d2))
+
+    Q = objective(model |> with_parsimonious_solution(:reaction))
+    @test all(Q[i, i] == -1 for i = 1:7)
 end

@@ -75,7 +75,7 @@
 
     # test pFBA
     growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"] * 0.9
-    
+
     res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
@@ -88,29 +88,25 @@
     mass_groups_min = values_dict(:enzyme_group, res)
     @test mass_groups_min["uncategorized"] < mass_groups["uncategorized"]
 
-    gm_changed_bound =
+    res2 =
         model |>
         with_changed_bound("BIOMASS_Ecoli_core_w_GAM", lower_bound = growth_lb) |>
-        with_enzyme_constraints(
-            gene_product_mass_group_bound = Dict(
-                "uncategorized" => total_gene_product_mass,
-            ),
+        with_enzyme_constraints(; total_gene_product_mass_bound) |>
+        with_parsimonious_solution(:enzyme) |>
+        flux_balance_analysis(
+            Clarabel.Optimizer;
+            modifications = [modify_optimizer_attribute("max_iter", 1000)],
         )
 
-    pfba_sol =
-        gm_changed_bound |>
-        with_parsimonious_solution(:enzyme) |>
-        flux_balance_analysis(Clarabel.Optimizer)
-
     @test isapprox(
-        values_dict(:reaction, gm_changed_bound, pfba_sol)["BIOMASS_Ecoli_core_w_GAM"],
+        values_dict(:reaction, res2)["BIOMASS_Ecoli_core_w_GAM"],
         0.7315450597991255,
         atol = QP_TEST_TOLERANCE,
     )
 
     @test isapprox(
-        values_dict(:enzyme_group, gm_changed_bound, pfba_sol)["uncategorized"],
-        91.425,
+        values_dict(:enzyme_group, res2)["uncategorized"],
+        91.4275211,
         atol = QP_TEST_TOLERANCE,
     )
 end
