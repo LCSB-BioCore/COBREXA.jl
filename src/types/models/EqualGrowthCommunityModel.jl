@@ -2,7 +2,7 @@
 $(TYPEDEF)
 
 A standardized structure used to package models that can easily be combined into
-a [`BalancedGrowthCommunityModel`](@ref).
+an [`EqualGrowthCommunityModel`](@ref).
 
 # Fields
 $(TYPEDFIELDS)
@@ -10,10 +10,8 @@ $(TYPEDFIELDS)
 # Assumptions
 1. Exchange reactions, *all* of which are idenitified in `exchange_reaction_ids`,
    have the form: `A[external] ⟷ ∅` where `A` is a metabolite. No other
-   exchanges are allowed.
-2. The biomass reaction of a model produces a biomass metabolite called
-   `biomass_metabolite_id` with stoichiometry 1.
-3. There is only one biomass reaction in the model.
+   exchanges are allowed. This is not checked, but only assumed.
+2. There is only one biomass reaction in the model.
 """
 Base.@kwdef mutable struct CommunityMember
     "Name of model appended to intracellular reactions and metabolites."
@@ -24,8 +22,8 @@ Base.@kwdef mutable struct CommunityMember
     model::AbstractMetabolicModel
     "List of all exchange reactions in model."
     exchange_reaction_ids::Vector{String}
-    "ID of biomass metabolite."
-    biomass_metabolite_id::String
+    "ID of biomass reaction."
+    biomass_reaction_id::String
 end
 
 """
@@ -40,8 +38,7 @@ $(TYPEDFIELDS)
 2. It is assumed that the same namespace is used to identify unique exchanged
    metabolites.
 3. The objective created by this model is the equal growth rate/balanced growth
-   objective. In short, all biomass metabolites are produced at the same rate.
-4. The flux units are `mmol X/gDW_total/h` for some metabolite `X`.
+   objective.
 
 # Implementation notes
 1. All reactions have the `id` of each respective underlying
@@ -54,13 +51,8 @@ $(TYPEDFIELDS)
     environmental metabolites have no prefix.
 3. All genes have the `id` of the respective underlying
     [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
-4.  Each bound from the underlying community members is multiplied by the
-    abundance of that member.
-5. This objective is assumed to be the equal growth rate/balanced growth
-    objective. Consequently, the relation `community_growth *
-    abundance_species_i = growth_species_i` should hold.
 """
-Base.@kwdef mutable struct BalancedGrowthCommunityModel <: AbstractMetabolicModel
+Base.@kwdef mutable struct EqualGrowthCommunityModel <: AbstractMetabolicModel
     "Models making up the community."
     members::Vector{CommunityMember}
     "Name of the objective"
@@ -70,68 +62,73 @@ Base.@kwdef mutable struct BalancedGrowthCommunityModel <: AbstractMetabolicMode
         Dict{String,Tuple{Float64,Float64}}()
 end
 
-function Accessors.variables(cm::BalancedGrowthCommunityModel)
+function Accessors.variables(cm::EqualGrowthCommunityModel)
     rxns = [add_community_prefix(m, rid) for m in cm.members for rid in variables(m.model)]
     env_exs = ["EX_" * env_met for env_met in get_env_mets(cm)]
     return [rxns; env_exs; cm.objective_id]
 end
 
-function Accessors.n_variables(cm::BalancedGrowthCommunityModel)
+function Accessors.n_variables(cm::EqualGrowthCommunityModel)
     num_model_reactions = sum(n_variables(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
     num_env_metabolites = length(get_env_mets(cm))
     return num_model_reactions + num_env_metabolites + 1 # add 1 for the community biomass
 end
 
-function Accessors.metabolites(cm::BalancedGrowthCommunityModel)
-    mets =
-        [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
-    return [mets; "ENV_" .* get_env_mets(cm)]
+function Accessors.metabolites(cm::EqualGrowthCommunityModel)
+    mets = [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
+    biomass_constraints = [m.id for m in cm.members]
+    return [mets; "ENV_" .* get_env_mets(cm); biomass_constraints]
 end
 
-function Accessors.n_metabolites(cm::BalancedGrowthCommunityModel)
-    num_model_reactions = sum(n_metabolites(m.model) for m in cm.members)
+function Accessors.n_metabolites(cm::EqualGrowthCommunityModel)
+    num_model_constraints = sum(n_metabolites(m.model) for m in cm.members)
     # assume each env metabolite gets an env exchange
     num_env_metabolites = length(get_env_mets(cm))
-    return num_model_reactions + num_env_metabolites
+    return num_model_constraints + num_env_metabolites + length(cm.members)
 end
 
-Accessors.genes(cm::BalancedGrowthCommunityModel) =
+Accessors.genes(cm::EqualGrowthCommunityModel) =
     [add_community_prefix(m, gid) for m in cm.members for gid in genes(m.model)]
 
-Accessors.balance(cm::BalancedGrowthCommunityModel) = [
-    vcat([balance(m.model) .* m.abundance for m in cm.members]...)
-    spzeros(length(get_env_mets(cm)))
-]
-
-Accessors.n_genes(cm::BalancedGrowthCommunityModel) =
+Accessors.n_genes(cm::EqualGrowthCommunityModel) =
     sum(n_genes(m.model) for m in cm.members)
 
-function Accessors.stoichiometry(cm::BalancedGrowthCommunityModel)
-    env_mets = get_env_mets(cm)
+Accessors.balance(cm::EqualGrowthCommunityModel) = [
+    vcat([balance(m.model) for m in cm.members]...)
+    spzeros(length(get_env_mets(cm)))
+    spzeros(length(cm.members))
+]
+
+function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
+    env_met_ids = get_env_mets(cm)
 
     model_S = blockdiag([stoichiometry(m.model) for m in cm.members]...)
+    model_env = spzeros(size(model_S, 1), length(env_met_ids))
+    obj1 = spzeros(size(model_env, 1))
 
-    zero_rxns = spzeros(size(model_S, 1), length(env_mets))
-    obj_rxn = spzeros(size(model_S, 1))
-    obj_rxn[indexin(
-        [add_community_prefix(m, m.biomass_metabolite_id) for m in cm.members],
-        metabolites(cm),
-    )] .= [-m.abundance for m in cm.members] # fix units of biomass
+    env_rows = hcat([env_ex_matrix(m, env_met_ids) .* m.abundance for m in cm.members]...)
+    obj2 = spzeros(size(env_rows, 1))
 
-    env_met_rows = spzeros(length(env_mets), size(model_S, 2))
-    env_met_rows = hcat([env_ex_matrix(m, env_mets) for m in cm.members]...)
-    zero_objs = spzeros(length(env_mets))
-
+    obj_rows = spzeros(length(cm.members), size(model_S, 2))
+    for i in 1:length(cm.members)
+        m = cm.members[i]
+        j = first(indexin([add_community_prefix(m, m.biomass_reaction_id)], variables(cm)))
+        obj_rows[i, j] = 1.0
+    end
+    env_cols = spzeros(length(cm.members), length(env_met_ids))
+    obj3 = -ones(length(cm.members))
+    
     return [
-        model_S zero_rxns obj_rxn
-        env_met_rows -I zero_objs
+        model_S model_env obj1
+        env_rows -I obj2
+        obj_rows env_cols obj3
     ]
 end
 
-function Accessors.bounds(cm::BalancedGrowthCommunityModel)
-    models_lbs = vcat([first(bounds(m.model)) .* m.abundance for m in cm.members]...)
-    models_ubs = vcat([last(bounds(m.model)) .* m.abundance for m in cm.members]...)
+function Accessors.bounds(cm::EqualGrowthCommunityModel)
+    models_lbs = vcat([first(bounds(m.model)) for m in cm.members]...)
+    models_ubs = vcat([last(bounds(m.model)) for m in cm.members]...)
     env_lbs = [
         first(get(cm.env_met_flux_bounds, met_id, -constants.default_reaction_bound))
         for met_id in get_env_mets(cm)
@@ -146,24 +143,24 @@ function Accessors.bounds(cm::BalancedGrowthCommunityModel)
     )
 end
 
-function Accessors.objective(cm::BalancedGrowthCommunityModel)
+function Accessors.objective(cm::EqualGrowthCommunityModel)
     vec = spzeros(n_variables(cm))
     vec[end] = 1.0
     return vec
 end
 
-function Accessors.coupling(cm::BalancedGrowthCommunityModel)
+function Accessors.coupling(cm::EqualGrowthCommunityModel)
     coups = blockdiag([coupling(m.model) for m in cm.members]...)
     n = n_variables(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 
-Accessors.n_coupling_constraints(cm::BalancedGrowthCommunityModel) =
+Accessors.n_coupling_constraints(cm::EqualGrowthCommunityModel) =
     sum(n_coupling_constraints(m.model) for m in cm.members)
 
-function Accessors.coupling_bounds(cm::BalancedGrowthCommunityModel)
-    lbs = vcat([first(coupling_bounds(m.model)) .* m.abundance for m in cm.members]...)
-    ubs = vcat([last(coupling_bounds(m.model)) .* m.abundance for m in cm.members]...)
+function Accessors.coupling_bounds(cm::EqualGrowthCommunityModel)
+    lbs = vcat([first(coupling_bounds(m.model)) for m in cm.members]...)
+    ubs = vcat([last(coupling_bounds(m.model)) for m in cm.members]...)
     return (lbs, ubs)
 end
 
@@ -174,20 +171,20 @@ Returns a matrix, which when multipled by the solution of a constraints based
 problem, yields the semantically meaningful fluxes that correspond to
 [`reactions`](@ref).
 """
-function Accessors.reaction_variables_matrix(cm::BalancedGrowthCommunityModel)
+function Accessors.reaction_variables_matrix(cm::EqualGrowthCommunityModel)
     # TODO add the non-matrix form!
     rfs = blockdiag([reaction_variables_matrix(m.model) for m in cm.members]...)
     nr = length(get_env_mets(cm)) + 1 # env ex + obj
     blockdiag(rfs, spdiagm(fill(1, nr)))
 end
 
-Accessors.reactions(cm::BalancedGrowthCommunityModel) = [
+Accessors.reactions(cm::EqualGrowthCommunityModel) = [
     vcat([add_community_prefix.(Ref(m), reactions(m.model)) for m in cm.members]...)
     ["EX_" * env_met for env_met in get_env_mets(cm)]
     cm.objective_id
 ]
 
-Accessors.n_reactions(cm::BalancedGrowthCommunityModel) =
+Accessors.n_reactions(cm::EqualGrowthCommunityModel) =
     sum(n_reactions(m.model) for m in cm.members) + length(get_env_mets(cm)) + 1
 
 #=
@@ -214,7 +211,7 @@ for (func, def) in (
     (:gene_name, nothing),
 )
     @eval begin
-        Accessors.$func(cm::BalancedGrowthCommunityModel, id::String) =
+        Accessors.$func(cm::EqualGrowthCommunityModel, id::String) =
             access_community_member(cm, id, $func; default = $def)
     end
 end

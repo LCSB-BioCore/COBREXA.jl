@@ -12,7 +12,7 @@ $(TYPEDSIGNATURES)
 
 A helper function to get the unique environmental metabolites.
 """
-get_env_mets(cm::BalancedGrowthCommunityModel) =
+get_env_mets(cm::EqualGrowthCommunityModel) =
     unique(vcat([get_exchange_mets(m) for m in cm.members]...))
 
 """
@@ -40,7 +40,7 @@ A helper function to find the index of the appropriate model. Assumes each `id`
 is delimited by `#` that separates the model ID prefix and the original id.
 """
 function access_community_member(
-    cm::BalancedGrowthCommunityModel,
+    cm::EqualGrowthCommunityModel,
     id::String,
     accessor::Function;
     default = nothing,

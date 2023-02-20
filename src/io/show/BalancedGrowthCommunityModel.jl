@@ -5,7 +5,7 @@ function Base.show(io::Base.IO, ::MIME"text/plain", cm::CommunityMember)
     )
 end
 
-function Base.show(io::Base.IO, ::MIME"text/plain", cm::BalancedGrowthCommunityModel)
+function Base.show(io::Base.IO, ::MIME"text/plain", cm::EqualGrowthCommunityModel)
     println(
         io,
         "A balanced growth community model comprised of $(length(cm.members)) underlying models.",

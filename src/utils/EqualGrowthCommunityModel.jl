@@ -6,7 +6,7 @@ a solved optimization model built from the `community_model`. Removes the
 `community_member` prefix in the string ids of the returned dictionary.
 """
 get_community_member_solution(
-    community_model::BalancedGrowthCommunityModel,
+    community_model::EqualGrowthCommunityModel,
     opt_model,
     community_member::CommunityMember,
 ) =
@@ -25,7 +25,7 @@ $(TYPEDSIGNATURES)
 Extract the environmental exchanges from `opt_model`, which is a solved
 optimization model built from the `community_model`.
 """
-get_environmental_exchanges(community_model::BalancedGrowthCommunityModel, opt_model) =
+get_environmental_exchanges(community_model::EqualGrowthCommunityModel, opt_model) =
     is_solved(opt_model) ?
     Dict(
         rid => val for (rid, val) in zip(
