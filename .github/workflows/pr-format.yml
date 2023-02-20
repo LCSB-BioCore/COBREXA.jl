@@ -20,7 +20,7 @@ jobs:
           gh pr checkout ${{ github.event.issue.number }}
       - name: Install JuliaFormatter and format
         run: |
-          julia --color=yes -e 'import Pkg; Pkg.add("JuliaFormatter")'
+          julia --color=yes -e 'import Pkg; Pkg.add(name="JuliaFormatter",version="1.0.22")'
           julia --color=yes -e 'using JuliaFormatter; format(".")'
       - name: Remove trailing whitespace
         run: |
