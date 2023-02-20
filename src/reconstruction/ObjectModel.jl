@@ -6,7 +6,7 @@ $(TYPEDSIGNATURES)
 Plural variant of [`add_reaction!`](@ref).
 """
 function add_reactions!(model::ObjectModel, rxns::Vector{Reaction})
-    throw_argerror_if_key_found(model, :reactions, rxns)
+    check_arg_keys_exists(model, :reactions, rxns)
     for rxn in rxns
         model.reactions[rxn.id] = rxn
     end
@@ -41,7 +41,7 @@ already present in the model.
 add_reaction(model::ObjectModel, rxn::Reaction) = add_reactions(model, [rxn])
 
 @_remove_fn reaction ObjectModel String inplace plural begin
-    throw_argerror_if_key_missing(model, :reactions, reaction_ids)
+    check_arg_keys_missing(model, :reactions, reaction_ids)
     delete!.(Ref(model.reactions), reaction_ids)
     nothing
 end
@@ -70,7 +70,7 @@ $(TYPEDSIGNATURES)
 Plural variant of [`add_metabolite!`](@ref).
 """
 function add_metabolites!(model::ObjectModel, mets::Vector{Metabolite})
-    throw_argerror_if_key_found(model, :metabolites, mets)
+    check_arg_keys_exists(model, :metabolites, mets)
     for met in mets
         model.metabolites[met.id] = met
     end
@@ -105,7 +105,7 @@ Return a shallow copied version of the `model` with `met` added.  Only adds
 add_metabolite(model::ObjectModel, met::Metabolite) = add_metabolites(model, [met])
 
 @_remove_fn metabolite ObjectModel String inplace plural begin
-    throw_argerror_if_key_missing(model, :metabolites, metabolite_ids)
+    check_arg_keys_missing(model, :metabolites, metabolite_ids)
     remove_reactions!(
         model,
         [
@@ -141,7 +141,7 @@ $(TYPEDSIGNATURES)
 Plural variant of [`add_gene!`](@ref).
 """
 function add_genes!(model::ObjectModel, genes::Vector{Gene})
-    throw_argerror_if_key_found(model, :genes, genes)
+    check_arg_keys_exists(model, :genes, genes)
     for gene in genes
         model.genes[gene.id] = gene
     end
@@ -185,7 +185,7 @@ function remove_genes!(
     gids::Vector{String};
     knockout_reactions::Bool = false,
 )
-    throw_argerror_if_key_missing(model, :genes, gids)
+    check_arg_keys_missing(model, :genes, gids)
     if knockout_reactions
         rm_reactions = String[]
         for (rid, r) in model.reactions
@@ -221,7 +221,7 @@ function remove_genes(
     gids::Vector{String};
     knockout_reactions::Bool = false,
 )
-    throw_argerror_if_key_missing(model, :genes, gids)
+    check_arg_keys_missing(model, :genes, gids)
 
     m = copy(model)
     m.genes = copy(model.genes)
@@ -269,7 +269,7 @@ remove_gene(model::ObjectModel, gid::String; knockout_reactions::Bool = false) =
 end
 
 @_change_bounds_fn ObjectModel String inplace plural begin
-    throw_argerror_if_key_missing(model, :reactions, rxn_ids)
+    check_arg_keys_missing(model, :reactions, rxn_ids)
     for (rxn_id, lower, upper) in zip(rxn_ids, lower_bounds, upper_bounds)
         isnothing(lower) || (model.reactions[rxn_id].lower_bound = lower)
         isnothing(upper) || (model.reactions[rxn_id].upper_bound = upper)
@@ -286,7 +286,7 @@ end
 end
 
 @_change_bounds_fn ObjectModel String plural begin
-    throw_argerror_if_key_missing(model, :reactions, rxn_ids)
+    check_arg_keys_missing(model, :reactions, rxn_ids)
     m = copy(model)
     m.reactions = copy(model.reactions)
     for (rid, lower, upper) in zip(rxn_ids, lower_bounds, upper_bounds)
@@ -313,7 +313,7 @@ function change_gene_product_bounds!(
     lower_bounds = fill(nothing, length(gids)),
     upper_bounds = fill(nothing, length(gids)),
 )
-    throw_argerror_if_key_missing(model, :genes, gids)
+    check_arg_keys_missing(model, :genes, gids)
     for (gid, lower, upper) in zip(gids, lower_bounds, upper_bounds)
         isnothing(lower) || (model.genes[gid].product_lower_bound = lower)
         isnothing(upper) || (model.genes[gid].product_upper_bound = upper)
@@ -352,7 +352,7 @@ function change_gene_product_bounds(
     lower_bounds = fill(nothing, length(gids)),
     upper_bounds = fill(nothing, length(gids)),
 )
-    throw_argerror_if_key_missing(model, :genes, gids)
+    check_arg_keys_missing(model, :genes, gids)
     m = copy(model)
     m.genes = copy(model.genes)
     for (gid, lower, upper) in zip(gids, lower_bounds, upper_bounds)
@@ -460,8 +460,7 @@ function add_biomass_metabolite!(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
-    haskey(model.reactions, biomass_rxn_id) ||
-        throw(ArgumentError("$biomass_rxn_id not found in model."))
+    check_has_biomass_rxn_id(model.reactions, biomass_rxn_id)
     model.reactions[biomass_rxn_id].metabolites[biomass_metabolite_id] = 1.0
     add_metabolite!(model, Metabolite(biomass_metabolite_id))
 end
@@ -478,8 +477,7 @@ function add_biomass_metabolite(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
-    haskey(model.reactions, biomass_rxn_id) ||
-        throw(ArgumentError("$biomass_rxn_id not found in model."))
+    check_has_biomass_rxn_id(model.reactions, biomass_rxn_id)
 
     m = copy(model)
     m.metabolites = copy(m.metabolites)
@@ -505,10 +503,12 @@ function remove_biomass_metabolite!(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
-    haskey(model.reactions, biomass_rxn_id) ||
-        throw(ArgumentError("$biomass_rxn_id not found in model."))
-    haskey(model.reaction[biomass_rxn_id], biomass_metabolite_id) ||
-        throw(ArgumentError("$biomass_metabolite_id not found in $biomass_rxn_id."))
+    check_has_biomass_rxn_id(model.reactions, biomass_rxn_id)
+    check_has_biomass_rxn_biomas_metabolite(
+        model.reactions,
+        biomass_rxn_id,
+        biomass_metabolite_id,
+    )
 
     delete!(model.reactions[biomass_rxn_id].metabolites, biomass_metabolite_id)
     remove_metabolite!(model, biomass_metabolite_id)
@@ -525,10 +525,12 @@ function remove_biomass_metabolite(
     biomass_rxn_id::String;
     biomass_metabolite_id = "biomass",
 )
-    haskey(model.reactions, biomass_rxn_id) ||
-        throw(ArgumentError("$biomass_rxn_id not found in model."))
-    haskey(model.reaction[biomass_rxn_id], biomass_metabolite_id) ||
-        throw(ArgumentError("$biomass_metabolite_id not found in $biomass_rxn_id."))
+    check_has_biomass_rxn_id(model.reactions, biomass_rxn_id)
+    check_has_biomass_rxn_biomas_metabolite(
+        model.reactions,
+        biomass_rxn_id,
+        biomass_metabolite_id,
+    )
 
     m = copy(model)
     m.metabolites = copy(m.metabolites)
@@ -581,12 +583,9 @@ function add_virtualribosome!(
     weight::Float64;
     virtualribosome_id = "virtualribosome",
 )
-    haskey(model.reactions, biomass_rxn_id) ||
-        throw(ArgumentError("$biomass_rxn_id not found in model."))
-    isnothing(model.reactions[biomass_rxn_id].gene_associations) ||
-        throw(ArgumentError("$biomass_rxn_id already has isozymes associated to it."))
-    haskey(model.genes, virtualribosome_id) &&
-        throw(ArgumentError("$virtualribosome_id already found in model."))
+    check_has_biomass_rxn_id(model.reactions, biomass_rxn_id)
+    check_biomass_rxn_has_isozymes(model.reactions, biomass_rxn_id)
+    check_has_virtualribosome(model.genes, virtualribosome_id)
 
     # ensure unidirectional
     model.reactions[biomass_rxn_id].lower_bound = 0.0
@@ -620,12 +619,9 @@ function add_virtualribosome(
     weight::Float64;
     virtualribosome_id = "virtualribosome",
 )
-    haskey(model.reactions, biomass_rxn_id) ||
-        throw(ArgumentError("$biomass_rxn_id not found in model."))
-    isnothing(model.reactions[biomass_rxn_id].gene_associations) ||
-        throw(ArgumentError("$biomass_rxn_id already has isozymes associated to it."))
-    haskey(model.genes, virtualribosome_id) &&
-        throw(ArgumentError("$virtualribosome_id already found in model."))
+    check_has_biomass_rxn_id(model.reactions, biomass_rxn_id)
+    check_biomass_rxn_has_isozymes(model.reactions, biomass_rxn_id)
+    check_has_virtualribosome(model.genes, virtualribosome_id)
 
     m = copy(model)
     m.reactions = copy(model.reactions)
@@ -649,8 +645,8 @@ function add_isozymes!(
     rids::Vector{String},
     isozymes_vector::Vector{Vector{Isozyme}},
 )
-    throw_argerror_if_key_missing(model, :reactions, rids)
-    throw_argerror_if_isozymes_found(model, rids)
+    check_arg_keys_missing(model, :reactions, rids)
+    check_has_isozymes(model, rids)
 
     for (rid, isozymes) in zip(rids, isozymes_vector)
         model.reactions[rid].gene_associations = isozymes
@@ -675,8 +671,8 @@ function add_isozymes(
     rids::Vector{String},
     isozymes_vector::Vector{Vector{Isozyme}},
 )
-    throw_argerror_if_key_missing(model, :reactions, rids)
-    throw_argerror_if_isozymes_found(model, rids)
+    check_arg_keys_missing(model, :reactions, rids)
+    check_has_isozymes(model, rids)
 
     m = copy(model)
     m.reactions = copy(model.reactions)
@@ -707,7 +703,7 @@ $(TYPEDSIGNATURES)
 Plural variant of [`remove_isozyme!`](@ref).
 """
 function remove_isozymes!(model::ObjectModel, rids::Vector{String})
-    throw_argerror_if_key_missing(model, :reactions, rids)
+    check_arg_keys_missing(model, :reactions, rids)
     for rid in rids
         model.reactions[rid].gene_associations = nothing
     end
@@ -727,7 +723,7 @@ $(TYPEDSIGNATURES)
 Plural variant of [`remove_isozyme`](@ref).
 """
 function remove_isozymes(model::ObjectModel, rids::Vector{String})
-    throw_argerror_if_key_missing(model, :reactions, rids)
+    check_arg_keys_missing(model, :reactions, rids)
 
     m = copy(model)
     m.reactions = copy(model.reactions)

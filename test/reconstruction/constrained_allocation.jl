@@ -46,7 +46,7 @@
 
     add_metabolites!(m, [Metabolite("m$i") for i = 1:4])
 
-    @test_throws ArgumentError (m |> with_virtualribosome("r6", 0.2))
+    @test_throws DomainError (m |> with_virtualribosome("r6", 0.2))
 
     ribomodel = m |> with_removed_isozymes("r6") |> with_virtualribosome("r6", 0.2)
 

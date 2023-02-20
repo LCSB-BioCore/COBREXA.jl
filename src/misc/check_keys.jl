@@ -1,29 +1,72 @@
 """
-Throw an ArgumentError if model.field has any keys in xs::Union{Reaction, Metabolite, Gene}.
+Throw a DomainError if `model.field` has any keys in the ID field of
+xs::Union{Reaction, Metabolite, Gene}.
 """
-function throw_argerror_if_key_found(model, field, xs)
-    _ids = collect(keys(getfield(model, field)))
-    ids = [x.id for x in xs if x.id in _ids]
+function check_arg_keys_exists(model, field, xs)
+    d = getfield(model, field)
+    ids = [x.id for x in xs if haskey(d, x.id)]
     isempty(ids) ||
-        throw(ArgumentError("Duplicated $field IDs already present in model: $ids"))
+        throw(DomainError("Duplicated $field IDs already present in model: $ids"))
     nothing
 end
 
 """
-Throw an ArgumentError if model.field does not have any keys in xs.
+Throw a DomainError if `model.field` does not have any keys in `xs`.
 """
-function throw_argerror_if_key_missing(model, field, xs::Vector{String})
-    _ids = collect(keys(getfield(model, field)))
-    ids = [x for x in xs if !(x in _ids)]
-    isempty(ids) || throw(ArgumentError("Missing $field IDs in model: $ids"))
+function check_arg_keys_missing(model, field, xs::Vector{String})
+    d = getfield(model, field)
+    ids = [x for x in xs if !haskey(d, x)]
+    isempty(ids) || throw(DomainError(ids, " $field IDs not found in model."))
     nothing
 end
 
 """
-Throw and ArgumentError if rxn_ids have isozymes associated with them.
+Throw a DomainError if rxn_ids have isozymes associated with them.
 """
-function throw_argerror_if_isozymes_found(model, rxn_ids)
+function check_has_isozymes(model, rxn_ids)
     ids = [rid for rid in rxn_ids if !isnothing(model.reactions[rid].gene_associations)]
-    isempty(ids) || throw(ArgumentError("Isozymes already assign to reactions: $ids"))
+    isempty(ids) || throw(DomainError(ids, " reactions already have isozymes."))
+    nothing
+end
+
+"""
+Throw a DomainError if the `biomass_rxn_id` is not in `model_reactions`.
+"""
+function check_has_biomass_rxn_id(model_reactions, biomass_rxn_id)
+    haskey(model_reactions, biomass_rxn_id) ||
+        throw(DomainError(biomass_rxn_id, " not found in model."))
+    nothing
+end
+
+"""
+Throw a DomainError if the `biomass_rxn_id` in `model_reactions` has any
+isozymes assigned to it.
+"""
+function check_biomass_rxn_has_isozymes(model_reactions, biomass_rxn_id)
+    isnothing(model_reactions[biomass_rxn_id].gene_associations) ||
+        throw(DomainError(biomass_rxn_id, " already has isozymes associated to it."))
+    nothing
+end
+
+"""
+Throw a DomainError if `virtualribosome_id` is already in the `model_genes`.
+"""
+function check_has_virtualribosome(model_genes, virtualribosome_id)
+    haskey(model_genes, virtualribosome_id) &&
+        throw(DomainError(virtualribosome_id, " already found in model."))
+    nothing
+end
+
+"""
+Throw a DomainError if `biomass_rxn_id` in `model_reactions` already has a
+`biomass_metabolite_id`.
+"""
+function check_has_biomass_rxn_biomas_metabolite(
+    model_reactions,
+    biomass_rxn_id,
+    biomass_metabolite_id,
+)
+    haskey(model_reactions[biomass_rxn_id], biomass_metabolite_id) ||
+        throw(DomainError(biomass_metabolite_id, " not found in $biomass_rxn_id."))
     nothing
 end

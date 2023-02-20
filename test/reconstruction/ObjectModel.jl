@@ -115,8 +115,8 @@
     @test !haskey(new_model2.reactions, "rtest")
     @test haskey(new_model.reactions, "rtest")
 
-    @test_throws ArgumentError add_reaction!(model, r3)
-    @test_throws ArgumentError remove_reaction!(model, "abc")
+    @test_throws DomainError add_reaction!(model, r3)
+    @test_throws DomainError remove_reaction!(model, "abc")
 
     ### metabolites
     add_metabolites!(model, [m5, m6])
@@ -139,8 +139,8 @@
     @test !haskey(new_model2.metabolites, "mtest")
     @test haskey(new_model.metabolites, "mtest")
 
-    @test_throws ArgumentError add_metabolite!(model, m2)
-    @test_throws ArgumentError remove_metabolite!(model, "abc")
+    @test_throws DomainError add_metabolite!(model, m2)
+    @test_throws DomainError remove_metabolite!(model, "abc")
 
     ### genes
     add_genes!(model, [g5, g6])
@@ -163,8 +163,8 @@
     @test !haskey(new_model2.genes, "gtest")
     @test haskey(new_model.genes, "gtest")
 
-    @test_throws ArgumentError add_gene!(model, g7)
-    @test_throws ArgumentError remove_gene!(model, "abc")
+    @test_throws DomainError add_gene!(model, g7)
+    @test_throws DomainError remove_gene!(model, "abc")
 
     # change gene
     change_gene_product_bound!(model, "g3"; lower_bound = -10, upper_bound = 10)

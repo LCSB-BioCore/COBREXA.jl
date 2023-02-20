@@ -15,9 +15,13 @@ using ..ModuleTools
 using ..Accessors
 using ..Internal:
     constants,
-    throw_argerror_if_key_found,
-    throw_argerror_if_key_missing,
-    throw_argerror_if_isozymes_found
+    check_arg_keys_exists,
+    check_arg_keys_missing,
+    check_has_isozymes,
+    check_has_biomass_rxn_id,
+    check_biomass_rxn_has_isozymes,
+    check_has_virtualribosome,
+    check_has_biomass_rxn_biomas_metabolite
 using ..Internal.Macros
 using ..Log.Internal
 using ..Types
