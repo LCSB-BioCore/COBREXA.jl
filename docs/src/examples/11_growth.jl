@@ -122,7 +122,7 @@ model_with_bounded_production = change_bound(model, biomass, lower_bound = 0.1) 
 minimal_intake_production = flux_balance_analysis_dict(
     model_with_bounded_production,
     GLPK.Optimizer,
-    modifications = [change_objective(exchanges)],
+    modifications = [modify_objective(exchanges)],
 );
 
 # Metabolite "cost" data may be supplemented using the `weights` argument of

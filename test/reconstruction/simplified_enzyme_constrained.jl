@@ -40,7 +40,7 @@
         flux_balance_analysis(
             simplified_enzyme_constrained_model,
             Tulip.Optimizer;
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> values_dict
 
     @test isapprox(

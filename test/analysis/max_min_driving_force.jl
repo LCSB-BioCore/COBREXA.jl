@@ -28,7 +28,7 @@
     x = flux_balance_analysis(
         mmdfm,
         Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+        modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
     # get mmdf
@@ -44,7 +44,7 @@
             mmdfm,
             Tulip.Optimizer;
             bounds = gamma_bounds(0.9),
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> result
 
     pyk_idx = first(indexin(["ΔG PYK"], gibbs_free_energy_reactions(mmdfm)))

@@ -101,9 +101,9 @@ end
             Tulip.Optimizer;
             bounds = objective_bounds(0.99),
             modifications = [
-                change_optimizer_attribute("IPM_IterationsLimit", 500),
-                change_constraint("EX_glc__D_e"; lower_bound = -10, upper_bound = -10),
-                change_constraint("EX_o2_e"; lower_bound = 0.0, upper_bound = 0.0),
+                modify_optimizer_attribute("IPM_IterationsLimit", 500),
+                modify_constraint("EX_glc__D_e"; lower_bound = -10, upper_bound = -10),
+                modify_constraint("EX_o2_e"; lower_bound = 0.0, upper_bound = 0.0),
             ],
         ) |> result
 

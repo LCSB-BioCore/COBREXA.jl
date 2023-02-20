@@ -5,7 +5,7 @@
         flux_balance_analysis(
             model,
             Tulip.Optimizer;
-            modifications = [change_objective("BIOMASS_Ecoli_core_w_GAM")],
+            modifications = [modify_objective("BIOMASS_Ecoli_core_w_GAM")],
         ) |> values_dict
 
     consuming, producing = metabolite_fluxes(model, fluxes)

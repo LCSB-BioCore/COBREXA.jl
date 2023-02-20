@@ -35,15 +35,15 @@ model = load_model("e_coli_core.xml")
 # Running of basic pFBA is perfectly analogous to running of [FBA](05a_fba.md)
 # and other analyses. We add several modifications that improve the solution
 # (using functions [`silence`](@ref), and
-# [`change_optimizer_attribute`](@ref)), and fix the glucose exchange (using
-# [`change_constraint`](@ref)) in order to get a more reasonable result:
+# [`modify_optimizer_attribute`](@ref)), and fix the glucose exchange (using
+# [`modify_constraint`](@ref)) in order to get a more reasonable result:
 
 fluxes = parsimonious_flux_balance_analysis_dict(
     model,
     Clarabel.Optimizer;
     modifications = [
         silence, # optionally silence the optimizer (Clarabel is very verbose by default)
-        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix glucose consumption rate
+        modify_constraint("R_EX_glc__D_e"; lb = -12, ub = -12), # fix glucose consumption rate
     ],
 )
 
@@ -64,11 +64,11 @@ flux_vector = parsimonious_flux_balance_analysis_vec(
     model,
     Tulip.Optimizer; # start with Tulip
     modifications = [
-        change_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
-        change_optimizer_attribute("IPM_IterationsLimit", 500), # we may change Tulip-specific attributes here
+        modify_constraint("R_EX_glc__D_e"; lb = -12, ub = -12),
+        modify_optimizer_attribute("IPM_IterationsLimit", 500), # we may change Tulip-specific attributes here
     ],
     qp_modifications = [
-        change_optimizer(Clarabel.Optimizer), # now switch to Clarabel (Tulip wouldn't be able to finish the computation)
+        modify_optimizer(Clarabel.Optimizer), # now switch to Clarabel (Tulip wouldn't be able to finish the computation)
         silence, # and make it quiet.
     ],
 )

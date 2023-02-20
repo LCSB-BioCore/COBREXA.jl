@@ -39,10 +39,10 @@ end
             model,
             Tulip.Optimizer;
             modifications = [
-                change_objective("BIOMASS_Ecoli_core_w_GAM"),
-                change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
-                change_sense(MAX_SENSE),
-                change_optimizer_attribute("IPM_IterationsLimit", 110),
+                modify_objective("BIOMASS_Ecoli_core_w_GAM"),
+                modify_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
+                modify_sense(MAX_SENSE),
+                modify_optimizer_attribute("IPM_IterationsLimit", 110),
             ],
         ) |> values_dict
 
@@ -59,7 +59,7 @@ end
             model,
             Tulip.Optimizer;
             modifications = [
-                change_objective(
+                modify_objective(
                     ["BIOMASS_Ecoli_core_w_GAM", "PFL"];
                     weights = [biomass_frac, pfl_frac],
                 ),
@@ -75,17 +75,19 @@ end
     @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        modifications = [change_constraint("gbbrsh"; lower_bound = -12, upper_bound = -12)],
+        modifications = [modify_constraint("gbbrsh"; lower_bound = -12, upper_bound = -12)],
     ) |> values_dict
+
     @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        modifications = [change_objective("gbbrsh")],
+        modifications = [modify_objective("gbbrsh")],
     ) |> values_dict
+
     @test_throws DomainError flux_balance_analysis(
         model,
         Tulip.Optimizer;
-        modifications = [change_objective(["BIOMASS_Ecoli_core_w_GAM"; "gbbrsh"])],
+        modifications = [modify_objective(["BIOMASS_Ecoli_core_w_GAM"; "gbbrsh"])],
     )
 end
 

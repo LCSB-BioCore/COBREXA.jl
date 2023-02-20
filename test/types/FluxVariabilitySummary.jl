@@ -6,7 +6,7 @@
             model,
             Tulip.Optimizer;
             bounds = objective_bounds(0.90),
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 2000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 2000)],
         ) |> result
 
     fr = flux_variability_summary(sol)

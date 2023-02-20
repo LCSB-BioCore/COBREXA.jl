@@ -244,7 +244,7 @@ screen(m,
     analysis = (m,a) -> # `args` elements get passed as the extra parameter here
         flux_balance_analysis_vec(m,
             Tulip.Optimizer;
-            modifications=[change_optimizer_attribute("IPM_IterationsLimit", a)],
+            modifications=[modify_optimizer_attribute("IPM_IterationsLimit", a)],
         ),
 )
 ```

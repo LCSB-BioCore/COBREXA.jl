@@ -13,7 +13,15 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
-using ..Internal: constants
+using ..Internal:
+    constants,
+    check_arg_keys_exists,
+    check_arg_keys_missing,
+    check_has_isozymes,
+    check_has_biomass_rxn_id,
+    check_biomass_rxn_has_isozymes,
+    check_has_virtualribosome,
+    check_has_biomass_rxn_biomas_metabolite
 using ..Internal.Macros
 using ..Log.Internal
 using ..Types

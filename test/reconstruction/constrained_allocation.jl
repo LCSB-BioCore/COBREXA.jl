@@ -46,12 +46,13 @@
 
     add_metabolites!(m, [Metabolite("m$i") for i = 1:4])
 
-    ribomodel = m |> with_virtualribosome("r6", 0.2)
+    @test_throws DomainError (m |> with_virtualribosome("r6", 0.2))
+
+    ribomodel = m |> with_removed_isozymes("r6") |> with_virtualribosome("r6", 0.2)
 
     @test haskey(ribomodel.genes, "virtualribosome")
     @test first(ribomodel.reactions["r6"].gene_associations).kcat_forward == 0.2
     @test first(m.reactions["r6"].gene_associations).kcat_forward == 10.0
-
 
     cam = make_simplified_enzyme_constrained_model(
         ribomodel;
@@ -64,11 +65,12 @@
         flux_balance_analysis(
             cam,
             Tulip.Optimizer;
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> values_dict(:reaction)
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
 
     # test inplace variant
+    remove_isozymes!(m, "r6")
     add_virtualribosome!(m, "r6", 0.2)
     cam = m |> with_simplified_enzyme_constraints(total_gene_product_mass_bound = 0.5)
 
@@ -78,24 +80,7 @@
         flux_balance_analysis(
             cam,
             Tulip.Optimizer;
-            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 1000)],
+            modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> values_dict(:reaction)
     @test isapprox(rxn_fluxes["r6"], 0.09695290851008717, atol = TEST_TOLERANCE)
-
-    # test with_isozyme functions
-    iso1 = Isozyme(["g1"]; kcat_forward = 200.0, kcat_backward = 300.0)
-    iso2 = Isozyme(["g2"]; kcat_forward = 100.0, kcat_backward = 500.0)
-    m2 = m |> with_isozymes(["r3", "r4"], [[iso1], [iso2]])
-    @test first(m2.reactions["r3"].gene_associations).kcat_backward == 300.0
-    @test first(m2.reactions["r4"].gene_associations).kcat_backward == 500.0
-    @test first(m.reactions["r3"].gene_associations).kcat_backward == 1.0
-
-    m2 = m |> with_isozymes("r3", [iso2])
-    @test first(m2.reactions["r3"].gene_associations).kcat_backward == 500.0
-    @test first(m.reactions["r3"].gene_associations).kcat_backward == 1.0
-
-    add_isozymes!(m, ["r3", "r4"], [[iso1], [iso2]])
-    @test first(m.reactions["r3"].gene_associations).kcat_backward == 300.0
-    @test first(m.reactions["r4"].gene_associations).kcat_backward == 500.0
-
 end

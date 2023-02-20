@@ -20,7 +20,7 @@ model = load_model(ObjectModel, "e_coli_core.json")
 # (or, alternatively, a pipeable "variant" version
 # [`with_changed_bound`](@ref)).
 #
-# Alternatively, you could utilize [`change_constraint`](@ref) as a
+# Alternatively, you could utilize [`modify_constraint`](@ref) as a
 # modification that acts directly on the JuMP optimization model. That may be
 # useful if you first apply some kind of complicated constraint scheme
 # modification, such as [`add_loopless_constraints`](@ref).
@@ -39,7 +39,7 @@ flux1 = flux_balance_analysis_vec(
 flux2 = flux_balance_analysis_vec(
     model,
     GLPK.Optimizer,
-    modifications = [change_constraint("FBA", lb = 0.0, ub = 0.0)],
+    modifications = [modify_constraint("FBA", lb = 0.0, ub = 0.0)],
 );
 
 # The solutions should not differ a lot:
@@ -55,7 +55,7 @@ original_flux = flux_balance_analysis_dict(model, GLPK.Optimizer);
 restricted_flux = flux_balance_analysis_dict(
     model,
     GLPK.Optimizer,
-    modifications = [change_constraint("EX_o2_e", lb = -0.1, ub = 0.0)],
+    modifications = [modify_constraint("EX_o2_e", lb = -0.1, ub = 0.0)],
 );
 
 # The growth in the restricted case is, expectably, lower than the original one:
