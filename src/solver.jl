@@ -3,7 +3,8 @@
     module Solver
 
 Interface of COBREXA to JuMP solvers; mainly recreation of the
-`AbstractMetabolicModel`s into JuMP optimization models.
+`AbstractMetabolicModel`s as JuMP optimization models, and retrieval of solved
+values.
 
 # Exports
 $(EXPORTS)
@@ -56,6 +57,7 @@ function make_optimization_model(
     end
 
     return optimization_model
+    #TODO what about ModelWithResult right from this point? ;D
 end
 
 """
@@ -65,7 +67,15 @@ Return `true` if `opt_model` solved successfully (solution is optimal or locally
 optimal).  Return `false` if any other termination status is reached.
 Termination status is defined in the documentation of `JuMP`.
 """
-is_solved(opt_model) = termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+is_solved(opt_model::Model) =
+    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of is_solved that works with [`ModelWithResult`](@ref).
+"""
+is_solved(r::ModelWithResult{<:Model}) = is_solved(r.result)
 
 """
 $(TYPEDSIGNATURES)
@@ -77,18 +87,6 @@ function optimize_objective(opt_model)::Maybe{Float64}
     optimize!(opt_model)
     solved_objective_value(opt_model)
 end
-
-"""
-$(TYPEDSIGNATURES)
-
-Returns vectors of the lower and upper bounds of `opt_model` constraints, where
-`opt_model` is a JuMP model constructed by e.g.
-[`make_optimization_model`](@ref) or [`flux_balance_analysis`](@ref).
-"""
-get_optmodel_bounds(opt_model) = (
-    [-normalized_rhs(lb) for lb in opt_model[:lbs]],
-    [normalized_rhs(ub) for ub in opt_model[:ubs]],
-)
 
 """
 $(TYPEDSIGNATURES)
@@ -111,49 +109,80 @@ end
 $(TYPEDSIGNATURES)
 
 Returns the current objective value of a model, if solved.
-
-# Example
-```
-solved_objective_value(flux_balance_analysis(model, ...))
-```
 """
-solved_objective_value(opt_model)::Maybe{Float64} =
+solved_objective_value(opt_model::Model)::Maybe{Float64} =
     is_solved(opt_model) ? objective_value(opt_model) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
-From the optimized model, returns a vector of values for the selected
-`semantics`. If the model did not solve, returns `nothing`.
+Pipeable variant of [`solved_objective_value`](@ref).
 
 # Example
 ```
-values_vec(Val(:reaction), model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+flux_balance_analysis(model, ...) |> solved_objective_value
 ```
 """
-function values_vec(
-    semantics::Val{Semantics},
-    model::AbstractMetabolicModel,
-    opt_model,
-) where {Semantics}
-    sem = Accessors.Internal.get_semantics(semantics)
-    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
-    (_, _, _, sem_varmtx) = sem
-    is_solved(opt_model) ? sem_varmtx(model)' * value.(opt_model[:x]) : nothing
+solved_objective_value(x::ModelWithResult{<:Model}) = solved_objective_value(x.result)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a vector of all variable values from the solved model, in the same order
+given by [`variables`](@ref).
+
+# Example
+```
+flux_balance_analysis(model, ...) |> values_vec
+```
+"""
+function values_vec(res::ModelWithResult{<:Model})
+    is_solved(res.result) ? value.(res.result[:x]) : nothing
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Convenience variant of [`values_vec`](@ref).
+Return a vector of all semantic variable values in the model, in the order
+given by the corresponding semantics.
 
 # Example
 ```
-values_vec(:reaction, model, flux_balance_analysis(model, ...)) # in order of reactions(model)
+values_vec(:reaction, flux_balance_analysis(model, ...))
 ```
 """
-values_vec(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
-    values_vec(Val(semantics), model, opt_model)
+function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
+    (_, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
+    is_solved(res.result) ? sem_varmtx(res.model)' * value.(res.result[:x]) : nothing
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+A pipeable variant of [`values_vec`](@ref).
+
+# Example
+```
+flux_balance_analysis(model, ...) |> values_vec(:reaction)
+```
+"""
+values_vec(semantics::Symbol) =
+    (res::ModelWithResult{<:Model}) -> values_vec(semantics, res)
+
+"""
+$(TYPEDSIGNATURES)
+
+Return a dictionary of all variable values from the solved model mapped
+to their IDs.
+
+# Example
+```
+flux_balance_analysis(model, ...) |> values_dict
+```
+"""
+function values_dict(res::ModelWithResult{<:Model})
+    is_solved(res.result) ? Dict(variables(res.model) .=> value.(res.result[:x])) : nothing
+end
 
 """
 $(TYPEDSIGNATURES)
@@ -164,46 +193,27 @@ solved values for the selected `semantics`. If the model did not solve, returns
 
 # Example
 ```
-values_dict(Val(:reaction), model, flux_balance_analysis(model, ...))
+values_dict(:reaction, flux_balance_analysis(model, ...))
 ```
 """
-function values_dict(
-    semantics::Val{Semantics},
-    model::AbstractMetabolicModel,
-    opt_model,
-) where {Semantics}
-    sem = Accessors.Internal.get_semantics(semantics)
-    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
-    (ids, _, _, sem_varmtx) = sem
-    is_solved(opt_model) ? Dict(ids(model) .=> sem_varmtx(model)' * value.(opt_model[:x])) :
-    nothing
+function values_dict(semantics::Symbol, res::ModelWithResult{<:Model})
+    (ids, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
+    is_solved(res.result) ?
+    Dict(ids(res.model) .=> sem_varmtx(res.model)' * value.(res.result[:x])) : nothing
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Convenience variant of [`values_dict`](@ref).
+A pipeable variant of [`values_dict`](@ref).
 
 # Example
 ```
-values_dict(:reaction, model, flux_balance_analysis(model, ...))
+flux_balance_analysis(model, ...) |> values_dict(:reaction)
 ```
 """
-values_dict(semantics::Symbol, model::AbstractMetabolicModel, opt_model) =
-    values_dict(Val(semantics), model, opt_model)
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of the convenience variant of [`values_dict`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_dict(:reaction, model)
-```
-"""
-values_dict(semantics::Symbol, model::AbstractMetabolicModel) =
-    opt_model -> values_dict(Val(semantics), model, opt_model)
+values_dict(semantics::Symbol) =
+    (res::ModelWithResult{<:Model}) -> values_dict(semantics, res)
 
 @export_locals
 end

@@ -1,11 +1,12 @@
 @testset "Flux summary" begin
     model = load_model(model_paths["e_coli_core.json"])
 
-    sol = flux_balance_analysis_dict(
-        model,
-        Tulip.Optimizer;
-        modifications = [change_optimizer_attribute("IPM_IterationsLimit", 200)],
-    )
+    sol =
+        flux_balance_analysis(
+            model,
+            Tulip.Optimizer;
+            modifications = [change_optimizer_attribute("IPM_IterationsLimit", 200)],
+        ) |> values_dict
 
     fr = flux_summary(sol; keep_unbounded = true, large_flux_bound = 25)
 

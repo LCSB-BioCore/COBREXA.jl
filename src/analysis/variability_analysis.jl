@@ -33,7 +33,7 @@ function flux_variability_analysis(
     kwargs...,
 )
     variability_analysis(
-        Val(:reaction),
+        :reaction,
         model,
         optimizer;
         ids = reaction_ids,
@@ -45,30 +45,19 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Run the variability analysis over a selected semantics defined by a symbol,
-such as `:reaction`. All other arguments are forwarded.
-"""
-variability_analysis(semantics::Symbol, args...; kwargs...) =
-    variability_analysis(Val(semantics), args...; kwargs...)
-
-"""
-$(TYPEDSIGNATURES)
-
 A variability analysis over a selected semantics, picking up only objects
 specified by IDs or indexes from the selected semantics. For semantics
-`Val(:reaction)`, this is equivalent to [`flux_variability_analysis`](@ref).
+`:reaction`, this is equivalent to [`flux_variability_analysis`](@ref).
 """
 function variability_analysis(
-    semantics::Val{Semantics},
+    semantics::Symbol,
     model::AbstractMetabolicModel,
     optimizer;
     ids::Maybe{Vector{String}} = nothing,
     indexes::Maybe{Vector{Int}} = nothing,
     kwargs...,
-) where {Semantics}
-    sem = Accessors.Internal.get_semantics(semantics)
-    isnothing(sem) && throw(DomainError(semantics, "Unknown semantics"))
-    (sem_ids, n_ids, _, sem_varmtx) = sem
+)
+    (sem_ids, n_ids, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
 
     if isnothing(indexes)
         idxs = if isnothing(ids)
@@ -147,37 +136,41 @@ function variability_analysis(
         )
     end
 
-    Z = bounds(
-        isnothing(optimal_objective_value) ?
-        objective_value(
-            flux_balance_analysis(model, optimizer; modifications = modifications),
-        ) : optimal_objective_value,
-    )
+    if isnothing(optimal_objective_value)
+        optimal_objective_value =
+            flux_balance_analysis(model, optimizer; modifications = modifications) |>
+            solved_objective_value
+    end
+    isnothing(optimal_objective_value) && error("model has no feasible solution for FVA")
+    Z = bounds(optimal_objective_value)
 
     flux_vector = [directions[:, i] for i = 1:size(directions, 2)]
 
-    return screen_optmodel_modifications(
+    ModelWithResult(
         model,
-        optimizer;
-        common_modifications = vcat(
-            modifications,
-            [
-                (model, opt_model) -> begin
-                    Z[1] > -Inf && @constraint(
-                        opt_model,
-                        objective(model)' * opt_model[:x] >= Z[1]
-                    )
-                    Z[2] < Inf && @constraint(
-                        opt_model,
-                        objective(model)' * opt_model[:x] <= Z[2]
-                    )
-                end,
-            ],
+        screen_optmodel_modifications(
+            model,
+            optimizer;
+            common_modifications = vcat(
+                modifications,
+                [
+                    (model, opt_model) -> begin
+                        Z[1] > -Inf && @constraint(
+                            opt_model,
+                            objective(model)' * opt_model[:x] >= Z[1]
+                        )
+                        Z[2] < Inf && @constraint(
+                            opt_model,
+                            objective(model)' * opt_model[:x] <= Z[2]
+                        )
+                    end,
+                ],
+            ),
+            args = tuple.([flux_vector flux_vector], [MIN_SENSE MAX_SENSE]),
+            analysis = (_, opt_model, flux, sense) ->
+                _max_variability_flux(opt_model, flux, sense, ret),
+            workers = workers,
         ),
-        args = tuple.([flux_vector flux_vector], [MIN_SENSE MAX_SENSE]),
-        analysis = (_, opt_model, flux, sense) ->
-            _max_variability_flux(opt_model, flux, sense, ret),
-        workers = workers,
     )
 end
 
@@ -204,16 +197,19 @@ mins, maxs = flux_variability_analysis_dict(
 """
 function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer; kwargs...)
     # TODO generalize this (requires smart analysis results)
-    vs = flux_variability_analysis(
+    res = flux_variability_analysis(
         model,
         optimizer;
         kwargs...,
-        ret = sol -> values_vec(:reaction, model, sol),
+        ret = sol -> values_vec(:reaction, ModelWithResult(model, sol)),
     )
-    flxs = reactions(model)
-    dicts = zip.(Ref(flxs), vs)
+    flxs = reactions(res.model)
+    dicts = zip.(Ref(flxs), res.result)
 
-    return (Dict(flxs .=> Dict.(dicts[:, 1])), Dict(flxs .=> Dict.(dicts[:, 2])))
+    ModelWithResult(
+        res.model,
+        (Dict(flxs .=> Dict.(dicts[:, 1])), Dict(flxs .=> Dict.(dicts[:, 2]))),
+    )
 end
 
 """
@@ -225,5 +221,6 @@ function _max_variability_flux(opt_model, flux, sense, ret)
     @objective(opt_model, sense, sum(flux .* opt_model[:x]))
     optimize!(opt_model)
 
+    # TODO should this get ModelWithResult ?
     is_solved(opt_model) ? ret(opt_model) : nothing
 end

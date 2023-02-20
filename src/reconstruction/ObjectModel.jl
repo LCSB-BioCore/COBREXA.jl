@@ -390,29 +390,11 @@ function add_virtualribosome(
     virtualribosome_id = "virtualribosome",
 )
     m = copy(model)
-
-    # unidirectional biomass
     m.reactions = copy(model.reactions)
     m.reactions[biomass_rxn_id] = copy(model.reactions[biomass_rxn_id])
-    m.reactions[biomass_rxn_id].lower_bound = 0.0
-    m.reactions[biomass_rxn_id].upper_bound = constants.default_reaction_bound
-
-    # add ribosome kinetics
-    if !isnothing(model.reactions[biomass_rxn_id].gene_associations)
-        m.reactions[biomass_rxn_id].gene_associations =
-            copy(model.reactions[biomass_rxn_id].gene_associations)
-    end
-    m.reactions[biomass_rxn_id].gene_associations = [
-        Isozyme(
-            kcat_forward = weight,
-            kcat_backward = 0.0,
-            gene_product_stoichiometry = Dict(virtualribosome_id => 1.0),
-        ),
-    ]
-
-    # add ribosome gene
     m.genes = copy(model.genes)
-    m.genes[virtualribosome_id] = Gene(id = virtualribosome_id, product_molar_mass = 1.0)
+
+    add_virtualribosome!(m, biomass_rxn_id, weight; virtualribosome_id)
 
     m
 end

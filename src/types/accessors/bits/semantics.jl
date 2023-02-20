@@ -44,7 +44,9 @@ function make_mapping_dict(
     )
 end
 
-const variable_semantics = Symbol[]
+const Semantic = Tuple{Function,Function,Function,Function}
+
+const variable_semantics = Dict{Symbol,Semantic}()
 
 """
 $(TYPEDSIGNATURES)
@@ -52,17 +54,20 @@ $(TYPEDSIGNATURES)
 Get a tuple of functions that work with the given semantics, or `nothing` if
 the semantics doesn't exist.
 """
-function get_semantics(
-    ::Val{Semantics},
-)::Types.Maybe{Tuple{Function,Function,Function,Function}} where {Semantics}
-    if Semantics in variable_semantics
-        return (
-            Base.eval(Accessors, Symbol(Semantics, :s)),
-            Base.eval(Accessors, Symbol(:n_, Semantics, :s)),
-            Base.eval(Accessors, Symbol(Semantics, :_variables)),
-            Base.eval(Accessors, Symbol(Semantics, :_variables_matrix)),
-        )
-    end
+function get_semantics(semantics::Symbol)::Types.Maybe{Semantic}
+    get(variable_semantics, semantics, nothing)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Like [`get_semantics`](@ref) but throws a `DomainError` if the semantics is not
+available.
+"""
+function semantics(semantics::Symbol)::Types.Maybe{Semantic}
+    res = get_semantics(semantics)
+    isnothing(res) && throw(DomainError(semantics, "unknown semantics"))
+    res
 end
 
 """
@@ -82,13 +87,12 @@ function make_variable_semantics(
     name::String,
     example::String,
 )
-    sym in themodule.Internal.variable_semantics && return
+    haskey(themodule.Internal.variable_semantics, sym) && return
 
     plural = Symbol(sym, :s)
     count = Symbol(:n_, plural)
     mapping = Symbol(sym, :_variables)
     mapping_mtx = Symbol(sym, :_variables_matrix)
-    push!(themodule.Internal.variable_semantics, sym)
 
     pluralfn = Expr(
         :macrocall,
@@ -177,9 +181,9 @@ safety reasons, this is never automatically inherited by wrappers.
         end),
     )
 
-    code = Expr(:block, pluralfn, countfn, mappingfn, mtxfn)
-
-    Base.eval(themodule, code)
+    Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn])
+    themodule.Internal.variable_semantics[sym] =
+        Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx))
 end
 
 """

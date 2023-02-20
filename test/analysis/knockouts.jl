@@ -115,34 +115,36 @@ end
         load_model(model_paths["e_coli_core.json"]), #then on JSONModel with the same contents
     ]
 
-        sol = flux_balance_analysis_dict(
-            model,
-            Tulip.Optimizer;
-            modifications = [
-                change_objective("BIOMASS_Ecoli_core_w_GAM"),
-                change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
-                change_sense(MAX_SENSE),
-                change_optimizer_attribute("IPM_IterationsLimit", 110),
-                knockout(["b0978", "b0734"]), # knockouts out cytbd
-            ],
-        )
+        sol =
+            flux_balance_analysis(
+                model,
+                Tulip.Optimizer;
+                modifications = [
+                    change_objective("BIOMASS_Ecoli_core_w_GAM"),
+                    change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
+                    change_sense(MAX_SENSE),
+                    change_optimizer_attribute("IPM_IterationsLimit", 110),
+                    knockout(["b0978", "b0734"]), # knockouts out cytbd
+                ],
+            ) |> values_dict
         @test isapprox(
             sol["BIOMASS_Ecoli_core_w_GAM"],
             0.2725811189335953,
             atol = TEST_TOLERANCE,
         )
 
-        sol = flux_balance_analysis_dict(
-            model,
-            Tulip.Optimizer;
-            modifications = [
-                change_objective("BIOMASS_Ecoli_core_w_GAM"),
-                change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
-                change_sense(MAX_SENSE),
-                change_optimizer_attribute("IPM_IterationsLimit", 110),
-                knockout("b2779"), # knockouts out enolase
-            ],
-        )
+        sol =
+            flux_balance_analysis(
+                model,
+                Tulip.Optimizer;
+                modifications = [
+                    change_objective("BIOMASS_Ecoli_core_w_GAM"),
+                    change_constraint("EX_glc__D_e"; lower_bound = -12, upper_bound = -12),
+                    change_sense(MAX_SENSE),
+                    change_optimizer_attribute("IPM_IterationsLimit", 110),
+                    knockout("b2779"), # knockouts out enolase
+                ],
+            ) |> values_dict
         @test isapprox(sol["BIOMASS_Ecoli_core_w_GAM"], 0.0, atol = TEST_TOLERANCE)
     end
 end

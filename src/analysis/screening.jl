@@ -98,7 +98,7 @@ screen(m,
         [reverse_reaction(5)],
         [reverse_reaction(3), reverse_reaction(6)]
     ],
-    analysis = mod -> flux_balance_analysis_vec(mod, GLPK.Optimizer))
+    analysis = mod -> flux_balance_analysis(mod, GLPK.Optimizer) |> value_vec)
 ```
 """
 screen(args...; kwargs...) =

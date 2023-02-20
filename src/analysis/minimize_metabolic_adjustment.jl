@@ -23,7 +23,7 @@ reference.
 # Example
 ```
 model = load_model("e_coli_core.json")
-reference_flux = flux_balance_analysis_vec(model, Gurobi.Optimizer)
+reference_flux = flux_balance_analysis(model, Gurobi.Optimizer) |> value_vec
 optmodel = minimize_metabolic_adjustment(
     model,
     reference_flux,
