@@ -24,7 +24,8 @@ struct ParsimoniousModel <: AbstractModelWrapper
 end
 
 function ParsimoniousModel(model::AbstractMetabolicModel, semantics::Vector{Symbol})
-    var_ids = vcat([first(Accessors.Internal.semantics(sem))(model) for sem in semantics]...)
+    var_ids =
+        vcat([first(Accessors.Internal.semantics(sem))(model) for sem in semantics]...)
     ParsimoniousModel(model, var_ids)
 end
 
