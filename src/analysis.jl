@@ -61,7 +61,7 @@ end
 @inject Analysis.Modifications begin
     using ...Accessors
     using ...Analysis
-    using ...Internal: constants
+    using ...Internal: constants, env_ex_matrix, check_abundances
     using ...Solver
     using ...Types
 

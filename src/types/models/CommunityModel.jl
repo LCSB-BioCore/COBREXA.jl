@@ -131,17 +131,9 @@ function Accessors.stoichiometry(cm::CommunityModel)
     model_S = blockdiag([stoichiometry(m.model) for m in cm.members]...)
     model_env = spzeros(size(model_S, 1), length(cm.environmental_links))
 
-    env_mets = [envlink.metabolite_id for envlink in cm.environmental_links]
-    env_rxns = [envlink.reaction_id for envlink in cm.environmental_links]
-
-    env_rows = hcat(
-        [
-            env_ex_matrix(m, env_mets, env_rxns) .* a for
-            (m, a) in zip(cm.members, cm.abundances)
-        ]...,
-    )
-
+    env_rows = env_ex_matrix(cm)
     env_link = spdiagm(sum(env_rows, dims = 2)[:])
+    
     return [
         model_S model_env
         env_rows -env_link

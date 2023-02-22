@@ -39,7 +39,7 @@ $(TYPEDSIGNATURES)
 A helper function that creates an exchange/environmental variable linking matrix
 for community member `m`.
 """
-function env_ex_matrix(
+function env_ex_member_matrix(
     m::CommunityMember,
     env_mets::Vector{String},
     env_rxns::Vector{String},
@@ -51,6 +51,42 @@ function env_ex_matrix(
         mat[midx, ridx] = 1.0
     end
     return mat
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+A helper function that creates the entire exchange/environmental variable
+linking matrix for a community model.
+"""
+function env_ex_matrix(cm)
+    env_mets = [envlink.metabolite_id for envlink in cm.environmental_links]
+    env_rxns = [envlink.reaction_id for envlink in cm.environmental_links]
+
+    hcat(
+        [
+            env_ex_member_matrix(m, env_mets, env_rxns) .* a for
+            (m, a) in zip(cm.members, cm.abundances)
+        ]...,
+    )
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant of [`env_ex_matrix`](@ref) that takes an explicit abundance matrix (used
+in solver modifications.)
+"""
+function env_ex_matrix(cm, abundances)
+    env_mets = [envlink.metabolite_id for envlink in cm.environmental_links]
+    env_rxns = [envlink.reaction_id for envlink in cm.environmental_links]
+
+    hcat(
+        [
+            env_ex_member_matrix(m, env_mets, env_rxns) .* a for
+            (m, a) in zip(cm.members, abundances)
+        ]...,
+    )
 end
 
 """
