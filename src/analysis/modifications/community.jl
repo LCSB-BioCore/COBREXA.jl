@@ -10,7 +10,7 @@ modify_abundances(new_abundances::Vector{Float64}) =
         #=
         Only support these community models because the location of the
         environmental balances are known.
-        =# 
+        =#
         model isa CommunityModel ||
             model isa EqualGrowthCommunityModel ||
             throw(
@@ -18,10 +18,12 @@ modify_abundances(new_abundances::Vector{Float64}) =
                     "Only CommunityModel and EqualGrowthCommunityModel are supported at this time.",
                 ),
             )
-        
+
         check_abundances(new_abundances) # TODO consider removing: too pedantic
-        
-        env_rows = model isa CommunityModel ? env_ex_matrix(model, new_abundances) : env_ex_matrix(model.inner, new_abundances) 
+
+        env_rows =
+            model isa CommunityModel ? env_ex_matrix(model, new_abundances) :
+            env_ex_matrix(model.inner, new_abundances)
         env_link = spdiagm(sum(env_rows, dims = 2)[:])
 
         n_vars = n_variables(model)
@@ -29,7 +31,8 @@ modify_abundances(new_abundances::Vector{Float64}) =
         n_cons = length(opt_model[:mb])
         n_objs = model isa CommunityModel ? 0 : length(model.inner.members)
 
-        row_offset = model isa CommunityModel ? n_cons - n_env_vars : n_cons - n_env_vars  - n_objs
+        row_offset =
+            model isa CommunityModel ? n_cons - n_env_vars : n_cons - n_env_vars - n_objs
 
         # fix abundance coefficients of species exchanges
         for (i, j, v) in zip(findnz(env_rows)...)
@@ -37,7 +40,8 @@ modify_abundances(new_abundances::Vector{Float64}) =
             set_normalized_coefficient(opt_model[:mb][ii], opt_model[:x][j], v)
         end
 
-        column_offset = model isa CommunityModel ? n_vars - n_env_vars : n_vars - n_env_vars - 1
+        column_offset =
+            model isa CommunityModel ? n_vars - n_env_vars : n_vars - n_env_vars - 1
 
         # fix total abundance to link exchange
         for (i, j, v) in zip(findnz(env_link)...)

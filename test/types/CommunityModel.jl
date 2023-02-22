@@ -185,25 +185,41 @@
     @test all(isempty.(coupling_bounds(cm)))
 
     # test modification for community model
-    res = flux_balance_analysis(cm, Tulip.Optimizer);
+    res = flux_balance_analysis(cm, Tulip.Optimizer)
     mb = res.result[:mb]
-    x = res.result[:x] 
+    x = res.result[:x]
     @test normalized_coefficient(mb[9], x[1]) == 0.2
     @test normalized_coefficient(mb[11], x[13]) == -0.8
 
-    res2 = flux_balance_analysis(cm, Tulip.Optimizer; modifications=[modify_abundances([0.5, 0.5])]);
+    res2 = flux_balance_analysis(
+        cm,
+        Tulip.Optimizer;
+        modifications = [modify_abundances([0.5, 0.5])],
+    )
     mb = res2.result[:mb]
-    x = res2.result[:x] 
+    x = res2.result[:x]
     @test normalized_coefficient(mb[9], x[1]) == 0.5
     @test normalized_coefficient(mb[11], x[13]) == -0.5
 
-    @test_throws ArgumentError flux_balance_analysis(m1, Tulip.Optimizer; modifications=[modify_abundances([0.5, 0.5])])
-    @test_throws DomainError flux_balance_analysis(cm, Tulip.Optimizer; modifications=[modify_abundances([0.3, 0.5])])
+    @test_throws ArgumentError flux_balance_analysis(
+        m1,
+        Tulip.Optimizer;
+        modifications = [modify_abundances([0.5, 0.5])],
+    )
+    @test_throws DomainError flux_balance_analysis(
+        cm,
+        Tulip.Optimizer;
+        modifications = [modify_abundances([0.3, 0.5])],
+    )
 
     # test modification for EqualGrowthCommunityModel
     eqgr = cm |> with_equal_growth_objective()
 
-    res3 = flux_balance_analysis(cm, Tulip.Optimizer; modifications=[modify_abundances([0.3, 0.7])]);
+    res3 = flux_balance_analysis(
+        cm,
+        Tulip.Optimizer;
+        modifications = [modify_abundances([0.3, 0.7])],
+    )
     mb = res3.result[:mb]
     x = res3.result[:x]
     @test normalized_coefficient(mb[10], x[5]) == 0.3

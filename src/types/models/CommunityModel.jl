@@ -133,7 +133,7 @@ function Accessors.stoichiometry(cm::CommunityModel)
 
     env_rows = env_ex_matrix(cm)
     env_link = spdiagm(sum(env_rows, dims = 2)[:])
-    
+
     return [
         model_S model_env
         env_rows -env_link

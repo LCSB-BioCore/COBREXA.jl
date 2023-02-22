@@ -45,4 +45,3 @@ function values_community_member_dict(
         (k, vid) in enumerate(variables(cm)) if startswith(vid, community_member.id * "#")
     )
 end
-

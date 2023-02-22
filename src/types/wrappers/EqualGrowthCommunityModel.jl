@@ -4,7 +4,7 @@ $(TYPEDEF)
 A wrapper around [`CommunityModel`](@ref) that returns a community model where
 the growth rates of all members are constrained to be equal to
 `community_objective_id`, which is the community growth rate. The objective of
-the resultant model is set to this `community_objective_id`. 
+the resultant model is set to this `community_objective_id`.
 
 # Notes
 1. No biomass metabolite exists (and none are created).
