@@ -1,4 +1,4 @@
-@testset "EqualGrowthCommunityModel: simple model" begin
+@testset "CommunityModel: structure" begin
 
     m1 = ObjectModel()
     add_metabolites!(
@@ -36,7 +36,6 @@
 
     cm1 = CommunityMember(
         id = "m1",
-        abundance = 0.2,
         model = m1,
         exchange_reaction_ids = ["EX_A", "EX_B"],
         biomass_reaction_id = "r2",
@@ -45,17 +44,21 @@
 
     cm2 = CommunityMember(
         id = "m2",
-        abundance = 0.8,
         model = m2,
         exchange_reaction_ids = ["EX_A", "EX_C"],
         biomass_reaction_id = "r2",
     )
 
-    cm = EqualGrowthCommunityModel(
+    cm = CommunityModel(
         members = [cm1, cm2],
-        env_met_flux_bounds = Dict("Ae" => (-10, 10)),
+        abundances = [0.2, 0.8],
+        environmental_links =  [
+            EnvironmentalLink("EX_A", "Ae", -10.0, 10.0)
+            EnvironmentalLink("EX_B", "Be", -20.0, 20.0)
+            EnvironmentalLink("EX_C", "Ce", -30, 30)
+        ]
     )
-    @test contains(sprint(show, MIME("text/plain"), cm), "balanced growth")
+    @test contains(sprint(show, MIME("text/plain"), cm), "community model")
 
     @test issetequal(
         variables(cm),
@@ -70,126 +73,118 @@
             "m2#EX_A"
             "m2#r1"
             "m2#r2"
-            "EX_Ae"
-            "EX_Be"
-            "EX_Ce"
-            "equal_growth_rates_biomass_function"
+            "EX_A"
+            "EX_C"
+            "EX_B"
         ],
     )
 
-    # @test issetequal(
-    #     metabolites(cm),
-    #     [
-    #         "m1#A"
-    #         "m1#B"
-    #         "m1#Ae"
-    #         "m1#Be"
-    #         "m1#X1"
-    #         "m2#Ae"
-    #         "m2#A"
-    #         "m2#C"
-    #         "m2#Ce"
-    #         "m2#X2"
-    #         "ENV_Ae"
-    #         "ENV_Be"
-    #         "ENV_Ce"
-    #     ],
-    # )
+    @test issetequal(
+        metabolites(cm),
+        [
+            "m1#A"
+            "m1#B"
+            "m1#Ae"
+            "m1#Be"
+            "m2#Ae"
+            "m2#A"
+            "m2#C"
+            "m2#Ce"
+            "ENV_Ae"
+            "ENV_Be"
+            "ENV_Ce"
+        ],
+    )
 
-    # @test issetequal(
-    #     genes(cm),
-    #     [
-    #         "m1#g1"
-    #         "m1#g2"
-    #         "m1#g3"
-    #         "m1#g4"
-    #         "m2#g1"
-    #         "m2#g2"
-    #         "m2#g3"
-    #         "m2#g4"
-    #     ],
-    # )
+    @test issetequal(
+        genes(cm),
+        [
+            "m1#g1"
+            "m1#g2"
+            "m1#g3"
+            "m1#g4"
+            "m2#g1"
+            "m2#g2"
+            "m2#g3"
+            "m2#g4"
+        ],
+    )
 
-    # @test n_variables(cm) == 14
-    # @test n_metabolites(cm) == 13
-    # @test n_genes(cm) == 8
+    @test n_variables(cm) == 13
+    @test n_metabolites(cm) == 11
+    @test n_genes(cm) == 8
 
-    # @test all(
-    #     stoichiometry(cm) .== [
-    #         0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    #         -1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -0.2
-    #         0.0 0.0 0.0 0.0 0.0 0.0 0.0 -1.0 -1.0 0.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 0.0 0.0 0.0 -1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 0.0 0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    #         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 -0.8
-    #         1.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 -1.0 0.0 0.0 0.0
-    #         0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 -1.0 0.0 0.0
-    #         0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 -1.0 0.0
-    #     ],
-    # )
+    @test all(
+        stoichiometry(cm) .== [
+            0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+            0.0   0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+           -1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+            0.0   0.0   0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+            0.0   0.0   0.0   0.0   0.0   0.0   0.0  -1.0  -1.0   0.0   0.0   0.0   0.0
+            0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   1.0  -1.0   0.0   0.0   0.0
+            0.0   0.0   0.0   0.0   0.0  -1.0   0.0   0.0   0.0   1.0   0.0   0.0   0.0
+            0.0   0.0   0.0   0.0   0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0
+            0.2   0.0   0.0   0.0   0.0   0.0   0.0   0.8   0.0   0.0  -1.0   0.0   0.0
+            0.0   0.0   0.0   0.0   0.2   0.0   0.0   0.0   0.0   0.0   0.0  -0.2   0.0
+            0.0   0.0   0.0   0.0   0.0   0.0   0.8   0.0   0.0   0.0   0.0   0.0  -0.8
+        ],
+    )
 
-    # lbs, ubs = bounds(cm)
-    # @test all(
-    #     lbs .== [
-    #         -200.0
-    #         -200.0
-    #         -200.0
-    #         0.0
-    #         0.0
-    #         0.0
-    #         0.0
-    #         -800.0
-    #         -800.0
-    #         -800.0
-    #         -10.0
-    #         -1000.0
-    #         -1000.0
-    #         0.0
-    #     ],
-    # )
-    # @test all(
-    #     ubs .== [
-    #         200.0
-    #         200.0
-    #         200.0
-    #         200.0
-    #         200.0
-    #         800.0
-    #         800.0
-    #         800.0
-    #         800.0
-    #         800.0
-    #         10.0
-    #         1000.0
-    #         1000.0
-    #         1000.0
-    #     ],
-    # )
+    lbs, ubs = bounds(cm)
+    @test all(
+        lbs .== [
+        -1000.0
+        -1000.0
+            0.0
+            0.0
+            0.0
+            0.0
+            0.0
+        -1000.0
+        -1000.0
+            0.0
+            -10.0
+            -20.0
+            -30.0
+        ],
+    )
+    @test all(
+        ubs .== [
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+            1000.0
+              10.0
+              20.0
+              30.0
+        ],
+    )
 
-    # @test all(objective(cm) .== [
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     0.0
-    #     1.0
-    # ])
+    @test all(objective(cm) .== [
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
+    ])
 
-    # @test n_coupling_constraints(cm) == 0
-    # @test isempty(coupling(cm))
-    # @test all(isempty.(coupling_bounds(cm)))
+    @test n_coupling_constraints(cm) == 0
+    @test isempty(coupling(cm))
+    @test all(isempty.(coupling_bounds(cm)))
 end
 
 @testset "EqualGrowthCommunityModel: e coli core" begin

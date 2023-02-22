@@ -70,3 +70,18 @@ function check_has_biomass_rxn_biomas_metabolite(
         throw(DomainError(biomass_metabolite_id, " not found in $biomass_rxn_id."))
     nothing
 end
+
+"""
+Throw a DomainError if some reaction ids `rids` are not found in the
+environmental_links of `cm`. Return the indices of `rids` in the environmental
+linkage vector.
+"""
+function check_environmental_ids(cm, rids)
+    env_rids = [envlink.reaction_id for envlink in cm.environmental_links]
+    idxs = indexin(rids, env_rids)
+    any(isnothing.(idxs)) || begin 
+        missing_idxs = findall(isnothing, idxs)
+        throw(DomainError(rids[missing_idxs], " exchange reaction IDs not found in environmental links."))
+    end
+    idxs
+end

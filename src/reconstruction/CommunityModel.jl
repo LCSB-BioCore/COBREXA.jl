@@ -50,10 +50,11 @@ function change_environmental_bounds!(
     rids::Vector{String};
     lower_bounds = fill(nothing, length(rids)),
     upper_bounds = fill(nothing, length(rids)),
-)
-    for (rid, lb, ub) in zip(rids, lower_bounds, upper_bounds)
-        isnothing(lb) || (model.environmental_exchange_reactions[rid][2] = lb)
-        isnothing(ub) || (model.environmental_exchange_reactions[rid][3] = ub)
+)   
+    idxs = check_environmental_ids(cm, rids)
+    for (idx, lb, ub) in zip(idxs, lower_bounds, upper_bounds)
+        isnothing(lb) || (model.environmental_links[idx].lower_bound = lb)
+        isnothing(ub) || (model.environmental_links[idx].upper_bound = ub)
     end
 end
 
@@ -87,18 +88,15 @@ function change_environmental_bounds(
     lower_bounds = fill(nothing, length(rids)),
     upper_bounds = fill(nothing, length(rids)),
 )
+    idxs = check_environmental_ids(cm, rids)
     m = copy(model)
-    m.environmental_exchange_reactions = copy(model.environmental_exchange_reactions)
-    for (k, (mid, _lb, _ub)) in model.environmental_exchange_reactions
-        _idx = indexin([k], rids)
-        if isnothing(_idx)
-            m.environmental_exchange_reactions[k] = [mid, _lb, _ub]
-        else
-            idx = first(_idx)
-            lb = isnothing(lower_bounds[idx]) ? _lb : lower_bounds[idx]
-            ub = isnothing(upper_bounds[idx]) ? _ub : upper_bounds[idx]
-            m.environmental_exchange_reactions[k] = [mid, lb, ub]
-        end
+    m.environmental_links = copy(model.environmental_links)
+    for (idx, lb, ub) in zip(idxs, lower_bounds, upper_bounds)
+        m.environmental_links[idx] = copy(model.environmental_links[idx])
+        m.environmental_links[idx].reaction_id = model.environmental_links[idx].reaction_id
+        m.environmental_links[idx].metabolite_id = model.environmental_links[idx].metabolite_id
+        m.environmental_links[idx].lower_bound = isnothing(lb) ? model.environmental_links[idx].lower_bound : lb
+        m.environmental_links[idx].upper_bound = isnothing(ub) ? model.environmental_links[idx].upper_bound : ub
     end
     m
 end
