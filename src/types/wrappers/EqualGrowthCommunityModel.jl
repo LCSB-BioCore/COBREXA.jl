@@ -19,7 +19,8 @@ end
 
 Accessors.unwrap_model(model::EqualGrowthCommunityModel) = model.inner
 
-Accessors.variables(cm::EqualGrowthCommunityModel) = [variables(cm.inner); cm.community_objective_id]
+Accessors.variables(cm::EqualGrowthCommunityModel) =
+    [variables(cm.inner); cm.community_objective_id]
 
 Accessors.n_variables(cm::EqualGrowthCommunityModel) = n_variables(cm.inner) + 1
 
@@ -84,6 +85,7 @@ function Accessors.reaction_variables_matrix(cm::EqualGrowthCommunityModel)
     blockdiag(mtx, u)
 end
 
-Accessors.reactions(cm::EqualGrowthCommunityModel) = [reactions(cm.inner); cm.community_objective_id]
+Accessors.reactions(cm::EqualGrowthCommunityModel) =
+    [reactions(cm.inner); cm.community_objective_id]
 
 Accessors.n_reactions(cm::EqualGrowthCommunityModel) = n_reactions(cm.inner) + 1

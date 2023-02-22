@@ -29,4 +29,5 @@ $(TYPEDSIGNATURES)
 Species a model variant that wraps a [`CommunityModel`](@ref) into a
 [`EqualGrowthCommunityModel`](@ref). Forwards the arguments to the constructor.
 """
-with_equal_growth_objective(args...; kwargs...) = m -> make_EqualGrowthCommunityModel(m, args...; kwargs...)
+with_equal_growth_objective(args...; kwargs...) =
+    m -> make_EqualGrowthCommunityModel(m, args...; kwargs...)

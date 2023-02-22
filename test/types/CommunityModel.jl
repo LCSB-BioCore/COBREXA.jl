@@ -190,7 +190,7 @@ end
     ecoli = load_model(ObjectModel, model_paths["e_coli_core.json"])
     ecoli.reactions["EX_glc__D_e"].lower_bound = -1000
     ex_rxns = COBREXA.Utils.find_exchange_reaction_ids(ecoli)
-    
+
     cm1 = CommunityMember(
         id = "ecoli1",
         model = ecoli,
@@ -223,12 +223,18 @@ end
     a1 = 0.2
     change_abundances!(cm, [a1, 0.8])
     @test cm.abundances[1] == 0.2
-    
+
     @test_throws DomainError cm |> with_changed_abundances([0.1, 0.2])
 
-    @test_throws DomainError cm |> with_changed_environmental_bound("abc"; lower_bound = -10, upper_bound = 10)
+    @test_throws DomainError cm |> with_changed_environmental_bound(
+        "abc";
+        lower_bound = -10,
+        upper_bound = 10,
+    )
 
-    cm3 = cm |> with_changed_environmental_bound("EX_glc__D_e"; lower_bound = -10, upper_bound = 10)
+    cm3 =
+        cm |>
+        with_changed_environmental_bound("EX_glc__D_e"; lower_bound = -10, upper_bound = 10)
     change_environmental_bound!(cm3, "EX_ac_e"; upper_bound = 100)
 
     @test cm3.environmental_links[1].upper_bound == 100
@@ -237,7 +243,11 @@ end
     eqcm = cm3 |> with_equal_growth_objective()
     d = flux_balance_analysis(eqcm, Tulip.Optimizer) |> values_dict
 
-    @test isapprox(d[eqcm.community_objective_id], 0.8739215069521299, atol = TEST_TOLERANCE)
+    @test isapprox(
+        d[eqcm.community_objective_id],
+        0.8739215069521299,
+        atol = TEST_TOLERANCE,
+    )
 
     # test if growth rates are the same
     @test isapprox(
@@ -293,16 +303,12 @@ end
             ecoli.reactions[rid].gene_associations = nothing
         end
     end
-    
+
     ex_rxns = COBREXA.Utils.find_exchange_reaction_ids(ecoli)
 
     gm =
         ecoli |>
-        with_changed_bound(
-            "EX_glc__D_e";
-            lower_bound = -1000.0,
-            upper_bound = 0,
-        ) |>
+        with_changed_bound("EX_glc__D_e"; lower_bound = -1000.0, upper_bound = 0) |>
         with_enzyme_constraints(total_gene_product_mass_bound = 100.0)
 
     cm1 = CommunityMember(
@@ -333,16 +339,23 @@ end
             (rid, mid, lb, ub) in zip(ex_rxns, ex_mids, ex_lbs, ex_ubs)
         ],
     )
-    
-    eqgr = cm |> with_changed_environmental_bound("EX_glc__D_e"; lower_bound=-1000.0) |> with_equal_growth_objective()
+
+    eqgr =
+        cm |>
+        with_changed_environmental_bound("EX_glc__D_e"; lower_bound = -1000.0) |>
+        with_equal_growth_objective()
 
     res = flux_balance_analysis(
         eqgr,
         Tulip.Optimizer;
         modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 2000)],
-    );
+    )
 
     f_d = values_dict(:reaction, res)
 
-    @test isapprox(f_d[eqgr.community_objective_id], 0.9210836692534606, atol = TEST_TOLERANCE)
+    @test isapprox(
+        f_d[eqgr.community_objective_id],
+        0.9210836692534606,
+        atol = TEST_TOLERANCE,
+    )
 end

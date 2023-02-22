@@ -110,4 +110,7 @@ $(TYPEDSIGNATURES)
 Return an [`EqualGrowthCommunityModel`](@ref) wrapper around `model`, optionally
 specifying the `community_objective_id`.
 """
-make_EqualGrowthCommunityModel(model::CommunityModel; community_objective_id="equal_growth_rates_biomass_function") = EqualGrowthCommunityModel(model, community_objective_id)
+make_EqualGrowthCommunityModel(
+    model::CommunityModel;
+    community_objective_id = "equal_growth_rates_biomass_function",
+) = EqualGrowthCommunityModel(model, community_objective_id)
