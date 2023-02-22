@@ -89,3 +89,13 @@ Accessors.reactions(cm::EqualGrowthCommunityModel) =
     [reactions(cm.inner); cm.community_objective_id]
 
 Accessors.n_reactions(cm::EqualGrowthCommunityModel) = n_reactions(cm.inner) + 1
+
+"""
+$(TYPEDSIGNATURES)
+
+Environmental reaction mapping to model variables.
+"""
+Accessors.environmental_reaction_variables(model::EqualGrowthCommunityModel) = Dict(
+    rid => Dict(rid => 1.0) for
+    rid in [envlink.reaction_id for envlink in model.inner.environmental_links]
+)

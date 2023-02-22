@@ -183,7 +183,6 @@ problem, yields the semantically meaningful fluxes that correspond to
 [`reactions`](@ref).
 """
 function Accessors.reaction_variables_matrix(cm::CommunityModel)
-    # TODO add the non-matrix form!
     rfs = blockdiag([reaction_variables_matrix(m.model) for m in cm.members]...)
     nr = length(cm.environmental_links)
     blockdiag(rfs, spdiagm(fill(1, nr)))
@@ -196,6 +195,16 @@ Accessors.reactions(cm::CommunityModel) = [
 
 Accessors.n_reactions(cm::CommunityModel) =
     sum(n_reactions(m.model) for m in cm.members) + length(cm.environmental_links)
+
+"""
+$(TYPEDSIGNATURES)
+
+Environmental reaction mapping to model variables.
+"""
+Accessors.environmental_reaction_variables(model::CommunityModel) = Dict(
+    rid => Dict(rid => 1.0) for
+    rid in [envlink.reaction_id for envlink in model.environmental_links]
+)
 
 #=
 This loops implements the rest of the accssors through access_community_member.

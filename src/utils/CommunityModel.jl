@@ -1,35 +1,48 @@
 """
 $(TYPEDSIGNATURES)
 
-Extract the solution of a specific `community_member` from `opt_model`, which is
-a solved optimization model built from the `community_model`. Removes the
-`community_member` prefix in the string ids of the returned dictionary.
+Extract the semantic solution of the variables for a specific `community_member`
+from `res`. Removes the `community_member` prefix in the string ids of the
+returned dictionary.
 """
-get_community_member_solution(
-    community_model::EqualGrowthCommunityModel,
-    opt_model,
+function values_community_member_dict(
+    semantics::Symbol,
+    res::ModelWithResult{<:Model},
     community_member::CommunityMember,
-) =
-    is_solved(opt_model) ?
-    Dict(
-        string(last(split(rid, community_member.id * "#"))) => val for (rid, val) in zip(
-            reactions(community_model),
-            reaction_variables_matrix(community_model)' * value.(opt_model[:x]),
-        ) if startswith(rid, community_member.id * "#")
-    ) : nothing
+)
 
+    is_solved(res) || return nothing
+
+    val_d = values_community_member_dict(res, community_member)
+
+    (sem_ids, _, sem_vard, _) = Accessors.Internal.semantics(semantics)
+
+    ids = sem_ids(community_member.model)
+
+    Dict(
+        id => sum(v * val_d[k] for (k, v) in sem_vard(community_member.model)[id]) for
+        id in ids
+    )
+end
 
 """
 $(TYPEDSIGNATURES)
 
-Extract the environmental exchanges from `opt_model`, which is a solved
-optimization model built from the `community_model`.
+Extract the solution of the variables for a specific `community_member` from
+`res`. Removes the `community_member` prefix in the string ids of the returned
+dictionary.
 """
-get_environmental_exchanges(community_model::EqualGrowthCommunityModel, opt_model) =
-    is_solved(opt_model) ?
+function values_community_member_dict(
+    res::ModelWithResult{<:Model},
+    community_member::CommunityMember,
+)
+    is_solved(res) || return nothing
+    cm = res.model
+    opt_model = res.result
+
     Dict(
-        rid => val for (rid, val) in zip(
-            reactions(community_model),
-            reaction_variables_matrix(community_model)' * value.(opt_model[:x]),
-        ) if !any(startswith(rid, cm.id * "#") for cm in community_model.members)
-    ) : nothing
+        string(last(split(vid, community_member.id * "#"))) => value(opt_model[:x][k]) for
+        (k, vid) in enumerate(variables(cm)) if startswith(vid, community_member.id * "#")
+    )
+end
+

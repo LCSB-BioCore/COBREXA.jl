@@ -358,4 +358,12 @@ end
         0.9210836692534606,
         atol = TEST_TOLERANCE,
     )
+
+    # test convenience operators
+    f_env = values_dict(:environmental_reaction, res)
+    @test f_env["EX_o2_e"] == f_d["EX_o2_e"] # this should(?) be non-variable
+
+    @test values_community_member_dict(res, cm1)["EX_glc__D_e"] == f_d["ecoli1#EX_glc__D_e"]
+
+    @test values_community_member_dict(:enzyme, res, cm2)["b4301"] == values_dict(res)["ecoli2#b4301"]*gene_product_molar_mass(cm2.model.inner, "b4301") 
 end
