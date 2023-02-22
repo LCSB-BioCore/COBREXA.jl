@@ -8,16 +8,14 @@ a [`CommunityModel`](@ref).
 $(TYPEDFIELDS)
 
 # Assumptions
-1. Exchange reactions, *all* of which are idenitified in `exchange_reaction_ids`,
-   have the form: `A[external] ⟷ ∅` where `A` is a metabolite. No other
-   exchanges are allowed. This is not checked, but only assumed.
+1. Exchange reactions, *all* of which are idenitified in
+   `exchange_reaction_ids`, have the form: `A[external] ⟷ ∅` where `A` is a
+   metabolite. No other exchanges are allowed. This is not checked, but assumed.
 2. There is only one biomass reaction in the model.
 """
 Base.@kwdef mutable struct CommunityMember
     "Name of model appended to intracellular reactions and metabolites."
     id::String
-    "Abundance of organism."
-    abundance::Float64
     "Underlying model."
     model::AbstractMetabolicModel
     "List of all exchange reactions in model."
@@ -29,12 +27,16 @@ end
 """
 $(TYPEDEF)
 
-A basic structure representing a community model. All `members` are connected to
-`environmental_exchange_reactions` if they possess the corresponding exchange
-reaction internally. This structure stitches together individual models with
+A basic structure representing a community model. All `members` are connected
+through `environmental_exchange_reactions` if they possess the corresponding
+exchange reaction internally (in `member.exchange_reaction_ids`). The
+`environmental_exchange_reactions` field is a dictionary with keys corresponding
+to the associated metabolite, as well as the reaction lower and upper bounds.
+
+This model structure stitches together individual member models with
 environmental exchange reactions, but does not add any objective. Use the
 community wrappers for this. The abundance of each member in the community
-weights the environmental exchange balance:
+weights the environmental exchange balances:
 ```
 env_ex_met1 = abundance_1 * ex_met1_member_1 + abundance_2 * ex_met_member_2 + ...
 ```
@@ -45,74 +47,77 @@ to its own biomass.
 # Fields
 $(TYPEDFIELDS)
 
-# Assumptions
-1. `environmental_exchange_reactions` is a superset of all exchange reactions
-   contained in each underlying member in the community.
-2. Each exchanged metabolite in the underlying models, identified through the
-   exchange reactions, is associated with an environmental exchange reaction.
-
 # Implementation notes
 1. All reactions have the `id` of each respective underlying
     [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
     Consequently, exchange reactions of the original model will look like
-    `species1#EX_...`. All exchange environmental reactions have `EX_` as a
-    prefix followed by the environmental metabolite id.
+    `species1#EX_...`.
 2. All metabolites have the `id` of each respective underlying
-    [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`. The
-    environmental metabolites have no prefix.
+    [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
 3. All genes have the `id` of the respective underlying
     [`CommunityMember`](@ref) appended as a prefix with the delimiter `#`.
+4. `environmental_exchange_reactions` is a superset of all exchange reactions
+    contained in each underlying member in the community. Only these reactions
+    get joined to each underlying model.
 """
 Base.@kwdef mutable struct CommunityModel <: AbstractMetabolicModel
     "Models making up the community."
     members::Vector{CommunityMember}
-    environmental_exchange_reactions::Vector{String}
+    "Abundances of each community member."
+    abundances::Vector{Float64}
+    "Environmental exchange reactions ids mapped to their environmental metabolite, and the reaction bounds."
+    environmental_exchange_reactions::Dict{String,Vector{String,Float64,Float64}}
 end
 
 function Accessors.variables(cm::CommunityModel)
     rxns = [add_community_prefix(m, rid) for m in cm.members for rid in variables(m.model)]
-    env_exs = ["EX_" * env_met for env_met in get_env_mets(cm)]
+    env_exs = [rid for rid in keys(cm.environmental_exchange_reactions)]
     return [rxns; env_exs]
 end
 
 function Accessors.n_variables(cm::CommunityModel)
     num_model_reactions = sum(n_variables(m.model) for m in cm.members)
-    # assume each env metabolite gets an env exchange
-    num_env_metabolites = length(get_env_mets(cm))
+    num_env_metabolites = length(cm.environmental_exchange_reactions)
     return num_model_reactions + num_env_metabolites
 end
 
 function Accessors.metabolites(cm::CommunityModel)
-    mets = [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
-    return [mets; "ENV_" .* get_env_mets(cm)]
+    mets =
+        [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
+    return [mets; "ENV_" .* [mid for (mid, _, _) in cm.environmental_exchange_reactions]]
 end
 
 function Accessors.n_metabolites(cm::CommunityModel)
     num_model_constraints = sum(n_metabolites(m.model) for m in cm.members)
-    # assume each env metabolite gets an env exchange
-    num_env_metabolites = length(get_env_mets(cm))
+    num_env_metabolites = length(cm.environmental_exchange_reactions)
     return num_model_constraints + num_env_metabolites
 end
 
 Accessors.genes(cm::CommunityModel) =
     [add_community_prefix(m, gid) for m in cm.members for gid in genes(m.model)]
 
-Accessors.n_genes(cm::CommunityModel) =
-    sum(n_genes(m.model) for m in cm.members)
+Accessors.n_genes(cm::CommunityModel) = sum(n_genes(m.model) for m in cm.members)
 
 Accessors.balance(cm::CommunityModel) = [
     vcat([balance(m.model) for m in cm.members]...)
-    spzeros(length(get_env_mets(cm)))
+    spzeros(length(cm.environmental_exchange_reactions))
 ]
 
 function Accessors.stoichiometry(cm::CommunityModel)
-    env_met_ids = get_env_mets(cm)
 
     model_S = blockdiag([stoichiometry(m.model) for m in cm.members]...)
     model_env = spzeros(size(model_S, 1), length(env_met_ids))
-   
-    env_rows = hcat([env_ex_matrix(m, env_met_ids) .* m.abundance for m in cm.members]...)
-    
+
+    env_mets = [mid for (mid, _, _) in values(cm.environmental_exchange_reactions)]
+    env_rxns = keys(cm.environmental_exchange_reactions)
+
+    env_rows = hcat(
+        [
+            env_ex_matrix(m, env_mets, env_rxns) .* a for
+            (m, a) in zip(cm.members, cm.abundances)
+        ]...,
+    )
+
     return [
         model_S model_env
         env_rows -I
@@ -122,15 +127,11 @@ end
 function Accessors.bounds(cm::CommunityModel)
     models_lbs = vcat([first(bounds(m.model)) for m in cm.members]...)
     models_ubs = vcat([last(bounds(m.model)) for m in cm.members]...)
-    
-    env_mets = get_env_mets(cm)
-    env_lbs = fill(-constants.default_reaction_bound, length(env_mets))
-    env_ubs = fill(constants.default_reaction_bound, length(env_mets))
-   
-    return (
-        [models_lbs; env_lbs],
-        [models_ubs; env_ubs],
-    )
+
+    env_lbs = [lb for (_, lb, _) in values(cm.environmental_exchange_reactions)]
+    env_ubs = [ub for (_, _, ub) in values(cm.environmental_exchange_reactions)]
+
+    return ([models_lbs; env_lbs], [models_ubs; env_ubs])
 end
 
 Accessors.objective(cm::CommunityModel) = spzeros(n_variables(cm))
@@ -160,17 +161,18 @@ problem, yields the semantically meaningful fluxes that correspond to
 function Accessors.reaction_variables_matrix(cm::CommunityModel)
     # TODO add the non-matrix form!
     rfs = blockdiag([reaction_variables_matrix(m.model) for m in cm.members]...)
-    nr = length(get_env_mets(cm))
+    nr = length(cm.environmental_exchange_reactions)
     blockdiag(rfs, spdiagm(fill(1, nr)))
 end
 
 Accessors.reactions(cm::CommunityModel) = [
     vcat([add_community_prefix.(Ref(m), reactions(m.model)) for m in cm.members]...)
-    ["EX_" * env_met for env_met in get_env_mets(cm)]
+    [rid for rid in keys(cm.environmental_exchange_reactions)]
 ]
 
 Accessors.n_reactions(cm::CommunityModel) =
-    sum(n_reactions(m.model) for m in cm.members) + length(get_env_mets(cm))
+    sum(n_reactions(m.model) for m in cm.members) +
+    length(cm.environmental_exchange_reactions)
 
 #=
 This loops implements the rest of the accssors through access_community_member.

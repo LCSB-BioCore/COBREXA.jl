@@ -3,12 +3,7 @@
     m1 = ObjectModel()
     add_metabolites!(
         m1,
-        [
-            Metabolite("A"),
-            Metabolite("B"),
-            Metabolite("Ae"),
-            Metabolite("Be"),
-        ],
+        [Metabolite("A"), Metabolite("B"), Metabolite("Ae"), Metabolite("Be")],
     )
     add_genes!(m1, [Gene("g1"), Gene("g2"), Gene("g3"), Gene("g4")])
     add_reactions!(
@@ -25,12 +20,7 @@
     m2 = ObjectModel()
     add_metabolites!(
         m2,
-        [
-            Metabolite("Ae"),
-            Metabolite("A"),
-            Metabolite("C"),
-            Metabolite("Ce"),
-        ],
+        [Metabolite("Ae"), Metabolite("A"), Metabolite("C"), Metabolite("Ce")],
     )
     add_genes!(m2, [Gene("g1"), Gene("g2"), Gene("g3"), Gene("g4")])
     add_reactions!(
@@ -292,7 +282,8 @@ end
         end
     end
 
-    gm = ecoli |>
+    gm =
+        ecoli |>
         with_changed_bounds(
             ["EX_glc__D_e"];
             lower_bounds = [-1000.0],
