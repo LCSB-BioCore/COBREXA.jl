@@ -52,11 +52,11 @@
     cm = CommunityModel(
         members = [cm1, cm2],
         abundances = [0.2, 0.8],
-        environmental_links =  [
+        environmental_links = [
             EnvironmentalLink("EX_A", "Ae", -10.0, 10.0)
             EnvironmentalLink("EX_B", "Be", -20.0, 20.0)
             EnvironmentalLink("EX_C", "Ce", -30, 30)
-        ]
+        ],
     )
     @test contains(sprint(show, MIME("text/plain"), cm), "community model")
 
@@ -116,38 +116,36 @@
 
     @test all(
         stoichiometry(cm) .== [
-            0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
-            0.0   0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
-           -1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
-            0.0   0.0   0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0
-            0.0   0.0   0.0   0.0   0.0   0.0   0.0  -1.0  -1.0   0.0   0.0   0.0   0.0
-            0.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   1.0  -1.0   0.0   0.0   0.0
-            0.0   0.0   0.0   0.0   0.0  -1.0   0.0   0.0   0.0   1.0   0.0   0.0   0.0
-            0.0   0.0   0.0   0.0   0.0   1.0  -1.0   0.0   0.0   0.0   0.0   0.0   0.0
-            0.2   0.0   0.0   0.0   0.0   0.0   0.0   0.8   0.0   0.0  -1.0   0.0   0.0
-            0.0   0.0   0.0   0.0   0.2   0.0   0.0   0.0   0.0   0.0   0.0  -0.2   0.0
-            0.0   0.0   0.0   0.0   0.0   0.0   0.8   0.0   0.0   0.0   0.0   0.0  -0.8
+            0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+            -1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 0.0 0.0 0.0 0.0 -1.0 -1.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 -1.0 0.0 0.0 0.0
+            0.0 0.0 0.0 0.0 0.0 -1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0
+            0.0 0.0 0.0 0.0 0.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0
+            0.2 0.0 0.0 0.0 0.0 0.0 0.0 0.8 0.0 0.0 -1.0 0.0 0.0
+            0.0 0.0 0.0 0.0 0.2 0.0 0.0 0.0 0.0 0.0 0.0 -0.2 0.0
+            0.0 0.0 0.0 0.0 0.0 0.0 0.8 0.0 0.0 0.0 0.0 0.0 -0.8
         ],
     )
 
     lbs, ubs = bounds(cm)
-    @test all(
-        lbs .== [
+    @test all(lbs .== [
         -1000.0
         -1000.0
-            0.0
-            0.0
-            0.0
-            0.0
-            0.0
+        0.0
+        0.0
+        0.0
+        0.0
+        0.0
         -1000.0
         -1000.0
-            0.0
-            -10.0
-            -20.0
-            -30.0
-        ],
-    )
+        0.0
+        -10.0
+        -20.0
+        -30.0
+    ])
     @test all(
         ubs .== [
             1000.0
@@ -160,9 +158,9 @@
             1000.0
             1000.0
             1000.0
-              10.0
-              20.0
-              30.0
+            10.0
+            20.0
+            30.0
         ],
     )
 
@@ -190,48 +188,67 @@ end
 @testset "EqualGrowthCommunityModel: e coli core" begin
 
     ecoli = load_model(ObjectModel, model_paths["e_coli_core.json"])
-
     ecoli.reactions["EX_glc__D_e"].lower_bound = -1000
-
     ex_rxns = COBREXA.Utils.find_exchange_reaction_ids(ecoli)
-
-    a1 = 0.2 # abundance species 1
-    a2 = 0.8 # abundance species 2
-
+    
     cm1 = CommunityMember(
         id = "ecoli1",
-        abundance = a1,
         model = ecoli,
         exchange_reaction_ids = ex_rxns,
         biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
     )
     cm2 = CommunityMember(
         id = "ecoli2",
-        abundance = a2,
         model = ecoli,
         exchange_reaction_ids = ex_rxns,
         biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
     )
 
-    cm = EqualGrowthCommunityModel(
+    ex_rxns = COBREXA.Utils.find_exchange_reaction_ids(ecoli)
+    ex_mids = [first(keys(reaction_stoichiometry(ecoli, rid))) for rid in ex_rxns]
+    ex_lbs = [ecoli.reactions[rid].lower_bound for rid in ex_rxns]
+    ex_ubs = [ecoli.reactions[rid].upper_bound for rid in ex_rxns]
+
+    a1 = 0.1 # abundance species 1
+    a2 = 0.8 # abundance species 2
+
+    cm = CommunityModel(
         members = [cm1, cm2],
-        env_met_flux_bounds = Dict("glc__D_e" => (-10, 10)),
+        abundances = [a1, a2],
+        environmental_links = [
+            EnvironmentalLink(rid, mid, lb, ub) for
+            (rid, mid, lb, ub) in zip(ex_rxns, ex_mids, ex_lbs, ex_ubs)
+        ],
     )
+    a1 = 0.2
+    change_abundances!(cm, [a1, 0.8])
+    @test cm.abundances[1] == 0.2
+    
+    @test_throws DomainError cm |> with_changed_abundances([0.1, 0.2])
 
-    d = flux_balance_analysis(cm, Tulip.Optimizer) |> values_dict
+    @test_throws DomainError cm |> with_changed_environmental_bound("abc"; lower_bound = -10, upper_bound = 10)
 
-    @test isapprox(d[cm.objective_id], 0.8739215069521299, atol = TEST_TOLERANCE)
+    cm3 = cm |> with_changed_environmental_bound("EX_glc__D_e"; lower_bound = -10, upper_bound = 10)
+    change_environmental_bound!(cm3, "EX_ac_e"; upper_bound = 100)
+
+    @test cm3.environmental_links[1].upper_bound == 100
+    @test cm3.environmental_links[9].lower_bound == -10
+
+    eqcm = cm3 |> with_equal_growth_objective()
+    d = flux_balance_analysis(eqcm, Tulip.Optimizer) |> values_dict
+
+    @test isapprox(d[eqcm.community_objective_id], 0.8739215069521299, atol = TEST_TOLERANCE)
 
     # test if growth rates are the same
     @test isapprox(
         d["ecoli1#BIOMASS_Ecoli_core_w_GAM"],
-        d[cm.objective_id],
+        d[eqcm.community_objective_id],
         atol = TEST_TOLERANCE,
     )
 
     @test isapprox(
         d["ecoli2#BIOMASS_Ecoli_core_w_GAM"],
-        d[cm.objective_id],
+        d[eqcm.community_objective_id],
         atol = TEST_TOLERANCE,
     )
 
@@ -241,9 +258,9 @@ end
         atol = TEST_TOLERANCE,
     )
 
-    # # test if model can be converted to another type
-    # om = convert(ObjectModel, cm)
-    # @test n_variables(om) == n_variables(cm)
+    # test if model can be converted to another type
+    om = convert(ObjectModel, cm)
+    @test n_variables(om) == n_variables(cm)
 end
 
 @testset "EqualGrowthCommunityModel: enzyme constrained e coli" begin
@@ -276,44 +293,56 @@ end
             ecoli.reactions[rid].gene_associations = nothing
         end
     end
+    
+    ex_rxns = COBREXA.Utils.find_exchange_reaction_ids(ecoli)
 
     gm =
         ecoli |>
-        with_changed_bounds(
-            ["EX_glc__D_e"];
-            lower_bounds = [-1000.0],
-            upper_bounds = [0],
+        with_changed_bound(
+            "EX_glc__D_e";
+            lower_bound = -1000.0,
+            upper_bound = 0,
         ) |>
         with_enzyme_constraints(total_gene_product_mass_bound = 100.0)
 
-    ex_rxns = find_exchange_reaction_ids(ecoli)
+    cm1 = CommunityMember(
+        id = "ecoli1",
+        model = gm,
+        exchange_reaction_ids = ex_rxns,
+        biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
+    )
+    cm2 = CommunityMember(
+        id = "ecoli2",
+        model = gm,
+        exchange_reaction_ids = ex_rxns,
+        biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
+    )
 
     a1 = 0.2 # abundance species 1
     a2 = 0.8 # abundance species 2
 
-    cm1 = CommunityMember(
-        id = "ecoli1",
-        abundance = a1,
-        model = gm,
-        exchange_reaction_ids = ex_rxns,
-        biomass_metabolite_id = "biomass",
-    )
-    cm2 = CommunityMember(
-        id = "ecoli2",
-        abundance = a2,
-        model = gm,
-        exchange_reaction_ids = ex_rxns,
-        biomass_metabolite_id = "biomass",
-    )
+    ex_mids = [first(keys(reaction_stoichiometry(ecoli, rid))) for rid in ex_rxns]
+    ex_lbs = [ecoli.reactions[rid].lower_bound for rid in ex_rxns]
+    ex_ubs = [ecoli.reactions[rid].upper_bound for rid in ex_rxns]
 
-    cm = EqualGrowthCommunityModel(members = [cm1, cm2])
+    cm = CommunityModel(
+        members = [cm1, cm2],
+        abundances = [a1, a2],
+        environmental_links = [
+            EnvironmentalLink(rid, mid, lb, ub) for
+            (rid, mid, lb, ub) in zip(ex_rxns, ex_mids, ex_lbs, ex_ubs)
+        ],
+    )
+    
+    eqgr = cm |> with_changed_environmental_bound("EX_glc__D_e"; lower_bound=-1000.0) |> with_equal_growth_objective()
 
     res = flux_balance_analysis(
-        cm,
+        eqgr,
         Tulip.Optimizer;
-        modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
-    )
+        modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 2000)],
+    );
 
     f_d = values_dict(:reaction, res)
-    @test isapprox(f_d[cm.objective_id], 0.9210848582802592, atol = TEST_TOLERANCE)
+
+    @test isapprox(f_d[eqgr.community_objective_id], 0.9210836692534606, atol = TEST_TOLERANCE)
 end

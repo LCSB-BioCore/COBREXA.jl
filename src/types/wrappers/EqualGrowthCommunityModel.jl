@@ -2,11 +2,11 @@
 $(TYPEDEF)
 
 A wrapper around [`CommunityModel`](@ref) that returns a community model where
-the growth rates of all members are constrained to be equal to `objective_id`,
-which is the community growth rate. The objective of the resultant model is set
-to this `objective_id`. 
+the growth rates of all members are constrained to be equal to
+`community_objective_id`, which is the community growth rate. The objective of
+the resultant model is set to this `community_objective_id`. 
 
-# Assumptions
+# Notes
 1. No biomass metabolite exists (and none are created).
 
 # Fields
@@ -14,12 +14,12 @@ $(TYPEDFIELDS)
 """
 Base.@kwdef mutable struct EqualGrowthCommunityModel <: AbstractModelWrapper
     inner::CommunityModel
-    objective_id::String = "equal_growth_rates_biomass_function"
+    community_objective_id::String
 end
 
 Accessors.unwrap_model(model::EqualGrowthCommunityModel) = model.inner
 
-Accessors.variables(cm::EqualGrowthCommunityModel) = [variables(cm.inner); cm.objective_id]
+Accessors.variables(cm::EqualGrowthCommunityModel) = [variables(cm.inner); cm.community_objective_id]
 
 Accessors.n_variables(cm::EqualGrowthCommunityModel) = n_variables(cm.inner) + 1
 
@@ -84,6 +84,6 @@ function Accessors.reaction_variables_matrix(cm::EqualGrowthCommunityModel)
     blockdiag(mtx, u)
 end
 
-Accessors.reactions(cm::EqualGrowthCommunityModel) = [reactions(cm.inner); cm.objective_id]
+Accessors.reactions(cm::EqualGrowthCommunityModel) = [reactions(cm.inner); cm.community_objective_id]
 
 Accessors.n_reactions(cm::EqualGrowthCommunityModel) = n_reactions(cm.inner) + 1

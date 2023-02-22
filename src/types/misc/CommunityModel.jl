@@ -1,6 +1,41 @@
 """
 $(TYPEDSIGNATURES)
 
+Shallow copy of a [`CommunityModel`](@ref)
+"""
+Base.copy(m::CommunityModel) = CommunityModel(;
+    members = m.members,
+    abundances = m.abundances,
+    environmental_links = m.environmental_links,
+)
+
+"""
+$(TYPEDSIGNATURES)
+
+Shallow copy of a [`CommunityModel`](@ref)
+"""
+Base.copy(m::CommunityMember) = CommunityMember(;
+    id = m.id,
+    model = m.id,
+    exchange_reaction_ids = m.exchange_reaction_ids,
+    biomass_reaction_id = m.biomass_reaction_id,
+)
+
+"""
+$(TYPEDSIGNATURES)
+
+Shallow copy of a [`EnvironmentalLink`](@ref)
+"""
+Base.copy(m::EnvironmentalLink) = EnvironmentalLink(;
+    reaction_id = m.reaction_id,
+    metabolite_id = m.metabolite_id,
+    lower_bound = m.lower_bound,
+    upper_bound = m.upper_bound,
+)
+
+"""
+$(TYPEDSIGNATURES)
+
 A helper function that creates an exchange/environmental variable linking matrix
 for community member `m`.
 """

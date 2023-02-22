@@ -79,9 +79,23 @@ linkage vector.
 function check_environmental_ids(cm, rids)
     env_rids = [envlink.reaction_id for envlink in cm.environmental_links]
     idxs = indexin(rids, env_rids)
-    any(isnothing.(idxs)) || begin 
+    any(isnothing.(idxs)) && begin
         missing_idxs = findall(isnothing, idxs)
-        throw(DomainError(rids[missing_idxs], " exchange reaction IDs not found in environmental links."))
+        throw(
+            DomainError(
+                rids[missing_idxs],
+                " exchange reaction IDs not found in environmental links.",
+            ),
+        )
     end
     idxs
+end
+
+"""
+Check if `new_abundances` sums to 1.
+"""
+function check_abundances(new_abundances)
+    isapprox(sum(new_abundances), 1.0; atol = constants.tolerance) ||
+        throw(DomainError(new_abundances, "The abundances do not sum to 1."))
+    nothing
 end

@@ -43,7 +43,7 @@ Base.@kwdef mutable struct EnvironmentalLink
     "Exchange reaction lower bound."
     lower_bound::Float64
     "Environmental reaction upper bound."
-    upper_bound::Float64 
+    upper_bound::Float64
 end
 
 """
@@ -141,7 +141,7 @@ function Accessors.stoichiometry(cm::CommunityModel)
         ]...,
     )
 
-    env_link = spdiagm(sum(env_rows, dims=2)[:])
+    env_link = spdiagm(sum(env_rows, dims = 2)[:])
     return [
         model_S model_env
         env_rows -env_link
@@ -195,8 +195,7 @@ Accessors.reactions(cm::CommunityModel) = [
 ]
 
 Accessors.n_reactions(cm::CommunityModel) =
-    sum(n_reactions(m.model) for m in cm.members) +
-    length(cm.environmental_links)
+    sum(n_reactions(m.model) for m in cm.members) + length(cm.environmental_links)
 
 #=
 This loops implements the rest of the accssors through access_community_member.
