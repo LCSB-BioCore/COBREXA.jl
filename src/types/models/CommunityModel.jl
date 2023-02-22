@@ -66,7 +66,7 @@ Base.@kwdef mutable struct CommunityModel <: AbstractMetabolicModel
     "Abundances of each community member."
     abundances::Vector{Float64}
     "Environmental exchange reactions ids mapped to their environmental metabolite, and the reaction bounds."
-    environmental_exchange_reactions::Dict{String,Vector{String,Float64,Float64}}
+    environmental_exchange_reactions::Dict{String,Vector{Any}} # TODO make concrete
 end
 
 function Accessors.variables(cm::CommunityModel)

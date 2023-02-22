@@ -52,8 +52,8 @@ function change_environmental_bounds!(
     upper_bounds = fill(nothing, length(rids)),
 )
     for (rid, lb, ub) in zip(rids, lower_bounds, upper_bounds)
-        isnothing(lb) || model.environmental_exchange_reactions[rid][2] = lb
-        isnothing(ub) || model.environmental_exchange_reactions[rid][3] = ub
+        isnothing(lb) || (model.environmental_exchange_reactions[rid][2] = lb)
+        isnothing(ub) || (model.environmental_exchange_reactions[rid][3] = ub)
     end
 end
 

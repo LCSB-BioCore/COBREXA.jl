@@ -25,7 +25,7 @@ A helper function to find the index of the appropriate model. Assumes each `id`
 is delimited by `#` that separates the model ID prefix and the original id.
 """
 function access_community_member(
-    cm::EqualGrowthCommunityModel,
+    cm::CommunityModel,
     id::String,
     accessor::Function;
     default = nothing,
