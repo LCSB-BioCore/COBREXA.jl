@@ -400,7 +400,7 @@ end
     f_env = values_dict(:environmental_exchange, res)
     @test isapprox(
         f_env["EX_o2_e"],
-        a1 * f_d["ecoli1#EX_o2_e"] + a2 * f_d["ecoli2#EX_o2_e"];
+        a1 * f_r["ecoli1#EX_o2_e"] + a2 * f_r["ecoli2#EX_o2_e"];
         atol = TEST_TOLERANCE,
     )
 
