@@ -14,8 +14,6 @@ $(TYPEDFIELDS)
 2. There is only one biomass reaction in the model.
 """
 Base.@kwdef mutable struct CommunityMember
-    "Name of model appended to intracellular reactions and metabolites."
-    id::String
     "Underlying model."
     model::AbstractMetabolicModel
     "List of all exchange reactions in model."
@@ -50,11 +48,12 @@ end
 $(TYPEDEF)
 
 A basic structure representing a community model. All `members` are connected
-through `environmental_links`, which is a vector of
-[`EnvironmentalLink`](@ref)s. If a member model possesses any exchange reaction
-in `environmental_links`, then it is connected to the associated environmental
-exchange reaction. Only the reactions in `environmental_links` are linked, any
-other boundary reaction is not constrained in the community model.
+through `environmental_links`. The `members` is an `OrderedDict` mapping the
+member ID to a [`CommunityMember`](@ref). The `environmental_links` is a vector
+of [`EnvironmentalLink`](@ref)s. If a member model possesses any exchange
+reaction in `environmental_links`, then it is connected to the associated
+environmental exchange reaction. Only the reactions in `environmental_links` are
+linked, any other boundary reaction is not constrained in the community model.
 
 This model structure stitches together individual member models with
 environmental exchange reactions, but does not add any objective. Use the
@@ -84,51 +83,59 @@ $(TYPEDFIELDS)
     each underlying model.
 """
 Base.@kwdef mutable struct CommunityModel <: AbstractMetabolicModel
-    "Models making up the community."
-    members::Vector{CommunityMember}
+    "Models making up the community (ID => model)."
+    members::OrderedDict{String,CommunityMember}
     "Abundances of each community member."
     abundances::Vector{Float64}
     "Environmental exchange to model exchange linking structure."
     environmental_links::Vector{EnvironmentalLink}
+    "A lookup table mapping: model IDs => accessor symbol => names => community names."
+    name_lookup::Dict{String,Dict{Symbol,Dict{String,String}}} =
+        build_community_name_lookup(members)
 end
 
 function Accessors.variables(cm::CommunityModel)
-    rxns = [add_community_prefix(m, rid) for m in cm.members for rid in variables(m.model)]
+    rxns = [
+        cm.name_lookup[id][:variables][vid] for (id, m) in cm.members for
+        vid in variables(m.model)
+    ]
     env_exs = [envlink.reaction_id for envlink in cm.environmental_links]
     return [rxns; env_exs]
 end
 
 function Accessors.n_variables(cm::CommunityModel)
-    num_model_reactions = sum(n_variables(m.model) for m in cm.members)
+    num_model_reactions = sum(n_variables(m.model) for m in values(cm.members))
     num_env_metabolites = length(cm.environmental_links)
     return num_model_reactions + num_env_metabolites
 end
 
 function Accessors.metabolites(cm::CommunityModel)
-    mets =
-        [add_community_prefix(m, mid) for m in cm.members for mid in metabolites(m.model)]
+    mets = [
+        cm.name_lookup[id][:metabolites][mid] for (id, m) in cm.members for
+        mid in metabolites(m.model)
+    ]
     return [mets; "ENV_" .* [envlink.metabolite_id for envlink in cm.environmental_links]]
 end
 
 function Accessors.n_metabolites(cm::CommunityModel)
-    num_model_constraints = sum(n_metabolites(m.model) for m in cm.members)
+    num_model_constraints = sum(n_metabolites(m.model) for m in values(cm.members))
     num_env_metabolites = length(cm.environmental_links)
     return num_model_constraints + num_env_metabolites
 end
 
 Accessors.genes(cm::CommunityModel) =
-    [add_community_prefix(m, gid) for m in cm.members for gid in genes(m.model)]
+    [cm.name_lookup[id][:genes][gid] for (id, m) in cm.members for gid in genes(m.model)]
 
-Accessors.n_genes(cm::CommunityModel) = sum(n_genes(m.model) for m in cm.members)
+Accessors.n_genes(cm::CommunityModel) = sum(n_genes(m.model) for m in values(cm.members))
 
 Accessors.balance(cm::CommunityModel) = [
-    vcat([balance(m.model) for m in cm.members]...)
+    vcat([balance(m.model) for m in values(cm.members)]...)
     spzeros(length(cm.environmental_links))
 ]
 
 function Accessors.stoichiometry(cm::CommunityModel)
 
-    model_S = blockdiag([stoichiometry(m.model) for m in cm.members]...)
+    model_S = blockdiag([stoichiometry(m.model) for m in values(cm.members)]...)
     model_env = spzeros(size(model_S, 1), length(cm.environmental_links))
 
     env_rows = env_ex_matrix(cm)
@@ -141,8 +148,8 @@ function Accessors.stoichiometry(cm::CommunityModel)
 end
 
 function Accessors.bounds(cm::CommunityModel)
-    models_lbs = vcat([first(bounds(m.model)) for m in cm.members]...)
-    models_ubs = vcat([last(bounds(m.model)) for m in cm.members]...)
+    models_lbs = vcat([first(bounds(m.model)) for m in values(cm.members)]...)
+    models_ubs = vcat([last(bounds(m.model)) for m in values(cm.members)]...)
 
     env_lbs = [envlink.lower_bound for envlink in cm.environmental_links]
     env_ubs = [envlink.upper_bound for envlink in cm.environmental_links]
@@ -153,53 +160,92 @@ end
 Accessors.objective(cm::CommunityModel) = spzeros(n_variables(cm))
 
 function Accessors.coupling(cm::CommunityModel)
-    coups = blockdiag([coupling(m.model) for m in cm.members]...)
+    coups = blockdiag([coupling(m.model) for m in values(cm.members)]...)
     n = n_variables(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 
 Accessors.n_coupling_constraints(cm::CommunityModel) =
-    sum(n_coupling_constraints(m.model) for m in cm.members)
+    sum(n_coupling_constraints(m.model) for m in values(cm.members))
 
 function Accessors.coupling_bounds(cm::CommunityModel)
-    lbs = vcat([first(coupling_bounds(m.model)) for m in cm.members]...)
-    ubs = vcat([last(coupling_bounds(m.model)) for m in cm.members]...)
+    lbs = vcat([first(coupling_bounds(m.model)) for m in values(cm.members)]...)
+    ubs = vcat([last(coupling_bounds(m.model)) for m in values(cm.members)]...)
     return (lbs, ubs)
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Returns a matrix, which when multipled by the solution of a constraints based
-problem, yields the semantically meaningful fluxes that correspond to
-[`reactions`](@ref).
-"""
-function Accessors.reaction_variables_matrix(cm::CommunityModel)
-    rfs = blockdiag([reaction_variables_matrix(m.model) for m in cm.members]...)
-    nr = length(cm.environmental_links)
-    blockdiag(rfs, spdiagm(fill(1, nr)))
+function Accessors.reaction_variables(model::CommunityModel)
+    nlu_r(id, x) = model.name_lookup[id][:reactions][x]
+    nlu_v(id, x) = model.name_lookup[id][:variables][x]
+    r_v = Dict{String,Dict{String,Float64}}()
+    for (id, m) in model.members
+        r_v_m = reaction_variables(m.model)
+        for (k, v) in r_v_m
+            r_v[nlu_r(id, k)] = Dict(nlu_v(id, kk) => vv for (kk, vv) in v)
+        end
+    end
+    r_v
 end
 
 Accessors.reactions(cm::CommunityModel) = [
-    vcat([add_community_prefix.(Ref(m), reactions(m.model)) for m in cm.members]...)
+    vcat(
+        [
+            [cm.name_lookup[id][:reactions][rid] for rid in reactions(m.model)] for
+            (id, m) in cm.members
+        ]...,
+    )
     [envlink.reaction_id for envlink in cm.environmental_links]
 ]
 
 Accessors.n_reactions(cm::CommunityModel) =
-    sum(n_reactions(m.model) for m in cm.members) + length(cm.environmental_links)
+    sum(n_reactions(m.model) for m in values(cm.members)) + length(cm.environmental_links)
 
 """
 $(TYPEDSIGNATURES)
 
-Environmental reaction mapping to model variables.
+Environmental exchange reaction mapping to model variables.
 """
-Accessors.environmental_reaction_variables(model::CommunityModel) = Dict(
+Accessors.environmental_exchange_variables(model::CommunityModel) = Dict(
     rid => Dict(rid => 1.0) for
     rid in [envlink.reaction_id for envlink in model.environmental_links]
 )
 
+"""
+$(TYPEDSIGNATURES)
+
+Environmental exchange reaction mapping to model variables.
+"""
+function Accessors.enzyme_variables(model::CommunityModel)
+    nlu(id, x) = model.name_lookup[id][:genes][x]
+    e_v = Dict{String,Dict{String,Float64}}()
+    for (id, m) in model.members
+        e_v_m = enzyme_variables(m.model)
+        for (k, v) in e_v_m
+            e_v[nlu(id, k)] = Dict(nlu(id, kk) => vv for (kk, vv) in v)
+        end
+    end
+    e_v
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Get a mapping of enzyme groups to variables. See [`enzyme_variables`](@ref).
+"""
+function Accessors.enzyme_group_variables(model::CommunityModel)
+    nlu(id, x) = model.name_lookup[id][:genes][x]
+    e_g_v = Dict{String,Dict{String,Float64}}()
+    for (id, m) in model.members
+        e_g_v_m = enzyme_group_variables(m.model)
+        for (k, v) in e_g_v_m
+            e_g_v[id*"#"*k] = Dict(nlu(id, kk) => vv for (kk, vv) in v)
+        end
+    end
+    e_g_v
+end
+
 #=
-This loops implements the rest of the accssors through access_community_member.
+This loops implements the rest of the accessors through access_community_member.
 Since most of the environmental reactions are generated programmtically, they
 will not have things like annotations etc. For this reason, these methods will
 only work if they access something inside the community members.

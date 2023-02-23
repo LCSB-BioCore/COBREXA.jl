@@ -44,13 +44,17 @@ function env_ex_member_matrix(
     env_mets::Vector{String},
     env_rxns::Vector{String},
 )
-    mat = spzeros(length(env_mets), n_variables(m.model))
-    for (midx, mid) in enumerate(env_mets)
-        mid in metabolites(m.model) || continue # does not have this exchange
-        ridx = first(indexin([env_rxns[midx]], variables(m.model))) #  find index of exchange reaction in member
-        mat[midx, ridx] = 1.0
-    end
-    return mat
+    idxs = [
+        (i, j) for
+        (i, j) in enumerate(indexin(env_rxns, variables(m.model))) if !isnothing(j)
+    ]
+    sparse(
+        first.(idxs),
+        last.(idxs),
+        ones(length(idxs)),
+        length(env_mets),
+        n_variables(m.model),
+    )
 end
 
 """
@@ -66,7 +70,7 @@ function env_ex_matrix(cm)
     hcat(
         [
             env_ex_member_matrix(m, env_mets, env_rxns) .* a for
-            (m, a) in zip(cm.members, cm.abundances)
+            (m, a) in zip(values(cm.members), cm.abundances)
         ]...,
     )
 end
@@ -84,7 +88,7 @@ function env_ex_matrix(cm, abundances)
     hcat(
         [
             env_ex_member_matrix(m, env_mets, env_rxns) .* a for
-            (m, a) in zip(cm.members, abundances)
+            (m, a) in zip(values(cm.members), abundances)
         ]...,
     )
 end
@@ -97,20 +101,36 @@ is delimited by `#` that separates the model ID prefix and the original id.
 """
 function access_community_member(
     cm::CommunityModel,
-    id::String,
+    delim_id::String,
     accessor::Function;
+    delim = "#",
     default = nothing,
 )
-    id_split = split(id, "#")
-    idx = findfirst(startswith(first(id_split)), m.id for m in cm.members)
-    isnothing(idx) && return default # can only access inside community member
-    accessor(cm.members[idx].model, string(last(id_split)))
-end
+    modelid_nameid = string.(split(delim_id, delim))
+    length(modelid_nameid) == 1 && return default # accessor default
 
+    modelid = first(modelid_nameid)
+    nameid = last(modelid_nameid)
+
+    accessor(cm.members[modelid].model, nameid)
+end
 
 """
 $(TYPEDSIGNATURES)
 
-A helper function to add the id of the community member as a prefix to some string.
+A helper function to build the `names_lookup` dictionary for a
+[`CommunityModel`](@ref).
 """
-add_community_prefix(m::CommunityMember, str::String; delim = "#") = m.id * delim * str
+function build_community_name_lookup(
+    members::OrderedDict{String,CommunityMember};
+    delim = "#",
+)
+    accessors = [variables, reactions, metabolites, genes]
+    Dict(
+        id => Dict(
+            Symbol(accessor) =>
+                Dict(k => id * delim * k for k in accessor(member.model)) for
+            accessor in accessors
+        ) for (id, member) in members
+    )
+end

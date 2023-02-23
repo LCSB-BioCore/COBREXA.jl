@@ -35,7 +35,6 @@
     )
 
     cm1 = CommunityMember(
-        id = "m1",
         model = m1,
         exchange_reaction_ids = ["EX_A", "EX_B"],
         biomass_reaction_id = "r2",
@@ -43,14 +42,13 @@
     @test contains(sprint(show, MIME("text/plain"), cm1), "community member")
 
     cm2 = CommunityMember(
-        id = "m2",
         model = m2,
         exchange_reaction_ids = ["EX_A", "EX_C"],
         biomass_reaction_id = "r2",
     )
 
     cm = CommunityModel(
-        members = [cm1, cm2],
+        members = OrderedDict("m1" => cm1, "m2" => cm2),
         abundances = [0.2, 0.8],
         environmental_links = [
             EnvironmentalLink("EX_A", "Ae", -10.0, 10.0)
@@ -224,7 +222,6 @@
     x = res3.result[:x]
     @test normalized_coefficient(mb[10], x[5]) == 0.3
     @test normalized_coefficient(mb[10], x[12]) == -0.3
-
 end
 
 @testset "EqualGrowthCommunityModel: e coli core" begin
@@ -234,13 +231,11 @@ end
     ex_rxns = COBREXA.Utils.find_exchange_reaction_ids(ecoli)
 
     cm1 = CommunityMember(
-        id = "ecoli1",
         model = ecoli,
         exchange_reaction_ids = ex_rxns,
         biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
     )
     cm2 = CommunityMember(
-        id = "ecoli2",
         model = ecoli,
         exchange_reaction_ids = ex_rxns,
         biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
@@ -255,7 +250,7 @@ end
     a2 = 0.8 # abundance species 2
 
     cm = CommunityModel(
-        members = [cm1, cm2],
+        members = OrderedDict("ecoli1" => cm1, "ecoli2" => cm2),
         abundances = [a1, a2],
         environmental_links = [
             EnvironmentalLink(rid, mid, lb, ub) for
@@ -354,13 +349,11 @@ end
         with_enzyme_constraints(total_gene_product_mass_bound = 100.0)
 
     cm1 = CommunityMember(
-        id = "ecoli1",
         model = gm,
         exchange_reaction_ids = ex_rxns,
         biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
     )
     cm2 = CommunityMember(
-        id = "ecoli2",
         model = gm,
         exchange_reaction_ids = ex_rxns,
         biomass_reaction_id = "BIOMASS_Ecoli_core_w_GAM",
@@ -374,7 +367,7 @@ end
     ex_ubs = [ecoli.reactions[rid].upper_bound for rid in ex_rxns]
 
     cm = CommunityModel(
-        members = [cm1, cm2],
+        members = OrderedDict("ecoli1" => cm1, "ecoli2" => cm2),
         abundances = [a1, a2],
         environmental_links = [
             EnvironmentalLink(rid, mid, lb, ub) for
@@ -393,21 +386,31 @@ end
         modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 2000)],
     )
 
-    f_d = values_dict(:reaction, res)
+    f_a = values_dict(res)
+    @test length(f_a) == 665
 
+    f_r = values_dict(:reaction, res)
     @test isapprox(
-        f_d[eqgr.community_objective_id],
+        f_r[eqgr.community_objective_id],
         0.9210836692534606,
         atol = TEST_TOLERANCE,
     )
 
     # test convenience operators
-    f_env = values_dict(:environmental_reaction, res)
-    @test f_env["EX_o2_e"] == f_d["EX_o2_e"] # this should(?) be non-variable
+    f_env = values_dict(:environmental_exchange, res)
+    @test isapprox(
+        f_env["EX_o2_e"],
+        a1 * f_d["ecoli1#EX_o2_e"] + a2 * f_d["ecoli2#EX_o2_e"];
+        atol = TEST_TOLERANCE,
+    )
 
-    @test values_community_member_dict(res, cm1)["EX_glc__D_e"] == f_d["ecoli1#EX_glc__D_e"]
+    f_e = values_dict(:enzyme, res)
+    @test isapprox(
+        sum(v for (k, v) in f_e if startswith(k, "ecoli1")),
+        100.0;
+        atol = TEST_TOLERANCE,
+    )
 
-    @test values_community_member_dict(:enzyme, res, cm2)["b4301"] ==
-          values_dict(res)["ecoli2#b4301"] *
-          gene_product_molar_mass(cm2.model.inner, "b4301")
+    f_g = values_dict(:enzyme_group, res)
+    @test isapprox(f_g["ecoli2#uncategorized"], 100.0; atol = TEST_TOLERANCE)
 end
