@@ -66,7 +66,7 @@ function check_has_biomass_rxn_biomas_metabolite(
     biomass_rxn_id,
     biomass_metabolite_id,
 )
-    haskey(model_reactions[biomass_rxn_id], biomass_metabolite_id) ||
+    haskey(model_reactions[biomass_rxn_id].metabolites, biomass_metabolite_id) ||
         throw(DomainError(biomass_metabolite_id, " not found in $biomass_rxn_id."))
     nothing
 end

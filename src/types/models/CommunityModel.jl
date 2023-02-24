@@ -138,7 +138,7 @@ function Accessors.stoichiometry(cm::CommunityModel)
     model_S = blockdiag([stoichiometry(m.model) for m in values(cm.members)]...)
     model_env = spzeros(size(model_S, 1), length(cm.environmental_links))
 
-    env_rows = env_ex_matrix(cm)
+    env_rows = environment_exchange_stoichiometry(cm)
     env_link = spdiagm(sum(env_rows, dims = 2)[:])
 
     return [

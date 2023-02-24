@@ -22,8 +22,9 @@ modify_abundances(new_abundances::Vector{Float64}) =
         check_abundances(new_abundances) # TODO consider removing: too pedantic
 
         env_rows =
-            model isa CommunityModel ? env_ex_matrix(model, new_abundances) :
-            env_ex_matrix(model.inner, new_abundances)
+            model isa CommunityModel ?
+            environment_exchange_stoichiometry(model, new_abundances) :
+            environment_exchange_stoichiometry(model.inner, new_abundances)
         env_link = spdiagm(sum(env_rows, dims = 2)[:])
 
         n_vars = n_variables(model)

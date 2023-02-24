@@ -39,7 +39,7 @@ $(TYPEDSIGNATURES)
 A helper function that creates an exchange/environmental variable linking matrix
 for community member `m`.
 """
-function env_ex_member_matrix(
+function environment_exchange_stoichiometry(
     m::CommunityMember,
     env_mets::Vector{String},
     env_rxns::Vector{String},
@@ -63,13 +63,13 @@ $(TYPEDSIGNATURES)
 A helper function that creates the entire exchange/environmental variable
 linking matrix for a community model.
 """
-function env_ex_matrix(cm)
+function environment_exchange_stoichiometry(cm::CommunityModel)
     env_mets = [envlink.metabolite_id for envlink in cm.environmental_links]
     env_rxns = [envlink.reaction_id for envlink in cm.environmental_links]
 
     hcat(
         [
-            env_ex_member_matrix(m, env_mets, env_rxns) .* a for
+            environment_exchange_stoichiometry(m, env_mets, env_rxns) .* a for
             (m, a) in zip(values(cm.members), cm.abundances)
         ]...,
     )
@@ -78,16 +78,16 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Variant of [`env_ex_matrix`](@ref) that takes an explicit abundance matrix (used
+Variant of [`environment_exchange_stoichiometry`](@ref) that takes an explicit abundance matrix (used
 in solver modifications.)
 """
-function env_ex_matrix(cm, abundances)
+function environment_exchange_stoichiometry(cm::CommunityModel, abundances)
     env_mets = [envlink.metabolite_id for envlink in cm.environmental_links]
     env_rxns = [envlink.reaction_id for envlink in cm.environmental_links]
 
     hcat(
         [
-            env_ex_member_matrix(m, env_mets, env_rxns) .* a for
+            environment_exchange_stoichiometry(m, env_mets, env_rxns) .* a for
             (m, a) in zip(values(cm.members), abundances)
         ]...,
     )
@@ -110,7 +110,7 @@ function access_community_member(
     length(modelid_nameid) == 1 && return default # accessor default
 
     modelid = first(modelid_nameid)
-    nameid = last(modelid_nameid)
+    nameid = modelid_nameid[2] # TODO deal with delimiters better
 
     accessor(cm.members[modelid].model, nameid)
 end

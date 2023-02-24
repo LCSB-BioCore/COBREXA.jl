@@ -187,9 +187,13 @@
     @test isnothing(new_model.reactions["r2"].gene_associations)
 
     # test added biomass metabolite
-    # new_model = model |> with_added_biomass_metabolite("BIOMASS_Ecoli_core_w_GAM")
-    # @test "biomass" in metabolites(modded_ecoli)
-    # @test !("biomass" in metabolites(ecoli))
-    # @test haskey(modded_ecoli.reactions["BIOMASS_Ecoli_core_w_GAM"].metabolites, "biomass")
-    # @test !haskey(ecoli.reactions["BIOMASS_Ecoli_core_w_GAM"].metabolites, "biomass")
+    new_model = model |> with_added_biomass_metabolite("r2")
+    @test "biomass" in metabolites(new_model)
+    @test !("biomass" in metabolites(model))
+    @test haskey(new_model.reactions["r2"].metabolites, "biomass")
+    @test !haskey(model.reactions["r2"].metabolites, "biomass")
+
+    new_model2 = new_model |> with_removed_biomass_metabolite("r2")
+    @test !("biomass" in metabolites(new_model2))
+    @test !haskey(new_model2.reactions["r2"].metabolites, "biomass")
 end
