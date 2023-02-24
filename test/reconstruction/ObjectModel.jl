@@ -185,4 +185,15 @@
     new_model2 = new_model |> with_added_isozymes("r2", isos)
     @test !isnothing(new_model2.reactions["r2"].gene_associations)
     @test isnothing(new_model.reactions["r2"].gene_associations)
+
+    # test added biomass metabolite
+    new_model = model |> with_added_biomass_metabolite("r2")
+    @test "biomass" in metabolites(new_model)
+    @test !("biomass" in metabolites(model))
+    @test haskey(new_model.reactions["r2"].metabolites, "biomass")
+    @test !haskey(model.reactions["r2"].metabolites, "biomass")
+
+    new_model2 = new_model |> with_removed_biomass_metabolite("r2")
+    @test !("biomass" in metabolites(new_model2))
+    @test !haskey(new_model2.reactions["r2"].metabolites, "biomass")
 end

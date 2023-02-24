@@ -155,6 +155,16 @@ negative (2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
 """
 )
 
+@make_variable_semantics(
+    :environmental_exchange,
+    "Environmental exchange reaction",
+    """
+Community models are composed of member models as well as environmental exchange
+reactions. This semantic grouping represents the environmental exchange
+reactions.
+"""
+)
+
 """
 $(TYPEDSIGNATURES)
 

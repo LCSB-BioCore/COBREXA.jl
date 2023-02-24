@@ -21,7 +21,9 @@ using ..Internal:
     check_has_biomass_rxn_id,
     check_biomass_rxn_has_isozymes,
     check_has_virtualribosome,
-    check_has_biomass_rxn_biomas_metabolite
+    check_has_biomass_rxn_biomas_metabolite,
+    check_environmental_ids,
+    check_abundances
 using ..Internal.Macros
 using ..Log.Internal
 using ..Types
