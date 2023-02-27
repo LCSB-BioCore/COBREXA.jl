@@ -34,7 +34,7 @@ function make_simplified_enzyme_constrained_model(
         argmax(isozyme -> speed_enzyme(model, isozyme), isozymes)
     end
 
-    columns = Vector{Types._SimplifiedEnzymeConstrainedColumn}()
+    columns = Vector{Wrappers.Internal.SimplifiedEnzymeConstrainedColumn}()
 
     (lbs, ubs) = bounds(model)
     rids = variables(model)
@@ -47,7 +47,7 @@ function make_simplified_enzyme_constrained_model(
             # non-enzymatic reaction (or a totally ignored one)
             push!(
                 columns,
-                Types._SimplifiedEnzymeConstrainedColumn(i, 0, lbs[i], ubs[i], 0),
+                Wrappers.Internal.SimplifiedEnzymeConstrainedColumn(i, 0, lbs[i], ubs[i], 0),
             )
             continue
         end
@@ -61,7 +61,7 @@ function make_simplified_enzyme_constrained_model(
             # reaction can run in reverse
             push!(
                 columns,
-                Types._SimplifiedEnzymeConstrainedColumn(
+                Wrappers.Internal.SimplifiedEnzymeConstrainedColumn(
                     i,
                     -1,
                     max(-ubs[i], 0),
@@ -75,7 +75,7 @@ function make_simplified_enzyme_constrained_model(
             # reaction can run forward
             push!(
                 columns,
-                Types._SimplifiedEnzymeConstrainedColumn(
+                Wrappers.Internal.SimplifiedEnzymeConstrainedColumn(
                     i,
                     1,
                     max(lbs[i], 0),

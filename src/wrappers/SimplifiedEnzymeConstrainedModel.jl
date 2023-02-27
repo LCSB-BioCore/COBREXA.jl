@@ -2,22 +2,6 @@
 """
 $(TYPEDEF)
 
-A helper type that describes the contents of [`SimplifiedEnzymeConstrainedModel`](@ref)s.
-
-# Fields
-$(TYPEDFIELDS)
-"""
-struct _SimplifiedEnzymeConstrainedColumn
-    reaction_idx::Int # number of the corresponding reaction in the inner model
-    direction::Int # 0 if "as is" and unique, -1 if reverse-only part, 1 if forward-only part
-    lb::Float64 # must be 0 if the reaction is unidirectional (if direction!=0)
-    ub::Float64
-    capacity_required::Float64 # must be 0 for bidirectional reactions (if direction==0)
-end
-
-"""
-$(TYPEDEF)
-
 An enzyme-capacity-constrained model using sMOMENT algorithm, as described by
 *Bekiaris, Pavlos Stephanos, and Steffen Klamt, "Automatic construction of
 metabolic models with enzyme constraints" BMC bioinformatics, 2020*.
@@ -64,7 +48,7 @@ enzymes, or those that should be ignored need to return `nothing` when
 $(TYPEDFIELDS)
 """
 struct SimplifiedEnzymeConstrainedModel <: AbstractModelWrapper
-    columns::Vector{_SimplifiedEnzymeConstrainedColumn}
+    columns::Vector{SimplifiedEnzymeConstrainedColumn}
     total_gene_product_mass_bound::Float64
 
     inner::AbstractMetabolicModel
