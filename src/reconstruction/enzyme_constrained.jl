@@ -73,7 +73,15 @@ function make_enzyme_constrained_model(
         if isnothing(isozymes)
             push!(
                 columns,
-                Wrappers.Internal.EnzymeConstrainedReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []),
+                Wrappers.Internal.EnzymeConstrainedReactionColumn(
+                    i,
+                    0,
+                    0,
+                    0,
+                    lbs[i],
+                    ubs[i],
+                    [],
+                ),
             )
             continue
         end
@@ -164,7 +172,8 @@ function make_enzyme_constrained_model(
 
     EnzymeConstrainedModel(
         [
-            Wrappers.Internal.enzyme_constrained_column_reactions(columns, model)' * objective(model)
+            Wrappers.Internal.enzyme_constrained_column_reactions(columns, model)' *
+            objective(model)
             spzeros(length(coupling_row_gene_product))
         ],
         columns,

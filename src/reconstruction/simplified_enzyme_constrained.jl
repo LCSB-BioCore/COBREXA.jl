@@ -47,7 +47,13 @@ function make_simplified_enzyme_constrained_model(
             # non-enzymatic reaction (or a totally ignored one)
             push!(
                 columns,
-                Wrappers.Internal.SimplifiedEnzymeConstrainedColumn(i, 0, lbs[i], ubs[i], 0),
+                Wrappers.Internal.SimplifiedEnzymeConstrainedColumn(
+                    i,
+                    0,
+                    lbs[i],
+                    ubs[i],
+                    0,
+                ),
             )
             continue
         end
