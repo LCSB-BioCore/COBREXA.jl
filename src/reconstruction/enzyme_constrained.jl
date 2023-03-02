@@ -6,7 +6,7 @@ given by the GECKO algorithm (see [`EnzymeConstrainedModel`](@ref) documentation
 for details). Multiple mass constraint groups can be placed on the model using
 the keyword arguments.
 
-Parameters `gene_product_mass_group` and `gene_product_mass_group_bound` specify
+Parameters `gene_product_mass_groups` and `gene_product_mass_group_bounds` specify
 the groups of gene products, and the respective total mass limit for each group.
 Gene products that are not listed in any gene product mass group are ignored.
 
@@ -19,11 +19,11 @@ capacity" in the model.
 ```
 ecmodel = make_enzyme_constrained_model(
     model;
-    gene_product_mass_group = Dict(
+    gene_product_mass_groups = Dict(
         "membrane" => ["e1", "e2"],
         "total" => ["e1", "e2", "e3"],
     ),
-    gene_product_mass_group_bound = Dict(
+    gene_product_mass_group_bounds = Dict(
         "membrane" => 0.2,
         "total" => 0.5,
     ),
@@ -37,18 +37,18 @@ ecmodel2 = make_enzyme_constrained_model(
 """
 function make_enzyme_constrained_model(
     model::AbstractMetabolicModel;
-    gene_product_mass_group::Maybe{Dict{String,Vector{String}}} = nothing,
-    gene_product_mass_group_bound::Maybe{Dict{String,Float64}} = nothing,
+    gene_product_mass_groups::Maybe{Dict{String,Vector{String}}} = nothing,
+    gene_product_mass_group_bounds::Maybe{Dict{String,Float64}} = nothing,
     total_gene_product_mass_bound::Maybe{Float64} = nothing,
 )
     if !isnothing(total_gene_product_mass_bound)
-        gene_product_mass_group = Dict("uncategorized" => genes(model))
-        gene_product_mass_group_bound =
+        gene_product_mass_groups = Dict("uncategorized" => genes(model))
+        gene_product_mass_group_bounds =
             Dict("uncategorized" => total_gene_product_mass_bound)
     end
-    isnothing(gene_product_mass_group) &&
+    isnothing(gene_product_mass_groups) &&
         throw(ArgumentError("missing mass group specification"))
-    isnothing(gene_product_mass_group_bound) &&
+    isnothing(gene_product_mass_group_bounds) &&
         throw(ArgumentError("missing mass group bounds"))
 
     gpb_(gid) = (gene_product_lower_bound(model, gid), gene_product_upper_bound(model, gid))
@@ -137,7 +137,7 @@ function make_enzyme_constrained_model(
     # prepare enzyme capacity constraints
     mg_gid_lookup = Dict{String,Vector{String}}()
     for gid in gids[coupling_row_gene_product]
-        for (mg, mg_gids) in gene_product_mass_group #  each gid can belong to multiple mass groups
+        for (mg, mg_gids) in gene_product_mass_groups #  each gid can belong to multiple mass groups
             gid ∉ mg_gids && continue
             if haskey(mg_gid_lookup, mg)
                 push!(mg_gid_lookup[mg], gid)
@@ -156,7 +156,7 @@ function make_enzyme_constrained_model(
                 grp,
                 idxs,
                 mms,
-                gene_product_mass_group_bound[grp],
+                gene_product_mass_group_bounds[grp],
             ),
         )
     end
