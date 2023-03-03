@@ -59,9 +59,9 @@ function Accessors.objective(m::MinimizeSemanticDistance)
     (_, _, _, smtx) = Accessors.Internal.semantics(m.semantics)
     Sem = smtx(m.inner)
 
-    return Sem' *
+    return Sem *
            [spdiagm(fill(-0.5, size(Sem, 2))) m.center] *
-           [Sem zeros(size(Sem, 1)); zeros(size(Sem, 2))' 1.0]
+           [Sem' zeros(size(Sem, 2)); zeros(size(Sem, 1))' 1.0]
 end
 
 """
