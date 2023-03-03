@@ -95,7 +95,7 @@
         with_parsimonious_solution(:enzyme) |>
         flux_balance_analysis(
             Clarabel.Optimizer;
-            modifications = [modify_optimizer_attribute("max_iter", 1000)],
+            modifications = [modify_optimizer_attribute("max_iter", 1000), silence],
         )
 
     @test isapprox(
