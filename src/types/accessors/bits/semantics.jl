@@ -64,7 +64,7 @@ $(TYPEDSIGNATURES)
 Like [`get_semantics`](@ref) but throws a `DomainError` if the semantics is not
 available.
 """
-function semantics(semantics::Symbol)::Types.Maybe{Semantic}
+function semantics(semantics::Symbol)::Semantic
     res = get_semantics(semantics)
     isnothing(res) && throw(DomainError(semantics, "unknown semantics"))
     res
