@@ -62,8 +62,8 @@ enzyme_constrained_model =
         reaction_isozymes = rxn_isozymes,
         gene_product_bounds,
         gene_product_molar_mass = gene_product_masses,
-        gene_product_mass_group = _ -> "uncategorized", # all products belong to the same "uncategorized" category
-        gene_product_mass_group_bound = _ -> 100.0, # the total limit of mass in the single category
+        gene_product_mass_groups = _ -> "uncategorized", # all products belong to the same "uncategorized" category
+        gene_product_mass_group_bounds = _ -> 100.0, # the total limit of mass in the single category
     )
 
 # (Alternatively, you may use [`make_enzyme_constrained_model`](@ref), which does the same
