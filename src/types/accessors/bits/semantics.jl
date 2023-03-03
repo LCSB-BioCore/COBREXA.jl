@@ -113,9 +113,7 @@ definition of the correspondence of $name and model variables.
 """,
         ),
         :(function $plural(a::AbstractMetabolicModel)::Vector{String}
-            x = collect(keys($mapping(a)))
-            sort!(x)
-            x
+            String[]
         end),
     )
 
@@ -133,7 +131,7 @@ vector returned by [`$plural`].
 """,
         ),
         :(function $count(a::AbstractMetabolicModel)::Int
-            length($mapping(a))
+            0
         end),
     )
 
@@ -182,6 +180,14 @@ safety reasons, this is never automatically inherited by wrappers.
     )
 
     Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn])
+
+    Base.eval(themodule, :(function $plural(w::AbstractModelWrapper)::Vector{String}
+        $plural(unwrap_model(w))
+    end))
+
+    Base.eval(themodule, :(function $count(w::AbstractModelWrapper)::Int
+        $count(unwrap_model(w))
+    end))
 
     Base.eval(
         themodule,
