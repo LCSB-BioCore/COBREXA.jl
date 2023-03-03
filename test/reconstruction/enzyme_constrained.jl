@@ -92,7 +92,7 @@
         model |>
         with_changed_bound("BIOMASS_Ecoli_core_w_GAM", lower_bound = growth_lb) |>
         with_enzyme_constraints(; total_gene_product_mass_bound) |>
-        with_parsimonious_solution(:enzyme) |>
+        with_parsimonious_objective(:enzyme) |>
         flux_balance_analysis(
             Clarabel.Optimizer;
             modifications = [modify_optimizer_attribute("max_iter", 1000), silence],

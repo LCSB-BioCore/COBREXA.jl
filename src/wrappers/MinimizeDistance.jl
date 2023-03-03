@@ -25,41 +25,69 @@ variants of the same concept. Internally powered by
 [`MinimizeSolutionDistance`](@ref).
 """
 minimize_solution_distance(center::Vector{Float64}) =
-    model -> MinimizeSolutionDistance(center, model)
+    model::AbstractMetabolicModel -> MinimizeSolutionDistance(center, model)
+
+"""
+$(TYPEDSIGNATURES)
+
+Set an objective that finds a solution of minimal norm. Typically, it is
+necessary to also add more constraints to the objective that prevent optimality
+of the trivial zero solution.
+
+This can be used to implement [`parsimonious_flux_balance_analysis`](@ref) in a
+flexible way that fits into larger model systems.
+"""
+with_parsimonious_objective() =
+    model::AbstractMetabolicModel ->
+        MinimizeSolutionDistance(zeros(n_variables(model)), model)
 
 """
 $(TYPEDEF)
 
 A wrapper that sets an objective that minimizes Euclidean distance from a given
-point in a semantic.
+point in a semantics.
 """
 struct MinimizeSemanticDistance <: AbstractModelWrapper
-    semantic::Symbol
+    semantics::Symbol
     center::Vector{Float64}
     inner::AbstractMetabolicModel
 end
 
 Accessors.unwrap_model(m::MinimizeSemanticDistance) = m.inner
 
-Accessors.objective(m::MinimizeSemanticDistance) =
-    let
-        Sem = variable_semantic_mtx(m.semantic, m.inner)
-        Sem' *
-        [spdiagm(fill(-0.5, size(Sem, 2))) m.center] *
-        [Sem zeros(size(Sem, 1)); zeros(size(Sem, 2))' 1.0]
-    end
+function Accessors.objective(m::MinimizeSemanticDistance)
+    (_, _, _, smtx) = Accessors.Internal.semantics(m.semantics)
+    Sem = smtx(m.inner)
+
+    return Sem' *
+           [spdiagm(fill(-0.5, size(Sem, 2))) m.center] *
+           [Sem zeros(size(Sem, 1)); zeros(size(Sem, 2))' 1.0]
+end
 
 """
 $(TYPEDSIGNATURES)
 
 Set a quadratic objective that minimizes the solution distance from a selected
-point in a space defined by a given semantic. Use
+point in a space defined by a given semantics. Use
 [`minimize_projected_distance`](@ref) for more fine-grained and weighted
 variant, and [`minimize_solution_distance`](@ref) for working directly upon
 variables. Internally powered by [`MinimizeSemanticDistance`](@ref).
 """
-minimize_semantic_distance(semantic::Symbol, center::Vector{Float64}) =
-    model -> MinimizeSolutionDistance(semantic, center, model)
+minimize_semantic_distance(semantics::Symbol, center::Vector{Float64}) =
+    model::AbstractMetabolicModel -> MinimizeSolutionDistance(semantics, center, model)
+
+"""
+$(TYPEDSIGNATURES)
+
+Set an objective that finds a solution of minimal norm in a given semantics.
+This can be used to implement various realistic variants of
+[`parsimonious_flux_balance_analysis`](@ref).
+"""
+with_parsimonious_objective(semantics::Symbol) =
+    model::AbstractMetabolicModel -> let
+        (_, n_sem, _, _) = Accessors.Internal.semantics(semantics)
+        MinimizeSemanticDistance(semantics, zeros(n_sem(model)), model)
+    end
 
 """
 $(TYPEDEF)
@@ -92,4 +120,14 @@ for simpler variants. Internally powered by
 [`MinimizeProjectedDistance`](@ref).
 """
 minimize_projected_distance(proj::SparseMat, center::Vector{Float64}) =
-    model -> MinimizeProjectedDistance(proj, center, model)
+    model::AbstractMetabolicModel -> MinimizeProjectedDistance(proj, center, model)
+
+"""
+$(TYPEDSIGNATURES)
+
+Set a quadratic objective that minimizes the norm in a given projection of
+model variables.
+"""
+with_parsimonious_objective(proj::SparseMat) =
+    model::AbstractMetabolicModel ->
+        MinimizeProjectedDistance(proj, zeros(size(proj, 1)), model)

@@ -19,12 +19,12 @@
     d2 =
         model |>
         with_changed_bound("biomass1", lower_bound = 10.0) |>
-        with_parsimonious_solution(:reaction) |>
+        with_parsimonious_objective(:reaction) |>
         flux_balance_analysis(Clarabel.Optimizer, modifications = [silence]) |>
         values_dict
 
     @test all(isapprox(d[k], d2[k], atol = QP_TEST_TOLERANCE) for k in keys(d2))
 
-    Q = objective(model |> with_parsimonious_solution(:reaction))
-    @test all(Q[i, i] == -1 for i = 1:7)
+    Q = objective(model |> with_parsimonious_objective(:reaction))
+    @test all(diag(Q) .== -0.5)
 end
