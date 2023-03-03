@@ -16,6 +16,7 @@ Metabolic Networks, Proceedings of the National Academy of Sciences, 2002" for
 more details.
 
 Additional arguments are passed to [`flux_balance_analysis`](@ref).
+See [`minimize_solution_distance`](@ref) for implementation details.
 
 Returns an optimized model that contains the feasible flux nearest to the
 reference.
@@ -39,7 +40,7 @@ minimize_metabolic_adjustment_analysis(
     optimizer;
     kwargs...,
 ) = flux_balance_analysis(
-    model |> Reconstruction.Pipes.minimize_adjustment(reference_flux),
+    model |> minimize_solution_distance(reference_flux),
     optimizer;
     kwargs...,
 )

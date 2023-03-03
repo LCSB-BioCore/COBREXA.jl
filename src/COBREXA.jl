@@ -44,6 +44,7 @@ using .ModuleTools
 
 # start loading individual user-facing modules
 @inc types
+@inc wrappers
 
 @inc io
 @inc solver
@@ -61,6 +62,7 @@ module Everything
     @reexport Reconstruction Pipes
     @reexport Solver
     @reexport Types
+    @reexport Wrappers
     @reexport Utils
 end
 

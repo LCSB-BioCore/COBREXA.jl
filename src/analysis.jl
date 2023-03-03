@@ -20,11 +20,11 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
+using ..Wrappers
 using ..Internal: constants
 using ..Log.Internal: @models_log
 using ..Solver
 using ..Types
-using ..Types: _EnzymeConstrainedReactionColumn, _SimplifiedEnzymeConstrainedColumn
 
 using Distributed
 using DistributedData

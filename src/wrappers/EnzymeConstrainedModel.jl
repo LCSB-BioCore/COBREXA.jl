@@ -1,36 +1,3 @@
-"""
-$(TYPEDEF)
-
-A helper type for describing the contents of [`EnzymeConstrainedModel`](@ref)s.
-
-# Fields
-$(TYPEDFIELDS)
-"""
-struct _EnzymeConstrainedReactionColumn
-    reaction_idx::Int
-    isozyme_idx::Int
-    direction::Int
-    reaction_coupling_row::Int
-    lb::Float64
-    ub::Float64
-    gene_product_coupling::Vector{Tuple{Int,Float64}}
-end
-
-"""
-$(TYPEDEF)
-
-A helper struct that contains the gene product capacity terms organized by
-the grouping type, e.g. metabolic or membrane groups etc.
-
-# Fields
-$(TYPEDFIELDS)
-"""
-struct _EnzymeConstrainedCapacity
-    group_id::String
-    gene_product_idxs::Vector{Int}
-    gene_product_molar_masses::Vector{Float64}
-    group_upper_bound::Float64
-end
 
 """
 $(TYPEDEF)
@@ -86,10 +53,10 @@ $(TYPEDFIELDS)
 """
 struct EnzymeConstrainedModel <: AbstractModelWrapper
     objective::SparseVec
-    columns::Vector{_EnzymeConstrainedReactionColumn}
+    columns::Vector{EnzymeConstrainedReactionColumn}
     coupling_row_reaction::Vector{Int}
     coupling_row_gene_product::Vector{Tuple{Int,Tuple{Float64,Float64}}}
-    coupling_row_mass_group::Vector{_EnzymeConstrainedCapacity}
+    coupling_row_mass_group::Vector{EnzymeConstrainedCapacity}
 
     inner::AbstractMetabolicModel
 end

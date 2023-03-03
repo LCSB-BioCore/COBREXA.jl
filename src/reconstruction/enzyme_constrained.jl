@@ -1,3 +1,4 @@
+# TODO move this to wrappers
 """
 $(TYPEDSIGNATURES)
 
@@ -55,7 +56,7 @@ function make_enzyme_constrained_model(
 
     gpmm_(gid) = gene_product_molar_mass(model, gid)
 
-    columns = Vector{Types._EnzymeConstrainedReactionColumn}()
+    columns = Vector{Wrappers.Internal.EnzymeConstrainedReactionColumn}()
     coupling_row_reaction = Int[]
     coupling_row_gene_product = Int[]
 
@@ -72,7 +73,15 @@ function make_enzyme_constrained_model(
         if isnothing(isozymes)
             push!(
                 columns,
-                Types._EnzymeConstrainedReactionColumn(i, 0, 0, 0, lbs[i], ubs[i], []),
+                Wrappers.Internal.EnzymeConstrainedReactionColumn(
+                    i,
+                    0,
+                    0,
+                    0,
+                    lbs[i],
+                    ubs[i],
+                    [],
+                ),
             )
             continue
         end
@@ -119,7 +128,7 @@ function make_enzyme_constrained_model(
                     # make a new column
                     push!(
                         columns,
-                        Types._EnzymeConstrainedReactionColumn(
+                        Wrappers.Internal.EnzymeConstrainedReactionColumn(
                             i,
                             iidx,
                             dir,
@@ -146,13 +155,13 @@ function make_enzyme_constrained_model(
             end
         end
     end
-    coupling_row_mass_group = Vector{Types._EnzymeConstrainedCapacity}()
+    coupling_row_mass_group = Vector{Wrappers.Internal.EnzymeConstrainedCapacity}()
     for (grp, gs) in mg_gid_lookup
         idxs = [gene_row_lookup[x] for x in Int.(indexin(gs, gids))]
         mms = gpmm_.(gs)
         push!(
             coupling_row_mass_group,
-            Types._EnzymeConstrainedCapacity(
+            Wrappers.Internal.EnzymeConstrainedCapacity(
                 grp,
                 idxs,
                 mms,
@@ -163,7 +172,8 @@ function make_enzyme_constrained_model(
 
     EnzymeConstrainedModel(
         [
-            Types.enzyme_constrained_column_reactions(columns, model)' * objective(model)
+            Wrappers.Internal.enzyme_constrained_column_reactions(columns, model)' *
+            objective(model)
             spzeros(length(coupling_row_gene_product))
         ],
         columns,

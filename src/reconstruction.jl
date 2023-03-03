@@ -13,6 +13,7 @@ using ..ModuleTools
 @dse
 
 using ..Accessors
+using ..Wrappers
 using ..Internal:
     constants,
     check_arg_keys_exists,
@@ -52,6 +53,7 @@ end
 @inject Reconstruction.Pipes begin
     using ..Reconstruction
     using ..Types
+    using ..Wrappers
     @inc_dir reconstruction pipes
 
     @export_locals
