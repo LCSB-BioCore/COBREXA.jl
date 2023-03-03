@@ -125,7 +125,7 @@ the original fluxes in the wrapped model.
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
         variables(model),
-        reactions(model),
+        reactions(model.inner),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 
