@@ -33,12 +33,20 @@ using the callback in `qp_modifications`, which are applied after the FBA. See
 the documentation of [`flux_balance_analysis`](@ref) for usage examples of
 modifications.
 
-Thhe optimum relaxation sequence can be specified in `relax` parameter, it
+The optimum relaxation sequence can be specified in `relax` parameter, it
 defaults to multiplicative range of `[1.0, 0.999999, ..., 0.99]` of the original
 bound.
 
 Returns an optimized model that contains the pFBA solution (or an unsolved model
 if something went wrong).
+
+# Performance
+
+This implementation attempts to save time by executing all pFBA steps on a
+single instance of the optimization model problem, trading off possible
+flexibility. For slightly less performant but much more flexible use, one can
+construct parsimonious models directly using
+[`with_parsimonious_objective`](@ref).
 
 # Example
 ```

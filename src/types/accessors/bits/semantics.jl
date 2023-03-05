@@ -64,7 +64,7 @@ $(TYPEDSIGNATURES)
 Like [`get_semantics`](@ref) but throws a `DomainError` if the semantics is not
 available.
 """
-function semantics(semantics::Symbol)::Types.Maybe{Semantic}
+function semantics(semantics::Symbol)::Semantic
     res = get_semantics(semantics)
     isnothing(res) && throw(DomainError(semantics, "unknown semantics"))
     res
@@ -113,9 +113,7 @@ definition of the correspondence of $name and model variables.
 """,
         ),
         :(function $plural(a::AbstractMetabolicModel)::Vector{String}
-            x = collect(keys($mapping(a)))
-            sort!(x)
-            x
+            String[]
         end),
     )
 
@@ -133,7 +131,7 @@ vector returned by [`$plural`].
 """,
         ),
         :(function $count(a::AbstractMetabolicModel)::Int
-            length($mapping(a))
+            0
         end),
     )
 
@@ -182,6 +180,32 @@ safety reasons, this is never automatically inherited by wrappers.
     )
 
     Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn])
+
+    Base.eval(themodule, :(function $plural(w::AbstractModelWrapper)::Vector{String}
+        $plural(unwrap_model(w))
+    end))
+
+    Base.eval(themodule, :(function $count(w::AbstractModelWrapper)::Int
+        $count(unwrap_model(w))
+    end))
+
+    Base.eval(
+        themodule,
+        :(function $mapping(w::AbstractModelWrapper)::Dict{String,Dict{String,Float64}}
+            $mapping(unwrap_model(w))
+        end),
+    )
+
+    # TODO here we would normally also overload the matrix function, but that
+    # one will break once anyone touches variables of the models (which is
+    # common). We should have a macro like @model_does_not_modify_variable_set
+    # that adds the overloads. Or perhaps AbstractModelWrapperWithSameVariables?
+    #
+    # The same probably goes for other semantics;
+    # AbstractModelWrapperThatOnlyTouchesSemantics(...) ? (Which has an
+    # alternative in forcing people to overload all semantic functions in all
+    # cases of adding semantics, which might actually be the right way.)
+
     themodule.Internal.variable_semantics[sym] =
         Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx))
 end

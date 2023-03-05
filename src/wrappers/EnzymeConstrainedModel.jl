@@ -101,12 +101,6 @@ function Accessors.bounds(model::EnzymeConstrainedModel)
     (lbs, ubs)
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
-the original fluxes in the wrapped model (as a matrix).
-"""
 function Accessors.reaction_variables_matrix(model::EnzymeConstrainedModel)
     rxnmat =
         enzyme_constrained_column_reactions(model)' * reaction_variables_matrix(model.inner)
@@ -116,12 +110,6 @@ function Accessors.reaction_variables_matrix(model::EnzymeConstrainedModel)
     ]
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Get the mapping of the reaction rates in [`EnzymeConstrainedModel`](@ref) to
-the original fluxes in the wrapped model.
-"""
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
         variables(model),
@@ -129,20 +117,18 @@ Accessors.reaction_variables(model::EnzymeConstrainedModel) =
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 
-"""
-$(TYPEDSIGNATURES)
+Accessors.enzymes(model::EnzymeConstrainedModel) = genes(model)
 
-Get a mapping of enzyme concentration (on a mass basis, i.e. mass enzyme/mass
-cell) variables to inner variables.
-"""
+Accessors.n_enzymes(model::EnzymeConstrainedModel) = n_genes(model)
+
 Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
-    Dict(gid => Dict(gid => gene_product_molar_mass(model, gid)) for gid in genes(model)) # this is enough for all the semantics to work
+    Dict(gid => Dict(gid => gene_product_molar_mass(model, gid)) for gid in genes(model))
 
-"""
-$(TYPEDSIGNATURES)
+Accessors.enzyme_groups(model::EnzymeConstrainedModel) =
+    [grp.group_id for grp in model.coupling_row_mass_group]
+Accessors.n_enzyme_groups(model::EnzymeConstrainedModel) =
+    length(model.coupling_row_mass_group)
 
-Get a mapping of enzyme groups to variables. See [`enzyme_variables`](@ref).
-"""
 function Accessors.enzyme_group_variables(model::EnzymeConstrainedModel)
     enz_ids = genes(model)
     Dict(
