@@ -73,8 +73,9 @@
         atol = TEST_TOLERANCE,
     )
 
-    # test enzyme objective
+    # test pFBA
     growth_lb = rxn_fluxes["BIOMASS_Ecoli_core_w_GAM"] * 0.9
+
     res = flux_balance_analysis(
         gm,
         Tulip.Optimizer;
@@ -86,6 +87,28 @@
     )
     mass_groups_min = values_dict(:enzyme_group, res)
     @test mass_groups_min["uncategorized"] < mass_groups["uncategorized"]
+
+    res2 =
+        model |>
+        with_changed_bound("BIOMASS_Ecoli_core_w_GAM", lower_bound = growth_lb) |>
+        with_enzyme_constraints(; total_gene_product_mass_bound) |>
+        with_parsimonious_objective(:enzyme) |>
+        flux_balance_analysis(
+            Clarabel.Optimizer;
+            modifications = [modify_optimizer_attribute("max_iter", 1000), silence],
+        )
+
+    @test isapprox(
+        values_dict(:reaction, res2)["BIOMASS_Ecoli_core_w_GAM"],
+        0.7315450597991255,
+        atol = QP_TEST_TOLERANCE,
+    )
+
+    @test isapprox(
+        values_dict(:enzyme_group, res2)["uncategorized"],
+        89.35338,
+        atol = QP_TEST_TOLERANCE,
+    )
 end
 
 @testset "GECKO small model" begin
@@ -159,4 +182,23 @@ end
     @test isapprox(mass_groups["bound2"], 0.04, atol = TEST_TOLERANCE)
     @test length(genes(gm)) == 4
     @test length(genes(gm.inner)) == 4
+
+    # new pfba test
+    growth_lb = rxn_fluxes["r6"] * 0.9
+
+    mqp =
+        m |>
+        with_changed_bound("r6", lower_bound = growth_lb) |>
+        with_enzyme_constraints(;
+            gene_product_mass_group = Dict("uncategorized" => genes(m), "bound2" => ["g3"]),
+            gene_product_mass_group_bound = Dict("uncategorized" => 0.5, "bound2" => 0.04),
+        ) |>
+        with_parsimonious_objective(:enzyme)
+
+    @test all(stoichiometry(mqp) .== stoichiometry(gm))
+    @test all(coupling(mqp) .== coupling(gm))
+
+    # this QP minimizes the squared sum of enzyme masses in g/gDW!
+    Q = sparse([9, 10, 11, 12], [9, 10, 11, 12], [-0.5, -2.0, -8.0, -4.5], 12, 13)
+    @test all(objective(mqp) .== Q)
 end

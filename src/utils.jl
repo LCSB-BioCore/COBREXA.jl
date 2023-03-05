@@ -16,6 +16,7 @@ using ..ModuleTools
 
 using ..Types
 using ..Accessors
+using ..Wrappers
 using ..Internal.Identifiers
 using ..Internal: constants
 using ..Internal.Macros
@@ -36,3 +37,4 @@ end
 @inject Types import ...Utils
 @inject Analysis using ...Utils: objective_bounds
 @inject Analysis.Modifications using ...Utils: is_boundary
+@inject Wrappers using ..Utils

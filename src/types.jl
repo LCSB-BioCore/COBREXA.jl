@@ -74,7 +74,6 @@ end # module Accessors
 
     @inc_dir types
     @inc_dir types models
-    @inc_dir types wrappers
 
     @export_locals
 end

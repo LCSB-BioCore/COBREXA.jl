@@ -87,19 +87,16 @@ Accessors.variables(model::MaxMinDrivingForceModel) =
 Accessors.n_variables(model::MaxMinDrivingForceModel) =
     1 + n_metabolites(model) + n_reactions(model)
 
-"""
-$(TYPEDSIGNATURES)
-
-Log metabolite concentration mapping to model variables.
-"""
+Accessors.metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
+    "log " .* metabolites(model)
+Accessors.n_metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
+    n_metabolites(model)
 Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel) =
     Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolites(model))
 
-"""
-$(TYPEDSIGNATURES)
-
-Gibbs free energy of reaction mapping to model variables.
-"""
+Accessors.gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
+    "ΔG " .* reactions(model)
+Accessors.n_gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) = n_reactions(model)
 Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
     Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reactions(model))
 

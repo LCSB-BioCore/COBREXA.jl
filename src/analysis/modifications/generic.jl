@@ -57,7 +57,9 @@ analysis function.  `new_objective` can be a single reaction identifier, or an
 array of reactions identifiers.
 
 Optionally, the objective can be weighted by a vector of `weights`, and a
-optimization `sense` can be set to either `MAX_SENSE` or `MIN_SENSE`.
+optimization `sense` can be set to either `MAX_SENSE` or `MIN_SENSE`. Note, the
+`sense` argument is a JuMP constant, thus you need to import JUMP for the name
+to be available.
 """
 modify_objective(
     new_objective::Union{String,Vector{String}};
