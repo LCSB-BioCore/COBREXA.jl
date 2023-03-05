@@ -25,7 +25,8 @@ using ..Internal: constants
 using ..Log.Internal: @models_log
 using ..Solver
 using ..Types
-using ..Types: _EnzymeConstrainedReactionColumn, SimplifiedEnzymeConstrainedColumn
+using ..Wrappers.Internal:
+    EnzymeConstrainedReactionColumn, SimplifiedEnzymeConstrainedColumn
 
 using Distributed
 using DistributedData

@@ -190,8 +190,11 @@ end
         m |>
         with_changed_bound("r6", lower_bound = growth_lb) |>
         with_enzyme_constraints(;
-            gene_product_mass_group = Dict("uncategorized" => genes(m), "bound2" => ["g3"]),
-            gene_product_mass_group_bound = Dict("uncategorized" => 0.5, "bound2" => 0.04),
+            gene_product_mass_groups = Dict(
+                "uncategorized" => genes(m),
+                "bound2" => ["g3"],
+            ),
+            gene_product_mass_group_bounds = Dict("uncategorized" => 0.5, "bound2" => 0.04),
         ) |>
         with_parsimonious_objective(:enzyme)
 

@@ -1,21 +1,3 @@
-
-"""
-$(TYPEDEF)
-
-A helper type that describes the contents of [`SimplifiedEnzymeConstrainedModel`](@ref)s.
-
-# Fields
-$(TYPEDFIELDS)
-"""
-struct SimplifiedEnzymeConstrainedColumn
-    reaction_idx::Int # number of the corresponding reaction in the inner model
-    direction::Int # 0 if "as is" and unique, -1 if reverse-only part, 1 if forward-only part
-    lb::Float64 # must be 0 if the reaction is unidirectional (if direction!=0)
-    ub::Float64
-    capacity_contribution::Float64 # must be 0 for bidirectional reactions (if direction==0)
-    capacity_bound_idxs::Vector{Int64} # index of associated bound(s)
-end
-
 """
 $(TYPEDEF)
 

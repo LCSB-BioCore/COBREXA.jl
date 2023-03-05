@@ -200,21 +200,18 @@ Accessors.reactions(cm::CommunityModel) = [
 Accessors.n_reactions(cm::CommunityModel) =
     sum(n_reactions(m.model) for m in values(cm.members)) + length(cm.environmental_links)
 
-"""
-$(TYPEDSIGNATURES)
 
-Environmental exchange reaction mapping to model variables.
-"""
 Accessors.environmental_exchange_variables(model::CommunityModel) = Dict(
     rid => Dict(rid => 1.0) for
     rid in [envlink.reaction_id for envlink in model.environmental_links]
 )
 
-"""
-$(TYPEDSIGNATURES)
+Accessors.environmental_exchanges(model::CommunityModel) =
+    [envlink.reaction_id for envlink in model.environmental_links]
 
-Environmental exchange reaction mapping to model variables.
-"""
+Accessors.n_environmental_exchanges(model::CommunityModel) =
+    length(model.environmental_links)
+
 function Accessors.enzyme_variables(model::CommunityModel)
     nlu(id, x) = model.name_lookup[id][:genes][x]
     e_v = Dict{String,Dict{String,Float64}}()
@@ -226,6 +223,11 @@ function Accessors.enzyme_variables(model::CommunityModel)
     end
     e_v
 end
+
+Accessors.enzymes(cm::CommunityModel) =
+    [cm.name_lookup[id][:genes][gid] for (id, m) in cm.members for gid in enzymes(m.model)]
+
+Accessors.n_enzymes(cm::CommunityModel) = sum(n_enzymes(m.model) for m in cm.members)
 
 """
 $(TYPEDSIGNATURES)
@@ -243,6 +245,12 @@ function Accessors.enzyme_group_variables(model::CommunityModel)
     end
     e_g_v
 end
+
+Accessors.enzyme_groups(cm::CommunityModel) =
+    [id * "#" * k for (id, m) in cm.members for k in enzyme_groups(m.model)]
+
+Accessors.n_enzyme_groups(cm::CommunityModel) =
+    sum(n_enzyme_groups(m.model) for m in cm.members)
 
 #=
 This loops implements the rest of the accessors through access_community_member.

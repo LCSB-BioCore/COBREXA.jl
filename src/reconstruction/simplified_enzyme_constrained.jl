@@ -90,6 +90,7 @@ function make_simplified_enzyme_constrained_model(
                     lbs[i],
                     ubs[i],
                     0,
+                    Int64[],
                 ),
             )
             continue
