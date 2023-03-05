@@ -106,7 +106,7 @@
 
     @test isapprox(
         values_dict(:enzyme_group, res2)["uncategorized"],
-        91.4275211,
+        89.35338,
         atol = QP_TEST_TOLERANCE,
     )
 end
@@ -182,4 +182,23 @@ end
     @test isapprox(mass_groups["bound2"], 0.04, atol = TEST_TOLERANCE)
     @test length(genes(gm)) == 4
     @test length(genes(gm.inner)) == 4
+
+    # new pfba test
+    growth_lb = rxn_fluxes["r6"] * 0.9
+
+    mqp =
+        m |>
+        with_changed_bound("r6", lower_bound = growth_lb) |>
+        with_enzyme_constraints(;
+            gene_product_mass_group = Dict("uncategorized" => genes(m), "bound2" => ["g3"]),
+            gene_product_mass_group_bound = Dict("uncategorized" => 0.5, "bound2" => 0.04),
+        ) |>
+        with_parsimonious_objective(:enzyme)
+
+    @test all(stoichiometry(mqp) .== stoichiometry(gm))
+    @test all(coupling(mqp) .== coupling(gm))
+
+    # this QP minimizes the squared sum of enzyme masses in g/gDW!
+    Q = sparse([9, 10, 11, 12], [9, 10, 11, 12], [-0.5, -2.0, -8.0, -4.5], 12, 13)
+    @test all(objective(mqp) .== Q)
 end
