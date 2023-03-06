@@ -91,7 +91,21 @@ Accessors.n_reactions(cm::EqualGrowthCommunityModel) = n_reactions(cm.inner) + 1
 Accessors.environmental_exchange_variables(model::EqualGrowthCommunityModel) =
     environmental_exchange_variables(model.inner)
 
+Accessors.environmental_exchanges(model::EqualGrowthCommunityModel) =
+    environmental_exchanges(model.inner)
+
+Accessors.n_environmental_exchanges(model::EqualGrowthCommunityModel) =
+    n_environmental_exchanges(model.inner)
+
 Accessors.enzyme_variables(model::EqualGrowthCommunityModel) = enzyme_variables(model.inner)
+
+Accessors.enzymes(model::EqualGrowthCommunityModel) = enzymes(model.inner)
+
+Accessors.n_enzymes(model::EqualGrowthCommunityModel) = n_enzymes(model.inner)
 
 Accessors.enzyme_group_variables(model::EqualGrowthCommunityModel) =
     enzyme_group_variables(model.inner)
+
+Accessors.enzymes(model::EqualGrowthCommunityModel) = enzymes(model.inner)
+
+Accessors.n_enzymes(model::EqualGrowthCommunityModel) = n_enzymes(model.inner)

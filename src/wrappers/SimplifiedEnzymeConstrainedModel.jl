@@ -1,4 +1,3 @@
-
 """
 $(TYPEDEF)
 
@@ -13,24 +12,24 @@ The model is constructed as follows:
 - stoichiometry of the original model is retained as much as possible, but
   enzymatic reations are split into forward and reverse parts (marked by a
   suffix like `...#forward` and `...#reverse`),
-- coupling is added to simulate a virtual metabolite "enzyme capacity", which is
-  consumed by all enzymatic reactions at a rate given by enzyme mass divided by
-  the corresponding kcat,
-- the total consumption of the enzyme capacity is constrained to a fixed
-  maximum.
+- coupling is added to simulate lumped virtual metabolites that act like enzyme
+  capacities. These are consumed by enzymatic reactions at a rate given by
+  enzyme mass divided by the corresponding kcat,
+- the total consumption of the enzyme capacity bounds is constrained to be less
+  than some fixed values.
 
 The `SimplifiedEnzymeConstrainedModel` structure contains a worked-out
 representation of the optimization problem atop a wrapped
-[`AbstractMetabolicModel`](@ref), in particular the separation of certain
-reactions into unidirectional forward and reverse parts (which changes the
-stoichiometric matrix), an "enzyme capacity" required for each reaction, and the
-value of the maximum capacity constraint. Original coupling in the inner model
-is retained.
+[`AbstractMetabolicModel`](@ref). The internal representation of the model
+splits reactions into unidirectional forward and reverse parts (which changes
+the stoichiometric matrix).
 
 In the structure, the field `columns` describes the correspondence of
-stoichiometry columns to the stoichiometry and data of the internal wrapped
-model, and `total_gene_product_mass_bound` is the total bound on the enzyme
-capacity consumption as specified in sMOMENT algorithm.
+stoichiometry columns to the stoichiometry, and data of the internal wrapped
+model. Multiple capacity bounds may be added through
+`total_reaction_mass_bounds`. These bounds are connected to the model through
+`columns`. Since this algorithm is reaction centered, no enzymes directly appear
+in the formulation.
 
 This implementation allows easy access to fluxes from the split reactions
 (available in `variables(model)`), while the original "simple" reactions from
@@ -49,7 +48,7 @@ $(TYPEDFIELDS)
 """
 struct SimplifiedEnzymeConstrainedModel <: AbstractModelWrapper
     columns::Vector{SimplifiedEnzymeConstrainedColumn}
-    total_gene_product_mass_bound::Float64
+    total_reaction_mass_bounds::Vector{Float64}
 
     inner::AbstractMetabolicModel
 end
@@ -102,15 +101,37 @@ Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 
-Accessors.coupling(model::SimplifiedEnzymeConstrainedModel) = vcat(
-    coupling(model.inner) * simplified_enzyme_constrained_column_reactions(model),
-    [col.capacity_required for col in model.columns]',
-)
+function Accessors.coupling(model::SimplifiedEnzymeConstrainedModel)
+    inner_coupling =
+        coupling(model.inner) * simplified_enzyme_constrained_column_reactions(model)
+
+    I = Int64[]
+    J = Int64[]
+    V = Float64[]
+    for (col_idx, col) in enumerate(model.columns)
+        for row_idx in col.capacity_bound_idxs
+            push!(J, col_idx)
+            push!(I, row_idx)
+            push!(V, col.capacity_contribution)
+        end
+    end
+
+    capacity_coupling =
+        sparse(I, J, V, length(model.total_reaction_mass_bounds), length(model.columns))
+
+    return [
+        inner_coupling
+        capacity_coupling
+    ]
+end
 
 Accessors.n_coupling_constraints(model::SimplifiedEnzymeConstrainedModel) =
-    n_coupling_constraints(model.inner) + 1
+    n_coupling_constraints(model.inner) + length(model.total_reaction_mass_bounds)
 
 Accessors.coupling_bounds(model::SimplifiedEnzymeConstrainedModel) =
     let (iclb, icub) = coupling_bounds(model.inner)
-        (vcat(iclb, [0.0]), vcat(icub, [model.total_gene_product_mass_bound]))
+        (
+            vcat(iclb, zeros(length(model.total_reaction_mass_bounds))),
+            vcat(icub, model.total_reaction_mass_bounds),
+        )
     end
