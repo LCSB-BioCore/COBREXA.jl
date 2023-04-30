@@ -57,27 +57,27 @@ function variability_analysis(
     indexes::Maybe{Vector{Int}} = nothing,
     kwargs...,
 )
-    (sem_ids, n_ids, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
+    s = Accessors.Internal.semantics(semantics)
 
     if isnothing(indexes)
         idxs = if isnothing(ids)
-            collect(1:n_ids(model))
+            collect(1:s.count(model))
         else
-            indexin(ids, sem_ids(model))
+            indexin(ids, s.ids(model))
         end
         any(isnothing.(idxs)) &&
             throw(DomainError(ids[isnothing.(idxs)], "Unknown IDs specified"))
         indexes = Int.(idxs)
     end
 
-    if any((indexes .< 1) .| (indexes .> n_ids(model)))
+    if any((indexes .< 1) .| (indexes .> s.count(model)))
         throw(DomainError(indexes, "Index out of range"))
     end
 
     variability_analysis(
         model,
         optimizer;
-        directions = sem_varmtx(model)[:, indexes],
+        directions = s.mapping_matrix(model)[:, indexes],
         kwargs...,
     )
 end

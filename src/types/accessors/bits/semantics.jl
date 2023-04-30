@@ -9,6 +9,7 @@ function make_mapping_mtx(
     semantics::Vector{String},
     var_sem_val::Dict{String,Dict{String,Float64}},
 )::Types.SparseMat
+    # TODO: move this to general utils or so
     rowidx = Dict(vars .=> 1:length(vars))
     colidx = Dict(semantics .=> 1:length(semantics))
     n = sum(length.(values(var_sem_val)))
@@ -38,15 +39,37 @@ function make_mapping_dict(
     semantics::Vector{String},
     mtx::Types.SparseMat,
 )::Dict{String,Dict{String,Float64}}
+    # TODO: move this to general utils
     Dict(
         sid => Dict(vars[vidx] => val for (vidx, val) in zip(findnz(mtx[:, sidx])...)) for
         (sidx, sid) in enumerate(semantics)
     )
 end
 
-const Semantic = Tuple{Function,Function,Function,Function}
+"""
+$(TYPEDEF)
 
-const variable_semantics = Dict{Symbol,Semantic}()
+A structure of function that stores implementation of a given variable
+semantic. Use [`semantics`](@ref) for lookup. If you want to create and
+register new semantics, use [`@make_variable_semantics`](@ref).
+"""
+Base.@kwdef struct Semantics
+    # TODO: move this to types?
+    "Returns a vector identifiers that describe views in the given semantics"
+    ids::Function
+
+    """Returns the size of the vector of the identifiers, in a possibly more
+    efficient way than measuring the length of the ID vector."""
+    count::Function
+
+    """Returns a mapping of semantic values to variables IDs in the model."""
+    mapping::Function
+
+    """Same as `mapping` but returns a matrix, which is possibly more efficient in certain cases."""
+    mapping_matrix::Function
+end
+
+const variable_semantics = Dict{Symbol,Semantics}()
 
 """
 $(TYPEDSIGNATURES)
@@ -54,7 +77,7 @@ $(TYPEDSIGNATURES)
 Get a tuple of functions that work with the given semantics, or `nothing` if
 the semantics doesn't exist.
 """
-function get_semantics(semantics::Symbol)::Types.Maybe{Semantic}
+function get_semantics(semantics::Symbol)::Types.Maybe{Semantics}
     get(variable_semantics, semantics, nothing)
 end
 
@@ -64,7 +87,7 @@ $(TYPEDSIGNATURES)
 Like [`get_semantics`](@ref) but throws a `DomainError` if the semantics is not
 available.
 """
-function semantics(semantics::Symbol)::Semantic
+function semantics(semantics::Symbol)::Semantics
     res = get_semantics(semantics)
     isnothing(res) && throw(DomainError(semantics, "unknown semantics"))
     res
@@ -207,7 +230,7 @@ safety reasons, this is never automatically inherited by wrappers.
     # cases of adding semantics, which might actually be the right way.)
 
     themodule.Internal.variable_semantics[sym] =
-        Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx))
+        Semantics(Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx))...)
 end
 
 """

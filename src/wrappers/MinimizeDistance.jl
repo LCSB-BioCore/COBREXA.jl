@@ -56,12 +56,12 @@ end
 Accessors.unwrap_model(m::MinimizeSemanticDistance) = m.inner
 
 function Accessors.objective(m::MinimizeSemanticDistance)
-    (_, _, _, smtx) = Accessors.Internal.semantics(m.semantics)
-    Sem = smtx(m.inner)
+    s = Accessors.Internal.semantics(m.semantics)
+    M = s.mapping_matrix(m.inner)
 
-    return Sem *
-           [spdiagm(fill(-0.5, size(Sem, 2))) m.center] *
-           [Sem' zeros(size(Sem, 2)); zeros(size(Sem, 1))' 1.0]
+    return M *
+           [spdiagm(fill(-0.5, size(M, 2))) m.center] *
+           [M' zeros(size(M, 2)); zeros(size(M, 1))' 1.0]
 end
 
 """
@@ -85,8 +85,8 @@ This can be used to implement various realistic variants of
 """
 with_parsimonious_objective(semantics::Symbol) =
     model::AbstractMetabolicModel -> let
-        (_, n_sem, _, _) = Accessors.Internal.semantics(semantics)
-        MinimizeSemanticDistance(semantics, zeros(n_sem(model)), model)
+        s = Accessors.Internal.semantics(semantics)
+        MinimizeSemanticDistance(semantics, zeros(s.count(model)), model)
     end
 
 """
