@@ -40,7 +40,7 @@ function make_optimization_model(
     @variable(optimization_model, x[1:n])
 
     # bound the variables
-    xl, xu = bounds(model)
+    xl, xu = variable_bounds(model)
     @constraint(optimization_model, lbs, xl .<= x) # lower bounds
     @constraint(optimization_model, ubs, x .<= xu) # upper bounds
 
@@ -169,7 +169,7 @@ solved_objective_value(x::ModelWithResult{<:Model}) = solved_objective_value(x.r
 $(TYPEDSIGNATURES)
 
 Return a vector of all variable values from the solved model, in the same order
-given by [`variables`](@ref).
+given by [`variable_ids`](@ref).
 
 # Example
 ```

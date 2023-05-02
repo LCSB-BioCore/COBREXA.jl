@@ -9,8 +9,8 @@
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     # not the best tests since it is possible that error could cancel each other out:
     @test sum(stoichiometry(jsonmodel)) == sum(stoichiometry(stdmodel))
-    jlbs, jubs = bounds(jsonmodel)
-    slbs, subs = bounds(jsonmodel)
+    jlbs, jubs = variable_bounds(jsonmodel)
+    slbs, subs = variable_bounds(jsonmodel)
     @test sum(jlbs) == sum(slbs)
     @test sum(jubs) == sum(subs)
 end

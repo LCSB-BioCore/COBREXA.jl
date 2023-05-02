@@ -61,7 +61,7 @@ function Accessors.stoichiometry(model::HDF5Model)::SparseMat
     h5_read_sparse(SparseMat, model.h5["stoichiometry"])
 end
 
-function Accessors.bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
+function Accessors.variable_bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
     precache!(model)
     (HDF5.readmmap(model.h5["lower_bounds"]), HDF5.readmmap(model.h5["upper_bounds"]))
 end

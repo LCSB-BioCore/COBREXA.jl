@@ -5,11 +5,11 @@
 A helper supertype of everything usable as a linear-like model for COBREXA
 functions.
 
-If you want your model type to work with COBREXA, add the `AbstractMetabolicModel` as
-its supertype, and implement the accessor functions. Accessors
-[`variables`](@ref), [`metabolites`](@ref), [`stoichiometry`](@ref),
-[`bounds`](@ref) and [`objective`](@ref) must be implemented; others are not
-mandatory and default to safe "empty" values.
+If you want your model type to work with COBREXA, add the
+`AbstractMetabolicModel` as its supertype, and implement the accessor
+functions. Accessors [`variable_ids`](@ref), [`metabolites`](@ref),
+[`stoichiometry`](@ref), [`variable_bounds`](@ref) and [`objective`](@ref) must
+be implemented; others are not mandatory and default to safe "empty" values.
 """
 abstract type AbstractMetabolicModel end
 

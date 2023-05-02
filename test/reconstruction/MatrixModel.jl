@@ -226,8 +226,8 @@ end
     @test stoichiometry(modLp) == stoichiometry(lp)[:, 2:3]
     @test balance(modLp) == balance(lp)
     @test objective(modLp) == objective(lp)[2:3]
-    @test bounds(modLp)[1] == bounds(lp)[1][2:3]
-    @test bounds(modLp)[2] == bounds(lp)[2][2:3]
+    @test variable_bounds(modLp)[1] == variable_bounds(lp)[1][2:3]
+    @test variable_bounds(modLp)[2] == variable_bounds(lp)[2][2:3]
     @test variable_ids(modLp) == variable_ids(lp)[2:3]
     @test metabolites(modLp) == metabolites(lp)
 end

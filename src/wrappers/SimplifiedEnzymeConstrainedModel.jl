@@ -73,7 +73,7 @@ Accessors.variable_ids(model::SimplifiedEnzymeConstrainedModel) =
 
 Accessors.variable_count(model::SimplifiedEnzymeConstrainedModel) = length(model.columns)
 
-Accessors.bounds(model::SimplifiedEnzymeConstrainedModel) =
+Accessors.variable_bounds(model::SimplifiedEnzymeConstrainedModel) =
     ([col.lb for col in model.columns], [col.ub for col in model.columns])
 
 """

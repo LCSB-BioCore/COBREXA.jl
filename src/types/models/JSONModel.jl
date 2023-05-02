@@ -124,7 +124,7 @@ function Accessors.stoichiometry(model::JSONModel)
     return SparseArrays.sparse(MI, RI, SV, length(met_ids), length(rxn_ids))
 end
 
-Accessors.bounds(model::JSONModel) = (
+Accessors.variable_bounds(model::JSONModel) = (
     [get(rxn, "lower_bound", -constants.default_reaction_bound) for rxn in model.rxns],
     [get(rxn, "upper_bound", constants.default_reaction_bound) for rxn in model.rxns],
 )
@@ -208,7 +208,7 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     met_ids = metabolites(mm)
     gene_ids = genes(mm)
     S = stoichiometry(mm)
-    lbs, ubs = bounds(mm)
+    lbs, ubs = variable_bounds(mm)
     ocs = objective(mm)
 
     json = Dict{String,Any}()

@@ -55,7 +55,8 @@ Accessors.metabolites(a::MatrixModel)::Vector{String} = a.mets
 
 Accessors.stoichiometry(a::MatrixModel)::SparseMat = a.S
 
-Accessors.bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} = (a.xl, a.xu)
+Accessors.variable_bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} =
+    (a.xl, a.xu)
 
 Accessors.balance(a::MatrixModel)::SparseVec = a.b
 
@@ -95,7 +96,7 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
         return m
     end
 
-    (xl, xu) = bounds(m)
+    (xl, xu) = variable_bounds(m)
     MatrixModel(
         stoichiometry(m),
         balance(m),

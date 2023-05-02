@@ -19,7 +19,7 @@ that work over the abstract type [`AbstractMetabolicModel`](@ref). To use your d
 structure in a model, you just make it a subtype of [`AbstractMetabolicModel`](@ref)
 and overload the required accessors. The accessors are functions that extract
 some relevant information, such as [`stoichiometry`](@ref) and
-[`bounds`](@ref), returning a fixed simple data type that can be further used
+[`variable_bounds`](@ref), returning a fixed simple data type that can be further used
 by COBREXA.  You may see a complete list of accessors
 [here](../functions.md#Base-Types).
 
@@ -68,7 +68,7 @@ function COBREXA.objective(m::CircularModel)
     return c
 end
 
-COBREXA.bounds(m::CircularModel) = (
+COBREXA.variable_bounds(m::CircularModel) = (
     zeros(reaction_count(m)), # lower bounds
     ones(reaction_count(m)), # upper bounds
 )

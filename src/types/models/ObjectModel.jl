@@ -104,7 +104,7 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
     return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), variable_count(model))
 end
 
-Accessors.bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
+Accessors.variable_bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
 Accessors.balance(model::ObjectModel)::SparseVec = spzeros(length(model.metabolites))
@@ -212,7 +212,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     end
 
     S = stoichiometry(model)
-    lbs, ubs = bounds(model)
+    lbs, ubs = variable_bounds(model)
     obj_idxs, obj_vals = findnz(objective(model))
     modelobjective = Dict(k => v for (k, v) in zip(variable_ids(model)[obj_idxs], obj_vals))
     for (i, rid) in enumerate(rxnids)

@@ -147,9 +147,9 @@ function Accessors.stoichiometry(cm::CommunityModel)
     ]
 end
 
-function Accessors.bounds(cm::CommunityModel)
-    models_lbs = vcat([first(bounds(m.model)) for m in values(cm.members)]...)
-    models_ubs = vcat([last(bounds(m.model)) for m in values(cm.members)]...)
+function Accessors.variable_bounds(cm::CommunityModel)
+    models_lbs = vcat([first(variable_bounds(m.model)) for m in values(cm.members)]...)
+    models_ubs = vcat([last(variable_bounds(m.model)) for m in values(cm.members)]...)
 
     env_lbs = [envlink.lower_bound for envlink in cm.environmental_links]
     env_ubs = [envlink.upper_bound for envlink in cm.environmental_links]

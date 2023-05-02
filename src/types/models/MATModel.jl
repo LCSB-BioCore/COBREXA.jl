@@ -38,7 +38,7 @@ end
 
 Accessors.stoichiometry(m::MATModel) = sparse(m.mat["S"])
 
-Accessors.bounds(m::MATModel) = (
+Accessors.variable_bounds(m::MATModel) = (
     reshape(get(m.mat, "lb", fill(-Inf, variable_count(m), 1)), variable_count(m)),
     reshape(get(m.mat, "ub", fill(Inf, variable_count(m), 1)), variable_count(m)),
 )
@@ -155,7 +155,7 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
         return m
     end
 
-    lb, ub = bounds(m)
+    lb, ub = variable_bounds(m)
     cl, cu = coupling_bounds(m)
     nr = variable_count(m)
     nm = n_metabolites(m)

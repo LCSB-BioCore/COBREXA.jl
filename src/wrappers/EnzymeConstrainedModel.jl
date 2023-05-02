@@ -89,7 +89,7 @@ end
 Accessors.variable_count(model::EnzymeConstrainedModel) =
     length(model.columns) + n_genes(model)
 
-function Accessors.bounds(model::EnzymeConstrainedModel)
+function Accessors.variable_bounds(model::EnzymeConstrainedModel)
     lbs = [
         [col.lb for col in model.columns]
         [lb for (_, (lb, _)) in model.coupling_row_gene_product]
@@ -157,7 +157,7 @@ Accessors.n_coupling_constraints(model::EnzymeConstrainedModel) =
 
 function Accessors.coupling_bounds(model::EnzymeConstrainedModel)
     (iclb, icub) = coupling_bounds(model.inner)
-    (ilb, iub) = bounds(model.inner)
+    (ilb, iub) = variable_bounds(model.inner)
     return (
         vcat(
             iclb,

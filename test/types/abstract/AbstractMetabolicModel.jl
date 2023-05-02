@@ -14,6 +14,7 @@ end
 
 @testset "ID shortcuts are identictical with the ID-generating functions" begin
     @test variables === variable_ids
+    @test bounds === variable_bounds
     @test reactions === reaction_ids
     # TODO don't forget about metabolites later
 end

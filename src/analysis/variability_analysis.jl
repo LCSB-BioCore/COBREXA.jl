@@ -7,8 +7,8 @@ each reaction flux `f` described by [`reactions`](@ref):
 min,max fᵀxᵢ
 s.t. S x = b
     xₗ ≤ x ≤ xᵤ
-     cᵀx ≥ bounds(Z₀)[1]
-     cᵀx ≤ bounds(Z₀)[2]
+     cᵀx ≥ variable_bounds(Z₀)[1]
+     cᵀx ≤ variable_bounds(Z₀)[2]
 ```
 where Z₀:= cᵀx₀ is the objective value of an optimal solution of the associated
 FBA problem (see [`flux_balance_analysis`](@ref) for a related analysis, also

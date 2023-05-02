@@ -70,7 +70,7 @@ function gapfill_minimum_reactions(
     # keep this in sync with src/base/solver.jl, except for adding balances.
     opt_model = Model(optimizer)
     @variable(opt_model, x[1:variable_count(model)])
-    xl, xu = bounds(model)
+    xl, xu = variable_bounds(model)
     @constraint(opt_model, lbs, xl .<= x)
     @constraint(opt_model, ubs, x .<= xu)
 

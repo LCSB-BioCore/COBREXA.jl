@@ -81,7 +81,7 @@ function Accessors.stoichiometry(model::SBMLModel)::SparseMat
     return sparse(Rows, Cols, Vals, n_metabolites(model), reaction_count(model))
 end
 
-function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
+function Accessors.variable_bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
     # There are multiple ways in SBML to specify a lower/upper bound. There are
     # the "global" model bounds that we completely ignore now because no one
     # uses them. In reaction, you can specify the bounds using "LOWER_BOUND"
@@ -282,7 +282,7 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     mets = metabolites(mm)
     rxns = variable_ids(mm)
     stoi = stoichiometry(mm)
-    (lbs, ubs) = bounds(mm)
+    (lbs, ubs) = variable_bounds(mm)
     comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 

@@ -43,6 +43,20 @@ end
 """
 $(TYPEDSIGNATURES)
 
+Get the lower and upper solution bounds of a model.
+"""
+function variable_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
+    missing_impl_error(bounds, (a,))
+end
+
+"""
+Shortcut for writing [`variable_bounds`](@ref).
+"""
+const bounds = variable_bounds
+
+"""
+$(TYPEDSIGNATURES)
+
 Return a vector of metabolite identifiers in a model. The vector precisely
 corresponds to the rows in [`stoichiometry`](@ref) matrix.
 
@@ -69,15 +83,6 @@ Get the sparse stoichiometry matrix of a model.
 """
 function stoichiometry(a::AbstractMetabolicModel)::SparseMat
     missing_impl_error(stoichiometry, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the lower and upper solution bounds of a model.
-"""
-function bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    missing_impl_error(bounds, (a,))
 end
 
 """

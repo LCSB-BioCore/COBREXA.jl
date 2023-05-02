@@ -52,7 +52,7 @@ flux_balance_analysis_vec(m, GLPK.Optimizer)
 ```
 
 To modify the functionality, we simply add specific methods for accessors that
-we want modified, such as [`bounds`](@ref), [`stoichiometry`](@ref) and
+we want modified, such as [`variable_bounds`](@ref), [`stoichiometry`](@ref) and
 [`objective`](@ref). We demonstrate that on several examples below.
 
 ## Example 1: Slower model
@@ -73,8 +73,8 @@ wrapped model, and modify them in a certain way.
 
 ```julia
 COBREXA.unwrap_model(x::RateChangedModel) = x.mdl
-function COBREXA.bounds(x::RateChangedModel)
-    (l, u) = bounds(x.mdl) # extract the original bounds
+function COBREXA.variable_bounds(x::RateChangedModel)
+    (l, u) = variable_bounds(x.mdl) # extract the original bounds
     return (l .* x.factor, u .* x.factor) # return customized bounds
 end
 ```
@@ -109,8 +109,8 @@ COBREXA.unwrap_model(x::LeakyModel) = x.mdl
 COBREXA.reaction_count(x::LeakyModel) = reaction_count(x.mdl) + 1
 COBREXA.reaction_ids(x::LeakyModel) = [reaction_ids(x.mdl); "The Leak"]
 COBREXA.stoichiometry(x::LeakyModel) = [stoichiometry(x.mdl) [m in x.leaking_metabolites ? -1.0 : 0.0 for m = metabolites(x.mdl)]]
-function COBREXA.bounds(x::LeakyModel)
-    (l, u) = bounds(x.mdl)
+function COBREXA.variable_bounds(x::LeakyModel)
+    (l, u) = variable_bounds(x.mdl)
     return ([l; x.leak_rate], [u; x.leak_rate])
 end
 ```

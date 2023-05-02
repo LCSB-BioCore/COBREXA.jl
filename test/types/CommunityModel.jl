@@ -128,7 +128,7 @@
         ],
     )
 
-    lbs, ubs = bounds(cm)
+    lbs, ubs = variable_bounds(cm)
     @test all(lbs .== [
         -1000.0
         -1000.0

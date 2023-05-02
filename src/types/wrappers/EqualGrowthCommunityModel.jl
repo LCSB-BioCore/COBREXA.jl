@@ -62,8 +62,8 @@ function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
     ]
 end
 
-function Accessors.bounds(cm::EqualGrowthCommunityModel)
-    lbs, ubs = bounds(cm.inner)
+function Accessors.variable_bounds(cm::EqualGrowthCommunityModel)
+    lbs, ubs = variable_bounds(cm.inner)
     return ([lbs; 0], [ubs; constants.default_reaction_bound])
 end
 

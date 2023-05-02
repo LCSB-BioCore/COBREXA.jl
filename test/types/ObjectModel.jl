@@ -74,7 +74,7 @@
     ub_test[2] = 0.0
     ub_test[3] = 1000.0
     ub_test[4] = 1000.0
-    lbs, ubs = bounds(model)
+    lbs, ubs = variable_bounds(model)
     @test lb_test == lbs
     @test ub_test == ubs
 
@@ -135,8 +135,8 @@
     @test issetequal(variable_ids(jsonmodel), variable_ids(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))
-    jlbs, jubs = bounds(jsonmodel)
-    slbs, subs = bounds(stdmodel)
+    jlbs, jubs = variable_bounds(jsonmodel)
+    slbs, subs = variable_bounds(stdmodel)
     @test issetequal(jlbs, slbs)
     @test issetequal(jubs, subs)
     jS = stoichiometry(jsonmodel)

@@ -175,7 +175,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     ]
 end
 
-function Accessors.bounds(model::MaxMinDrivingForceModel)
+function Accessors.variable_bounds(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
 
     lbs = fill(-model.max_dg_bound, variable_count(model))

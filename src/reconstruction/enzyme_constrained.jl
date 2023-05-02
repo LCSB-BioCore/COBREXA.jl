@@ -61,7 +61,7 @@ function make_enzyme_constrained_model(
     coupling_row_gene_product = Int[]
 
     gids = genes(model)
-    (lbs, ubs) = bounds(model)
+    (lbs, ubs) = variable_bounds(model)
     rids = variable_ids(model)
 
     gene_name_lookup = Dict(gids .=> 1:length(gids))

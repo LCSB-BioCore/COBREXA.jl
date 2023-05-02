@@ -21,8 +21,8 @@
     @test size(stoichiometry(model)) == size(stoichiometry(h5))
     @test isapprox(sum(stoichiometry(model)), sum(stoichiometry(h5)))
     rxnp = sortperm(variable_ids(model))
-    @test bounds(model)[1][rxnp] == bounds(h5)[1]
-    @test bounds(model)[2][rxnp] == bounds(h5)[2]
+    @test variable_bounds(model)[1][rxnp] == variable_bounds(h5)[1]
+    @test variable_bounds(model)[2][rxnp] == variable_bounds(h5)[2]
     @test objective(model)[rxnp] == objective(h5)
     @test all(iszero, balance(h5))
 

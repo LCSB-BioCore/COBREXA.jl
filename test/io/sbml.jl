@@ -6,8 +6,8 @@
     @test size(stoichiometry(sbmlm)) == (92, 95)
     @test size(stoichiometry(m)) == (n_metabolites(sbmlm), variable_count(sbmlm))
     @test length(m.S.nzval) == 380
-    @test length.(bounds(sbmlm)) == (95, 95)
-    @test length.(bounds(m)) == (95, 95)
+    @test length.(variable_bounds(sbmlm)) == (95, 95)
+    @test length.(variable_bounds(m)) == (95, 95)
     @test all([length(m.xl), length(m.xu), length(m.c)] .== 95)
 
     @test metabolites(m)[1:3] == ["M_13dpg_c", "M_2pg_c", "M_3pg_c"]

@@ -20,7 +20,7 @@
     @test size(samples, 1) == size(warmup, 1)
     @test size(samples, 2) == size(warmup, 2) * 3 * length(W)
 
-    lbs, ubs = bounds(model)
+    lbs, ubs = variable_bounds(model)
     @test all(samples .>= lbs)
     @test all(samples .<= ubs)
     @test all(cm.C * samples .>= cm.cl)

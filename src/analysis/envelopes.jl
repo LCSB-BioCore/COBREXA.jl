@@ -19,7 +19,7 @@ envelope_lattice(
     model::AbstractMetabolicModel,
     ridxs::Vector{Int};
     samples = 10,
-    ranges = collect(zip(bounds(model)...))[ridxs],
+    ranges = collect(zip(variable_bounds(model)...))[ridxs],
     reaction_samples = fill(samples, length(ridxs)),
 ) = (
     lb .+ (ub - lb) .* ((1:s) .- 1) ./ max(s - 1, 1) for

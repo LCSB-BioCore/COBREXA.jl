@@ -40,7 +40,7 @@ function affine_hit_and_run(
 )
     @assert size(warmup_points, 1) == variable_count(m)
 
-    lbs, ubs = bounds(m)
+    lbs, ubs = variable_bounds(m)
     C = coupling(m)
     cl, cu = coupling_bounds(m)
     if isnothing(C)
