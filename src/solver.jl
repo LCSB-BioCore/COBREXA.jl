@@ -33,21 +33,29 @@ function make_optimization_model(
 
     precache!(model)
 
-    m, n = size(stoichiometry(model))
-    xl, xu = bounds(model)
-
     optimization_model = Model(optimizer)
+
+    # make the variables
+    n = variable_count(model)
     @variable(optimization_model, x[1:n])
+
+    # bound the variables
+    xl, xu = bounds(model)
+    @constraint(optimization_model, lbs, xl .<= x) # lower bounds
+    @constraint(optimization_model, ubs, x .<= xu) # upper bounds
+
+    # add the objective
     let obj = objective(model)
         if obj isa AbstractVector
+            # linear objective case
             @objective(optimization_model, sense, obj' * x)
         else
+            # quadratic objective case
             @objective(optimization_model, sense, x' * obj * [x; 1])
         end
     end
+
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
-    @constraint(optimization_model, lbs, xl .<= x) # lower bounds
-    @constraint(optimization_model, ubs, x .<= xu) # upper bounds
 
     C = coupling(model) # empty if no coupling
     isempty(C) || begin
