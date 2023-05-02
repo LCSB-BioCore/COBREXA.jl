@@ -94,9 +94,9 @@ Accessors.metabolite_log_concentration_count(model::MaxMinDrivingForceModel) =
 Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel) =
     Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolites(model))
 
-Accessors.gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
+Accessors.gibbs_free_energy_reaction_ids(model::MaxMinDrivingForceModel) =
     "ΔG " .* reaction_ids(model)
-Accessors.n_gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
+Accessors.gibbs_free_energy_reaction_count(model::MaxMinDrivingForceModel) =
     reaction_count(model)
 Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
     Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reaction_ids(model))

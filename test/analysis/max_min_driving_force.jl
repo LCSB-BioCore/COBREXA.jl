@@ -47,6 +47,6 @@
             modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> result
 
-    pyk_idx = first(indexin(["ΔG PYK"], gibbs_free_energy_reactions(mmdfm)))
+    pyk_idx = first(indexin(["ΔG PYK"], gibbs_free_energy_reaction_ids(mmdfm)))
     @test isapprox(sols[pyk_idx, 2], -1.5895040002691128; atol = TEST_TOLERANCE)
 end
