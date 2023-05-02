@@ -44,7 +44,7 @@ function make_optimization_model(
     @constraint(optimization_model, lbs, xl .<= x) # lower bounds
     @constraint(optimization_model, ubs, x .<= xu) # upper bounds
 
-    # add the objective
+    # mark the objective
     let obj = objective(model)
         if obj isa AbstractVector
             # linear objective case
@@ -55,6 +55,37 @@ function make_optimization_model(
         end
     end
 
+    # go over the semantics and add bounds if there are any
+    for (semname, sem) in Accessors.Internal.get_semantics()
+        bounds = sem.bounds(model)
+        if isnothing(bounds)
+            continue
+        elseif bounds isa Vector{Float64}
+            # equality bounds
+            c = @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
+            set_name.(c, "$(semname)_eqs")
+        elseif bounds isa Tuple{Vector{Float64},Vector{Float64}}
+            # lower/upper interval bounds
+            slb, sub = bounds
+            smtx = sem.mapping_matrix(model)
+            c = @constraint(optimization_model, slb .<= smtx * x)
+            set_name.(c, "$(semname)_lbs")
+            c = @constraint(optimization_model, smtx * x .<= sub)
+            set_name.(c, "$(semname)_ubs")
+        else
+            # if the bounds returned something weird, complain loudly.
+            throw(
+                TypeError(
+                    :make_optimization_model,
+                    "conversion of $(typeof(model)) bounds",
+                    typeof(bounds),
+                    Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}},
+                ),
+            )
+        end
+    end
+
+    # make stoichiometry balanced
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
 
     C = coupling(model) # empty if no coupling

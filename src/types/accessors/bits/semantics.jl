@@ -92,6 +92,15 @@ const variable_semantics = Dict{Symbol,Semantics}()
 """
 $(TYPEDSIGNATURES)
 
+Get all available semantics in a symbol-indexed dictionary.
+"""
+function get_semantics()::Dict{Symbol,Semantics}
+    variable_semantics
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 Get a tuple of functions that work with the given semantics, or `nothing` if
 the semantics doesn't exist.
 """
