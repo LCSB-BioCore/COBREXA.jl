@@ -225,10 +225,11 @@ function Accessors.enzyme_variables(model::CommunityModel)
     e_v
 end
 
-Accessors.enzymes(cm::CommunityModel) =
-    [cm.name_lookup[id][:genes][gid] for (id, m) in cm.members for gid in enzymes(m.model)]
+Accessors.enzyme_ids(cm::CommunityModel) = [
+    cm.name_lookup[id][:genes][gid] for (id, m) in cm.members for gid in enzyme_ids(m.model)
+]
 
-Accessors.n_enzymes(cm::CommunityModel) = sum(n_enzymes(m.model) for m in cm.members)
+Accessors.enzyme_count(cm::CommunityModel) = sum(enzyme_count(m.model) for m in cm.members)
 
 """
 $(TYPEDSIGNATURES)

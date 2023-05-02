@@ -117,9 +117,9 @@ Accessors.reaction_variables(model::EnzymeConstrainedModel) =
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 
-Accessors.enzymes(model::EnzymeConstrainedModel) = genes(model)
+Accessors.enzyme_ids(model::EnzymeConstrainedModel) = genes(model)
 
-Accessors.n_enzymes(model::EnzymeConstrainedModel) = n_genes(model)
+Accessors.enzyme_count(model::EnzymeConstrainedModel) = n_genes(model)
 
 Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
     Dict(gid => Dict(gid => gene_product_molar_mass(model, gid)) for gid in genes(model))

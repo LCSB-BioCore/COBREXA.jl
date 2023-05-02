@@ -99,9 +99,9 @@ Accessors.n_environmental_exchanges(model::EqualGrowthCommunityModel) =
 
 Accessors.enzyme_variables(model::EqualGrowthCommunityModel) = enzyme_variables(model.inner)
 
-Accessors.enzymes(model::EqualGrowthCommunityModel) = enzymes(model.inner)
+Accessors.enzyme_ids(model::EqualGrowthCommunityModel) = enzyme_ids(model.inner)
 
-Accessors.n_enzymes(model::EqualGrowthCommunityModel) = n_enzymes(model.inner)
+Accessors.enzyme_count(model::EqualGrowthCommunityModel) = enzyme_count(model.inner)
 
 Accessors.enzyme_group_variables(model::EqualGrowthCommunityModel) =
     enzyme_group_variables(model.inner)
