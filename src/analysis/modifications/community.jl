@@ -48,6 +48,10 @@ modify_abundances(new_abundances::Vector{Float64}) =
         for (i, j, v) in zip(findnz(env_link)...)
             jj = j + column_offset
             ii = i + row_offset
-            set_normalized_coefficient(opt_model[:metabolite_eqs][ii], opt_model[:x][jj], -v)
+            set_normalized_coefficient(
+                opt_model[:metabolite_eqs][ii],
+                opt_model[:x][jj],
+                -v,
+            )
         end
     end
