@@ -244,9 +244,13 @@ no bounds, or a vector of floats with equality bounds, or a tuple of 2 vectors
 with lower and upper bounds.
 """,
         ),
-        :(function $bounds(a::AbstractMetabolicModel)::SparseMat
-            nothing
-        end),
+        :(
+            function $bounds(
+                a::AbstractMetabolicModel,
+            )::Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}}
+                nothing
+            end
+        ),
     )
 
     Base.eval.(Ref(themodule), [idsfn, countfn, mappingfn, mtxfn, boundsfn])
