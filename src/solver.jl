@@ -75,6 +75,10 @@ function make_optimization_model(
             label = Symbol(semname, :_lbs)
             optimization_model[label] = constraints
             set_name.(constraints, "$label")
+            # TODO: this actually uses the semantic matrix transposed, but
+            # that's right. Fix: transpose all other semantics because having
+            # the stoichiometry in the "right" way is quite crucial for folks
+            # being able to reason about stuff.
             constraints = @constraint(optimization_model, smtx * x .<= sub)
             label = Symbol(semname, :_ubs)
             optimization_model[label] = constraints
