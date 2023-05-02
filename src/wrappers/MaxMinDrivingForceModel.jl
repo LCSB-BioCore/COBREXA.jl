@@ -87,9 +87,9 @@ Accessors.variables(model::MaxMinDrivingForceModel) =
 Accessors.n_variables(model::MaxMinDrivingForceModel) =
     1 + n_metabolites(model) + reaction_count(model)
 
-Accessors.metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
+Accessors.metabolite_log_concentration_ids(model::MaxMinDrivingForceModel) =
     "log " .* metabolites(model)
-Accessors.n_metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
+Accessors.metabolite_log_concentration_count(model::MaxMinDrivingForceModel) =
     n_metabolites(model)
 Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel) =
     Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolites(model))
