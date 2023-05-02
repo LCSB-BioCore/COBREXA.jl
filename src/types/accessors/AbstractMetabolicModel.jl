@@ -152,8 +152,8 @@ to make thermodynamic calculations easier.
 )
 
 @make_variable_semantics(
-    :gibbs_free_energy_reaction,
-    "Gibbs free energy of reaction",
+    :gibbs_free_energy,
+    "Gibbs free energies",
     """
 Some thermodynamic models need to ensure that the ΔG of each reaction is
 negative (2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
