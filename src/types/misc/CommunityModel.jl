@@ -125,12 +125,16 @@ function build_community_name_lookup(
     members::OrderedDict{String,CommunityMember};
     delim = "#",
 )
-    accessors = [variables, reactions, metabolites, genes]
+    accessors = [
+        :variables => variables,
+        :reactions => reaction_ids,
+        :metabolites => metabolites,
+        :genes => genes,
+    ]
     Dict(
         id => Dict(
-            Symbol(accessor) =>
-                Dict(k => id * delim * k for k in accessor(member.model)) for
-            accessor in accessors
+            accessorname => Dict(k => id * delim * k for k in accessor(member.model))
+            for (accessorname, accessor) in accessors
         ) for (id, member) in members
     )
 end
