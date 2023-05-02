@@ -205,7 +205,7 @@ values_vec(:reaction, flux_balance_analysis(model, ...))
 """
 function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
     s = Accessors.Internal.semantics(semantics)
-    is_solved(res.result) ? s.mapping_matrix(res.model)' * value.(res.result[:x]) : nothing
+    is_solved(res.result) ? s.mapping_matrix(res.model) * value.(res.result[:x]) : nothing
 end
 
 """
@@ -252,7 +252,7 @@ values_dict(:reaction, flux_balance_analysis(model, ...))
 function values_dict(semantics::Symbol, res::ModelWithResult{<:Model})
     s = Accessors.Internal.semantics(semantics)
     is_solved(res.result) ?
-    Dict(s.ids(res.model) .=> s.mapping_matrix(res.model)' * value.(res.result[:x])) :
+    Dict(s.ids(res.model) .=> s.mapping_matrix(res.model) * value.(res.result[:x])) :
     nothing
 end
 

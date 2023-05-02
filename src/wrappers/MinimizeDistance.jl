@@ -59,9 +59,10 @@ function Accessors.objective(m::MinimizeSemanticDistance)
     s = Accessors.Internal.semantics(m.semantics)
     M = s.mapping_matrix(m.inner)
 
-    return M *
-           [spdiagm(fill(-0.5, size(M, 2))) m.center] *
-           [M' zeros(size(M, 2)); zeros(size(M, 1))' 1.0]
+    # TODO check the validity of the math here
+    return M' *
+           [spdiagm(fill(-0.5, size(M, 1))) m.center] *
+           [M zeros(size(M, 1)); zeros(size(M, 2))' 1.0]
 end
 
 """

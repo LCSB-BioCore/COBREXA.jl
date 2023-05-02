@@ -77,7 +77,7 @@ function variability_analysis(
     variability_analysis(
         model,
         optimizer;
-        directions = s.mapping_matrix(model)[:, indexes],
+        directions = (s.mapping_matrix(model)')[:, indexes],
         kwargs...,
     )
 end
