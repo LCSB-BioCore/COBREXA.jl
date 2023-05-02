@@ -88,15 +88,16 @@ function make_optimization_model(
     # make stoichiometry balanced
     @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
 
-    C = coupling(model) # empty if no coupling
-    isempty(C) || begin
+    # add coupling constraints
+    C = coupling(model)
+    if !isempty(C)
         cl, cu = coupling_bounds(model)
         @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
         @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
     end
 
     return optimization_model
-    #TODO what about ModelWithResult right from this point? ;D
+    #TODO so well, what about having ModelWithResult right from this point? ;D
 end
 
 """
