@@ -116,6 +116,11 @@ flux, such as with separate bidirectional reactions.
 """
 )
 
+"""
+Shortcut for writing [`reaction_ids`](@ref).
+"""
+const reactions = reaction_ids
+
 @make_variable_semantics(
     :enzyme,
     "enzyme supplies",

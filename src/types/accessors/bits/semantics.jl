@@ -130,13 +130,13 @@ function make_variable_semantics(
 )
     haskey(themodule.Internal.variable_semantics, sym) && return
 
-    plural = Symbol(sym, :s)
-    count = Symbol(:n_, plural)
+    ids = Symbol(sym, :_ids)
+    count = Symbol(sym, :_count)
     mapping = Symbol(sym, :_variables)
     mapping_mtx = Symbol(sym, :_variables_matrix)
     bounds = Symbol(sym, :_bounds)
 
-    pluralfn = Expr(
+    idsfn = Expr(
         :macrocall,
         Symbol("@doc"),
         source,
@@ -154,7 +154,7 @@ model. See the documentation of [`$mapping`](@ref) for closer
 definition of the correspondence of $name and model variables.
 """,
         ),
-        :(function $plural(a::AbstractMetabolicModel)::Vector{String}
+        :(function $ids(a::AbstractMetabolicModel)::Vector{String}
             String[]
         end),
     )
@@ -169,7 +169,7 @@ definition of the correspondence of $name and model variables.
             """
 
 Count of $name that the model describes, should be equal to the length of
-vector returned by [`$plural`].
+vector returned by [`$ids`].
 """,
         ),
         :(function $count(a::AbstractMetabolicModel)::Int
@@ -189,7 +189,7 @@ vector returned by [`$plural`].
 Bipartite mapping of $name described by the model to the actual
 variables in the model. Returns a dictionary of $name assigned to the
 variable IDs and their linear coefficients. See the documentation of
-[`$plural`](@ref) for semantics.
+[`$ids`](@ref) for semantics.
 
 To improve the performance, you may want to use [`$mapping_mtx`](@ref).
 """,
@@ -217,7 +217,7 @@ safety reasons, this is never automatically inherited by wrappers.
 """,
         ),
         :(function $mapping_mtx(a::AbstractMetabolicModel)::SparseMat
-            make_mapping_mtx(variables(a), $plural(a), $mapping(a))
+            make_mapping_mtx(variables(a), $ids(a), $mapping(a))
         end),
     )
 
@@ -240,11 +240,11 @@ with lower and upper bounds.
         end),
     )
 
-    Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn, boundsfn])
+    Base.eval.(Ref(themodule), [idsfn, countfn, mappingfn, mtxfn, boundsfn])
 
     # extend the AbstractModelWrapper
-    Base.eval(themodule, :(function $plural(w::AbstractModelWrapper)::Vector{String}
-        $plural(unwrap_model(w))
+    Base.eval(themodule, :(function $ids(w::AbstractModelWrapper)::Vector{String}
+        $ids(unwrap_model(w))
     end))
 
     Base.eval(themodule, :(function $count(w::AbstractModelWrapper)::Int
@@ -279,9 +279,8 @@ with lower and upper bounds.
     # alternative in forcing people to overload all semantic functions in all
     # cases of adding semantics, which might actually be the right way.)
 
-    themodule.Internal.variable_semantics[sym] = Semantics(
-        Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx, bounds))...,
-    )
+    themodule.Internal.variable_semantics[sym] =
+        Semantics(Base.eval.(Ref(themodule), (ids, count, mapping, mapping_mtx, bounds))...)
 end
 
 """
@@ -305,8 +304,8 @@ reactions; this macro declares precisely the same about the model type.
 macro all_variables_are_reactions(mt)
     m = esc(mt)
     quote
-        $Accessors.reactions(model::$m) = $Accessors.variables(model)
-        $Accessors.n_reactions(model::$m) = $Accessors.n_variables(model)
+        $Accessors.reaction_ids(model::$m) = $Accessors.variables(model)
+        $Accessors.reaction_count(model::$m) = $Accessors.n_variables(model)
         $Accessors.reaction_variables(model::$m) =
             Dict(var => Dict(var => 1.0) for var in $Accessors.variables(model))
         $Accessors.reaction_variables_matrix(model::$m) =
