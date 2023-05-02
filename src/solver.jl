@@ -68,7 +68,9 @@ function make_optimization_model(
             continue
         elseif typeof(bounds) <: AbstractVector{Float64}
             # equality bounds
-            label(semname, :eqs,
+            label(
+                semname,
+                :eqs,
                 @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
             )
         elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
