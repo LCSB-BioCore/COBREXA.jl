@@ -35,6 +35,12 @@ function make_optimization_model(
 
     optimization_model = Model(optimizer)
 
+    function label(semname, suffix, constraints)
+        l = Symbol(semname, :_, suffix)
+        optimization_model[l] = constraints
+        set_name.(constraints, "$l")
+    end
+
     # make the variables
     n = variable_count(model)
     @variable(optimization_model, x[1:n])
@@ -62,27 +68,19 @@ function make_optimization_model(
             continue
         elseif typeof(bounds) <: AbstractVector{Float64}
             # equality bounds
-            constraints =
+            label(semname, :eqs,
                 @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
-            label = Symbol(semname, :_eqs)
-            optimization_model[label] = constraints
-            set_name.(constraints, "$label")
+            )
         elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
             # lower/upper interval bounds
             slb, sub = bounds
             smtx = sem.mapping_matrix(model)
-            constraints = @constraint(optimization_model, slb .<= smtx * x)
-            label = Symbol(semname, :_lbs)
-            optimization_model[label] = constraints
-            set_name.(constraints, "$label")
+            label(semname, :lbs, @constraint(optimization_model, slb .<= smtx * x))
+            label(semname, :ubs, @constraint(optimization_model, smtx * x .<= sub))
             # TODO: this actually uses the semantic matrix transposed, but
             # that's right. Fix: transpose all other semantics because having
             # the stoichiometry in the "right" way is quite crucial for folks
             # being able to reason about stuff.
-            constraints = @constraint(optimization_model, smtx * x .<= sub)
-            label = Symbol(semname, :_ubs)
-            optimization_model[label] = constraints
-            set_name.(constraints, "$label")
         else
             # if the bounds returned something weird, complain loudly.
             throw(
