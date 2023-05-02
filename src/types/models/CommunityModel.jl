@@ -207,10 +207,10 @@ Accessors.environmental_exchange_variables(model::CommunityModel) = Dict(
     rid in [envlink.reaction_id for envlink in model.environmental_links]
 )
 
-Accessors.environmental_exchanges(model::CommunityModel) =
+Accessors.environmental_exchange_ids(model::CommunityModel) =
     [envlink.reaction_id for envlink in model.environmental_links]
 
-Accessors.n_environmental_exchanges(model::CommunityModel) =
+Accessors.environmental_exchange_count(model::CommunityModel) =
     length(model.environmental_links)
 
 function Accessors.enzyme_variables(model::CommunityModel)

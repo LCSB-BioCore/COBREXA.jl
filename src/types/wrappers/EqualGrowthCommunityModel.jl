@@ -91,11 +91,11 @@ Accessors.reaction_count(cm::EqualGrowthCommunityModel) = reaction_count(cm.inne
 Accessors.environmental_exchange_variables(model::EqualGrowthCommunityModel) =
     environmental_exchange_variables(model.inner)
 
-Accessors.environmental_exchanges(model::EqualGrowthCommunityModel) =
-    environmental_exchanges(model.inner)
+Accessors.environmental_exchange_ids(model::EqualGrowthCommunityModel) =
+    environmental_exchange_ids(model.inner)
 
-Accessors.n_environmental_exchanges(model::EqualGrowthCommunityModel) =
-    n_environmental_exchanges(model.inner)
+Accessors.environmental_exchange_count(model::EqualGrowthCommunityModel) =
+    environmental_exchange_count(model.inner)
 
 Accessors.enzyme_variables(model::EqualGrowthCommunityModel) = enzyme_variables(model.inner)
 
