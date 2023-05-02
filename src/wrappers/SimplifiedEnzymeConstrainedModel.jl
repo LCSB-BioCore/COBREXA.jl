@@ -97,7 +97,7 @@ wrapped model.
 Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
         variables(model),
-        reactions(model.inner),
+        reaction_ids(model.inner),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 

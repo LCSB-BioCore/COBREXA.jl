@@ -107,7 +107,7 @@ modifying the reaction list, stoichiometry, and bounds:
 ```julia
 COBREXA.unwrap_model(x::LeakyModel) = x.mdl
 COBREXA.reaction_count(x::LeakyModel) = reaction_count(x.mdl) + 1
-COBREXA.reactions(x::LeakyModel) = [reactions(x.mdl); "The Leak"]
+COBREXA.reaction_ids(x::LeakyModel) = [reaction_ids(x.mdl); "The Leak"]
 COBREXA.stoichiometry(x::LeakyModel) = [stoichiometry(x.mdl) [m in x.leaking_metabolites ? -1.0 : 0.0 for m = metabolites(x.mdl)]]
 function COBREXA.bounds(x::LeakyModel)
     (l, u) = bounds(x.mdl)

@@ -52,7 +52,7 @@ First, define the reactions and metabolites:
 COBREXA.reaction_count(m::CircularModel) = m.size
 COBREXA.n_metabolites(m::CircularModel) = m.size
 
-COBREXA.reactions(m::CircularModel) = ["rxn$i" for i in 1:reaction_count(m)]
+COBREXA.reaction_ids(m::CircularModel) = ["rxn$i" for i in 1:reaction_count(m)]
 COBREXA.metabolites(m::CircularModel) = ["met$i" for i in 1:n_metabolites(m)]
 ```
 

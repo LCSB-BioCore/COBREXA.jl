@@ -322,7 +322,7 @@ end
     ecoli.genes["s0001"].product_upper_bound = 10.0
 
     # update isozymes with kinetic information
-    for rid in reactions(ecoli)
+    for rid in reaction_ids(ecoli)
         if haskey(ecoli_core_reaction_kcats, rid) # if has kcat, then has grr
             newisozymes = Isozyme[]
             for (i, grr) in enumerate(reaction_gene_associations(ecoli, rid))

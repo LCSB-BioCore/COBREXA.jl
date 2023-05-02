@@ -187,10 +187,10 @@ function Accessors.reaction_variables(model::CommunityModel)
     r_v
 end
 
-Accessors.reactions(cm::CommunityModel) = [
+Accessors.reaction_ids(cm::CommunityModel) = [
     vcat(
         [
-            [cm.name_lookup[id][:reactions][rid] for rid in reactions(m.model)] for
+            [cm.name_lookup[id][:reactions][rid] for rid in reaction_ids(m.model)] for
             (id, m) in cm.members
         ]...,
     )

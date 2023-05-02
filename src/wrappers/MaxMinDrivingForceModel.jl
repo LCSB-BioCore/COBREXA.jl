@@ -82,7 +82,7 @@ end
 Accessors.unwrap_model(model::MaxMinDrivingForceModel) = model.inner
 
 Accessors.variables(model::MaxMinDrivingForceModel) =
-    ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
+    ["mmdf"; "log " .* metabolites(model); "ΔG " .* reaction_ids(model)]
 
 Accessors.n_variables(model::MaxMinDrivingForceModel) =
     1 + n_metabolites(model) + reaction_count(model)
@@ -95,11 +95,11 @@ Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel)
     Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolites(model))
 
 Accessors.gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
-    "ΔG " .* reactions(model)
+    "ΔG " .* reaction_ids(model)
 Accessors.n_gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
     reaction_count(model)
 Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
-    Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reactions(model))
+    Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reaction_ids(model))
 
 
 Accessors.objective(model::MaxMinDrivingForceModel) =
@@ -119,7 +119,7 @@ function Accessors.balance(model::MaxMinDrivingForceModel)
     # give dummy dG0 for reactions that don't have data
     dg0s = [
         get(model.reaction_standard_gibbs_free_energies, rid, 0.0) for
-        rid in reactions(model)
+        rid in reaction_ids(model)
     ]
 
     return [
@@ -163,7 +163,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     end
 
     # add ΔG relationships
-    dgrs = spdiagm(ones(length(reactions(model))))
+    dgrs = spdiagm(ones(length(reaction_ids(model))))
     S = stoichiometry(model.inner)
     stoich_mat = -(model.R * model.T) * S'
     dg_mat = [spzeros(reaction_count(model)) stoich_mat dgrs]
@@ -204,12 +204,12 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
 
     # only constrain reactions that have thermo data
     active_rids = Internal.active_reaction_ids(model)
-    idxs = Int.(indexin(active_rids, reactions(model)))
+    idxs = Int.(indexin(active_rids, reaction_ids(model)))
 
     # thermodynamic sign should correspond to the fluxes
     flux_signs = spzeros(length(idxs), reaction_count(model))
     for (i, j) in enumerate(idxs)
-        flux_signs[i, j] = sign(model.flux_solution[reactions(model)[j]])
+        flux_signs[i, j] = sign(model.flux_solution[reaction_ids(model)[j]])
     end
 
     neg_dg_mat = [

@@ -113,7 +113,7 @@ end
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
         variables(model),
-        reactions(model),
+        reaction_ids(model),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 

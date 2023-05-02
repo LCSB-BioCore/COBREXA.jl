@@ -83,8 +83,8 @@ function Accessors.reaction_variables(cm::EqualGrowthCommunityModel)
     r_v
 end
 
-Accessors.reactions(cm::EqualGrowthCommunityModel) =
-    [reactions(cm.inner); cm.community_objective_id]
+Accessors.reaction_ids(cm::EqualGrowthCommunityModel) =
+    [reaction_ids(cm.inner); cm.community_objective_id]
 
 Accessors.reaction_count(cm::EqualGrowthCommunityModel) = reaction_count(cm.inner) + 1
 

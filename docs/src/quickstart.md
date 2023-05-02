@@ -114,7 +114,7 @@ res = screen(m,
     variants=[
 	# create one variant for each reaction in the model, with that reaction knocked out
         [with_changed_bound(reaction_id, lower_bound =0.0, upper_bound =0.0)]
-	for reaction_id in reactions(m)
+	for reaction_id in reaction_ids(m)
     ],
     analysis = model -> begin
 	# we need to check if the optimizer even found a feasible solution,
@@ -130,7 +130,7 @@ res = screen(m,
 In result, you should get a long list of the biomass production for each
 reaction knockout. Let's decorate it with reaction names:
 ```julia
-Dict(reactions(m) .=> res)
+Dict(reaction_ids(m) .=> res)
 ```
 ...which should output an easily accessible dictionary with all the objective
 values named, giving a quick overview of which reactions are critical for the
