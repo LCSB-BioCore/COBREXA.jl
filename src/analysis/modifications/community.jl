@@ -29,7 +29,7 @@ modify_abundances(new_abundances::Vector{Float64}) =
 
         n_vars = variable_count(model)
         n_env_vars = length(model.environmental_links)
-        n_cons = length(opt_model[:mb])
+        n_cons = length(opt_model[:metabolite_eqs])
         n_objs = model isa CommunityModel ? 0 : length(model.inner.members)
 
         row_offset =
@@ -38,7 +38,7 @@ modify_abundances(new_abundances::Vector{Float64}) =
         # fix abundance coefficients of species exchanges
         for (i, j, v) in zip(findnz(env_rows)...)
             ii = i + row_offset
-            set_normalized_coefficient(opt_model[:mb][ii], opt_model[:x][j], v)
+            set_normalized_coefficient(opt_model[:metabolite_eqs][ii], opt_model[:x][j], v)
         end
 
         column_offset =
@@ -48,6 +48,6 @@ modify_abundances(new_abundances::Vector{Float64}) =
         for (i, j, v) in zip(findnz(env_link)...)
             jj = j + column_offset
             ii = i + row_offset
-            set_normalized_coefficient(opt_model[:mb][ii], opt_model[:x][jj], -v)
+            set_normalized_coefficient(opt_model[:metabolite_eqs][ii], opt_model[:x][jj], -v)
         end
     end
