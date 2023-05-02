@@ -199,7 +199,7 @@ In SBML, these are usually called "gene products" but we write `genes` for
 simplicity.
 """
 function genes(a::AbstractMetabolicModel)::Vector{String}
-    return []
+    String[]
 end
 
 """
