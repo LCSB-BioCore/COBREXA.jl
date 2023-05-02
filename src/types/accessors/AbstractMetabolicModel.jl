@@ -133,7 +133,7 @@ these values.
 
 @make_variable_semantics(
     :enzyme_group,
-    "enzyme group",
+    "enzyme groups",
     """
 Certain model types use enzymes to catalyze reactions. These enzymes typically
 have capacity limitations (e.g. membrane or cytosol density constraints). Enzyme
@@ -143,7 +143,7 @@ groups collect these sets of enzymes for convenient analysis.
 
 @make_variable_semantics(
     :metabolite_log_concentration,
-    "metabolite log concentration",
+    "metabolite log-concentrations",
     """
 Certain model types use metabolite concentrations instead of reaction fluxes are
 variables. This semantic grouping uses the log (base e) metabolite concentration
@@ -162,7 +162,7 @@ negative (2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
 
 @make_variable_semantics(
     :environmental_exchange,
-    "Environmental exchange reaction",
+    "environmental exchanges",
     """
 Community models are composed of member models as well as environmental exchange
 reactions. This semantic grouping represents the environmental exchange
