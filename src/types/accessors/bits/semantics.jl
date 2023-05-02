@@ -182,7 +182,7 @@ vector returned by [`$ids`].
 """,
         ),
         :(function $count(a::AbstractMetabolicModel)::Int
-            0
+            length($ids(a))
         end),
     )
 
@@ -244,13 +244,9 @@ no bounds, or a vector of floats with equality bounds, or a tuple of 2 vectors
 with lower and upper bounds.
 """,
         ),
-        :(
-            function $bounds(
-                a::AbstractMetabolicModel,
-            )::Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}}
-                nothing
-            end
-        ),
+        :(function $bounds(a::AbstractMetabolicModel)
+            $(sym == :metabolite ? :(spzeros($count(a))) : nothing)
+        end),
     )
 
     Base.eval.(Ref(themodule), [idsfn, countfn, mappingfn, mtxfn, boundsfn])
@@ -271,16 +267,9 @@ with lower and upper bounds.
         end),
     )
 
-    Base.eval(
-        themodule,
-        :(
-            function $bounds(
-                w::AbstractModelWrapper,
-            )::Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}}
-                $bounds(unwrap_model(w))
-            end
-        ),
-    )
+    Base.eval(themodule, :(function $bounds(w::AbstractModelWrapper)
+        $bounds(unwrap_model(w))
+    end))
 
     # TODO here we would normally also overload the matrix function, but that
     # one will break once anyone touches variables of the models (which is quite
