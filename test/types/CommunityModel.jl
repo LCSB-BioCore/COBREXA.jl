@@ -78,7 +78,7 @@
     )
 
     @test issetequal(
-        metabolites(cm),
+        metabolite_ids(cm),
         [
             "m1#A"
             "m1#B"
@@ -109,7 +109,7 @@
     )
 
     @test variable_count(cm) == 13
-    @test n_metabolites(cm) == 11
+    @test metabolite_count(cm) == 11
     @test n_genes(cm) == 8
 
     @test all(

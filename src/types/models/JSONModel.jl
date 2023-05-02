@@ -73,14 +73,14 @@ _parse_notes(x)::Notes = _parse_annotations(x)
 
 Accessors.variable_count(model::JSONModel) = length(model.rxns)
 
-Accessors.n_metabolites(model::JSONModel) = length(model.mets)
+Accessors.metabolite_count(model::JSONModel) = length(model.mets)
 
 Accessors.n_genes(model::JSONModel) = length(model.genes)
 
 Accessors.variable_ids(model::JSONModel) =
     [_json_rxn_name(r, i) for (i, r) in enumerate(model.rxns)]
 
-Accessors.metabolites(model::JSONModel) =
+Accessors.metabolite_ids(model::JSONModel) =
     [_json_met_name(m, i) for (i, m) in enumerate(model.mets)]
 
 Accessors.genes(model::JSONModel) =
@@ -90,7 +90,7 @@ Accessors.Internal.@all_variables_are_reactions JSONModel
 
 function Accessors.stoichiometry(model::JSONModel)
     rxn_ids = variable_ids(model)
-    met_ids = metabolites(model)
+    met_ids = metabolite_ids(model)
 
     n_entries = 0
     for r in model.rxns
@@ -205,7 +205,7 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     end
 
     rxn_ids = variable_ids(mm)
-    met_ids = metabolites(mm)
+    met_ids = metabolite_ids(mm)
     gene_ids = genes(mm)
     S = stoichiometry(mm)
     lbs, ubs = variable_bounds(mm)

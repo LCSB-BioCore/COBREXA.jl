@@ -20,4 +20,4 @@ $(TYPEDSIGNATURES)
 Helper function that returns the unmangled variable IDs.
 """
 original_variables(model::MaxMinDrivingForceModel) =
-    ["mmdf"; metabolites(model); reaction_ids(model)]
+    ["mmdf"; metabolite_ids(model); reaction_ids(model)]

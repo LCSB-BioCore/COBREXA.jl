@@ -172,16 +172,16 @@ function Accessors.coupling_bounds(model::EnzymeConstrainedModel)
     )
 end
 
-Accessors.balance(model::EnzymeConstrainedModel) =
-    [balance(model.inner); spzeros(length(model.coupling_row_gene_product))]
+Accessors.metabolite_bounds(model::EnzymeConstrainedModel) =
+    [metabolite_bounds(model.inner); spzeros(length(model.coupling_row_gene_product))]
 
 Accessors.n_genes(model::EnzymeConstrainedModel) = length(model.coupling_row_gene_product)
 
 Accessors.genes(model::EnzymeConstrainedModel) =
     genes(model.inner)[[idx for (idx, _) in model.coupling_row_gene_product]]
 
-Accessors.metabolites(model::EnzymeConstrainedModel) =
-    [metabolites(model.inner); genes(model) .* "#enzyme_constrained"]
+Accessors.metabolite_ids(model::EnzymeConstrainedModel) =
+    [metabolite_ids(model.inner); genes(model) .* "#enzyme_constrained"]
 
-Accessors.n_metabolites(model::EnzymeConstrainedModel) =
-    n_metabolites(model.inner) + n_genes(model)
+Accessors.metabolite_count(model::EnzymeConstrainedModel) =
+    metabolite_count(model.inner) + n_genes(model)

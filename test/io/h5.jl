@@ -13,10 +13,10 @@
 
     # briefly test that the loading is okay
     @test variable_count(model) == variable_count(h5)
-    @test n_metabolites(model) == n_metabolites(h5)
+    @test metabolite_count(model) == metabolite_count(h5)
     @test issetequal(variable_ids(model), variable_ids(h5))
-    @test issetequal(metabolites(model), metabolites(h5))
-    @test issorted(metabolites(h5))
+    @test issetequal(metabolite_ids(model), metabolite_ids(h5))
+    @test issorted(metabolite_ids(h5))
     @test issorted(variable_ids(h5))
     @test size(stoichiometry(model)) == size(stoichiometry(h5))
     @test isapprox(sum(stoichiometry(model)), sum(stoichiometry(h5)))
@@ -24,7 +24,7 @@
     @test variable_bounds(model)[1][rxnp] == variable_bounds(h5)[1]
     @test variable_bounds(model)[2][rxnp] == variable_bounds(h5)[2]
     @test objective(model)[rxnp] == objective(h5)
-    @test all(iszero, balance(h5))
+    @test all(iszero, metabolite_bounds(h5))
 
     close(h5)
     @test isnothing(h5.h5)

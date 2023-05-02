@@ -89,9 +89,6 @@ function make_optimization_model(
         end
     end
 
-    # make stoichiometry balanced
-    @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
-
     # add coupling constraints
     C = coupling(model)
     if !isempty(C)

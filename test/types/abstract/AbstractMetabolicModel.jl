@@ -13,8 +13,10 @@ end
 
 
 @testset "ID shortcuts are identictical with the ID-generating functions" begin
+    # this is better triple-checked to avoid someone stealing the overloads
     @test variables === variable_ids
     @test bounds === variable_bounds
     @test reactions === reaction_ids
-    # TODO don't forget about metabolites later
+    @test metabolites === metabolite_ids
+    @test stoichiometry === metabolite_variables_matrix
 end

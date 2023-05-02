@@ -10,7 +10,7 @@ struct MATModel <: AbstractMetabolicModel
     mat::Dict{String,Any}
 end
 
-Accessors.n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
+Accessors.metabolite_count(m::MATModel)::Int = size(m.mat["S"], 1)
 Accessors.variable_count(m::MATModel)::Int = size(m.mat["S"], 2)
 
 function Accessors.variable_ids(m::MATModel)::Vector{String}
@@ -27,12 +27,12 @@ _mat_has_squashed_coupling(mat) =
     haskey(mat, "A") && haskey(mat, "b") && length(mat["b"]) == size(mat["A"], 1)
 
 
-function Accessors.metabolites(m::MATModel)::Vector{String}
-    nm = n_metabolites(m)
+function Accessors.metabolite_ids(m::MATModel)::Vector{String}
+    nm = metabolite_count(m)
     if haskey(m.mat, "mets")
         reshape(m.mat["mets"], length(m.mat["mets"]))[begin:nm]
     else
-        "met" .* string.(1:n_metabolites(m))
+        "met" .* string.(1:metabolite_count(m))
     end
 end
 
@@ -43,12 +43,12 @@ Accessors.variable_bounds(m::MATModel) = (
     reshape(get(m.mat, "ub", fill(Inf, variable_count(m), 1)), variable_count(m)),
 )
 
-function Accessors.balance(m::MATModel)
-    b = get(m.mat, "b", spzeros(n_metabolites(m), 1))
+function Accessors.metabolite_bounds(m::MATModel)
+    b = get(m.mat, "b", spzeros(metabolite_count(m), 1))
     if _mat_has_squashed_coupling(m.mat)
-        b = b[1:n_metabolites(m), :]
+        b = b[1:metabolite_count(m), :]
     end
-    sparse(reshape(b, n_metabolites(m)))
+    sparse(reshape(b, metabolite_count(m)))
 end
 
 Accessors.objective(m::MATModel) =
@@ -97,13 +97,13 @@ function Accessors.eval_reaction_gene_association(m::MATModel, rid::String; kwar
 end
 
 Accessors.metabolite_formula(m::MATModel, mid::String) = maybemap(
-    x -> parse_formula(x[findfirst(==(mid), metabolites(m))]),
+    x -> parse_formula(x[findfirst(==(mid), metabolite_ids(m))]),
     gets(m.mat, nothing, constants.keynames.metformulas),
 )
 
 function Accessors.metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
     met_charge = maybemap(
-        x -> x[findfirst(==(mid), metabolites(m))],
+        x -> x[findfirst(==(mid), metabolite_ids(m))],
         gets(m.mat, nothing, constants.keynames.metcharges),
     )
     maybemap(Int, isnan(met_charge) ? nothing : met_charge)
@@ -111,7 +111,7 @@ end
 
 function Accessors.metabolite_compartment(m::MATModel, mid::String)
     res = maybemap(
-        x -> x[findfirst(==(mid), metabolites(m))],
+        x -> x[findfirst(==(mid), metabolite_ids(m))],
         gets(m.mat, nothing, constants.keynames.metcompartments),
     )
     # if the metabolite is an integer or a (very integerish) float, it is an
@@ -139,7 +139,7 @@ Accessors.reaction_name(m::MATModel, rid::String) = maybemap(
 )
 
 Accessors.metabolite_name(m::MATModel, mid::String) = maybemap(
-    x -> x[findfirst(==(mid), metabolites(m))],
+    x -> x[findfirst(==(mid), metabolite_ids(m))],
     gets(m.mat, nothing, constants.keynames.metnames),
 )
 
@@ -158,15 +158,15 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
     lb, ub = variable_bounds(m)
     cl, cu = coupling_bounds(m)
     nr = variable_count(m)
-    nm = n_metabolites(m)
+    nm = metabolite_count(m)
     return MATModel(
         Dict(
             "S" => stoichiometry(m),
             "rxns" => variable_ids(m),
-            "mets" => metabolites(m),
+            "mets" => metabolite_ids(m),
             "lb" => Vector(lb),
             "ub" => Vector(ub),
-            "b" => Vector(balance(m)),
+            "b" => Vector(metabolite_bounds(m)),
             "c" => Vector(objective(m)),
             "C" => coupling(m),
             "cl" => Vector(cl),
@@ -183,11 +183,14 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
             "metFormulas" =>
                 default.(
                     "",
-                    maybemap.(unparse_formula, metabolite_formula.(Ref(m), metabolites(m))),
+                    maybemap.(
+                        unparse_formula,
+                        metabolite_formula.(Ref(m), metabolite_ids(m)),
+                    ),
                 ),
-            "metCharges" => default.(0, metabolite_charge.(Ref(m), metabolites(m))),
+            "metCharges" => default.(0, metabolite_charge.(Ref(m), metabolite_ids(m))),
             "metCompartments" =>
-                default.("", metabolite_compartment.(Ref(m), metabolites(m))),
+                default.("", metabolite_compartment.(Ref(m), metabolite_ids(m))),
         ),
     )
 end

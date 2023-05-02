@@ -363,7 +363,7 @@ end
 end
 
 @_remove_fn metabolite MatrixCoupling String inplace plural begin
-    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolite_ids(model))))
 end
 
 @_remove_fn metabolite MatrixCoupling String begin
@@ -371,7 +371,7 @@ end
 end
 
 @_remove_fn metabolite MatrixCoupling String plural begin
-    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolite_ids(model))))
 end
 
 """

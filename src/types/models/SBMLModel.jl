@@ -42,7 +42,7 @@ Accessors.variable_ids(model::SBMLModel)::Vector{String} = model.reaction_ids
 
 Accessors.Internal.@all_variables_are_reactions SBMLModel
 
-Accessors.metabolites(model::SBMLModel)::Vector{String} = model.metabolite_ids
+Accessors.metabolite_ids(model::SBMLModel)::Vector{String} = model.metabolite_ids
 
 function Accessors.stoichiometry(model::SBMLModel)::SparseMat
 
@@ -78,7 +78,7 @@ function Accessors.stoichiometry(model::SBMLModel)::SparseMat
             push!(Vals, isnothing(sr.stoichiometry) ? 1.0 : sr.stoichiometry)
         end
     end
-    return sparse(Rows, Cols, Vals, n_metabolites(model), reaction_count(model))
+    return sparse(Rows, Cols, Vals, metabolite_count(model), reaction_count(model))
 end
 
 function Accessors.variable_bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
@@ -134,7 +134,7 @@ function Accessors.variable_bounds(model::SBMLModel)::Tuple{Vector{Float64},Vect
     )
 end
 
-Accessors.balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
+Accessors.metabolite_bounds(model::SBMLModel)::SparseVec = spzeros(metabolite_count(model))
 
 function Accessors.objective(model::SBMLModel)::SparseVec
     res = sparsevec([], [], reaction_count(model))
@@ -279,7 +279,7 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
         return mm
     end
 
-    mets = metabolites(mm)
+    mets = metabolite_ids(mm)
     rxns = variable_ids(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = variable_bounds(mm)

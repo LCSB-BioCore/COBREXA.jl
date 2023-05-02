@@ -41,7 +41,7 @@ open(f -> serialize(f, sm), "myModel.stdmodel", "w")
 # The models can then be loaded back using `deserialize`:
 
 sm2 = deserialize("myModel.stdmodel")
-issetequal(metabolites(sm), metabolites(sm2))
+issetequal(metabolite_ids(sm), metabolite_ids(sm2))
 
 # This form of loading operation is usually pretty quick:
 t = @elapsed deserialize("myModel.stdmodel")

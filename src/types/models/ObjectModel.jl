@@ -60,9 +60,10 @@ Accessors.variable_count(model::ObjectModel)::Int = length(model.reactions)
 
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
-Accessors.metabolites(model::ObjectModel)::StringVecType = collect(keys(model.metabolites))
+Accessors.metabolite_ids(model::ObjectModel)::StringVecType =
+    collect(keys(model.metabolites))
 
-Accessors.n_metabolites(model::ObjectModel)::Int = length(model.metabolites)
+Accessors.metabolite_count(model::ObjectModel)::Int = length(model.metabolites)
 
 Accessors.genes(model::ObjectModel)::StringVecType = collect(keys(model.genes))
 
@@ -85,7 +86,7 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
 
     # establish the ordering
     rxns = variable_ids(model)
-    met_idx = Dict(mid => i for (i, mid) in enumerate(metabolites(model)))
+    met_idx = Dict(mid => i for (i, mid) in enumerate(metabolite_ids(model)))
 
     # fill the matrix entries
     for (ridx, rid) in enumerate(rxns)
@@ -101,13 +102,14 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
             push!(SV, coeff)
         end
     end
-    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), variable_count(model))
+    return SparseArrays.sparse(MI, RI, SV, metabolite_count(model), variable_count(model))
 end
 
 Accessors.variable_bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
-Accessors.balance(model::ObjectModel)::SparseVec = spzeros(length(model.metabolites))
+Accessors.metabolite_bounds(model::ObjectModel)::SparseVec =
+    spzeros(length(model.metabolites))
 
 Accessors.objective(model::ObjectModel)::SparseVec =
     sparse([get(model.objective, rid, 0.0) for rid in keys(model.reactions)])
@@ -187,7 +189,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     modelgenes = OrderedDict{String,Gene}()
 
     gids = genes(model)
-    metids = metabolites(model)
+    metids = metabolite_ids(model)
     rxnids = variable_ids(model)
 
     for gid in gids

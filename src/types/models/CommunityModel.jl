@@ -109,16 +109,16 @@ function Accessors.variable_count(cm::CommunityModel)
     return num_model_reactions + num_env_metabolites
 end
 
-function Accessors.metabolites(cm::CommunityModel)
+function Accessors.metabolite_ids(cm::CommunityModel)
     mets = [
         cm.name_lookup[id][:metabolites][mid] for (id, m) in cm.members for
-        mid in metabolites(m.model)
+        mid in metabolite_ids(m.model)
     ]
     return [mets; "ENV_" .* [envlink.metabolite_id for envlink in cm.environmental_links]]
 end
 
-function Accessors.n_metabolites(cm::CommunityModel)
-    num_model_constraints = sum(n_metabolites(m.model) for m in values(cm.members))
+function Accessors.metabolite_count(cm::CommunityModel)
+    num_model_constraints = sum(metabolite_count(m.model) for m in values(cm.members))
     num_env_metabolites = length(cm.environmental_links)
     return num_model_constraints + num_env_metabolites
 end
@@ -128,8 +128,8 @@ Accessors.genes(cm::CommunityModel) =
 
 Accessors.n_genes(cm::CommunityModel) = sum(n_genes(m.model) for m in values(cm.members))
 
-Accessors.balance(cm::CommunityModel) = [
-    vcat([balance(m.model) for m in values(cm.members)]...)
+Accessors.metabolite_bounds(cm::CommunityModel) = [
+    vcat([metabolite_bounds(m.model) for m in values(cm.members)]...)
     spzeros(length(cm.environmental_links))
 ]
 

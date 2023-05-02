@@ -12,7 +12,7 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
     ubs = zeros(length(rxns))
     for (j, rxn) in enumerate(rxns)
         req = rxn.metabolites
-        for (i, v) in zip(indexin(keys(req), metabolites(model)), values(req))
+        for (i, v) in zip(indexin(keys(req), metabolite_ids(model)), values(req))
             push!(J, j)
             push!(I, i)
             push!(V, v)
@@ -21,7 +21,7 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
         lbs[j] = rxn.lower_bound
         ubs[j] = rxn.upper_bound
     end
-    Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))
+    Sadd = sparse(I, J, V, metabolite_count(model), length(rxns))
     model.S = [model.S Sadd]
     model.c = dropzeros([model.c; zeros(length(rxns))]) # does not add an objective info from rxns
     model.xu = ubs
@@ -370,7 +370,7 @@ end
             any(in.(findnz(model.S[:, ridx])[1], Ref(metabolite_idxs)))
         ],
     )
-    mask = .!in.(1:n_metabolites(model), Ref(metabolite_idxs))
+    mask = .!in.(1:metabolite_count(model), Ref(metabolite_idxs))
     model.S = model.S[mask, :]
     model.b = model.b[mask]
     model.mets = model.mets[mask]
@@ -392,7 +392,7 @@ end
 end
 
 @_remove_fn metabolite MatrixModel String inplace plural begin
-    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolite_ids(model))))
 end
 
 @_remove_fn metabolite MatrixModel String begin
@@ -400,7 +400,7 @@ end
 end
 
 @_remove_fn metabolite MatrixModel String plural begin
-    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolite_ids(model))))
 end
 
 """

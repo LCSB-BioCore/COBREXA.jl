@@ -19,7 +19,7 @@
     )
     sm.m = nothing
     @test issetequal(
-        metabolites(convert(MatrixModelWithCoupling, sm)),
-        metabolites(convert(MatrixModelWithCoupling, sm2)),
+        metabolite_ids(convert(MatrixModelWithCoupling, sm)),
+        metabolite_ids(convert(MatrixModelWithCoupling, sm2)),
     )
 end

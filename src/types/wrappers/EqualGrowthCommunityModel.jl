@@ -24,14 +24,14 @@ Accessors.variable_ids(cm::EqualGrowthCommunityModel) =
 
 Accessors.variable_count(cm::EqualGrowthCommunityModel) = variable_count(cm.inner) + 1
 
-Accessors.metabolites(cm::EqualGrowthCommunityModel) =
-    [metabolites(cm.inner); [m.id for m in cm.inner.members]]
+Accessors.metabolite_ids(cm::EqualGrowthCommunityModel) =
+    [metabolite_ids(cm.inner); [m.id for m in cm.inner.members]]
 
-Accessors.n_metabolites(cm::EqualGrowthCommunityModel) =
-    n_metabolites(cm.inner) + length(cm.inner.members)
+Accessors.metabolite_count(cm::EqualGrowthCommunityModel) =
+    metabolite_count(cm.inner) + length(cm.inner.members)
 
-Accessors.balance(cm::EqualGrowthCommunityModel) = [
-    balance(cm.inner)
+Accessors.metabolite_bounds(cm::EqualGrowthCommunityModel) = [
+    metabolite_bounds(cm.inner)
     spzeros(length(cm.inner.members))
 ]
 

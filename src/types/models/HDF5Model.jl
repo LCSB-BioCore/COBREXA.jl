@@ -46,12 +46,12 @@ end
 
 Accessors.Internal.@all_variables_are_reactions HDF5Model
 
-function Accessors.n_metabolites(model::HDF5Model)::Int
+function Accessors.metabolite_count(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["metabolites"])
 end
 
-function Accessors.metabolites(model::HDF5Model)::Vector{String}
+function Accessors.metabolite_ids(model::HDF5Model)::Vector{String}
     precache!(model)
     read(model.h5["metabolites"])
 end
@@ -66,7 +66,7 @@ function Accessors.variable_bounds(model::HDF5Model)::Tuple{Vector{Float64},Vect
     (HDF5.readmmap(model.h5["lower_bounds"]), HDF5.readmmap(model.h5["upper_bounds"]))
 end
 
-function Accessors.balance(model::HDF5Model)::SparseVec
+function Accessors.metabolite_bounds(model::HDF5Model)::SparseVec
     precache!(model)
     h5_read_sparse(SparseVec, model.h5["balance"])
 end

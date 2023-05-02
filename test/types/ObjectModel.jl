@@ -47,10 +47,10 @@
     @test contains(sprint(show, MIME("text/plain"), model), "ObjectModel")
 
     @test "r1" in variable_ids(model)
-    @test "m4" in metabolites(model)
+    @test "m4" in metabolite_ids(model)
     @test "g2" in genes(model)
     @test variable_count(model) == 4
-    @test n_metabolites(model) == 4
+    @test metabolite_count(model) == 4
     @test n_genes(model) == 3
 
     S_test = spzeros(4, 4)
@@ -78,7 +78,7 @@
     @test lb_test == lbs
     @test ub_test == ubs
 
-    @test balance(model) == spzeros(n_metabolites(model))
+    @test metabolite_bounds(model) == spzeros(metabolite_count(model))
 
     obj_test = spzeros(4)
     obj_test[1] = 1.0
@@ -134,7 +134,7 @@
     stdmodel = convert(ObjectModel, jsonmodel)
     @test issetequal(variable_ids(jsonmodel), variable_ids(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
-    @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))
+    @test issetequal(metabolite_ids(jsonmodel), metabolite_ids(stdmodel))
     jlbs, jubs = variable_bounds(jsonmodel)
     slbs, subs = variable_bounds(stdmodel)
     @test issetequal(jlbs, slbs)
@@ -143,10 +143,10 @@
     sS = stoichiometry(stdmodel)
     j_r1_index = findfirst(x -> x == "r1", variable_ids(jsonmodel))
     s_r1_index = findfirst(x -> x == "r1", variable_ids(stdmodel))
-    j_m1_index = findfirst(x -> x == "m1", metabolites(jsonmodel))
-    j_m2_index = findfirst(x -> x == "m2", metabolites(jsonmodel))
-    s_m1_index = findfirst(x -> x == "m1", metabolites(stdmodel))
-    s_m2_index = findfirst(x -> x == "m2", metabolites(stdmodel))
+    j_m1_index = findfirst(x -> x == "m1", metabolite_ids(jsonmodel))
+    j_m2_index = findfirst(x -> x == "m2", metabolite_ids(jsonmodel))
+    s_m1_index = findfirst(x -> x == "m1", metabolite_ids(stdmodel))
+    s_m2_index = findfirst(x -> x == "m2", metabolite_ids(stdmodel))
     @test jS[j_m1_index, j_r1_index] == sS[s_m1_index, s_r1_index]
     @test jS[j_m2_index, j_r1_index] == sS[s_m2_index, s_r1_index]
 end

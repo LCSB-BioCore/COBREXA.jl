@@ -119,7 +119,7 @@ end
         check_consistency = true,
     )
     @test variable_count(cp) == variable_count(new_cp)
-    @test n_metabolites(cp) + 1 == n_metabolites(new_cp)
+    @test metabolite_count(cp) + 1 == metabolite_count(new_cp)
 end
 
 @testset "Add reactions" begin
@@ -224,12 +224,12 @@ end
 
     modLp = remove_reactions(lp, [4; 1])
     @test stoichiometry(modLp) == stoichiometry(lp)[:, 2:3]
-    @test balance(modLp) == balance(lp)
+    @test metabolite_bounds(modLp) == metabolite_bounds(lp)
     @test objective(modLp) == objective(lp)[2:3]
     @test variable_bounds(modLp)[1] == variable_bounds(lp)[1][2:3]
     @test variable_bounds(modLp)[2] == variable_bounds(lp)[2][2:3]
     @test variable_ids(modLp) == variable_ids(lp)[2:3]
-    @test metabolites(modLp) == metabolites(lp)
+    @test metabolite_ids(modLp) == metabolite_ids(lp)
 end
 
 @testset "Remove metabolites" begin
@@ -237,17 +237,20 @@ end
 
     m1 = remove_metabolites(model, ["glc__D_e", "for_c"])
     m2 = remove_metabolite(model, "glc__D_e")
-    m3 = remove_metabolites(model, Int.(indexin(["glc__D_e", "for_c"], metabolites(model))))
-    m4 = remove_metabolite(model, first(indexin(["glc__D_e"], metabolites(model))))
+    m3 = remove_metabolites(
+        model,
+        Int.(indexin(["glc__D_e", "for_c"], metabolite_ids(model))),
+    )
+    m4 = remove_metabolite(model, first(indexin(["glc__D_e"], metabolite_ids(model))))
 
     @test size(stoichiometry(m1)) == (70, 90)
     @test size(stoichiometry(m2)) == (71, 93)
     @test size(stoichiometry(m3)) == (70, 90)
     @test size(stoichiometry(m4)) == (71, 93)
-    @test all((!in(metabolites(m1))).(["glc__D_e", "for_c"]))
-    @test !(["glc__D_e"] in metabolites(m2))
-    @test all((!in(metabolites(m3))).(["glc__D_e", "for_c"]))
-    @test !(["glc__D_e"] in metabolites(m4))
+    @test all((!in(metabolite_ids(m1))).(["glc__D_e", "for_c"]))
+    @test !(["glc__D_e"] in metabolite_ids(m2))
+    @test all((!in(metabolite_ids(m3))).(["glc__D_e", "for_c"]))
+    @test !(["glc__D_e"] in metabolite_ids(m4))
 end
 
 @testset "Core in place modifications" begin
