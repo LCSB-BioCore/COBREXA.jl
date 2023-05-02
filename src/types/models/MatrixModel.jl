@@ -47,7 +47,7 @@ mutable struct MatrixModel <: AbstractMetabolicModel
     end
 end
 
-Accessors.variables(a::MatrixModel)::Vector{String} = a.rxns
+Accessors.variable_ids(a::MatrixModel)::Vector{String} = a.rxns
 
 Accessors.Internal.@all_variables_are_reactions MatrixModel
 
@@ -102,10 +102,10 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
         objective(m),
         xl,
         xu,
-        variables(m),
+        variable_ids(m),
         metabolites(m),
         Vector{Maybe{GeneAssociationsDNF}}([
-            reaction_gene_associations(m, id) for id in variables(m)
+            reaction_gene_associations(m, id) for id in variable_ids(m)
         ]),
     )
 end

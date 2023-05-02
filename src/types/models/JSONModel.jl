@@ -18,7 +18,7 @@ changes in `json` invalidate the cache.
 ````
 model = load_json_model("some_model.json")
 model.json # see the actual underlying JSON
-variables(model) # see the list of reactions
+variable_ids(model) # see the list of reactions
 ````
 
 # Fields
@@ -71,13 +71,13 @@ end
 
 _parse_notes(x)::Notes = _parse_annotations(x)
 
-Accessors.n_variables(model::JSONModel) = length(model.rxns)
+Accessors.variable_count(model::JSONModel) = length(model.rxns)
 
 Accessors.n_metabolites(model::JSONModel) = length(model.mets)
 
 Accessors.n_genes(model::JSONModel) = length(model.genes)
 
-Accessors.variables(model::JSONModel) =
+Accessors.variable_ids(model::JSONModel) =
     [_json_rxn_name(r, i) for (i, r) in enumerate(model.rxns)]
 
 Accessors.metabolites(model::JSONModel) =
@@ -89,7 +89,7 @@ Accessors.genes(model::JSONModel) =
 Accessors.Internal.@all_variables_are_reactions JSONModel
 
 function Accessors.stoichiometry(model::JSONModel)
-    rxn_ids = variables(model)
+    rxn_ids = variable_ids(model)
     met_ids = metabolites(model)
 
     n_entries = 0
@@ -204,7 +204,7 @@ function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
         return mm
     end
 
-    rxn_ids = variables(mm)
+    rxn_ids = variable_ids(mm)
     met_ids = metabolites(mm)
     gene_ids = genes(mm)
     S = stoichiometry(mm)

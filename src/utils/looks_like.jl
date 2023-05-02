@@ -17,13 +17,13 @@ alternative.
 
 # Example
 ```
-findall(looks_like_exchange_reaction, variables(model)) # returns indices
-filter(looks_like_exchange_reaction, variables(model)) # returns Strings
+findall(looks_like_exchange_reaction, variable_ids(model)) # returns indices
+filter(looks_like_exchange_reaction, variable_ids(model)) # returns Strings
 
 # to use the optional arguments you need to expand the function's arguments
 # using an anonymous function
-findall(x -> looks_like_exchange_reaction(x; exclude_biomass=true), variables(model)) # returns indices
-filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), variables(model)) # returns Strings
+findall(x -> looks_like_exchange_reaction(x; exclude_biomass=true), variable_ids(model)) # returns indices
+filter(x -> looks_like_exchange_reaction(x; exclude_biomass=true), variable_ids(model)) # returns Strings
 ```
 """
 function looks_like_exchange_reaction(
@@ -43,7 +43,7 @@ Shortcut for finding exchange reaction indexes in a model; arguments are
 forwarded to [`looks_like_exchange_reaction`](@ref).
 """
 find_exchange_reactions(m::AbstractMetabolicModel; kwargs...) =
-    findall(id -> looks_like_exchange_reaction(id; kwargs...), variables(m))
+    findall(id -> looks_like_exchange_reaction(id; kwargs...), variable_ids(m))
 
 """
 $(TYPEDSIGNATURES)
@@ -52,7 +52,7 @@ Shortcut for finding exchange reaction identifiers in a model; arguments are
 forwarded to [`looks_like_exchange_reaction`](@ref).
 """
 find_exchange_reaction_ids(m::AbstractMetabolicModel; kwargs...) =
-    filter(id -> looks_like_exchange_reaction(id, kwargs...), variables(m))
+    filter(id -> looks_like_exchange_reaction(id, kwargs...), variable_ids(m))
 
 """
 $(TYPEDSIGNATURES)
@@ -70,8 +70,8 @@ alternative.
 
 # Example
 ```
-filter(looks_like_biomass_reaction, variables(model)) # returns strings
-findall(looks_like_biomass_reaction, variables(model)) # returns indices
+filter(looks_like_biomass_reaction, variable_ids(model)) # returns strings
+findall(looks_like_biomass_reaction, variable_ids(model)) # returns indices
 ```
 """
 function looks_like_biomass_reaction(
@@ -91,7 +91,7 @@ Shortcut for finding biomass reaction indexes in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
 """
 find_biomass_reactions(m::AbstractMetabolicModel; kwargs...) =
-    findall(id -> looks_like_biomass_reaction(id; kwargs...), variables(m))
+    findall(id -> looks_like_biomass_reaction(id; kwargs...), variable_ids(m))
 
 """
 $(TYPEDSIGNATURES)
@@ -100,7 +100,7 @@ Shortcut for finding biomass reaction identifiers in a model; arguments are
 forwarded to [`looks_like_biomass_reaction`](@ref).
 """
 find_biomass_reaction_ids(m::AbstractMetabolicModel; kwargs...) =
-    filter(id -> looks_like_biomass_reaction(id; kwargs...), variables(m))
+    filter(id -> looks_like_biomass_reaction(id; kwargs...), variable_ids(m))
 
 """
 $(TYPEDSIGNATURES)

@@ -54,9 +54,9 @@ end
 
 # AbstractMetabolicModel interface follows
 
-Accessors.variables(model::ObjectModel)::StringVecType = collect(keys(model.reactions))
+Accessors.variable_ids(model::ObjectModel)::StringVecType = collect(keys(model.reactions))
 
-Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
+Accessors.variable_count(model::ObjectModel)::Int = length(model.reactions)
 
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
@@ -84,7 +84,7 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
     sizehint!(SV, n_entries)
 
     # establish the ordering
-    rxns = variables(model)
+    rxns = variable_ids(model)
     met_idx = Dict(mid => i for (i, mid) in enumerate(metabolites(model)))
 
     # fill the matrix entries
@@ -101,7 +101,7 @@ function Accessors.stoichiometry(model::ObjectModel)::SparseMat
             push!(SV, coeff)
         end
     end
-    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), n_variables(model))
+    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), variable_count(model))
 end
 
 Accessors.bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
@@ -188,7 +188,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
 
     gids = genes(model)
     metids = metabolites(model)
-    rxnids = variables(model)
+    rxnids = variable_ids(model)
 
     for gid in gids
         modelgenes[gid] = Gene(
@@ -214,7 +214,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     S = stoichiometry(model)
     lbs, ubs = bounds(model)
     obj_idxs, obj_vals = findnz(objective(model))
-    modelobjective = Dict(k => v for (k, v) in zip(variables(model)[obj_idxs], obj_vals))
+    modelobjective = Dict(k => v for (k, v) in zip(variable_ids(model)[obj_idxs], obj_vals))
     for (i, rid) in enumerate(rxnids)
         rmets = Dict{String,Float64}()
         for (j, stoich) in zip(findnz(S[:, i])...)

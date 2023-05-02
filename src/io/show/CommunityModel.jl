@@ -1,5 +1,5 @@
 function Base.show(io::Base.IO, ::MIME"text/plain", cm::CommunityMember)
-    println(io, "A community member with $(n_variables(cm.model)) internal variables.")
+    println(io, "A community member with $(variable_count(cm.model)) internal variables.")
 end
 
 function Base.show(io::Base.IO, ::MIME"text/plain", cm::CommunityModel)

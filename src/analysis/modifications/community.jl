@@ -27,7 +27,7 @@ modify_abundances(new_abundances::Vector{Float64}) =
             environment_exchange_stoichiometry(model.inner, new_abundances)
         env_link = spdiagm(sum(env_rows, dims = 2)[:])
 
-        n_vars = n_variables(model)
+        n_vars = variable_count(model)
         n_env_vars = length(model.environmental_links)
         n_cons = length(opt_model[:mb])
         n_objs = model isa CommunityModel ? 0 : length(model.inner.members)

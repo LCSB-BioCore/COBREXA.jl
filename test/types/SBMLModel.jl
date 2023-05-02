@@ -4,8 +4,8 @@
     sm = convert(ObjectModel, sbmlm)
     sbmlm2 = convert(SBMLModel, sm)
 
-    @test Set(variables(sbmlm)) == Set(variables(sbmlm2))
-    @test Set(variables(sbmlm)) == Set(variables(sm))
+    @test Set(variable_ids(sbmlm)) == Set(variable_ids(sbmlm2))
+    @test Set(variable_ids(sbmlm)) == Set(variable_ids(sm))
     @test Set(metabolites(sbmlm)) == Set(metabolites(sbmlm2))
     sp(x) = x.species
     @test all([
@@ -15,7 +15,7 @@
         ) && issetequal(
             sp.(sbmlm.sbml.reactions[i].products),
             sp.(sbmlm2.sbml.reactions[i].products),
-        ) for i in variables(sbmlm2)
+        ) for i in variable_ids(sbmlm2)
     ])
     st(x) = isnothing(x.stoichiometry) ? 1.0 : x.stoichiometry
     @test all([
@@ -25,7 +25,7 @@
         ) && issetequal(
             st.(sbmlm.sbml.reactions[i].products),
             st.(sbmlm2.sbml.reactions[i].products),
-        ) for i in variables(sbmlm2)
+        ) for i in variable_ids(sbmlm2)
     ])
 end
 

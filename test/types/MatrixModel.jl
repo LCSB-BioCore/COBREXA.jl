@@ -11,8 +11,8 @@ end
     sm = convert(ObjectModel, cm)
     cm2 = convert(MatrixModel, sm)
 
-    @test Set(variables(cm)) == Set(variables(sm))
-    @test Set(variables(cm)) == Set(variables(cm2))
+    @test Set(variable_ids(cm)) == Set(variable_ids(sm))
+    @test Set(variable_ids(cm)) == Set(variable_ids(cm2))
 
     @test sort(sort.(reaction_gene_associations(sm, reaction_ids(sm)[1]))) ==
           sort(sort.(reaction_gene_associations(cm, reaction_ids(sm)[1])))

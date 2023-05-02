@@ -38,7 +38,7 @@ function SBMLModel(sbml::SBML.Model, active_objective::String = "")
     )
 end
 
-Accessors.variables(model::SBMLModel)::Vector{String} = model.reaction_ids
+Accessors.variable_ids(model::SBMLModel)::Vector{String} = model.reaction_ids
 
 Accessors.Internal.@all_variables_are_reactions SBMLModel
 
@@ -280,7 +280,7 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     end
 
     mets = metabolites(mm)
-    rxns = variables(mm)
+    rxns = variable_ids(mm)
     stoi = stoichiometry(mm)
     (lbs, ubs) = bounds(mm)
     comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))

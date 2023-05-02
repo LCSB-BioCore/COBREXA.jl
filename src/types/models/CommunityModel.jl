@@ -94,17 +94,17 @@ Base.@kwdef mutable struct CommunityModel <: AbstractMetabolicModel
         build_community_name_lookup(members)
 end
 
-function Accessors.variables(cm::CommunityModel)
+function Accessors.variable_ids(cm::CommunityModel)
     rxns = [
         cm.name_lookup[id][:variables][vid] for (id, m) in cm.members for
-        vid in variables(m.model)
+        vid in variable_ids(m.model)
     ]
     env_exs = [envlink.reaction_id for envlink in cm.environmental_links]
     return [rxns; env_exs]
 end
 
-function Accessors.n_variables(cm::CommunityModel)
-    num_model_reactions = sum(n_variables(m.model) for m in values(cm.members))
+function Accessors.variable_count(cm::CommunityModel)
+    num_model_reactions = sum(variable_count(m.model) for m in values(cm.members))
     num_env_metabolites = length(cm.environmental_links)
     return num_model_reactions + num_env_metabolites
 end
@@ -157,11 +157,11 @@ function Accessors.bounds(cm::CommunityModel)
     return ([models_lbs; env_lbs], [models_ubs; env_ubs])
 end
 
-Accessors.objective(cm::CommunityModel) = spzeros(n_variables(cm))
+Accessors.objective(cm::CommunityModel) = spzeros(variable_count(cm))
 
 function Accessors.coupling(cm::CommunityModel)
     coups = blockdiag([coupling(m.model) for m in values(cm.members)]...)
-    n = n_variables(cm)
+    n = variable_count(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 

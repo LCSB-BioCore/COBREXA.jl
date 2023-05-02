@@ -81,10 +81,10 @@ end
 
 Accessors.unwrap_model(model::MaxMinDrivingForceModel) = model.inner
 
-Accessors.variables(model::MaxMinDrivingForceModel) =
+Accessors.variable_ids(model::MaxMinDrivingForceModel) =
     ["mmdf"; "log " .* metabolites(model); "ΔG " .* reaction_ids(model)]
 
-Accessors.n_variables(model::MaxMinDrivingForceModel) =
+Accessors.variable_count(model::MaxMinDrivingForceModel) =
     1 + n_metabolites(model) + reaction_count(model)
 
 Accessors.metabolite_log_concentration_ids(model::MaxMinDrivingForceModel) =
@@ -102,7 +102,7 @@ Accessors.gibbs_free_energy_variables(model::MaxMinDrivingForceModel) =
 
 
 Accessors.objective(model::MaxMinDrivingForceModel) =
-    [1.0; fill(0.0, n_variables(model) - 1)]
+    [1.0; fill(0.0, variable_count(model) - 1)]
 
 function Accessors.balance(model::MaxMinDrivingForceModel)
     # proton water balance
@@ -134,7 +134,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
 
     # set proton and water equality constraints
     num_proton_water = length(model.proton_ids) + length(model.water_ids)
-    proton_water_mat = spzeros(num_proton_water, n_variables(model))
+    proton_water_mat = spzeros(num_proton_water, variable_count(model))
     idxs = indexin([model.proton_ids; model.water_ids], var_ids)
     for (i, j) in enumerate(idxs)
         isnothing(j) && throw(error("Water or proton ID not found in model."))
@@ -142,7 +142,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     end
 
     # constant concentration constraints
-    const_conc_mat = spzeros(length(model.constant_concentrations), n_variables(model))
+    const_conc_mat = spzeros(length(model.constant_concentrations), variable_count(model))
     ids = collect(keys(model.constant_concentrations))
     idxs = indexin(ids, var_ids)
     for (i, j) in enumerate(idxs)
@@ -152,7 +152,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     end
 
     # add the relative bounds
-    const_ratio_mat = spzeros(length(model.concentration_ratios), n_variables(model))
+    const_ratio_mat = spzeros(length(model.concentration_ratios), variable_count(model))
     for (i, (mid1, mid2)) in enumerate(keys(model.concentration_ratios))
         idxs = indexin([mid1, mid2], var_ids)
         any(isnothing.(idxs)) &&
@@ -178,8 +178,8 @@ end
 function Accessors.bounds(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
 
-    lbs = fill(-model.max_dg_bound, n_variables(model))
-    ubs = fill(model.max_dg_bound, n_variables(model))
+    lbs = fill(-model.max_dg_bound, variable_count(model))
+    ubs = fill(model.max_dg_bound, variable_count(model))
 
     # mmdf must be positive for problem to be feasible (it is defined as -ΔG)
     lbs[1] = 0.0

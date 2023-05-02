@@ -4,7 +4,7 @@
     m = convert(MatrixModel, sbmlm)
 
     @test size(stoichiometry(sbmlm)) == (92, 95)
-    @test size(stoichiometry(m)) == (n_metabolites(sbmlm), n_variables(sbmlm))
+    @test size(stoichiometry(m)) == (n_metabolites(sbmlm), variable_count(sbmlm))
     @test length(m.S.nzval) == 380
     @test length.(bounds(sbmlm)) == (95, 95)
     @test length.(bounds(m)) == (95, 95)

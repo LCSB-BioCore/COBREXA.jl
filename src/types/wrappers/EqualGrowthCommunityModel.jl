@@ -19,10 +19,10 @@ end
 
 Accessors.unwrap_model(model::EqualGrowthCommunityModel) = model.inner
 
-Accessors.variables(cm::EqualGrowthCommunityModel) =
-    [variables(cm.inner); cm.community_objective_id]
+Accessors.variable_ids(cm::EqualGrowthCommunityModel) =
+    [variable_ids(cm.inner); cm.community_objective_id]
 
-Accessors.n_variables(cm::EqualGrowthCommunityModel) = n_variables(cm.inner) + 1
+Accessors.variable_count(cm::EqualGrowthCommunityModel) = variable_count(cm.inner) + 1
 
 Accessors.metabolites(cm::EqualGrowthCommunityModel) =
     [metabolites(cm.inner); [m.id for m in cm.inner.members]]
@@ -44,7 +44,7 @@ function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
         cm.inner.name_lookup[id][:variables][m.biomass_reaction_id] for
         (id, m) in cm.inner.members
     ]
-    biomass_idxs = indexin(biomass_ids, variables(cm.inner))
+    biomass_idxs = indexin(biomass_ids, variable_ids(cm.inner))
 
     obj_links = sparse(
         1:length(biomass_idxs),
@@ -68,7 +68,7 @@ function Accessors.bounds(cm::EqualGrowthCommunityModel)
 end
 
 function Accessors.objective(cm::EqualGrowthCommunityModel)
-    vec = spzeros(n_variables(cm)) # overwrite objective
+    vec = spzeros(variable_count(cm)) # overwrite objective
     vec[end] = 1.0
     return vec
 end

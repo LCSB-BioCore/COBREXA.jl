@@ -1,6 +1,6 @@
 @testset "MatrixModel utilities" begin
     cp = test_LP()
-    @test n_variables(cp) == 3
+    @test variable_count(cp) == 3
     @test n_metabolites(cp) == 4
     @test n_coupling_constraints(cp) == 0
 

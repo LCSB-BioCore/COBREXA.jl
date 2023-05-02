@@ -46,10 +46,10 @@
 
     @test contains(sprint(show, MIME("text/plain"), model), "ObjectModel")
 
-    @test "r1" in variables(model)
+    @test "r1" in variable_ids(model)
     @test "m4" in metabolites(model)
     @test "g2" in genes(model)
-    @test n_variables(model) == 4
+    @test variable_count(model) == 4
     @test n_metabolites(model) == 4
     @test n_genes(model) == 3
 
@@ -132,7 +132,7 @@
 
     jsonmodel = convert(JSONModel, model)
     stdmodel = convert(ObjectModel, jsonmodel)
-    @test issetequal(variables(jsonmodel), variables(stdmodel))
+    @test issetequal(variable_ids(jsonmodel), variable_ids(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))
     jlbs, jubs = bounds(jsonmodel)
@@ -141,8 +141,8 @@
     @test issetequal(jubs, subs)
     jS = stoichiometry(jsonmodel)
     sS = stoichiometry(stdmodel)
-    j_r1_index = findfirst(x -> x == "r1", variables(jsonmodel))
-    s_r1_index = findfirst(x -> x == "r1", variables(stdmodel))
+    j_r1_index = findfirst(x -> x == "r1", variable_ids(jsonmodel))
+    s_r1_index = findfirst(x -> x == "r1", variable_ids(stdmodel))
     j_m1_index = findfirst(x -> x == "m1", metabolites(jsonmodel))
     j_m2_index = findfirst(x -> x == "m2", metabolites(jsonmodel))
     s_m1_index = findfirst(x -> x == "m1", metabolites(stdmodel))

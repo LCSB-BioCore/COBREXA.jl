@@ -120,14 +120,14 @@ reason.
 function variability_analysis(
     model::AbstractMetabolicModel,
     optimizer;
-    directions::SparseMat = spdiagm(fill(1.0, n_variables(model))),
+    directions::SparseMat = spdiagm(fill(1.0, variable_count(model))),
     modifications = [],
     workers = [myid()],
     optimal_objective_value = nothing,
     bounds = z -> (z, Inf),
     ret = objective_value,
 )
-    if size(directions, 1) != n_variables(model)
+    if size(directions, 1) != variable_count(model)
         throw(
             DomainError(
                 size(directions, 1),

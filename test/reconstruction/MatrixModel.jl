@@ -105,7 +105,7 @@ end
         1.0,
         check_consistency = true,
     )
-    @test n_variables(cp) + 1 == n_variables(new_cp)
+    @test variable_count(cp) + 1 == variable_count(new_cp)
 
     (new_cp, new_reactions, new_mets) = add_reactions(
         cp,
@@ -118,7 +118,7 @@ end
         ["m1", "m2", "m3", "m6"],
         check_consistency = true,
     )
-    @test n_variables(cp) == n_variables(new_cp)
+    @test variable_count(cp) == variable_count(new_cp)
     @test n_metabolites(cp) + 1 == n_metabolites(new_cp)
 end
 
@@ -187,7 +187,7 @@ end
     # proper subset of existing metabolites
     cp = test_LP()
     new_cp = add_reactions(cp, [-1.0], zeros(1), 1.0, 0.0, 1.0, "r4", ["m1"])
-    @test n_variables(cp) + 1 == n_variables(new_cp)
+    @test variable_count(cp) + 1 == variable_count(new_cp)
 
     @test_throws DimensionMismatch add_reactions(
         cp,
@@ -228,7 +228,7 @@ end
     @test objective(modLp) == objective(lp)[2:3]
     @test bounds(modLp)[1] == bounds(lp)[1][2:3]
     @test bounds(modLp)[2] == bounds(lp)[2][2:3]
-    @test variables(modLp) == variables(lp)[2:3]
+    @test variable_ids(modLp) == variable_ids(lp)[2:3]
     @test metabolites(modLp) == metabolites(lp)
 end
 

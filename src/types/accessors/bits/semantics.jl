@@ -217,7 +217,7 @@ safety reasons, this is never automatically inherited by wrappers.
 """,
         ),
         :(function $mapping_mtx(a::AbstractMetabolicModel)::SparseMat
-            make_mapping_mtx(variables(a), $ids(a), $mapping(a))
+            make_mapping_mtx(variable_ids(a), $ids(a), $mapping(a))
         end),
     )
 
@@ -242,7 +242,7 @@ with lower and upper bounds.
 
     Base.eval.(Ref(themodule), [idsfn, countfn, mappingfn, mtxfn, boundsfn])
 
-    # extend the AbstractModelWrapper
+    # extend the AbstractModelWrapper defaults
     Base.eval(themodule, :(function $ids(w::AbstractModelWrapper)::Vector{String}
         $ids(unwrap_model(w))
     end))
@@ -304,11 +304,11 @@ reactions; this macro declares precisely the same about the model type.
 macro all_variables_are_reactions(mt)
     m = esc(mt)
     quote
-        $Accessors.reaction_ids(model::$m) = $Accessors.variables(model)
-        $Accessors.reaction_count(model::$m) = $Accessors.n_variables(model)
+        $Accessors.reaction_ids(model::$m) = $Accessors.variable_ids(model)
+        $Accessors.reaction_count(model::$m) = $Accessors.variable_count(model)
         $Accessors.reaction_variables(model::$m) =
-            Dict(var => Dict(var => 1.0) for var in $Accessors.variables(model))
+            Dict(var => Dict(var => 1.0) for var in $Accessors.variable_ids(model))
         $Accessors.reaction_variables_matrix(model::$m) =
-            $SparseArrays.spdiagm(fill(1.0, $Accessors.n_variables(model)))
+            $SparseArrays.spdiagm(fill(1.0, $Accessors.variable_count(model)))
     end
 end

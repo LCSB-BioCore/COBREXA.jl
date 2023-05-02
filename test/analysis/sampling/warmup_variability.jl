@@ -9,7 +9,7 @@
         workers = W,
     )
 
-    idx = first(indexin([rid], variables(model)))
+    idx = first(indexin([rid], variable_ids(model)))
     @test size(pts) == (95, 100)
     @test all(pts[idx, :] .>= -2)
     @test all(pts[idx, :] .<= 2)

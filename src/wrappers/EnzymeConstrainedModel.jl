@@ -36,7 +36,7 @@ not in [`coupling`](@ref)), and `inner`, which is the original wrapped model.
 The `objective` of the model includes also the extra columns for individual
 genes, as held by `coupling_row_gene_product`.
 
-Implementation exposes the split reactions (available as `variables(model)`),
+Implementation exposes the split reactions (available as `variable_ids(model)`),
 but retains the original "simple" reactions accessible by [`reactions`](@ref).
 The related constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
@@ -74,8 +74,8 @@ end
 
 Accessors.objective(model::EnzymeConstrainedModel) = model.objective
 
-function Accessors.variables(model::EnzymeConstrainedModel)
-    inner_reactions = variables(model.inner)
+function Accessors.variable_ids(model::EnzymeConstrainedModel)
+    inner_reactions = variable_ids(model.inner)
     mangled_reactions = [
         enzyme_constrained_reaction_name(
             inner_reactions[col.reaction_idx],
@@ -86,7 +86,7 @@ function Accessors.variables(model::EnzymeConstrainedModel)
     [mangled_reactions; genes(model)]
 end
 
-Accessors.n_variables(model::EnzymeConstrainedModel) =
+Accessors.variable_count(model::EnzymeConstrainedModel) =
     length(model.columns) + n_genes(model)
 
 function Accessors.bounds(model::EnzymeConstrainedModel)
@@ -112,7 +112,7 @@ end
 
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
-        variables(model),
+        variable_ids(model),
         reaction_ids(model),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient

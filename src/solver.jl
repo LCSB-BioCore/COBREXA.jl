@@ -181,7 +181,8 @@ flux_balance_analysis(model, ...) |> values_dict
 ```
 """
 function values_dict(res::ModelWithResult{<:Model})
-    is_solved(res.result) ? Dict(variables(res.model) .=> value.(res.result[:x])) : nothing
+    is_solved(res.result) ? Dict(variable_ids(res.model) .=> value.(res.result[:x])) :
+    nothing
 end
 
 """

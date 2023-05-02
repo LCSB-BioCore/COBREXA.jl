@@ -39,7 +39,7 @@ flexible way that fits into larger model systems.
 """
 with_parsimonious_objective() =
     model::AbstractMetabolicModel ->
-        MinimizeSolutionDistance(zeros(n_variables(model)), model)
+        MinimizeSolutionDistance(zeros(variable_count(model)), model)
 
 """
 $(TYPEDEF)

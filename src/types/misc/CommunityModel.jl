@@ -46,14 +46,14 @@ function environment_exchange_stoichiometry(
 )
     idxs = [
         (i, j) for
-        (i, j) in enumerate(indexin(env_rxns, variables(m.model))) if !isnothing(j)
+        (i, j) in enumerate(indexin(env_rxns, variable_ids(m.model))) if !isnothing(j)
     ]
     sparse(
         first.(idxs),
         last.(idxs),
         ones(length(idxs)),
         length(env_mets),
-        n_variables(m.model),
+        variable_count(m.model),
     )
 end
 

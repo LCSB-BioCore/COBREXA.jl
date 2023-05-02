@@ -14,8 +14,8 @@
     @test sm2.m == nothing # nothing is cached here
     @test isequal(m, deserialize(tmpfile("toy2.serialized"))) # it was written as-is
     @test issetequal(
-        variables(convert(ObjectModel, sm)),
-        variables(convert(ObjectModel, sm2)),
+        variable_ids(convert(ObjectModel, sm)),
+        variable_ids(convert(ObjectModel, sm2)),
     )
     sm.m = nothing
     @test issetequal(

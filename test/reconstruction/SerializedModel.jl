@@ -8,8 +8,8 @@
     @test typeof(m2) == typeof(m)
 
     sm = serialize_model(m, tmpfile("recon.serialized"))
-    m2 = remove_reaction(sm, variables(m)[3])
+    m2 = remove_reaction(sm, variable_ids(m)[3])
 
     @test typeof(m2) == typeof(m)
-    @test !(variables(m)[3] in variables(m2))
+    @test !(variable_ids(m)[3] in variable_ids(m2))
 end

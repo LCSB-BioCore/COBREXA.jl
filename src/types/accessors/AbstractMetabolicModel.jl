@@ -22,17 +22,22 @@ exchanges, separate forward and reverse reactions, supplies of enzymatic and
 genetic material and virtual cell volume, etc. To simplify the view of the model
 contents use [`reaction_variables`](@ref).
 """
-function variables(a::AbstractMetabolicModel)::Vector{String}
+function variable_ids(a::AbstractMetabolicModel)::Vector{String}
     missing_impl_error(variables, (a,))
 end
+
+"""
+Shortcut for writing [`variable_ids`](@ref).
+"""
+const variables = variable_ids
 
 """
 $(TYPEDSIGNATURES)
 
 Get the number of reactions in a model.
 """
-function n_variables(a::AbstractMetabolicModel)::Int
-    length(variables(a))
+function variable_count(a::AbstractMetabolicModel)::Int
+    length(variable_ids(a))
 end
 
 """
@@ -164,9 +169,9 @@ negative (2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
     :environmental_exchange,
     "environmental exchanges",
     """
-Community models are composed of member models as well as environmental exchange
-reactions. This semantic grouping represents the environmental exchange
-reactions.
+Community models are composed of member models as well as environmental
+exchange reactions. This semantic grouping represents the environmental
+exchange reactions.
 """
 )
 
@@ -177,7 +182,7 @@ Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
 function coupling(a::AbstractMetabolicModel)::SparseMat
-    return spzeros(0, n_variables(a))
+    return spzeros(0, variable_count(a))
 end
 
 """
@@ -299,8 +304,8 @@ function reaction_stoichiometry(
 )::Dict{String,Float64}
     mets = metabolites(m)
     Dict(
-        mets[k] => v for
-        (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rid], variables(m)))])...)
+        mets[k] => v for (k, v) in
+        zip(findnz(stoichiometry(m)[:, first(indexin([rid], variable_ids(m)))])...)
     )
 end
 
