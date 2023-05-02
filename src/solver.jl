@@ -66,7 +66,7 @@ function make_optimization_model(
                 @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
             label = Symbol(semname, :_eqs)
             optimization_model[label] = constraints
-            set_name.(c, "$label")
+            set_name.(constraints, "$label")
         elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
             # lower/upper interval bounds
             slb, sub = bounds
@@ -74,11 +74,11 @@ function make_optimization_model(
             constraints = @constraint(optimization_model, slb .<= smtx * x)
             label = Symbol(semname, :_lbs)
             optimization_model[label] = constraints
-            set_name.(c, "$label")
+            set_name.(constraints, "$label")
             constraints = @constraint(optimization_model, smtx * x .<= sub)
             label = Symbol(semname, :_ubs)
             optimization_model[label] = constraints
-            set_name.(c, "$label")
+            set_name.(constraints, "$label")
         else
             # if the bounds returned something weird, complain loudly.
             throw(
