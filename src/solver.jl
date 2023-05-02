@@ -62,16 +62,23 @@ function make_optimization_model(
             continue
         elseif typeof(bounds) <: AbstractVector{Float64}
             # equality bounds
-            c = @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
-            set_name.(c, "$(semname)_eqs")
+            constraints =
+                @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
+            label = Symbol(semname, :_eqs)
+            optimization_model[label] = constraints
+            set_name.(c, "$label")
         elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
             # lower/upper interval bounds
             slb, sub = bounds
             smtx = sem.mapping_matrix(model)
-            c = @constraint(optimization_model, slb .<= smtx * x)
-            set_name.(c, "$(semname)_lbs")
-            c = @constraint(optimization_model, smtx * x .<= sub)
-            set_name.(c, "$(semname)_ubs")
+            constraints = @constraint(optimization_model, slb .<= smtx * x)
+            label = Symbol(semname, :_lbs)
+            optimization_model[label] = constraints
+            set_name.(c, "$label")
+            constraints = @constraint(optimization_model, smtx * x .<= sub)
+            label = Symbol(semname, :_ubs)
+            optimization_model[label] = constraints
+            set_name.(c, "$label")
         else
             # if the bounds returned something weird, complain loudly.
             throw(
