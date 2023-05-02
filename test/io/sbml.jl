@@ -28,6 +28,6 @@ end
 @testset "Import yeast-GEM (sbml)" begin
     m = load_model(ObjectModel, model_paths["yeast-GEM.xml"])
     @test n_metabolites(m) == 2744
-    @test n_reactions(m) == 4063
+    @test reaction_count(m) == 4063
     @test n_genes(m) == 1160
 end

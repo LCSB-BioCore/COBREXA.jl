@@ -85,7 +85,7 @@ Accessors.variables(model::MaxMinDrivingForceModel) =
     ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
 
 Accessors.n_variables(model::MaxMinDrivingForceModel) =
-    1 + n_metabolites(model) + n_reactions(model)
+    1 + n_metabolites(model) + reaction_count(model)
 
 Accessors.metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
     "log " .* metabolites(model)
@@ -96,7 +96,8 @@ Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel)
 
 Accessors.gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
     "ΔG " .* reactions(model)
-Accessors.n_gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) = n_reactions(model)
+Accessors.n_gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
+    reaction_count(model)
 Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
     Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reactions(model))
 
@@ -165,7 +166,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     dgrs = spdiagm(ones(length(reactions(model))))
     S = stoichiometry(model.inner)
     stoich_mat = -(model.R * model.T) * S'
-    dg_mat = [spzeros(n_reactions(model)) stoich_mat dgrs]
+    dg_mat = [spzeros(reaction_count(model)) stoich_mat dgrs]
 
     return [
         proton_water_mat
@@ -206,7 +207,7 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
     idxs = Int.(indexin(active_rids, reactions(model)))
 
     # thermodynamic sign should correspond to the fluxes
-    flux_signs = spzeros(length(idxs), n_reactions(model))
+    flux_signs = spzeros(length(idxs), reaction_count(model))
     for (i, j) in enumerate(idxs)
         flux_signs[i, j] = sign(model.flux_solution[reactions(model)[j]])
     end

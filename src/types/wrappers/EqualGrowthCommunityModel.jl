@@ -86,7 +86,7 @@ end
 Accessors.reactions(cm::EqualGrowthCommunityModel) =
     [reactions(cm.inner); cm.community_objective_id]
 
-Accessors.n_reactions(cm::EqualGrowthCommunityModel) = n_reactions(cm.inner) + 1
+Accessors.reaction_count(cm::EqualGrowthCommunityModel) = reaction_count(cm.inner) + 1
 
 Accessors.environmental_exchange_variables(model::EqualGrowthCommunityModel) =
     environmental_exchange_variables(model.inner)

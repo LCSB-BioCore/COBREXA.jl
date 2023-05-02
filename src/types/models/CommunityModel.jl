@@ -197,8 +197,9 @@ Accessors.reactions(cm::CommunityModel) = [
     [envlink.reaction_id for envlink in cm.environmental_links]
 ]
 
-Accessors.n_reactions(cm::CommunityModel) =
-    sum(n_reactions(m.model) for m in values(cm.members)) + length(cm.environmental_links)
+Accessors.reaction_count(cm::CommunityModel) =
+    sum(reaction_count(m.model) for m in values(cm.members)) +
+    length(cm.environmental_links)
 
 
 Accessors.environmental_exchange_variables(model::CommunityModel) = Dict(

@@ -78,7 +78,7 @@ function Accessors.stoichiometry(model::SBMLModel)::SparseMat
             push!(Vals, isnothing(sr.stoichiometry) ? 1.0 : sr.stoichiometry)
         end
     end
-    return sparse(Rows, Cols, Vals, n_metabolites(model), n_reactions(model))
+    return sparse(Rows, Cols, Vals, n_metabolites(model), reaction_count(model))
 end
 
 function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
@@ -137,7 +137,7 @@ end
 Accessors.balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
 
 function Accessors.objective(model::SBMLModel)::SparseVec
-    res = sparsevec([], [], n_reactions(model))
+    res = sparsevec([], [], reaction_count(model))
 
     objective = get(model.sbml.objectives, model.active_objective, nothing)
     if isnothing(objective) && length(model.sbml.objectives) == 1

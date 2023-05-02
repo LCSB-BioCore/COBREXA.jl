@@ -49,10 +49,10 @@ end
 First, define the reactions and metabolites:
 
 ```julia
-COBREXA.n_reactions(m::CircularModel) = m.size
+COBREXA.reaction_count(m::CircularModel) = m.size
 COBREXA.n_metabolites(m::CircularModel) = m.size
 
-COBREXA.reactions(m::CircularModel) = ["rxn$i" for i in 1:n_reactions(m)]
+COBREXA.reactions(m::CircularModel) = ["rxn$i" for i in 1:reaction_count(m)]
 COBREXA.metabolites(m::CircularModel) = ["met$i" for i in 1:n_metabolites(m)]
 ```
 
@@ -63,18 +63,18 @@ We can continue with the actual linear model properties:
 
 ```julia
 function COBREXA.objective(m::CircularModel)
-    c = spzeros(n_reactions(m))
+    c = spzeros(reaction_count(m))
     c[1] = 1 #optimize the first reaction
     return c
 end
 
 COBREXA.bounds(m::CircularModel) = (
-    zeros(n_reactions(m)), # lower bounds
-    ones(n_reactions(m)), # upper bounds
+    zeros(reaction_count(m)), # lower bounds
+    ones(reaction_count(m)), # upper bounds
 )
 
 function COBREXA.stoichiometry(m::CircularModel)
-    nr = n_reactions(m)
+    nr = reaction_count(m)
     stoi(i,j) =
         i == j ? 1.0 :
         (i % nr + 1) == j  ? -1.0 :

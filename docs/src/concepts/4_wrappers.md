@@ -106,7 +106,7 @@ modifying the reaction list, stoichiometry, and bounds:
 
 ```julia
 COBREXA.unwrap_model(x::LeakyModel) = x.mdl
-COBREXA.n_reactions(x::LeakyModel) = n_reactions(x.mdl) + 1
+COBREXA.reaction_count(x::LeakyModel) = reaction_count(x.mdl) + 1
 COBREXA.reactions(x::LeakyModel) = [reactions(x.mdl); "The Leak"]
 COBREXA.stoichiometry(x::LeakyModel) = [stoichiometry(x.mdl) [m in x.leaking_metabolites ? -1.0 : 0.0 for m = metabolites(x.mdl)]]
 function COBREXA.bounds(x::LeakyModel)
@@ -120,7 +120,7 @@ accessors that depend on correct sizes of the model items.
 
 ```julia
 COBREXA.objective(x::LeakyModel) = [objective(x.mdl); 0]
-COBREXA.reaction_flux(x::LeakyModel) = [reaction_flux(x.mdl); zeros(1, n_reactions(x.mdl))]
+COBREXA.reaction_flux(x::LeakyModel) = [reaction_flux(x.mdl); zeros(1, reaction_count(x.mdl))]
 COBREXA.coupling(x::LeakyModel) = [coupling(x.mdl) zeros(n_coupling_constraints(x.mdl))]
 ```
 (Among other, we modified the [`reaction_flux`](@ref) so that all analysis
