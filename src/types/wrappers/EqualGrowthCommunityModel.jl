@@ -106,6 +106,7 @@ Accessors.enzyme_count(model::EqualGrowthCommunityModel) = enzyme_count(model.in
 Accessors.enzyme_group_variables(model::EqualGrowthCommunityModel) =
     enzyme_group_variables(model.inner)
 
-Accessors.enzyme_groups(model::EqualGrowthCommunityModel) = enzyme_groups(model.inner)
+Accessors.enzyme_group_ids(model::EqualGrowthCommunityModel) = enzyme_group_ids(model.inner)
 
-Accessors.n_enzyme_groups(model::EqualGrowthCommunityModel) = n_enzyme_groups(model.inner)
+Accessors.enzyme_group_count(model::EqualGrowthCommunityModel) =
+    enzyme_group_count(model.inner)

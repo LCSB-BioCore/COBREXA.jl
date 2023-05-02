@@ -124,9 +124,9 @@ Accessors.enzyme_count(model::EnzymeConstrainedModel) = n_genes(model)
 Accessors.enzyme_variables(model::EnzymeConstrainedModel) =
     Dict(gid => Dict(gid => gene_product_molar_mass(model, gid)) for gid in genes(model))
 
-Accessors.enzyme_groups(model::EnzymeConstrainedModel) =
+Accessors.enzyme_group_ids(model::EnzymeConstrainedModel) =
     [grp.group_id for grp in model.coupling_row_mass_group]
-Accessors.n_enzyme_groups(model::EnzymeConstrainedModel) =
+Accessors.enzyme_group_count(model::EnzymeConstrainedModel) =
     length(model.coupling_row_mass_group)
 
 function Accessors.enzyme_group_variables(model::EnzymeConstrainedModel)

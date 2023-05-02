@@ -248,11 +248,11 @@ function Accessors.enzyme_group_variables(model::CommunityModel)
     e_g_v
 end
 
-Accessors.enzyme_groups(cm::CommunityModel) =
-    [id * "#" * k for (id, m) in cm.members for k in enzyme_groups(m.model)]
+Accessors.enzyme_group_ids(cm::CommunityModel) =
+    [id * "#" * k for (id, m) in cm.members for k in enzyme_group_ids(m.model)]
 
-Accessors.n_enzyme_groups(cm::CommunityModel) =
-    sum(n_enzyme_groups(m.model) for m in cm.members)
+Accessors.enzyme_group_count(cm::CommunityModel) =
+    sum(enzyme_group_count(m.model) for m in cm.members)
 
 #=
 This loops implements the rest of the accessors through access_community_member.
