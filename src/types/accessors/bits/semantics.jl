@@ -55,18 +55,36 @@ register new semantics, use [`@make_variable_semantics`](@ref).
 """
 Base.@kwdef struct Semantics
     # TODO: move this to types?
-    "Returns a vector identifiers that describe views in the given semantics"
+    """
+    Returns a vector identifiers that describe views in the given semantics.
+    """
     ids::Function
 
-    """Returns the size of the vector of the identifiers, in a possibly more
-    efficient way than measuring the length of the ID vector."""
+    """
+    Returns the size of the vector of the identifiers, in a possibly more
+    efficient way than measuring the length of the ID vector.
+    """
     count::Function
 
-    """Returns a mapping of semantic values to variables IDs in the model."""
+    """
+    Returns a mapping of semantic values to variables IDs in the model.
+    """
     mapping::Function
 
-    """Same as `mapping` but returns a matrix, which is possibly more efficient in certain cases."""
+    """
+    Same as `mapping` but returns a matrix (with variables in rows and the
+    semantic values in columns), which is possibly more efficient or handy in
+    specific cases.
+    """
     mapping_matrix::Function
+
+    """
+    Returns either `nothing` if the semantics does not have specific
+    constraints associated, or a vector of floating-point values that represent
+    equality constraints on semantic values, or a tuple of 2 vectors that
+    represent lower and upper bounds on semantic values.
+    """
+    bounds::Function
 end
 
 const variable_semantics = Dict{Symbol,Semantics}()
@@ -116,6 +134,7 @@ function make_variable_semantics(
     count = Symbol(:n_, plural)
     mapping = Symbol(sym, :_variables)
     mapping_mtx = Symbol(sym, :_variables_matrix)
+    bounds = Symbol(sym, :_bounds)
 
     pluralfn = Expr(
         :macrocall,
@@ -202,8 +221,28 @@ safety reasons, this is never automatically inherited by wrappers.
         end),
     )
 
-    Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn])
+    boundsfn = Expr(
+        :macrocall,
+        Symbol("@doc"),
+        source,
+        Expr(
+            :string,
+            :TYPEDSIGNATURES,
+            """
 
+Bounds for $name described by the model. Either returns `nothing` if there are
+no bounds, or a vector of floats with equality bounds, or a tuple of 2 vectors
+with lower and upper bounds.
+""",
+        ),
+        :(function $bounds(a::AbstractMetabolicModel)::SparseMat
+            nothing
+        end),
+    )
+
+    Base.eval.(Ref(themodule), [pluralfn, countfn, mappingfn, mtxfn, boundsfn])
+
+    # extend the AbstractModelWrapper
     Base.eval(themodule, :(function $plural(w::AbstractModelWrapper)::Vector{String}
         $plural(unwrap_model(w))
     end))
@@ -219,8 +258,19 @@ safety reasons, this is never automatically inherited by wrappers.
         end),
     )
 
+    Base.eval(
+        themodule,
+        :(
+            function $bounds(
+                w::AbstractModelWrapper,
+            )::Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}}
+                $bounds(unwrap_model(w))
+            end
+        ),
+    )
+
     # TODO here we would normally also overload the matrix function, but that
-    # one will break once anyone touches variables of the models (which is
+    # one will break once anyone touches variables of the models (which is quite
     # common). We should have a macro like @model_does_not_modify_variable_set
     # that adds the overloads. Or perhaps AbstractModelWrapperWithSameVariables?
     #
@@ -229,8 +279,9 @@ safety reasons, this is never automatically inherited by wrappers.
     # alternative in forcing people to overload all semantic functions in all
     # cases of adding semantics, which might actually be the right way.)
 
-    themodule.Internal.variable_semantics[sym] =
-        Semantics(Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx))...)
+    themodule.Internal.variable_semantics[sym] = Semantics(
+        Base.eval.(Ref(themodule), (plural, count, mapping, mapping_mtx, bounds))...,
+    )
 end
 
 """
