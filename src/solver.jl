@@ -60,11 +60,11 @@ function make_optimization_model(
         bounds = sem.bounds(model)
         if isnothing(bounds)
             continue
-        elseif bounds isa Vector{Float64}
+        elseif typeof(bounds) <: AbstractVector{Float64}
             # equality bounds
             c = @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
             set_name.(c, "$(semname)_eqs")
-        elseif bounds isa Tuple{Vector{Float64},Vector{Float64}}
+        elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
             # lower/upper interval bounds
             slb, sub = bounds
             smtx = sem.mapping_matrix(model)
@@ -78,8 +78,12 @@ function make_optimization_model(
                 TypeError(
                     :make_optimization_model,
                     "conversion of $(typeof(model)) bounds",
+                    Union{
+                        Nothing,
+                        <:AbstractVector{Float64},
+                        Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}},
+                    },
                     typeof(bounds),
-                    Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}},
                 ),
             )
         end
