@@ -44,6 +44,11 @@ function make_simplified_enzyme_constrained_model(
     reaction_mass_groups::Maybe{Dict{String,Vector{String}}} = nothing,
     reaction_mass_group_bounds::Maybe{Dict{String,Float64}} = nothing,
 )
+    all(
+        !isnothing,
+        [reaction_mass_groups, reaction_mass_group_bounds, total_reaction_mass_bound],
+    ) && throw(ArgumentError("Too many arguments specified!"))
+
     # fix kwarg inputs
     if !isnothing(total_reaction_mass_bound)
         reaction_mass_groups = Dict("uncategorized" => variables(model)) # TODO should be reactions

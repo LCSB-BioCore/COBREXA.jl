@@ -42,6 +42,15 @@ function make_enzyme_constrained_model(
     gene_product_mass_group_bounds::Maybe{Dict{String,Float64}} = nothing,
     total_gene_product_mass_bound::Maybe{Float64} = nothing,
 )
+    all(
+        !isnothing,
+        [
+            gene_product_mass_groups,
+            gene_product_mass_group_bounds,
+            total_gene_product_mass_bound,
+        ],
+    ) && throw(ArgumentError("Too many arguments specified!"))
+
     if !isnothing(total_gene_product_mass_bound)
         gene_product_mass_groups = Dict("uncategorized" => genes(model))
         gene_product_mass_group_bounds =
