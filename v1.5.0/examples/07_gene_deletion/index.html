@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Gene knockouts · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../">Contents</a></li><li><a class="tocitem" href="../01_loading/">Loading models</a></li><li><a class="tocitem" href="../02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../06_fva/">Flux variability analysis (FVA)</a></li><li class="is-active"><a class="tocitem" href>Gene knockouts</a><ul class="internal"><li><a class="tocitem" href="#Deleting-a-single-gene"><span>Deleting a single gene</span></a></li><li><a class="tocitem" href="#Knocking-out-multiple-genes"><span>Knocking out multiple genes</span></a></li><li><a class="tocitem" href="#Processing-all-single-gene-knockouts"><span>Processing all single gene knockouts</span></a></li><li><a class="tocitem" href="#Processing-all-multiple-gene-deletions"><span>Processing all multiple-gene deletions</span></a></li></ul></li><li><a class="tocitem" href="../07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../09_loopless/">Loopless FBA</a></li><li><a class="tocitem" href="../10_crowding/">FBA with crowding</a></li><li><a class="tocitem" href="../11_growth/">Growth media analysis</a></li><li><a class="tocitem" href="../12_mmdf/">Maximum-minimum driving force analysis</a></li><li><a class="tocitem" href="../13_moma/">Minimization of metabolic adjustment (MOMA)</a></li><li><a class="tocitem" href="../14_smoment/">sMOMENT</a></li><li><a class="tocitem" href="../15_gecko/">GECKO</a></li><li><a class="tocitem" href="../16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../../distributed/">Contents</a></li><li><a class="tocitem" href="../../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../../concepts/">Contents</a></li><li><a class="tocitem" href="../../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Gene knockouts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Gene knockouts</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/examples/07_gene_deletion.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Gene-knockouts"><a class="docs-heading-anchor" href="#Gene-knockouts">Gene knockouts</a><a id="Gene-knockouts-1"></a><a class="docs-heading-anchor-permalink" href="#Gene-knockouts" title="Permalink"></a></h1><p>Here we will use the <a href="../../functions/analysis/#COBREXA.knockout-Tuple{String}"><code>knockout</code></a> function to modify the optimization model before solving, in order to simulate genes knocked out. We can pass <a href="../../functions/analysis/#COBREXA.knockout-Tuple{String}"><code>knockout</code></a> to many analysis functions that support parameter <code>modifications</code>, including <a href="../../functions/analysis/#COBREXA.flux_balance_analysis-Union{Tuple{M}, Tuple{M, Any}} where M&lt;:MetabolicModel"><code>flux_balance_analysis</code></a>, <a href="../../functions/analysis/#COBREXA.flux_variability_analysis-Tuple{MetabolicModel, Any}"><code>flux_variability_analysis</code></a>, and others.</p><h2 id="Deleting-a-single-gene"><a class="docs-heading-anchor" href="#Deleting-a-single-gene">Deleting a single gene</a><a id="Deleting-a-single-gene-1"></a><a class="docs-heading-anchor-permalink" href="#Deleting-a-single-gene" title="Permalink"></a></h2><pre><code class="language-julia">!isfile(&quot;e_coli_core.xml&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.xml&quot;, &quot;e_coli_core.xml&quot;)
+
+using COBREXA, GLPK
+
+model = load_model(&quot;e_coli_core.xml&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type SBMLModel
+sparse([8, 10, 21, 43, 50, 51, 8, 9, 6, 12  …  33, 66, 68, 72, 23, 26, 33, 72, 22, 33], [1, 1, 1, 1, 1, 1, 2, 2, 3, 3  …  93, 93, 93, 93, 94, 94, 94, 94, 95, 95], [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0  …  1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0], 72, 95)
+Number of reactions: 95
+Number of metabolites: 72
+</pre><p>First, let&#39;s compute the &quot;original&quot; flux, with no knockouts.</p><pre><code class="language-julia">original_flux = flux_balance_analysis_dict(model, GLPK.Optimizer);</code></pre><p>One can find gene IDs that we can knock out using <a href="../../functions/types/#COBREXA.genes-Tuple{CoreModel}"><code>genes</code></a> and <a href="../../functions/types/#COBREXA.gene_name-Tuple{JSONModel, String}"><code>gene_name</code></a> functions:</p><pre><code class="language-julia">genes(model)</code></pre><pre class="documenter-example-output">137-element Vector{String}:
+ &quot;G_b0008&quot;
+ &quot;G_b0114&quot;
+ &quot;G_b0115&quot;
+ &quot;G_b0116&quot;
+ &quot;G_b0118&quot;
+ &quot;G_b0351&quot;
+ &quot;G_b0356&quot;
+ &quot;G_b0451&quot;
+ &quot;G_b0474&quot;
+ &quot;G_b0485&quot;
+ ⋮
+ &quot;G_b4122&quot;
+ &quot;G_b4151&quot;
+ &quot;G_b4152&quot;
+ &quot;G_b4153&quot;
+ &quot;G_b4154&quot;
+ &quot;G_b4232&quot;
+ &quot;G_b4301&quot;
+ &quot;G_b4395&quot;
+ &quot;G_s0001&quot;</pre><p>It is possible to sort the genes by gene name to allow easier lookups:</p><pre><code class="language-julia">sort(gene_name.(Ref(model), genes(model)) .=&gt; genes(model))</code></pre><pre class="documenter-example-output">137-element Vector{Pair{String, String}}:
+ &quot;aceA&quot; =&gt; &quot;G_b4015&quot;
+ &quot;aceB&quot; =&gt; &quot;G_b4014&quot;
+ &quot;aceE&quot; =&gt; &quot;G_b0114&quot;
+ &quot;aceF&quot; =&gt; &quot;G_b0115&quot;
+ &quot;ackA&quot; =&gt; &quot;G_b2296&quot;
+ &quot;acnA&quot; =&gt; &quot;G_b1276&quot;
+ &quot;acnB&quot; =&gt; &quot;G_b0118&quot;
+ &quot;adhE&quot; =&gt; &quot;G_b1241&quot;
+ &quot;adhP&quot; =&gt; &quot;G_b1478&quot;
+  &quot;adk&quot; =&gt; &quot;G_b0474&quot;
+        ⋮
+ &quot;talB&quot; =&gt; &quot;G_b0008&quot;
+ &quot;tdcD&quot; =&gt; &quot;G_b3115&quot;
+ &quot;tdcE&quot; =&gt; &quot;G_b3114&quot;
+ &quot;tktA&quot; =&gt; &quot;G_b2935&quot;
+ &quot;tktB&quot; =&gt; &quot;G_b2465&quot;
+ &quot;tpiA&quot; =&gt; &quot;G_b3919&quot;
+ &quot;ydjI&quot; =&gt; &quot;G_b1773&quot;
+ &quot;ytjC&quot; =&gt; &quot;G_b4395&quot;
+  &quot;zwf&quot; =&gt; &quot;G_b1852&quot;</pre><p>Compute the flux with a genes knocked out:</p><pre><code class="language-julia">flux_with_knockout =
+    flux_balance_analysis_dict(model, GLPK.Optimizer, modifications = [knockout(&quot;G_b3236&quot;)])</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; 0.0
+  &quot;R_ACONTb&quot;      =&gt; 8.33976
+  &quot;R_GLNS&quot;        =&gt; 0.211162
+  &quot;R_SUCOAS&quot;      =&gt; -7.44879
+  &quot;R_TPI&quot;         =&gt; 9.17856
+  &quot;R_EX_pi_e&quot;     =&gt; -3.03794
+  &quot;R_PPC&quot;         =&gt; 9.81525
+  &quot;R_O2t&quot;         =&gt; 23.9021
+  &quot;R_G6PDH2r&quot;     =&gt; 1.53023e-15
+  &quot;R_TALA&quot;        =&gt; -0.147739
+  &quot;R_PPCK&quot;        =&gt; -1.24923e-14
+  &quot;R_EX_lac__D_e&quot; =&gt; 2.65889e-14
+  &quot;R_PGL&quot;         =&gt; 1.45805e-15
+  &quot;R_H2Ot&quot;        =&gt; -30.8724
+  &quot;R_GLNabc&quot;      =&gt; 0.0
+  &quot;R_EX_co2_e&quot;    =&gt; 24.8568
+  &quot;R_EX_gln__L_e&quot; =&gt; 0.0
+  &quot;R_EX_nh4_e&quot;    =&gt; -4.50303
+  &quot;R_MALt2_2&quot;     =&gt; 0.0
+  ⋮               =&gt; ⋮</pre><p>We can see there is a small decrease in production upon knocking out the gene:</p><pre><code class="language-julia">biomass_id = &quot;R_BIOMASS_Ecoli_core_w_GAM&quot;
+flux_with_knockout[biomass_id] / original_flux[biomass_id]</code></pre><pre class="documenter-example-output">0.9449581959159197</pre><p>Similarly, we can explore how the flux variability has changed once the gene is knocked out:</p><pre><code class="language-julia">variability_with_knockout =
+    flux_variability_analysis(model, GLPK.Optimizer, modifications = [knockout(&quot;G_b3236&quot;)])</code></pre><pre class="documenter-example-output">95×2 Matrix{Float64}:
+  2.9513e-13     -2.67554e-15
+  2.97805e-13     0.0
+  6.12843e-13     4.26326e-14
+  8.33976         8.33976
+  8.33976         8.33976
+  6.12843e-13     4.26326e-14
+  3.67464         3.67464
+  7.44879         7.44879
+  1.53157e-13     0.0
+  2.40799e-13     5.35109e-15
+  ⋮            
+  2.08722e-13     6.57758e-11
+  0.0             6.57758e-11
+  7.44879      1000.0
+ -7.44879        -7.44879
+ -0.147739       -0.147739
+  0.0             9.86631e-11
+ -0.147739       -0.147739
+ -0.44586        -0.44586
+  9.17856         9.17856</pre><h2 id="Knocking-out-multiple-genes"><a class="docs-heading-anchor" href="#Knocking-out-multiple-genes">Knocking out multiple genes</a><a id="Knocking-out-multiple-genes-1"></a><a class="docs-heading-anchor-permalink" href="#Knocking-out-multiple-genes" title="Permalink"></a></h2><p>Multiple genes can be knocked out by simply passing a vector of genes to the knockout modification. This knocks out all genes that can run the FBA reaction:</p><pre><code class="language-julia">reaction_gene_association(model, &quot;R_FBA&quot;)</code></pre><pre class="documenter-example-output">3-element Vector{Vector{String}}:
+ [&quot;G_b1773&quot;]
+ [&quot;G_b2097&quot;]
+ [&quot;G_b2925&quot;]</pre><pre><code class="language-julia">flux_with_double_knockout = flux_balance_analysis_dict(
+    model,
+    GLPK.Optimizer,
+    modifications = [knockout([&quot;G_b2097&quot;, &quot;G_b1773&quot;, &quot;G_b2925&quot;])],
+)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; 0.0
+  &quot;R_ACONTb&quot;      =&gt; 0.759585
+  &quot;R_GLNS&quot;        =&gt; 0.180022
+  &quot;R_SUCOAS&quot;      =&gt; -1.36381e-15
+  &quot;R_TPI&quot;         =&gt; 6.75636e-16
+  &quot;R_EX_pi_e&quot;     =&gt; -2.58994
+  &quot;R_PPC&quot;         =&gt; 2.01749
+  &quot;R_O2t&quot;         =&gt; 27.5263
+  &quot;R_G6PDH2r&quot;     =&gt; 27.8991
+  &quot;R_TALA&quot;        =&gt; 9.17374
+  &quot;R_PPCK&quot;        =&gt; 4.66459e-15
+  &quot;R_EX_lac__D_e&quot; =&gt; 1.39942e-15
+  &quot;R_PGL&quot;         =&gt; 27.8991
+  &quot;R_H2Ot&quot;        =&gt; -31.7697
+  &quot;R_GLNabc&quot;      =&gt; 0.0
+  &quot;R_EX_co2_e&quot;    =&gt; 26.6412
+  &quot;R_EX_gln__L_e&quot; =&gt; 0.0
+  &quot;R_EX_nh4_e&quot;    =&gt; -3.83897
+  &quot;R_MALt2_2&quot;     =&gt; 0.0
+  ⋮               =&gt; ⋮</pre><pre><code class="language-julia">flux_with_double_knockout[biomass_id] / original_flux[biomass_id]</code></pre><pre class="documenter-example-output">0.8056066159777874</pre><h2 id="Processing-all-single-gene-knockouts"><a class="docs-heading-anchor" href="#Processing-all-single-gene-knockouts">Processing all single gene knockouts</a><a id="Processing-all-single-gene-knockouts-1"></a><a class="docs-heading-anchor-permalink" href="#Processing-all-single-gene-knockouts" title="Permalink"></a></h2><p>Function <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a> provides a parallelizable and extensible way to run the flux balance analysis with the knockout over all genes:</p><pre><code class="language-julia">knockout_fluxes = screen(
+    model,
+    args = tuple.(genes(model)),
+    analysis = (m, gene) -&gt; begin
+        res = flux_balance_analysis_dict(m, GLPK.Optimizer, modifications = [knockout(gene)])
+        if !isnothing(res)
+            res[biomass_id]
+        end
+    end,
+)</code></pre><pre class="documenter-example-output">137-element Vector{Union{Nothing, Float64}}:
+ 0.8739215069684118
+ 0.7966959254309448
+ 0.7966959254309448
+ 0.7823510529477573
+ 0.8739215069684118
+ 0.8739215069684118
+ 0.8739215069684118
+ 0.8739215069684118
+ 0.8739215069684118
+ 0.8739215069684118
+ ⋮
+ 0.8739215069684118
+ 0.8739215069684213
+ 0.8739215069684213
+ 0.8739215069684213
+ 0.8739215069684213
+ 0.8739215069684118
+ 0.8739215069684118
+ 0.8739215069684118
+ 0.21114065257211534</pre><p>It is useful to display the biomass growth rates of the knockout models together with the gene name:</p><pre><code class="language-julia">sort(gene_name.(Ref(model), genes(model)) .=&gt; knockout_fluxes, by = first)</code></pre><pre class="documenter-example-output">137-element Vector{Pair{String}}:
+ &quot;aceA&quot; =&gt; 0.8739215069684099
+ &quot;aceB&quot; =&gt; 0.8739215069684118
+ &quot;aceE&quot; =&gt; 0.7966959254309448
+ &quot;aceF&quot; =&gt; 0.7966959254309448
+ &quot;ackA&quot; =&gt; 0.8739215069684118
+ &quot;acnA&quot; =&gt; 0.8739215069684118
+ &quot;acnB&quot; =&gt; 0.8739215069684118
+ &quot;adhE&quot; =&gt; 0.8739215069684118
+ &quot;adhP&quot; =&gt; 0.8739215069684118
+  &quot;adk&quot; =&gt; 0.8739215069684118
+        ⋮
+ &quot;talB&quot; =&gt; 0.8739215069684118
+ &quot;tdcD&quot; =&gt; 0.8739215069684118
+ &quot;tdcE&quot; =&gt; 0.8739215069684118
+ &quot;tktA&quot; =&gt; 0.8739215069684118
+ &quot;tktB&quot; =&gt; 0.8739215069684118
+ &quot;tpiA&quot; =&gt; 0.7040369478590172
+ &quot;ydjI&quot; =&gt; 0.8739215069684118
+ &quot;ytjC&quot; =&gt; 0.8739215069684118
+  &quot;zwf&quot; =&gt; 0.8638133095039895</pre><h2 id="Processing-all-multiple-gene-deletions"><a class="docs-heading-anchor" href="#Processing-all-multiple-gene-deletions">Processing all multiple-gene deletions</a><a id="Processing-all-multiple-gene-deletions-1"></a><a class="docs-heading-anchor-permalink" href="#Processing-all-multiple-gene-deletions" title="Permalink"></a></h2><h3 id="Double-gene-knockouts"><a class="docs-heading-anchor" href="#Double-gene-knockouts">Double gene knockouts</a><a id="Double-gene-knockouts-1"></a><a class="docs-heading-anchor-permalink" href="#Double-gene-knockouts" title="Permalink"></a></h3><p>Since we can generate any kind of argument matrix for <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a> to process, it is straightforward to generate the matrix of all double gene knockouts and let the function process it. This computes the biomass production of all double-gene knockouts:</p><pre><code class="language-julia">gene_groups = [[g1, g2] for g1 in genes(model), g2 in genes(model)];
+double_knockout_fluxes = screen(
+    model,
+    args = tuple.(gene_groups),
+    analysis = (m, gene_groups) -&gt; begin
+        res = flux_balance_analysis_dict(
+            m,
+            GLPK.Optimizer,
+            modifications = [knockout(gene_groups)],
+        )
+        if !isnothing(res)
+            res[biomass_id]
+        end
+    end,
+)</code></pre><pre class="documenter-example-output">137×137 Matrix{Union{Nothing, Float64}}:
+ 0.873922  0.796696  0.796696  0.782351  …  0.873922  0.873922   0.211141
+ 0.796696  0.796696  0.796696  0.782351     0.796696  0.796696   0.210794
+ 0.796696  0.796696  0.796696  0.782351     0.796696  0.796696   0.210794
+ 0.782351  0.782351  0.782351  0.782351     0.782351  0.782351   0.210794
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351  …  0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922  -6.45106e-16
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ ⋮                                       ⋱            ⋮         
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351  …  0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351     0.873922  0.873922   0.211141
+ 0.873922  0.796696  0.796696  0.782351  …  0.873922  0.873922   0.211141
+ 0.211141  0.210794  0.210794  0.210794     0.211141  0.211141   0.211141</pre><p>The results can be converted to an easily scrutinizable form as follows:</p><pre><code class="language-julia">reshape([gene_name.(Ref(model), p) for p in gene_groups] .=&gt; double_knockout_fluxes, :)</code></pre><pre class="documenter-example-output">18769-element Vector{Pair{Vector{String}}}:
+   [&quot;talB&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+   [&quot;aceE&quot;, &quot;talB&quot;] =&gt; 0.7966959254309448
+   [&quot;aceF&quot;, &quot;talB&quot;] =&gt; 0.7966959254309448
+    [&quot;lpd&quot;, &quot;talB&quot;] =&gt; 0.7823510529477573
+   [&quot;acnB&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+   [&quot;mhpF&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+   [&quot;frmA&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+   [&quot;amtB&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+    [&quot;adk&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+   [&quot;glsA&quot;, &quot;talB&quot;] =&gt; 0.8739215069684118
+                    ⋮
+  [&quot;fumB&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211534
+  [&quot;frdD&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211645
+  [&quot;frdC&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211645
+  [&quot;frdB&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211645
+  [&quot;frdA&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211645
+   [&quot;fbp&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211534
+  [&quot;sgcE&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211534
+  [&quot;ytjC&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211534
+ [&quot;s0001&quot;, &quot;s0001&quot;] =&gt; 0.21114065257211534</pre><h3 id="Triple-gene-knockouts-(and-others)"><a class="docs-heading-anchor" href="#Triple-gene-knockouts-(and-others)">Triple gene knockouts (and others)</a><a id="Triple-gene-knockouts-(and-others)-1"></a><a class="docs-heading-anchor-permalink" href="#Triple-gene-knockouts-(and-others)" title="Permalink"></a></h3><p>We can extend the same analysis to triple or other gene knockouts by generating a different array of gene pairs. For example, one can generate gene_groups for triple gene deletion screening:</p><pre><code class="language-julia">gene_groups = [[g1, g2, g3] for g1 in genes(model), g2 in genes(model), g3 in genes(model)];</code></pre><p>!!! warning Full triple gene deletion analysis may take a long time to compute.     We may use parallel processing with <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a> to speed up the     analysis. Alternatively, process only a subset of the genes triples.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../06_fva/">« Flux variability analysis (FVA)</a><a class="docs-footer-nextpage" href="../07_restricting_reactions/">Restricting and disabling individual reactions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 8 May 2023 10:31">Monday 8 May 2023</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

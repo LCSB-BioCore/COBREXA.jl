@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>COBREXA.jl in 10 minutes · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../examples/">Contents</a></li><li><a class="tocitem" href="../examples/01_loading/">Loading models</a></li><li><a class="tocitem" href="../examples/02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../examples/03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../examples/03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../examples/04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../examples/04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../examples/04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../examples/05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../examples/05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../examples/06_fva/">Flux variability analysis (FVA)</a></li><li><a class="tocitem" href="../examples/07_gene_deletion/">Gene knockouts</a></li><li><a class="tocitem" href="../examples/07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../examples/08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../examples/09_loopless/">Loopless FBA</a></li><li><a class="tocitem" href="../examples/10_crowding/">FBA with crowding</a></li><li><a class="tocitem" href="../examples/11_growth/">Growth media analysis</a></li><li><a class="tocitem" href="../examples/12_mmdf/">Maximum-minimum driving force analysis</a></li><li><a class="tocitem" href="../examples/13_moma/">Minimization of metabolic adjustment (MOMA)</a></li><li><a class="tocitem" href="../examples/14_smoment/">sMOMENT</a></li><li><a class="tocitem" href="../examples/15_gecko/">GECKO</a></li><li><a class="tocitem" href="../examples/16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../examples/17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../distributed/">Contents</a></li><li><a class="tocitem" href="../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../concepts/">Contents</a></li><li><a class="tocitem" href="../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../functions/">Contents</a></li><li><a class="tocitem" href="../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../functions/base/">Base functions</a></li><li><a class="tocitem" href="../functions/io/">Input and output</a></li><li><a class="tocitem" href="../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../functions/types/">Types</a></li><li><a class="tocitem" href="../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>COBREXA.jl in 10 minutes</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>COBREXA.jl in 10 minutes</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/quickstart.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Quick-start-guide"><a class="docs-heading-anchor" href="#Quick-start-guide">Quick start guide</a><a id="Quick-start-guide-1"></a><a class="docs-heading-anchor-permalink" href="#Quick-start-guide" title="Permalink"></a></h1><p>You can install COBREXA from Julia repositories. Start <code>julia</code>, <strong>press <code>]</code></strong> to switch to the Packaging environment, and type:</p><pre><code class="language-none">add COBREXA</code></pre><p>You also need to install your favorite solver supported by <code>JuMP.jl</code> (such as Gurobi, Mosek, CPLEX, GLPK, Clarabel, etc., see a <a href="https://jump.dev/JuMP.jl/stable/installation/#Supported-solvers">list here</a>).  For example, you can install <code>Tulip.jl</code> solver by typing:</p><pre><code class="language-none">add Tulip</code></pre><p>Alternatively, you may use <a href="#prebuilt-images">prebuilt Docker and Apptainer images</a>.</p><p>If you are running COBREXA.jl for the first time, it is very likely that upon installing and importing the packages, your Julia installation will need to precompile their source code from the scratch. In fresh installations, the precompilation process should take less than 5 minutes.</p><p>When the packages are installed, switch back to the &quot;normal&quot; julia shell by pressing Backspace (the prompt should change color back to green). After that, you can download <a href="http://bigg.ucsd.edu/models/e_coli_core">a SBML model from the internet</a> and perform a flux balance analysis as follows:</p><pre><code class="language-julia">using COBREXA   # loads the package
+using Tulip     # loads the optimization solver
+
+# download the model
+download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.xml&quot;, &quot;e_coli_core.xml&quot;)
+
+# open the SBML file and load the contents
+model = load_model(&quot;e_coli_core.xml&quot;)
+
+# run a FBA
+fluxes = flux_balance_analysis_dict(model, Tulip.Optimizer)</code></pre><p>The variable <code>fluxes</code> will now contain a dictionary of the computed optimal flux of each reaction in the model:</p><pre><code class="language-none">Dict{String,Float64} with 95 entries:
+  &quot;R_EX_fum_e&quot;    =&gt; 0.0
+  &quot;R_ACONTb&quot;      =&gt; 6.00725
+  &quot;R_TPI&quot;         =&gt; 7.47738
+  &quot;R_SUCOAS&quot;      =&gt; -5.06438
+  &quot;R_GLNS&quot;        =&gt; 0.223462
+  &quot;R_EX_pi_e&quot;     =&gt; -3.2149
+  &quot;R_PPC&quot;         =&gt; 2.50431
+  &quot;R_O2t&quot;         =&gt; 21.7995
+  &quot;R_G6PDH2r&quot;     =&gt; 4.95999
+  &quot;R_TALA&quot;        =&gt; 1.49698
+  ⋮               =&gt; ⋮</code></pre><h4 id="Model-variant-processing"><a class="docs-heading-anchor" href="#Model-variant-processing">Model variant processing</a><a id="Model-variant-processing-1"></a><a class="docs-heading-anchor-permalink" href="#Model-variant-processing" title="Permalink"></a></h4><p>The main feature of COBREXA.jl is the ability to easily specify and process many analyses in parallel. To demonstrate, let&#39;s see how the organism would perform if some reactions were disabled independently:</p><pre><code class="language-julia"># convert to a model type that is efficient to modify
+m = convert(StandardModel, model)
+
+# find the model objective value if oxygen or carbon dioxide transports are disabled
+screen(m, # the base model
+    variants=[ # this specifies how to generate the desired model variants
+        [], # one with no modifications, i.e. the base case
+        [with_changed_bound(&quot;R_O2t&quot;, lower=0.0, upper=0.0)], # disable oxygen
+        [with_changed_bound(&quot;R_CO2t&quot;, lower=0.0, upper=0.0)], # disable CO2
+        [with_changed_bound(&quot;R_O2t&quot;, lower=0.0, upper=0.0),
+	        with_changed_bound(&quot;R_CO2t&quot;, lower=0.0, upper=0.0)], # disable both
+    ],
+    # this specifies what to do with the model variants (received as the argument `x`)
+    analysis = x -&gt;
+        flux_balance_analysis_dict(x, Tulip.Optimizer)[&quot;R_BIOMASS_Ecoli_core_w_GAM&quot;],
+)</code></pre><p>You should receive a result showing that missing oxygen transport makes the biomass production much harder:</p><pre><code class="language-julia">4-element Vector{Float64}:
+ 0.8739215022674809
+ 0.21166294973372796
+ 0.46166961413944896
+ 0.21114065173865457</code></pre><p>Most importantly, such analyses can be easily specified by automatically generating long lists of modifications to be applied to the model, and parallelized.</p><p>Knocking out each reaction in the model is efficiently accomplished:</p><pre><code class="language-julia"># load the task distribution package, add several worker nodes, and load
+# COBREXA and the solver on the nodes
+using Distributed
+addprocs(4)
+@everywhere using COBREXA, Tulip
+
+# get a list of the workers
+worker_list = workers()
+
+# run the processing in parallel for many model variants
+res = screen(m,
+    variants=[
+	# create one variant for each reaction in the model, with that reaction knocked out
+        [with_changed_bound(reaction_id, lower=0.0, upper=0.0)]
+	for reaction_id in reactions(m)
+    ],
+    analysis = model -&gt; begin
+	# we need to check if the optimizer even found a feasible solution,
+	# which may not be the case if we knock out important reactions
+    	sol = flux_balance_analysis_dict(model, Tulip.Optimizer)
+	isnothing(sol) ? nothing : sol[&quot;R_BIOMASS_Ecoli_core_w_GAM&quot;]
+    end,
+    # run the screening in parallel on all workers in the list
+    workers = worker_list,
+)</code></pre><p>In result, you should get a long list of the biomass production for each reaction knockout. Let&#39;s decorate it with reaction names:</p><pre><code class="language-julia">Dict(reactions(m) .=&gt; res)</code></pre><p>...which should output an easily accessible dictionary with all the objective values named, giving a quick overview of which reactions are critical for the model organism to create biomass:</p><pre><code class="language-julia">Dict{String, Union{Nothing, Float64}} with 95 entries:
+  &quot;R_ACALD&quot;       =&gt; 0.873922
+  &quot;R_PTAr&quot;        =&gt; 0.873922
+  &quot;R_ALCD2x&quot;      =&gt; 0.873922
+  &quot;R_PDH&quot;         =&gt; 0.796696
+  &quot;R_PYK&quot;         =&gt; 0.864926
+  &quot;R_CO2t&quot;        =&gt; 0.46167
+  &quot;R_EX_nh4_e&quot;    =&gt; 1.44677e-15
+  &quot;R_MALt2_2&quot;     =&gt; 0.873922
+  &quot;R_CS&quot;          =&gt; 2.44779e-14
+  &quot;R_PGM&quot;         =&gt; 1.04221e-15
+  &quot;R_TKT1&quot;        =&gt; 0.864759
+  ⋮             =&gt; ⋮</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../examples/">Contents »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 8 May 2023 10:31">Monday 8 May 2023</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
