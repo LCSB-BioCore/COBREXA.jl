@@ -10,7 +10,7 @@ Number of reactions: 95
 Number of metabolites: 72
 </pre><p>MOMA analysis requires solution of a quadratic model, we will thus use Clarabel as the main optimizer.</p><pre><code class="language-julia">using Clarabel</code></pre><p>We will need a reference solution, which represents the original state of the organism before the change.</p><pre><code class="language-julia">reference_flux =
     flux_balance_analysis_dict(model, Clarabel.Optimizer; modifications = [silence])</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
-  &quot;R_EX_fum_e&quot;    =&gt; -6.7812e-12
+  &quot;R_EX_fum_e&quot;    =&gt; -5.00659e-12
   &quot;R_ACONTb&quot;      =&gt; 6.00725
   &quot;R_GLNS&quot;        =&gt; 0.223462
   &quot;R_SUCOAS&quot;      =&gt; -5.06438
@@ -20,15 +20,15 @@ Number of metabolites: 72
   &quot;R_O2t&quot;         =&gt; 21.7995
   &quot;R_G6PDH2r&quot;     =&gt; 4.95998
   &quot;R_TALA&quot;        =&gt; 1.49698
-  &quot;R_PPCK&quot;        =&gt; 3.96203e-9
-  &quot;R_EX_lac__D_e&quot; =&gt; 5.58955e-10
+  &quot;R_PPCK&quot;        =&gt; 5.75426e-10
+  &quot;R_EX_lac__D_e&quot; =&gt; 6.70413e-11
   &quot;R_PGL&quot;         =&gt; 4.95998
   &quot;R_H2Ot&quot;        =&gt; -29.1758
-  &quot;R_GLNabc&quot;      =&gt; 2.25337e-12
+  &quot;R_GLNabc&quot;      =&gt; 2.95563e-12
   &quot;R_EX_co2_e&quot;    =&gt; 22.8098
-  &quot;R_EX_gln__L_e&quot; =&gt; -2.25168e-12
+  &quot;R_EX_gln__L_e&quot; =&gt; -2.95564e-12
   &quot;R_EX_nh4_e&quot;    =&gt; -4.76532
-  &quot;R_MALt2_2&quot;     =&gt; 1.11042e-11
+  &quot;R_MALt2_2&quot;     =&gt; 5.34064e-12
   ⋮               =&gt; ⋮</pre><p>As the change here, we manually knock out CYTBD reaction:</p><pre><code class="language-julia">changed_model = change_bound(model, &quot;R_CYTBD&quot;, lower = 0.0, upper = 0.0);</code></pre><p>Now, let&#39;s find a flux that minimizes the organism&#39;s metabolic adjustment for this model:</p><pre><code class="language-julia">flux_summary(
     minimize_metabolic_adjustment_analysis_dict(
         changed_model,
@@ -39,17 +39,17 @@ Number of metabolites: 72
 )</code></pre><pre class="documenter-example-output">Biomass
   R_BIOMASS_Ecoli_core_w_GAM: 0.06
 Import
-  R_EX_glc__D_e:              -9.1553
+  R_EX_glc__D_e:              -9.1554
   R_EX_nh4_e:                 -1.3091
   R_EX_pi_e:                  -0.2209
 Export
   R_EX_glu__L_e:              0.9817
   R_EX_acald_e:               1.7139
-  R_EX_co2_e:                 5.1126
-  R_EX_h2o_e:                 5.7937
+  R_EX_co2_e:                 5.1127
+  R_EX_h2o_e:                 5.7936
   R_EX_succ_e:                5.9147
   R_EX_etoh_e:                7.6345
-  R_EX_h_e:                   14.9973
+  R_EX_h_e:                   14.9974
 </pre><p>For illustration, you can compare the result to the flux that is found by simple optimization:</p><pre><code class="language-julia">flux_summary(
     flux_balance_analysis_dict(
         changed_model,
@@ -69,4 +69,4 @@ Export
   R_EX_ac_e:                  8.5036
   R_EX_for_e:                 17.8047
   R_EX_h_e:                   30.5542
-</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../12_mmdf/">« Maximum-minimum driving force analysis</a><a class="docs-footer-nextpage" href="../14_smoment/">sMOMENT »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 12 February 2023 17:21">Sunday 12 February 2023</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../12_mmdf/">« Maximum-minimum driving force analysis</a><a class="docs-footer-nextpage" href="../14_smoment/">sMOMENT »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 8 May 2023 08:33">Monday 8 May 2023</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
