@@ -36,7 +36,7 @@ Accessors.metabolite_bounds(cm::EqualGrowthCommunityModel) = [
 ]
 
 function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
-
+    # TODO this needs a rework
     S = stoichiometry(cm.inner)
     obj_col = spzeros(size(S, 1))
 
