@@ -111,8 +111,8 @@ metabolite id.
 
 # Example
 ```
-filter(looks_like_extracellular_metabolite, metabolites(model)) # returns strings
-findall(looks_like_extracellular_metabolite, metabolites(model)) # returns indices
+filter(looks_like_extracellular_metabolite, metabolite_ids(model)) # returns strings
+findall(looks_like_extracellular_metabolite, metabolite_ids(model)) # returns indices
 ```
 """
 function looks_like_extracellular_metabolite(
@@ -129,7 +129,7 @@ Shortcut for finding extracellular metabolite indexes in a model; arguments are
 forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
 find_extracellular_metabolites(m::AbstractMetabolicModel; kwargs...) =
-    findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
+    findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolite_ids(m))
 
 """
 $(TYPEDSIGNATURES)
@@ -138,7 +138,7 @@ Shortcut for finding extracellular metabolite identifiers in a model; arguments 
 forwarded to [`looks_like_extracellular_metabolite`](@ref).
 """
 find_extracellular_metabolite_ids(m::AbstractMetabolicModel; kwargs...) =
-    findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
+    findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolite_ids(m))
 
 @_is_reaction_fn "exchange" Identifiers.EXCHANGE_REACTIONS
 @_is_reaction_fn "transport" Identifiers.TRANSPORT_REACTIONS

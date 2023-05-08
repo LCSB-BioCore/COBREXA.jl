@@ -78,7 +78,7 @@
     )
 
     @test issetequal(
-        metabolites(cm),
+        metabolite_ids(cm),
         [
             "m1#A"
             "m1#B"
@@ -109,7 +109,7 @@
     )
 
     @test variable_count(cm) == 13
-    @test n_metabolites(cm) == 11
+    @test metabolite_count(cm) == 11
     @test n_genes(cm) == 8
 
     @test all(
@@ -184,7 +184,7 @@
 
     # test modification for community model
     res = flux_balance_analysis(cm, Tulip.Optimizer)
-    mb = res.result[:mb]
+    mb = res.result[:metabolite_eqs]
     x = res.result[:x]
     @test normalized_coefficient(mb[9], x[1]) == 0.2
     @test normalized_coefficient(mb[11], x[13]) == -0.8
@@ -194,7 +194,7 @@
         Tulip.Optimizer;
         modifications = [modify_abundances([0.5, 0.5])],
     )
-    mb = res2.result[:mb]
+    mb = res2.result[:metabolite_eqs]
     x = res2.result[:x]
     @test normalized_coefficient(mb[9], x[1]) == 0.5
     @test normalized_coefficient(mb[11], x[13]) == -0.5
@@ -218,7 +218,7 @@
         Tulip.Optimizer;
         modifications = [modify_abundances([0.3, 0.7])],
     )
-    mb = res3.result[:mb]
+    mb = res3.result[:metabolite_eqs]
     x = res3.result[:x]
     @test normalized_coefficient(mb[10], x[5]) == 0.3
     @test normalized_coefficient(mb[10], x[12]) == -0.3

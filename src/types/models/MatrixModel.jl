@@ -51,14 +51,20 @@ Accessors.variable_ids(a::MatrixModel)::Vector{String} = a.rxns
 
 Accessors.Internal.@all_variables_are_reactions MatrixModel
 
-Accessors.metabolites(a::MatrixModel)::Vector{String} = a.mets
+Accessors.metabolite_ids(a::MatrixModel)::Vector{String} = a.mets
 
-Accessors.stoichiometry(a::MatrixModel)::SparseMat = a.S
+Accessors.metabolite_variables_matrix(a::MatrixModel)::SparseMat = a.S
+
+Accessors.metabolite_variables(a::MatrixModel) = Accessors.Internal.make_mapping_dict(
+    metabolite_ids(a),
+    variable_ids(a),
+    metabolite_variables_matrix(a),
+)
 
 Accessors.variable_bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (a.xl, a.xu)
 
-Accessors.balance(a::MatrixModel)::SparseVec = a.b
+Accessors.metabolite_bounds(a::MatrixModel)::SparseVec = a.b
 
 Accessors.objective(a::MatrixModel)::SparseVec = a.c
 
@@ -99,12 +105,12 @@ function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicMode
     (xl, xu) = variable_bounds(m)
     MatrixModel(
         stoichiometry(m),
-        balance(m),
+        metabolite_bounds(m),
         objective(m),
         xl,
         xu,
         variable_ids(m),
-        metabolites(m),
+        metabolite_ids(m),
         Vector{Maybe{GeneAssociationsDNF}}([
             reaction_gene_associations(m, id) for id in variable_ids(m)
         ]),

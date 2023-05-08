@@ -50,10 +50,10 @@ First, define the reactions and metabolites:
 
 ```julia
 COBREXA.reaction_count(m::CircularModel) = m.size
-COBREXA.n_metabolites(m::CircularModel) = m.size
+COBREXA.metabolite_count(m::CircularModel) = m.size
 
 COBREXA.reaction_ids(m::CircularModel) = ["rxn$i" for i in 1:reaction_count(m)]
-COBREXA.metabolites(m::CircularModel) = ["met$i" for i in 1:n_metabolites(m)]
+COBREXA.metabolite_ids(m::CircularModel) = ["met$i" for i in 1:metabolite_count(m)]
 ```
 
 It is useful to re-use the already defined functions, as that improves the code

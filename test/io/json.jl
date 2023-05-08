@@ -5,7 +5,7 @@
 
     # test if same reaction ids
     @test issetequal(variable_ids(jsonmodel), variable_ids(stdmodel))
-    @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))
+    @test issetequal(metabolite_ids(jsonmodel), metabolite_ids(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     # not the best tests since it is possible that error could cancel each other out:
     @test sum(stoichiometry(jsonmodel)) == sum(stoichiometry(stdmodel))

@@ -23,7 +23,7 @@ genetic material and virtual cell volume, etc. To simplify the view of the model
 contents use [`reaction_variables`](@ref).
 """
 function variable_ids(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(variables, (a,))
+    missing_impl_error(variable_ids, (a,))
 end
 
 """
@@ -46,53 +46,13 @@ $(TYPEDSIGNATURES)
 Get the lower and upper solution bounds of a model.
 """
 function variable_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    missing_impl_error(bounds, (a,))
+    missing_impl_error(variable_bounds, (a,))
 end
 
 """
 Shortcut for writing [`variable_bounds`](@ref).
 """
 const bounds = variable_bounds
-
-"""
-$(TYPEDSIGNATURES)
-
-Return a vector of metabolite identifiers in a model. The vector precisely
-corresponds to the rows in [`stoichiometry`](@ref) matrix.
-
-As with [`variables`](@ref)s, some metabolites in models may be virtual,
-representing purely technical equality constraints.
-"""
-function metabolites(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(metabolites, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of metabolites in a model.
-"""
-function n_metabolites(a::AbstractMetabolicModel)::Int
-    length(metabolites(a))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the sparse stoichiometry matrix of a model.
-"""
-function stoichiometry(a::AbstractMetabolicModel)::SparseMat
-    missing_impl_error(stoichiometry, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the sparse balance vector of a model.
-"""
-function balance(a::AbstractMetabolicModel)::SparseVec
-    return spzeros(n_metabolites(a))
-end
 
 """
 $(TYPEDSIGNATURES)
@@ -130,6 +90,26 @@ flux, such as with separate bidirectional reactions.
 Shortcut for writing [`reaction_ids`](@ref).
 """
 const reactions = reaction_ids
+
+@make_variable_semantics(
+    :metabolite,
+    "metabolites",
+    """
+Metabolite values represent the over-time change of abundance of individual
+metabolites in the model. To reach a steady state, models typically constraint
+these to be zero.
+"""
+)
+
+"""
+A shortcut for [`metabolite_ids`](@ref).
+"""
+const metabolites = metabolite_ids
+
+"""
+The usual name of [`metabolite_variables_matrix`](@ref).
+"""
+const stoichiometry = metabolite_variables_matrix
 
 @make_variable_semantics(
     :enzyme,
@@ -219,7 +199,7 @@ In SBML, these are usually called "gene products" but we write `genes` for
 simplicity.
 """
 function genes(a::AbstractMetabolicModel)::Vector{String}
-    return []
+    String[]
 end
 
 """
@@ -307,7 +287,7 @@ function reaction_stoichiometry(
     m::AbstractMetabolicModel,
     rid::String,
 )::Dict{String,Float64}
-    mets = metabolites(m)
+    mets = metabolite_ids(m)
     Dict(
         mets[k] => v for (k, v) in
         zip(findnz(stoichiometry(m)[:, first(indexin([rid], variable_ids(m)))])...)

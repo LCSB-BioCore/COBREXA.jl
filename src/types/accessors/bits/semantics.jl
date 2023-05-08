@@ -5,27 +5,27 @@ A helper function to quickly create a sparse matrix from a dictionary that
 describes it. Reverse of [`make_mapping_dict`](@ref).
 """
 function make_mapping_mtx(
-    vars::Vector{String},
     semantics::Vector{String},
-    var_sem_val::Dict{String,Dict{String,Float64}},
+    vars::Vector{String},
+    sem_var_val::Dict{String,Dict{String,Float64}},
 )::Types.SparseMat
     # TODO: move this to general utils or so
-    rowidx = Dict(vars .=> 1:length(vars))
-    colidx = Dict(semantics .=> 1:length(semantics))
-    n = sum(length.(values(var_sem_val)))
+    rowidx = Dict(semantics .=> 1:length(semantics))
+    colidx = Dict(vars .=> 1:length(vars))
+    n = sum(length.(values(sem_var_val)))
     R = Vector{Int}(undef, n)
     C = Vector{Int}(undef, n)
     V = Vector{Float64}(undef, n)
     i = 1
-    for (cid, col_val) in var_sem_val
-        for (rid, val) in col_val
+    for (rid, var_val) in sem_var_val
+        for (cid, val) in var_val
             R[i] = rowidx[rid]
             C[i] = colidx[cid]
             V[i] = val
             i += 1
         end
     end
-    sparse(R, C, V, length(vars), length(semantics))
+    sparse(R, C, V, length(semantics), length(vars))
 end
 
 """
@@ -35,15 +35,19 @@ A helper function to quickly create a sparse matrix from a dictionary that
 describes it. Reverse of [`make_mapping_mtx`](@ref).
 """
 function make_mapping_dict(
-    vars::Vector{String},
     semantics::Vector{String},
+    vars::Vector{String},
     mtx::Types.SparseMat,
 )::Dict{String,Dict{String,Float64}}
-    # TODO: move this to general utils
-    Dict(
-        sid => Dict(vars[vidx] => val for (vidx, val) in zip(findnz(mtx[:, sidx])...)) for
-        (sidx, sid) in enumerate(semantics)
-    )
+    x = Dict{String,Dict{String,Float64}}()
+    for (ridx, cidx, val) in zip(findnz(mtx)...)
+        if haskey(x, semantics[ridx])
+            x[semantics[ridx]][vars[cidx]] = val
+        else
+            x[semantics[ridx]] = Dict{String,Float64}(vars[cidx] => val)
+        end
+    end
+    x
 end
 
 """
@@ -67,13 +71,13 @@ Base.@kwdef struct Semantics
     count::Function
 
     """
-    Returns a mapping of semantic values to variables IDs in the model.
+    Returns a mapping of semantic values to variables IDs and their stoichiometry.
     """
     mapping::Function
 
     """
-    Same as `mapping` but returns a matrix (with variables in rows and the
-    semantic values in columns), which is possibly more efficient or handy in
+    Same as `mapping` but returns a matrix (with semantic values in rows and
+    the variables in columns), which is possibly more efficient or handy in
     specific cases.
     """
     mapping_matrix::Function
@@ -182,7 +186,7 @@ vector returned by [`$ids`].
 """,
         ),
         :(function $count(a::AbstractMetabolicModel)::Int
-            0
+            length($ids(a))
         end),
     )
 
@@ -219,14 +223,14 @@ To improve the performance, you may want to use [`$mapping_mtx`](@ref).
 
 Bipartite mapping of $name described by the model to the actual
 variables in the model, described as a sparse matrix mapping with rows
-corresponding to model variables and columns corresponding to $name.
+corresponding to $name and columns corresponding to model variables.
 
 By default, this is derived from [`$mapping`](@ref) in all models. For
 safety reasons, this is never automatically inherited by wrappers.
 """,
         ),
         :(function $mapping_mtx(a::AbstractMetabolicModel)::SparseMat
-            make_mapping_mtx(variable_ids(a), $ids(a), $mapping(a))
+            make_mapping_mtx($ids(a), variable_ids(a), $mapping(a))
         end),
     )
 
@@ -244,13 +248,9 @@ no bounds, or a vector of floats with equality bounds, or a tuple of 2 vectors
 with lower and upper bounds.
 """,
         ),
-        :(
-            function $bounds(
-                a::AbstractMetabolicModel,
-            )::Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}}
-                nothing
-            end
-        ),
+        :(function $bounds(a::AbstractMetabolicModel)
+            $(sym == :metabolite ? :(spzeros($count(a))) : nothing)
+        end),
     )
 
     Base.eval.(Ref(themodule), [idsfn, countfn, mappingfn, mtxfn, boundsfn])
@@ -271,16 +271,9 @@ with lower and upper bounds.
         end),
     )
 
-    Base.eval(
-        themodule,
-        :(
-            function $bounds(
-                w::AbstractModelWrapper,
-            )::Union{Nothing,Vector{Float64},Tuple{Vector{Float64},Vector{Float64}}}
-                $bounds(unwrap_model(w))
-            end
-        ),
-    )
+    Base.eval(themodule, :(function $bounds(w::AbstractModelWrapper)
+        $bounds(unwrap_model(w))
+    end))
 
     # TODO here we would normally also overload the matrix function, but that
     # one will break once anyone touches variables of the models (which is quite

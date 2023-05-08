@@ -15,7 +15,12 @@ end
 # [`AbstractMetabolicModel`](@ref).
 #
 
-@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () variables metabolites stoichiometry bounds balance objective coupling n_coupling_constraints coupling_bounds genes n_genes precache! model_notes model_annotations
+# TODO make some functionality that allows folks to clearly declare that stuff
+# like variable_count, somesemantic_count or somesemantic_variables_matrix did
+# not change and can be safely inherited instead of being recreated from the
+# more complex data.
+
+@inherit_model_methods_fn AbstractModelWrapper () unwrap_model () variable_ids variable_bounds objective coupling n_coupling_constraints coupling_bounds genes n_genes precache! model_notes model_annotations
 
 @inherit_model_methods_fn AbstractModelWrapper (rid::String,) unwrap_model (rid,) reaction_gene_associations reaction_subsystem reaction_stoichiometry reaction_annotations reaction_notes reaction_isozymes
 

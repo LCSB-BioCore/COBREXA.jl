@@ -76,7 +76,7 @@ model.genes[random_gene_id]
 # The same idea holds for both metabolites (stored as `Metabolite`s) and
 # reactions (stored as `Reaction`s). This is demonstrated below.
 
-random_metabolite_id = metabolites(model)[rand(1:n_metabolites(model))]
+random_metabolite_id = metabolite_ids(model)[rand(1:metabolite_count(model))]
 model.metabolites[random_metabolite_id]
 #
 random_reaction_id = variable_ids(model)[rand(1:variable_count(model))]

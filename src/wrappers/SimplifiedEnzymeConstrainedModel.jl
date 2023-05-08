@@ -84,8 +84,8 @@ Get the mapping of the reaction rates in
 wrapped model (as a matrix).
 """
 Accessors.reaction_variables_matrix(model::SimplifiedEnzymeConstrainedModel) =
-    simplified_enzyme_constrained_column_reactions(model)' *
-    reaction_variables_matrix(model.inner)
+    reaction_variables_matrix(model.inner) *
+    simplified_enzyme_constrained_column_reactions(model) #TODO check
 
 """
 $(TYPEDSIGNATURES)
@@ -96,8 +96,8 @@ wrapped model.
 """
 Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
-        variable_ids(model),
         reaction_ids(model.inner),
+        variable_ids(model),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 

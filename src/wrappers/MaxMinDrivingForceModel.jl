@@ -82,17 +82,17 @@ end
 Accessors.unwrap_model(model::MaxMinDrivingForceModel) = model.inner
 
 Accessors.variable_ids(model::MaxMinDrivingForceModel) =
-    ["mmdf"; "log " .* metabolites(model); "ΔG " .* reaction_ids(model)]
+    ["mmdf"; "log " .* metabolite_ids(model); "ΔG " .* reaction_ids(model)]
 
 Accessors.variable_count(model::MaxMinDrivingForceModel) =
-    1 + n_metabolites(model) + reaction_count(model)
+    1 + metabolite_count(model) + reaction_count(model)
 
 Accessors.metabolite_log_concentration_ids(model::MaxMinDrivingForceModel) =
-    "log " .* metabolites(model)
+    "log " .* metabolite_ids(model)
 Accessors.metabolite_log_concentration_count(model::MaxMinDrivingForceModel) =
-    n_metabolites(model)
+    metabolite_count(model)
 Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel) =
-    Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolites(model))
+    Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolite_ids(model))
 
 Accessors.gibbs_free_energy_ids(model::MaxMinDrivingForceModel) =
     "ΔG " .* reaction_ids(model)
@@ -104,7 +104,7 @@ Accessors.gibbs_free_energy_variables(model::MaxMinDrivingForceModel) =
 Accessors.objective(model::MaxMinDrivingForceModel) =
     [1.0; fill(0.0, variable_count(model) - 1)]
 
-function Accessors.balance(model::MaxMinDrivingForceModel)
+function Accessors.metabolite_bounds(model::MaxMinDrivingForceModel)
     # proton water balance
     num_proton_water = length(model.proton_ids) + length(model.water_ids)
     proton_water_vec = spzeros(num_proton_water)
@@ -186,8 +186,8 @@ function Accessors.variable_bounds(model::MaxMinDrivingForceModel)
     ubs[1] = 1000.0
 
     # log concentrations
-    lbs[2:(1+n_metabolites(model))] .= log(model.concentration_lb)
-    ubs[2:(1+n_metabolites(model))] .= log(model.concentration_ub)
+    lbs[2:(1+metabolite_count(model))] .= log(model.concentration_lb)
+    ubs[2:(1+metabolite_count(model))] .= log(model.concentration_ub)
 
     # need to make special adjustments for the constants
     idxs = indexin([model.proton_ids; model.water_ids], var_ids)
@@ -212,12 +212,12 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
     end
 
     neg_dg_mat = [
-        spzeros(length(idxs)) spzeros(length(idxs), n_metabolites(model)) flux_signs
+        spzeros(length(idxs)) spzeros(length(idxs), metabolite_count(model)) flux_signs
     ]
 
     mmdf_mat = sparse(
         [
-            -ones(length(idxs)) spzeros(length(idxs), n_metabolites(model)) -flux_signs
+            -ones(length(idxs)) spzeros(length(idxs), metabolite_count(model)) -flux_signs
         ],
     )
 

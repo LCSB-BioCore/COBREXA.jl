@@ -60,54 +60,34 @@ Accessors.variable_count(model::ObjectModel)::Int = length(model.reactions)
 
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
-Accessors.metabolites(model::ObjectModel)::StringVecType = collect(keys(model.metabolites))
+Accessors.metabolite_ids(model::ObjectModel)::StringVecType =
+    collect(keys(model.metabolites))
 
-Accessors.n_metabolites(model::ObjectModel)::Int = length(model.metabolites)
+Accessors.metabolite_count(model::ObjectModel)::Int = length(model.metabolites)
 
 Accessors.genes(model::ObjectModel)::StringVecType = collect(keys(model.genes))
 
 Accessors.n_genes(model::ObjectModel)::Int = length(model.genes)
 
-function Accessors.stoichiometry(model::ObjectModel)::SparseMat
-    n_entries = 0
-    for (_, r) in model.reactions
-        for _ in r.metabolites
-            n_entries += 1
+function Accessors.metabolite_variables(model::ObjectModel)
+    x = Dict{String,Dict{String,Float64}}()
+    for (rid, r) in model.reactions
+        for (mid, coeff) in r.metabolites
+            if haskey(x, mid)
+                x[mid][rid] = coeff
+            else
+                x[mid] = Dict{String,Float64}(rid => coeff)
+            end
         end
     end
-
-    MI = Vector{Int}()
-    RI = Vector{Int}()
-    SV = Vector{Float64}()
-    sizehint!(MI, n_entries)
-    sizehint!(RI, n_entries)
-    sizehint!(SV, n_entries)
-
-    # establish the ordering
-    rxns = variable_ids(model)
-    met_idx = Dict(mid => i for (i, mid) in enumerate(metabolites(model)))
-
-    # fill the matrix entries
-    for (ridx, rid) in enumerate(rxns)
-        for (mid, coeff) in model.reactions[rid].metabolites
-            haskey(met_idx, mid) || throw(
-                DomainError(
-                    mid,
-                    "Metabolite $(mid) not found in model but occurs in stoichiometry of $(rid)",
-                ),
-            )
-            push!(MI, met_idx[mid])
-            push!(RI, ridx)
-            push!(SV, coeff)
-        end
-    end
-    return SparseArrays.sparse(MI, RI, SV, n_metabolites(model), variable_count(model))
+    x
 end
 
 Accessors.variable_bounds(model::ObjectModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (lower_bounds(model), upper_bounds(model))
 
-Accessors.balance(model::ObjectModel)::SparseVec = spzeros(length(model.metabolites))
+Accessors.metabolite_bounds(model::ObjectModel)::SparseVec =
+    spzeros(length(model.metabolites))
 
 Accessors.objective(model::ObjectModel)::SparseVec =
     sparse([get(model.objective, rid, 0.0) for rid in keys(model.reactions)])
@@ -187,7 +167,7 @@ function Base.convert(::Type{ObjectModel}, model::AbstractMetabolicModel)
     modelgenes = OrderedDict{String,Gene}()
 
     gids = genes(model)
-    metids = metabolites(model)
+    metids = metabolite_ids(model)
     rxnids = variable_ids(model)
 
     for gid in gids

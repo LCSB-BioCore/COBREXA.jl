@@ -6,7 +6,7 @@
 
     @test Set(variable_ids(sbmlm)) == Set(variable_ids(sbmlm2))
     @test Set(variable_ids(sbmlm)) == Set(variable_ids(sm))
-    @test Set(metabolites(sbmlm)) == Set(metabolites(sbmlm2))
+    @test Set(metabolite_ids(sbmlm)) == Set(metabolite_ids(sbmlm2))
     sp(x) = x.species
     @test all([
         issetequal(

@@ -41,7 +41,8 @@
         x -> looks_like_exchange_reaction(x; exclude_biomass = true),
         variable_ids(cp),
     ) == ["EX_m1(e)", "EX_m3(e)"]
-    @test filter(looks_like_extracellular_metabolite, metabolites(cp)) == ["m1[e]", "m3[e]"]
+    @test filter(looks_like_extracellular_metabolite, metabolite_ids(cp)) ==
+          ["m1[e]", "m3[e]"]
     @test filter(looks_like_biomass_reaction, variable_ids(cp)) ==
           ["EX_biomass(e)", "biomass1"]
     @test filter(
@@ -54,27 +55,27 @@ end
     model = load_model(model_paths["e_coli_core.json"])
     @test length(filter(looks_like_exchange_reaction, variable_ids(model))) == 20
     @test length(filter(looks_like_biomass_reaction, variable_ids(model))) == 1
-    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
+    @test length(filter(looks_like_extracellular_metabolite, metabolite_ids(model))) == 20
 
     model = load_model(model_paths["e_coli_core.xml"])
     @test length(filter(looks_like_exchange_reaction, variable_ids(model))) == 20
     @test length(filter(looks_like_biomass_reaction, variable_ids(model))) == 1
-    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
+    @test length(filter(looks_like_extracellular_metabolite, metabolite_ids(model))) == 20
 
     model = load_model(model_paths["e_coli_core.mat"])
     @test length(filter(looks_like_exchange_reaction, variable_ids(model))) == 20
     @test length(filter(looks_like_biomass_reaction, variable_ids(model))) == 1
-    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
+    @test length(filter(looks_like_extracellular_metabolite, metabolite_ids(model))) == 20
 
     model = convert(ObjectModel, model)
     @test length(filter(looks_like_exchange_reaction, variable_ids(model))) == 20
     @test length(filter(looks_like_biomass_reaction, variable_ids(model))) == 1
-    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
+    @test length(filter(looks_like_extracellular_metabolite, metabolite_ids(model))) == 20
 
     model = convert(MatrixModelWithCoupling, model)
     @test length(filter(looks_like_exchange_reaction, variable_ids(model))) == 20
     @test length(filter(looks_like_biomass_reaction, variable_ids(model))) == 1
-    @test length(filter(looks_like_extracellular_metabolite, metabolites(model))) == 20
+    @test length(filter(looks_like_extracellular_metabolite, metabolite_ids(model))) == 20
 end
 
 @testset "Ontology usage in is_xxx_reaction" begin
