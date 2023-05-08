@@ -36,7 +36,13 @@ function Accessors.metabolite_ids(m::MATModel)::Vector{String}
     end
 end
 
-Accessors.stoichiometry(m::MATModel) = sparse(m.mat["S"])
+Accessors.metabolite_variables_matrix(m::MATModel) = sparse(m.mat["S"])
+
+Accessors.metabolite_variables(m::MATModel) = Accessors.Internal.make_mapping_dict(
+    metabolite_ids(m),
+    variable_ids(m),
+    metabolite_variables_matrix(m),
+)
 
 Accessors.variable_bounds(m::MATModel) = (
     reshape(get(m.mat, "lb", fill(-Inf, variable_count(m), 1)), variable_count(m)),

@@ -53,7 +53,13 @@ Accessors.Internal.@all_variables_are_reactions MatrixModel
 
 Accessors.metabolite_ids(a::MatrixModel)::Vector{String} = a.mets
 
-Accessors.stoichiometry(a::MatrixModel)::SparseMat = a.S
+Accessors.metabolite_variables_matrix(a::MatrixModel)::SparseMat = a.S
+
+Accessors.metabolite_variables(a::MatrixModel) = Accessors.Internal.make_mapping_dict(
+    metabolite_ids(a),
+    variable_ids(a),
+    metabolite_variables_matrix(a),
+)
 
 Accessors.variable_bounds(a::MatrixModel)::Tuple{Vector{Float64},Vector{Float64}} =
     (a.xl, a.xu)

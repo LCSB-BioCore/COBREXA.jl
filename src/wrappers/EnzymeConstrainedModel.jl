@@ -63,15 +63,6 @@ end
 
 Accessors.unwrap_model(model::EnzymeConstrainedModel) = model.inner
 
-function Accessors.stoichiometry(model::EnzymeConstrainedModel)
-    irrevS = stoichiometry(model.inner) * enzyme_constrained_column_reactions(model)
-    enzS = enzyme_constrained_gene_product_coupling(model)
-    [
-        irrevS spzeros(size(irrevS, 1), size(enzS, 1))
-        -enzS I(size(enzS, 1))
-    ]
-end
-
 Accessors.objective(model::EnzymeConstrainedModel) = model.objective
 
 function Accessors.variable_ids(model::EnzymeConstrainedModel)
@@ -104,10 +95,7 @@ end
 function Accessors.reaction_variables_matrix(model::EnzymeConstrainedModel)
     rxnmat =
         reaction_variables_matrix(model.inner) * enzyme_constrained_column_reactions(model)
-    [
-        rxnmat
-        spzeros(size(rxnmat, 1), n_genes(model))
-    ]
+    hcat(rxnmat, spzeros(size(rxnmat, 1), n_genes(model)))
 end
 
 Accessors.reaction_variables(model::EnzymeConstrainedModel) =
@@ -125,6 +113,22 @@ Accessors.metabolite_count(model::EnzymeConstrainedModel) =
 
 Accessors.metabolite_bounds(model::EnzymeConstrainedModel) =
     [metabolite_bounds(model.inner); spzeros(length(model.coupling_row_gene_product))]
+
+function Accessors.metabolite_variables_matrix(model::EnzymeConstrainedModel)
+    irrevS = stoichiometry(model.inner) * enzyme_constrained_column_reactions(model)
+    enzS = enzyme_constrained_gene_product_coupling(model)
+    [
+        irrevS spzeros(size(irrevS, 1), size(enzS, 1))
+        -enzS I(size(enzS, 1))
+    ]
+end
+
+Accessors.metabolite_variables(model::EnzymeConstrainedModel) =
+    Accessors.Internal.make_mapping_dict(
+        metabolite_ids(model),
+        variable_ids(model),
+        metabolite_variables_matrix(model),
+    )
 
 Accessors.enzyme_ids(model::EnzymeConstrainedModel) = genes(model)
 

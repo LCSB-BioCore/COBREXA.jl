@@ -88,40 +88,18 @@ Accessors.genes(model::JSONModel) =
 
 Accessors.Internal.@all_variables_are_reactions JSONModel
 
-function Accessors.stoichiometry(model::JSONModel)
-    rxn_ids = variable_ids(model)
-    met_ids = metabolite_ids(model)
-
-    n_entries = 0
-    for r in model.rxns
-        for _ in r["metabolites"]
-            n_entries += 1
+function Accessors.metabolite_variables(model::JSONModel)
+    x = Dict{String,Dict{String,Float64}}()
+    for (rid, ridx) in model.rxn_index
+        for (mid, coeff) in model.rxns[ridx]["metabolites"]
+            if haskey(x, mid)
+                x[mid][rid] = coeff
+            else
+                x[mid] = Dict{String,Float64}(rid => coeff)
+            end
         end
     end
-
-    MI = Vector{Int}()
-    RI = Vector{Int}()
-    SV = Vector{Float64}()
-    sizehint!(MI, n_entries)
-    sizehint!(RI, n_entries)
-    sizehint!(SV, n_entries)
-
-    for (i, rid) in enumerate(rxn_ids)
-        r = model.rxns[model.rxn_index[rid]]
-        for (mid, coeff) in r["metabolites"]
-            haskey(model.met_index, mid) || throw(
-                DomainError(
-                    met_id,
-                    "Unknown metabolite found in stoichiometry of $(rxn_ids[i])",
-                ),
-            )
-
-            push!(MI, model.met_index[mid])
-            push!(RI, i)
-            push!(SV, coeff)
-        end
-    end
-    return SparseArrays.sparse(MI, RI, SV, length(met_ids), length(rxn_ids))
+    x
 end
 
 Accessors.variable_bounds(model::JSONModel) = (

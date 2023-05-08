@@ -58,10 +58,17 @@ function Accessors.metabolite_ids(model::HDF5Model)::Vector{String}
     read(model.h5["metabolites"])
 end
 
-function Accessors.stoichiometry(model::HDF5Model)::SparseMat
+function Accessors.metabolite_variables_matrix(model::HDF5Model)::SparseMat
     precache!(model)
     h5_read_sparse(SparseMat, model.h5["stoichiometry"])
 end
+
+Accessors.metabolite_variables(model::HDF5Model)::Dict{String,Dict{String,Float}} =
+    Accessors.Internal.make_mapping_dict(
+        metabolite_ids(m),
+        variable_ids(m),
+        metabolite_variables_matrix(m),
+    )
 
 function Accessors.variable_bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
     precache!(model)
