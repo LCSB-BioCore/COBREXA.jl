@@ -230,7 +230,7 @@ safety reasons, this is never automatically inherited by wrappers.
 """,
         ),
         :(function $mapping_mtx(a::AbstractMetabolicModel)::SparseMat
-            make_mapping_mtx(variable_ids(a), $ids(a), $mapping(a))
+            make_mapping_mtx($ids(a), variable_ids(a), $mapping(a))
         end),
     )
 
