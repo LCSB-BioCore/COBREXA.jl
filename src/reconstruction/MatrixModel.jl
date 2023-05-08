@@ -392,7 +392,10 @@ end
 end
 
 @_remove_fn metabolite MatrixModel String inplace plural begin
-    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolite_ids(model))))
+    remove_metabolites!(
+        model,
+        Int.(indexin(metabolite_ids, Accessors.metabolite_ids(model))),
+    )
 end
 
 @_remove_fn metabolite MatrixModel String begin
@@ -400,7 +403,10 @@ end
 end
 
 @_remove_fn metabolite MatrixModel String plural begin
-    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolite_ids(model))))
+    remove_metabolites(
+        model,
+        Int.(indexin(metabolite_ids, Accessors.metabolite_ids(model))),
+    )
 end
 
 """
