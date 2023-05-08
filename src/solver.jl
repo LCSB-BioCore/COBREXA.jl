@@ -62,6 +62,9 @@ function make_optimization_model(
     end
 
     # go over the semantics and add bounds if there are any
+    # TODO for use in sampling and other things, it would be nice to have
+    # helper functions to make a complete matrix of equality and interval
+    # constraints.
     for (semname, sem) in Accessors.Internal.get_semantics()
         bounds = sem.bounds(model)
         if isnothing(bounds)

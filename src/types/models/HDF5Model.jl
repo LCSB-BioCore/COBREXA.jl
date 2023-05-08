@@ -26,6 +26,8 @@ mutable struct HDF5Model <: AbstractMetabolicModel
     HDF5Model(filename::String) = new(nothing, filename)
 end
 
+# TODO this might need to store the extra semantics now
+
 function Accessors.precache!(model::HDF5Model)::Nothing
     if isnothing(model.h5)
         model.h5 = h5open(model.filename, "r")
