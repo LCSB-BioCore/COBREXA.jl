@@ -45,17 +45,20 @@ function make_simplified_enzyme_constrained_model(
     reaction_mass_group_bounds::Maybe{Dict{String,Float64}} = nothing,
 )
 
-    if !isnothing(total_reaction_mass_bound) &&
-       all(isnothing, [reaction_mass_groups, reaction_mass_group_bounds])
+    if !isnothing(total_reaction_mass_bound)
+        (isnothing(gene_product_mass_groups) && isnothing(gene_product_mass_groups)) ||
+            throw(
+                ArgumentError(
+                    "argument values would be overwritten by total_gene_product_mass_bound!",
+                ),
+            )
 
         reaction_mass_groups = Dict("uncategorized" => genes(model))
         reaction_mass_group_bounds = Dict("uncategorized" => total_reaction_mass_bound)
+    end
 
-    elseif isnothing(total_reaction_mass_bound) &&
-           all(!isnothing, [reaction_mass_groups, reaction_mass_group_bounds])
-        # nothing to do
-    else
-        throw(ArgumentError("Arguments misspecified!"))
+    if isnothing(reaction_mass_groups) || isnothing(reaction_mass_group_bounds)
+        throw(ArgumentError("Insufficient mass group specification!"))
     end
 
     # helper function to rank the isozymes by relative speed
