@@ -46,10 +46,10 @@ function make_simplified_enzyme_constrained_model(
 )
 
     if !isnothing(total_reaction_mass_bound)
-        (isnothing(gene_product_mass_groups) && isnothing(gene_product_mass_groups)) ||
+        (isnothing(reaction_mass_groups) && isnothing(reaction_mass_group_bounds)) ||
             throw(
                 ArgumentError(
-                    "argument values would be overwritten by total_gene_product_mass_bound!",
+                    "argument values would be overwritten by total_reaction_mass_bound!",
                 ),
             )
 
