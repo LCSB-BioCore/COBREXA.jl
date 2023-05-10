@@ -42,25 +42,18 @@ function make_enzyme_constrained_model(
     gene_product_mass_group_bounds::Maybe{Dict{String,Float64}} = nothing,
     total_gene_product_mass_bound::Maybe{Float64} = nothing,
 )
-    if all(
-        !isnothing,
-        [
-            gene_product_mass_groups,
-            gene_product_mass_group_bounds,
-            total_gene_product_mass_bound,
-        ],
-    )
-        throw(ArgumentError("Too many arguments specified!"))
-    elseif !isnothing(total_gene_product_mass_bound) &&
-           all(isnothing, [gene_product_mass_groups, gene_product_mass_group_bounds])
+    if !isnothing(total_gene_product_mass_bound) &&
+       all(isnothing, [gene_product_mass_groups, gene_product_mass_group_bounds])
+
         gene_product_mass_groups = Dict("uncategorized" => genes(model))
         gene_product_mass_group_bounds =
             Dict("uncategorized" => total_gene_product_mass_bound)
+
+    elseif isnothing(total_gene_product_mass_bound) &&
+           all(!isnothing, [gene_product_mass_groups, gene_product_mass_group_bounds])
+        # nothing to do
     else
-        isnothing(gene_product_mass_groups) &&
-            throw(ArgumentError("missing mass group specification"))
-        isnothing(gene_product_mass_group_bounds) &&
-            throw(ArgumentError("missing mass group bounds"))
+        throw(ArgumentError("Arguments misspecified!"))
     end
 
     gpb_(gid) = (gene_product_lower_bound(model, gid), gene_product_upper_bound(model, gid))
