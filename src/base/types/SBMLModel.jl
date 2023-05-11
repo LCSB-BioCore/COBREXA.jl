@@ -180,7 +180,7 @@ $(TYPEDSIGNATURES)
 Objective of the [`SBMLModel`](@ref).
 """
 function objective(model::SBMLModel)::SparseVec
-    res = sparsevec([], [], n_reactions(model))
+    res = spzeros(n_reactions(model))
 
     objective = get(model.sbml.objectives, model.active_objective, nothing)
     if isnothing(objective) && length(model.sbml.objectives) == 1
