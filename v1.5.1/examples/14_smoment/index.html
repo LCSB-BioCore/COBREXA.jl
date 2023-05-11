@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>sMOMENT · COBREXA.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="COBREXA.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="COBREXA.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">COBREXA.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">COBREXA.jl in 10 minutes</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../">Contents</a></li><li><a class="tocitem" href="../01_loading/">Loading models</a></li><li><a class="tocitem" href="../02_convert_save/">Converting, modifying and saving models</a></li><li><a class="tocitem" href="../03_exploring/">Exploring model contents</a></li><li><a class="tocitem" href="../03b_accessors/">Generic accessors</a></li><li><a class="tocitem" href="../04_core_model/"><code>CoreModel</code> usage</a></li><li><a class="tocitem" href="../04_standardmodel/">Basic usage of <code>StandardModel</code></a></li><li><a class="tocitem" href="../04b_standardmodel_construction/">Model construction and modification</a></li><li><a class="tocitem" href="../05a_fba/">Flux balance analysis (FBA)</a></li><li><a class="tocitem" href="../05b_fba_mods/">Extending FBA with modifications</a></li><li><a class="tocitem" href="../06_fva/">Flux variability analysis (FVA)</a></li><li><a class="tocitem" href="../07_gene_deletion/">Gene knockouts</a></li><li><a class="tocitem" href="../07_restricting_reactions/">Restricting and disabling individual reactions</a></li><li><a class="tocitem" href="../08_pfba/">Parsimonious flux balance analysis (pFBA)</a></li><li><a class="tocitem" href="../09_loopless/">Loopless FBA</a></li><li><a class="tocitem" href="../10_crowding/">FBA with crowding</a></li><li><a class="tocitem" href="../11_growth/">Growth media analysis</a></li><li><a class="tocitem" href="../12_mmdf/">Maximum-minimum driving force analysis</a></li><li><a class="tocitem" href="../13_moma/">Minimization of metabolic adjustment (MOMA)</a></li><li class="is-active"><a class="tocitem" href>sMOMENT</a></li><li><a class="tocitem" href="../15_gecko/">GECKO</a></li><li><a class="tocitem" href="../16_hit_and_run/">Hit and run sampling</a></li><li><a class="tocitem" href="../17_envelopes/">Production envelopes</a></li></ul></li><li><span class="tocitem">Parallel, distributed and HPC processing</span><ul><li><a class="tocitem" href="../../distributed/">Contents</a></li><li><a class="tocitem" href="../../distributed/1_functions/">Parallel processing overview</a></li><li><a class="tocitem" href="../../distributed/2_parallel/">Local parallel processing</a></li><li><a class="tocitem" href="../../distributed/3_slurm/">Working in a HPC environment</a></li><li><a class="tocitem" href="../../distributed/4_serialized/">Faster model distribution</a></li></ul></li><li><span class="tocitem">Core concepts guide</span><ul><li><a class="tocitem" href="../../concepts/">Contents</a></li><li><a class="tocitem" href="../../concepts/1_screen/">Screening many model variants</a></li><li><a class="tocitem" href="../../concepts/2_modifications/">Writing custom optimizer modifications</a></li><li><a class="tocitem" href="../../concepts/3_custom_models/">Working with custom models</a></li><li><a class="tocitem" href="../../concepts/4_wrappers/">Extending the models</a></li></ul></li><li><span class="tocitem">Reference (Functions and types)</span><ul><li><a class="tocitem" href="../../functions/">Contents</a></li><li><a class="tocitem" href="../../functions/analysis/">Analysis functions</a></li><li><a class="tocitem" href="../../functions/base/">Base functions</a></li><li><a class="tocitem" href="../../functions/io/">Input and output</a></li><li><a class="tocitem" href="../../functions/reconstruction/">Model construction functions</a></li><li><a class="tocitem" href="../../functions/types/">Types</a></li><li><a class="tocitem" href="../../functions/utils/">Utilities</a></li></ul></li><li><a class="tocitem" href="../../howToContribute/">How to contribute</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>sMOMENT</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>sMOMENT</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lcsb-biocore/COBREXA.jl/blob/master/docs/src/examples/14_smoment.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="sMOMENT"><a class="docs-heading-anchor" href="#sMOMENT">sMOMENT</a><a id="sMOMENT-1"></a><a class="docs-heading-anchor-permalink" href="#sMOMENT" title="Permalink"></a></h1><p>sMOMENT algorithm can be used to easily adjust the metabolic activity within the cell to respect known enzymatic parameters and enzyme mass constraints measured by proteomics and other methods.</p><p>The original description from sMOMENT is by <a href="https://doi.org/10.1186/s12859-019-3329-9">Bekiaris, and Klamt, &quot;Automatic construction of metabolic models with enzyme constraints.&quot;, BMC bioinformatics, 2020</a></p><p>Let&#39;s load some packages:</p><pre><code class="language-julia">!isfile(&quot;e_coli_core.json&quot;) &amp;&amp;
+    download(&quot;http://bigg.ucsd.edu/static/models/e_coli_core.json&quot;, &quot;e_coli_core.json&quot;)
+
+using COBREXA, GLPK
+
+model = load_model(&quot;e_coli_core.json&quot;)</code></pre><pre class="documenter-example-output">Metabolic model of type JSONModel
+sparse([9, 51, 55, 64, 65, 34, 44, 59, 66, 64  …  20, 22, 23, 25, 16, 17, 34, 44, 57, 59], [1, 1, 1, 1, 1, 2, 2, 2, 2, 3  …  93, 93, 94, 94, 95, 95, 95, 95, 95, 95], [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0  …  1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0], 72, 95)
+Number of reactions: 95
+Number of metabolites: 72
+</pre><p>We will necessarily need the enzyme turnover numbers (aka &quot;kcats&quot;) and masses of the required gene products.  You do not necessarily need to know all data for the given model, but the more you have, the better the approximation will be.</p><p>For the demonstration purpose, we will generate the data randomly. In a realistic setting, you would input experimental or database-originating data here:</p><pre><code class="language-julia">import Random
+Random.seed!(1) # repeatability
+
+gene_product_masses = Dict(genes(model) .=&gt; randn(n_genes(model)) .* 10 .+ 60)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 137 entries:
+  &quot;b4301&quot; =&gt; 69.9065
+  &quot;b1602&quot; =&gt; 70.0268
+  &quot;b4154&quot; =&gt; 55.4119
+  &quot;b3236&quot; =&gt; 50.4756
+  &quot;b1621&quot; =&gt; 59.9869
+  &quot;b1779&quot; =&gt; 56.4588
+  &quot;b3951&quot; =&gt; 64.7369
+  &quot;b1676&quot; =&gt; 54.0343
+  &quot;b3114&quot; =&gt; 56.9763
+  &quot;b1241&quot; =&gt; 60.6193
+  &quot;b2276&quot; =&gt; 55.0068
+  &quot;b1761&quot; =&gt; 63.8676
+  &quot;b3925&quot; =&gt; 55.3065
+  &quot;b3493&quot; =&gt; 47.598
+  &quot;b3733&quot; =&gt; 52.1707
+  &quot;b2926&quot; =&gt; 68.4462
+  &quot;b0979&quot; =&gt; 45.6388
+  &quot;b4015&quot; =&gt; 56.497
+  &quot;b2296&quot; =&gt; 44.2344
+  ⋮       =&gt; ⋮</pre><p>We only take the reactions that have gene products (i.e., enzymes) associated with them):</p><pre><code class="language-julia">rxns = filter(
+    x -&gt;
+        !looks_like_biomass_reaction(x) &amp;&amp;
+            !looks_like_exchange_reaction(x) &amp;&amp;
+            !isnothing(reaction_gene_association(model, x)),
+    reactions(model),
+)</code></pre><pre class="documenter-example-output">69-element Vector{String}:
+ &quot;PFK&quot;
+ &quot;PFL&quot;
+ &quot;PGI&quot;
+ &quot;PGK&quot;
+ &quot;PGL&quot;
+ &quot;ACALD&quot;
+ &quot;AKGt2r&quot;
+ &quot;PGM&quot;
+ &quot;PIt2r&quot;
+ &quot;ALCD2x&quot;
+ ⋮
+ &quot;MALt2_2&quot;
+ &quot;MDH&quot;
+ &quot;ME1&quot;
+ &quot;ME2&quot;
+ &quot;NADH16&quot;
+ &quot;NADTRHD&quot;
+ &quot;NH4t&quot;
+ &quot;O2t&quot;
+ &quot;PDH&quot;</pre><p>The information about each enzyme and its capabilities is stored in an <a href="../../functions/types/#COBREXA.Isozyme"><code>Isozyme</code></a> structure. For simplicity, sMOMENT ignores much of the information about the multiplicity of required gene products and other.</p><pre><code class="language-julia">rxn_isozymes = Dict(
+    rxn =&gt; Isozyme(
+        Dict(vcat(reaction_gene_association(model, rxn)...) .=&gt; 1),
+        randn() * 100 + 600, #forward kcat
+        randn() * 100 + 500, #reverse kcat
+    ) for rxn in rxns
+)</code></pre><pre class="documenter-example-output">Dict{String, Isozyme} with 69 entries:
+  &quot;NH4t&quot;    =&gt; Isozyme(Dict(&quot;b0451&quot;=&gt;1, &quot;s0001&quot;=&gt;1), 669.647, 627.895)
+  &quot;ACALD&quot;   =&gt; Isozyme(Dict(&quot;b1241&quot;=&gt;1, &quot;b0351&quot;=&gt;1), 592.595, 607.625)
+  &quot;PTAr&quot;    =&gt; Isozyme(Dict(&quot;b2297&quot;=&gt;1, &quot;b2458&quot;=&gt;1), 584.264, 557.713)
+  &quot;PGL&quot;     =&gt; Isozyme(Dict(&quot;b0767&quot;=&gt;1), 540.211, 485.094)
+  &quot;NADTRHD&quot; =&gt; Isozyme(Dict(&quot;b1603&quot;=&gt;1, &quot;b1602&quot;=&gt;1, &quot;b3962&quot;=&gt;1), 612.8, 608.149)
+  &quot;ALCD2x&quot;  =&gt; Isozyme(Dict(&quot;b1241&quot;=&gt;1, &quot;b0356&quot;=&gt;1, &quot;b1478&quot;=&gt;1), 462.073, 330.9…
+  &quot;PGK&quot;     =&gt; Isozyme(Dict(&quot;b2926&quot;=&gt;1), 720.862, 424.687)
+  &quot;PDH&quot;     =&gt; Isozyme(Dict(&quot;b0114&quot;=&gt;1, &quot;b0115&quot;=&gt;1, &quot;b0116&quot;=&gt;1), 669.985, 380.3…
+  &quot;LDH_D&quot;   =&gt; Isozyme(Dict(&quot;b1380&quot;=&gt;1, &quot;b2133&quot;=&gt;1), 676.15, 452.057)
+  &quot;PYK&quot;     =&gt; Isozyme(Dict(&quot;b1854&quot;=&gt;1, &quot;b1676&quot;=&gt;1), 646.569, 533.939)
+  &quot;CO2t&quot;    =&gt; Isozyme(Dict(&quot;s0001&quot;=&gt;1), 599.569, 371.856)
+  &quot;PIt2r&quot;   =&gt; Isozyme(Dict(&quot;b2987&quot;=&gt;1, &quot;b3493&quot;=&gt;1), 460.427, 476.199)
+  &quot;ME1&quot;     =&gt; Isozyme(Dict(&quot;b1479&quot;=&gt;1), 871.006, 523.277)
+  &quot;MALt2_2&quot; =&gt; Isozyme(Dict(&quot;b3528&quot;=&gt;1), 524.693, 464.676)
+  &quot;CS&quot;      =&gt; Isozyme(Dict(&quot;b0720&quot;=&gt;1), 634.028, 438.943)
+  &quot;PGM&quot;     =&gt; Isozyme(Dict(&quot;b4395&quot;=&gt;1, &quot;b3612&quot;=&gt;1, &quot;b0755&quot;=&gt;1), 433.345, 483.6…
+  &quot;TKT1&quot;    =&gt; Isozyme(Dict(&quot;b2935&quot;=&gt;1, &quot;b2465&quot;=&gt;1), 615.688, 426.719)
+  &quot;ATPS4r&quot;  =&gt; Isozyme(Dict(&quot;b3734&quot;=&gt;1, &quot;b3737&quot;=&gt;1, &quot;b3732&quot;=&gt;1, &quot;b3736&quot;=&gt;1, &quot;b3…
+  &quot;ACONTa&quot;  =&gt; Isozyme(Dict(&quot;b0118&quot;=&gt;1, &quot;b1276&quot;=&gt;1), 379.032, 588.815)
+  ⋮         =&gt; ⋮</pre><p>In case some of the reactions are missing in <code>rxn_isozymes</code>, sMOMENT simply ignores them.</p><p>Once the data is gathered, we create a model that wraps the original model with additional sMOMENT structure:</p><pre><code class="language-julia">smoment_model =
+    model |&gt; with_smoment(
+        reaction_isozyme = rxn_isozymes,
+        gene_product_molar_mass = gene_product_masses,
+        total_enzyme_capacity = 50.0,
+    )</code></pre><pre class="documenter-example-output">Metabolic model of type SMomentModel
+sparse([9, 51, 55, 64, 65, 34, 44, 59, 66, 64  …  23, 25, 23, 25, 16, 17, 34, 44, 57, 59], [1, 1, 1, 1, 1, 2, 2, 2, 2, 3  …  129, 129, 130, 130, 131, 131, 131, 131, 131, 131], [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0  …  -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0], 72, 131)
+Number of reactions: 131
+Number of metabolites: 72
+</pre><p>(You could alternatively use the <a href="../../functions/analysis/#COBREXA.make_smoment_model-Tuple{MetabolicModel}"><code>make_smoment_model</code></a> to create the structure more manually; but <a href="../../functions/reconstruction/#COBREXA.with_smoment-Tuple{}"><code>with_smoment</code></a> is easier to use e.g. with <a href="../../functions/analysis/#COBREXA.screen-Tuple"><code>screen</code></a>.)</p><p>In turn, you should have a complete model with unidirectional reactions and additional coupling, as specified by the sMOMENT method:</p><pre><code class="language-julia">[stoichiometry(smoment_model); coupling(smoment_model)]</code></pre><pre class="documenter-example-output">73×131 SparseArrays.SparseMatrixCSC{Float64, Int64} with 599 stored entries:
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠣⠀⠀⠀⠀⠀⠀⠈⠶⠶⠄⠀⡀⡀⠀⠀⠀
+⠂⠀⠓⠂⠒⠂⠘⠩⠓⠃⠛⠚⠂⠘⠘⡊⠓⠀⠂⠀⠀⠀⠀⠐⢁⠀⠀⠑⠈⠓⠒⠚⠓⠊⠡⣖⠓⠒⠀⠀
+⠀⠀⠶⠀⠰⠆⠀⠀⠀⠰⠀⢰⠀⠀⠀⠀⠀⠀⡆⠀⠀⠀⠀⠀⠈⠀⠀⠀⠈⢡⡶⣠⣤⢠⢠⠶⠹⢿⣆⠰
+⠀⣉⠀⢠⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠐⠠⠄⠀⠀⠀⠀⠀⠀⠀⠀⠆⠀⠀⠀⠀⠉⠀⠀⠀⠀⠀⠀⠀⠐⠆
+⠀⠀⠆⠀⣒⠀⡘⠀⢃⠃⠒⠛⠀⠈⠀⠈⠁⠒⠀⠀⠀⠀⠀⠀⠀⢀⠀⠂⠈⠠⠞⠒⠀⠐⠀⠀⠈⠁⠀⠀
+⠈⠀⠀⠀⠀⠀⠀⠀⢀⠁⠀⠩⠁⣠⡔⠀⠐⠀⠠⠄⢀⠀⠀⠀⠀⠀⠁⠀⠊⠀⠈⠀⠀⢀⠀⠉⠀⠙⠀⠈
+⠠⠀⠭⠀⠈⠛⠀⠀⠀⢀⠠⠤⠀⠠⢠⠀⡤⣬⠉⠁⠐⠀⠀⠀⠀⠀⡀⠀⠄⠀⠀⠀⠀⠀⠀⠄⠄⠀⠀⠠
+⠄⠤⢠⡄⠀⠀⠎⠉⠄⠤⠴⠦⠀⠂⠀⠀⠀⠤⠐⠒⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠤⠀⠠⠀⠀⠀⠀⠀
+⢁⠉⣀⠀⠀⠀⠑⠂⠃⢙⢉⣉⠶⢐⠀⠀⠀⣉⠀⢀⡀⠠⠀⠀⠀⠀⢀⠀⠀⠀⠀⠉⠀⠐⠐⠀⡀⠒⠀⢐
+⢤⠄⠀⠀⠈⠁⠀⠀⠀⠀⠀⠨⠀⠀⠀⠀⠘⠨⠅⠭⠀⠐⡀⠀⠀⠀⠠⢄⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣠⣄⣀⣀⣀⣀⣀⣀⡀⣀⣀⡠⣀⣀⣀⣀⣐⣠⣤⣤⡄⠀⠑⠀⠀⠀⢠⣀⣚⣢⣤⣀⣀⣀⣀⣀⣀⣀⣀⣀</pre><p>the type (SMomentModel) is a model wrapper – it is a thin additional layer that just adds the necessary sMOMENT-relevant information atop the original model, which is unmodified. That makes the process very efficient and suitable for large-scale data processing. You can still access the original &quot;base&quot; model hidden in the SMomentModel using <a href="../../functions/types/#COBREXA.unwrap_model-Tuple{CoreCoupling}"><code>unwrap_model</code></a>.</p><p>Other than that, the <a href="../../functions/types/#COBREXA.SMomentModel"><code>SMomentModel</code></a> is a model type like any other, and you can run any analysis you want on it, such as FBA:</p><pre><code class="language-julia">flux_balance_analysis_dict(smoment_model, GLPK.Optimizer)</code></pre><pre class="documenter-example-output">Dict{String, Float64} with 95 entries:
+  &quot;ACALD&quot;       =&gt; 7.21514e-15
+  &quot;PTAr&quot;        =&gt; 4.6195
+  &quot;ALCD2x&quot;      =&gt; 7.21514e-15
+  &quot;PDH&quot;         =&gt; 5.64771
+  &quot;PYK&quot;         =&gt; 2.26508
+  &quot;CO2t&quot;        =&gt; -5.61213
+  &quot;EX_nh4_e&quot;    =&gt; -1.16158
+  &quot;MALt2_2&quot;     =&gt; 0.0
+  &quot;CS&quot;          =&gt; 0.229832
+  &quot;PGM&quot;         =&gt; -6.97218
+  &quot;TKT1&quot;        =&gt; 0.0769017
+  &quot;EX_mal__L_e&quot; =&gt; 0.0
+  &quot;ACONTa&quot;      =&gt; 0.229832
+  &quot;EX_pi_e&quot;     =&gt; -0.783652
+  &quot;GLNS&quot;        =&gt; 0.0544703
+  &quot;ICL&quot;         =&gt; -7.26379e-16
+  &quot;EX_o2_e&quot;     =&gt; -5.36585
+  &quot;FBA&quot;         =&gt; 3.65917
+  &quot;EX_gln__L_e&quot; =&gt; 7.27645e-17
+  ⋮             =&gt; ⋮</pre><p>(Notice that the total reaction fluxes are reported despite the fact that reactions are indeed split in the model! The underlying mechanism is provided by <a href="../../functions/types/#COBREXA.reaction_flux-Tuple{MetabolicModel}"><code>reaction_flux</code></a> accessor.)</p><p><a href="../06_fva/">Variability</a> of the sMOMENT model can be explored as such:</p><pre><code class="language-julia">flux_variability_analysis(smoment_model, GLPK.Optimizer, bounds = gamma_bounds(0.95))</code></pre><pre class="documenter-example-output">95×2 Matrix{Float64}:
+   2.45267       5.27497
+   0.0           8.65379
+   1.02326       5.40892
+ -10.4873       -5.50558
+   5.32907e-15   2.38384
+  -1.94964       0.0
+  -0.364104      0.0
+ -10.1846       -5.20283
+   0.74447       0.783652
+  -1.94964       0.0
+   ⋮            
+   0.0           0.0
+  -1.3876        0.949426
+   0.0           0.82907
+   0.0           1.3876
+   7.28026      11.5838
+   0.0           1.43239
+   1.1035        1.41386
+   3.64013       6.0218
+  -3.55271e-15   6.98001</pre><p>...and a sMOMENT model sample can be obtained <a href="../16_hit_and_run/">as usual with sampling</a>:</p><pre><code class="language-julia">(
+    affine_hit_and_run(
+        smoment_model,
+        warmup_from_variability(smoment_model, GLPK.Optimizer),
+    )&#39; * reaction_flux(smoment_model)
+)</code></pre><pre class="documenter-example-output">1310×95 Matrix{Float64}:
+ 3.10685  1.10726   2.59042  -5.80754  …  0.219219  2.2906   2.48831
+ 2.69583  0.741132  2.27535  -4.99543     0.194943  2.32345  2.12898
+ 3.04288  1.09169   2.50473  -5.66116     0.232269  2.44912  2.28091
+ 3.3285   1.15695   2.8487   -6.0796      0.2824    2.19665  2.46634
+ 2.97507  1.03514   2.41419  -5.2681      0.177603  2.5011   1.82948
+ 2.98859  1.04911   2.55938  -5.56872  …  0.226673  2.38212  2.25291
+ 3.10703  1.03917   2.60557  -5.70924     0.218012  2.34946  2.3762
+ 3.02855  1.08782   2.4878   -5.61031     0.231883  2.45454  2.23157
+ 2.96803  0.912577  2.43025  -5.58785     0.247873  2.35008  2.34231
+ 2.90577  0.980347  2.37952  -5.39473     0.21198   2.41175  2.10716
+ ⋮                                     ⋱                     
+ 2.99797  0.773903  2.58985  -5.53668     0.174147  2.24359  2.29044
+ 2.67869  0.842503  2.15491  -5.03359     0.262696  2.50289  1.9988
+ 2.90926  0.666214  2.41727  -5.28405     0.264136  2.38063  2.24734
+ 2.96929  0.818245  2.5056   -5.42826     0.241253  2.33236  2.20057
+ 2.93624  0.912764  2.44179  -5.41595  …  0.227794  2.37043  2.06027
+ 2.98602  0.893283  2.51572  -5.51114     0.218293  2.3529   2.17738
+ 2.26609  0.749011  1.9116   -4.52937     0.275108  2.36304  1.85706
+ 2.9427   0.840576  2.48082  -5.43956     0.201142  2.32729  2.17416
+ 2.88146  0.823753  2.26378  -5.2138      0.28943   2.47918  2.15513</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../13_moma/">« Minimization of metabolic adjustment (MOMA)</a><a class="docs-footer-nextpage" href="../15_gecko/">GECKO »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 11 May 2023 10:45">Thursday 11 May 2023</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
