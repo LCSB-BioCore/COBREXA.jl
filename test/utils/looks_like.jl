@@ -81,13 +81,13 @@ end
     model = load_model(ObjectModel, model_paths["e_coli_core.json"])
 
     # macro generated, so only test positive and negative case
-    @test !is_biomass_reaction(model, "PFL")
-    @test is_biomass_reaction(model, "BIOMASS_Ecoli_core_w_GAM")
+    @test !is_sbo_biomass_reaction(model, "PFL")
+    @test is_sbo_biomass_reaction(model, "BIOMASS_Ecoli_core_w_GAM")
 
-    @test isa_reaction(model, "PFL")
-    @test !isa_reaction(model, "atp_c") 
-    @test isa_gene(model, "b2464")
-    @test !isa_gene(model, "atp_c")
-    @test isa_metabolite(model, "atp_c")
-    @test !isa_metabolite(model, "PFL")
+    @test is_sbo_reaction(model, "PFL")
+    @test !is_sbo_reaction(model, "atp_c")
+    @test is_sbo_gene(model, "b2464")
+    @test !is_sbo_gene(model, "atp_c")
+    @test is_sbo_metabolite(model, "atp_c")
+    @test !is_sbo_metabolite(model, "PFL")
 end

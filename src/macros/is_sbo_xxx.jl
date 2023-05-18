@@ -1,19 +1,19 @@
 
 """
-@_isa_fn(anno_id, identifier)
+@_is_sbo_fn(anno_id, identifier)
 
-A helper for creating functions like `isa_reaction`, `isa_gene`, `isa_metabolite`.
+A helper for creating functions like `is_sbo_reaction`, `is_sbo_gene`, `is_sbo_metabolite`.
 """
-macro _isa_fn(anno_id, identifiers)
+macro _is_sbo_fn(anno_id, identifiers)
 
-    fname = Symbol(:isa_, anno_id)
+    fname = Symbol(:is_sbo_, anno_id)
     annofunc = Symbol(anno_id, :_annotations)
     accessorfunc = Symbol(anno_id, :s)
     body = quote
         begin
             id in $accessorfunc(model) || return false
             anno = $annofunc(model, id)
-            for key in annotation_keys
+            for key in sbo_annotation_keys
                 if haskey(anno, key)
                     any(in.($identifiers, Ref(anno[key]))) && return true
                 end
@@ -26,10 +26,10 @@ macro _isa_fn(anno_id, identifiers)
         $fname(
             model::AbstractMetabolicModel,
             id::String;
-            annotation_keys = ["sbo", "SBO"],
+            sbo_annotation_keys = ["sbo", "SBO"],
         )
 
-    Check if a $(anno_id) can be identified using the `annotation_keys`. Returns
+    Check if a $(anno_id) can be identified using the `sbo_annotation_keys`. Returns
     false if no hits or if no keys are found.
     """
     esc(
@@ -42,7 +42,7 @@ macro _isa_fn(anno_id, identifiers)
                 $fname(
                     model::AbstractMetabolicModel,
                     id::String;
-                    annotation_keys = ["sbo", "SBO"],
+                    sbo_annotation_keys = ["sbo", "SBO"],
                 ) = $body
             ),
         ),
