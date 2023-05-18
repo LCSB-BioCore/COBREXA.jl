@@ -85,9 +85,9 @@ end
     @test is_biomass_reaction(model, "BIOMASS_Ecoli_core_w_GAM")
 
     @test isa_reaction(model, "PFL")
-    @test_throws KeyError isa_reaction(model, "atp_c") 
+    @test !isa_reaction(model, "atp_c") 
     @test isa_gene(model, "b2464")
-    @test_throws KeyError isa_gene(model, "atp_c")
+    @test !isa_gene(model, "atp_c")
     @test isa_metabolite(model, "atp_c")
-    @test_throws KeyError isa_metabolite(model, "PFL")
+    @test !isa_metabolite(model, "PFL")
 end

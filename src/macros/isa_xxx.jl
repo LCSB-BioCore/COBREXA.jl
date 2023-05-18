@@ -8,8 +8,10 @@ macro _isa_fn(anno_id, identifiers)
 
     fname = Symbol(:isa_, anno_id)
     annofunc = Symbol(anno_id, :_annotations)
+    accessorfunc = Symbol(anno_id, :s)
     body = quote
         begin
+            id in $accessorfunc(model) || return false
             anno = $annofunc(model, id)
             for key in annotation_keys
                 if haskey(anno, key)
