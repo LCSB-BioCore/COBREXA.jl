@@ -144,6 +144,10 @@ find_extracellular_metabolite_ids(m::AbstractMetabolicModel; kwargs...) =
 @_is_reaction_fn "transport" Identifiers.TRANSPORT_REACTIONS
 @_is_reaction_fn "biomass" Identifiers.BIOMASS_REACTIONS
 @_is_reaction_fn "atp_maintenance" Identifiers.ATP_MAINTENANCE_REACTIONS
-@_is_reaction_fn "pseudo" Identifiers.PSEUDOREACTIONS
+@_is_reaction_fn "pseudo" Identifiers.PSEUDO_REACTIONS
 @_is_reaction_fn "metabolic" Identifiers.METABOLIC_REACTIONS
 @_is_reaction_fn "spontaneous" Identifiers.SPONTANEOUS_REACTIONS
+
+@_isa_fn "gene" Identifiers.GENES
+@_isa_fn "metabolite" Identifiers.METABOLITES
+@_isa_fn "reaction" Identifiers.REACTIONS
