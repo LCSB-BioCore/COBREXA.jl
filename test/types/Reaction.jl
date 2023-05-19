@@ -6,13 +6,6 @@
     m3 = Metabolite("m3")
     m4 = Metabolite("m4")
     m5 = Metabolite("m5")
-    m6 = Metabolite("m6")
-    m7 = Metabolite("m7")
-    m8 = Metabolite("m8")
-    m9 = Metabolite("m9")
-    m10 = Metabolite("m10")
-    m11 = Metabolite("m11")
-    m12 = Metabolite("m12")
 
     g1 = Gene("g1")
     g2 = Gene("g2")
@@ -43,25 +36,23 @@
     r3 = ReactionForward("r3", Dict(m3.id => -1.0, m4.id => 1.0))
     @test r3.lower_bound == 0.0 && r3.upper_bound == 1000.0
 
-    r4 = ReactionBidirectional("r4", Dict(m3.id => -1.0, m4.id => 1.0))
+    r4 = ReactionBidirectional("r4", Dict(m4.id => -1.0, m5.id => 1.0))
     r4.annotations = Dict("sboterm" => ["sbo"], "biocyc" => ["ads", "asds"])
     @test r4.lower_bound == -1000.0 && r4.upper_bound == 1000.0
 
     rd = OrderedDict(r.id => r for r in [r1, r2, r3, r4])
     @test issetequal(["r1", "r4"], ambiguously_identified_items(annotation_index(rd)))
 
-    id = check_duplicate_reaction(r4, rd)
-    @test id == "r3"
+    model = ObjectModel()
+    add_reactions!(model, [r1, r2, r3, r4])
+    add_metabolites!(model, [m1, m2, m3, m4, m5])
 
-    r5 = ReactionBidirectional("r5", Dict(m3.id => -11.0, m4.id => 1.0))
-    id = check_duplicate_reaction(r5, rd)
-    @test id == "r3"
-
-    r5 = ReactionBidirectional("r5", Dict(m3.id => -11.0, m4.id => 1.0))
-    id = check_duplicate_reaction(r5, rd; only_metabolites = false)
-    @test isnothing(id)
-
-    r5 = ReactionBidirectional("r5", Dict(m3.id => -1.0, m4.id => 1.0))
-    id = check_duplicate_reaction(r5, rd; only_metabolites = false)
-    @test id == "r3"
+    @test isempty(reaction_is_duplicated(model, r4))
+    @test isempty(reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m3.id => -1.0, m4.id => 1.0))))
+    @test "r3" in reaction_is_duplicated(model, ReactionForward("r5", Dict(m3.id => -1.0, m4.id => 1.0)))
+    @test "r3" in reaction_is_duplicated(model, ReactionBackward("r5", Dict(m3.id => 1.0, m4.id => -1.0)))
+    @test isempty(reaction_is_duplicated(model, ReactionBackward("r5", Dict(m3.id => -1.0, m4.id => 1.0))))
+    @test "r4" in reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m4.id => -1.0, m5.id => 1.0)))
+    @test "r4" in reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m4.id => 1.0, m5.id => -1.0)))
+    @test isempty(reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m4.id => 2.0, m5.id => -1.0))))
 end

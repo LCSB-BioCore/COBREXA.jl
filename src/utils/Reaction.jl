@@ -1,41 +1,50 @@
 """
 $(TYPEDSIGNATURES)
 
-Check if `rxn` already exists in `rxns` but has another `id`.
-If `only_metabolites` is `true` then only the metabolite `id`s are checked.
-Otherwise, compares metabolite `id`s and the absolute value of their stoichiometric coefficients to those of `rxn`.
-If `rxn` has the same reaction equation as another reaction in `rxns`, the return the `id`.
-Otherwise return `nothing`.
+Check if `rxn` already exists in `model`, but has another `id`. For a reaction
+to be duplicated the substrates, their stoichiometric coefficients, and the
+reaction direction needs to be exactly the same as some other reaction in
+`model`. Returns a list of reaction `id`s that are duplicates of `rxn`, or an
+empty list otherwise. 
+
+# Notes
+
+This method ignores any reactions in `model` with the same `id` as `rxn`. This
+is convenient to identify duplicate reactions. The reaction directions need to
+be exactly the same, as in a forward and a reversible reaction are counted as
+different reactions for example.
 
 See also: [`reaction_mass_balanced`](@ref)
 """
-function check_duplicate_reaction(
-    crxn::Reaction,
-    rxns::OrderedDict{String,Reaction};
-    only_metabolites = true,
+function reaction_is_duplicated(
+    model::ObjectModel, # TODO this can be generalized if getting the bounds of reaction with semantics gets finalized
+    rxn::Reaction,
 )
-    for (k, rxn) in rxns
-        if rxn.id != crxn.id # skip if same ID
-            if only_metabolites # only check if metabolites are the same
-                if issetequal(keys(crxn.metabolites), keys(rxn.metabolites))
-                    return k
-                end
-            else # also check the stoichiometric coefficients
-                reaction_checker = true
-                for (kk, vv) in rxn.metabolites # get reaction stoich
-                    if abs(get(crxn.metabolites, kk, 0)) != abs(vv) # if at least one stoich doesn't match
-                        reaction_checker = false
-                        break
-                    end
-                end
-                if reaction_checker &&
-                   issetequal(keys(crxn.metabolites), keys(rxn.metabolites))
-                    return k
-                end
-            end
+    duplicated_rxns = String[]
+    
+    for rid in reactions(model)
+        rid == rxn.id && continue
+
+        rs = reaction_stoichiometry(model, rid)
+        
+        # metabolite ids the same
+        issetequal(keys(rxn.metabolites), keys(rs)) || continue
+        
+        # stoichiometry the same
+        dir_correction = sign(rs[first(keys(rs))]) == sign(rxn.metabolites[first(keys(rs))]) ? 1 : -1
+        all(dir_correction * rs[mid] == rxn.metabolites[mid] for mid in keys(rs)) || continue
+        
+        # directions the same: A -> B forward and B <- A backward are the same
+        r = model.reactions[rid]
+        if dir_correction == 1
+            sign(r.lower_bound) == sign(rxn.lower_bound) && sign(r.upper_bound) == sign(rxn.upper_bound) && push!(duplicated_rxns, rid)
+        else
+            sign(dir_correction * r.lower_bound) == sign(rxn.upper_bound) && 
+                sign(dir_correction * r.upper_bound) == sign(rxn.lower_bound) && push!(duplicated_rxns, rid)    
         end
     end
-    return nothing
+    
+    return duplicated_rxns
 end
 
 """
