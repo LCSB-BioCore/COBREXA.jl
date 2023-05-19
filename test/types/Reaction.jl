@@ -48,11 +48,38 @@
     add_metabolites!(model, [m1, m2, m3, m4, m5])
 
     @test isempty(reaction_is_duplicated(model, r4))
-    @test isempty(reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m3.id => -1.0, m4.id => 1.0))))
-    @test "r3" in reaction_is_duplicated(model, ReactionForward("r5", Dict(m3.id => -1.0, m4.id => 1.0)))
-    @test "r3" in reaction_is_duplicated(model, ReactionBackward("r5", Dict(m3.id => 1.0, m4.id => -1.0)))
-    @test isempty(reaction_is_duplicated(model, ReactionBackward("r5", Dict(m3.id => -1.0, m4.id => 1.0))))
-    @test "r4" in reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m4.id => -1.0, m5.id => 1.0)))
-    @test "r4" in reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m4.id => 1.0, m5.id => -1.0)))
-    @test isempty(reaction_is_duplicated(model, ReactionBidirectional("r5", Dict(m4.id => 2.0, m5.id => -1.0))))
+    @test isempty(
+        reaction_is_duplicated(
+            model,
+            ReactionBidirectional("r5", Dict(m3.id => -1.0, m4.id => 1.0)),
+        ),
+    )
+    @test "r3" in reaction_is_duplicated(
+        model,
+        ReactionForward("r5", Dict(m3.id => -1.0, m4.id => 1.0)),
+    )
+    @test "r3" in reaction_is_duplicated(
+        model,
+        ReactionBackward("r5", Dict(m3.id => 1.0, m4.id => -1.0)),
+    )
+    @test isempty(
+        reaction_is_duplicated(
+            model,
+            ReactionBackward("r5", Dict(m3.id => -1.0, m4.id => 1.0)),
+        ),
+    )
+    @test "r4" in reaction_is_duplicated(
+        model,
+        ReactionBidirectional("r5", Dict(m4.id => -1.0, m5.id => 1.0)),
+    )
+    @test "r4" in reaction_is_duplicated(
+        model,
+        ReactionBidirectional("r5", Dict(m4.id => 1.0, m5.id => -1.0)),
+    )
+    @test isempty(
+        reaction_is_duplicated(
+            model,
+            ReactionBidirectional("r5", Dict(m4.id => 2.0, m5.id => -1.0)),
+        ),
+    )
 end

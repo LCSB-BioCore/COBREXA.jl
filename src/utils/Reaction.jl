@@ -5,7 +5,7 @@ Check if `rxn` already exists in `model`, but has another `id`. For a reaction
 to be duplicated the substrates, their stoichiometric coefficients, and the
 reaction direction needs to be exactly the same as some other reaction in
 `model`. Returns a list of reaction `id`s that are duplicates of `rxn`, or an
-empty list otherwise. 
+empty list otherwise.
 
 # Notes
 
@@ -21,29 +21,34 @@ function reaction_is_duplicated(
     rxn::Reaction,
 )
     duplicated_rxns = String[]
-    
+
     for rid in reactions(model)
         rid == rxn.id && continue
 
         rs = reaction_stoichiometry(model, rid)
-        
+
         # metabolite ids the same
         issetequal(keys(rxn.metabolites), keys(rs)) || continue
-        
+
         # stoichiometry the same
-        dir_correction = sign(rs[first(keys(rs))]) == sign(rxn.metabolites[first(keys(rs))]) ? 1 : -1
-        all(dir_correction * rs[mid] == rxn.metabolites[mid] for mid in keys(rs)) || continue
-        
+        dir_correction =
+            sign(rs[first(keys(rs))]) == sign(rxn.metabolites[first(keys(rs))]) ? 1 : -1
+        all(dir_correction * rs[mid] == rxn.metabolites[mid] for mid in keys(rs)) ||
+            continue
+
         # directions the same: A -> B forward and B <- A backward are the same
         r = model.reactions[rid]
         if dir_correction == 1
-            sign(r.lower_bound) == sign(rxn.lower_bound) && sign(r.upper_bound) == sign(rxn.upper_bound) && push!(duplicated_rxns, rid)
+            sign(r.lower_bound) == sign(rxn.lower_bound) &&
+                sign(r.upper_bound) == sign(rxn.upper_bound) &&
+                push!(duplicated_rxns, rid)
         else
-            sign(dir_correction * r.lower_bound) == sign(rxn.upper_bound) && 
-                sign(dir_correction * r.upper_bound) == sign(rxn.lower_bound) && push!(duplicated_rxns, rid)    
+            sign(dir_correction * r.lower_bound) == sign(rxn.upper_bound) &&
+                sign(dir_correction * r.upper_bound) == sign(rxn.lower_bound) &&
+                push!(duplicated_rxns, rid)
         end
     end
-    
+
     return duplicated_rxns
 end
 
