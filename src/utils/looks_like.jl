@@ -140,10 +140,14 @@ forwarded to [`looks_like_extracellular_metabolite`](@ref).
 find_extracellular_metabolite_ids(m::AbstractMetabolicModel; kwargs...) =
     findall(id -> looks_like_extracellular_metabolite(id; kwargs...), metabolites(m))
 
-@_is_reaction_fn "exchange" Identifiers.EXCHANGE_REACTIONS
-@_is_reaction_fn "transport" Identifiers.TRANSPORT_REACTIONS
-@_is_reaction_fn "biomass" Identifiers.BIOMASS_REACTIONS
-@_is_reaction_fn "atp_maintenance" Identifiers.ATP_MAINTENANCE_REACTIONS
-@_is_reaction_fn "pseudo" Identifiers.PSEUDOREACTIONS
-@_is_reaction_fn "metabolic" Identifiers.METABOLIC_REACTIONS
-@_is_reaction_fn "spontaneous" Identifiers.SPONTANEOUS_REACTIONS
+@_is_sbo_reaction_fn "exchange" Identifiers.EXCHANGE_REACTIONS
+@_is_sbo_reaction_fn "transport" Identifiers.TRANSPORT_REACTIONS
+@_is_sbo_reaction_fn "biomass" Identifiers.BIOMASS_REACTIONS
+@_is_sbo_reaction_fn "atp_maintenance" Identifiers.ATP_MAINTENANCE_REACTIONS
+@_is_sbo_reaction_fn "pseudo" Identifiers.PSEUDO_REACTIONS
+@_is_sbo_reaction_fn "metabolic" Identifiers.METABOLIC_REACTIONS
+@_is_sbo_reaction_fn "spontaneous" Identifiers.SPONTANEOUS_REACTIONS
+
+@_is_sbo_fn "gene" Identifiers.GENES
+@_is_sbo_fn "metabolite" Identifiers.METABOLITES
+@_is_sbo_fn "reaction" Identifiers.REACTIONS
