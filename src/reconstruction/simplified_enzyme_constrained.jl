@@ -44,15 +44,21 @@ function make_simplified_enzyme_constrained_model(
     reaction_mass_groups::Maybe{Dict{String,Vector{String}}} = nothing,
     reaction_mass_group_bounds::Maybe{Dict{String,Float64}} = nothing,
 )
-    # fix kwarg inputs
+
     if !isnothing(total_reaction_mass_bound)
-        reaction_mass_groups = Dict("uncategorized" => variables(model)) # TODO should be reactions
+        (isnothing(reaction_mass_groups) && isnothing(reaction_mass_group_bounds)) || throw(
+            ArgumentError(
+                "argument values would be overwritten by total_reaction_mass_bound!",
+            ),
+        )
+
+        reaction_mass_groups = Dict("uncategorized" => variables(model))
         reaction_mass_group_bounds = Dict("uncategorized" => total_reaction_mass_bound)
     end
-    isnothing(reaction_mass_groups) &&
-        throw(ArgumentError("missing reaction mass group specification"))
-    isnothing(reaction_mass_group_bounds) &&
-        throw(ArgumentError("missing reaction mass group bounds"))
+
+    if isnothing(reaction_mass_groups) || isnothing(reaction_mass_group_bounds)
+        throw(ArgumentError("Insufficient mass group specification!"))
+    end
 
     # helper function to rank the isozymes by relative speed
     speed_enzyme(model, isozyme) =
