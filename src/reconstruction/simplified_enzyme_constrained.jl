@@ -53,7 +53,7 @@ function make_simplified_enzyme_constrained_model(
                 ),
             )
 
-        reaction_mass_groups = Dict("uncategorized" => genes(model))
+        reaction_mass_groups = Dict("uncategorized" => variables(model))
         reaction_mass_group_bounds = Dict("uncategorized" => total_reaction_mass_bound)
     end
 
