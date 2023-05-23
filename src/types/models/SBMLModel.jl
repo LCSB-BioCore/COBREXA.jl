@@ -137,7 +137,7 @@ end
 Accessors.balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
 
 function Accessors.objective(model::SBMLModel)::SparseVec
-    res = sparsevec([], [], n_reactions(model))
+    res = spzeros(n_reactions(model))
 
     objective = get(model.sbml.objectives, model.active_objective, nothing)
     if isnothing(objective) && length(model.sbml.objectives) == 1
