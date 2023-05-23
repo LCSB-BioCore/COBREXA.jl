@@ -46,12 +46,11 @@ function make_simplified_enzyme_constrained_model(
 )
 
     if !isnothing(total_reaction_mass_bound)
-        (isnothing(reaction_mass_groups) && isnothing(reaction_mass_group_bounds)) ||
-            throw(
-                ArgumentError(
-                    "argument values would be overwritten by total_reaction_mass_bound!",
-                ),
-            )
+        (isnothing(reaction_mass_groups) && isnothing(reaction_mass_group_bounds)) || throw(
+            ArgumentError(
+                "argument values would be overwritten by total_reaction_mass_bound!",
+            ),
+        )
 
         reaction_mass_groups = Dict("uncategorized" => variables(model))
         reaction_mass_group_bounds = Dict("uncategorized" => total_reaction_mass_bound)
