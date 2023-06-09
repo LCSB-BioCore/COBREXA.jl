@@ -239,3 +239,22 @@ macro all_variables_are_reactions(mt)
             $SparseArrays.spdiagm(fill(1.0, $Accessors.n_variables(model)))
     end
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Convenience helper -- for many models boundary variables are exchange reactions.
+"""
+macro all_boundary_variables_are_exchanges(mt)
+    m = esc(mt)
+    quote
+        $Accessors.exchanges(model::$m) = [
+            vid for vid in $Accessors.variables(model) if $Utils.is_boundary(model, vid)
+            ]
+        # $Accessors.n_exchanges(model::$m) = $Accessors.n_variables(model)
+        # $Accessors.exchange_variables(model::$m) =
+        #     Dict(var => Dict(var => 1.0) for var in $Accessors.variables(model))
+        # $Accessors.exchange_variables_matrix(model::$m) =
+        #     $SparseArrays.spdiagm(fill(1.0, $Accessors.n_variables(model)))
+    end
+end

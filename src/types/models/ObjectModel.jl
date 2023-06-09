@@ -60,6 +60,8 @@ Accessors.n_variables(model::ObjectModel)::Int = length(model.reactions)
 
 Accessors.Internal.@all_variables_are_reactions ObjectModel
 
+Accessors.Internal.@all_boundary_variables_are_exchanges ObjectModel
+
 Accessors.metabolites(model::ObjectModel)::StringVecType = collect(keys(model.metabolites))
 
 Accessors.n_metabolites(model::ObjectModel)::Int = length(model.metabolites)

@@ -106,6 +106,15 @@ function objective(a::AbstractMetabolicModel)::Union{SparseVec,SparseMat}
 end
 
 @make_variable_semantics(
+    :exchange,
+    "exchange fluxes",
+    """
+    Typically exchange reactions represent pseudoreactions that introduce mass
+    into a model. This grouping isolates these types of reactions in a model.
+"""
+)
+
+@make_variable_semantics(
     :reaction,
     "reaction fluxes",
     """

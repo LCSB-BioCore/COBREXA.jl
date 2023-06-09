@@ -28,6 +28,7 @@ using LinearAlgebra
 using OrderedCollections
 using Serialization
 using SparseArrays
+using PrettyTables
 
 @inc_dir utils
 
