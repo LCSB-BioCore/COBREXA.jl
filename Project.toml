@@ -39,6 +39,7 @@ SBML = "1.4.2"
 StableRNGs = "1.0"
 Tulip = "0.7.0, 0.8.0, 0.9.2"
 julia = "1.5"
+PrettyTables = "^2.2"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"

@@ -10,14 +10,27 @@ fluxes smaller than `small_flux_bound` and bigger than `large_flux_bound` are
 not printed. Heuristic `biomass_strings` prefixes can be supplied in case the
 model uses an esoteric name space cf. [`looks_like_biomass_reaction`](@ref).
 
+In some cases 
+
 Returns the full, unaltered `modelwithresult` for further processing. 
 
 # Example
 ```
-modelwithresult = flux_balance_analysis(
-    model,
-    GLPK.Optimizer,
-) |> summarize(:reaction)
+modelwithresult = flux_balance_analysis(model, GLPK.Optimizer) |> summarize
+
+modelwithresult = flux_balance_analysis(model, GLPK.Optimizer) |> summarize(:reaction)
+
+modelwithresult =
+    flux_balance_analysis(model, GLPK.Optimizer) |> summarize(;
+        namepace_mapping = (model, rid) ->
+            reaction_metabolite_map(model, rid; use_annotation = "bigg.metabolite"),
+    )
+
+modelwithresult =
+    flux_balance_analysis(model, GLPK.Optimizer) |> summarize(;
+        namepace_mapping = (model, rid) ->
+            reaction_annotation_map(model, rid; use_annotation = "biocyc"),
+    )
 ```
 """
 function summarize(
@@ -26,8 +39,10 @@ function summarize(
     biomass_strings = constants.biomass_strings,
     small_flux_bound = 1.0 / constants.default_reaction_bound^2,
     large_flux_bound = constants.default_reaction_bound,
+    namepace_mapping = nothing,
 )
     isnothing(modelwithresult) && return nothing
+    ns(x) = isnothing(namepace_mapping) ? x : namepace_mapping(modelwithresult.model, x)
 
     d = values_dict(semantics, modelwithresult)
 
@@ -54,8 +69,8 @@ function summarize(
 
     ids = [
         biomass_ids
-        import_ids[import_idxs]
-        export_ids[export_idxs]
+        ns.(import_ids[import_idxs])
+        ns.(export_ids[export_idxs])
     ]
     fluxes = [
         biomass_fluxes
@@ -93,6 +108,7 @@ end
 summarize(; kwargs...) =
     (modelwithresult::ModelWithResult{<:Model}) ->
         summarize(modelwithresult, :exchange; kwargs...)
+
 summarize(semantics::Symbol; kwargs...) =
     (modelwithresult::ModelWithResult{<:Model}) ->
         summarize(modelwithresult, semantics; kwargs...)
