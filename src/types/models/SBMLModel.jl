@@ -182,7 +182,7 @@ Accessors.metabolite_charge(model::SBMLModel, mid::String)::Maybe{Int} =
     model.sbml.species[mid].charge
 
 function _parse_sbml_identifiers_org_uri(uri::String)::Tuple{String,String}
-    m = match(r"^http://identifiers.org/([^/]+)/(.*)$", uri)
+    m = match(r"^https?://identifiers.org/([^/]+)/(.*)$", uri)
     isnothing(m) ? ("RESOURCE_URI", uri) : (m[1], m[2])
 end
 
