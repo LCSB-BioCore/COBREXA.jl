@@ -90,6 +90,8 @@ Accessors.reaction_gene_associations(
     rid::String,
 )::Maybe{GeneAssociationsDNF} = model.grrs[first(indexin([rid], model.rxns))]
 
+Accessors.Internal.@all_boundary_variables_are_exchanges MatrixModel
+
 function Base.convert(::Type{MatrixModel}, m::M) where {M<:AbstractMetabolicModel}
     if typeof(m) == MatrixModel
         return m

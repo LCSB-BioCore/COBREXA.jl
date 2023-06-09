@@ -274,6 +274,8 @@ Accessors.model_annotations(model::SBMLModel) =
 
 Accessors.model_notes(model::SBMLModel) = _sbml_import_notes(model.sbml.notes)
 
+Accessors.Internal.@all_boundary_variables_are_exchanges SBMLModel
+
 function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
     if typeof(mm) == SBMLModel
         return mm

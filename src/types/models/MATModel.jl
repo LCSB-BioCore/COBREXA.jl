@@ -143,6 +143,8 @@ Accessors.metabolite_name(m::MATModel, mid::String) = maybemap(
     gets(m.mat, nothing, constants.keynames.metnames),
 )
 
+Accessors.Internal.@all_boundary_variables_are_exchanges MATModel
+
 # NOTE: There's no useful standard on how and where to store notes and
 # annotations in MATLAB models. We therefore leave it very open for the users,
 # who can easily support any annotation scheme using a custom wrapper.

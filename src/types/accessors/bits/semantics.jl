@@ -249,12 +249,13 @@ macro all_boundary_variables_are_exchanges(mt)
     m = esc(mt)
     quote
         $Accessors.exchanges(model::$m) = [
-            vid for vid in $Accessors.variables(model) if $Utils.is_boundary(model, vid)
-            ]
-        # $Accessors.n_exchanges(model::$m) = $Accessors.n_variables(model)
-        # $Accessors.exchange_variables(model::$m) =
-        #     Dict(var => Dict(var => 1.0) for var in $Accessors.variables(model))
-        # $Accessors.exchange_variables_matrix(model::$m) =
-        #     $SparseArrays.spdiagm(fill(1.0, $Accessors.n_variables(model)))
+            vid for vid in $Accessors.variables(model) if
+            length(keys($Accessors.reaction_stoichiometry(model, vid))) == 1
+        ]
+        $Accessors.n_exchanges(model::$m) = length($Accessors.exchanges(model))
+        $Accessors.exchange_variables(model::$m) = Dict(
+            vid => Dict(vid => 1.0) for vid in $Accessors.variables(model) if
+            length(keys($Accessors.reaction_stoichiometry(model, vid))) == 1
+        )
     end
 end

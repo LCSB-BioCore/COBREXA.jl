@@ -199,6 +199,8 @@ Accessors.model_annotations(model::JSONModel)::Annotations =
 
 Accessors.model_notes(model::JSONModel)::Notes = get(model.json, "notes", Notes())
 
+Accessors.Internal.@all_boundary_variables_are_exchanges JSONModel
+
 function Base.convert(::Type{JSONModel}, mm::AbstractMetabolicModel)
     if typeof(mm) == JSONModel
         return mm
