@@ -2,7 +2,7 @@
 $(TYPEDSIGNATURES)
 
 Print a table with the relevant variables of a solved model. This is useful for
-pretty-printing and quickly exploring results. 
+pretty-printing and quickly exploring results.
 
 By default, `semantics = :exchange`. The biomass fluxes are always displayed at
 the top level, followed by imported and then exported fluxes. Absolute values of
@@ -10,9 +10,9 @@ fluxes smaller than `small_flux_bound` and bigger than `large_flux_bound` are
 not printed. Heuristic `biomass_strings` prefixes can be supplied in case the
 model uses an esoteric name space cf. [`looks_like_biomass_reaction`](@ref).
 
-In some cases 
+In some cases
 
-Returns the full, unaltered `modelwithresult` for further processing. 
+Returns the full, unaltered `modelwithresult` for further processing.
 
 # Example
 ```

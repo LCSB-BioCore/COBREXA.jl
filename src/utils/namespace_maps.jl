@@ -7,7 +7,7 @@ Optionally, set `use_annotation` to use the first annotation specified by
 returns the metabolite id.
 
 This function is most useful in conjunction with [`summarize`](@ref).
- 
+
 ```
 summarize(...; namepace_mapping = reaction_metabolite_map)
 summarize(...; namepace_mapping = (model, rid) -> reaction_metabolite_map(model, rid; use_annotation = "bigg.metabolite"))
