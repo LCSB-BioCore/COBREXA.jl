@@ -1,219 +1,76 @@
 
-"""
-    module Solver
-
-Interface of COBREXA to JuMP solvers; mainly recreation of the
-`AbstractMetabolicModel`s as JuMP optimization models, and retrieval of solved
-values.
-
-# Exports
-$(EXPORTS)
-"""
-module Solver
-using ..ModuleTools
-@dse
-
-using ..Types
-using ..Accessors
-using JuMP
+import JuMP as J
 
 """
 $(TYPEDSIGNATURES)
 
-Convert `AbstractMetabolicModel`s to a JuMP model, place objectives and the equality
-constraint.
-
-Here coupling means inequality constraints coupling multiple variables together.
+Construct a JuMP `Model` that describes the precise constraint system into the
+JuMP `Model` created for solving in `optimizer`, with a given optional
+`objective` and optimization `sense`.
 """
-function make_optimization_model(
-    model::AbstractMetabolicModel,
-    optimizer;
-    sense = MAX_SENSE,
+function J.Model(
+    constraints::C.ConstraintTree;
+    objective::Maybe{C.Value} = nothing,
+    optimizer,
+    sense = J.MAX_SENSE
 )
-
-    precache!(model)
-
-    m, n = size(stoichiometry(model))
-    xl, xu = bounds(model)
-
-    optimization_model = Model(optimizer)
-    @variable(optimization_model, x[1:n])
-    let obj = objective(model)
-        if obj isa AbstractVector
-            @objective(optimization_model, sense, obj' * x)
-        else
-            @objective(optimization_model, sense, x' * obj * [x; 1])
+    model = J.Model(optimizer)
+    J.@variable(model, x[1:C.var_count(cs)])
+    isnothing(objective) || J.@objective(model, sense, C.value_product(objective, x))
+    function add_constraint(c::C.Constraint)
+        if c.bound isa Float64
+            J.@constraint(model, C.value_product(c.value, x) == c.bound)
+        elseif c.bound isa C.IntervalBound
+            val = C.value_product(c.value, x)
+            isinf(c.bound[1]) || J.@constraint(model, val >= c.bound[1])
+            isinf(c.bound[2]) || J.@constraint(model, val <= c.bound[2])
         end
     end
-    @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
-    @constraint(optimization_model, lbs, xl .<= x) # lower bounds
-    @constraint(optimization_model, ubs, x .<= xu) # upper bounds
-
-    C = coupling(model) # empty if no coupling
-    isempty(C) || begin
-        cl, cu = coupling_bounds(model)
-        @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
-        @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
+    function add_constraint(c::C.ConstraintTree)
+        add_constraint.(values(c))
     end
-
-    return optimization_model
-    #TODO what about ModelWithResult right from this point? ;D
+    add_constraint(cs)
+    model
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Return `true` if `opt_model` solved successfully (solution is optimal or locally
-optimal).  Return `false` if any other termination status is reached.
-Termination status is defined in the documentation of `JuMP`.
+Convenience re-export of `optimize!` from JuMP.
 """
-is_solved(opt_model::Model) =
-    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+const optimize! = J.optimize!
 
 """
 $(TYPEDSIGNATURES)
 
-Variant of is_solved that works with [`ModelWithResult`](@ref).
+`true` if `opt_model` solved successfully (solution is optimal or
+locally optimal). `false` if any other termination status is reached.
 """
-is_solved(r::ModelWithResult{<:Model}) = is_solved(r.result)
-
-"""
-$(TYPEDSIGNATURES)
-
-Shortcut for running JuMP `optimize!` on a model and returning the objective
-value, if solved.
-"""
-function optimize_objective(opt_model)::Maybe{Float64}
-    optimize!(opt_model)
-    solved_objective_value(opt_model)
-end
+is_solved(opt_model::J.Model) =
+    J.termination_status(opt_model) in [J.MOI.OPTIMAL, J.MOI.LOCALLY_SOLVED]
 
 """
 $(TYPEDSIGNATURES)
 
-Helper function to set the bounds of a variable in the model. Internally calls
-`set_normalized_rhs` from JuMP. If the bounds are set to `nothing`, they will
-not be changed.
+The optimized objective value of a JuMP model, if solved.
 """
-function set_optmodel_bound!(
-    vidx,
-    opt_model;
-    lower_bound::Maybe{Real} = nothing,
-    upper_bound::Maybe{Real} = nothing,
-)
-    isnothing(lower_bound) || set_normalized_rhs(opt_model[:lbs][vidx], -lower_bound)
-    isnothing(upper_bound) || set_normalized_rhs(opt_model[:ubs][vidx], upper_bound)
-end
+optimized_objective_value(opt_model::J.Model)::Maybe{Float64} =
+    is_solved(opt_model) ? J.objective_value(opt_model) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
-Returns the current objective value of a model, if solved.
+The optimized variable assignment of a JuMP model, if solved.
 """
-solved_objective_value(opt_model::Model)::Maybe{Float64} =
-    is_solved(opt_model) ? objective_value(opt_model) : nothing
-
-"""
-$(TYPEDSIGNATURES)
-
-Pipeable variant of [`solved_objective_value`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> solved_objective_value
-```
-"""
-solved_objective_value(x::ModelWithResult{<:Model}) = solved_objective_value(x.result)
+optimized_variable_assignment(opt_model::J.Model)::Maybe{Vector{Float64}} =
+    is_solved(opt_model) ? J.value.(model[:x])
 
 """
 $(TYPEDSIGNATURES)
 
-Return a vector of all variable values from the solved model, in the same order
-given by [`variables`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_vec
-```
+Convenience overload for making solution trees out of JuMP models
 """
-function values_vec(res::ModelWithResult{<:Model})
-    is_solved(res.result) ? value.(res.result[:x]) : nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Return a vector of all semantic variable values in the model, in the order
-given by the corresponding semantics.
-
-# Example
-```
-values_vec(:reaction, flux_balance_analysis(model, ...))
-```
-"""
-function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
-    (_, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
-    is_solved(res.result) ? sem_varmtx(res.model)' * value.(res.result[:x]) : nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of [`values_vec`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_vec(:reaction)
-```
-"""
-values_vec(semantics::Symbol) =
-    (res::ModelWithResult{<:Model}) -> values_vec(semantics, res)
-
-"""
-$(TYPEDSIGNATURES)
-
-Return a dictionary of all variable values from the solved model mapped
-to their IDs.
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_dict
-```
-"""
-function values_dict(res::ModelWithResult{<:Model})
-    is_solved(res.result) ? Dict(variables(res.model) .=> value.(res.result[:x])) : nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-From the optimized model, returns a dictionary mapping semantic IDs to their
-solved values for the selected `semantics`. If the model did not solve, returns
-`nothing`.
-
-# Example
-```
-values_dict(:reaction, flux_balance_analysis(model, ...))
-```
-"""
-function values_dict(semantics::Symbol, res::ModelWithResult{<:Model})
-    (ids, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
-    is_solved(res.result) ?
-    Dict(ids(res.model) .=> sem_varmtx(res.model)' * value.(res.result[:x])) : nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of [`values_dict`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_dict(:reaction)
-```
-"""
-values_dict(semantics::Symbol) =
-    (res::ModelWithResult{<:Model}) -> values_dict(semantics, res)
-
-@export_locals
+C.solution_tree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} =
+let vars = optimized_variable_assignment(opt_model)
+    isnothing(vars) ? nothing : C.solution_tree(c, vars)
 end
