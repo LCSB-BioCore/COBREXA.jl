@@ -46,14 +46,14 @@ function environment_exchange_stoichiometry(
 )
     idxs = [
         (i, j) for
-        (i, j) in enumerate(indexin(env_rxns, variables(m.model))) if !isnothing(j)
+        (i, j) in enumerate(indexin(env_rxns, variable_ids(m.model))) if !isnothing(j)
     ]
     sparse(
         first.(idxs),
         last.(idxs),
         ones(length(idxs)),
         length(env_mets),
-        n_variables(m.model),
+        variable_count(m.model),
     )
 end
 
@@ -125,12 +125,16 @@ function build_community_name_lookup(
     members::OrderedDict{String,CommunityMember};
     delim = "#",
 )
-    accessors = [variables, reactions, metabolites, genes]
+    accessors = [
+        :variables => variables,
+        :reactions => reaction_ids,
+        :metabolites => metabolites,
+        :genes => genes,
+    ]
     Dict(
         id => Dict(
-            Symbol(accessor) =>
-                Dict(k => id * delim * k for k in accessor(member.model)) for
-            accessor in accessors
+            accessorname => Dict(k => id * delim * k for k in accessor(member.model))
+            for (accessorname, accessor) in accessors
         ) for (id, member) in members
     )
 end

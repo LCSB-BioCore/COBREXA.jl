@@ -19,24 +19,24 @@ end
 
 Accessors.unwrap_model(model::EqualGrowthCommunityModel) = model.inner
 
-Accessors.variables(cm::EqualGrowthCommunityModel) =
-    [variables(cm.inner); cm.community_objective_id]
+Accessors.variable_ids(cm::EqualGrowthCommunityModel) =
+    [variable_ids(cm.inner); cm.community_objective_id]
 
-Accessors.n_variables(cm::EqualGrowthCommunityModel) = n_variables(cm.inner) + 1
+Accessors.variable_count(cm::EqualGrowthCommunityModel) = variable_count(cm.inner) + 1
 
-Accessors.metabolites(cm::EqualGrowthCommunityModel) =
-    [metabolites(cm.inner); [m.id for m in cm.inner.members]]
+Accessors.metabolite_ids(cm::EqualGrowthCommunityModel) =
+    [metabolite_ids(cm.inner); [m.id for m in cm.inner.members]]
 
-Accessors.n_metabolites(cm::EqualGrowthCommunityModel) =
-    n_metabolites(cm.inner) + length(cm.inner.members)
+Accessors.metabolite_count(cm::EqualGrowthCommunityModel) =
+    metabolite_count(cm.inner) + length(cm.inner.members)
 
-Accessors.balance(cm::EqualGrowthCommunityModel) = [
-    balance(cm.inner)
+Accessors.metabolite_bounds(cm::EqualGrowthCommunityModel) = [
+    metabolite_bounds(cm.inner)
     spzeros(length(cm.inner.members))
 ]
 
 function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
-
+    # TODO this needs a rework
     S = stoichiometry(cm.inner)
     obj_col = spzeros(size(S, 1))
 
@@ -44,7 +44,7 @@ function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
         cm.inner.name_lookup[id][:variables][m.biomass_reaction_id] for
         (id, m) in cm.inner.members
     ]
-    biomass_idxs = indexin(biomass_ids, variables(cm.inner))
+    biomass_idxs = indexin(biomass_ids, variable_ids(cm.inner))
 
     obj_links = sparse(
         1:length(biomass_idxs),
@@ -62,13 +62,13 @@ function Accessors.stoichiometry(cm::EqualGrowthCommunityModel)
     ]
 end
 
-function Accessors.bounds(cm::EqualGrowthCommunityModel)
-    lbs, ubs = bounds(cm.inner)
+function Accessors.variable_bounds(cm::EqualGrowthCommunityModel)
+    lbs, ubs = variable_bounds(cm.inner)
     return ([lbs; 0], [ubs; constants.default_reaction_bound])
 end
 
 function Accessors.objective(cm::EqualGrowthCommunityModel)
-    vec = spzeros(n_variables(cm)) # overwrite objective
+    vec = spzeros(variable_count(cm)) # overwrite objective
     vec[end] = 1.0
     return vec
 end
@@ -83,29 +83,30 @@ function Accessors.reaction_variables(cm::EqualGrowthCommunityModel)
     r_v
 end
 
-Accessors.reactions(cm::EqualGrowthCommunityModel) =
-    [reactions(cm.inner); cm.community_objective_id]
+Accessors.reaction_ids(cm::EqualGrowthCommunityModel) =
+    [reaction_ids(cm.inner); cm.community_objective_id]
 
-Accessors.n_reactions(cm::EqualGrowthCommunityModel) = n_reactions(cm.inner) + 1
+Accessors.reaction_count(cm::EqualGrowthCommunityModel) = reaction_count(cm.inner) + 1
 
 Accessors.environmental_exchange_variables(model::EqualGrowthCommunityModel) =
     environmental_exchange_variables(model.inner)
 
-Accessors.environmental_exchanges(model::EqualGrowthCommunityModel) =
-    environmental_exchanges(model.inner)
+Accessors.environmental_exchange_ids(model::EqualGrowthCommunityModel) =
+    environmental_exchange_ids(model.inner)
 
-Accessors.n_environmental_exchanges(model::EqualGrowthCommunityModel) =
-    n_environmental_exchanges(model.inner)
+Accessors.environmental_exchange_count(model::EqualGrowthCommunityModel) =
+    environmental_exchange_count(model.inner)
 
 Accessors.enzyme_variables(model::EqualGrowthCommunityModel) = enzyme_variables(model.inner)
 
-Accessors.enzymes(model::EqualGrowthCommunityModel) = enzymes(model.inner)
+Accessors.enzyme_ids(model::EqualGrowthCommunityModel) = enzyme_ids(model.inner)
 
-Accessors.n_enzymes(model::EqualGrowthCommunityModel) = n_enzymes(model.inner)
+Accessors.enzyme_count(model::EqualGrowthCommunityModel) = enzyme_count(model.inner)
 
 Accessors.enzyme_group_variables(model::EqualGrowthCommunityModel) =
     enzyme_group_variables(model.inner)
 
-Accessors.enzyme_groups(model::EqualGrowthCommunityModel) = enzyme_groups(model.inner)
+Accessors.enzyme_group_ids(model::EqualGrowthCommunityModel) = enzyme_group_ids(model.inner)
 
-Accessors.n_enzyme_groups(model::EqualGrowthCommunityModel) = n_enzyme_groups(model.inner)
+Accessors.enzyme_group_count(model::EqualGrowthCommunityModel) =
+    enzyme_group_count(model.inner)

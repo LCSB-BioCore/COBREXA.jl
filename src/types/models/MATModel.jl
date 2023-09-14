@@ -10,14 +10,14 @@ struct MATModel <: AbstractMetabolicModel
     mat::Dict{String,Any}
 end
 
-Accessors.n_metabolites(m::MATModel)::Int = size(m.mat["S"], 1)
-Accessors.n_variables(m::MATModel)::Int = size(m.mat["S"], 2)
+Accessors.metabolite_count(m::MATModel)::Int = size(m.mat["S"], 1)
+Accessors.variable_count(m::MATModel)::Int = size(m.mat["S"], 2)
 
-function Accessors.variables(m::MATModel)::Vector{String}
+function Accessors.variable_ids(m::MATModel)::Vector{String}
     if haskey(m.mat, "rxns")
-        reshape(m.mat["rxns"], n_variables(m))
+        reshape(m.mat["rxns"], variable_count(m))
     else
-        "rxn" .* string.(1:n_variables(m))
+        "rxn" .* string.(1:variable_count(m))
     end
 end
 
@@ -27,43 +27,49 @@ _mat_has_squashed_coupling(mat) =
     haskey(mat, "A") && haskey(mat, "b") && length(mat["b"]) == size(mat["A"], 1)
 
 
-function Accessors.metabolites(m::MATModel)::Vector{String}
-    nm = n_metabolites(m)
+function Accessors.metabolite_ids(m::MATModel)::Vector{String}
+    nm = metabolite_count(m)
     if haskey(m.mat, "mets")
         reshape(m.mat["mets"], length(m.mat["mets"]))[begin:nm]
     else
-        "met" .* string.(1:n_metabolites(m))
+        "met" .* string.(1:metabolite_count(m))
     end
 end
 
-Accessors.stoichiometry(m::MATModel) = sparse(m.mat["S"])
+Accessors.metabolite_variables_matrix(m::MATModel) = sparse(m.mat["S"])
 
-Accessors.bounds(m::MATModel) = (
-    reshape(get(m.mat, "lb", fill(-Inf, n_variables(m), 1)), n_variables(m)),
-    reshape(get(m.mat, "ub", fill(Inf, n_variables(m), 1)), n_variables(m)),
+Accessors.metabolite_variables(m::MATModel) = Accessors.Internal.make_mapping_dict(
+    metabolite_ids(m),
+    variable_ids(m),
+    metabolite_variables_matrix(m),
 )
 
-function Accessors.balance(m::MATModel)
-    b = get(m.mat, "b", spzeros(n_metabolites(m), 1))
+Accessors.variable_bounds(m::MATModel) = (
+    reshape(get(m.mat, "lb", fill(-Inf, variable_count(m), 1)), variable_count(m)),
+    reshape(get(m.mat, "ub", fill(Inf, variable_count(m), 1)), variable_count(m)),
+)
+
+function Accessors.metabolite_bounds(m::MATModel)
+    b = get(m.mat, "b", spzeros(metabolite_count(m), 1))
     if _mat_has_squashed_coupling(m.mat)
-        b = b[1:n_metabolites(m), :]
+        b = b[1:metabolite_count(m), :]
     end
-    sparse(reshape(b, n_metabolites(m)))
+    sparse(reshape(b, metabolite_count(m)))
 end
 
 Accessors.objective(m::MATModel) =
-    sparse(reshape(get(m.mat, "c", zeros(n_variables(m), 1)), n_variables(m)))
+    sparse(reshape(get(m.mat, "c", zeros(variable_count(m), 1)), variable_count(m)))
 
 Accessors.coupling(m::MATModel) =
-    _mat_has_squashed_coupling(m.mat) ? sparse(m.mat["A"][n_variables(m)+1:end, :]) :
-    sparse(get(m.mat, "C", zeros(0, n_variables(m))))
+    _mat_has_squashed_coupling(m.mat) ? sparse(m.mat["A"][variable_count(m)+1:end, :]) :
+    sparse(get(m.mat, "C", zeros(0, variable_count(m))))
 
 function Accessors.coupling_bounds(m::MATModel)
     nc = n_coupling_constraints(m)
     if _mat_has_squashed_coupling(m.mat)
         (
             sparse(fill(-Inf, nc)),
-            sparse(reshape(m.mat["b"], length(m.mat["b"]))[n_variables(m)+1:end]),
+            sparse(reshape(m.mat["b"], length(m.mat["b"]))[variable_count(m)+1:end]),
         )
     else
         (
@@ -80,7 +86,7 @@ end
 
 function Accessors.reaction_gene_associations(m::MATModel, rid::String)
     if haskey(m.mat, "grRules")
-        grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
+        grr = m.mat["grRules"][findfirst(==(rid), variable_ids(m))]
         typeof(grr) == String ? parse_grr(grr) : nothing
     else
         nothing
@@ -89,7 +95,7 @@ end
 
 function Accessors.eval_reaction_gene_association(m::MATModel, rid::String; kwargs...)
     if haskey(m.mat, "grRules")
-        grr = m.mat["grRules"][findfirst(==(rid), variables(m))]
+        grr = m.mat["grRules"][findfirst(==(rid), variable_ids(m))]
         typeof(grr) == String ? eval_grr(parse_grr_to_sbml(grr); kwargs...) : nothing
     else
         nothing
@@ -97,13 +103,13 @@ function Accessors.eval_reaction_gene_association(m::MATModel, rid::String; kwar
 end
 
 Accessors.metabolite_formula(m::MATModel, mid::String) = maybemap(
-    x -> parse_formula(x[findfirst(==(mid), metabolites(m))]),
+    x -> parse_formula(x[findfirst(==(mid), metabolite_ids(m))]),
     gets(m.mat, nothing, constants.keynames.metformulas),
 )
 
 function Accessors.metabolite_charge(m::MATModel, mid::String)::Maybe{Int}
     met_charge = maybemap(
-        x -> x[findfirst(==(mid), metabolites(m))],
+        x -> x[findfirst(==(mid), metabolite_ids(m))],
         gets(m.mat, nothing, constants.keynames.metcharges),
     )
     maybemap(Int, isnan(met_charge) ? nothing : met_charge)
@@ -111,7 +117,7 @@ end
 
 function Accessors.metabolite_compartment(m::MATModel, mid::String)
     res = maybemap(
-        x -> x[findfirst(==(mid), metabolites(m))],
+        x -> x[findfirst(==(mid), metabolite_ids(m))],
         gets(m.mat, nothing, constants.keynames.metcompartments),
     )
     # if the metabolite is an integer or a (very integerish) float, it is an
@@ -134,12 +140,12 @@ function Accessors.reaction_stoichiometry(m::MATModel, ridx::Int)::Dict{String,F
 end
 
 Accessors.reaction_name(m::MATModel, rid::String) = maybemap(
-    x -> x[findfirst(==(rid), variables(m))],
+    x -> x[findfirst(==(rid), variable_ids(m))],
     gets(m.mat, nothing, constants.keynames.rxnnames),
 )
 
 Accessors.metabolite_name(m::MATModel, mid::String) = maybemap(
-    x -> x[findfirst(==(mid), metabolites(m))],
+    x -> x[findfirst(==(mid), metabolite_ids(m))],
     gets(m.mat, nothing, constants.keynames.metnames),
 )
 
@@ -155,18 +161,18 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
         return m
     end
 
-    lb, ub = bounds(m)
+    lb, ub = variable_bounds(m)
     cl, cu = coupling_bounds(m)
-    nr = n_variables(m)
-    nm = n_metabolites(m)
+    nr = variable_count(m)
+    nm = metabolite_count(m)
     return MATModel(
         Dict(
             "S" => stoichiometry(m),
-            "rxns" => variables(m),
-            "mets" => metabolites(m),
+            "rxns" => variable_ids(m),
+            "mets" => metabolite_ids(m),
             "lb" => Vector(lb),
             "ub" => Vector(ub),
-            "b" => Vector(balance(m)),
+            "b" => Vector(metabolite_bounds(m)),
             "c" => Vector(objective(m)),
             "C" => coupling(m),
             "cl" => Vector(cl),
@@ -177,17 +183,20 @@ function Base.convert(::Type{MATModel}, m::AbstractMetabolicModel)
                     "",
                     maybemap.(
                         x -> unparse_grr(String, x),
-                        reaction_gene_associations.(Ref(m), variables(m)),
+                        reaction_gene_associations.(Ref(m), variable_ids(m)),
                     ),
                 ),
             "metFormulas" =>
                 default.(
                     "",
-                    maybemap.(unparse_formula, metabolite_formula.(Ref(m), metabolites(m))),
+                    maybemap.(
+                        unparse_formula,
+                        metabolite_formula.(Ref(m), metabolite_ids(m)),
+                    ),
                 ),
-            "metCharges" => default.(0, metabolite_charge.(Ref(m), metabolites(m))),
+            "metCharges" => default.(0, metabolite_charge.(Ref(m), metabolite_ids(m))),
             "metCompartments" =>
-                default.("", metabolite_compartment.(Ref(m), metabolites(m))),
+                default.("", metabolite_compartment.(Ref(m), metabolite_ids(m))),
         ),
     )
 end

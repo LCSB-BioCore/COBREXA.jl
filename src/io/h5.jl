@@ -21,17 +21,17 @@ disk storage, writing the data to disk (using this function) is the only way to
 make new HDF5 models.
 """
 function save_h5_model(model::AbstractMetabolicModel, file_name::String)::HDF5Model
-    rxns = variables(model)
+    rxns = variable_ids(model)
     rxnp = sortperm(rxns)
-    mets = metabolites(model)
+    mets = metabolite_ids(model)
     metp = sortperm(mets)
     h5open(file_name, "w") do f
         write(f, "metabolites", mets[metp])
         write(f, "reactions", rxns[rxnp])
-        h5_write_sparse(create_group(f, "balance"), balance(model)[metp])
+        h5_write_sparse(create_group(f, "balance"), metabolite_bounds(model)[metp])
         h5_write_sparse(create_group(f, "objective"), objective(model)[rxnp])
         h5_write_sparse(create_group(f, "stoichiometry"), stoichiometry(model)[metp, rxnp])
-        let (lbs, ubs) = bounds(model)
+        let (lbs, ubs) = variable_bounds(model)
             write(f, "lower_bounds", lbs[rxnp])
             write(f, "upper_bounds", ubs[rxnp])
         end

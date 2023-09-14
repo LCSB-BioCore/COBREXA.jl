@@ -27,7 +27,7 @@ warmup_points = warmup_from_variability(model, GLPK.Optimizer)
 samples = affine_hit_and_run(model, warmup_points, sample_iters = 101:105)
 
 # convert the result to flux (for models where the distinction matters):
-fluxes = reaction_variables_matrix(model)' * samples
+fluxes = reaction_variables_matrix(model) * samples
 ```
 """
 function affine_hit_and_run(
@@ -38,13 +38,13 @@ function affine_hit_and_run(
     chains = length(workers),
     seed = rand(Int),
 )
-    @assert size(warmup_points, 1) == n_variables(m)
+    @assert size(warmup_points, 1) == variable_count(m)
 
-    lbs, ubs = bounds(m)
+    lbs, ubs = variable_bounds(m)
     C = coupling(m)
     cl, cu = coupling_bounds(m)
     if isnothing(C)
-        C = zeros(0, n_variables(m))
+        C = zeros(0, variable_count(m))
         cl = zeros(0)
         cu = zeros(0)
     end

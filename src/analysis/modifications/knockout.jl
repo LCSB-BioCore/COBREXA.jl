@@ -36,7 +36,7 @@ other models.
 function _do_knockout(model::AbstractMetabolicModel, opt_model, gene_ids::Vector{String})
     #TODO this should preferably work on reactions. Make it a wrapper.
     KOs = Set(gene_ids)
-    for (ridx, rid) in enumerate(variables(model))
+    for (ridx, rid) in enumerate(variable_ids(model))
         if eval_reaction_gene_association(model, rid, falses = KOs) == false # also tests for nothing!
             set_optmodel_bound!(ridx, opt_model, lower_bound = 0, upper_bound = 0)
         end

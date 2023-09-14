@@ -64,7 +64,7 @@ samples = affine_hit_and_run(model, warmup_points, sample_iters = 201:210, chain
 
 using CairoMakie
 
-o2, co2 = indexin(["R_EX_o2_e", "R_EX_co2_e"], variables(model))
+o2, co2 = indexin(["R_EX_o2_e", "R_EX_co2_e"], variable_ids(model))
 
 scatter(
     samples[o2, :],

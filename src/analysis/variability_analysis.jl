@@ -7,8 +7,8 @@ each reaction flux `f` described by [`reactions`](@ref):
 min,max fᵀxᵢ
 s.t. S x = b
     xₗ ≤ x ≤ xᵤ
-     cᵀx ≥ bounds(Z₀)[1]
-     cᵀx ≤ bounds(Z₀)[2]
+     cᵀx ≥ variable_bounds(Z₀)[1]
+     cᵀx ≤ variable_bounds(Z₀)[2]
 ```
 where Z₀:= cᵀx₀ is the objective value of an optimal solution of the associated
 FBA problem (see [`flux_balance_analysis`](@ref) for a related analysis, also
@@ -57,27 +57,27 @@ function variability_analysis(
     indexes::Maybe{Vector{Int}} = nothing,
     kwargs...,
 )
-    (sem_ids, n_ids, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
+    s = Accessors.Internal.semantics(semantics)
 
     if isnothing(indexes)
         idxs = if isnothing(ids)
-            collect(1:n_ids(model))
+            collect(1:s.count(model))
         else
-            indexin(ids, sem_ids(model))
+            indexin(ids, s.ids(model))
         end
         any(isnothing.(idxs)) &&
             throw(DomainError(ids[isnothing.(idxs)], "Unknown IDs specified"))
         indexes = Int.(idxs)
     end
 
-    if any((indexes .< 1) .| (indexes .> n_ids(model)))
+    if any((indexes .< 1) .| (indexes .> s.count(model)))
         throw(DomainError(indexes, "Index out of range"))
     end
 
     variability_analysis(
         model,
         optimizer;
-        directions = sem_varmtx(model)[:, indexes],
+        directions = (s.mapping_matrix(model)')[:, indexes],
         kwargs...,
     )
 end
@@ -120,14 +120,14 @@ reason.
 function variability_analysis(
     model::AbstractMetabolicModel,
     optimizer;
-    directions::SparseMat = spdiagm(fill(1.0, n_variables(model))),
+    directions::SparseMat = spdiagm(fill(1.0, variable_count(model))),
     modifications = [],
     workers = [myid()],
     optimal_objective_value = nothing,
     bounds = z -> (z, Inf),
     ret = objective_value,
 )
-    if size(directions, 1) != n_variables(model)
+    if size(directions, 1) != variable_count(model)
         throw(
             DomainError(
                 size(directions, 1),
@@ -203,7 +203,7 @@ function flux_variability_analysis_dict(model::AbstractMetabolicModel, optimizer
         kwargs...,
         ret = sol -> values_vec(:reaction, ModelWithResult(model, sol)),
     )
-    flxs = reactions(res.model)
+    flxs = reaction_ids(res.model)
     dicts = zip.(Ref(flxs), res.result)
 
     ModelWithResult(

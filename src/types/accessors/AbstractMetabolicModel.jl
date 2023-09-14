@@ -22,48 +22,22 @@ exchanges, separate forward and reverse reactions, supplies of enzymatic and
 genetic material and virtual cell volume, etc. To simplify the view of the model
 contents use [`reaction_variables`](@ref).
 """
-function variables(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(variables, (a,))
+function variable_ids(a::AbstractMetabolicModel)::Vector{String}
+    missing_impl_error(variable_ids, (a,))
 end
+
+"""
+Shortcut for writing [`variable_ids`](@ref).
+"""
+const variables = variable_ids
 
 """
 $(TYPEDSIGNATURES)
 
 Get the number of reactions in a model.
 """
-function n_variables(a::AbstractMetabolicModel)::Int
-    length(variables(a))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Return a vector of metabolite identifiers in a model. The vector precisely
-corresponds to the rows in [`stoichiometry`](@ref) matrix.
-
-As with [`variables`](@ref)s, some metabolites in models may be virtual,
-representing purely technical equality constraints.
-"""
-function metabolites(a::AbstractMetabolicModel)::Vector{String}
-    missing_impl_error(metabolites, (a,))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the number of metabolites in a model.
-"""
-function n_metabolites(a::AbstractMetabolicModel)::Int
-    length(metabolites(a))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Get the sparse stoichiometry matrix of a model.
-"""
-function stoichiometry(a::AbstractMetabolicModel)::SparseMat
-    missing_impl_error(stoichiometry, (a,))
+function variable_count(a::AbstractMetabolicModel)::Int
+    length(variable_ids(a))
 end
 
 """
@@ -71,18 +45,14 @@ $(TYPEDSIGNATURES)
 
 Get the lower and upper solution bounds of a model.
 """
-function bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
-    missing_impl_error(bounds, (a,))
+function variable_bounds(a::AbstractMetabolicModel)::Tuple{Vector{Float64},Vector{Float64}}
+    missing_impl_error(variable_bounds, (a,))
 end
 
 """
-$(TYPEDSIGNATURES)
-
-Get the sparse balance vector of a model.
+Shortcut for writing [`variable_bounds`](@ref).
 """
-function balance(a::AbstractMetabolicModel)::SparseVec
-    return spzeros(n_metabolites(a))
-end
+const bounds = variable_bounds
 
 """
 $(TYPEDSIGNATURES)
@@ -116,6 +86,31 @@ flux, such as with separate bidirectional reactions.
 """
 )
 
+"""
+Shortcut for writing [`reaction_ids`](@ref).
+"""
+const reactions = reaction_ids
+
+@make_variable_semantics(
+    :metabolite,
+    "metabolites",
+    """
+Metabolite values represent the over-time change of abundance of individual
+metabolites in the model. To reach a steady state, models typically constraint
+these to be zero.
+"""
+)
+
+"""
+A shortcut for [`metabolite_ids`](@ref).
+"""
+const metabolites = metabolite_ids
+
+"""
+The usual name of [`metabolite_variables_matrix`](@ref).
+"""
+const stoichiometry = metabolite_variables_matrix
+
 @make_variable_semantics(
     :enzyme,
     "enzyme supplies",
@@ -128,7 +123,7 @@ these values.
 
 @make_variable_semantics(
     :enzyme_group,
-    "enzyme group",
+    "enzyme groups",
     """
 Certain model types use enzymes to catalyze reactions. These enzymes typically
 have capacity limitations (e.g. membrane or cytosol density constraints). Enzyme
@@ -138,7 +133,7 @@ groups collect these sets of enzymes for convenient analysis.
 
 @make_variable_semantics(
     :metabolite_log_concentration,
-    "metabolite log concentration",
+    "metabolite log-concentrations",
     """
 Certain model types use metabolite concentrations instead of reaction fluxes are
 variables. This semantic grouping uses the log (base e) metabolite concentration
@@ -147,8 +142,8 @@ to make thermodynamic calculations easier.
 )
 
 @make_variable_semantics(
-    :gibbs_free_energy_reaction,
-    "Gibbs free energy of reaction",
+    :gibbs_free_energy,
+    "Gibbs free energies",
     """
 Some thermodynamic models need to ensure that the ΔG of each reaction is
 negative (2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
@@ -157,11 +152,11 @@ negative (2nd law of thermodynamics). This semantic grouping represents ΔGᵣ.
 
 @make_variable_semantics(
     :environmental_exchange,
-    "Environmental exchange reaction",
+    "environmental exchanges",
     """
-Community models are composed of member models as well as environmental exchange
-reactions. This semantic grouping represents the environmental exchange
-reactions.
+Community models are composed of member models as well as environmental
+exchange reactions. This semantic grouping represents the environmental
+exchange reactions.
 """
 )
 
@@ -172,7 +167,7 @@ Get a matrix of coupling constraint definitions of a model. By default, there
 is no coupling in the models.
 """
 function coupling(a::AbstractMetabolicModel)::SparseMat
-    return spzeros(0, n_variables(a))
+    return spzeros(0, variable_count(a))
 end
 
 """
@@ -204,7 +199,7 @@ In SBML, these are usually called "gene products" but we write `genes` for
 simplicity.
 """
 function genes(a::AbstractMetabolicModel)::Vector{String}
-    return []
+    String[]
 end
 
 """
@@ -292,10 +287,10 @@ function reaction_stoichiometry(
     m::AbstractMetabolicModel,
     rid::String,
 )::Dict{String,Float64}
-    mets = metabolites(m)
+    mets = metabolite_ids(m)
     Dict(
-        mets[k] => v for
-        (k, v) in zip(findnz(stoichiometry(m)[:, first(indexin([rid], variables(m)))])...)
+        mets[k] => v for (k, v) in
+        zip(findnz(stoichiometry(m)[:, first(indexin([rid], variable_ids(m)))])...)
     )
 end
 

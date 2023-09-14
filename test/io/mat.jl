@@ -16,7 +16,7 @@ end
 
 @testset "Import yeast-GEM (mat)" begin
     m = load_model(ObjectModel, model_paths["yeast-GEM.mat"])
-    @test n_metabolites(m) == 2744
-    @test n_reactions(m) == 4063
+    @test metabolite_count(m) == 2744
+    @test reaction_count(m) == 4063
     @test n_genes(m) == 1160
 end

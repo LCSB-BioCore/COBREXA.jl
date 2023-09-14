@@ -32,7 +32,7 @@ model. Multiple capacity bounds may be added through
 in the formulation.
 
 This implementation allows easy access to fluxes from the split reactions
-(available in `variables(model)`), while the original "simple" reactions from
+(available in `variable_ids(model)`), while the original "simple" reactions from
 the wrapped model are retained as [`reactions`](@ref). All additional
 constraints are implemented using [`coupling`](@ref) and
 [`coupling_bounds`](@ref).
@@ -61,8 +61,8 @@ Accessors.stoichiometry(model::SimplifiedEnzymeConstrainedModel) =
 Accessors.objective(model::SimplifiedEnzymeConstrainedModel) =
     simplified_enzyme_constrained_column_reactions(model)' * objective(model.inner)
 
-Accessors.variables(model::SimplifiedEnzymeConstrainedModel) =
-    let inner_reactions = variables(model.inner)
+Accessors.variable_ids(model::SimplifiedEnzymeConstrainedModel) =
+    let inner_reactions = variable_ids(model.inner)
         [
             simplified_enzyme_constrained_reaction_name(
                 inner_reactions[col.reaction_idx],
@@ -71,9 +71,9 @@ Accessors.variables(model::SimplifiedEnzymeConstrainedModel) =
         ]
     end
 
-Accessors.n_variables(model::SimplifiedEnzymeConstrainedModel) = length(model.columns)
+Accessors.variable_count(model::SimplifiedEnzymeConstrainedModel) = length(model.columns)
 
-Accessors.bounds(model::SimplifiedEnzymeConstrainedModel) =
+Accessors.variable_bounds(model::SimplifiedEnzymeConstrainedModel) =
     ([col.lb for col in model.columns], [col.ub for col in model.columns])
 
 """
@@ -84,8 +84,8 @@ Get the mapping of the reaction rates in
 wrapped model (as a matrix).
 """
 Accessors.reaction_variables_matrix(model::SimplifiedEnzymeConstrainedModel) =
-    simplified_enzyme_constrained_column_reactions(model)' *
-    reaction_variables_matrix(model.inner)
+    reaction_variables_matrix(model.inner) *
+    simplified_enzyme_constrained_column_reactions(model) #TODO check
 
 """
 $(TYPEDSIGNATURES)
@@ -96,8 +96,8 @@ wrapped model.
 """
 Accessors.reaction_variables(model::SimplifiedEnzymeConstrainedModel) =
     Accessors.Internal.make_mapping_dict(
-        variables(model),
-        reactions(model.inner),
+        reaction_ids(model.inner),
+        variable_ids(model),
         reaction_variables_matrix(model),
     ) # TODO currently inefficient
 

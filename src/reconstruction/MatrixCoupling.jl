@@ -16,7 +16,7 @@ function add_reactions(
     new_lm = add_reactions(m.lm, s, b, c, xl, xu, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), variable_count(new_lm) - variable_count(m.lm))),
         m.cl,
         m.cu,
     )
@@ -50,7 +50,7 @@ function add_reactions(
     )
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), variable_count(new_lm) - variable_count(m.lm))),
         m.cl,
         m.cu,
     )
@@ -71,7 +71,7 @@ function add_reactions(
     new_lm = add_reactions(m.lm, Sp, b, c, xl, xu, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), variable_count(new_lm) - variable_count(m.lm))),
         m.cl,
         m.cu,
     )
@@ -90,7 +90,7 @@ function add_reactions(
     new_lm = add_reactions(m1.lm, m2, check_consistency = check_consistency)
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m1.C, spzeros(size(m1.C, 1), n_variables(new_lm) - n_variables(m1.lm))),
+        hcat(m1.C, spzeros(size(m1.C, 1), variable_count(new_lm) - variable_count(m1.lm))),
         m1.cl,
         m1.cu,
     )
@@ -123,7 +123,7 @@ function add_reactions(
     )
     return MatrixModelWithCoupling(
         new_lm,
-        hcat(m.C, spzeros(size(m.C, 1), n_variables(new_lm) - n_variables(m.lm))),
+        hcat(m.C, spzeros(size(m.C, 1), variable_count(new_lm) - variable_count(m.lm))),
         m.cl,
         m.cu,
     )
@@ -182,7 +182,7 @@ function add_coupling_constraints!(
 
     all([length(cu), length(cl)] .== size(C, 1)) ||
         throw(DimensionMismatch("mismatched numbers of constraints"))
-    size(C, 2) == n_variables(m) ||
+    size(C, 2) == variable_count(m) ||
         throw(DimensionMismatch("mismatched number of reactions"))
 
     m.C = vcat(m.C, sparse(C))
@@ -304,9 +304,9 @@ end
 end
 
 @_remove_fn reaction MatrixCoupling Int inplace plural begin
-    orig_rxns = variables(model.lm)
+    orig_rxns = variable_ids(model.lm)
     remove_reactions!(model.lm, reaction_idxs)
-    model.C = model.C[:, in.(orig_rxns, Ref(Set(variables(model.lm))))]
+    model.C = model.C[:, in.(orig_rxns, Ref(Set(variable_ids(model.lm))))]
     nothing
 end
 
@@ -317,7 +317,7 @@ end
 @_remove_fn reaction MatrixCoupling Int plural begin
     n = copy(model)
     n.lm = remove_reactions(n.lm, reaction_idxs)
-    n.C = n.C[:, in.(variables(model.lm), Ref(Set(variables(n.lm))))]
+    n.C = n.C[:, in.(variable_ids(model.lm), Ref(Set(variable_ids(n.lm))))]
     return n
 end
 
@@ -326,7 +326,7 @@ end
 end
 
 @_remove_fn reaction MatrixCoupling String inplace plural begin
-    remove_reactions!(model, Int.(indexin(reaction_ids, variables(model))))
+    remove_reactions!(model, Int.(indexin(reaction_ids, variable_ids(model))))
 end
 
 @_remove_fn reaction MatrixCoupling String begin
@@ -334,7 +334,7 @@ end
 end
 
 @_remove_fn reaction MatrixCoupling String plural begin
-    remove_reactions(model, Int.(indexin(reaction_ids, variables(model))))
+    remove_reactions(model, Int.(indexin(reaction_ids, variable_ids(model))))
 end
 
 @_remove_fn metabolite MatrixCoupling Int inplace begin
@@ -342,9 +342,9 @@ end
 end
 
 @_remove_fn metabolite MatrixCoupling Int plural inplace begin
-    orig_rxns = variables(model.lm)
+    orig_rxns = variable_ids(model.lm)
     model.lm = remove_metabolites(model.lm, metabolite_idxs)
-    model.C = model.C[:, in.(orig_rxns, Ref(Set(variables(model.lm))))]
+    model.C = model.C[:, in.(orig_rxns, Ref(Set(variable_ids(model.lm))))]
     nothing
 end
 
@@ -363,7 +363,10 @@ end
 end
 
 @_remove_fn metabolite MatrixCoupling String inplace plural begin
-    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites!(
+        model,
+        Int.(indexin(metabolite_ids, Accessors.metabolite_ids(model))),
+    )
 end
 
 @_remove_fn metabolite MatrixCoupling String begin
@@ -371,7 +374,10 @@ end
 end
 
 @_remove_fn metabolite MatrixCoupling String plural begin
-    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites(
+        model,
+        Int.(indexin(metabolite_ids, Accessors.metabolite_ids(model))),
+    )
 end
 
 """

@@ -94,31 +94,31 @@ Base.@kwdef mutable struct CommunityModel <: AbstractMetabolicModel
         build_community_name_lookup(members)
 end
 
-function Accessors.variables(cm::CommunityModel)
+function Accessors.variable_ids(cm::CommunityModel)
     rxns = [
         cm.name_lookup[id][:variables][vid] for (id, m) in cm.members for
-        vid in variables(m.model)
+        vid in variable_ids(m.model)
     ]
     env_exs = [envlink.reaction_id for envlink in cm.environmental_links]
     return [rxns; env_exs]
 end
 
-function Accessors.n_variables(cm::CommunityModel)
-    num_model_reactions = sum(n_variables(m.model) for m in values(cm.members))
+function Accessors.variable_count(cm::CommunityModel)
+    num_model_reactions = sum(variable_count(m.model) for m in values(cm.members))
     num_env_metabolites = length(cm.environmental_links)
     return num_model_reactions + num_env_metabolites
 end
 
-function Accessors.metabolites(cm::CommunityModel)
+function Accessors.metabolite_ids(cm::CommunityModel)
     mets = [
         cm.name_lookup[id][:metabolites][mid] for (id, m) in cm.members for
-        mid in metabolites(m.model)
+        mid in metabolite_ids(m.model)
     ]
     return [mets; "ENV_" .* [envlink.metabolite_id for envlink in cm.environmental_links]]
 end
 
-function Accessors.n_metabolites(cm::CommunityModel)
-    num_model_constraints = sum(n_metabolites(m.model) for m in values(cm.members))
+function Accessors.metabolite_count(cm::CommunityModel)
+    num_model_constraints = sum(metabolite_count(m.model) for m in values(cm.members))
     num_env_metabolites = length(cm.environmental_links)
     return num_model_constraints + num_env_metabolites
 end
@@ -128,8 +128,8 @@ Accessors.genes(cm::CommunityModel) =
 
 Accessors.n_genes(cm::CommunityModel) = sum(n_genes(m.model) for m in values(cm.members))
 
-Accessors.balance(cm::CommunityModel) = [
-    vcat([balance(m.model) for m in values(cm.members)]...)
+Accessors.metabolite_bounds(cm::CommunityModel) = [
+    vcat([metabolite_bounds(m.model) for m in values(cm.members)]...)
     spzeros(length(cm.environmental_links))
 ]
 
@@ -147,9 +147,9 @@ function Accessors.stoichiometry(cm::CommunityModel)
     ]
 end
 
-function Accessors.bounds(cm::CommunityModel)
-    models_lbs = vcat([first(bounds(m.model)) for m in values(cm.members)]...)
-    models_ubs = vcat([last(bounds(m.model)) for m in values(cm.members)]...)
+function Accessors.variable_bounds(cm::CommunityModel)
+    models_lbs = vcat([first(variable_bounds(m.model)) for m in values(cm.members)]...)
+    models_ubs = vcat([last(variable_bounds(m.model)) for m in values(cm.members)]...)
 
     env_lbs = [envlink.lower_bound for envlink in cm.environmental_links]
     env_ubs = [envlink.upper_bound for envlink in cm.environmental_links]
@@ -157,11 +157,11 @@ function Accessors.bounds(cm::CommunityModel)
     return ([models_lbs; env_lbs], [models_ubs; env_ubs])
 end
 
-Accessors.objective(cm::CommunityModel) = spzeros(n_variables(cm))
+Accessors.objective(cm::CommunityModel) = spzeros(variable_count(cm))
 
 function Accessors.coupling(cm::CommunityModel)
     coups = blockdiag([coupling(m.model) for m in values(cm.members)]...)
-    n = n_variables(cm)
+    n = variable_count(cm)
     return [coups spzeros(size(coups, 1), n - size(coups, 2))]
 end
 
@@ -187,18 +187,19 @@ function Accessors.reaction_variables(model::CommunityModel)
     r_v
 end
 
-Accessors.reactions(cm::CommunityModel) = [
+Accessors.reaction_ids(cm::CommunityModel) = [
     vcat(
         [
-            [cm.name_lookup[id][:reactions][rid] for rid in reactions(m.model)] for
+            [cm.name_lookup[id][:reactions][rid] for rid in reaction_ids(m.model)] for
             (id, m) in cm.members
         ]...,
     )
     [envlink.reaction_id for envlink in cm.environmental_links]
 ]
 
-Accessors.n_reactions(cm::CommunityModel) =
-    sum(n_reactions(m.model) for m in values(cm.members)) + length(cm.environmental_links)
+Accessors.reaction_count(cm::CommunityModel) =
+    sum(reaction_count(m.model) for m in values(cm.members)) +
+    length(cm.environmental_links)
 
 
 Accessors.environmental_exchange_variables(model::CommunityModel) = Dict(
@@ -206,10 +207,10 @@ Accessors.environmental_exchange_variables(model::CommunityModel) = Dict(
     rid in [envlink.reaction_id for envlink in model.environmental_links]
 )
 
-Accessors.environmental_exchanges(model::CommunityModel) =
+Accessors.environmental_exchange_ids(model::CommunityModel) =
     [envlink.reaction_id for envlink in model.environmental_links]
 
-Accessors.n_environmental_exchanges(model::CommunityModel) =
+Accessors.environmental_exchange_count(model::CommunityModel) =
     length(model.environmental_links)
 
 function Accessors.enzyme_variables(model::CommunityModel)
@@ -224,10 +225,11 @@ function Accessors.enzyme_variables(model::CommunityModel)
     e_v
 end
 
-Accessors.enzymes(cm::CommunityModel) =
-    [cm.name_lookup[id][:genes][gid] for (id, m) in cm.members for gid in enzymes(m.model)]
+Accessors.enzyme_ids(cm::CommunityModel) = [
+    cm.name_lookup[id][:genes][gid] for (id, m) in cm.members for gid in enzyme_ids(m.model)
+]
 
-Accessors.n_enzymes(cm::CommunityModel) = sum(n_enzymes(m.model) for m in cm.members)
+Accessors.enzyme_count(cm::CommunityModel) = sum(enzyme_count(m.model) for m in cm.members)
 
 """
 $(TYPEDSIGNATURES)
@@ -246,11 +248,11 @@ function Accessors.enzyme_group_variables(model::CommunityModel)
     e_g_v
 end
 
-Accessors.enzyme_groups(cm::CommunityModel) =
-    [id * "#" * k for (id, m) in cm.members for k in enzyme_groups(m.model)]
+Accessors.enzyme_group_ids(cm::CommunityModel) =
+    [id * "#" * k for (id, m) in cm.members for k in enzyme_group_ids(m.model)]
 
-Accessors.n_enzyme_groups(cm::CommunityModel) =
-    sum(n_enzyme_groups(m.model) for m in cm.members)
+Accessors.enzyme_group_count(cm::CommunityModel) =
+    sum(enzyme_group_count(m.model) for m in cm.members)
 
 #=
 This loops implements the rest of the accessors through access_community_member.

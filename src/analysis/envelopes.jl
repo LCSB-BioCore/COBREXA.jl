@@ -6,7 +6,7 @@ Version of [`envelope_lattice`](@ref) that works on string reaction IDs instead
 of integer indexes.
 """
 envelope_lattice(model::AbstractMetabolicModel, rids::Vector{String}; kwargs...) =
-    envelope_lattice(model, Vector{Int}(indexin(rids, variables(model))); kwargs...)
+    envelope_lattice(model, Vector{Int}(indexin(rids, variable_ids(model))); kwargs...)
 
 """
 $(TYPEDSIGNATURES)
@@ -19,7 +19,7 @@ envelope_lattice(
     model::AbstractMetabolicModel,
     ridxs::Vector{Int};
     samples = 10,
-    ranges = collect(zip(bounds(model)...))[ridxs],
+    ranges = collect(zip(variable_bounds(model)...))[ridxs],
     reaction_samples = fill(samples, length(ridxs)),
 ) = (
     lb .+ (ub - lb) .* ((1:s) .- 1) ./ max(s - 1, 1) for
@@ -39,7 +39,7 @@ objective_envelope(
     kwargs...,
 ) = objective_envelope(
     model,
-    Vector{Int}(indexin(rids, variables(model))),
+    Vector{Int}(indexin(rids, variable_ids(model))),
     args...;
     kwargs...,
 )

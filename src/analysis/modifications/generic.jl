@@ -20,7 +20,7 @@ of reaction `id` if supplied.
 """
 modify_constraint(id::String; lower_bound = nothing, upper_bound = nothing) =
     (model, opt_model) -> begin
-        ind = first(indexin([id], variables(model)))
+        ind = first(indexin([id], variable_ids(model)))
         isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
         set_optmodel_bound!(
             ind,
@@ -43,7 +43,7 @@ modify_constraints(
 ) =
     (model, opt_model) -> begin
         for (id, lb, ub) in zip(ids, lower_bounds, upper_bounds)
-            ind = first(indexin([id], variables(model)))
+            ind = first(indexin([id], variable_ids(model)))
             isnothing(ind) && throw(DomainError(id, "No matching reaction was found."))
             set_optmodel_bound!(ind, opt_model, lower_bound = lb, upper_bound = ub)
         end
@@ -70,10 +70,11 @@ modify_objective(
 
         # Construct objective_indices array
         if typeof(new_objective) == String
-            objective_indices = indexin([new_objective], variables(model))
+            objective_indices = indexin([new_objective], variable_ids(model))
         else
-            objective_indices =
-                [first(indexin([rxnid], variables(model))) for rxnid in new_objective]
+            objective_indices = [
+                first(indexin([rxnid], variable_ids(model))) for rxnid in new_objective
+            ]
         end
 
         any(isnothing.(objective_indices)) && throw(
@@ -81,7 +82,7 @@ modify_objective(
         )
 
         # Initialize weights
-        opt_weights = spzeros(n_variables(model))
+        opt_weights = spzeros(variable_count(model))
 
         isempty(weights) && (weights = ones(length(objective_indices))) # equal weights
 

@@ -25,7 +25,7 @@ mutable struct MatrixCoupling{M} <: AbstractModelWrapper where {M<:AbstractMetab
     ) where {M<:AbstractMetabolicModel}
         length(cu) == length(cl) ||
             throw(DimensionMismatch("`cl` and `cu` need to have the same size"))
-        size(C) == (length(cu), n_variables(lm)) ||
+        size(C) == (length(cu), variable_count(lm)) ||
             throw(DimensionMismatch("wrong dimensions of `C`"))
 
         new{M}(lm, sparse(C), collect(cl), collect(cu))
@@ -55,7 +55,12 @@ function Base.convert(
         (cl, cu) = coupling_bounds(mm)
         MatrixCoupling(convert(M, mm), coupling(mm), cl, cu)
     else
-        MatrixCoupling(convert(M, mm), spzeros(0, n_variables(mm)), spzeros(0), spzeros(0))
+        MatrixCoupling(
+            convert(M, mm),
+            spzeros(0, variable_count(mm)),
+            spzeros(0),
+            spzeros(0),
+        )
     end
 end
 

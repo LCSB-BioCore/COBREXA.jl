@@ -33,31 +33,86 @@ function make_optimization_model(
 
     precache!(model)
 
-    m, n = size(stoichiometry(model))
-    xl, xu = bounds(model)
-
     optimization_model = Model(optimizer)
-    @variable(optimization_model, x[1:n])
-    let obj = objective(model)
-        if obj isa AbstractVector
-            @objective(optimization_model, sense, obj' * x)
-        else
-            @objective(optimization_model, sense, x' * obj * [x; 1])
-        end
+
+    function label(semname, suffix, constraints)
+        l = Symbol(semname, :_, suffix)
+        optimization_model[l] = constraints
+        set_name.(constraints, "$l")
     end
-    @constraint(optimization_model, mb, stoichiometry(model) * x .== balance(model)) # mass balance
+
+    # make the variables
+    n = variable_count(model)
+    @variable(optimization_model, x[1:n])
+
+    # bound the variables
+    xl, xu = variable_bounds(model)
     @constraint(optimization_model, lbs, xl .<= x) # lower bounds
     @constraint(optimization_model, ubs, x .<= xu) # upper bounds
 
-    C = coupling(model) # empty if no coupling
-    isempty(C) || begin
+    # mark the objective
+    let obj = objective(model)
+        if obj isa AbstractVector
+            # linear objective case
+            @objective(optimization_model, sense, obj' * x)
+        else
+            # quadratic objective case
+            @objective(optimization_model, sense, x' * obj * [x; 1])
+        end
+    end
+
+    # go over the semantics and add bounds if there are any
+    # TODO for use in sampling and other things, it would be nice to have
+    # helper functions to make a complete matrix of equality and interval
+    # constraints.
+    for (semname, sem) in Accessors.Internal.get_semantics()
+        bounds = sem.bounds(model)
+        if isnothing(bounds)
+            continue
+        elseif typeof(bounds) <: AbstractVector{Float64}
+            # equality bounds
+            label(
+                semname,
+                :eqs,
+                @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
+            )
+        elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
+            # lower/upper interval bounds
+            slb, sub = bounds
+            smtx = sem.mapping_matrix(model)
+            label(semname, :lbs, @constraint(optimization_model, slb .<= smtx * x))
+            label(semname, :ubs, @constraint(optimization_model, smtx * x .<= sub))
+            # TODO: this actually uses the semantic matrix transposed, but
+            # that's right. Fix: transpose all other semantics because having
+            # the stoichiometry in the "right" way is quite crucial for folks
+            # being able to reason about stuff.
+        else
+            # if the bounds returned something weird, complain loudly.
+            throw(
+                TypeError(
+                    :make_optimization_model,
+                    "conversion of $(typeof(model)) bounds",
+                    Union{
+                        Nothing,
+                        <:AbstractVector{Float64},
+                        Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}},
+                    },
+                    typeof(bounds),
+                ),
+            )
+        end
+    end
+
+    # add coupling constraints
+    C = coupling(model)
+    if !isempty(C)
         cl, cu = coupling_bounds(model)
         @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
         @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
     end
 
     return optimization_model
-    #TODO what about ModelWithResult right from this point? ;D
+    #TODO so well, what about having ModelWithResult right from this point? ;D
 end
 
 """
@@ -129,7 +184,7 @@ solved_objective_value(x::ModelWithResult{<:Model}) = solved_objective_value(x.r
 $(TYPEDSIGNATURES)
 
 Return a vector of all variable values from the solved model, in the same order
-given by [`variables`](@ref).
+given by [`variable_ids`](@ref).
 
 # Example
 ```
@@ -152,8 +207,8 @@ values_vec(:reaction, flux_balance_analysis(model, ...))
 ```
 """
 function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
-    (_, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
-    is_solved(res.result) ? sem_varmtx(res.model)' * value.(res.result[:x]) : nothing
+    s = Accessors.Internal.semantics(semantics)
+    is_solved(res.result) ? s.mapping_matrix(res.model) * value.(res.result[:x]) : nothing
 end
 
 """
@@ -181,7 +236,8 @@ flux_balance_analysis(model, ...) |> values_dict
 ```
 """
 function values_dict(res::ModelWithResult{<:Model})
-    is_solved(res.result) ? Dict(variables(res.model) .=> value.(res.result[:x])) : nothing
+    is_solved(res.result) ? Dict(variable_ids(res.model) .=> value.(res.result[:x])) :
+    nothing
 end
 
 """
@@ -197,9 +253,10 @@ values_dict(:reaction, flux_balance_analysis(model, ...))
 ```
 """
 function values_dict(semantics::Symbol, res::ModelWithResult{<:Model})
-    (ids, _, _, sem_varmtx) = Accessors.Internal.semantics(semantics)
+    s = Accessors.Internal.semantics(semantics)
     is_solved(res.result) ?
-    Dict(ids(res.model) .=> sem_varmtx(res.model)' * value.(res.result[:x])) : nothing
+    Dict(s.ids(res.model) .=> s.mapping_matrix(res.model) * value.(res.result[:x])) :
+    nothing
 end
 
 """

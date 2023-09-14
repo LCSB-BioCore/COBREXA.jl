@@ -12,7 +12,7 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
     ubs = zeros(length(rxns))
     for (j, rxn) in enumerate(rxns)
         req = rxn.metabolites
-        for (i, v) in zip(indexin(keys(req), metabolites(model)), values(req))
+        for (i, v) in zip(indexin(keys(req), metabolite_ids(model)), values(req))
             push!(J, j)
             push!(I, i)
             push!(V, v)
@@ -21,7 +21,7 @@ function add_reactions!(model::MatrixModel, rxns::Vector{Reaction})
         lbs[j] = rxn.lower_bound
         ubs[j] = rxn.upper_bound
     end
-    Sadd = sparse(I, J, V, n_metabolites(model), length(rxns))
+    Sadd = sparse(I, J, V, metabolite_count(model), length(rxns))
     model.S = [model.S Sadd]
     model.c = dropzeros([model.c; zeros(length(rxns))]) # does not add an objective info from rxns
     model.xu = ubs
@@ -180,7 +180,7 @@ function add_reactions(
 
     new_mets = vcat(m.mets, mets[new_metabolites])
 
-    zero_block = spzeros(length(new_metabolites), n_variables(m))
+    zero_block = spzeros(length(new_metabolites), variable_count(m))
     ext_s = vcat(sparse(m.S), zero_block)
 
     mapping = [findfirst(isequal(met), new_mets) for met in mets]
@@ -294,7 +294,7 @@ end
 @_change_bounds_fn MatrixModel String inplace plural begin
     change_bounds!(
         model,
-        Vector{Int}(indexin(rxn_ids, variables(model)));
+        Vector{Int}(indexin(rxn_ids, variable_ids(model)));
         lower_bounds,
         upper_bounds,
     )
@@ -312,7 +312,7 @@ end
 @_change_bounds_fn MatrixModel String plural begin
     change_bounds(
         model,
-        Int.(indexin(rxn_ids, variables(model)));
+        Int.(indexin(rxn_ids, variable_ids(model)));
         lower_bounds,
         upper_bounds,
     )
@@ -323,7 +323,7 @@ end
 end
 
 @_remove_fn reaction MatrixModel Int inplace plural begin
-    mask = .!in.(1:n_variables(model), Ref(reaction_idxs))
+    mask = .!in.(1:variable_count(model), Ref(reaction_idxs))
     model.S = model.S[:, mask]
     model.c = model.c[mask]
     model.xl = model.xl[mask]
@@ -347,7 +347,7 @@ end
 end
 
 @_remove_fn reaction MatrixModel String inplace plural begin
-    remove_reactions!(model, Int.(indexin(reaction_ids, variables(model))))
+    remove_reactions!(model, Int.(indexin(reaction_ids, variable_ids(model))))
 end
 
 @_remove_fn reaction MatrixModel String begin
@@ -355,7 +355,7 @@ end
 end
 
 @_remove_fn reaction MatrixModel String plural begin
-    remove_reactions(model, Int.(indexin(reaction_ids, variables(model))))
+    remove_reactions(model, Int.(indexin(reaction_ids, variable_ids(model))))
 end
 
 @_remove_fn metabolite MatrixModel Int inplace begin
@@ -366,11 +366,11 @@ end
     remove_reactions!(
         model,
         [
-            ridx for ridx = 1:n_variables(model) if
+            ridx for ridx = 1:variable_count(model) if
             any(in.(findnz(model.S[:, ridx])[1], Ref(metabolite_idxs)))
         ],
     )
-    mask = .!in.(1:n_metabolites(model), Ref(metabolite_idxs))
+    mask = .!in.(1:metabolite_count(model), Ref(metabolite_idxs))
     model.S = model.S[mask, :]
     model.b = model.b[mask]
     model.mets = model.mets[mask]
@@ -392,7 +392,10 @@ end
 end
 
 @_remove_fn metabolite MatrixModel String inplace plural begin
-    remove_metabolites!(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites!(
+        model,
+        Int.(indexin(metabolite_ids, Accessors.metabolite_ids(model))),
+    )
 end
 
 @_remove_fn metabolite MatrixModel String begin
@@ -400,7 +403,10 @@ end
 end
 
 @_remove_fn metabolite MatrixModel String plural begin
-    remove_metabolites(model, Int.(indexin(metabolite_ids, metabolites(model))))
+    remove_metabolites(
+        model,
+        Int.(indexin(metabolite_ids, Accessors.metabolite_ids(model))),
+    )
 end
 
 """
@@ -438,7 +444,7 @@ function change_objective!(
     rxn_ids::Vector{String};
     weights = ones(length(rxn_ids)),
 )
-    idxs = indexin(rxn_ids, variables(model))
+    idxs = indexin(rxn_ids, variable_ids(model))
     any(isnothing(idx) for idx in idxs) &&
         throw(DomainError(rxn_ids, "Some reaction ids not found in the model"))
     change_objective!(model, Int.(idxs); weights)

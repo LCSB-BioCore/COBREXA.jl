@@ -79,10 +79,10 @@ function make_simplified_enzyme_constrained_model(
     bound_ids = keys(reaction_mass_group_bounds)
     total_reaction_mass_bounds = collect(values(reaction_mass_group_bounds))
 
-    (lbs, ubs) = bounds(model) # TODO need a reaction_bounds accessor for full generality
-    rids = variables(model) # TODO needs to be reactions
+    (lbs, ubs) = variable_bounds(model) # TODO need a reaction_bounds accessor for full generality
+    rids = variable_ids(model) # TODO needs to be reactions
 
-    for i = 1:n_variables(model) # TODO this should be reactions
+    for i = 1:variable_count(model) # TODO this should be reactions
 
         isozyme = ris_(model, rids[i])
 

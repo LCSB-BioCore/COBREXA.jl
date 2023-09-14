@@ -52,7 +52,7 @@ flux_balance_analysis_vec(m, GLPK.Optimizer)
 ```
 
 To modify the functionality, we simply add specific methods for accessors that
-we want modified, such as [`bounds`](@ref), [`stoichiometry`](@ref) and
+we want modified, such as [`variable_bounds`](@ref), [`stoichiometry`](@ref) and
 [`objective`](@ref). We demonstrate that on several examples below.
 
 ## Example 1: Slower model
@@ -73,8 +73,8 @@ wrapped model, and modify them in a certain way.
 
 ```julia
 COBREXA.unwrap_model(x::RateChangedModel) = x.mdl
-function COBREXA.bounds(x::RateChangedModel)
-    (l, u) = bounds(x.mdl) # extract the original bounds
+function COBREXA.variable_bounds(x::RateChangedModel)
+    (l, u) = variable_bounds(x.mdl) # extract the original bounds
     return (l .* x.factor, u .* x.factor) # return customized bounds
 end
 ```
@@ -106,11 +106,11 @@ modifying the reaction list, stoichiometry, and bounds:
 
 ```julia
 COBREXA.unwrap_model(x::LeakyModel) = x.mdl
-COBREXA.n_reactions(x::LeakyModel) = n_reactions(x.mdl) + 1
-COBREXA.reactions(x::LeakyModel) = [reactions(x.mdl); "The Leak"]
-COBREXA.stoichiometry(x::LeakyModel) = [stoichiometry(x.mdl) [m in x.leaking_metabolites ? -1.0 : 0.0 for m = metabolites(x.mdl)]]
-function COBREXA.bounds(x::LeakyModel)
-    (l, u) = bounds(x.mdl)
+COBREXA.reaction_count(x::LeakyModel) = reaction_count(x.mdl) + 1
+COBREXA.reaction_ids(x::LeakyModel) = [reaction_ids(x.mdl); "The Leak"]
+COBREXA.stoichiometry(x::LeakyModel) = [stoichiometry(x.mdl) [m in x.leaking_metabolites ? -1.0 : 0.0 for m = metabolite_ids(x.mdl)]]
+function COBREXA.variable_bounds(x::LeakyModel)
+    (l, u) = variable_bounds(x.mdl)
     return ([l; x.leak_rate], [u; x.leak_rate])
 end
 ```
@@ -120,7 +120,7 @@ accessors that depend on correct sizes of the model items.
 
 ```julia
 COBREXA.objective(x::LeakyModel) = [objective(x.mdl); 0]
-COBREXA.reaction_flux(x::LeakyModel) = [reaction_flux(x.mdl); zeros(1, n_reactions(x.mdl))]
+COBREXA.reaction_flux(x::LeakyModel) = [reaction_flux(x.mdl); zeros(1, reaction_count(x.mdl))]
 COBREXA.coupling(x::LeakyModel) = [coupling(x.mdl) zeros(n_coupling_constraints(x.mdl))]
 ```
 (Among other, we modified the [`reaction_flux`](@ref) so that all analysis

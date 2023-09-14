@@ -4,13 +4,13 @@
     stdmodel = convert(ObjectModel, jsonmodel)
 
     # test if same reaction ids
-    @test issetequal(variables(jsonmodel), variables(stdmodel))
-    @test issetequal(metabolites(jsonmodel), metabolites(stdmodel))
+    @test issetequal(variable_ids(jsonmodel), variable_ids(stdmodel))
+    @test issetequal(metabolite_ids(jsonmodel), metabolite_ids(stdmodel))
     @test issetequal(genes(jsonmodel), genes(stdmodel))
     # not the best tests since it is possible that error could cancel each other out:
     @test sum(stoichiometry(jsonmodel)) == sum(stoichiometry(stdmodel))
-    jlbs, jubs = bounds(jsonmodel)
-    slbs, subs = bounds(jsonmodel)
+    jlbs, jubs = variable_bounds(jsonmodel)
+    slbs, subs = variable_bounds(jsonmodel)
     @test sum(jlbs) == sum(slbs)
     @test sum(jubs) == sum(subs)
 end

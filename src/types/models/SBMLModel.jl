@@ -38,50 +38,40 @@ function SBMLModel(sbml::SBML.Model, active_objective::String = "")
     )
 end
 
-Accessors.variables(model::SBMLModel)::Vector{String} = model.reaction_ids
+Accessors.variable_ids(model::SBMLModel)::Vector{String} = model.reaction_ids
 
 Accessors.Internal.@all_variables_are_reactions SBMLModel
 
-Accessors.metabolites(model::SBMLModel)::Vector{String} = model.metabolite_ids
+Accessors.metabolite_ids(model::SBMLModel)::Vector{String} = model.metabolite_ids
 
-function Accessors.stoichiometry(model::SBMLModel)::SparseMat
-
-    # find the vector size for preallocation
-    nnz = 0
-    for (_, r) in model.sbml.reactions
-        for _ in r.reactants
-            nnz += 1
+function Accessors.metabolite_variables(model::SBMLModel)
+    x = Dict{String,Dict{String,Float64}}()
+    add!(mid, rid, c) =
+        if haskey(x, mid)
+            x[mid][rid] = c
+        else
+            x[mid] = Dict{String,Float64}(rid => c)
         end
-        for _ in r.products
-            nnz += 1
+    for (rid, r) in model.sbml.reactions
+        for reactant in r.reactants
+            add!(
+                reactant.species,
+                rid,
+                isnothing(reactant.stoichiometry) ? -1.0 : -reactant.stoichiometry,
+            )
         end
-    end
-
-    Rows = Int[]
-    Cols = Int[]
-    Vals = Float64[]
-    sizehint!(Rows, nnz)
-    sizehint!(Cols, nnz)
-    sizehint!(Vals, nnz)
-
-    row_idx = Dict(k => i for (i, k) in enumerate(model.metabolite_ids))
-    for (ridx, rid) in enumerate(model.reaction_ids)
-        r = model.sbml.reactions[rid]
-        for sr in r.reactants
-            push!(Rows, model.metabolite_idx[sr.species])
-            push!(Cols, ridx)
-            push!(Vals, isnothing(sr.stoichiometry) ? -1.0 : -sr.stoichiometry)
-        end
-        for sr in r.products
-            push!(Rows, model.metabolite_idx[sr.species])
-            push!(Cols, ridx)
-            push!(Vals, isnothing(sr.stoichiometry) ? 1.0 : sr.stoichiometry)
+        for product in r.products
+            add!(
+                product.species,
+                rid,
+                isnothing(product.stoichiometry) ? 1.0 : product.stoichiometry,
+            )
         end
     end
-    return sparse(Rows, Cols, Vals, n_metabolites(model), n_reactions(model))
+    x
 end
 
-function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
+function Accessors.variable_bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float64}}
     # There are multiple ways in SBML to specify a lower/upper bound. There are
     # the "global" model bounds that we completely ignore now because no one
     # uses them. In reaction, you can specify the bounds using "LOWER_BOUND"
@@ -134,10 +124,10 @@ function Accessors.bounds(model::SBMLModel)::Tuple{Vector{Float64},Vector{Float6
     )
 end
 
-Accessors.balance(model::SBMLModel)::SparseVec = spzeros(n_metabolites(model))
+Accessors.metabolite_bounds(model::SBMLModel)::SparseVec = spzeros(metabolite_count(model))
 
 function Accessors.objective(model::SBMLModel)::SparseVec
-    res = spzeros(n_reactions(model))
+    res = sparsevec([], [], reaction_count(model))
 
     objective = get(model.sbml.objectives, model.active_objective, nothing)
     if isnothing(objective) && length(model.sbml.objectives) == 1
@@ -279,10 +269,10 @@ function Base.convert(::Type{SBMLModel}, mm::AbstractMetabolicModel)
         return mm
     end
 
-    mets = metabolites(mm)
-    rxns = variables(mm)
+    mets = metabolite_ids(mm)
+    rxns = variable_ids(mm)
     stoi = stoichiometry(mm)
-    (lbs, ubs) = bounds(mm)
+    (lbs, ubs) = variable_bounds(mm)
     comps = default.("compartment", metabolite_compartment.(Ref(mm), mets))
     compss = Set(comps)
 

@@ -1,7 +1,7 @@
 @testset "MOMA" begin
     model = test_toyModel()
 
-    sol = [looks_like_biomass_reaction(rid) ? 0.5 : 0.0 for rid in variables(model)]
+    sol = [looks_like_biomass_reaction(rid) ? 0.5 : 0.0 for rid in variable_ids(model)]
 
     moma =
         minimize_metabolic_adjustment_analysis(

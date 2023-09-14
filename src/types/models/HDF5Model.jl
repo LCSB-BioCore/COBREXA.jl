@@ -26,6 +26,8 @@ mutable struct HDF5Model <: AbstractMetabolicModel
     HDF5Model(filename::String) = new(nothing, filename)
 end
 
+# TODO this might need to store the extra semantics now
+
 function Accessors.precache!(model::HDF5Model)::Nothing
     if isnothing(model.h5)
         model.h5 = h5open(model.filename, "r")
@@ -33,12 +35,12 @@ function Accessors.precache!(model::HDF5Model)::Nothing
     nothing
 end
 
-function Accessors.n_variables(model::HDF5Model)::Int
+function Accessors.variable_count(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["reactions"])
 end
 
-function Accessors.variables(model::HDF5Model)::Vector{String}
+function Accessors.variable_ids(model::HDF5Model)::Vector{String}
     precache!(model)
     # TODO is there any reasonable method to mmap strings from HDF5?
     read(model.h5["reactions"])
@@ -46,27 +48,34 @@ end
 
 Accessors.Internal.@all_variables_are_reactions HDF5Model
 
-function Accessors.n_metabolites(model::HDF5Model)::Int
+function Accessors.metabolite_count(model::HDF5Model)::Int
     precache!(model)
     length(model.h5["metabolites"])
 end
 
-function Accessors.metabolites(model::HDF5Model)::Vector{String}
+function Accessors.metabolite_ids(model::HDF5Model)::Vector{String}
     precache!(model)
     read(model.h5["metabolites"])
 end
 
-function Accessors.stoichiometry(model::HDF5Model)::SparseMat
+function Accessors.metabolite_variables_matrix(model::HDF5Model)::SparseMat
     precache!(model)
     h5_read_sparse(SparseMat, model.h5["stoichiometry"])
 end
 
-function Accessors.bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
+Accessors.metabolite_variables(model::HDF5Model)::Dict{String,Dict{String,Float}} =
+    Accessors.Internal.make_mapping_dict(
+        metabolite_ids(m),
+        variable_ids(m),
+        metabolite_variables_matrix(m),
+    )
+
+function Accessors.variable_bounds(model::HDF5Model)::Tuple{Vector{Float64},Vector{Float64}}
     precache!(model)
     (HDF5.readmmap(model.h5["lower_bounds"]), HDF5.readmmap(model.h5["upper_bounds"]))
 end
 
-function Accessors.balance(model::HDF5Model)::SparseVec
+function Accessors.metabolite_bounds(model::HDF5Model)::SparseVec
     precache!(model)
     h5_read_sparse(SparseVec, model.h5["balance"])
 end
