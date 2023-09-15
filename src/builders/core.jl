@@ -1,5 +1,5 @@
 
-import FBCModelInterface as F
+import AbstractFBCModels as F
 import SparseArrays: sparse
 
 """
