@@ -15,6 +15,7 @@ function J.Model(
     sense = J.MAX_SENSE,
 )
     model = J.Model(optimizer)
+    #TODO add support for quadratic stuff (copy out of CTs docs)
     J.@variable(model, x[1:C.var_count(cs)])
     isnothing(objective) || J.@objective(model, sense, C.value_product(objective, x))
     function add_constraint(c::C.Constraint)
