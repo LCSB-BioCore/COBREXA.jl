@@ -12,7 +12,7 @@ function J.Model(
     constraints::C.ConstraintTree;
     objective::Maybe{C.Value} = nothing,
     optimizer,
-    sense = J.MAX_SENSE
+    sense = J.MAX_SENSE,
 )
     model = J.Model(optimizer)
     J.@variable(model, x[1:C.var_count(cs)])
@@ -32,6 +32,13 @@ function J.Model(
     add_constraint(cs)
     model
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Convenience re-export of `Model` from JuMP.
+"""
+const Model = J.Model
 
 """
 $(TYPEDSIGNATURES)
@@ -63,14 +70,14 @@ $(TYPEDSIGNATURES)
 The optimized variable assignment of a JuMP model, if solved.
 """
 optimized_variable_assignment(opt_model::J.Model)::Maybe{Vector{Float64}} =
-    is_solved(opt_model) ? J.value.(model[:x])
+    is_solved(opt_model) ? J.value.(model[:x]) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Convenience overload for making solution trees out of JuMP models
 """
-C.solution_tree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} =
+C.SolutionTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} = nothing
 let vars = optimized_variable_assignment(opt_model)
-    isnothing(vars) ? nothing : C.solution_tree(c, vars)
+    isnothing(vars) ? nothing : C.SolutionTree(c, vars)
 end
