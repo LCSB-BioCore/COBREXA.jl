@@ -57,6 +57,7 @@ myModel *=
         signed = myModel.fluxes,
     )
 ```
+#TODO this might go to the docs
 """
 sign_split_constraints(;
     positive::C.ConstraintTree,
