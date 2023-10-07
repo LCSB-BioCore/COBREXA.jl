@@ -96,7 +96,7 @@ $(TYPEDSIGNATURES)
 
 Convenience overload for making solution trees out of JuMP models
 """
-C.SolutionTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} = nothing
-let vars = optimized_variable_assignment(opt_model)
-    isnothing(vars) ? nothing : C.SolutionTree(c, vars)
-end
+C.SolutionTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} =
+    let vars = optimized_variable_assignment(opt_model)
+        isnothing(vars) ? nothing : C.SolutionTree(c, vars)
+    end
