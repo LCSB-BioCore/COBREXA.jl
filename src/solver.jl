@@ -14,10 +14,18 @@ function J.Model(
     optimizer,
     sense = J.MAX_SENSE,
 )
+    # TODO this might better have its own name to avoid type piracy.
     model = J.Model(optimizer)
-    #TODO add support for quadratic stuff (copy out of CTs docs)
     J.@variable(model, x[1:C.var_count(cs)])
-    isnothing(objective) || J.@objective(model, sense, C.value_product(objective, x))
+
+    # objectives
+    if objective isa C.Value
+        JuMP.@objective(model, sense, C.value_product(objective, x))
+    elseif objective isa C.QValue
+        JuMP.@objective(model, sense, C.qvalue_product(objective, x))
+    end
+
+    # constraints
     function add_constraint(c::C.Constraint)
         if c.bound isa Float64
             J.@constraint(model, C.value_product(c.value, x) == c.bound)
@@ -27,11 +35,21 @@ function J.Model(
             isinf(c.bound[2]) || J.@constraint(model, val <= c.bound[2])
         end
     end
+    function add_constraint(c::C.QConstraint)
+        if c.bound isa Float64
+            JuMP.@constraint(model, C.qvalue_product(c.qvalue, x) == c.bound)
+        elseif c.bound isa Tuple{Float64,Float64}
+            val = C.qvalue_product(c.qvalue, x)
+            isinf(c.bound[1]) || JuMP.@constraint(model, val >= c.bound[1])
+            isinf(c.bound[2]) || JuMP.@constraint(model, val <= c.bound[2])
+        end
+    end
     function add_constraint(c::C.ConstraintTree)
         add_constraint.(values(c))
     end
     add_constraint(cs)
-    model
+
+    return model
 end
 
 """
