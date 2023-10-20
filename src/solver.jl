@@ -8,40 +8,27 @@ Construct a JuMP `Model` that describes the precise constraint system into the
 JuMP `Model` created for solving in `optimizer`, with a given optional
 `objective` and optimization `sense`.
 """
-function J.Model(
-    constraints::C.ConstraintTree;
-    objective::Maybe{C.Value} = nothing,
+function to_jump_model(
+    cs::C.ConstraintTree;
+    objective::Union{C.LinearValue,C.QuadraticValue, Nothing} = nothing,
     optimizer,
     sense = J.MAX_SENSE,
 )
     # TODO this might better have its own name to avoid type piracy.
     model = J.Model(optimizer)
+    
     J.@variable(model, x[1:C.var_count(cs)])
-
-    # objectives
-    if objective isa C.Value
-        JuMP.@objective(model, sense, C.value_product(objective, x))
-    elseif objective isa C.QValue
-        JuMP.@objective(model, sense, C.qvalue_product(objective, x))
-    end
-
+    
+    isnothing(objective) || J.@objective(model, sense, C.substitute(objective, x))
+    
     # constraints
     function add_constraint(c::C.Constraint)
         if c.bound isa Float64
-            J.@constraint(model, C.value_product(c.value, x) == c.bound)
+            J.@constraint(model, C.substitute(c.value, x) == c.bound)
         elseif c.bound isa C.IntervalBound
-            val = C.value_product(c.value, x)
+            val = C.substitute(c.value, x)
             isinf(c.bound[1]) || J.@constraint(model, val >= c.bound[1])
             isinf(c.bound[2]) || J.@constraint(model, val <= c.bound[2])
-        end
-    end
-    function add_constraint(c::C.QConstraint)
-        if c.bound isa Float64
-            JuMP.@constraint(model, C.qvalue_product(c.qvalue, x) == c.bound)
-        elseif c.bound isa Tuple{Float64,Float64}
-            val = C.qvalue_product(c.qvalue, x)
-            isinf(c.bound[1]) || JuMP.@constraint(model, val >= c.bound[1])
-            isinf(c.bound[2]) || JuMP.@constraint(model, val <= c.bound[2])
         end
     end
     function add_constraint(c::C.ConstraintTree)
@@ -51,20 +38,6 @@ function J.Model(
 
     return model
 end
-
-"""
-$(TYPEDSIGNATURES)
-
-Convenience re-export of `Model` from JuMP.
-"""
-const Model = J.Model
-
-"""
-$(TYPEDSIGNATURES)
-
-Convenience re-export of `optimize!` from JuMP.
-"""
-const optimize! = J.optimize!
 
 """
 $(TYPEDSIGNATURES)
@@ -89,14 +62,14 @@ $(TYPEDSIGNATURES)
 The optimized variable assignment of a JuMP model, if solved.
 """
 optimized_variable_assignment(opt_model::J.Model)::Maybe{Vector{Float64}} =
-    is_solved(opt_model) ? J.value.(model[:x]) : nothing
+    is_solved(opt_model) ? J.value.(opt_model[:x]) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
 Convenience overload for making solution trees out of JuMP models
 """
-C.SolutionTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} =
+C.ValueTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.ValueTree} =
     let vars = optimized_variable_assignment(opt_model)
-        isnothing(vars) ? nothing : C.SolutionTree(c, vars)
+        isnothing(vars) ? nothing : C.ValueTree(c, vars)
     end

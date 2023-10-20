@@ -1,5 +1,5 @@
 
-import AbstractFBCModels as F
+import AbstractFBCModels as A
 import SparseArrays: sparse
 
 """
@@ -8,22 +8,21 @@ $(TYPEDSIGNATURES)
 A constraint tree that models the content of the given instance of
 `AbstractFBCModel`.
 """
-metabolic_model(model::F.AbstractFBCModel) =
-    let
-        rxns =
-            Symbol.(F.reactions(model)), mets =
-                Symbol.(F.metabolites(model)), lbs, ubs =
-                    F.bounds(model), stoi =
-                        F.stoichiometry(model), bal =
-                            F.balance(model), obj = F.objective(model)
+function metabolic_model(model::A.AbstractFBCModel)
+    rxns = Symbol.(A.reactions(model))
+    mets = Symbol.(A.metabolites(model))
+    lbs, ubs = A.bounds(model)
+    stoi = A.stoichiometry(model)
+    bal = A.balance(model)
+    obj = A.objective(model)
 
-        :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
-        :balance^C.ConstraintTree(
-            m => Constraint(value = Value(sparse(row)), bound = b) for
-            (m, row, b) in zip(mets, eachrow(stoi), bals)
-        ) *
-        :objective^C.Constraint(C.Value(sparse(obj)))
-    end
+    :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
+    :stoichiometry^C.ConstraintTree(
+        met => C.Constraint(value = C.LinearValue(sparse(row)), bound = b) for
+        (met, row, b) in zip(mets, eachrow(stoi), bal)
+    ) *
+    :objective^C.Constraint(C.LinearValue(sparse(obj)))
+end
 
 """
 $(TYPEDSIGNATURES)
