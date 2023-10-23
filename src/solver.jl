@@ -1,6 +1,4 @@
 
-import JuMP as J
-
 """
 $(TYPEDSIGNATURES)
 
@@ -10,17 +8,17 @@ JuMP `Model` created for solving in `optimizer`, with a given optional
 """
 function to_jump_model(
     cs::C.ConstraintTree;
-    objective::Union{C.LinearValue,C.QuadraticValue, Nothing} = nothing,
+    objective::Union{C.LinearValue,C.QuadraticValue,Nothing} = nothing,
     optimizer,
     sense = J.MAX_SENSE,
 )
     # TODO this might better have its own name to avoid type piracy.
     model = J.Model(optimizer)
-    
+
     J.@variable(model, x[1:C.var_count(cs)])
-    
+
     isnothing(objective) || J.@objective(model, sense, C.substitute(objective, x))
-    
+
     # constraints
     function add_constraint(c::C.Constraint)
         if c.bound isa Float64

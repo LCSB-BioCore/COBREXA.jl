@@ -1,7 +1,4 @@
 
-import AbstractFBCModels as A
-import SparseArrays: sparse
-
 """
 $(TYPEDSIGNATURES)
 
@@ -17,7 +14,7 @@ function metabolic_model(model::A.AbstractFBCModel)
     obj = A.objective(model)
 
     :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
-    :stoichiometry^C.ConstraintTree(
+    :flux_stoichiometry^C.ConstraintTree(
         met => C.Constraint(value = C.LinearValue(sparse(row)), bound = b) for
         (met, row, b) in zip(mets, eachrow(stoi), bal)
     ) *
@@ -32,6 +29,18 @@ Shortcut for allocation non-negative ("unsigned") variables. The argument
 """
 unsigned_variables(; keys) = C.variables(; keys, bounds = Ref((0.0, Inf)))
 
+function fluxes_in_direction(fluxes::C.ConstraintTree, direction = :forward)
+    keys = Symbol[]
+    for (id, flux) in fluxes
+        if direction == :forward
+            last(flux.bound) > 0 && push!(keys, id)
+        else
+            first(flux.bound) < 0 && push!(keys, id)
+        end
+    end
+    C.variables(; keys, bounds = Ref((0.0, Inf)))
+end
+
 """
 $(TYPEDSIGNATURES)
 
@@ -43,7 +52,7 @@ Keys in the result are the same as the keys of `signed` constraints.
 Typically, this can be used to create "unidirectional" fluxes
 together with [`unsigned_variables`](@ref):
 ```
-uvars = unsigned_variables(keys(myModel.fluxes))
+uvars = unsigned_variables(keys = collect(keys(myModel.fluxes)))
 
 myModel = myModel +
     :fluxes_forward^uvars +
@@ -63,9 +72,10 @@ sign_split_constraints(;
     negative::C.ConstraintTree,
     signed::C.ConstraintTree,
 ) = C.ConstraintTree(
-    C.Constraint(
-        value = s + (haskey(negative, k) ? negative[k].value : zero(C.Value)) -
-                (haskey(positive, k) ? positive[k].value : zero(C.Value)),
+    k => C.Constraint(
+        value = s.value +
+                (haskey(negative, k) ? negative[k].value : zero(typeof(s.value))) -
+                (haskey(positive, k) ? positive[k].value : zero(typeof(s.value))),
         bound = 0.0,
-    ) for (k, s) in C.elems(signed)
+    ) for (k, s) in signed
 )
