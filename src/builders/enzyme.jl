@@ -16,12 +16,10 @@ through of all these isozymes. These variables are linked to fluxes through
 """
 function isozyme_variables(
     reaction_id::Symbol,
-    reaction_isozymes::Dict{Symbol,Vector{Isozyme}},
+    reaction_isozymes::Dict{Symbol,Dict{Symbol, Isozyme}},
 )
     C.variables(;
-        keys = Symbol.(
-            "isozyme_" .* string.(collect(1:length(reaction_isozymes[reaction_id])))
-        ),
+        keys = collect(keys(reaction_isozymes[reaction_id])),
         bounds = Ref((0.0, Inf)),
     )
 end
@@ -55,12 +53,12 @@ function enzyme_stoichiometry(
     enzymes::C.ConstraintTree,
     fluxes_isozymes_forward::C.ConstraintTree,
     fluxes_isozymes_backward::C.ConstraintTree,
-    reaction_isozymes::Dict{Symbol,Vector{Isozyme}},
+    reaction_isozymes::Dict{Symbol,Dict{Symbol, Isozyme}},
 )   
     # map enzyme ids to reactions that use them (not all isozymes have to though)
     enzyme_rid_lookup = Dict{Symbol,Vector{Symbol}}()
     for (rid, isozymes) in reaction_isozymes
-        for isozyme in isozymes
+        for isozyme in values(isozymes)
             for gid in keys(isozyme.gene_product_stoichiometry)
                 rids = get!(enzyme_rid_lookup, Symbol(gid), Symbol[])
                 rid in rids || push!(rids, rid)
@@ -108,14 +106,15 @@ function enzyme_balance(
     gid::Symbol,
     rid::Symbol,
     fluxes_isozymes::C.ConstraintTree, # direction
-    reaction_isozymes::Dict{Symbol,Vector{Isozyme}},
+    reaction_isozymes::Dict{Symbol,Dict{Symbol, Isozyme}},
     direction = :kcat_forward,
-)
+)   
+    isozyme_dict = reaction_isozymes[rid]
+
     sum( # this is where the stoichiometry comes in
-        -isozyme_value.value * isozyme_data.gene_product_stoichiometry[string(gid)] /
-        getfield(isozyme_data, direction) for (isozyme_data, (_, isozyme_value)) in
-        zip(reaction_isozymes[rid], fluxes_isozymes[rid]) if
-        gid in Symbol.(keys(isozyme_data.gene_product_stoichiometry));
+        -isozyme_value.value * isozyme_dict[isozyme_id].gene_product_stoichiometry[string(gid)] /
+        getfield(isozyme_dict[isozyme_id], direction) for (isozyme_id, isozyme_value) in
+        fluxes_isozymes[rid] if gid in Symbol.(keys(isozyme_dict[isozyme_id].gene_product_stoichiometry));
         init = zero(C.LinearValue),
     )
 end
