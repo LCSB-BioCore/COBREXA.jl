@@ -36,17 +36,17 @@
 
     # values_dict(:reaction, mmdfm, opt_model) # TODO throw missing semantics error
     @test length(x |> values_dict(:metabolite_log_concentration)) == 72
-    @test length(x |> values_dict(:gibbs_free_energy)) == 95
+    @test length(x |> values_dict(:gibbs_free_energy_reaction)) == 95
 
     sols =
         variability_analysis(
-            :gibbs_free_energy,
+            :gibbs_free_energy_reaction,
             mmdfm,
             Tulip.Optimizer;
             bounds = gamma_bounds(0.9),
             modifications = [modify_optimizer_attribute("IPM_IterationsLimit", 1000)],
         ) |> result
 
-    pyk_idx = first(indexin(["ΔG PYK"], gibbs_free_energy_ids(mmdfm)))
+    pyk_idx = first(indexin(["ΔG PYK"], gibbs_free_energy_reactions(mmdfm)))
     @test isapprox(sols[pyk_idx, 2], -1.5895040002691128; atol = TEST_TOLERANCE)
 end

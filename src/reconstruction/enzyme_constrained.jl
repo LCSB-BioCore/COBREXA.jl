@@ -68,13 +68,13 @@ function make_enzyme_constrained_model(
     coupling_row_gene_product = Int[]
 
     gids = genes(model)
-    (lbs, ubs) = variable_bounds(model)
-    rids = variable_ids(model)
+    (lbs, ubs) = bounds(model)
+    rids = variables(model)
 
     gene_name_lookup = Dict(gids .=> 1:length(gids))
     gene_row_lookup = Dict{Int,Int}()
 
-    for i = 1:variable_count(model)
+    for i = 1:n_variables(model)
         isozymes = reaction_isozymes(model, rids[i])
 
         if isnothing(isozymes)

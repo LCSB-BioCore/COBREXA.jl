@@ -59,7 +59,7 @@
     @test contains(sprint(show, MIME("text/plain"), cm), "community model")
 
     @test issetequal(
-        variable_ids(cm),
+        variables(cm),
         [
             "m1#EX_A"
             "m1#r1"
@@ -78,7 +78,7 @@
     )
 
     @test issetequal(
-        metabolite_ids(cm),
+        metabolites(cm),
         [
             "m1#A"
             "m1#B"
@@ -108,8 +108,8 @@
         ],
     )
 
-    @test variable_count(cm) == 13
-    @test metabolite_count(cm) == 11
+    @test n_variables(cm) == 13
+    @test n_metabolites(cm) == 11
     @test n_genes(cm) == 8
 
     @test all(
@@ -128,7 +128,7 @@
         ],
     )
 
-    lbs, ubs = variable_bounds(cm)
+    lbs, ubs = bounds(cm)
     @test all(lbs .== [
         -1000.0
         -1000.0
@@ -184,7 +184,7 @@
 
     # test modification for community model
     res = flux_balance_analysis(cm, Tulip.Optimizer)
-    mb = res.result[:metabolite_eqs]
+    mb = res.result[:mb]
     x = res.result[:x]
     @test normalized_coefficient(mb[9], x[1]) == 0.2
     @test normalized_coefficient(mb[11], x[13]) == -0.8
@@ -194,7 +194,7 @@
         Tulip.Optimizer;
         modifications = [modify_abundances([0.5, 0.5])],
     )
-    mb = res2.result[:metabolite_eqs]
+    mb = res2.result[:mb]
     x = res2.result[:x]
     @test normalized_coefficient(mb[9], x[1]) == 0.5
     @test normalized_coefficient(mb[11], x[13]) == -0.5
@@ -218,7 +218,7 @@
         Tulip.Optimizer;
         modifications = [modify_abundances([0.3, 0.7])],
     )
-    mb = res3.result[:metabolite_eqs]
+    mb = res3.result[:mb]
     x = res3.result[:x]
     @test normalized_coefficient(mb[10], x[5]) == 0.3
     @test normalized_coefficient(mb[10], x[12]) == -0.3
@@ -307,7 +307,7 @@ end
 
     # test if model can be converted to another type
     om = convert(ObjectModel, cm)
-    @test variable_count(om) == variable_count(cm)
+    @test n_variables(om) == n_variables(cm)
 end
 
 @testset "EqualGrowthCommunityModel: enzyme constrained e coli" begin
@@ -322,7 +322,7 @@ end
     ecoli.genes["s0001"].product_upper_bound = 10.0
 
     # update isozymes with kinetic information
-    for rid in reaction_ids(ecoli)
+    for rid in reactions(ecoli)
         if haskey(ecoli_core_reaction_kcats, rid) # if has kcat, then has grr
             newisozymes = Isozyme[]
             for (i, grr) in enumerate(reaction_gene_associations(ecoli, rid))

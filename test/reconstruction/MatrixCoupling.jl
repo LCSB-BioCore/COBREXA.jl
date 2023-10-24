@@ -25,7 +25,7 @@
     cp = test_coupledLP()
     n_c = n_coupling_constraints(cp)
     new_cp = remove_coupling_constraints(cp, 1)
-    @test size(coupling(cp)) == (n_c, variable_count(cp))
+    @test size(coupling(cp)) == (n_c, n_variables(cp))
     @test n_c - 1 == n_coupling_constraints(new_cp)
     @test n_coupling_constraints(cp) == n_c
     new_cp = remove_coupling_constraints(cp, [1, 2])
@@ -117,7 +117,7 @@ end
 
 @testset "Remove reactions" begin
     cp = convert(MatrixModelWithCoupling, test_LP())
-    cp = add_coupling_constraints(cp, 1.0 .* collect(1:variable_count(cp)), -1.0, 1.0)
+    cp = add_coupling_constraints(cp, 1.0 .* collect(1:n_variables(cp)), -1.0, 1.0)
 
     new_cp = remove_reactions(cp, [3, 2])
     @test new_cp isa MatrixModelWithCoupling

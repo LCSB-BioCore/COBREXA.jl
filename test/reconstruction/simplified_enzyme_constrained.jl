@@ -8,7 +8,7 @@
     model.genes["s0001"] = Gene(id = "s0001"; product_molar_mass = 0.0)
 
     # update isozymes with kinetic information
-    for rid in reaction_ids(model)
+    for rid in reactions(model)
         if haskey(ecoli_core_reaction_kcats, rid) # if has kcat, then has grr
             newisozymes = Isozyme[]
             for (i, grr) in enumerate(reaction_gene_associations(model, rid))

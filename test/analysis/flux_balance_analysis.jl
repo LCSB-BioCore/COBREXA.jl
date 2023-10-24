@@ -26,7 +26,7 @@
     fluxes_vec = flux_balance_analysis(cp, Tulip.Optimizer) |> values_vec
     @test all(fluxes_vec .== sol)
     fluxes_dict = flux_balance_analysis(cp, Tulip.Optimizer) |> values_dict
-    rxns = variable_ids(cp)
+    rxns = variables(cp)
     @test all([fluxes_dict[rxns[i]] == sol[i] for i in eachindex(rxns)])
 end
 
@@ -102,8 +102,8 @@ end
     γ = 40
 
     # construct coupling bounds
-    nr = variable_count(model)
-    biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], variable_ids(model)))
+    nr = n_variables(model)
+    biomass_index = first(indexin(["BIOMASS_Ecoli_core_w_GAM"], variables(model)))
 
     Cf = sparse(1.0I, nr, nr)
     Cf[:, biomass_index] .= -γ

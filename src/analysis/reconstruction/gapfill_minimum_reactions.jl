@@ -54,13 +54,13 @@ function gapfill_minimum_reactions(
     precache!(model)
 
     # constraints from universal reactions that can fill gaps
-    univs = _universal_stoichiometry(universal_reactions, metabolite_ids(model))
+    univs = _universal_stoichiometry(universal_reactions, metabolites(model))
 
     # add space for additional metabolites and glue with the universal reaction
     # stoichiometry
     extended_stoichiometry = [[
         stoichiometry(model)
-        spzeros(length(univs.new_mids), variable_count(model))
+        spzeros(length(univs.new_mids), n_variables(model))
     ] univs.stoichiometry]
 
     # make the model anew (we can't really use make_optimization_model because
@@ -69,8 +69,8 @@ function gapfill_minimum_reactions(
     # tiny temporary wrapper for this.
     # keep this in sync with src/base/solver.jl, except for adding balances.
     opt_model = Model(optimizer)
-    @variable(opt_model, x[1:variable_count(model)])
-    xl, xu = variable_bounds(model)
+    @variable(opt_model, x[1:n_variables(model)])
+    xl, xu = bounds(model)
     @constraint(opt_model, lbs, xl .<= x)
     @constraint(opt_model, ubs, x .<= xu)
 
@@ -89,7 +89,7 @@ function gapfill_minimum_reactions(
     @constraint(
         opt_model,
         extended_stoichiometry * [x; ux] .==
-        [metabolite_bounds(model); zeros(length(univs.new_mids))]
+        [balance(model); zeros(length(univs.new_mids))]
     )
 
     # objective bounds

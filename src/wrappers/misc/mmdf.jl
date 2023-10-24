@@ -11,7 +11,7 @@ active_reaction_ids(model::MaxMinDrivingForceModel) = filter(
             abs(get(model.flux_solution, rid, model.small_flux_tol / 2)) >
             model.small_flux_tol &&
             !(rid in model.ignore_reaction_ids),
-    reaction_ids(model),
+    reactions(model),
 )
 
 """
@@ -20,4 +20,4 @@ $(TYPEDSIGNATURES)
 Helper function that returns the unmangled variable IDs.
 """
 original_variables(model::MaxMinDrivingForceModel) =
-    ["mmdf"; metabolite_ids(model); reaction_ids(model)]
+    ["mmdf"; metabolites(model); reactions(model)]

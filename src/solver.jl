@@ -1,276 +1,102 @@
 
-"""
-    module Solver
-
-Interface of COBREXA to JuMP solvers; mainly recreation of the
-`AbstractMetabolicModel`s as JuMP optimization models, and retrieval of solved
-values.
-
-# Exports
-$(EXPORTS)
-"""
-module Solver
-using ..ModuleTools
-@dse
-
-using ..Types
-using ..Accessors
-using JuMP
+import JuMP as J
 
 """
 $(TYPEDSIGNATURES)
 
-Convert `AbstractMetabolicModel`s to a JuMP model, place objectives and the equality
-constraint.
-
-Here coupling means inequality constraints coupling multiple variables together.
+Construct a JuMP `Model` that describes the precise constraint system into the
+JuMP `Model` created for solving in `optimizer`, with a given optional
+`objective` and optimization `sense`.
 """
-function make_optimization_model(
-    model::AbstractMetabolicModel,
-    optimizer;
-    sense = MAX_SENSE,
+function J.Model(
+    constraints::C.ConstraintTree;
+    objective::Maybe{C.Value} = nothing,
+    optimizer,
+    sense = J.MAX_SENSE,
 )
+    # TODO this might better have its own name to avoid type piracy.
+    model = J.Model(optimizer)
+    J.@variable(model, x[1:C.var_count(cs)])
 
-    precache!(model)
-
-    optimization_model = Model(optimizer)
-
-    function label(semname, suffix, constraints)
-        l = Symbol(semname, :_, suffix)
-        optimization_model[l] = constraints
-        set_name.(constraints, "$l")
+    # objectives
+    if objective isa C.Value
+        JuMP.@objective(model, sense, C.value_product(objective, x))
+    elseif objective isa C.QValue
+        JuMP.@objective(model, sense, C.qvalue_product(objective, x))
     end
 
-    # make the variables
-    n = variable_count(model)
-    @variable(optimization_model, x[1:n])
-
-    # bound the variables
-    xl, xu = variable_bounds(model)
-    @constraint(optimization_model, lbs, xl .<= x) # lower bounds
-    @constraint(optimization_model, ubs, x .<= xu) # upper bounds
-
-    # mark the objective
-    let obj = objective(model)
-        if obj isa AbstractVector
-            # linear objective case
-            @objective(optimization_model, sense, obj' * x)
-        else
-            # quadratic objective case
-            @objective(optimization_model, sense, x' * obj * [x; 1])
+    # constraints
+    function add_constraint(c::C.Constraint)
+        if c.bound isa Float64
+            J.@constraint(model, C.value_product(c.value, x) == c.bound)
+        elseif c.bound isa C.IntervalBound
+            val = C.value_product(c.value, x)
+            isinf(c.bound[1]) || J.@constraint(model, val >= c.bound[1])
+            isinf(c.bound[2]) || J.@constraint(model, val <= c.bound[2])
         end
     end
-
-    # go over the semantics and add bounds if there are any
-    # TODO for use in sampling and other things, it would be nice to have
-    # helper functions to make a complete matrix of equality and interval
-    # constraints.
-    for (semname, sem) in Accessors.Internal.get_semantics()
-        bounds = sem.bounds(model)
-        if isnothing(bounds)
-            continue
-        elseif typeof(bounds) <: AbstractVector{Float64}
-            # equality bounds
-            label(
-                semname,
-                :eqs,
-                @constraint(optimization_model, sem.mapping_matrix(model) * x .== bounds)
-            )
-        elseif typeof(bounds) <: Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}}
-            # lower/upper interval bounds
-            slb, sub = bounds
-            smtx = sem.mapping_matrix(model)
-            label(semname, :lbs, @constraint(optimization_model, slb .<= smtx * x))
-            label(semname, :ubs, @constraint(optimization_model, smtx * x .<= sub))
-            # TODO: this actually uses the semantic matrix transposed, but
-            # that's right. Fix: transpose all other semantics because having
-            # the stoichiometry in the "right" way is quite crucial for folks
-            # being able to reason about stuff.
-        else
-            # if the bounds returned something weird, complain loudly.
-            throw(
-                TypeError(
-                    :make_optimization_model,
-                    "conversion of $(typeof(model)) bounds",
-                    Union{
-                        Nothing,
-                        <:AbstractVector{Float64},
-                        Tuple{<:AbstractVector{Float64},<:AbstractVector{Float64}},
-                    },
-                    typeof(bounds),
-                ),
-            )
+    function add_constraint(c::C.QConstraint)
+        if c.bound isa Float64
+            JuMP.@constraint(model, C.qvalue_product(c.qvalue, x) == c.bound)
+        elseif c.bound isa Tuple{Float64,Float64}
+            val = C.qvalue_product(c.qvalue, x)
+            isinf(c.bound[1]) || JuMP.@constraint(model, val >= c.bound[1])
+            isinf(c.bound[2]) || JuMP.@constraint(model, val <= c.bound[2])
         end
     end
-
-    # add coupling constraints
-    C = coupling(model)
-    if !isempty(C)
-        cl, cu = coupling_bounds(model)
-        @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
-        @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
+    function add_constraint(c::C.ConstraintTree)
+        add_constraint.(values(c))
     end
+    add_constraint(cs)
 
-    return optimization_model
-    #TODO so well, what about having ModelWithResult right from this point? ;D
+    return model
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Return `true` if `opt_model` solved successfully (solution is optimal or locally
-optimal).  Return `false` if any other termination status is reached.
-Termination status is defined in the documentation of `JuMP`.
+Convenience re-export of `Model` from JuMP.
 """
-is_solved(opt_model::Model) =
-    termination_status(opt_model) in [MOI.OPTIMAL, MOI.LOCALLY_SOLVED]
+const Model = J.Model
 
 """
 $(TYPEDSIGNATURES)
 
-Variant of is_solved that works with [`ModelWithResult`](@ref).
+Convenience re-export of `optimize!` from JuMP.
 """
-is_solved(r::ModelWithResult{<:Model}) = is_solved(r.result)
-
-"""
-$(TYPEDSIGNATURES)
-
-Shortcut for running JuMP `optimize!` on a model and returning the objective
-value, if solved.
-"""
-function optimize_objective(opt_model)::Maybe{Float64}
-    optimize!(opt_model)
-    solved_objective_value(opt_model)
-end
+const optimize! = J.optimize!
 
 """
 $(TYPEDSIGNATURES)
 
-Helper function to set the bounds of a variable in the model. Internally calls
-`set_normalized_rhs` from JuMP. If the bounds are set to `nothing`, they will
-not be changed.
+`true` if `opt_model` solved successfully (solution is optimal or
+locally optimal). `false` if any other termination status is reached.
 """
-function set_optmodel_bound!(
-    vidx,
-    opt_model;
-    lower_bound::Maybe{Real} = nothing,
-    upper_bound::Maybe{Real} = nothing,
-)
-    isnothing(lower_bound) || set_normalized_rhs(opt_model[:lbs][vidx], -lower_bound)
-    isnothing(upper_bound) || set_normalized_rhs(opt_model[:ubs][vidx], upper_bound)
-end
+is_solved(opt_model::J.Model) =
+    J.termination_status(opt_model) in [J.MOI.OPTIMAL, J.MOI.LOCALLY_SOLVED]
 
 """
 $(TYPEDSIGNATURES)
 
-Returns the current objective value of a model, if solved.
+The optimized objective value of a JuMP model, if solved.
 """
-solved_objective_value(opt_model::Model)::Maybe{Float64} =
-    is_solved(opt_model) ? objective_value(opt_model) : nothing
-
-"""
-$(TYPEDSIGNATURES)
-
-Pipeable variant of [`solved_objective_value`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> solved_objective_value
-```
-"""
-solved_objective_value(x::ModelWithResult{<:Model}) = solved_objective_value(x.result)
+optimized_objective_value(opt_model::J.Model)::Maybe{Float64} =
+    is_solved(opt_model) ? J.objective_value(opt_model) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
-Return a vector of all variable values from the solved model, in the same order
-given by [`variable_ids`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_vec
-```
+The optimized variable assignment of a JuMP model, if solved.
 """
-function values_vec(res::ModelWithResult{<:Model})
-    is_solved(res.result) ? value.(res.result[:x]) : nothing
-end
+optimized_variable_assignment(opt_model::J.Model)::Maybe{Vector{Float64}} =
+    is_solved(opt_model) ? J.value.(model[:x]) : nothing
 
 """
 $(TYPEDSIGNATURES)
 
-Return a vector of all semantic variable values in the model, in the order
-given by the corresponding semantics.
-
-# Example
-```
-values_vec(:reaction, flux_balance_analysis(model, ...))
-```
+Convenience overload for making solution trees out of JuMP models
 """
-function values_vec(semantics::Symbol, res::ModelWithResult{<:Model})
-    s = Accessors.Internal.semantics(semantics)
-    is_solved(res.result) ? s.mapping_matrix(res.model) * value.(res.result[:x]) : nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of [`values_vec`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_vec(:reaction)
-```
-"""
-values_vec(semantics::Symbol) =
-    (res::ModelWithResult{<:Model}) -> values_vec(semantics, res)
-
-"""
-$(TYPEDSIGNATURES)
-
-Return a dictionary of all variable values from the solved model mapped
-to their IDs.
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_dict
-```
-"""
-function values_dict(res::ModelWithResult{<:Model})
-    is_solved(res.result) ? Dict(variable_ids(res.model) .=> value.(res.result[:x])) :
-    nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-From the optimized model, returns a dictionary mapping semantic IDs to their
-solved values for the selected `semantics`. If the model did not solve, returns
-`nothing`.
-
-# Example
-```
-values_dict(:reaction, flux_balance_analysis(model, ...))
-```
-"""
-function values_dict(semantics::Symbol, res::ModelWithResult{<:Model})
-    s = Accessors.Internal.semantics(semantics)
-    is_solved(res.result) ?
-    Dict(s.ids(res.model) .=> s.mapping_matrix(res.model) * value.(res.result[:x])) :
-    nothing
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-A pipeable variant of [`values_dict`](@ref).
-
-# Example
-```
-flux_balance_analysis(model, ...) |> values_dict(:reaction)
-```
-"""
-values_dict(semantics::Symbol) =
-    (res::ModelWithResult{<:Model}) -> values_dict(semantics, res)
-
-@export_locals
-end
+C.SolutionTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} =
+    let vars = optimized_variable_assignment(opt_model)
+        isnothing(vars) ? nothing : C.SolutionTree(c, vars)
+    end

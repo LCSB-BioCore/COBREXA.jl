@@ -6,8 +6,8 @@
     sm = convert(ObjectModel, mm)
     mm2 = convert(MATModel, sm)
 
-    @test Set(variable_ids(mm)) == Set(variable_ids(sm))
-    @test Set(variable_ids(mm)) == Set(variable_ids(mm2))
+    @test Set(variables(mm)) == Set(variables(sm))
+    @test Set(variables(mm)) == Set(variables(mm2))
 end
 
 @testset "MATModel generic interface" begin

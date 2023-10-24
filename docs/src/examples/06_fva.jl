@@ -71,7 +71,7 @@ flux_variability_summary((min_fluxes, max_fluxes))
 # biomass "growth" along with the minimized/maximized reaction flux.
 
 # First, find the index of biomass reaction in all reactions
-biomass_idx = first(indexin(["R_BIOMASS_Ecoli_core_w_GAM"], variable_ids(model)))
+biomass_idx = first(indexin(["R_BIOMASS_Ecoli_core_w_GAM"], variables(model)))
 
 # Now run the FVA:
 vs = flux_variability_analysis(

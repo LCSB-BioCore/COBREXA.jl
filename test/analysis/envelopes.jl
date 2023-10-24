@@ -6,12 +6,12 @@
 
     lat = collect.(envelope_lattice(m, rxns; samples = 3))
     @test lat == [[-1000.0, 0.0, 1000.0], [-1000.0, 0.0, 1000.0], [-1000.0, 0.0, 1000.0]]
-    @test lat == collect.(envelope_lattice(m, variable_ids(m)[rxns]; samples = 3))
+    @test lat == collect.(envelope_lattice(m, variables(m)[rxns]; samples = 3))
 
     vals =
         objective_envelope(
             m,
-            variable_ids(m)[rxns],
+            variables(m)[rxns],
             Tulip.Optimizer;
             lattice_args = (samples = 3, ranges = [(-5, 0), (-5, 0), (-5, 5)]),
             workers = W,

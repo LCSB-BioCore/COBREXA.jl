@@ -27,7 +27,7 @@ enzyme_constrained_column_reactions(columns, inner) = sparse(
     [col.reaction_idx for col in columns],
     1:length(columns),
     [col.direction >= 0 ? 1 : -1 for col in columns],
-    variable_count(inner),
+    n_variables(inner),
     length(columns),
 )
 
@@ -112,6 +112,6 @@ simplified_enzyme_constrained_column_reactions(model::SimplifiedEnzymeConstraine
         [col.reaction_idx for col in model.columns],
         1:length(model.columns),
         [col.direction >= 0 ? 1 : -1 for col in model.columns],
-        variable_count(model.inner),
+        n_variables(model.inner),
         length(model.columns),
     )

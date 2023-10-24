@@ -19,7 +19,7 @@ that work over the abstract type [`AbstractMetabolicModel`](@ref). To use your d
 structure in a model, you just make it a subtype of [`AbstractMetabolicModel`](@ref)
 and overload the required accessors. The accessors are functions that extract
 some relevant information, such as [`stoichiometry`](@ref) and
-[`variable_bounds`](@ref), returning a fixed simple data type that can be further used
+[`bounds`](@ref), returning a fixed simple data type that can be further used
 by COBREXA.  You may see a complete list of accessors
 [here](../functions.md#Base-Types).
 
@@ -49,11 +49,11 @@ end
 First, define the reactions and metabolites:
 
 ```julia
-COBREXA.reaction_count(m::CircularModel) = m.size
-COBREXA.metabolite_count(m::CircularModel) = m.size
+COBREXA.n_reactions(m::CircularModel) = m.size
+COBREXA.n_metabolites(m::CircularModel) = m.size
 
-COBREXA.reaction_ids(m::CircularModel) = ["rxn$i" for i in 1:reaction_count(m)]
-COBREXA.metabolite_ids(m::CircularModel) = ["met$i" for i in 1:metabolite_count(m)]
+COBREXA.reactions(m::CircularModel) = ["rxn$i" for i in 1:n_reactions(m)]
+COBREXA.metabolites(m::CircularModel) = ["met$i" for i in 1:n_metabolites(m)]
 ```
 
 It is useful to re-use the already defined functions, as that improves the code
@@ -63,18 +63,18 @@ We can continue with the actual linear model properties:
 
 ```julia
 function COBREXA.objective(m::CircularModel)
-    c = spzeros(reaction_count(m))
+    c = spzeros(n_reactions(m))
     c[1] = 1 #optimize the first reaction
     return c
 end
 
-COBREXA.variable_bounds(m::CircularModel) = (
-    zeros(reaction_count(m)), # lower bounds
-    ones(reaction_count(m)), # upper bounds
+COBREXA.bounds(m::CircularModel) = (
+    zeros(n_reactions(m)), # lower bounds
+    ones(n_reactions(m)), # upper bounds
 )
 
 function COBREXA.stoichiometry(m::CircularModel)
-    nr = reaction_count(m)
+    nr = n_reactions(m)
     stoi(i,j) =
         i == j ? 1.0 :
         (i % nr + 1) == j  ? -1.0 :

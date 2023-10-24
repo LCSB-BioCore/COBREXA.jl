@@ -81,30 +81,30 @@ end
 
 Accessors.unwrap_model(model::MaxMinDrivingForceModel) = model.inner
 
-Accessors.variable_ids(model::MaxMinDrivingForceModel) =
-    ["mmdf"; "log " .* metabolite_ids(model); "ΔG " .* reaction_ids(model)]
+Accessors.variables(model::MaxMinDrivingForceModel) =
+    ["mmdf"; "log " .* metabolites(model); "ΔG " .* reactions(model)]
 
-Accessors.variable_count(model::MaxMinDrivingForceModel) =
-    1 + metabolite_count(model) + reaction_count(model)
+Accessors.n_variables(model::MaxMinDrivingForceModel) =
+    1 + n_metabolites(model) + n_reactions(model)
 
-Accessors.metabolite_log_concentration_ids(model::MaxMinDrivingForceModel) =
-    "log " .* metabolite_ids(model)
-Accessors.metabolite_log_concentration_count(model::MaxMinDrivingForceModel) =
-    metabolite_count(model)
+Accessors.metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
+    "log " .* metabolites(model)
+Accessors.n_metabolite_log_concentrations(model::MaxMinDrivingForceModel) =
+    n_metabolites(model)
 Accessors.metabolite_log_concentration_variables(model::MaxMinDrivingForceModel) =
-    Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolite_ids(model))
+    Dict(mid => Dict(mid => 1.0) for mid in "log " .* metabolites(model))
 
-Accessors.gibbs_free_energy_ids(model::MaxMinDrivingForceModel) =
-    "ΔG " .* reaction_ids(model)
-Accessors.gibbs_free_energy_count(model::MaxMinDrivingForceModel) = reaction_count(model)
-Accessors.gibbs_free_energy_variables(model::MaxMinDrivingForceModel) =
-    Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reaction_ids(model))
+Accessors.gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) =
+    "ΔG " .* reactions(model)
+Accessors.n_gibbs_free_energy_reactions(model::MaxMinDrivingForceModel) = n_reactions(model)
+Accessors.gibbs_free_energy_reaction_variables(model::MaxMinDrivingForceModel) =
+    Dict(rid => Dict(rid => 1.0) for rid in "ΔG " .* reactions(model))
 
 
 Accessors.objective(model::MaxMinDrivingForceModel) =
-    [1.0; fill(0.0, variable_count(model) - 1)]
+    [1.0; fill(0.0, n_variables(model) - 1)]
 
-function Accessors.metabolite_bounds(model::MaxMinDrivingForceModel)
+function Accessors.balance(model::MaxMinDrivingForceModel)
     # proton water balance
     num_proton_water = length(model.proton_ids) + length(model.water_ids)
     proton_water_vec = spzeros(num_proton_water)
@@ -118,7 +118,7 @@ function Accessors.metabolite_bounds(model::MaxMinDrivingForceModel)
     # give dummy dG0 for reactions that don't have data
     dg0s = [
         get(model.reaction_standard_gibbs_free_energies, rid, 0.0) for
-        rid in reaction_ids(model)
+        rid in reactions(model)
     ]
 
     return [
@@ -134,7 +134,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
 
     # set proton and water equality constraints
     num_proton_water = length(model.proton_ids) + length(model.water_ids)
-    proton_water_mat = spzeros(num_proton_water, variable_count(model))
+    proton_water_mat = spzeros(num_proton_water, n_variables(model))
     idxs = indexin([model.proton_ids; model.water_ids], var_ids)
     for (i, j) in enumerate(idxs)
         isnothing(j) && throw(error("Water or proton ID not found in model."))
@@ -142,7 +142,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     end
 
     # constant concentration constraints
-    const_conc_mat = spzeros(length(model.constant_concentrations), variable_count(model))
+    const_conc_mat = spzeros(length(model.constant_concentrations), n_variables(model))
     ids = collect(keys(model.constant_concentrations))
     idxs = indexin(ids, var_ids)
     for (i, j) in enumerate(idxs)
@@ -152,7 +152,7 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     end
 
     # add the relative bounds
-    const_ratio_mat = spzeros(length(model.concentration_ratios), variable_count(model))
+    const_ratio_mat = spzeros(length(model.concentration_ratios), n_variables(model))
     for (i, (mid1, mid2)) in enumerate(keys(model.concentration_ratios))
         idxs = indexin([mid1, mid2], var_ids)
         any(isnothing.(idxs)) &&
@@ -162,10 +162,10 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     end
 
     # add ΔG relationships
-    dgrs = spdiagm(ones(length(reaction_ids(model))))
+    dgrs = spdiagm(ones(length(reactions(model))))
     S = stoichiometry(model.inner)
     stoich_mat = -(model.R * model.T) * S'
-    dg_mat = [spzeros(reaction_count(model)) stoich_mat dgrs]
+    dg_mat = [spzeros(n_reactions(model)) stoich_mat dgrs]
 
     return [
         proton_water_mat
@@ -175,19 +175,19 @@ function Accessors.stoichiometry(model::MaxMinDrivingForceModel)
     ]
 end
 
-function Accessors.variable_bounds(model::MaxMinDrivingForceModel)
+function Accessors.bounds(model::MaxMinDrivingForceModel)
     var_ids = Internal.original_variables(model)
 
-    lbs = fill(-model.max_dg_bound, variable_count(model))
-    ubs = fill(model.max_dg_bound, variable_count(model))
+    lbs = fill(-model.max_dg_bound, n_variables(model))
+    ubs = fill(model.max_dg_bound, n_variables(model))
 
     # mmdf must be positive for problem to be feasible (it is defined as -ΔG)
     lbs[1] = 0.0
     ubs[1] = 1000.0
 
     # log concentrations
-    lbs[2:(1+metabolite_count(model))] .= log(model.concentration_lb)
-    ubs[2:(1+metabolite_count(model))] .= log(model.concentration_ub)
+    lbs[2:(1+n_metabolites(model))] .= log(model.concentration_lb)
+    ubs[2:(1+n_metabolites(model))] .= log(model.concentration_ub)
 
     # need to make special adjustments for the constants
     idxs = indexin([model.proton_ids; model.water_ids], var_ids)
@@ -203,21 +203,21 @@ function Accessors.coupling(model::MaxMinDrivingForceModel)
 
     # only constrain reactions that have thermo data
     active_rids = Internal.active_reaction_ids(model)
-    idxs = Int.(indexin(active_rids, reaction_ids(model)))
+    idxs = Int.(indexin(active_rids, reactions(model)))
 
     # thermodynamic sign should correspond to the fluxes
-    flux_signs = spzeros(length(idxs), reaction_count(model))
+    flux_signs = spzeros(length(idxs), n_reactions(model))
     for (i, j) in enumerate(idxs)
-        flux_signs[i, j] = sign(model.flux_solution[reaction_ids(model)[j]])
+        flux_signs[i, j] = sign(model.flux_solution[reactions(model)[j]])
     end
 
     neg_dg_mat = [
-        spzeros(length(idxs)) spzeros(length(idxs), metabolite_count(model)) flux_signs
+        spzeros(length(idxs)) spzeros(length(idxs), n_metabolites(model)) flux_signs
     ]
 
     mmdf_mat = sparse(
         [
-            -ones(length(idxs)) spzeros(length(idxs), metabolite_count(model)) -flux_signs
+            -ones(length(idxs)) spzeros(length(idxs), n_metabolites(model)) -flux_signs
         ],
     )
 

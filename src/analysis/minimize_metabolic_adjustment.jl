@@ -3,7 +3,7 @@ $(TYPEDSIGNATURES)
 
 Run minimization of metabolic adjustment (MOMA) on `model` with respect to
 `reference_flux`, which is a vector of fluxes in the order of
-`variable_ids(model)`. MOMA finds the shortest Euclidian distance between
+`variables(model)`. MOMA finds the shortest Euclidian distance between
 `reference_flux` and `model` with `modifications`:
 ```
 min Σᵢ (xᵢ - flux_refᵢ)²

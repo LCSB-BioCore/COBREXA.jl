@@ -5,8 +5,8 @@
     sm = convert(ObjectModel, jm)
     jm2 = convert(JSONModel, sm)
 
-    @test Set(variable_ids(jm)) == Set(variable_ids(sm))
-    @test Set(variable_ids(jm)) == Set(variable_ids(jm2))
+    @test Set(variables(jm)) == Set(variables(sm))
+    @test Set(variables(jm)) == Set(variables(jm2))
 end
 
 @testset "JSONModel generic interface" begin

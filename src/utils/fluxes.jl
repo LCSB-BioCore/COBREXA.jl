@@ -6,8 +6,8 @@ produce them, given the flux distribution supplied in `flux_dict`.
 """
 function metabolite_fluxes(model::AbstractMetabolicModel, flux_dict::Dict{String,Float64})
     S = stoichiometry(model)
-    rids = variable_ids(model)
-    mids = metabolite_ids(model)
+    rids = variables(model)
+    mids = metabolites(model)
 
     producing = Dict{String,Dict{String,Float64}}()
     consuming = Dict{String,Dict{String,Float64}}()
@@ -52,7 +52,7 @@ atom_fluxes(model, fluxes)["C"]
 ```
 """
 function atom_fluxes(model::AbstractMetabolicModel, reaction_fluxes::Dict{String,Float64})
-    rids = variable_ids(model)
+    rids = variables(model)
     atom_flux = Dict{String,Float64}()
     for (ridx, rid) in enumerate(rids)
         haskey(reaction_fluxes, rid) || continue
