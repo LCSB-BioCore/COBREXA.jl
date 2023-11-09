@@ -1,6 +1,4 @@
 
-import JuMP as J
-
 """
 $(TYPEDSIGNATURES)
 

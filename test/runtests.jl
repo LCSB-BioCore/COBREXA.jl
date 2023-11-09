@@ -1,22 +1,14 @@
 using COBREXA, Test
-
-using COBREXA.Everything
-
 using Aqua
 using Clarabel
 using Distributed
 using Downloads
 using GLPK # for MILPs
-using JSON
-using JuMP
 using LinearAlgebra
-using MAT
-using OrderedCollections
 using Serialization
 using SHA
 using SparseArrays
 using Statistics
-using Tulip
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
@@ -41,15 +33,7 @@ end
 # set up the workers for Distributed, so that the tests that require more
 # workers do not unnecessarily load the stuff multiple times
 W = addprocs(2)
-t = @elapsed @everywhere using COBREXA, COBREXA.Analysis, Tulip, JuMP
-print_timing("import of packages", t)
-t = @elapsed @everywhere begin
-    model = Model(Tulip.Optimizer)
-    @variable(model, 0 <= x <= 1)
-    @objective(model, Max, x)
-    optimize!(model)
-end
-print_timing("JuMP+Tulip code warmup", t)
+t = @elapsed @everywhere using COBREXA, Tulip, JuMP
 
 # make sure there's a directory for temporary data
 tmpdir = "tmpfiles"
@@ -62,15 +46,7 @@ run_test_file("data_downloaded.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    run_test_dir(joinpath("types", "abstract"), "Abstract types")
-    run_test_dir("types", "Model types and wrappers")
-    run_test_dir(joinpath("types", "misc"), "Model helper functions")
-    run_test_file("log.jl")
-    run_test_dir("utils", "Utilities")
-    run_test_dir("io", "I/O functions")
-    run_test_dir("reconstruction")
     run_test_dir("analysis")
-    run_test_dir(joinpath("analysis", "sampling"), "Sampling")
     run_test_file("aqua.jl")
 end
 
