@@ -56,7 +56,11 @@ fermentation = ctmodel.fluxes.EX_ac_e.value + ctmodel.fluxes.EX_etoh_e.value
 forced_mixed_fermentation =
     ctmodel * :fermentation^C.Constraint(fermentation, (10.0, 1000.0)) # new modified model is created
 
-vt = X.flux_balance_analysis(forced_mixed_fermentation, T.Optimizer; modifications = [X.silence])
+vt = X.flux_balance_analysis(
+    forced_mixed_fermentation,
+    T.Optimizer;
+    modifications = [X.silence],
+)
 
 @test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
 
@@ -75,3 +79,10 @@ ctmodel.fluxes.ATPM.bound = (8.39, 10000.0) # revert
 vt = ctmodel |> X.flux_balance_analysis(T.Optimizer; modifications = [X.silence])
 
 @test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src
+
+# Gene knockouts can be done with ease making use of the piping functionality.
+# Here oxidative phosphorylation is knocked out.
+
+vt = ctmodel |> X.knockout!(["b0979", "b0734"], model) |> X.flux_balance_analysis(T.Optimizer; modifications = [X.silence])
+
+@test isapprox(vt.objective, 0.21166, atol = TEST_TOLERANCE) #src
