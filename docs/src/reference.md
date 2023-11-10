@@ -1,47 +1,6 @@
 # API reference
 
-## Helper types
-
-```@autodocs
-Modules = [COBREXA]
-Pages = ["src/types.jl"]
+```@contents
+Pages = ["reference/types.md", "reference/io.md", "reference/builders.md", "reference/solver.md"]
+Depth = 2
 ```
-
-## Model loading and saving
-
-```@autodocs
-Modules = [COBREXA]
-Pages = ["src/io.jl"]
-```
-
-## Constraint system building
-
-```@autodocs
-Modules = [COBREXA]
-Pages = ["src/builders/core.jl"]
-```
-
-### Genetic constraints
-
-```@autodocs
-Modules = [COBREXA]
-Pages = ["src/builders/genes.jl"]
-```
-
-### Objective function helpers
-
-```@autodocs
-Modules = [COBREXA]
-Pages = ["src/builders/objectives.jl"]
-```
-
-## Solver interface
-
-```@autodocs
-Modules = [COBREXA]
-Pages = ["src/solver.jl"]
-```
-
-## Analysis functions
-
-## Distributed analysis
