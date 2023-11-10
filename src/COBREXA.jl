@@ -8,6 +8,7 @@ using DocStringExtensions
 import AbstractFBCModels as A
 import ConstraintTrees as C
 import JuMP as J
+import SparseArrays: sparse
 
 include("types.jl")
 include("solver.jl")
