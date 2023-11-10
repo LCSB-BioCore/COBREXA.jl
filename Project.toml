@@ -9,7 +9,6 @@ ConstraintTrees = "5515826b-29c3-47a5-8849-8513ac836620"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 DistributedData = "f6a0035f-c5ac-4ad0-b410-ad102ced35df"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
-JSONFBCModels = "475c1105-d6ed-49c1-9b32-c11adca6d3e8"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
@@ -35,6 +34,7 @@ GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
 SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
+JSONFBCModels = "475c1105-d6ed-49c1-9b32-c11adca6d3e8"
 
 [targets]
-test = ["Aqua", "Clarabel", "GLPK", "Test", "Tulip"]
+test = ["Aqua", "Clarabel", "Downloads", "GLPK", "SHA", "Test", "Tulip", "JSONFBCModels"]
