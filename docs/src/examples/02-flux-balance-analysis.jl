@@ -1,10 +1,13 @@
 
 # # Flux balance analysis
 
-using COBREXA
+import COBREXA as X
 import AbstractFBCModels as A
 import JSONFBCModels as J
 
-# TODO: run FBA on a FBC model
+model = A.load(J.JSONFBCModel, "e_coli_core.json")
 
-model 
+
+ctmodel = X.fbc_model_constraints(model)
+
+
