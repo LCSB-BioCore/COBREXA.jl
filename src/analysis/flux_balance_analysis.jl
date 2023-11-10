@@ -2,7 +2,8 @@
 $(TYPEDSIGNATURES)
 
 Run flux balance analysis (FBA) on the `model`, optionally specifying
-`modifications` to the problem.  Basically, FBA solves this optimization problem:
+`modifications` to the problem.  Basically, FBA solves this optimization
+problem:
 ```
 max cᵀx
 s.t. S x = b
@@ -15,9 +16,10 @@ information.
 The `optimizer` must be set to a `JuMP`-compatible optimizer, such as
 `GLPK.Optimizer` or `Tulip.Optimizer`.
 
-Optionally, you may specify one or more modifications to be applied to the
-model before the analysis, such as [`modify_optimizer_attribute`](@ref),
-[`change_objective`](@ref), and [`modify_sense`](@ref).
+Optionally, you may specify one or more modifications to be applied to the model
+before the analysis, such as [`set_objective_sense`](@ref),
+[`set_optimizer`](@ref), [`set_optimizer_attribute`](@ref), and
+[`silence`](@ref).
 
 Returns a [`C.ValueTree`](@ref).
 
@@ -51,6 +53,8 @@ function flux_balance_analysis(ctmodel::C.ConstraintTree, optimizer; modificatio
     end
 
     J.optimize!(opt_model)
+    
+    is_solved(opt_model) || return nothing
 
     C.ValueTree(ctmodel, J.value.(opt_model[:x]))
 end
