@@ -20,8 +20,8 @@ function run_test_file(path...)
     print_timing(fn, t)
 end
 
-function run_doc(path...)
-    run_test_file("..", "docs", "src", path...)
+function run_doc_ex(path...)
+    run_test_file("..", "docs", "src", "examples", path...)
 end
 
 # set up the workers for Distributed, so that the tests that require more
@@ -35,8 +35,8 @@ run_test_file("data_downloaded.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    run_doc("loading-and-saving.jl")
-    run_doc("flux-balance-analysis.jl")
+    run_doc("01-loading-and-saving.jl")
+    run_doc("02-flux-balance-analysis.jl")
     run_test_file("aqua.jl")
 end
 
