@@ -9,39 +9,24 @@ JuMP `Model` created for solving in `optimizer`, with a given optional
 `objective` and optimization `sense`.
 """
 function J.Model(
-    constraints::C.ConstraintTree;
-    objective::Maybe{C.Value} = nothing,
+    constraints::C.ConstraintTreeElem;
+    objective::Union{Nothing,C.LinearValue,C.QuadraticValue} = nothing,
     optimizer,
     sense = J.MAX_SENSE,
 )
     # TODO this might better have its own name to avoid type piracy.
     model = J.Model(optimizer)
     J.@variable(model, x[1:C.var_count(cs)])
-
-    # objectives
-    if objective isa C.Value
-        JuMP.@objective(model, sense, C.value_product(objective, x))
-    elseif objective isa C.QValue
-        JuMP.@objective(model, sense, C.qvalue_product(objective, x))
-    end
+    JuMP.@objective(model, sense, C.substitute(objective, x))
 
     # constraints
     function add_constraint(c::C.Constraint)
         if c.bound isa Float64
-            J.@constraint(model, C.value_product(c.value, x) == c.bound)
+            J.@constraint(model, C.substitute(c.value, x) == c.bound)
         elseif c.bound isa C.IntervalBound
-            val = C.value_product(c.value, x)
+            val = C.substitute(c.value, x)
             isinf(c.bound[1]) || J.@constraint(model, val >= c.bound[1])
             isinf(c.bound[2]) || J.@constraint(model, val <= c.bound[2])
-        end
-    end
-    function add_constraint(c::C.QConstraint)
-        if c.bound isa Float64
-            JuMP.@constraint(model, C.qvalue_product(c.qvalue, x) == c.bound)
-        elseif c.bound isa Tuple{Float64,Float64}
-            val = C.qvalue_product(c.qvalue, x)
-            isinf(c.bound[1]) || JuMP.@constraint(model, val >= c.bound[1])
-            isinf(c.bound[2]) || JuMP.@constraint(model, val <= c.bound[2])
         end
     end
     function add_constraint(c::C.ConstraintTree)
@@ -96,7 +81,7 @@ $(TYPEDSIGNATURES)
 
 Convenience overload for making solution trees out of JuMP models
 """
-C.SolutionTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.SolutionTree} =
+C.ValueTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.ValueTree} =
     let vars = optimized_variable_assignment(opt_model)
-        isnothing(vars) ? nothing : C.SolutionTree(c, vars)
+        isnothing(vars) ? nothing : C.ValueTree(c, vars)
     end
