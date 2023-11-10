@@ -8,7 +8,7 @@ $(TYPEDSIGNATURES)
 A constraint tree that models the content of the given instance of
 `AbstractFBCModel`.
 """
-function fbc_model_structure(model::F.AbstractFBCModel)
+function fbc_model_constraints(model::F.AbstractFBCModel)
     rxns = Symbol.(F.reactions(model))
     mets = Symbol.(F.metabolites(model))
     lbs, ubs = F.bounds(model)
@@ -27,6 +27,8 @@ function fbc_model_structure(model::F.AbstractFBCModel)
     )
 end
 
+export fbc_model_constraints
+
 """
 $(TYPEDSIGNATURES)
 
@@ -34,6 +36,8 @@ Shortcut for allocation non-negative ("unsigned") variables. The argument
 `keys` is forwarded to `ConstraintTrees.variables` as `keys`.
 """
 unsigned_variables(; keys) = C.variables(; keys, bounds = Ref((0.0, Inf)))
+
+export unsigned_variables
 
 """
 $(TYPEDSIGNATURES)
@@ -72,3 +76,5 @@ sign_split_constraints(;
     ) for (k, s) in C.elems(signed)
 )
 #TODO the example above might as well go to docs
+
+export sign_split_constraints

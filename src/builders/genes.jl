@@ -1,11 +1,18 @@
 
-knockout_constraints(ko_genes; fluxes::ConstraintTree, gene_products_available) =
+knockout_constraints(;fluxes::ConstraintTree, knockout_test) =
     C.ConstraintTree(
-        rxn => C.Constraint(C.value(fluxes[rxn]), 0.0) for rxn in keys(fluxes) if begin
-            if gene_products_available(rxn, k)
-                false
-            else
-                all(gs -> any(g -> g in ko_genes, gs), gss)
-            end
-        end
+        rxn => C.Constraint(C.value(fluxes[rxn]), 0.0) for rxn in keys(fluxes) if knockout_test(rxn)
     )
+
+export knockout_constraints
+
+fbc_gene_knockout_constraints(;fluxes::ConstraintTree, genes, fbc_model::A.AbstractFBCModel) = knockout_constraints(;
+    fluxes,
+    knockout_test =
+        rxn -> !A.reaction_gene_products_available(
+            rxn,
+            g -> not (g in genes)
+        ),
+)
+
+export fbc_gene_knockout_constraints

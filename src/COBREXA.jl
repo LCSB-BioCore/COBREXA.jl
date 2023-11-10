@@ -5,6 +5,7 @@ module COBREXA
 
 using DocStringExtensions
 
+import AbstractFBCModels as A
 import ConstraintTrees as C
 import JuMP as J
 

@@ -6,7 +6,7 @@ Construct a JuMP `Model` that describes the precise constraint system into the
 JuMP `Model` created for solving in `optimizer`, with a given optional
 `objective` and optimization `sense`.
 """
-function make_optimization_model(
+function optimization_model(
     cs::C.ConstraintTree;
     objective::Union{Nothing,C.LinearValue,C.QuadraticValue} = nothing,
     optimizer,
@@ -35,6 +35,8 @@ function make_optimization_model(
     return model
 end
 
+export optimization_model
+
 """
 $(TYPEDSIGNATURES)
 
@@ -44,6 +46,8 @@ locally optimal). `false` if any other termination status is reached.
 is_solved(opt_model::J.Model) =
     J.termination_status(opt_model) in [J.MOI.OPTIMAL, J.MOI.LOCALLY_SOLVED]
 
+export is_solved
+
 """
 $(TYPEDSIGNATURES)
 
@@ -52,6 +56,8 @@ The optimized objective value of a JuMP model, if solved.
 optimized_objective_value(opt_model::J.Model)::Maybe{Float64} =
     is_solved(opt_model) ? J.objective_value(opt_model) : nothing
 
+export optimized_objective_value
+
 """
 $(TYPEDSIGNATURES)
 
@@ -59,6 +65,8 @@ The optimized variable assignment of a JuMP model, if solved.
 """
 optimized_variable_assignment(opt_model::J.Model)::Maybe{Vector{Float64}} =
     is_solved(opt_model) ? J.value.(opt_model[:x]) : nothing
+
+export optimized_variable_assignment
 
 """
 $(TYPEDSIGNATURES)
@@ -70,3 +78,5 @@ solution(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.ValueTree} =
     let vars = optimized_variable_assignment(opt_model)
         isnothing(vars) ? nothing : C.ValueTree(c, vars)
     end
+
+export solution
