@@ -8,7 +8,7 @@ $(TYPEDSIGNATURES)
 A constraint tree that models the content of the given instance of
 `AbstractFBCModel`.
 """
-function metabolic_model(model::F.AbstractFBCModel)
+function fbc_model_structure(model::F.AbstractFBCModel)
     rxns = Symbol.(F.reactions(model))
     mets = Symbol.(F.metabolites(model))
     lbs, ubs = F.bounds(model)
@@ -16,12 +16,15 @@ function metabolic_model(model::F.AbstractFBCModel)
     bal = F.balance(model)
     obj = F.objective(model)
 
-    return :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
-        :balance^C.ConstraintTree(
+    #TODO: is sparse() required below?
+    return C.ConstraintTree(
+        :fluxes => C.variables(keys = rxns, bounds = zip(lbs, ubs)),
+        :balances => C.ConstraintTree(
             m => C.Constraint(value = C.LinearValue(sparse(row)), bound = b) for
             (m, row, b) in zip(mets, eachrow(stoi), bals)
-        ) *
-        :objective^C.Constraint(value = C.Value(sparse(obj)))
+        ),
+        :objective => C.Constraint(value = C.Value(sparse(obj))),
+    )
 end
 
 """
@@ -62,9 +65,9 @@ sign_split_constraints(;
     negative::C.ConstraintTree,
     signed::C.ConstraintTree,
 ) = C.ConstraintTree(
-    C.Constraint(
-        value = s + (haskey(negative, k) ? negative[k].value : zero(C.Value)) -
-                (haskey(positive, k) ? positive[k].value : zero(C.Value)),
+    k => C.Constraint(
+        value = s + (haskey(negative, k) ? C.value(negative[k]) : zero(C.Value)) -
+                (haskey(positive, k) ? C.value(positive[k]) : zero(C.Value)),
         bound = 0.0,
     ) for (k, s) in C.elems(signed)
 )

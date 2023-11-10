@@ -1,14 +1,10 @@
 using COBREXA, Test
 using Aqua
+
 using Clarabel
 using Distributed
-using Downloads
+import AbstractFBCModels as A
 using GLPK # for MILPs
-using LinearAlgebra
-using Serialization
-using SHA
-using SparseArrays
-using Statistics
 
 # tolerance for comparing analysis results (should be a bit bigger than the
 # error tolerance in computations)
@@ -24,10 +20,8 @@ function run_test_file(path...)
     print_timing(fn, t)
 end
 
-function run_test_dir(dir, comment = "Directory $dir/")
-    @testset "$comment" begin
-        run_test_file.(joinpath.(dir, filter(fn -> endswith(fn, ".jl"), readdir(dir))))
-    end
+function run_doc(path...)
+    run_test_file("..", "docs", "src", path...)
 end
 
 # set up the workers for Distributed, so that the tests that require more
@@ -35,18 +29,14 @@ end
 W = addprocs(2)
 t = @elapsed @everywhere using COBREXA, Tulip, JuMP
 
-# make sure there's a directory for temporary data
-tmpdir = "tmpfiles"
-isdir(tmpdir) || mkdir(tmpdir)
-tmpfile(x...) = joinpath(tmpdir, x...)
-
 # load the test models
 run_test_file("data_static.jl")
 run_test_file("data_downloaded.jl")
 
 # import base files
 @testset "COBREXA test suite" begin
-    run_test_dir("analysis")
+    run_doc("loading-and-saving.jl")
+    run_doc("flux-balance-analysis.jl")
     run_test_file("aqua.jl")
 end
 

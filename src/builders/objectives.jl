@@ -1,19 +1,20 @@
 
-squared_error_objective(x) =
-    C.Constraint(sum((c.value * c.value for c in x), init = zero(C.Value)))
-squared_error_objective(x::ConstraintTree) = squared_error_objective(values(x))
+sum_objectve(x) =
+    C.Constraint(sum(C.value.(x), init = zero(C.LinearValue)))
+    
+sum_objective(x::ConstraintTree) = squared_error_objective(values(x))
 
-squared_error_objective(constraints::Vector, target::Vector) =
-    C.Constraint(sum(let tmp = (c.value - t)
-        tmp * tmp
-    end for (c, t) in zip(constraints, target)))
+squared_sum_objective(x) =
+    C.Constraint(sum(C.squared.(C.value.(x)), init = zero(C.QuadraticValue)))
+
+squared_sum_objective(x::ConstraintTree) = squared_sum_objective(values(x))
 
 squared_error_objective(constraints::ConstraintTree, target) = C.Constraint(
     sum(
-        let tmp = (c.value - target[k])
+        let tmp = (C.value(c) - target[k])
             tmp * tmp
-        end for (k, c) in C.elems(constraints) if haskey(target, k)
+        end for (k, c) in constraints if haskey(target, k)
     ),
 )
 
-# TODO use `mergewith` to do this reasonably
+# TODO use `mergewith` to do this reasonably (add it to ConstraintTrees)

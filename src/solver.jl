@@ -6,7 +6,7 @@ Construct a JuMP `Model` that describes the precise constraint system into the
 JuMP `Model` created for solving in `optimizer`, with a given optional
 `objective` and optimization `sense`.
 """
-function make_jump_model(
+function make_optimization_model(
     cs::C.ConstraintTree;
     objective::Union{Nothing,C.LinearValue,C.QuadraticValue} = nothing,
     optimizer,
@@ -63,9 +63,10 @@ optimized_variable_assignment(opt_model::J.Model)::Maybe{Vector{Float64}} =
 """
 $(TYPEDSIGNATURES)
 
-Convenience overload for making solution trees out of JuMP models
+Annotate a `ConstraintTree` with the values given by the optimization model,
+producing a `ValueTree` (if solved).
 """
-C.ValueTree(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.ValueTree} =
+solution(c::C.ConstraintTree, opt_model::J.Model)::Maybe{C.ValueTree} =
     let vars = optimized_variable_assignment(opt_model)
         isnothing(vars) ? nothing : C.ValueTree(c, vars)
     end
