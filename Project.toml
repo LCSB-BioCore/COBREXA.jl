@@ -32,6 +32,8 @@ Clarabel = "61c947e1-3e6d-4ee4-985a-eec8c727bd6e"
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [targets]
 test = ["Aqua", "Clarabel", "GLPK", "Test", "Tulip"]
