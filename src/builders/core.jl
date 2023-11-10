@@ -8,22 +8,21 @@ $(TYPEDSIGNATURES)
 A constraint tree that models the content of the given instance of
 `AbstractFBCModel`.
 """
-metabolic_model(model::F.AbstractFBCModel) =
-    let
-        rxns =
-            Symbol.(F.reactions(model)), mets =
-                Symbol.(F.metabolites(model)), lbs, ubs =
-                    F.bounds(model), stoi =
-                        F.stoichiometry(model), bal =
-                            F.balance(model), obj = F.objective(model)
+function metabolic_model(model::F.AbstractFBCModel)
+    rxns = Symbol.(F.reactions(model))
+    mets = Symbol.(F.metabolites(model))
+    lbs, ubs = F.bounds(model)
+    stoi = F.stoichiometry(model)
+    bal = F.balance(model)
+    obj = F.objective(model)
 
-        :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
+    return :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
         :balance^C.ConstraintTree(
-            m => Constraint(value = Value(sparse(row)), bound = b) for
+            m => C.Constraint(value = C.LinearValue(sparse(row)), bound = b) for
             (m, row, b) in zip(mets, eachrow(stoi), bals)
         ) *
-        :objective^C.Constraint(C.Value(sparse(obj)))
-    end
+        :objective^C.Constraint(value = C.Value(sparse(obj)))
+end
 
 """
 $(TYPEDSIGNATURES)
@@ -57,7 +56,6 @@ myModel *=
         signed = myModel.fluxes,
     )
 ```
-#TODO this might go to the docs
 """
 sign_split_constraints(;
     positive::C.ConstraintTree,
@@ -70,3 +68,4 @@ sign_split_constraints(;
         bound = 0.0,
     ) for (k, s) in C.elems(signed)
 )
+#TODO the example above might as well go to docs
