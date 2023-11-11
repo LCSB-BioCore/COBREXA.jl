@@ -37,33 +37,31 @@ The optimum relaxation sequence can be specified in `relax` parameter, it
 defaults to multiplicative range of `[1.0, 0.999999, ..., 0.99]` of the original
 bound.
 
-Returns an optimized model that contains the pFBA solution (or an unsolved model
-if something went wrong).
-
-# Performance
-
-This implementation attempts to save time by executing all pFBA steps on a
-single instance of the optimization model problem, trading off possible
-flexibility. For slightly less performant but much more flexible use, one can
-construct parsimonious models directly using
-[`with_parsimonious_objective`](@ref).
+Returns a [`C.ValueTree`](@ref), or `nothing` if the solution could not be found.
 
 # Example
 ```
 model = load_model("e_coli_core.json")
-parsimonious_flux_balance_analysis(model, biomass, Gurobi.Optimizer) |> values_vec
+parsimonious_flux_balance_analysis(model, Gurobi.Optimizer)
 ```
 """
 function parsimonious_flux_balance_analysis(
-    model::C.ConstraintTree,
+    ctmodel::C.ConstraintTree,
     optimizer;
     modifications = [],
     qp_modifications = [],
     relax_bounds = [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
 )
     # Run FBA
-    opt_model = flux_balance_analysis(model, optimizer; modifications)
-    J.is_solved(opt_model) || return nothing # FBA failed
+    opt_model = optimization_model(ctmodel; objective = ctmodel.objective.value, optimizer)
+
+    for mod in modifications
+        mod(ctmodel, opt_model)
+    end
+
+    J.optimize!(opt_model)
+
+    is_solved(opt_model) || return nothing
 
     # get the objective
     Z = J.objective_value(opt_model)
@@ -79,14 +77,36 @@ function parsimonious_flux_balance_analysis(
     J.@objective(opt_model, Min, sum(dot(v, v)))
 
     for rb in relax_bounds
-        # lb, ub = objective_bounds(rb)(Z)
+        lb, ub = objective_bounds(rb)(Z)
         J.@constraint(opt_model, pfba_constraint, lb <= original_objective <= ub)
 
         J.optimize!(opt_model)
-        J.is_solved(opt_model) && break
+        is_solved(opt_model) && break
+        @warn("Relaxing pFBA objective bound!")
 
         J.delete(opt_model, pfba_constraint)
         J.unregister(opt_model, :pfba_constraint)
     end
 
+    C.ValueTree(ctmodel, J.value.(opt_model[:x]))
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Variant that takes an [`A.AbstractFBCModel`](@ref) as input. All other arguments are forwarded.
+"""
+function parsimonious_flux_balance_analysis(model::A.AbstractFBCModel, optimizer; kwargs...)
+    ctmodel = fbc_model_constraints(model)
+    parsimonious_flux_balance_analysis(ctmodel, optimizer; kwargs...)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Pipe-able variant of [`parsimonious_flux_balance_analysis`](@ref).
+"""
+parsimonious_flux_balance_analysis(optimizer; modifications = []) =
+    m -> parsimonious_flux_balance_analysis(m, optimizer; modifications)
+
+export parsimonious_flux_balance_analysis
