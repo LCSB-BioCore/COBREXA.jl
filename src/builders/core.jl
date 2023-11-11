@@ -50,7 +50,7 @@ Keys in the result are the same as the keys of `signed` constraints.
 Typically, this can be used to create "unidirectional" fluxes
 together with [`unsigned_variables`](@ref):
 ```
-uvars = unsigned_variables(keys(myModel.fluxes))
+uvars = unsigned_variables(keys = collect(keys(myModel.fluxes)))
 
 myModel = myModel +
     :fluxes_forward^uvars +
