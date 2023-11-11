@@ -17,6 +17,7 @@ include("solver.jl")
 include("builders/core.jl")
 include("builders/genes.jl")
 include("builders/objectives.jl")
+include("builders/enzyme.jl")
 
 include("analysis/modifications/optimizer_settings.jl")
 include("analysis/flux_balance_analysis.jl")
