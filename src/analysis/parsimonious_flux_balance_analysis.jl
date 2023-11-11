@@ -33,11 +33,11 @@ using the callback in `qp_modifications`, which are applied after the FBA. See
 the documentation of [`flux_balance_analysis`](@ref) for usage examples of
 modifications.
 
-The optimum relaxation sequence can be specified in `relax` parameter, it
-defaults to multiplicative range of `[1.0, 0.999999, ..., 0.99]` of the original
-bound.
+The `relax` parameter, which defaults to `0.999`, relaxes the objective bound of
+the original bound to prevent numerical issues.
 
-Returns a [`C.ValueTree`](@ref), or `nothing` if the solution could not be found.
+Returns a [`C.ValueTree`](@ref), or `nothing` if the solution could not be
+found.
 
 # Example
 ```
@@ -50,7 +50,7 @@ function parsimonious_flux_balance_analysis(
     optimizer;
     modifications = [],
     qp_modifications = [],
-    relax_bounds = [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
+    relax = 0.999,
 )
     # Run FBA
     opt_model = optimization_model(ctmodel; objective = ctmodel.objective.value, optimizer)
@@ -65,30 +65,25 @@ function parsimonious_flux_balance_analysis(
 
     # get the objective
     Z = J.objective_value(opt_model)
-    original_objective = J.objective_function(opt_model)
+    
+    _ctmodel = ctmodel * :pfbaobjective ^ squared_sum_objective(ctmodel.fluxes)
+    _ctmodel.objective.bound = relax == 1.0 ? Z : objective_bounds(relax)(Z)  # TODO currently breaks
+
+    opt_model = X.optimization_model(
+        _ctmodel;
+        objective = ctmodel.pfbaobjective.value,
+        optimizer,
+        sense = X.J.MIN_SENSE,
+    )
 
     # prepare the model for pFBA
     for mod in qp_modifications
         mod(model, opt_model)
     end
+    
+    J.optimize!(opt_model)
 
-    # add the minimization constraint for total flux
-    v = opt_model[:x] # fluxes
-    J.@objective(opt_model, Min, sum(dot(v, v)))
-
-    for rb in relax_bounds
-        lb, ub = objective_bounds(rb)(Z)
-        J.@constraint(opt_model, pfba_constraint, lb <= original_objective <= ub)
-
-        J.optimize!(opt_model)
-        is_solved(opt_model) && break
-        @warn("Relaxing pFBA objective bound!")
-
-        J.delete(opt_model, pfba_constraint)
-        J.unregister(opt_model, :pfba_constraint)
-    end
-
-    C.ValueTree(ctmodel, J.value.(opt_model[:x]))
+    C.ValueTree(_ctmodel, J.value.(opt_model[:x]))
 end
 
 """
