@@ -1,7 +1,6 @@
 
-sum_objectve(x) =
-    C.Constraint(sum(C.value.(x), init = zero(C.LinearValue)))
-    
+sum_objectve(x) = C.Constraint(sum(C.value.(x), init = zero(C.LinearValue)))
+
 sum_objective(x::C.ConstraintTree) = squared_error_objective(values(x))
 
 squared_sum_objective(x) =
@@ -10,8 +9,7 @@ squared_sum_objective(x) =
 squared_sum_objective(x::C.ConstraintTree) = squared_sum_objective(values(x))
 
 squared_error_objective(constraints::C.ConstraintTree, target) = C.Constraint(
-    sum(
-        let tmp = (C.value(c) - target[k])
+    sum(let tmp = (C.value(c) - target[k])
             tmp * tmp
         end for (k, c) in constraints if haskey(target, k)),
 )

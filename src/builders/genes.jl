@@ -16,14 +16,14 @@ gene_knockouts(;
     model::A.AbstractFBCModel,
 ) = knockout_constraints(;
     fluxes,
-    knockout_test = rxn -> begin 
+    knockout_test = rxn -> begin
         maybe_avail = A.reaction_gene_products_available(
             model,
             string(rxn),
             g -> !(g in ko_genes), # not available if knocked out
         )
         isnothing(maybe_avail) ? false : !maybe_avail # negate here because of knockout_constraints
-        end,
+    end,
 )
 
 """
@@ -39,4 +39,3 @@ Pipe-able variant.
 """
 knockout!(ko_genes::Vector{String}, model::A.AbstractFBCModel) =
     m -> knockout!(m, ko_genes, model)
-    

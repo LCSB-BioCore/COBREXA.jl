@@ -31,7 +31,7 @@ vt = X.flux_balance_analysis(model, T.Optimizer)
 ctmodel = X.fbc_model_constraints(model)
 
 # We can also pass some modifications to the optimizer
-# Except for `X.silence`, all other optimizer modifications 
+# Except for `X.silence`, all other optimizer modifications
 # are the same as those in JuMP.
 vt = X.flux_balance_analysis(
     ctmodel,
@@ -46,7 +46,7 @@ vt = X.flux_balance_analysis(
 
 @test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src
 
-# We can also modify the model. The most explicit way to do this is 
+# We can also modify the model. The most explicit way to do this is
 # to make a new constraint tree representation of the model.
 
 import ConstraintTrees as C
@@ -64,7 +64,7 @@ vt = X.flux_balance_analysis(
 
 @test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
 
-# Models that cannot be solved return `nothing`. In the example below, the 
+# Models that cannot be solved return `nothing`. In the example below, the
 # underlying model is modified.
 
 ctmodel.fluxes.ATPM.bound = (1000.0, 10000.0) # TODO make mutable
@@ -83,6 +83,9 @@ vt = ctmodel |> X.flux_balance_analysis(T.Optimizer; modifications = [X.silence]
 # Gene knockouts can be done with ease making use of the piping functionality.
 # Here oxidative phosphorylation is knocked out.
 
-vt = ctmodel |> X.knockout!(["b0979", "b0734"], model) |> X.flux_balance_analysis(T.Optimizer; modifications = [X.silence])
+vt =
+    ctmodel |>
+    X.knockout!(["b0979", "b0734"], model) |>
+    X.flux_balance_analysis(T.Optimizer; modifications = [X.silence])
 
 @test isapprox(vt.objective, 0.21166, atol = TEST_TOLERANCE) #src
