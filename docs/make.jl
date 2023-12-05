@@ -2,10 +2,6 @@ using Documenter
 using Literate, JSON
 using COBREXA
 
-# testing constants
-const TEST_TOLERANCE = 1e-3
-const QP_TEST_TOLERANCE = 1e-2 # for Clarabel
-
 # build the examples
 examples_path = joinpath(@__DIR__, "src", "examples")
 examples_basenames = sort(filter(x -> endswith(x, ".jl"), readdir(examples_path)))

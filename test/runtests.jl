@@ -6,6 +6,10 @@ using Distributed
 import AbstractFBCModels as A
 using GLPK # for MILPs
 
+# testing constants
+const TEST_TOLERANCE = 1e-3
+const QP_TEST_TOLERANCE = 1e-2 # for Clarabel
+
 # helper functions for running tests en masse
 print_timing(fn, t) = @info "$(fn) done in $(round(t; digits = 2))s"
 
