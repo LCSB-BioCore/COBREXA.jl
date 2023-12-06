@@ -19,7 +19,7 @@ StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 [compat]
 AbstractFBCModels = "0.2"
 Clarabel = "0.3"
-ConstraintTrees = "0.4"
+ConstraintTrees = "0.5"
 DistributedData = "0.2"
 DocStringExtensions = "0.8, 0.9"
 JuMP = "1"
