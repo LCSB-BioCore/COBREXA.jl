@@ -20,7 +20,7 @@ function run_test_file(path...)
 end
 
 function run_doc_examples()
-    for dir in readdir("../docs/src/examples", join = true) |> filter(endswith(".jl"))
+    for dir in filter(endswith(".jl"), readdir("../docs/src/examples", join = true))
         run_test_file(dir)
     end
 end
