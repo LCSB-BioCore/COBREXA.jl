@@ -26,6 +26,7 @@ gene_knockouts(;
     end,
 )
 
+#TODO remove the bang from here, there's no side effect
 """
 $(TYPEDSIGNATURES)
 """
