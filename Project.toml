@@ -18,20 +18,32 @@ StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 
 [compat]
 AbstractFBCModels = "0.2"
+Aqua = "0.7"
 Clarabel = "0.3"
-ConstraintTrees = "0.4"
+ConstraintTrees = "0.5"
 DistributedData = "0.2"
 DocStringExtensions = "0.8, 0.9"
+Downloads = "1"
+GLPK = "1"
+JSONFBCModels = "0.1"
 JuMP = "1"
+SBMLFBCModels = "0.1"
+SHA = "0.7, 1"
 StableRNGs = "1.0"
+Test = "1"
+Tulip = "0.9"
 julia = "1.5"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Clarabel = "61c947e1-3e6d-4ee4-985a-eec8c727bd6e"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+JSONFBCModels = "475c1105-d6ed-49c1-9b32-c11adca6d3e8"
+SBMLFBCModels = "3e8f9d1a-ffc1-486d-82d6-6c7276635980"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [targets]
-test = ["Aqua", "Clarabel", "GLPK", "Test", "Tulip"]
+test = ["Aqua", "Clarabel", "Downloads", "GLPK", "SHA", "Test", "Tulip", "JSONFBCModels"]

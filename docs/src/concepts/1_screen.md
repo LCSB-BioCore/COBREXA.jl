@@ -24,7 +24,7 @@ screen_variants(
         [with_changed_bound("O2t", lb = 0, ub = 0)],  # disable O2 transport
         [with_changed_bound("CO2t", lb = 0, ub = 0), with_changed_bound("O2t", lb = 0, ub = 0)],  # disable both transports
     ],
-    m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
+    m -> flux_balance_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
 )
 ```
 The call specifies a model (the `m` that we have loaded) that is being tested,
@@ -89,7 +89,7 @@ res = screen_variants(m,
             ["EX_h2o_e", "EX_co2_e", "EX_o2_e", "EX_nh4_e"], # and this set of exchanges
         )
     ],
-    m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
+    m -> flux_balance_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
 )
 ```
 
@@ -199,7 +199,7 @@ screen_variants(
         [with_disabled_oxygen_transport],
         [with_disabled_reaction("NH4t")],
     ],
-    m -> flux_balance_analysis_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
+    m -> flux_balance_dict(m, Tulip.Optimizer)["BIOMASS_Ecoli_core_w_GAM"],
 )
 ```
 
@@ -222,7 +222,7 @@ That should get you the results for all new variants of the model:
 
 Some analysis functions may take additional arguments, which you might want to
 vary for the analysis. `modifications` argument of
-[`flux_balance_analysis_dict`](@ref) is one example of such argument, allowing
+[`flux_balance_dict`](@ref) is one example of such argument, allowing
 you to specify details of the optimization procedure.
 
 [`screen`](@ref) function allows you to do precisely that -- apart from
@@ -242,7 +242,7 @@ iterations needed for Tulip solver to find a feasible solution:
 screen(m,
     args = [(i,) for i in 5:15],  # the iteration counts, packed in 1-tuples
     analysis = (m,a) -> # `args` elements get passed as the extra parameter here
-        flux_balance_analysis_vec(m,
+        flux_balance_vec(m,
             Tulip.Optimizer;
             modifications=[modify_optimizer_attribute("IPM_IterationsLimit", a)],
         ),

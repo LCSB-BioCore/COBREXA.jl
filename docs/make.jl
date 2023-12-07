@@ -25,6 +25,7 @@ find_mds(path) =
         filter(x -> endswith(x, ".md"), readdir(joinpath(@__DIR__, "src", path))),
     )
 
+#TODO migrate this to Documenter-1, and make all checks strict
 # build the docs
 makedocs(
     modules = [COBREXA],
@@ -51,10 +52,11 @@ makedocs(
             "Contents" => "concepts.md"
             find_mds("concepts")
         ],
-        "Reference" => [
-            "Contents" => "reference.md"
-            find_mds("reference")
-        ],
+        "Reference" => "reference.md",
+        #[ # TODO re-add this when the reference gets bigger
+        #"Contents" => "reference.md"
+        #find_mds("reference")
+        #],
     ],
 )
 

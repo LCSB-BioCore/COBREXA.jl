@@ -20,3 +20,8 @@ Manifest.toml
 
 # ignore container files
 *.sif
+
+# ignore models
+*.xml
+*.json
+*.mat
