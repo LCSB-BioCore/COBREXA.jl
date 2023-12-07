@@ -120,7 +120,7 @@ variables:
 # any available docker and current julia
 #
 
-docker:julia1.8:
+docker:julia1.9:
   stage: test
   image: $CI_REGISTRY/r3/docker/julia-custom
   script:
@@ -132,7 +132,7 @@ docker:julia1.8:
 # built & deployed
 #
 
-linux:julia1.8:
+linux:julia1.9:
   stage: test
   tags:
     - slave01
@@ -152,19 +152,19 @@ linux:julia1.6:
 # Additional platform&environment compatibility tests
 #
 
-windows8:julia1.8:
+windows8:julia1.9:
   stage: test-compat
   <<: *global_trigger_compat_tests
   <<: *global_julia19
   <<: *global_env_win8
 
-windows10:julia1.8:
+windows10:julia1.9:
   stage: test-compat
   <<: *global_trigger_compat_tests
   <<: *global_julia19
   <<: *global_env_win10
 
-mac:julia1.8:
+mac:julia1.9:
   stage: test-compat
   <<: *global_trigger_compat_tests
   <<: *global_julia19
