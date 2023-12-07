@@ -26,26 +26,26 @@ Returns a [`C.ValueTree`](@ref).
 # Example
 ```
 model = load_model("e_coli_core.json")
-solution = flux_balance_analysis(model, GLPK.optimizer)
+solution = flux_balance(model, GLPK.optimizer)
 ```
 """
-function flux_balance_analysis(model::A.AbstractFBCModel, optimizer; modifications = [])
+function flux_balance(model::A.AbstractFBCModel, optimizer; modifications = [])
     ctmodel = fbc_model_constraints(model)
-    flux_balance_analysis(ctmodel, optimizer; modifications)
+    flux_balance(ctmodel, optimizer; modifications)
 end
 
 """
 $(TYPEDSIGNATURES)
 
-A variant of [`flux_balance_analysis`](@ref) that takes in a
+A variant of [`flux_balance`](@ref) that takes in a
 [`C.ConstraintTree`](@ref) as the model to optimize. The objective is inferred
 from the field `objective` in `ctmodel`. All other arguments are forwarded.
 """
-function flux_balance_analysis(ctmodel::C.ConstraintTree, optimizer; modifications = [])
+function flux_balance(ctmodel::C.ConstraintTree, optimizer; modifications = [])
     opt_model = optimization_model(ctmodel; objective = ctmodel.objective.value, optimizer)
 
     for mod in modifications
-        mod(ctmodel, opt_model)
+        mod(opt_model)
     end
 
     J.optimize!(opt_model)
@@ -58,9 +58,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Pipe-able variant of [`flux_balance_analysis`](@ref).
+Pipe-able variant of [`flux_balance`](@ref).
 """
-flux_balance_analysis(optimizer; modifications = []) =
-    m -> flux_balance_analysis(m, optimizer; modifications)
+flux_balance(optimizer; modifications = []) = m -> flux_balance(m, optimizer; modifications)
 
-export flux_balance_analysis
+export flux_balance

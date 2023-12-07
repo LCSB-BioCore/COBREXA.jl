@@ -1,5 +1,4 @@
 
-import AbstractFBCModels as F
 import SparseArrays: sparse
 
 """
@@ -8,13 +7,13 @@ $(TYPEDSIGNATURES)
 A constraint tree that models the content of the given instance of
 `AbstractFBCModel`.
 """
-function fbc_model_constraints(model::F.AbstractFBCModel)
-    rxns = Symbol.(F.reactions(model))
-    mets = Symbol.(F.metabolites(model))
-    lbs, ubs = F.bounds(model)
-    stoi = F.stoichiometry(model)
-    bal = F.balance(model)
-    obj = F.objective(model)
+function fbc_model_constraints(model::A.AbstractFBCModel)
+    rxns = Symbol.(A.reactions(model))
+    mets = Symbol.(A.metabolites(model))
+    lbs, ubs = A.bounds(model)
+    stoi = A.stoichiometry(model)
+    bal = A.balance(model)
+    obj = A.objective(model)
 
     #TODO: is sparse() required below?
     return C.ConstraintTree(

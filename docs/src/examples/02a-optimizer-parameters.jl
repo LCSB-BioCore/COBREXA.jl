@@ -3,7 +3,7 @@
 #
 # Many optimizers require fine-tuning to produce best results. You can pass in
 # additional optimizer settings via the `modifications` parameter of
-# [`flux_balance_analysis`](@ref). These include e.g.
+# [`flux_balance`](@ref). These include e.g.
 #
 # - [`set_optimizer_attribute`](@ref) (typically allowing you to tune e.g.
 #   iteration limits, tolerances, or floating-point precision)
@@ -29,28 +29,22 @@ model = load_model("e_coli_core.json")
 
 # Running a FBA with a silent optimizer that has slightly increased iteration
 # limit for IPM algorithm may now look as follows:
-solution = flux_balance_analysis(
-    ctmodel,
+solution = flux_balance(
+    model,
     Tulip.Optimizer;
-    modifications = [
-        silence
-        set_optimizer_attribute("IPM_IterationsLimit", 1000)
-    ],
+    modifications = [silence, set_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 
 @test !isnothing(solution) #src
 
-# To see some of the effects of the configuration changes, you may deliberately
-# cripple the optimizer's possibilities to a few iterations, which will cause
-# it to fail and return no solution:
+# To see some of the effects of the configuration changes, you may e.g.
+# deliberately cripple the optimizer's possibilities to a few iterations, which
+# will cause it to fail and return no solution:
 
-solution = flux_balance_analysis(
-    ctmodel,
+solution = flux_balance(
+    model,
     Tulip.Optimizer;
-    modifications = [
-        silence
-        set_optimizer_attribute("IPM_IterationsLimit", 1000)
-    ],
+    modifications = [silence, set_optimizer_attribute("IPM_IterationsLimit", 2)],
 )
 
 println(solution)

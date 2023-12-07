@@ -28,7 +28,10 @@ end
 # set up the workers for Distributed, so that the tests that require more
 # workers do not unnecessarily load the stuff multiple times
 W = addprocs(2)
-t = @elapsed @everywhere using COBREXA, Tulip, JuMP
+t = @elapsed @everywhere begin
+    using COBREXA
+    import Tulip, JuMP
+end
 
 # load the test models
 run_test_file("data_static.jl")

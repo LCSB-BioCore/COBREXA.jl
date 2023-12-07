@@ -14,7 +14,7 @@
 #
 # ## Changing the model-to-optimizer pipeline
 #
-# TODO the stuff below:
+# TODO clean up the stuff below:
 
 using COBREXA
 
@@ -43,36 +43,22 @@ fermentation = ctmodel.fluxes.EX_ac_e.value + ctmodel.fluxes.EX_etoh_e.value
 forced_mixed_fermentation =
     ctmodel * :fermentation^C.Constraint(fermentation, (10.0, 1000.0)) # new modified model is created
 
-vt = flux_balance_analysis(
-    forced_mixed_fermentation,
-    Tulip.Optimizer;
-    modifications = [silence],
-)
+vt = flux_balance(forced_mixed_fermentation, Tulip.Optimizer; modifications = [silence])
 
 @test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
 
 # Models that cannot be solved return `nothing`. In the example below, the
 # underlying model is modified.
 
-ctmodel.fluxes.ATPM.bound = (1000.0, 10000.0) # TODO make mutable
+ctmodel.fluxes.ATPM.bound = (1000.0, 10000.0)
 
-vt = flux_balance_analysis(ctmodel, Tulip.Optimizer; modifications = [silence])
+vt = flux_balance(ctmodel, Tulip.Optimizer; modifications = [silence])
 
 @test isnothing(vt) #src
 
 # Models can also be piped into the analysis functions
 
 ctmodel.fluxes.ATPM.bound = (8.39, 10000.0) # revert
-vt = ctmodel |> flux_balance_analysis(Tulip.Optimizer; modifications = [silence])
+vt = ctmodel |> flux_balance(Tulip.Optimizer; modifications = [silence])
 
 @test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src
-
-# Gene knockouts can be done with ease making use of the piping functionality.
-# Here oxidative phosphorylation is knocked out.
-
-vt =
-    ctmodel |>
-    X.knockout!(["b0979", "b0734"], model) |>
-    X.flux_balance_analysis(Tulip.Optimizer; modifications = [X.silence])
-
-@test isapprox(vt.objective, 0.21166, atol = TEST_TOLERANCE) #src

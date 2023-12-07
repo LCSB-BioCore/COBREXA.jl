@@ -25,12 +25,12 @@ genome-scale models. Molecular Systems Biology, 6. 390. doi:
 accession:10.1038/msb.2010.47" for more details.
 
 pFBA gets the model optimum by standard FBA (using
-[`flux_balance_analysis`](@ref) with `optimizer` and `modifications`), then
+[`flux_balance`](@ref) with `optimizer` and `modifications`), then
 finds a minimal total flux through the model that still satisfies the (slightly
 relaxed) optimum. This is done using a quadratic problem optimizer. If the
 original optimizer does not support quadratic optimization, it can be changed
 using the callback in `qp_modifications`, which are applied after the FBA. See
-the documentation of [`flux_balance_analysis`](@ref) for usage examples of
+the documentation of [`flux_balance`](@ref) for usage examples of
 modifications.
 
 The optimum relaxation sequence can be specified in `relax` parameter, it
@@ -51,10 +51,10 @@ construct parsimonious models directly using
 # Example
 ```
 model = load_model("e_coli_core.json")
-parsimonious_flux_balance_analysis(model, biomass, Gurobi.Optimizer) |> values_vec
+parsimonious_flux_balance(model, biomass, Gurobi.Optimizer) |> values_vec
 ```
 """
-function parsimonious_flux_balance_analysis(
+function parsimonious_flux_balance(
     model::C.ConstraintTree,
     optimizer;
     modifications = [],
@@ -62,7 +62,7 @@ function parsimonious_flux_balance_analysis(
     relax_bounds = [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
 )
     # Run FBA
-    opt_model = flux_balance_analysis(model, optimizer; modifications)
+    opt_model = flux_balance(model, optimizer; modifications)
     J.is_solved(opt_model) || return nothing # FBA failed
 
     # get the objective

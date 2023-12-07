@@ -1,7 +1,7 @@
 
 # # Flux balance analysis (FBA)
 
-# Here we use [`flux_balance_analysis`](@ref) and several related functions to
+# Here we use [`flux_balance`](@ref) and several related functions to
 # find an optimal flux in the *E. coli* "core" model. We will need the model,
 # which we can download using [`download_model`](@ref):
 
@@ -26,9 +26,9 @@ model = load_model("e_coli_core.json")
 # There are many possibilities on how to arrange the metabolic model into the
 # optimization framework and how to actually solve it. The "usual" assumed one
 # is captured in the default behavior of function
-# [`flux_balance_analysis`](@ref):
+# [`flux_balance`](@ref):
 
-solution = flux_balance_analysis(model, Tulip.Optimizer)
+solution = flux_balance(model, Tulip.Optimizer)
 
 @test isapprox(solution.objective, 0.8739, atol = TEST_TOLERANCE) #src
 
