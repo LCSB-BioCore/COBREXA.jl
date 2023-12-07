@@ -11,6 +11,7 @@ import JuMP as J
 import SparseArrays: sparse
 
 include("types.jl")
+include("io.jl")
 include("solver.jl")
 
 include("builders/core.jl")
