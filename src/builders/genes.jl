@@ -16,7 +16,7 @@ gene_knockouts(;
     model::A.AbstractFBCModel,
 ) = knockout_constraints(;
     fluxes,
-    knockout_test = rxn -> begin 
+    knockout_test = rxn -> begin
         maybe_avail = A.reaction_gene_products_available(
             model,
             string(rxn),

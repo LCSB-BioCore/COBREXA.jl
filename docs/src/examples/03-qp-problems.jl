@@ -28,14 +28,14 @@ vt = X.parsimonious_flux_balance_analysis(model, Clarabel.Optimizer)
 
 model |> parsimonious_flux_balance_analysis(Clarabel.Optimizer; modifications = [X.silence])
 
-@test isapprox(vt.objective, 0.87392; atol=TEST_TOLERANCE) #src
-@test isapprox(sum(x^2 for x in values(vt.fluxes)), 11414.2119; atol=QP_TEST_TOLERANCE) #src
+@test isapprox(vt.objective, 0.87392; atol = TEST_TOLERANCE) #src
+@test isapprox(sum(x^2 for x in values(vt.fluxes)), 11414.2119; atol = QP_TEST_TOLERANCE) #src
 
 # Alternatively, you can construct your own constraint tree model with 
 # the quadratic objective (this approach is much more flexible).
 
 ctmodel = X.fbc_model_constraints(model)
-ctmodel *= :l2objective ^ X.squared_sum_objective(ctmodel.fluxes)
+ctmodel *= :l2objective^X.squared_sum_objective(ctmodel.fluxes)
 ctmodel.objective.bound = 0.3 # set growth rate # TODO currently breaks
 
 opt_model = X.optimization_model(
@@ -46,12 +46,12 @@ opt_model = X.optimization_model(
 )
 
 X.J.optimize!(opt_model) # JuMP is called J in COBREXA
-    
+
 X.is_solved(opt_model) # check if solved
 
 vt = X.C.ValueTree(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees.jl is called C in COBREXA
 
-@test isapprox(vt.l2objective, ?; atol=QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds
+@test isapprox(vt.l2objective, ?; atol = QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds
 
 # It is likewise as simple to run MOMA using the convenience functions. 
 
@@ -61,15 +61,23 @@ vt = X.minimize_metabolic_adjustment_analysis(model, ref_sol, Gurobi.Optimizer)
 
 # Or use the piping functionality
 
-model |> X.minimize_metabolic_adjustment_analysis(ref_sol, Clarabel.Optimizer; modifications = [X.silence])
+model |> X.minimize_metabolic_adjustment_analysis(
+    ref_sol,
+    Clarabel.Optimizer;
+    modifications = [X.silence],
+)
 
-@test isapprox(vt.:momaobjective, 0.81580806; atol=TEST_TOLERANCE) #src
+@test isapprox(vt.:momaobjective, 0.81580806; atol = TEST_TOLERANCE) #src
 
 # Alternatively, you can construct your own constraint tree model with 
 # the quadratic objective (this approach is much more flexible).
 
 ctmodel = X.fbc_model_constraints(model)
-ctmodel *= :minoxphospho ^ X.squared_sum_error_objective(ctmodel.fluxes, Dict(:ATPS4r => 33.0, :CYTBD => 22.0,))
+ctmodel *=
+    :minoxphospho^X.squared_sum_error_objective(
+        ctmodel.fluxes,
+        Dict(:ATPS4r => 33.0, :CYTBD => 22.0),
+    )
 ctmodel.objective.bound = 0.3 # set growth rate # TODO currently breaks
 
 opt_model = X.optimization_model(
@@ -80,9 +88,9 @@ opt_model = X.optimization_model(
 )
 
 X.J.optimize!(opt_model) # JuMP is called J in COBREXA
-    
+
 X.is_solved(opt_model) # check if solved
 
 vt = X.C.ValueTree(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees.jl is called C in COBREXA
 
-@test isapprox(vt.l2objective, ?; atol=QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds
+@test isapprox(vt.l2objective, ?; atol = QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds

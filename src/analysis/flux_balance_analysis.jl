@@ -42,18 +42,14 @@ A variant of [`flux_balance_analysis`](@ref) that takes in a
 from the field `objective` in `ctmodel`. All other arguments are forwarded.
 """
 function flux_balance_analysis(ctmodel::C.ConstraintTree, optimizer; modifications = [])
-    opt_model = optimization_model(
-        ctmodel;
-        objective = ctmodel.objective.value,
-        optimizer,
-    )
+    opt_model = optimization_model(ctmodel; objective = ctmodel.objective.value, optimizer)
 
     for mod in modifications
         mod(ctmodel, opt_model)
     end
 
     J.optimize!(opt_model)
-    
+
     is_solved(opt_model) || return nothing
 
     C.ValueTree(ctmodel, J.value.(opt_model[:x]))

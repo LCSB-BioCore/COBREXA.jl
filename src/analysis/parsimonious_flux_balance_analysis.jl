@@ -65,8 +65,8 @@ function parsimonious_flux_balance_analysis(
 
     # get the objective
     Z = J.objective_value(opt_model)
-    
-    _ctmodel = ctmodel * :pfbaobjective ^ squared_sum_objective(ctmodel.fluxes)
+
+    _ctmodel = ctmodel * :pfbaobjective^squared_sum_objective(ctmodel.fluxes)
     _ctmodel.objective.bound = relax == 1.0 ? Z : objective_bounds(relax)(Z)  # TODO currently breaks
 
     opt_model = X.optimization_model(
@@ -80,7 +80,7 @@ function parsimonious_flux_balance_analysis(
     for mod in qp_modifications
         mod(model, opt_model)
     end
-    
+
     J.optimize!(opt_model)
 
     C.ValueTree(_ctmodel, J.value.(opt_model[:x]))
