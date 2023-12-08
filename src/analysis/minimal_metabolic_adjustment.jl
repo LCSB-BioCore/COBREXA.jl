@@ -24,35 +24,35 @@ model = load_model("e_coli_core.json")
 
 ```
 """
-function minimize_metabolic_adjustment_analysis(
-    ctmodel::C.ConstraintTree,
+function minimal_metabolic_adjustment(
+    constraints::C.ConstraintTree,
     reference_solution::Dict{String,Float64},
     optimizer;
     modifications = [],
 )
-    _ctmodel =
-        ctmodel *
+    _constraints =
+        constraints *
         :momaobjective^squared_sum_error_objective(
-            ctmodel.fluxes,
+            constraints.fluxes,
             Dict(Symbol(k) => float(v) for (k, v) in reference_solution),
         )
 
     opt_model = optimization_model(
-        _ctmodel;
-        objective = _ctmodel.momaobjective.value,
+        _constraints;
+        objective = _constraints.momaobjective.value,
         optimizer,
         sense = J.MIN_SENSE,
     )
 
     for mod in modifications
-        mod(ctmodel, opt_model)
+        mod(constraints, opt_model)
     end
 
     J.optimize!(opt_model)
 
     is_solved(opt_model) || return nothing
 
-    C.ValueTree(_ctmodel, J.value.(opt_model[:x]))
+    C.ValueTree(_constraints, J.value.(opt_model[:x]))
 end
 
 """
@@ -60,24 +60,9 @@ $(TYPEDSIGNATURES)
 
 Variant that takes an [`A.AbstractFBCModel`](@ref) as input. All other arguments are forwarded.
 """
-function minimize_metabolic_adjustment_analysis(
-    model::A.AbstractFBCModel,
-    args...;
-    kwargs...,
-)
-    ctmodel = fbc_model_constraints(model)
-    minimize_metabolic_adjustment_analysis(ctmodel, args...; kwargs...)
+function minimal_metabolic_adjustment(model::A.AbstractFBCModel, args...; kwargs...)
+    constraints = fbc_model_constraints(model)
+    minimal_metabolic_adjustment(constraints, args...; kwargs...)
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Pipe-able variant of [`minimize_metabolic_adjustment_analysis`](@ref).
-"""
-minimize_metabolic_adjustment_analysis(
-    reference_solution::Dict{String,Float64},
-    optimizer;
-    kwargs...,
-) = m -> minimize_metabolic_adjustment_analysis(m, reference_solution, optimizer; kwargs...)
-
-export minimize_metabolic_adjustment_analysis
+export minimal_metabolic_adjustment

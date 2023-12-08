@@ -29,36 +29,20 @@ model = load_model("e_coli_core.json")
 solution = flux_balance(model, GLPK.optimizer)
 ```
 """
-function flux_balance(model::A.AbstractFBCModel, optimizer; modifications = [])
-    ctmodel = fbc_model_constraints(model)
-    flux_balance(ctmodel, optimizer; modifications)
+function flux_balance(model::A.AbstractFBCModel, optimizer; kwargs...)
+    constraints = fbc_model_constraints(model)
+    optimize_constraints(
+        constraints;
+        objective = constraints.objective,
+        optimizer,
+        kwargs...,
+    )
 end
 
 """
 $(TYPEDSIGNATURES)
 
-A variant of [`flux_balance`](@ref) that takes in a
-[`C.ConstraintTree`](@ref) as the model to optimize. The objective is inferred
-from the field `objective` in `ctmodel`. All other arguments are forwarded.
-"""
-function flux_balance(ctmodel::C.ConstraintTree, optimizer; modifications = [])
-    opt_model = optimization_model(ctmodel; objective = ctmodel.objective.value, optimizer)
-
-    for mod in modifications
-        mod(opt_model)
-    end
-
-    J.optimize!(opt_model)
-
-    is_solved(opt_model) || return nothing
-
-    C.ValueTree(ctmodel, J.value.(opt_model[:x]))
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Pipe-able variant of [`flux_balance`](@ref).
+Pipe-able overload of [`flux_balance`](@ref).
 """
 flux_balance(optimizer; modifications = []) = m -> flux_balance(m, optimizer; modifications)
 
