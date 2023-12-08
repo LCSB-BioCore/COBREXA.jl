@@ -47,4 +47,3 @@ is_solved(opt_model::J.Model) =
     J.termination_status(opt_model) in [J.MOI.OPTIMAL, J.MOI.LOCALLY_SOLVED]
 
 export is_solved
-

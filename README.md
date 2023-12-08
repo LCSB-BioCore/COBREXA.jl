@@ -115,7 +115,7 @@ download("http://bigg.ucsd.edu/static/models/e_coli_core.xml", "e_coli_core.xml"
 model = load_model("e_coli_core.xml")
 
 # run a FBA
-fluxes = flux_balance_analysis_dict(model, Tulip.Optimizer)
+fluxes = flux_balance_dict(model, Tulip.Optimizer)
 ```
 
 The variable `fluxes` will now contain a dictionary of the computed optimal

@@ -9,5 +9,5 @@ Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [compat]
-Documenter = "0.26"
-Literate = "2.8"
+Documenter = "1"
+Literate = "2"

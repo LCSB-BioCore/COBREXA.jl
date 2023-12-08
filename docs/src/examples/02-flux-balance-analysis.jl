@@ -1,88 +1,49 @@
 
 # # Flux balance analysis (FBA)
 
-# We will use [`flux_balance_analysis`](@ref) and several related functions to
-# find the optimal flux distribution in the *E. coli* "core" model.
+# Here we use [`flux_balance`](@ref) and several related functions to
+# find an optimal flux in the *E. coli* "core" model. We will need the model,
+# which we can download using [`download_model`](@ref):
 
-# If it is not already present, download the model and load the package:
-import Downloads: download
-
-!isfile("e_coli_core.json") &&
-    download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
-
-# next, load the necessary packages
-
-import COBREXA as X
-import AbstractFBCModels as A # for the accessors
-import JSONFBCModels as J # for the model type
-import Tulip as T # use any JuMP supported optimizer
-import GLPK as G
-
-model = A.load(J.JSONFBCModel, "e_coli_core.json") # load the model
-
-# run FBA on the model using default settings
-
-vt = X.flux_balance_analysis(model, T.Optimizer)
-
-@test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src
-
-# Alternatively, a constraint tree can be passed in as well
-
-ctmodel = X.fbc_model_constraints(model)
-
-# We can also pass some modifications to the optimizer
-# Except for `X.silence`, all other optimizer modifications 
-# are the same as those in JuMP.
-vt = X.flux_balance_analysis(
-    ctmodel,
-    G.Optimizer;
-    modifications = [
-        X.silence
-        X.set_objective_sense(X.J.MAX_SENSE) # JuMP is called J inside COBREXA
-        X.set_optimizer(T.Optimizer) # change to Tulip from GLPK
-        X.set_optimizer_attribute("IPM_IterationsLimit", 110) # Tulip specific setting
-    ],
+download_model(
+    "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+    "e_coli_core.json",
+    "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
 )
 
-@test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src
+# Additionally to COBREXA and the model format package, we will need a solver
+# -- let's use Tulip here:
 
-# We can also modify the model. The most explicit way to do this is 
-# to make a new constraint tree representation of the model.
+import JSONFBCModels
+import Tulip
 
-import ConstraintTrees as C
+model = load_model("e_coli_core.json")
 
-fermentation = ctmodel.fluxes.EX_ac_e.value + ctmodel.fluxes.EX_etoh_e.value
+# ## Running a FBA
+#
+# There are many possibilities on how to arrange the metabolic model into the
+# optimization framework and how to actually solve it. The "usual" assumed one
+# is captured in the default behavior of function
+# [`flux_balance`](@ref):
 
-forced_mixed_fermentation =
-    ctmodel * :fermentation^C.Constraint(fermentation, (10.0, 1000.0)) # new modified model is created
+solution = flux_balance(model, Tulip.Optimizer)
 
-vt = X.flux_balance_analysis(
-    forced_mixed_fermentation,
-    T.Optimizer;
-    modifications = [X.silence],
-)
+@test isapprox(solution.objective, 0.8739, atol = TEST_TOLERANCE) #src
 
-@test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
+# The result contains a tree of all optimized values in the model, including
+# fluxes, the objective value, and possibly others (given by what the model
+# contains).
+#
+# You can explore the dot notation to explore the solution, extracting e.g. the
+# value of the objective:
 
-# Models that cannot be solved return `nothing`. In the example below, the 
-# underlying model is modified.
+solution.objective
 
-ctmodel.fluxes.ATPM.bound = (1000.0, 10000.0) # TODO make mutable
+# ...or the value of the flux through the given reaction (note the solution is
+# not unique in FBA):
 
-vt = X.flux_balance_analysis(ctmodel, T.Optimizer; modifications = [X.silence])
+solution.fluxes.PFK
 
-@test isnothing(vt) #src
+# ...or make a "table" of all fluxes through all reactions:
 
-# Models can also be piped into the analysis functions
-
-ctmodel.fluxes.ATPM.bound = (8.39, 10000.0) # revert
-vt = ctmodel |> X.flux_balance_analysis(T.Optimizer; modifications = [X.silence])
-
-@test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src
-
-# Gene knockouts can be done with ease making use of the piping functionality.
-# Here oxidative phosphorylation is knocked out.
-
-vt = ctmodel |> X.knockout!(["b0979", "b0734"], model) |> X.flux_balance_analysis(T.Optimizer; modifications = [X.silence])
-
-@test isapprox(vt.objective, 0.21166, atol = TEST_TOLERANCE) #src
+collect(solution.fluxes)

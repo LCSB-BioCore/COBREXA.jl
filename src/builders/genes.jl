@@ -23,9 +23,10 @@ gene_knockouts(;
             g -> !(g in ko_genes), # not available if knocked out
         )
         isnothing(maybe_avail) ? false : !maybe_avail # negate here because of knockout_constraints
-        end,
+    end,
 )
 
+#TODO remove the bang from here, there's no side effect
 """
 $(TYPEDSIGNATURES)
 """
@@ -39,4 +40,3 @@ Pipe-able variant.
 """
 knockout!(ko_genes::Vector{String}, model::A.AbstractFBCModel) =
     m -> knockout!(m, ko_genes, model)
-    
