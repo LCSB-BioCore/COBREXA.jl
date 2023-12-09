@@ -38,12 +38,17 @@ m *=
 # create fluxes for each isozyme
 for (rid, _) in m.fluxes_forward
     if haskey(reaction_isozymes, string(rid))
-        m += :fluxes_isozymes_forward^rid^X.isozyme_variables(string(rid), reaction_isozymes)
+        m +=
+            :fluxes_isozymes_forward^rid^X.isozyme_variables(string(rid), reaction_isozymes)
     end
 end
 for (rid, _) in m.fluxes_backward
     if haskey(reaction_isozymes, string(rid))
-        m += :fluxes_isozymes_backward^rid^X.isozyme_variables(string(rid), reaction_isozymes)
+        m +=
+            :fluxes_isozymes_backward^rid^X.isozyme_variables(
+                string(rid),
+                reaction_isozymes,
+            )
     end
 end
 
