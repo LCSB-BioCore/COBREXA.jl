@@ -21,7 +21,7 @@ before the analysis, such as [`set_objective_sense`](@ref),
 [`set_optimizer`](@ref), [`set_optimizer_attribute`](@ref), and
 [`silence`](@ref).
 
-Returns a [`C.ValueTree`](@ref).
+Returns a solved tree.
 
 # Example
 ```
@@ -52,7 +52,7 @@ function flux_balance(ctmodel::C.ConstraintTree, optimizer; modifications = [])
 
     is_solved(opt_model) || return nothing
 
-    C.ValueTree(ctmodel, J.value.(opt_model[:x]))
+    C.constraint_values(ctmodel, J.value.(opt_model[:x]))
 end
 
 """
