@@ -27,7 +27,7 @@ function parsimonious_optimized_constraints(
 )
 
     # first solve the optimization problem with the original objective
-    om = optimization_model(constraints, args...; kwargs...)
+    om = optimization_model(constraints, args...; objective, kwargs...)
     for m in modifications
         m(om)
     end
