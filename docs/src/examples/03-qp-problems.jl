@@ -31,7 +31,7 @@ model |> parsimonious_flux_balance(Clarabel.Optimizer; modifications = [X.silenc
 @test isapprox(vt.objective, 0.87392; atol = TEST_TOLERANCE) #src
 @test isapprox(sum(x^2 for x in values(vt.fluxes)), 11414.2119; atol = QP_TEST_TOLERANCE) #src
 
-# Alternatively, you can construct your own constraint tree model with 
+# Alternatively, you can construct your own constraint tree model with
 # the quadratic objective (this approach is much more flexible).
 
 ctmodel = X.fbc_model_constraints(model)
@@ -53,7 +53,7 @@ vt = X.C.constraint_values(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees
 
 @test isapprox(vt.l2objective, ?; atol = QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds
 
-# It is likewise as simple to run MOMA using the convenience functions. 
+# It is likewise as simple to run MOMA using the convenience functions.
 
 ref_sol = Dict("ATPS4r" => 33.0, "CYTBD" => 22.0)
 
@@ -66,7 +66,7 @@ X.minimize_metabolic_adjustment(ref_sol, Clarabel.Optimizer; modifications = [X.
 
 @test isapprox(vt.:momaobjective, 0.81580806; atol = TEST_TOLERANCE) #src
 
-# Alternatively, you can construct your own constraint tree model with 
+# Alternatively, you can construct your own constraint tree model with
 # the quadratic objective (this approach is much more flexible).
 
 ctmodel = X.fbc_model_constraints(model)
