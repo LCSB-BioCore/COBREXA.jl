@@ -21,7 +21,8 @@ before the analysis, such as [`set_objective_sense`](@ref),
 [`set_optimizer`](@ref), [`set_optimizer_attribute`](@ref), and
 [`silence`](@ref).
 
-Returns a [`C.ValueTree`](@ref).
+Returns a tree with the optimization solution of the same shape as the model
+defined by [`fbc_model_constraints`](@ref).
 
 # Example
 ```
@@ -33,7 +34,7 @@ function flux_balance(model::A.AbstractFBCModel, optimizer; kwargs...)
     constraints = fbc_model_constraints(model)
     optimize_constraints(
         constraints;
-        objective = constraints.objective,
+        objective = constraints.objective.value,
         optimizer,
         kwargs...,
     )

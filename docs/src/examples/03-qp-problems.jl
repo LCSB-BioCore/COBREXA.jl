@@ -49,7 +49,7 @@ X.J.optimize!(opt_model) # JuMP is called J in COBREXA
 
 X.is_solved(opt_model) # check if solved
 
-vt = X.C.ValueTree(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees.jl is called C in COBREXA
+vt = X.C.constraint_values(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees.jl is called C in COBREXA
 
 @test isapprox(vt.l2objective, ?; atol = QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds
 
@@ -91,6 +91,6 @@ X.J.optimize!(opt_model) # JuMP is called J in COBREXA
 
 X.is_solved(opt_model) # check if solved
 
-vt = X.C.ValueTree(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees.jl is called C in COBREXA
+vt = X.C.constraint_values(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees.jl is called C in COBREXA
 
 @test isapprox(vt.l2objective, ?; atol = QP_TEST_TOLERANCE) #src  # TODO will break until mutable bounds

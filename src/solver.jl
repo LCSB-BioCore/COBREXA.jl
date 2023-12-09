@@ -7,8 +7,8 @@ JuMP `Model` created for solving in `optimizer`, with a given optional
 `objective` and optimization `sense`.
 """
 function optimization_model(
-    cs::C.ConstraintTree;
-    objective::Union{Nothing,C.LinearValue,C.QuadraticValue} = nothing,
+    cs::C.ConstraintTreeElem;
+    objective::Union{Nothing,C.Value} = nothing,
     optimizer,
     sense = J.MAX_SENSE,
 )
@@ -57,16 +57,16 @@ the model, and return either `nothing` if the optimization failed, or `output`
 substituted with the solved values (`output` defaults to `constraints`.
 """
 function optimize_constraints(
-    constraints::C.ConstraintTree,
+    constraints::C.ConstraintTreeElem,
     args...;
     modifications = [],
     output = constraints,
     kwargs...,
 )
-    om = optimization_model(constraints, args..., kwargs...)
+    om = optimization_model(constraints, args...; kwargs...)
     for m in modifications
         m(om)
     end
     J.optimize!(om)
-    is_solved(om) ? C.ValueTree(output, J.value.(opt_model[:x])) : nothing
+    is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
 end
