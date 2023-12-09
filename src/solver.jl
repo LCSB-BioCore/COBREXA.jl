@@ -56,7 +56,7 @@ Make an JuMP model out of `constraints` using [`optimization_model`](@ref)
 the model, and return either `nothing` if the optimization failed, or `output`
 substituted with the solved values (`output` defaults to `constraints`.
 """
-function optimize_constraints(
+function optimized_constraints(
     constraints::C.ConstraintTreeElem,
     args...;
     modifications = [],
@@ -70,3 +70,5 @@ function optimize_constraints(
     J.optimize!(om)
     is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
 end
+
+export optimized_constraints

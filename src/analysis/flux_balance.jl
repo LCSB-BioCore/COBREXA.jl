@@ -32,7 +32,7 @@ solution = flux_balance(model, GLPK.optimizer)
 """
 function flux_balance(model::A.AbstractFBCModel, optimizer; kwargs...)
     constraints = fbc_model_constraints(model)
-    optimize_constraints(
+    optimized_constraints(
         constraints;
         objective = constraints.objective.value,
         optimizer,

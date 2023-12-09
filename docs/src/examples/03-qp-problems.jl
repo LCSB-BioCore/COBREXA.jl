@@ -1,8 +1,8 @@
 
 # # Quandratic objective flux balance analysis type problems
 
-# We will use [`parsimonious_flux_balance_analysis`](@ref) and
-# [`minimize_metabolic_adjustment_analysis`](@ref) to find the optimal flux
+# We will use [`parsimonious_flux_balance`](@ref) and
+# [`minimize_metabolic_adjustment`](@ref) to find the optimal flux
 # distribution in the *E. coli* "core" model.
 
 # If it is not already present, download the model and load the package:
@@ -22,11 +22,11 @@ model = A.load(J.JSONFBCModel, "e_coli_core.json") # load the model
 
 # Use the convenience function to run standard pFBA
 
-vt = X.parsimonious_flux_balance_analysis(model, Clarabel.Optimizer)
+vt = X.parsimonious_flux_balance(model, Clarabel.Optimizer)
 
 # Or use the piping functionality
 
-model |> parsimonious_flux_balance_analysis(Clarabel.Optimizer; modifications = [X.silence])
+model |> parsimonious_flux_balance(Clarabel.Optimizer; modifications = [X.silence])
 
 @test isapprox(vt.objective, 0.87392; atol = TEST_TOLERANCE) #src
 @test isapprox(sum(x^2 for x in values(vt.fluxes)), 11414.2119; atol = QP_TEST_TOLERANCE) #src
@@ -57,15 +57,12 @@ vt = X.C.constraint_values(ctmodel, X.J.value.(opt_model[:x])) # ConstraintTrees
 
 ref_sol = Dict("ATPS4r" => 33.0, "CYTBD" => 22.0)
 
-vt = X.minimize_metabolic_adjustment_analysis(model, ref_sol, Gurobi.Optimizer)
+vt = X.minimize_metabolic_adjustment(model, ref_sol, Gurobi.Optimizer)
 
 # Or use the piping functionality
 
-model |> X.minimize_metabolic_adjustment_analysis(
-    ref_sol,
-    Clarabel.Optimizer;
-    modifications = [X.silence],
-)
+model |>
+X.minimize_metabolic_adjustment(ref_sol, Clarabel.Optimizer; modifications = [X.silence])
 
 @test isapprox(vt.:momaobjective, 0.81580806; atol = TEST_TOLERANCE) #src
 
