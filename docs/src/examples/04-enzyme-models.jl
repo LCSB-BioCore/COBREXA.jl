@@ -1,3 +1,25 @@
+# # Enzyme constrained models 
+
+# Here we will construct an enzyme constrained variant of the *E. coli* "core"
+# model. We will need the model, which we can download using
+# [`download_model`](@ref):
+
+using COBREXA
+
+download_model(
+    "http://bigg.ucsd.edu/static/models/e_coli_core.json",
+    "e_coli_core.json",
+    "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
+)
+
+# Additionally to COBREXA and the model format package, we will need a solver
+# -- let's use Tulip here:
+
+import JSONFBCModels
+import Tulip
+
+model = load_model("e_coli_core.json")
+
 import JSONFBCModels as M
 import AbstractFBCModels as A
 import COBREXA as X
