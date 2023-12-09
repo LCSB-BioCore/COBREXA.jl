@@ -22,7 +22,7 @@ model = A.load(J.JSONFBCModel, "e_coli_core.json") # load the model
 
 # Use the convenience function to run standard pFBA
 
-vt = X.parsimonious_flux_balance(model, Clarabel.Optimizer)
+vt = X.parsimonious_flux_balance(model, Clarabel.Optimizer; modifications = [X.silence])
 
 # Or use the piping functionality
 

@@ -1,34 +1,40 @@
 """
 $(TYPEDSIGNATURES)
 
-Run flux balance analysis (FBA) on the `model`, optionally specifying
-`modifications` to the problem.  Basically, FBA solves this optimization
-problem:
-```
-max cᵀx
-s.t. S x = b
-     xₗ ≤ x ≤ xᵤ
-```
-See "Orth, J., Thiele, I. & Palsson, B. What is flux balance analysis?. Nat
-Biotechnol 28, 245-248 (2010). https://doi.org/10.1038/nbt.1614" for more
-information.
+Make an JuMP model out of `constraints` using [`optimization_model`](@ref)
+(most arguments are forwarded there), then apply the `modifications`, optimize
+the model, and return either `nothing` if the optimization failed, or `output`
+substituted with the solved values (`output` defaults to `constraints`.
 
-The `optimizer` must be set to a `JuMP`-compatible optimizer, such as
-`GLPK.Optimizer` or `Tulip.Optimizer`.
+For a "nice" version for simpler finding of metabolic model optima, use
+[`flux_balance`](@ref).
+"""
+function optimized_constraints(
+    constraints::C.ConstraintTreeElem,
+    args...;
+    modifications = [],
+    output = constraints,
+    kwargs...,
+)
+    om = optimization_model(constraints, args...; kwargs...)
+    for m in modifications
+        m(om)
+    end
+    J.optimize!(om)
+    is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
+end
 
-Optionally, you may specify one or more modifications to be applied to the model
-before the analysis, such as [`set_objective_sense`](@ref),
-[`set_optimizer`](@ref), [`set_optimizer_attribute`](@ref), and
-[`silence`](@ref).
+export optimized_constraints
 
-Returns a tree with the optimization solution of the same shape as the model
-defined by [`fbc_model_constraints`](@ref).
+"""
+$(TYPEDSIGNATURES)
 
-# Example
-```
-model = load_model("e_coli_core.json")
-solution = flux_balance(model, GLPK.optimizer)
-```
+Compute an optimal objective-optimizing solution of the given `model`.
+
+Most arguments are forwarded to [`optimized_constraints`](@ref).
+
+Returns a tree with the optimization solution of the same shape as
+given by [`fbc_model_constraints`](@ref).
 """
 function flux_balance(model::A.AbstractFBCModel, optimizer; kwargs...)
     constraints = fbc_model_constraints(model)

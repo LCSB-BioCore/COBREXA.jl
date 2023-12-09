@@ -47,28 +47,3 @@ is_solved(opt_model::J.Model) =
     J.termination_status(opt_model) in [J.MOI.OPTIMAL, J.MOI.LOCALLY_SOLVED]
 
 export is_solved
-
-"""
-$(TYPEDSIGNATURES)
-
-Make an JuMP model out of `constraints` using [`optimization_model`](@ref)
-(most arguments are forwarded there), then apply the modifications, optimize
-the model, and return either `nothing` if the optimization failed, or `output`
-substituted with the solved values (`output` defaults to `constraints`.
-"""
-function optimized_constraints(
-    constraints::C.ConstraintTreeElem,
-    args...;
-    modifications = [],
-    output = constraints,
-    kwargs...,
-)
-    om = optimization_model(constraints, args...; kwargs...)
-    for m in modifications
-        m(om)
-    end
-    J.optimize!(om)
-    is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
-end
-
-export optimized_constraints

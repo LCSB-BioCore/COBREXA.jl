@@ -1,92 +1,111 @@
+
 """
 $(TYPEDSIGNATURES)
 
-Run parsimonious flux balance analysis (pFBA) on the `model`. In short, pFBA
-runs two consecutive optimization problems. The first is traditional FBA:
-```
-max cᵀx = μ
-s.t. S x = b
-     xₗ ≤ x ≤ xᵤ
-```
-And the second is a quadratic optimization problem:
-```
-min Σᵢ xᵢ²
-s.t. S x = b
-     xₗ ≤ x ≤ xᵤ
-     μ = μ⁰
-```
-Where the optimal solution of the FBA problem, μ⁰, has been added as an
-additional constraint. See "Lewis, Nathan E, Hixson, Kim K, Conrad, Tom M,
-Lerman, Joshua A, Charusanti, Pep, Polpitiya, Ashoka D, Adkins, Joshua N,
-Schramm, Gunnar, Purvine, Samuel O, Lopez-Ferrer, Daniel, Weitz, Karl K, Eils,
-Roland, König, Rainer, Smith, Richard D, Palsson, Bernhard Ø, (2010) Omic data
-from evolved E. coli are consistent with computed optimal growth from
-genome-scale models. Molecular Systems Biology, 6. 390. doi:
-accession:10.1038/msb.2010.47" for more details.
+Optimize the system of `constraints` to get the optimal `objective` value. Then
+try to find a "parsimonious" solution with the same `objective` value, which
+optimizes the `parsimonious_objective` (possibly also switching optimization
+sense, optimizer, and adding more modifications).
 
-pFBA gets the model optimum by standard FBA (using
-[`flux_balance`](@ref) with `optimizer` and `modifications`), then
-finds a minimal total flux through the model that still satisfies the (slightly
-relaxed) optimum. This is done using a quadratic problem optimizer. If the
-original optimizer does not support quadratic optimization, it can be changed
-using the callback in `qp_modifications`, which are applied after the FBA. See
-the documentation of [`flux_balance`](@ref) for usage examples of
-modifications.
+For efficiency, everything is performed on a single instance of JuMP model.
 
-The optimum relaxation sequence can be specified in `relax` parameter, it
-defaults to multiplicative range of `[1.0, 0.999999, ..., 0.99]` of the original
-bound.
+A simpler version suitable for direct work with metabolic models is available
+in [`parsimonious_flux_balance`](@ref).
+"""
+function parsimonious_optimized_constraints(
+    constraints::C.ConstraintTreeElem,
+    args...;
+    objective::C.Value,
+    modifications = [],
+    parsimonious_objective::C.Value,
+    parsimonious_optimizer = nothing,
+    parsimonious_sense = J.MIN_SENSE,
+    parsimonious_modifications = [],
+    tolerances = [absolute_tolerance_bound(0)],
+    output = constraints,
+    kwargs...,
+)
 
-Returns an optimized model that contains the pFBA solution (or an unsolved model
-if something went wrong).
+    # first solve the optimization problem with the original objective
+    om = optimization_model(constraints, args...; kwargs...)
+    for m in modifications
+        m(om)
+    end
+    J.optimize!(om)
+    is_solved(om) || return nothing
 
-# Performance
+    target_objective_value = J.objective_value(om)
 
-This implementation attempts to save time by executing all pFBA steps on a
-single instance of the optimization model problem, trading off possible
-flexibility. For slightly less performant but much more flexible use, one can
-construct parsimonious models directly using
-[`with_parsimonious_objective`](@ref).
+    # switch to parsimonizing the solution w.r.t. to the objective value
+    isnothing(parsimonious_optimizer) || J.set_optimizer(om, parsimonious_optimizer)
+    for m in parsimonious_modifications
+        m(om)
+    end
 
-# Example
-```
-model = load_model("e_coli_core.json")
-parsimonious_flux_balance(model, biomass, Gurobi.Optimizer) |> values_vec
-```
+    J.@objective(om, J.MIN_SENSE, C.substitute(parsimonious_objective, om[:x]))
+
+    # try all admissible tolerances
+    for tolerance in tolerances
+        (lb, ub) = tolerance(target_objective_value)
+        J.@constraint(
+            om,
+            pfba_tolerance_constraint,
+            lb <= C.substitute(objective, om[:x]) <= ub
+        )
+
+        J.optimize!(om)
+        is_solved(om) && return C.constraint_values(output, J.value.(om[:x]))
+
+        J.delete(om, pfba_tolerance_constraint)
+        J.unregister(om, :pfba_tolerance_constraint)
+    end
+
+    # all tolerances failed
+    return nothing
+end
+
+export parsimonious_optimized_constraints
+
+"""
+$(TYPEDSIGNATURES)
+
+Compute a parsimonious flux solution for the given `model`. In short, the
+objective value of the parsimonious solution should be the same as the one from
+[`flux_balance`](@ref), except the squared sum of reaction fluxes is minimized.
+If there are multiple possible fluxes that achieve a given objective value,
+parsimonious flux thus represents the "minimum energy" one, thus arguably more
+realistic.
+
+Most arguments are forwarded to [`parsimonious_optimized_constraints`](@ref),
+with some (objectives) filled in automatically to fit the common processing of
+FBC models, and some (`tolerances`) provided with more practical defaults.
+
+Similarly to the [`flux_balance`](@ref), returns a tree with the optimization
+solutions of the shape as given by [`fbc_model_constraints`](@ref).
 """
 function parsimonious_flux_balance(
-    model::C.ConstraintTree,
+    model::A.AbstractFBCModel,
     optimizer;
-    modifications = [],
-    qp_modifications = [],
-    relax_bounds = [1.0, 0.999999, 0.99999, 0.9999, 0.999, 0.99],
+    tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
+    kwargs...,
 )
-    # Run FBA
-    opt_model = flux_balance(model, optimizer; modifications)
-    J.is_solved(opt_model) || return nothing # FBA failed
-
-    # get the objective
-    Z = J.objective_value(opt_model)
-    original_objective = J.objective_function(opt_model)
-
-    # prepare the model for pFBA
-    for mod in qp_modifications
-        mod(model, opt_model)
-    end
-
-    # add the minimization constraint for total flux
-    v = opt_model[:x] # fluxes
-    J.@objective(opt_model, Min, sum(dot(v, v)))
-
-    for rb in relax_bounds
-        # lb, ub = objective_bounds(rb)(Z)
-        J.@constraint(opt_model, pfba_constraint, lb <= original_objective <= ub)
-
-        J.optimize!(opt_model)
-        J.is_solved(opt_model) && break
-
-        J.delete(opt_model, pfba_constraint)
-        J.unregister(opt_model, :pfba_constraint)
-    end
-
+    constraints = fbc_model_constraints(model)
+    parsimonious_optimized_constraints(
+        constraints;
+        optimizer,
+        objective = constraints.objective.value,
+        parsimonious_objective = squared_sum_objective(constraints.fluxes),
+        tolerances,
+        kwargs...,
+    )
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Pipe-able variant of [`parsimonious_flux_balance`](@ref).
+"""
+parsimonious_flux_balance(optimizer; kwargs...) =
+    model -> parsimonious_flux_balance(model, optimizer; kwargs...)
+
+export parsimonious_flux_balance
