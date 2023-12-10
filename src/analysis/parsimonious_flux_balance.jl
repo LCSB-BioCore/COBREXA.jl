@@ -13,8 +13,7 @@ A simpler version suitable for direct work with metabolic models is available
 in [`parsimonious_flux_balance`](@ref).
 """
 function parsimonious_optimized_constraints(
-    constraints::C.ConstraintTreeElem,
-    args...;
+    constraints::C.ConstraintTreeElem;
     objective::C.Value,
     modifications = [],
     parsimonious_objective::C.Value,
@@ -27,7 +26,7 @@ function parsimonious_optimized_constraints(
 )
 
     # first solve the optimization problem with the original objective
-    om = optimization_model(constraints, args...; objective, kwargs...)
+    om = optimization_model(constraints; objective, kwargs...)
     for m in modifications
         m(om)
     end
@@ -74,7 +73,8 @@ objective value of the parsimonious solution should be the same as the one from
 [`flux_balance`](@ref), except the squared sum of reaction fluxes is minimized.
 If there are multiple possible fluxes that achieve a given objective value,
 parsimonious flux thus represents the "minimum energy" one, thus arguably more
-realistic.
+realistic. The optimized squared distance is present in the result as
+`parsimonious_objective`.
 
 Most arguments are forwarded to [`parsimonious_optimized_constraints`](@ref),
 with some (objectives) filled in automatically to fit the common processing of
@@ -90,11 +90,12 @@ function parsimonious_flux_balance(
     kwargs...,
 )
     constraints = fbc_model_constraints(model)
+    parsimonious_objective = squared_sum_objective(constraints.fluxes)
     parsimonious_optimized_constraints(
-        constraints;
+        constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);
         optimizer,
         objective = constraints.objective.value,
-        parsimonious_objective = squared_sum_objective(constraints.fluxes),
+        parsimonious_objective,
         tolerances,
         kwargs...,
     )

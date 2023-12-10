@@ -6,6 +6,11 @@ $(TYPEDSIGNATURES)
 
 A constraint tree that models the content of the given instance of
 `AbstractFBCModel`.
+
+The constructed tree contains subtrees `fluxes` (with the reaction-defining
+"variables") and `flux_stoichiometry` (with the metabolite-balance-defining
+constraints), and a single constraint `objective` thad describes the objective
+function of the model.
 """
 function fbc_model_constraints(model::A.AbstractFBCModel)
     rxns = Symbol.(A.reactions(model))

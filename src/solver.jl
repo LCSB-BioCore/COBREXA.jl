@@ -10,7 +10,7 @@ function optimization_model(
     cs::C.ConstraintTreeElem;
     objective::Union{Nothing,C.Value} = nothing,
     optimizer,
-    sense = J.MAX_SENSE,
+    sense = Maximal,
 )
     model = J.Model(optimizer)
 
@@ -47,3 +47,30 @@ is_solved(opt_model::J.Model) =
     J.termination_status(opt_model) in [J.MOI.OPTIMAL, J.MOI.LOCALLY_SOLVED]
 
 export is_solved
+
+"""
+    Minimal
+
+Objective sense for finding the minimal value of the objective.
+
+Same as `JuMP.MIN_SENSE`.
+"""
+const Minimal = J.MIN_SENSE
+
+"""
+    Maximal
+
+Objective sense for finding the maximal value of the objective.
+
+Same as `JuMP.MAX_SENSE`.
+"""
+const Maximal = J.MAX_SENSE
+
+"""
+    Maximal
+
+Objective sense for finding the any feasible value of the objective.
+
+Same as `JuMP.FEASIBILITY_SENSE`.
+"""
+const Feasible = J.FEASIBILITY_SENSE

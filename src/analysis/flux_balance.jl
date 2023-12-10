@@ -10,13 +10,12 @@ For a "nice" version for simpler finding of metabolic model optima, use
 [`flux_balance`](@ref).
 """
 function optimized_constraints(
-    constraints::C.ConstraintTreeElem,
-    args...;
+    constraints::C.ConstraintTreeElem;
     modifications = [],
     output = constraints,
     kwargs...,
 )
-    om = optimization_model(constraints, args...; kwargs...)
+    om = optimization_model(constraints; kwargs...)
     for m in modifications
         m(om)
     end

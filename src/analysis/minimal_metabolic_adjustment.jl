@@ -2,67 +2,76 @@
 """
 $(TYPEDSIGNATURES)
 
-Run minimization of metabolic adjustment (MOMA) on `model` with respect to
-`reference_solution`, which is a dictionary of fluxes. MOMA finds the shortest
-Euclidian distance between `reference_solution` and `model` with `modifications`:
-```
-min Σᵢ (xᵢ - flux_refᵢ)²
-s.t. S x = b
-     xₗ ≤ x ≤ xᵤ
-```
-Because the problem has a quadratic objective, a QP solver is required. See
-"Daniel, Vitkup & Church, Analysis of Optimality in Natural and Perturbed
-Metabolic Networks, Proceedings of the National Academy of Sciences, 2002" for
-more details.
+Find a feasible solution of the "minimal metabolic adjustment analysis" (MOMA)
+for the `model`, which is the "closest" feasible solution to the given
+`reference_fluxes`, in the sense of squared-sum error distance. The minimized
+squared distance (the objective) is present in the result tree as
+`minimal_adjustment_objective`.
 
-Returns a [`C.ValueTree`](@ref), or `nothing` if the solution could not be
-found.
+This is often used for models with smaller feasible region than the reference
+models (typically handicapped by a knockout, nutritional deficiency or a
+similar perturbation). MOMA solution then gives an expectable "easiest"
+adjustment of the organism towards a somewhat working state.
 
-# Example
-```
-model = load_model("e_coli_core.json")
+Reference fluxes that do not exist in the model are ignored (internally, the
+objective is constructed via [`squared_sum_error_objective`](@ref)).
 
-```
+Additional parameters are forwarded to [`optimized_constraints`](@ref).
 """
 function minimal_metabolic_adjustment(
-    constraints::C.ConstraintTree,
-    reference_solution::Dict{String,Float64},
+    model::A.AbstractFBCModel,
+    reference_fluxes::Dict{Symbol,Float64},
     optimizer;
-    modifications = [],
+    kwargs...,
 )
-    _constraints =
-        constraints *
-        :momaobjective^squared_sum_error_objective(
-            constraints.fluxes,
-            Dict(Symbol(k) => float(v) for (k, v) in reference_solution),
-        )
-
-    opt_model = optimization_model(
-        _constraints;
-        objective = _constraints.momaobjective.value,
+    constraints = fbc_model_constraints(model)
+    objective = squared_sum_error_objective(constraints.fluxes, reference_fluxes)
+    optimized_constraints(
+        constraints * :minimal_adjustment_objective^C.Constraint(objective);
         optimizer,
-        sense = J.MIN_SENSE,
+        objective,
+        sense = Minimal,
+        kwargs...,
     )
-
-    for mod in modifications
-        mod(constraints, opt_model)
-    end
-
-    J.optimize!(opt_model)
-
-    is_solved(opt_model) || return nothing
-
-    C.ValueTree(_constraints, J.value.(opt_model[:x]))
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Variant that takes an [`A.AbstractFBCModel`](@ref) as input. All other arguments are forwarded.
+A slightly easier-to-use version of [`minimal_metabolic_adjustment`](@ref) that
+computes the reference flux as the optimal solution of the
+[`reference_model`](@ref). The reference flux is calculated using
+`reference_optimizer` and `reference_modifications`, which default to the
+`optimizer` and `modifications`.
+
+Leftover arguments are passed to the overload of
+[`minimal_metabolic_adjustment`](@ref) that accepts the reference flux
+dictionary.
 """
-function minimal_metabolic_adjustment(model::A.AbstractFBCModel, args...; kwargs...)
-    constraints = fbc_model_constraints(model)
-    minimal_metabolic_adjustment(constraints, args...; kwargs...)
+function minimal_metabolic_adjustment(
+    model::A.AbstractFBCModel,
+    reference_model::A.AbstractFBCModel,
+    optimizer;
+    reference_optimizer = optimizer,
+    modifications = [],
+    reference_modifications = modifications,
+    kwargs...,
+)
+    reference_constraints = fbc_model_constraints(reference_model)
+    reference_fluxes = optimized_constraints(
+        reference_constraints;
+        optimizer = reference_optimizer,
+        modifications = reference_modifications,
+        output = reference_constraints.fluxes,
+    )
+    isnothing(reference_fluxes) && return nothing
+    minimal_metabolic_adjustment(
+        model,
+        reference_fluxes,
+        optimizer;
+        modifications,
+        kwargs...,
+    )
 end
 
 export minimal_metabolic_adjustment

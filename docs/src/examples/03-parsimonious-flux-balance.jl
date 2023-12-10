@@ -46,7 +46,7 @@ opt_model = optimization_model(
     ctmodel;
     objective = ctmodel.:l2objective.value,
     optimizer = Clarabel.Optimizer,
-    sense = J.MIN_SENSE,
+    sense = Minimal,
 )
 
 J.optimize!(opt_model) # JuMP is called J in COBREXA
@@ -85,7 +85,7 @@ opt_model = optimization_model(
     ctmodel;
     objective = ctmodel.minoxphospho.value,
     optimizer = Clarabel.Optimizer,
-    sense = J.MIN_SENSE,
+    sense = Minimal,
 )
 
 J.optimize!(opt_model) # JuMP is called J in COBREXA
