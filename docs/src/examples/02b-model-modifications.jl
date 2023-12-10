@@ -79,7 +79,7 @@ model.reactions["EX_glc__D_e"].lower_bound = -5.0
 low_glucose_solution = flux_balance(model, GLPK.Optimizer)
 low_glucose_solution.objective
 
-@test isapprox(low_glucose_solution.objective, 0.41559777, atol=TEST_TOLERANCE) #src
+@test isapprox(low_glucose_solution.objective, 0.41559777, atol = TEST_TOLERANCE) #src
 
 # ## Preventing reference-based sharing problems with `deepcopy`
 #
@@ -114,9 +114,13 @@ modified_model.reactions["EX_glc__D_e"].lower_bound = -123.0
 
 # With `deepcopy`, the result works as intended:
 
-(modified_model.reactions["EX_glc__D_e"].lower_bound, base_model.reactions["EX_glc__D_e"].lower_bound)
+(
+    modified_model.reactions["EX_glc__D_e"].lower_bound,
+    base_model.reactions["EX_glc__D_e"].lower_bound,
+)
 
-@test modified_model.reactions["EX_glc__D_e"].lower_bound != base_model.reactions["EX_glc__D_e"].lower_bound #src
+@test modified_model.reactions["EX_glc__D_e"].lower_bound !=
+      base_model.reactions["EX_glc__D_e"].lower_bound #src
 
 #md # !!! danger "Avoid overwriting base models when using in-place modifications"
 #md #     Whenever you are changing a copy of the model, make sure that you are not changing it by a reference. Always use some copy mechanism such as `copy` or `deepcopy` to prevent the default reference-based sharing.
@@ -135,7 +139,8 @@ flux_differences = mergewith(-, base_solution.fluxes, low_glucose_solution.fluxe
 sort(flux_differences, by = last)
 
 # ...or compute the squared distance, to see the "absolute" changes:
-flux_changes = mergewith((x,y) -> (x-y)^2, base_solution.fluxes, low_glucose_solution.fluxes)
+flux_changes =
+    mergewith((x, y) -> (x - y)^2, base_solution.fluxes, low_glucose_solution.fluxes)
 
 # ...and again see what changed most:
 sort(flux_changes, by = last)
