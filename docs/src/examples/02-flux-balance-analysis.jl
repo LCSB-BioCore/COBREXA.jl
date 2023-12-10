@@ -47,3 +47,7 @@ solution.fluxes.PFK
 # ...or make a "table" of all fluxes through all reactions:
 
 collect(solution.fluxes)
+
+# ## Advanced: Finding flux balance via the low-level interface
+
+# TODO ConstraintTrees (maybe put this into a separate example?)

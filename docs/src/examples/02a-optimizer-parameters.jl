@@ -39,12 +39,13 @@ solution = flux_balance(
 
 # To see some of the effects of the configuration changes, you may e.g.
 # deliberately cripple the optimizer's possibilities to a few iterations, which
-# will cause it to fail and return no solution:
+# will cause it to fail, return no solution, and verbosely describe what
+# happened:
 
 solution = flux_balance(
     model,
     Tulip.Optimizer;
-    modifications = [silence, set_optimizer_attribute("IPM_IterationsLimit", 2)],
+    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 2)],
 )
 
 println(solution)
