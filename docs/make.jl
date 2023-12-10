@@ -29,7 +29,6 @@ find_mds(path) =
         filter(x -> endswith(x, ".md"), readdir(joinpath(@__DIR__, "src", path))),
     )
 
-#TODO migrate this to Documenter-1, and make all checks strict
 # build the docs
 makedocs(
     modules = [COBREXA],
@@ -42,6 +41,7 @@ makedocs(
     ),
     authors = "The developers of COBREXA.jl",
     linkcheck = !("skiplinks" in ARGS),
+    warnonly = true, # TODO: remove later
     pages = [
         "Home" => "index.md",
         "Examples" => [
