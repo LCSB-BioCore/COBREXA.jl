@@ -5,6 +5,8 @@
 # find an optimal flux in the *E. coli* "core" model. We will need the model,
 # which we can download using [`download_model`](@ref):
 
+using COBREXA
+
 download_model(
     "http://bigg.ucsd.edu/static/models/e_coli_core.json",
     "e_coli_core.json",

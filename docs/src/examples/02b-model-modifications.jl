@@ -119,7 +119,7 @@ modified_model.reactions["EX_glc__D_e"].lower_bound = -123.0
     base_model.reactions["EX_glc__D_e"].lower_bound,
 )
 
-@test modified_model.reactions["EX_glc__D_e"].lower_bound !=
+@test modified_model.reactions["EX_glc__D_e"].lower_bound != #src
       base_model.reactions["EX_glc__D_e"].lower_bound #src
 
 #md # !!! danger "Avoid overwriting base models when using in-place modifications"
@@ -136,14 +136,14 @@ modified_model.reactions["EX_glc__D_e"].lower_bound = -123.0
 flux_differences = mergewith(-, base_solution.fluxes, low_glucose_solution.fluxes)
 
 # ...and see what were the biggest directional differences:
-sort(flux_differences, by = last)
+sort(collect(flux_differences), by = last)
 
 # ...or compute the squared distance, to see the "absolute" changes:
 flux_changes =
     mergewith((x, y) -> (x - y)^2, base_solution.fluxes, low_glucose_solution.fluxes)
 
 # ...and again see what changed most:
-sort(flux_changes, by = last)
+sort(collect(flux_changes), by = last)
 
 #md # !!! tip "For realistic comparisons always find an unique flux solution"
 #md #     Since the usual flux balance allows a lot of freedom in the "solved" flux and the only value that is "reproducible" by the analysis is the objective, one should never compare the flux distributions directly. Typically, that may result in false-positive (and sometimes false-negative) differences. Use e.g. [parsimonious FBA](03-parsimonious-flux-balance) to obtain uniquely determined and safely comparable flux solutions.
