@@ -43,7 +43,12 @@ fermentation = ctmodel.fluxes.EX_ac_e.value + ctmodel.fluxes.EX_etoh_e.value
 forced_mixed_fermentation =
     ctmodel * :fermentation^C.Constraint(fermentation, (10.0, 1000.0)) # new modified model is created
 
-vt = flux_balance(forced_mixed_fermentation, Tulip.Optimizer; modifications = [silence])
+vt = optimized_constraints(
+    forced_mixed_fermentation,
+    objective = forced_mixed_fermentation.objective.value,
+    optimizer = Tulip.Optimizer,
+    modifications = [silence],
+)
 
 @test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
 
@@ -52,13 +57,25 @@ vt = flux_balance(forced_mixed_fermentation, Tulip.Optimizer; modifications = [s
 
 ctmodel.fluxes.ATPM.bound = (1000.0, 10000.0)
 
-vt = flux_balance(ctmodel, Tulip.Optimizer; modifications = [silence])
+#TODO explicitly show here how false sharing looks like
+
+vt = optimized_constraints(
+    ctmodel,
+    objective = ctmodel.objective.value,
+    optimizer = Tulip.Optimizer,
+    modifications = [silence],
+)
 
 @test isnothing(vt) #src
 
 # Models can also be piped into the analysis functions
 
 ctmodel.fluxes.ATPM.bound = (8.39, 10000.0) # revert
-vt = ctmodel |> flux_balance(Tulip.Optimizer; modifications = [silence])
+vt = optimized_constraints(
+    ctmodel,
+    objective = ctmodel.objective.value,
+    optimizer = Tulip.Optimizer,
+    modifications = [silence],
+)
 
 @test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src

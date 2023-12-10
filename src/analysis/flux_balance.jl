@@ -1,64 +1,54 @@
 """
 $(TYPEDSIGNATURES)
 
-Run flux balance analysis (FBA) on the `model`, optionally specifying
-`modifications` to the problem.  Basically, FBA solves this optimization
-problem:
-```
-max cᵀx
-s.t. S x = b
-     xₗ ≤ x ≤ xᵤ
-```
-See "Orth, J., Thiele, I. & Palsson, B. What is flux balance analysis?. Nat
-Biotechnol 28, 245-248 (2010). https://doi.org/10.1038/nbt.1614" for more
-information.
+Make an JuMP model out of `constraints` using [`optimization_model`](@ref)
+(most arguments are forwarded there), then apply the `modifications`, optimize
+the model, and return either `nothing` if the optimization failed, or `output`
+substituted with the solved values (`output` defaults to `constraints`.
 
-The `optimizer` must be set to a `JuMP`-compatible optimizer, such as
-`GLPK.Optimizer` or `Tulip.Optimizer`.
-
-Optionally, you may specify one or more modifications to be applied to the model
-before the analysis, such as [`set_objective_sense`](@ref),
-[`set_optimizer`](@ref), [`set_optimizer_attribute`](@ref), and
-[`silence`](@ref).
-
-Returns a [`C.ValueTree`](@ref).
-
-# Example
-```
-model = load_model("e_coli_core.json")
-solution = flux_balance(model, GLPK.optimizer)
-```
+For a "nice" version for simpler finding of metabolic model optima, use
+[`flux_balance`](@ref).
 """
-function flux_balance(model::A.AbstractFBCModel, optimizer; modifications = [])
-    ctmodel = fbc_model_constraints(model)
-    flux_balance(ctmodel, optimizer; modifications)
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-A variant of [`flux_balance`](@ref) that takes in a
-[`C.ConstraintTree`](@ref) as the model to optimize. The objective is inferred
-from the field `objective` in `ctmodel`. All other arguments are forwarded.
-"""
-function flux_balance(ctmodel::C.ConstraintTree, optimizer; modifications = [])
-    opt_model = optimization_model(ctmodel; objective = ctmodel.objective.value, optimizer)
-
-    for mod in modifications
-        mod(opt_model)
+function optimized_constraints(
+    constraints::C.ConstraintTreeElem;
+    modifications = [],
+    output = constraints,
+    kwargs...,
+)
+    om = optimization_model(constraints; kwargs...)
+    for m in modifications
+        m(om)
     end
+    J.optimize!(om)
+    is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
+end
 
-    J.optimize!(opt_model)
+export optimized_constraints
 
-    is_solved(opt_model) || return nothing
+"""
+$(TYPEDSIGNATURES)
 
-    C.ValueTree(ctmodel, J.value.(opt_model[:x]))
+Compute an optimal objective-optimizing solution of the given `model`.
+
+Most arguments are forwarded to [`optimized_constraints`](@ref).
+
+Returns a tree with the optimization solution of the same shape as
+given by [`fbc_model_constraints`](@ref).
+"""
+function flux_balance(model::A.AbstractFBCModel, optimizer; kwargs...)
+    constraints = fbc_model_constraints(model)
+    optimized_constraints(
+        constraints;
+        objective = constraints.objective.value,
+        optimizer,
+        kwargs...,
+    )
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Pipe-able variant of [`flux_balance`](@ref).
+Pipe-able overload of [`flux_balance`](@ref).
 """
 flux_balance(optimizer; modifications = []) = m -> flux_balance(m, optimizer; modifications)
 

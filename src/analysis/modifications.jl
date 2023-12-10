@@ -4,8 +4,8 @@
 """
 $(TYPEDSIGNATURES)
 
-Change the objective sense of optimization. Possible arguments are
-`JuMP.MAX_SENSE` and `JuMP.MIN_SENSE`.
+Change the objective sense of optimization. Accepted arguments include
+[`Minimal`](@ref), [`Maximal`](@ref), and [`Feasible`](@ref).
 """
 set_objective_sense(objective_sense) =
     opt_model -> J.set_objective_sense(opt_model, objective_sense)

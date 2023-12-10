@@ -21,7 +21,9 @@ end
 
 function run_doc_examples()
     for dir in filter(endswith(".jl"), readdir("../docs/src/examples", join = true))
-        run_test_file(dir)
+        @testset "docs/$(basename(dir))" begin
+            run_test_file(dir)
+        end
     end
 end
 

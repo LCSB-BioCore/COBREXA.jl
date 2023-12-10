@@ -2,6 +2,10 @@ using Documenter
 using Literate, JSON
 using COBREXA
 
+# testing constants
+const TEST_TOLERANCE = 1e-3
+const QP_TEST_TOLERANCE = 1e-2 # for Clarabel
+
 # build the examples
 examples_path = joinpath(@__DIR__, "src", "examples")
 examples_basenames = sort(filter(x -> endswith(x, ".jl"), readdir(examples_path)))
@@ -25,7 +29,6 @@ find_mds(path) =
         filter(x -> endswith(x, ".md"), readdir(joinpath(@__DIR__, "src", path))),
     )
 
-#TODO migrate this to Documenter-1, and make all checks strict
 # build the docs
 makedocs(
     modules = [COBREXA],
@@ -38,6 +41,7 @@ makedocs(
     ),
     authors = "The developers of COBREXA.jl",
     linkcheck = !("skiplinks" in ARGS),
+    warnonly = true, # TODO: remove later
     pages = [
         "Home" => "index.md",
         "Examples" => [

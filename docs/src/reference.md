@@ -42,6 +42,13 @@ Modules = [COBREXA]
 Pages = ["src/builders/objectives.jl"]
 ```
 
+### Bounds&tolerances helpers
+
+```@autodocs
+Modules = [COBREXA]
+Pages = ["src/misc/bounds.jl"]
+```
+
 ## Analysis functions
 
 ```@autodocs
