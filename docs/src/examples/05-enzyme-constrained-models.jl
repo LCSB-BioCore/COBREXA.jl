@@ -38,7 +38,7 @@ reaction_isozymes = Dict{String,Dict{String,X.Isozyme}}() # a mapping from react
 for rid in A.reactions(model)
     grrs = A.reaction_gene_association_dnf(model, rid)
     isnothing(grrs) && continue # skip if no grr available
-
+    haskey(ecoli_core_reaction_kcats, rid) || continue #src
     for (i, grr) in enumerate(grrs)
         d = get!(reaction_isozymes, rid, Dict{String,X.Isozyme}())
         # each isozyme gets a unique name
@@ -46,8 +46,11 @@ for rid in A.reactions(model)
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), # assume subunit stoichiometry of 1 for all isozymes
             kcat_forward = 100 + 50 * rand(), # forward reaction turnover number
             kcat_backward = 100 + 50 * rand(), # reverse reaction turnover number
-            # kcat_forward = ecoli_core_reaction_kcats[rid][i][1],
-            # kcat_backward = ecoli_core_reaction_kcats[rid][i][2],
+        )
+        d["isozyme_"*string(i)] = X.Isozyme( #src
+            gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), #src
+            kcat_forward = ecoli_core_reaction_kcats[rid][i][1], #src
+            kcat_backward = ecoli_core_reaction_kcats[rid][i][2], #src
         )
     end
 end
@@ -63,7 +66,8 @@ end
 # Similarly, we will randomly generate enzyme molar masses for use in the enzyme
 # constrained model.
 
-gene_molar_masses = Dict(gid => 40 + 40 * rand() for gid in A.genes(model))
+gene_molar_masses = Dict(gid => 100 + 40 * rand() for gid in A.genes(model))
+gene_molar_masses = ecoli_core_gene_product_masses #src
 
 #!!! warning "Molar mass units"
 #    Take care with the units of the molar masses. In literature they are 
@@ -81,7 +85,7 @@ gene_molar_masses = Dict(gid => 40 + 40 * rand() for gid in A.genes(model))
 # The capacity limitation usually denotes an upper bound of protein available to
 # the cell. 
 
-total_enzyme_capacity = 0.5 # g enzyme/gDW
+total_enzyme_capacity = 100.0 # g enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
@@ -89,5 +93,25 @@ m = build_enzyme_constrained_model(
     model,
     reaction_isozymes,
     gene_molar_masses,
-    [("caplim", ["b0351", "b1241", "b0726", "b0727"], 0.5)],
+    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)],
 )
+
+m.fluxes.EX_glc__D_e.bound = (-1000.0, 1000.0) # undo glucose important bound
+m.fluxes.GLCpts.bound = (-1.0, 12.0) # undo glucose important bound
+for (k, v) in m.enzymes
+    if k == :b2779
+        v.bound = (0.01, 0.06)
+    else
+        v.bound = (0.0, 1.0)
+    end
+end
+
+sol = optimized_constraints(
+    m;
+    objective = m.objective.value,
+    optimizer = Tulip.Optimizer,
+    modifications =[set_optimizer_attribute("IPM_IterationsLimit", 1000)]
+)
+
+
+### Building the model incrementally

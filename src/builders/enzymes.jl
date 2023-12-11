@@ -1,18 +1,21 @@
 """
 $(TYPEDSIGNATURES)
 
-Allocate enzyme variables (gene products in the model) to a constraint tree.
+Allocate enzyme variables (gene products in the model) to a constraint tree
+using all the genes in the `model`.
 """
 enzyme_variables(model::A.AbstractFBCModel) =
     C.variables(; keys = Symbol.(A.genes(model)), bounds = Ref((0.0, Inf)))
 
+export enzyme_variables
+
 """
 $(TYPEDSIGNATURES)
 
-Create isozyme variables for reactions. A single reaction may be catalyzed by
-multiple enzymes (isozymes), and the total flux through a reaction is the sum
-through of all these isozymes. These variables are linked to fluxes through
-[`link_isozymes`](@ref).
+Helper function to create isozyme variables for reactions. A single reaction may
+be catalyzed by multiple enzymes (isozymes), and the total flux through a
+reaction is the sum through of all these isozymes. These variables are linked to
+fluxes through [`link_isozymes`](@ref).
 """
 function isozyme_variables(
     reaction_id::String,
@@ -27,8 +30,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Link isozymes to fluxes. All forward (backward) fluxes are the sum of all the
-isozymes catalysing these fluxes.
+Helper function to link isozymes to fluxes. All forward (backward) fluxes are
+the sum of all the isozymes catalysing these fluxes.
 """
 function link_isozymes(
     fluxes_directional::C.ConstraintTree,
@@ -45,9 +48,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Create the enzyme "mass balance" matrix. In essence, the stoichiometric
-coefficient is subunit_stoichiometry / kcat for each directional, isozyme flux,
-and it must be balanced by the enzyme variable supply.
+Helper function to create the enzyme "mass balance" matrix. In essence, the
+stoichiometric coefficient is subunit_stoichiometry / kcat for each directional,
+isozyme flux, and it must be balanced by the enzyme variable supply.
 """
 function enzyme_stoichiometry(
     enzymes::C.ConstraintTree,
@@ -121,25 +124,53 @@ function enzyme_balance(
     )
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Create enzyme capacity limitation.
+"""
 function enzyme_capacity(
     enzymes::C.ConstraintTree,
-    enzyme_molar_mass::Dict{String,Float64},
+    gene_molar_masses::Dict{String,Float64},
     enzyme_ids::Vector{String},
     capacity::Float64,
 )
     C.Constraint(
         value = sum(
-            enzymes[Symbol(gid)].value * enzyme_molar_mass[gid] for gid in enzyme_ids
+            enzymes[Symbol(gid)].value * gene_molar_masses[gid] for gid in enzyme_ids
         ),
         bound = (0.0, capacity),
     )
 end
 
+export enzyme_capacity
+
 """
 $(TYPEDSIGNATURES)
 
-Return an enzyme constrained model, taking as input a standard constraint based
-model.
+Create enzyme constraints.
+"""
+function enzyme_constraints(
+    fluxes::C.ConstraintTree,
+    enzymes::C.ConstraintTree,
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+)
+
+# TODO
+
+end
+
+export enzyme_constraints
+
+"""
+$(TYPEDSIGNATURES)
+
+Return an enzyme constrained model, taking as input a standard constraint-based
+`model`. The enzyme model is parameterized by `reaction_isozymes`, which is a
+mapping of reaction IDs (those used in the fluxes of the model) to named
+[`Isozyme`](@ref)s. Additionally, `gene_molar_masses` and `capacity_limitations`
+should be supplied. The latter is a vector of tuples, where each tuple
+represents a distinct bound as `(bound_id, genes_in_bound, protein_mass_bound)`. 
 """
 function build_enzyme_constrained_model(
     model::A.AbstractFBCModel,
@@ -147,12 +178,15 @@ function build_enzyme_constrained_model(
     gene_molar_masses::Dict{String,Float64},
     capacity_limitations::Vector{Tuple{String,Vector{String},Float64}},
 )
+
     # create base constraint tree
     m = fbc_model_constraints(model)
 
+    # create enzyme variables
+    m += :enzymes^enzyme_variables(model)
+
     # create directional fluxes
-    m +=
-        :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
+    m += :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
         :fluxes_backward^fluxes_in_direction(m.fluxes, :backward)
 
     # link directional fluxes to original fluxes
@@ -195,9 +229,6 @@ function build_enzyme_constrained_model(
             m.fluxes_isozymes_backward,
         )
 
-    # create enzyme variables
-    m += :enzymes^enzyme_variables(model)
-
     # add enzyme mass balances
     m *=
         :enzyme_stoichiometry^enzyme_stoichiometry(
@@ -206,13 +237,13 @@ function build_enzyme_constrained_model(
             m.fluxes_isozymes_backward,
             reaction_isozymes,
         )
-
+    
     # add capacity limitations
     for (id, gids, cap) in capacity_limitations
         m *= Symbol(id)^enzyme_capacity(m.enzymes, gene_molar_masses, gids, cap)
     end
 
-    return m
+    m
 end
 
-export build_enzyme_constrained_model
+return build_enzyme_constrained_model

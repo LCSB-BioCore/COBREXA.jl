@@ -224,6 +224,7 @@ const ecoli_core_gene_product_masses = Dict{String,Float64}(
     "b1611" => 50.489,
     "b0726" => 105.062,
     "b2279" => 10.845,
+    "s0001" => 0.0,
 )
 
 const ecoli_core_reaction_kcats = Dict{String,Vector{Tuple{Float64,Float64}}}(
