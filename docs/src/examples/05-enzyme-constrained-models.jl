@@ -85,9 +85,7 @@ total_enzyme_capacity = 0.5 # g enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
-import COBREXA as X
-
-m = X.build_enzyme_constrained_model(
+m = build_enzyme_constrained_model(
     model,
     reaction_isozymes,
     gene_molar_masses,

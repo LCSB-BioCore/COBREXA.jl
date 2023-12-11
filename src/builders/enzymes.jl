@@ -135,6 +135,12 @@ function enzyme_capacity(
     )
 end
 
+"""
+$(TYPEDSIGNATURES)
+
+Return an enzyme constrained model, taking as input a standard constraint based
+model.
+"""
 function build_enzyme_constrained_model(
     model::A.AbstractFBCModel,
     reaction_isozymes::Dict{String,Dict{String,Isozyme}},
@@ -208,3 +214,5 @@ function build_enzyme_constrained_model(
 
     return m
 end
+
+export build_enzyme_constrained_model
