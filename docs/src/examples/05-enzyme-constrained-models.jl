@@ -38,7 +38,7 @@ reaction_isozymes = Dict{String,Dict{String,X.Isozyme}}() # a mapping from react
 for rid in A.reactions(model)
     grrs = A.reaction_gene_association_dnf(model, rid)
     isnothing(grrs) && continue # skip if no grr available
-    
+
     for (i, grr) in enumerate(grrs)
         d = get!(reaction_isozymes, rid, Dict{String,X.Isozyme}())
         # each isozyme gets a unique name
@@ -63,9 +63,7 @@ end
 # Similarly, we will randomly generate enzyme molar masses for use in the enzyme
 # constrained model.
 
-gene_molar_masses = Dict(
-    gid => 40 + 40 * rand() for gid in A.genes(model)
-)
+gene_molar_masses = Dict(gid => 40 + 40 * rand() for gid in A.genes(model))
 
 #!!! warning "Molar mass units"
 #    Take care with the units of the molar masses. In literature they are 
@@ -93,5 +91,5 @@ m = X.build_enzyme_constrained_model(
     model,
     reaction_isozymes,
     gene_molar_masses,
-    [("caplim", ["b0351", "b1241", "b0726", "b0727"], 0.5)]
+    [("caplim", ["b0351", "b1241", "b0726", "b0727"], 0.5)],
 )

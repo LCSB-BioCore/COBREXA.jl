@@ -128,7 +128,9 @@ function enzyme_capacity(
     capacity::Float64,
 )
     C.Constraint(
-        value = sum(enzymes[Symbol(gid)].value * enzyme_molar_mass[gid] for gid in enzyme_ids),
+        value = sum(
+            enzymes[Symbol(gid)].value * enzyme_molar_mass[gid] for gid in enzyme_ids
+        ),
         bound = (0.0, capacity),
     )
 end
@@ -136,8 +138,8 @@ end
 function build_enzyme_constrained_model(
     model::A.AbstractFBCModel,
     reaction_isozymes::Dict{String,Dict{String,Isozyme}},
-    gene_molar_masses::Dict{String, Float64},
-    capacity_limitations::Vector{Tuple{String, Vector{String}, Float64}},
+    gene_molar_masses::Dict{String,Float64},
+    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}},
 )
     # create base constraint tree
     m = fbc_model_constraints(model)
@@ -146,7 +148,7 @@ function build_enzyme_constrained_model(
     m +=
         :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
         :fluxes_backward^fluxes_in_direction(m.fluxes, :backward)
-    
+
     # link directional fluxes to original fluxes
     m *=
         :link_flux_directions^sign_split_constraints(
@@ -154,12 +156,15 @@ function build_enzyme_constrained_model(
             negative = m.fluxes_backward,
             signed = m.fluxes,
         )
-    
+
     # create fluxes for each isozyme
     for (rid, _) in m.fluxes_forward
         if haskey(reaction_isozymes, string(rid))
             m +=
-                :fluxes_isozymes_forward^rid^isozyme_variables(string(rid), reaction_isozymes)
+                :fluxes_isozymes_forward^rid^isozyme_variables(
+                    string(rid),
+                    reaction_isozymes,
+                )
         end
     end
     for (rid, _) in m.fluxes_backward
@@ -171,7 +176,7 @@ function build_enzyme_constrained_model(
                 )
         end
     end
-    
+
     # link isozyme fluxes to directional fluxes
     m *=
         :link_isozyme_fluxes_forward^link_isozymes(
@@ -183,10 +188,10 @@ function build_enzyme_constrained_model(
             m.fluxes_backward,
             m.fluxes_isozymes_backward,
         )
-    
+
     # create enzyme variables
     m += :enzymes^enzyme_variables(model)
-    
+
     # add enzyme mass balances
     m *=
         :enzyme_stoichiometry^enzyme_stoichiometry(
@@ -195,15 +200,10 @@ function build_enzyme_constrained_model(
             m.fluxes_isozymes_backward,
             reaction_isozymes,
         )
-    
+
     # add capacity limitations
     for (id, gids, cap) in capacity_limitations
-        m *= Symbol(id)^enzyme_capacity(
-            m.enzymes,
-            gene_molar_masses,
-            gids,
-            cap,
-        )
+        m *= Symbol(id)^enzyme_capacity(m.enzymes, gene_molar_masses, gids, cap)
     end
 
     return m
