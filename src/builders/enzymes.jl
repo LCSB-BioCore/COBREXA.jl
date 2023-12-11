@@ -156,7 +156,7 @@ function enzyme_constraints(
     reaction_isozymes::Dict{String,Dict{String,Isozyme}},
 )
 
-# TODO
+    # TODO
 
 end
 
@@ -186,7 +186,8 @@ function build_enzyme_constrained_model(
     m += :enzymes^enzyme_variables(model)
 
     # create directional fluxes
-    m += :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
+    m +=
+        :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
         :fluxes_backward^fluxes_in_direction(m.fluxes, :backward)
 
     # link directional fluxes to original fluxes
@@ -237,7 +238,7 @@ function build_enzyme_constrained_model(
             m.fluxes_isozymes_backward,
             reaction_isozymes,
         )
-    
+
     # add capacity limitations
     for (id, gids, cap) in capacity_limitations
         m *= Symbol(id)^enzyme_capacity(m.enzymes, gene_molar_masses, gids, cap)

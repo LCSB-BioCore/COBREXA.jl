@@ -110,7 +110,7 @@ sol = optimized_constraints(
     m;
     objective = m.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications =[set_optimizer_attribute("IPM_IterationsLimit", 1000)]
+    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 
 
