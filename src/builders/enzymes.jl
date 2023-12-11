@@ -61,7 +61,7 @@ function enzyme_stoichiometry(
         for isozyme in values(isozymes)
             for gid in keys(isozyme.gene_product_stoichiometry)
                 rids = get!(enzyme_rid_lookup, Symbol(gid), Symbol[])
-                rid in rids || push!(rids, rid)
+                rid in rids || push!(rids, Symbol(rid))
             end
         end
     end
@@ -106,10 +106,10 @@ function enzyme_balance(
     gid::Symbol,
     rid::Symbol,
     fluxes_isozymes::C.ConstraintTree, # direction
-    reaction_isozymes::Dict{Symbol,Dict{Symbol,Isozyme}},
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
     direction = :kcat_forward,
 )
-    isozyme_dict = reaction_isozymes[rid]
+    isozyme_dict = Dict(Symbol(k) => v for (k, v) in reaction_isozymes[string(rid)])
 
     sum( # this is where the stoichiometry comes in
         -isozyme_value.value *
@@ -123,12 +123,88 @@ end
 
 function enzyme_capacity(
     enzymes::C.ConstraintTree,
-    enzyme_molar_mass::Dict{Symbol,Float64},
-    enzyme_ids::Vector{Symbol},
+    enzyme_molar_mass::Dict{String,Float64},
+    enzyme_ids::Vector{String},
     capacity::Float64,
 )
     C.Constraint(
-        value = sum(enzymes[gid].value * enzyme_molar_mass[gid] for gid in enzyme_ids),
+        value = sum(enzymes[Symbol(gid)].value * enzyme_molar_mass[gid] for gid in enzyme_ids),
         bound = (0.0, capacity),
     )
+end
+
+function build_enzyme_constrained_model(
+    model::A.AbstractFBCModel,
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    gene_molar_masses::Dict{String, Float64},
+    capacity_limitations::Vector{Tuple{String, Vector{String}, Float64}},
+)
+    # create base constraint tree
+    m = fbc_model_constraints(model)
+
+    # create directional fluxes
+    m +=
+        :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
+        :fluxes_backward^fluxes_in_direction(m.fluxes, :backward)
+    
+    # link directional fluxes to original fluxes
+    m *=
+        :link_flux_directions^sign_split_constraints(
+            positive = m.fluxes_forward,
+            negative = m.fluxes_backward,
+            signed = m.fluxes,
+        )
+    
+    # create fluxes for each isozyme
+    for (rid, _) in m.fluxes_forward
+        if haskey(reaction_isozymes, string(rid))
+            m +=
+                :fluxes_isozymes_forward^rid^isozyme_variables(string(rid), reaction_isozymes)
+        end
+    end
+    for (rid, _) in m.fluxes_backward
+        if haskey(reaction_isozymes, string(rid))
+            m +=
+                :fluxes_isozymes_backward^rid^isozyme_variables(
+                    string(rid),
+                    reaction_isozymes,
+                )
+        end
+    end
+    
+    # link isozyme fluxes to directional fluxes
+    m *=
+        :link_isozyme_fluxes_forward^link_isozymes(
+            m.fluxes_forward,
+            m.fluxes_isozymes_forward,
+        )
+    m *=
+        :link_isozyme_fluxes_backward^link_isozymes(
+            m.fluxes_backward,
+            m.fluxes_isozymes_backward,
+        )
+    
+    # create enzyme variables
+    m += :enzymes^enzyme_variables(model)
+    
+    # add enzyme mass balances
+    m *=
+        :enzyme_stoichiometry^enzyme_stoichiometry(
+            m.enzymes,
+            m.fluxes_isozymes_forward,
+            m.fluxes_isozymes_backward,
+            reaction_isozymes,
+        )
+    
+    # add capacity limitations
+    for (id, gids, cap) in capacity_limitations
+        m *= Symbol(id)^enzyme_capacity(
+            m.enzymes,
+            gene_molar_masses,
+            gids,
+            cap,
+        )
+    end
+
+    return m
 end
