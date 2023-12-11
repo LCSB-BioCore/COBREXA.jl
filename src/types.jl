@@ -21,6 +21,8 @@ Base.@kwdef mutable struct Isozyme
     kcat_backward::Maybe{Float64} = nothing
 end
 
+export Isozyme
+
 """
 $(TYPEDSIGNATURES)
 
