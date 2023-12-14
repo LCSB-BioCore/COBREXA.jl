@@ -34,6 +34,7 @@ include("builders/core.jl")
 include("builders/genes.jl")
 include("builders/objectives.jl")
 include("builders/enzymes.jl")
+include("builders/thermodynamic.jl")
 
 include("analysis/modifications.jl")
 include("analysis/flux_balance.jl")
