@@ -148,37 +148,34 @@ export enzyme_capacity
 """
 $(TYPEDSIGNATURES)
 
-Return an enzyme constrained model, taking as input a standard constraint-based
-`model`. The enzyme model is parameterized by `reaction_isozymes`, which is a
-mapping of reaction IDs (those used in the fluxes of the model) to named
-[`Isozyme`](@ref)s. Additionally, `gene_molar_masses` and `capacity_limitations`
-should be supplied. The latter is a vector of tuples, where each tuple
-represents a distinct bound as `(bound_id, genes_in_bound, protein_mass_bound)`.
+Add enzyme constraints to a constraint tree, `m`. The enzyme model is
+parameterized by `reaction_isozymes`, which is a mapping of reaction IDs (those
+used in the fluxes of the model) to named [`Isozyme`](@ref)s. Additionally,
+`gene_molar_masses` and `capacity_limitations` should be supplied. The latter is
+a vector of tuples, where each tuple represents a distinct bound as `(bound_id,
+genes_in_bound, protein_mass_bound)`. Finally, specify the `fluxes` and
+`enzymes` to which the constraints should be mounted.
 """
-function build_enzyme_constrained_model(
-    model::A.AbstractFBCModel,
+function add_enzyme_constraints!(
+    m::C.ConstraintTree,
     reaction_isozymes::Dict{String,Dict{String,Isozyme}},
     gene_molar_masses::Dict{String,Float64},
-    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}},
+    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
+    fluxes = m.fluxes,
+    enzymes = m.enzymes,
 )
-
-    # create base constraint tree
-    m = fbc_model_constraints(model)
-
-    # create enzyme variables
-    m += :enzymes^enzyme_variables(model)
 
     # create directional fluxes
     m +=
-        :fluxes_forward^fluxes_in_direction(m.fluxes, :forward) +
-        :fluxes_backward^fluxes_in_direction(m.fluxes, :backward)
+        :fluxes_forward^fluxes_in_direction(fluxes, :forward) +
+        :fluxes_backward^fluxes_in_direction(fluxes, :backward)
 
     # link directional fluxes to original fluxes
     m *=
         :link_flux_directions^sign_split_constraints(
             positive = m.fluxes_forward,
             negative = m.fluxes_backward,
-            signed = m.fluxes,
+            signed = fluxes,
         )
 
     # create fluxes for each isozyme
@@ -216,7 +213,7 @@ function build_enzyme_constrained_model(
     # add enzyme mass balances
     m *=
         :enzyme_stoichiometry^enzyme_stoichiometry(
-            m.enzymes,
+            enzymes,
             m.fluxes_isozymes_forward,
             m.fluxes_isozymes_backward,
             reaction_isozymes,
@@ -224,10 +221,56 @@ function build_enzyme_constrained_model(
 
     # add capacity limitations
     for (id, gids, cap) in capacity_limitations
-        m *= Symbol(id)^enzyme_capacity(m.enzymes, gene_molar_masses, gids, cap)
+        m *= Symbol(id)^enzyme_capacity(enzymes, gene_molar_masses, gids, cap)
     end
 
     m
 end
 
-export build_enzyme_constrained_model
+export add_enzyme_constraints!
+
+"""
+$(TYPEDSIGNATURES)
+
+Run a basic enzyme constrained flux balance analysis on `model`. The enzyme
+model is parameterized by `reaction_isozymes`, which is a mapping of reaction
+IDs (those used in the fluxes of the model) to named [`Isozyme`](@ref)s.
+Additionally, `gene_molar_masses` and `capacity_limitations` should be supplied.
+The latter is a vector of tuples, where each tuple represents a distinct bound
+as `(bound_id, genes_in_bound, protein_mass_bound)`. Typically, `model` has
+bounded exchange reactions, which are unnecessary in enzyme constrained models.
+Unbound these reactions by listing their IDs in `unconstrain_reactions`, which
+makes them reversible. Optimization `modifications` are directly forwarded.
+
+In the event that your model requires more complex build steps, consider
+constructing it manually by using [`add_enzyme_constraints!`](@ref).
+"""
+function enzyme_constrained_flux_balance_analysis(
+    model::A.AbstractFBCModel,
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    gene_molar_masses::Dict{String,Float64},
+    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
+    optimizer,
+    unconstrain_reactions = String[],
+    modifications = [],
+)
+    m = fbc_model_constraints(model)
+
+    # create enzyme variables
+    m += :enzymes^enzyme_variables(model)
+
+    m = add_enzyme_constraints!(
+        m,
+        reaction_isozymes,
+        gene_molar_masses,
+        capacity_limitations,
+    )
+
+    for rid in Symbol.(unconstrain_reactions)
+        m.fluxes[rid].bound = (-1000.0, 1000.0)
+    end
+
+    optimized_constraints(m; objective = m.objective.value, optimizer, modifications)
+end
+
+export enzyme_constrained_flux_balance_analysis

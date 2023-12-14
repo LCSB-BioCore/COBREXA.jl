@@ -89,25 +89,48 @@ total_enzyme_capacity = 0.1 # g enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
-m = build_enzyme_constrained_model(
+ec_solution = enzyme_constrained_flux_balance_analysis(
     model,
     reaction_isozymes,
     gene_molar_masses,
-    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)],
+    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)];
+    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
+    unconstrain_reactions = ["EX_glc__D_e"],
+    optimizer = Tulip.Optimizer,
 )
 
+#src these values should be unique (glucose transporter is the only way to get carbon into the system)
+@test isapprox(ec_solution.objective, 3.2105477675077743, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.fluxes.EX_glc__D_e, -41.996885051738445, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.enzymes.b2417, 9.974991164132524e-5, atol = 1e-7) #src
+
+### Building a model incrementally
+
+# create basic flux model
+m = fbc_model_constraints(model)
+
+# create enzyme variables
+m += :enzymes^enzyme_variables(model)
+
+# constrain some fluxes and enzymes manually
 m.fluxes.EX_glc__D_e.bound = (-1000.0, 0.0) # undo glucose important bound from original model
 m.enzymes.b2417.bound = (0.0, 0.1) # for fun, change the bounds of the protein b2417
 
-solution = optimized_constraints(
+# attach the enzyme mass balances
+m = add_enzyme_constraints!(
+    m,
+    reaction_isozymes,
+    gene_molar_masses,
+    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)];
+    fluxes = m.fluxes, # mount enzyme constraints to these fluxes
+    enzymes = m.enzymes, # enzyme variables
+)
+
+# solve the model
+ec_solution = optimized_constraints(
     m;
     objective = m.objective.value,
     optimizer = Tulip.Optimizer,
     modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
 )
-
-#src these values should be unique (glucose transporter is the only way to get carbon into the system)
-@test isapprox(solution.objective, 3.2105477675077743, atol = TEST_TOLERANCE) #src
-@test isapprox(solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
-@test isapprox(solution.fluxes.EX_glc__D_e, -41.996885051738445, atol = TEST_TOLERANCE) #src
-@test isapprox(solution.enzymes.b2417, 9.974991164132524e-5, atol = 1e-7) #src
