@@ -153,7 +153,7 @@ Return an enzyme constrained model, taking as input a standard constraint-based
 mapping of reaction IDs (those used in the fluxes of the model) to named
 [`Isozyme`](@ref)s. Additionally, `gene_molar_masses` and `capacity_limitations`
 should be supplied. The latter is a vector of tuples, where each tuple
-represents a distinct bound as `(bound_id, genes_in_bound, protein_mass_bound)`. 
+represents a distinct bound as `(bound_id, genes_in_bound, protein_mass_bound)`.
 """
 function build_enzyme_constrained_model(
     model::A.AbstractFBCModel,
