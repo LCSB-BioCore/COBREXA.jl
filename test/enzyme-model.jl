@@ -69,18 +69,14 @@
         [("total_proteome_bound", A.genes(model), 0.5)],
     )
 
-    sol = optimized_constraints(
+    řešení = optimized_constraints(
         m;
         objective = m.objective.value,
         optimizer = Tulip.Optimizer,
         modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
 
-    rxn_fluxes = flux_dict(gm, opt_model)
-    gene_products = gene_product_dict(gm, opt_model)
-    mass_groups = gene_product_mass_group_dict(gm, opt_model)
-
-    @test isapprox(sol.objective, 3.181818181753438, atol = TEST_TOLERANCE)
-    @test isapprox(sol.enzymes.g4, 0.09090909090607537, atol = TEST_TOLERANCE)
-    @test isapprox(sol.total_proteome_bound, 0.5, atol = TEST_TOLERANCE)
+    @test isapprox(řešení.objective, 3.181818181753438, atol = TEST_TOLERANCE)
+    @test isapprox(řešení.enzymes.g4, 0.09090909090607537, atol = TEST_TOLERANCE)
+    @test isapprox(řešení.total_proteome_bound, 0.5, atol = TEST_TOLERANCE)
 end

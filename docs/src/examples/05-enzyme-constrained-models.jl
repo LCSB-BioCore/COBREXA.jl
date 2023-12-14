@@ -34,23 +34,23 @@ import AbstractFBCModels as A
 
 using Random
 
-reaction_isozymes = Dict{String,Dict{String,X.Isozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
+reaction_isozymes = Dict{String,Dict{String,Isozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
 for rid in A.reactions(model)
     grrs = A.reaction_gene_association_dnf(model, rid)
     isnothing(grrs) && continue # skip if no grr available
     haskey(ecoli_core_reaction_kcats, rid) || continue #src
     for (i, grr) in enumerate(grrs)
-        d = get!(reaction_isozymes, rid, Dict{String,X.Isozyme}())
+        d = get!(reaction_isozymes, rid, Dict{String,Isozyme}())
         # each isozyme gets a unique name
-        d["isozyme_"*string(i)] = X.Isozyme( # Isozyme struct is defined by COBREXA 
+        d["isozyme_"*string(i)] = Isozyme( # Isozyme struct is defined by COBREXA 
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), # assume subunit stoichiometry of 1 for all isozymes
-            kcat_forward = 100 + 50 * rand(), # forward reaction turnover number
-            kcat_backward = 100 + 50 * rand(), # reverse reaction turnover number
+            kcat_forward = (100 + 50 * rand()) * 3600.0, # forward reaction turnover number units = 1/h
+            kcat_backward = (100 + 50 * rand()) * 3600.0, # reverse reaction turnover number units = 1/h
         )
-        d["isozyme_"*string(i)] = X.Isozyme( #src
+        d["isozyme_"*string(i)] = Isozyme( #src
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), #src
-            kcat_forward = ecoli_core_reaction_kcats[rid][i][1], #src
-            kcat_backward = ecoli_core_reaction_kcats[rid][i][2], #src
+            kcat_forward = ecoli_core_reaction_kcats[rid][i][1] * 3600.0, #src
+            kcat_backward = ecoli_core_reaction_kcats[rid][i][2] * 3600.0, #src
         )
     end
 end
@@ -66,7 +66,7 @@ end
 # Similarly, we will randomly generate enzyme molar masses for use in the enzyme
 # constrained model.
 
-gene_molar_masses = Dict(gid => 100 + 40 * rand() for gid in A.genes(model))
+gene_molar_masses = Dict(gid => 20 + 40 * rand() for gid in A.genes(model))
 gene_molar_masses = ecoli_core_gene_product_masses #src
 
 #!!! warning "Molar mass units"
@@ -78,14 +78,14 @@ gene_molar_masses = ecoli_core_gene_product_masses #src
 #    into play when setting the capacity limitations, e.g. usually a sum 
 #    over all enzymes weighted by their molar masses: `e * mm`. Thus, if 
 #    your capacity limitation has units of g/gDW, then the molar masses 
-#    must have units of g/mmol.  
+#    must have units of g/mmol (= kDa).  
 
 ### Capacity limitation
 
 # The capacity limitation usually denotes an upper bound of protein available to
 # the cell. 
 
-total_enzyme_capacity = 100.0 # g enzyme/gDW
+total_enzyme_capacity = 0.1 # g enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
@@ -96,22 +96,18 @@ m = build_enzyme_constrained_model(
     [("total_proteome_bound", A.genes(model), total_enzyme_capacity)],
 )
 
-m.fluxes.EX_glc__D_e.bound = (-1000.0, 1000.0) # undo glucose important bound
-m.fluxes.GLCpts.bound = (-1.0, 12.0) # undo glucose important bound
-for (k, v) in m.enzymes
-    if k == :b2779
-        v.bound = (0.01, 0.06)
-    else
-        v.bound = (0.0, 1.0)
-    end
-end
+m.fluxes.EX_glc__D_e.bound = (-1000.0, 0.0) # undo glucose important bound from original model
+m.enzymes.b2417.bound = (0.0, 0.1) # for fun, change the bounds of the protein b2417
 
-sol = optimized_constraints(
+solution = optimized_constraints(
     m;
     objective = m.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
 )
 
-
-### Building the model incrementally
+#src these values should be unique (glucose transporter is the only way to get carbon into the system)
+@test isapprox(solution.objective, 3.2105477675077743, atol = TEST_TOLERANCE) #src
+@test isapprox(solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
+@test isapprox(solution.fluxes.EX_glc__D_e, -41.996885051738445, atol = TEST_TOLERANCE) #src
+@test isapprox(solution.enzymes.b2417, 9.974991164132524e-5, atol = 1e-7) #src

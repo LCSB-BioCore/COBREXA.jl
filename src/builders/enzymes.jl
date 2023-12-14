@@ -148,23 +148,6 @@ export enzyme_capacity
 """
 $(TYPEDSIGNATURES)
 
-Create enzyme constraints.
-"""
-function enzyme_constraints(
-    fluxes::C.ConstraintTree,
-    enzymes::C.ConstraintTree,
-    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
-)
-
-    # TODO
-
-end
-
-export enzyme_constraints
-
-"""
-$(TYPEDSIGNATURES)
-
 Return an enzyme constrained model, taking as input a standard constraint-based
 `model`. The enzyme model is parameterized by `reaction_isozymes`, which is a
 mapping of reaction IDs (those used in the fluxes of the model) to named
