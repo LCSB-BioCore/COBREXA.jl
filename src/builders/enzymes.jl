@@ -247,4 +247,4 @@ function build_enzyme_constrained_model(
     m
 end
 
-return build_enzyme_constrained_model
+export build_enzyme_constrained_model
