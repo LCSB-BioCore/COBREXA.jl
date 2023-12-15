@@ -62,16 +62,11 @@
     gene_product_molar_mass =
         Dict("g1" => 1.0, "g2" => 2.0, "g3" => 3.0, "g4" => 4.0, "g5" => 1.0)
 
-    m = build_enzyme_constrained_model(
+    řešení = enzyme_constrained_flux_balance_analysis(
         model,
         reaction_isozymes,
         gene_product_molar_mass,
-        [("total_proteome_bound", A.genes(model), 0.5)],
-    )
-
-    řešení = optimized_constraints(
-        m;
-        objective = m.objective.value,
+        [("total_proteome_bound", A.genes(model), 0.5)];
         optimizer = Tulip.Optimizer,
         modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
     )
