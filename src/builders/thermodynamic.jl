@@ -25,8 +25,8 @@ function build_max_min_driving_force_model(
         DomainError(
             reaction_standard_gibbs_free_energies,
             """
-                      Not all reactions have thermodynamic data. 
-                      Either add the reactions with missing ΔG0s to ignore_reaction_ids, 
+                      Not all reactions have thermodynamic data.
+                      Either add the reactions with missing ΔG0s to ignore_reaction_ids,
                       or add the data to reaction_standard_gibbs_free_energies.
                       """,
         ),
@@ -48,7 +48,7 @@ function build_max_min_driving_force_model(
         :delta_G_reactions^C.variables(keys = Symbol.(rxns)),
     )
 
-    #= 
+    #=
     Build gibbs free energy relations
     ΔG_rxn == ΔG0 + R * T * sum ( log_concentration_variable * stoichiometry_value )
     =#
@@ -76,18 +76,18 @@ function build_max_min_driving_force_model(
             ) for (rxn, (dG0, met_ids, stoich_coeffs)) in zip(rxns, dG0s_met_ids_stoichs)
         )
 
-    #= 
+    #=
     Set proton log concentration to zero so that it won't impact any
     calculations (biothermodynamics assumption). Also set water concentrations
-    to zero (aqueous condition assumptions). How true is "aqueous conditions"? 
-    Debatable... 
+    to zero (aqueous condition assumptions). How true is "aqueous conditions"?
+    Debatable...
     =#
     for met in [Symbol.(proton_ids); Symbol.(water_ids)]
         haskey(m.log_metabolite_concentrations, met) &&
             (m.log_metabolite_concentrations[met].bound = 0.0)
     end
 
-    #= 
+    #=
     Add thermodynamic feasibility constraint (ΔG < 0 for a feasible reaction in flux direction).
     Add objective constraint to solve max min problem.
     =#
@@ -241,7 +241,7 @@ function max_min_driving_force_analysis(
         proton_ids,
     )
 
-    for (mid, val) in constant_concentrations 
+    for (mid, val) in constant_concentrations
         m.log_metabolite_concentrations[Symbol(mid)].bound = log(val)
     end
 

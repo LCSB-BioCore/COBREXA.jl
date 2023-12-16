@@ -56,9 +56,9 @@ reaction_standard_gibbs_free_energies = Dict{String,Float64}(
 # if the reaction runs forward or backward.
 
 #!!! warning "Only the signs are extracted from the reference solution"
-# It is most convenient to pass a flux solution into `reference_flux`, but 
+# It is most convenient to pass a flux solution into `reference_flux`, but
 # take care to round fluxes near 0 to their correct sign if they should be
-# included in the resultant thermodynamic model. Otherwise, remove them from 
+# included in the resultant thermodynamic model. Otherwise, remove them from
 # reference flux input.
 
 reference_flux = Dict(
@@ -79,7 +79,10 @@ mmdf_solution = max_min_driving_force_analysis(
     model,
     reaction_standard_gibbs_free_energies;
     reference_flux,
-    concentration_ratios = Dict("atp" => ("atp_c", "adp_c", 10.0), "nadh" => ("nadh_c", "nad_c", 0.13)),
+    concentration_ratios = Dict(
+        "atp" => ("atp_c", "adp_c", 10.0),
+        "nadh" => ("nadh_c", "nad_c", 0.13),
+    ),
     proton_ids = ["h_c", "h_e"],
     water_ids = ["h2o_c", "h2o_e"],
     concentration_lb = 1e-6, # M
@@ -95,7 +98,7 @@ mmdf_solution = max_min_driving_force_analysis(
 # ## Building the thermodynamic model yourself
 
 # It is also possible to build the thermodynamic model yourself. This allows you
-# to incorporate more complex constraints and gives you more freedom. 
+# to incorporate more complex constraints and gives you more freedom.
 
 m = build_max_min_driving_force_model(
     model,
