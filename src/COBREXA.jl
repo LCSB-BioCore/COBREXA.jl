@@ -24,7 +24,7 @@ using DocStringExtensions
 import AbstractFBCModels as A
 import ConstraintTrees as C
 import JuMP as J
-import SparseArrays: sparse
+import SparseArrays: sparse, findnz
 
 include("types.jl")
 include("io.jl")
@@ -34,6 +34,7 @@ include("builders/core.jl")
 include("builders/genes.jl")
 include("builders/objectives.jl")
 include("builders/enzymes.jl")
+include("builders/thermodynamic.jl")
 
 include("analysis/modifications.jl")
 include("analysis/flux_balance.jl")
