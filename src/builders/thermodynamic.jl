@@ -136,26 +136,17 @@ m = add_ratio_constraints(
 )
 ```
 """
-function add_log_ratio_constraints(
-    m::C.ConstraintTree,
-    ratios::Dict{String,Tuple{String,String,Float64}};
-    name::Symbol,
+log_ratio_constraints(
+    ratios::Dict{String,Tuple{String,String,Float64}},
     on::C.ConstraintTree,
+) = C.ConstraintTree(
+    Symbol(cid) => C.Constraint(
+        value = on[Symbol(var1)].value - on[Symbol(var2)].value,
+        bound = log(ratio),
+    ) for (cid, (var1, var2, ratio)) in ratios
 )
-    for (cid, (var1, var2, ratio)) in ratios
-        m *=
-            name^Symbol(
-                cid,
-            )^C.Constraint(
-                value = on[Symbol(var1)].value - on[Symbol(var2)].value,
-                bound = log(ratio),
-            )
-    end
 
-    m
-end
-
-export add_log_ratio_constraints
+export log_ratio_constraints
 
 
 """
@@ -245,12 +236,11 @@ function max_min_driving_force_analysis(
         m.log_metabolite_concentrations[Symbol(mid)].bound = log(val)
     end
 
-    m = add_log_ratio_constraints(
-        m,
-        concentration_ratios;
-        name = :metabolite_ratio_constraints,
-        on = m.log_metabolite_concentrations,
-    )
+    m *=
+        :metabolite_ratio_constraints^log_ratio_constraints(
+            concentration_ratios,
+            m.log_metabolite_concentrations,
+        )
 
 
     optimized_constraints(
