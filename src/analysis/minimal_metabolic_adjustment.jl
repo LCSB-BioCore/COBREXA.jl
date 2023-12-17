@@ -18,7 +18,7 @@ objective is constructed via [`squared_sum_error_objective`](@ref)).
 
 Additional parameters are forwarded to [`optimized_constraints`](@ref).
 """
-function minimal_metabolic_adjustment(
+function minimization_of_metabolic_adjustment_analysis(
     model::A.AbstractFBCModel,
     reference_fluxes::Dict{Symbol,Float64},
     optimizer;
@@ -48,7 +48,7 @@ Leftover arguments are passed to the overload of
 [`minimal_metabolic_adjustment`](@ref) that accepts the reference flux
 dictionary.
 """
-function minimal_metabolic_adjustment(
+function minimization_of_metabolic_adjustment_analysis(
     model::A.AbstractFBCModel,
     reference_model::A.AbstractFBCModel,
     optimizer;
@@ -65,7 +65,7 @@ function minimal_metabolic_adjustment(
         output = reference_constraints.fluxes,
     )
     isnothing(reference_fluxes) && return nothing
-    minimal_metabolic_adjustment(
+    minimization_of_metabolic_adjustment_analysis(
         model,
         reference_fluxes,
         optimizer;
@@ -74,4 +74,4 @@ function minimal_metabolic_adjustment(
     )
 end
 
-export minimal_metabolic_adjustment
+export minimization_of_metabolic_adjustment_analysis
