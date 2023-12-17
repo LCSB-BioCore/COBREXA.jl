@@ -10,7 +10,7 @@ Returns a tree with the optimization solution of the same shape as
 given by [`fbc_model_constraints`](@ref).
 """
 function flux_balance_analysis(model::A.AbstractFBCModel, optimizer; kwargs...)
-    constraints = fbc_model_constraints(model)
+    constraints = build_flux_balance_model(model)
     optimized_constraints(
         constraints;
         objective = constraints.objective.value,

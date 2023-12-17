@@ -12,7 +12,7 @@ The constructed tree contains subtrees `fluxes` (with the reaction-defining
 constraints), and a single constraint `objective` thad describes the objective
 function of the model.
 """
-function fbc_model_constraints(model::A.AbstractFBCModel)
+function build_flux_balance_model(model::A.AbstractFBCModel)
     rxns = Symbol.(A.reactions(model))
     mets = Symbol.(A.metabolites(model))
     lbs, ubs = A.bounds(model)

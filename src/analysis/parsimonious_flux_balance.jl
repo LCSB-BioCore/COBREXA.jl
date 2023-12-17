@@ -89,7 +89,7 @@ function parsimonious_flux_balance_analysis(
     tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
     kwargs...,
 )
-    constraints = fbc_model_constraints(model)
+    constraints = build_flux_balance_model(model)
     parsimonious_objective = squared_sum_objective(constraints.fluxes)
     parsimonious_optimized_constraints(
         constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);

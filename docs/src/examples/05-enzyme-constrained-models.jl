@@ -108,7 +108,7 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
 ### Building a model incrementally
 
 # create basic flux model
-m = fbc_model_constraints(model)
+m = build_flux_balance_model(model)
 
 # create enzyme variables
 m += :enzymes^enzyme_variables(model)

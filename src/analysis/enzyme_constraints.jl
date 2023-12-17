@@ -28,7 +28,7 @@ function enzyme_constrained_flux_balance_analysis(
     unconstrain_reactions = String[],
     modifications = [],
 )
-    m = fbc_model_constraints(model)
+    m = build_flux_balance_model(model)
 
     # create enzyme variables
     m += :enzymes^enzyme_variables(model)
