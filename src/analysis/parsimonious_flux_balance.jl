@@ -109,4 +109,4 @@ Pipe-able variant of [`parsimonious_flux_balance`](@ref).
 parsimonious_flux_balance_analysis(optimizer; kwargs...) =
     model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
 
-export parsimonious_flux_balance
+export parsimonious_flux_balance_analysis

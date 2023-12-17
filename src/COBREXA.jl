@@ -36,11 +36,14 @@ include("builders/objectives.jl")
 include("builders/enzymes.jl")
 include("builders/thermodynamic.jl")
 
-include("analysis/modifications.jl")
+include("analysis/core.jl")
 include("analysis/flux_balance.jl")
 include("analysis/parsimonious_flux_balance.jl")
 include("analysis/minimal_metabolic_adjustment.jl")
+include("analysis/enzyme_constraints.jl")
+include("analysis/max_min_driving_force.jl")
 
 include("misc/bounds.jl")
+include("misc/modifications.jl")
 
 end # module COBREXA

@@ -31,7 +31,7 @@ function build_flux_balance_model(model::A.AbstractFBCModel)
     )
 end
 
-export fbc_model_constraints
+export build_flux_balance_model
 
 """
 $(TYPEDSIGNATURES)
