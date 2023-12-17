@@ -128,11 +128,9 @@ latter is logged internally.
 
 # Example
 ```
-m = add_ratio_constraints(
-    m,
-    Dict("atp" => ("atp_c", "adp_c", log(10.0)), "nadh" => ("nadh_c", "nad_c", log(0.13)));
-    name = :metabolite_ratio_constraints,
-    on = m.log_metabolite_concentrations,
+m *= :log_ratio_constraints^log_ratio_constraints(
+    Dict("atp" => ("atp_c", "adp_c", log(10.0)), "nadh" => ("nadh_c", "nad_c", log(0.13))),
+    m.log_metabolite_concentrations,
 )
 ```
 """

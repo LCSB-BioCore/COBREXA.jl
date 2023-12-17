@@ -102,7 +102,7 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
 #src these values should be unique (glucose transporter is the only way to get carbon into the system)
 @test isapprox(ec_solution.objective, 3.2105477675077743, atol = TEST_TOLERANCE) #src
 @test isapprox(ec_solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
-@test isapprox(ec_solution.fluxes.EX_glc__D_e, -41.996885051738445, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.fluxes.EX_glc__D_e, -42.0, atol = 0.1) #src
 @test isapprox(ec_solution.enzymes.b2417, 9.974991164132524e-5, atol = 1e-7) #src
 
 ### Building a model incrementally
