@@ -112,10 +112,11 @@ m = build_max_min_driving_force_model(
     R = 8.31446261815324e-3, # kJ/K/mol
 )
 
-m *= :metabolite_ratio_constraints^log_ratio_constraints(
-    Dict("atp" => ("atp_c", "adp_c", 10.0), "nadh" => ("nadh_c", "nad_c", 0.13)),
-    m.log_metabolite_concentrations,
-)
+m *=
+    :metabolite_ratio_constraints^log_ratio_constraints(
+        Dict("atp" => ("atp_c", "adp_c", 10.0), "nadh" => ("nadh_c", "nad_c", 0.13)),
+        m.log_metabolite_concentrations,
+    )
 
 # solve the model
 mmdf_solution = optimized_constraints(
