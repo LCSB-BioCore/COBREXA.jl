@@ -18,6 +18,6 @@ import Clarabel
 # guessing.
 model = convert(CM.Model, load_model("e_coli_core.json"))
 
-reference_fluxes = parsimonious_flux_balance(model, Clarabel.Optimizer).fluxes
+reference_fluxes = parsimonious_flux_balance_analysis(model, Clarabel.Optimizer).fluxes
 
 # TODO MOMA from here

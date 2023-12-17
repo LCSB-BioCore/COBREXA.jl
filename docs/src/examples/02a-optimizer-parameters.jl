@@ -29,7 +29,7 @@ model = load_model("e_coli_core.json")
 
 # Running a FBA with a silent optimizer that has slightly increased iteration
 # limit for IPM algorithm may now look as follows:
-solution = flux_balance(
+solution = flux_balance_analysis(
     model,
     Tulip.Optimizer;
     modifications = [silence, set_optimizer_attribute("IPM_IterationsLimit", 1000)],
@@ -42,7 +42,7 @@ solution = flux_balance(
 # will cause it to fail, return no solution, and verbosely describe what
 # happened:
 
-solution = flux_balance(
+solution = flux_balance_analysis(
     model,
     Tulip.Optimizer;
     modifications = [set_optimizer_attribute("IPM_IterationsLimit", 2)],

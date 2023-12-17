@@ -28,7 +28,7 @@ model = load_model("e_coli_core.json")
 # is captured in the default behavior of function
 # [`flux_balance`](@ref):
 
-solution = flux_balance(model, Tulip.Optimizer)
+solution = flux_balance_analysis(model, Tulip.Optimizer)
 
 @test isapprox(solution.objective, 0.8739, atol = TEST_TOLERANCE) #src
 

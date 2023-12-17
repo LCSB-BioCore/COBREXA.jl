@@ -83,7 +83,7 @@ FBC models, and some (`tolerances`) provided with more practical defaults.
 Similarly to the [`flux_balance`](@ref), returns a tree with the optimization
 solutions of the shape as given by [`fbc_model_constraints`](@ref).
 """
-function parsimonious_flux_balance(
+function parsimonious_flux_balance_analysis(
     model::A.AbstractFBCModel,
     optimizer;
     tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
@@ -106,7 +106,7 @@ $(TYPEDSIGNATURES)
 
 Pipe-able variant of [`parsimonious_flux_balance`](@ref).
 """
-parsimonious_flux_balance(optimizer; kwargs...) =
-    model -> parsimonious_flux_balance(model, optimizer; kwargs...)
+parsimonious_flux_balance_analysis(optimizer; kwargs...) =
+    model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
 
 export parsimonious_flux_balance
