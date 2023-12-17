@@ -1,3 +1,13 @@
+
+"""
+$(TYPEDSIGNATURES)
+"""
+function add_loopless_constraints!()
+
+end
+
+export add_loopless_constraints!
+
 """
 $(TYPEDSIGNATURES)
 
@@ -21,37 +31,69 @@ For more details about the algorithm, see `Schellenberger, Lewis, and, Palsson. 
 of thermodynamically infeasible loops in steady-state metabolic models.", Biophysical
 journal, 2011`.
 """
-add_loopless_constraints(;
-    max_flux_bound = _constants.default_reaction_bound, # needs to be an order of magnitude bigger, big M method heuristic
-    strict_inequality_tolerance = _constants.loopless_strict_inequality_tolerance,
-) =
-    (model, opt_model) -> begin
+function loopless_flux_balance_analysis(
+    model;
+    max_flux_bound = 1000.0, # needs to be an order of magnitude bigger, big M method heuristic
+    strict_inequality_tolerance = 10.0, # heuristic from paper
+    modifications=[],
+    optimizer,
+)
+        
+        m = fbc_model_constraints(model)
 
-        internal_rxn_idxs = [
-            ridx for (ridx, rid) in enumerate(reactions(model)) if
-            !is_boundary(reaction_stoichiometry(model, rid))
-        ]
+        # find all internal reactions
+        internal_reactions = [(i, Symbol(rid)) for (i, rid) in enumerate(A.reactions(model)) if !is_boundary(model, rid)]
+        internal_reaction_ids = last.(internal_reactions)
+        internal_reaction_idxs = first.(internal_reactions)
 
-        N_int = nullspace(Array(stoichiometry(model)[:, internal_rxn_idxs])) # no sparse nullspace function
+        # add loopless variables: flux direction setters (binary) and pseudo gibbs free energy of reaction
+        m += :loopless_binary_variables^C.variables(keys=internal_reaction_ids, bounds=Ref(C.Binary))
+        m += :pseudo_gibbs_free_energy_reaction^C.variables(keys=internal_reaction_ids)
 
-        y = @variable(opt_model, y[1:length(internal_rxn_idxs)], Bin)
-        G = @variable(opt_model, G[1:length(internal_rxn_idxs)]) # approx ΔG for internal reactions
+        # add -1000 * (1-a) ≤ v ≤ 1000 * a which need to be split into forward and backward components
+        m *= :loopless_reaction_directions^:backward^C.ConstraintTree(
+            rid => C.Constraint(
+                value = m.fluxes[rid].value + max_flux_bound * (1 - m.loopless_binary_variables[rid].value),
+                bound = (0, Inf),
+            ) for rid in internal_reaction_ids
+        )
+        m *= :loopless_reaction_directions^:forward^C.ConstraintTree(
+            rid => C.Constraint(
+                value = max_flux_bound * m.loopless_binary_variables[rid].value - m.fluxes[rid].value ,
+                bound = (0, Inf),
+            ) for rid in internal_reaction_ids
+        )
 
-        x = opt_model[:x]
-        for (cidx, ridx) in enumerate(internal_rxn_idxs)
-            @constraint(opt_model, -max_flux_bound * (1 - y[cidx]) <= x[ridx])
-            @constraint(opt_model, x[ridx] <= max_flux_bound * y[cidx])
+        # add -1000*a + 1 * (1-a) ≤ Gibbs ≤ -1 * a + 1000 * (1 - a) which also need to be split
+        m *= :loopless_pseudo_gibbs_sign^:backward^C.ConstraintTree(
+            rid => C.Constraint(
+                value =  m.pseudo_gibbs_free_energy_reaction[rid].value + max_flux_bound * m.loopless_binary_variables[rid].value - strict_inequality_tolerance * (1 - m.loopless_binary_variables[rid].value),
+                bound = (0, Inf),
+            ) for rid in internal_reaction_ids
+        )
+        m *= :loopless_pseudo_gibbs_sign^:forward^C.ConstraintTree(
+            rid => C.Constraint(
+                value = -strict_inequality_tolerance * m.loopless_binary_variables[rid].value + max_flux_bound * (1 - m.loopless_binary_variables[rid].value) - m.pseudo_gibbs_free_energy_reaction[rid].value,
+                bound = (0, Inf),
+            ) for rid in internal_reaction_ids
+        )
 
-            @constraint(
-                opt_model,
-                -max_flux_bound * y[cidx] + strict_inequality_tolerance * (1 - y[cidx]) <= G[cidx]
-            )
-            @constraint(
-                opt_model,
-                G[cidx] <=
-                -strict_inequality_tolerance * y[cidx] + max_flux_bound * (1 - y[cidx])
-            )
-        end
+        # add N_int' * Gibbs = 0 where N_int = nullspace
+        N_int = nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs])) # no sparse nullspace function
+        m *= :loopless_condition^C.ConstraintTree(
+            Symbol(:nullspace_vector, i) => C.Constraint(
+            value = sum(col[j] * m.pseudo_gibbs_free_energy_reaction[internal_reaction_ids[j]].value for j in eachindex(col)),    
+            bound = 0,
+            ) for (i, col) in enumerate(eachcol(N_int))
+        )
 
-        @constraint(opt_model, N_int' * G .== 0)
-    end
+        # solve
+        optimized_constraints(
+            m;
+            objective = m.objective.value,
+            optimizer,
+            modifications,
+        )
+end
+
+export loopless_flux_balance_analysis
