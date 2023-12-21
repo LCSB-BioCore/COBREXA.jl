@@ -11,6 +11,11 @@ end
 
 export environment_exchange_variables
 
+"""
+$(TYPEDSIGNATURES)
+
+Helper function to build a "blank" community model with only environmental exchange reactions.
+"""
 function build_community_environment(env_ex_rxns = Dict{String,Tuple{Float64,Float64}}())
     C.ConstraintTree(
         :environmental_exchange_reactions => environment_exchange_variables(env_ex_rxns),
@@ -19,6 +24,12 @@ end
 
 export build_community_environment
 
+"""
+$(TYPEDSIGNATURES)
+
+Helper function to link species specific exchange reactions to the environmental
+exchange reactions by weighting them with their abundances.
+"""
 function link_environmental_exchanges(
     m::C.ConstraintTree,
     member_abundances::Vector{Tuple{Symbol,Float64}};
@@ -40,7 +51,14 @@ end
 
 export link_environmental_exchanges
 
-function equal_growth_rate_constraints(member_biomasses::Vector{Tuple{Symbol,C.LinearValue}})
+"""
+$(TYPEDSIGNATURES)
+
+Helper function to set each species growth rate equal to each other.
+"""
+function equal_growth_rate_constraints(
+    member_biomasses::Vector{Tuple{Symbol,C.LinearValue}},
+)
     C.ConstraintTree(
         Symbol(bid1, :_, bid2) => C.Constraint(value = bval1 - bval2, bound = 0.0) for
         ((bid1, bval1), (bid2, bval2)) in
