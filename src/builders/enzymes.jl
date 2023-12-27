@@ -19,8 +19,8 @@ fluxes through [`link_isozymes`](@ref).
 """
 function isozyme_variables(
     reaction_id::String,
-    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
-)
+    reaction_isozymes::Dict{String,Dict{String,T}},
+) where {T<:Isozyme}
     C.variables(;
         keys = Symbol.(collect(keys(reaction_isozymes[reaction_id]))),
         bounds = C.Between(0.0, Inf),
@@ -56,8 +56,8 @@ function enzyme_stoichiometry(
     enzymes::C.ConstraintTree,
     fluxes_isozymes_forward::C.ConstraintTree,
     fluxes_isozymes_backward::C.ConstraintTree,
-    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
-)
+    reaction_isozymes::Dict{String,Dict{String,T}},
+) where {T<:Isozyme}
     # map enzyme ids to reactions that use them (not all isozymes have to though)
     enzyme_rid_lookup = Dict{Symbol,Vector{Symbol}}()
     for (rid, isozymes) in reaction_isozymes
@@ -109,9 +109,9 @@ function enzyme_balance(
     gid::Symbol,
     rid::Symbol,
     fluxes_isozymes::C.ConstraintTree, # direction
-    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    reaction_isozymes::Dict{String,Dict{String,T}},
     direction = :kcat_forward,
-)
+) where {T<:Isozyme}
     isozyme_dict = Dict(Symbol(k) => v for (k, v) in reaction_isozymes[string(rid)])
 
     sum( # this is where the stoichiometry comes in
@@ -150,20 +150,26 @@ $(TYPEDSIGNATURES)
 
 Add enzyme constraints to a constraint tree, `m`. The enzyme model is
 parameterized by `reaction_isozymes`, which is a mapping of reaction IDs (those
-used in the fluxes of the model) to named [`Isozyme`](@ref)s. Additionally,
-`gene_molar_masses` and `capacity_limitations` should be supplied. The latter is
-a vector of tuples, where each tuple represents a distinct bound as `(bound_id,
-genes_in_bound, protein_mass_bound)`. Finally, specify the `fluxes` and
-`enzymes` to which the constraints should be mounted.
+used in the fluxes of the model) to named struct which is a subtype of
+[`Isozyme`](@ref)s. Additionally, `gene_molar_masses` and `capacity_limitations`
+should be supplied. The latter is a vector of tuples, where each tuple
+represents a distinct bound as `(bound_id, genes_in_bound, protein_mass_bound)`.
+Finally, specify the `fluxes` and `enzymes` to which the constraints should be
+mounted.
+
+# Note
+The isozyme struct used in `reaction_isozymes` must have fields
+`gene_product_stoichiometry`, `kcat_forward`, and `kcat_backward` to properly
+assign kcats to reactions. Use [`SimpleIsozyme`](@ref) when in doubt.
 """
 function add_enzyme_constraints!(
     m::C.ConstraintTree,
-    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    reaction_isozymes::Dict{String,Dict{String,T}},
     gene_molar_masses::Dict{String,Float64},
     capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
     fluxes = m.fluxes,
     enzymes = m.enzymes,
-)
+) where {T<:Isozyme}
 
     # create directional fluxes
     m +=
@@ -247,7 +253,7 @@ constructing it manually by using [`add_enzyme_constraints!`](@ref).
 """
 function enzyme_constrained_flux_balance_analysis(
     model::A.AbstractFBCModel,
-    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    reaction_isozymes::Dict{String,Dict{String,SimpleIsozyme}},
     gene_molar_masses::Dict{String,Float64},
     capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
     optimizer,

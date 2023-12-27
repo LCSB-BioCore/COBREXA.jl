@@ -9,26 +9,39 @@ const Maybe{X} = Union{Nothing,X}
 """
 $(TYPEDEF)
 
-Information about isozyme composition including subunit stoichiometry and
-turnover numbers.
+Abstract isozyme type that stores all kinetic information required for
+constraint-based modeling.
+
+"""
+abstract type Isozyme end
+
+"""
+$(TYPEDEF)
+
+A simple struct storing information about the isozyme composition, including
+subunit stoichiometry and turnover numbers.
 
 # Fields
 $(TYPEDFIELDS)
 """
-Base.@kwdef mutable struct Isozyme
+Base.@kwdef mutable struct SimpleIsozyme <: Isozyme
     gene_product_stoichiometry::Dict{String,Float64}
     kcat_forward::Maybe{Float64} = nothing
     kcat_backward::Maybe{Float64} = nothing
 end
 
-export Isozyme
+export SimpleIsozyme
 
 """
 $(TYPEDSIGNATURES)
 
-A convenience constructor for [`Isozyme`](@ref) that takes a string gene
+A convenience constructor for [`SimpleIsozyme`](@ref) that takes a string gene
 reaction rule and converts it into the appropriate format. Assumes the
 `gene_product_stoichiometry` for each subunit is 1.
 """
-Isozyme(gids::Vector{String}; kwargs...) =
-    Isozyme(; gene_product_stoichiometry = Dict(gid => 1.0 for gid in gids), kwargs...)
+SimpleIsozyme(gids::Vector{String}; kcat_forward::Float64, kcat_backward::Float64) =
+    SimpleIsozyme(;
+        gene_product_stoichiometry = Dict(gid => 1.0 for gid in gids),
+        kcat_forward,
+        kcat_backward,
+    )
