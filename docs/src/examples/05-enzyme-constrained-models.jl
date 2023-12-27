@@ -106,6 +106,7 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
 @test isapprox(ec_solution.enzymes.b2417, 9.974991164132524e-5, atol = 1e-7) #src
 
 ### Building a model incrementally
+import ConstraintTrees as C
 
 # create basic flux model
 m = fbc_model_constraints(model)
@@ -114,8 +115,8 @@ m = fbc_model_constraints(model)
 m += :enzymes^enzyme_variables(model)
 
 # constrain some fluxes and enzymes manually
-m.fluxes.EX_glc__D_e.bound = (-1000.0, 0.0) # undo glucose important bound from original model
-m.enzymes.b2417.bound = (0.0, 0.1) # for fun, change the bounds of the protein b2417
+m.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 0.0) # undo glucose important bound from original model
+m.enzymes.b2417.bound = C.Between(0.0, 0.1) # for fun, change the bounds of the protein b2417
 
 # attach the enzyme mass balances
 m = add_enzyme_constraints!(

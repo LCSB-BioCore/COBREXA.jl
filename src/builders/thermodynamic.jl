@@ -43,7 +43,7 @@ function build_max_min_driving_force_model(
         :max_min_driving_force^C.variable() +
         :log_metabolite_concentrations^C.variables(
             keys = Symbol.(mets),
-            bounds = zip(log(concentration_lb), log(concentration_ub)),
+            bounds = C.Between(log(concentration_lb), log(concentration_ub)),
         ) +
         :delta_G_reactions^C.variables(keys = Symbol.(rxns)),
     )
@@ -72,7 +72,7 @@ function build_max_min_driving_force_model(
                         sum(
                             m.log_metabolite_concentrations[Symbol(met_id)].value * stoich for (met_id, stoich) in zip(met_ids, stoich_coeffs)
                         ),
-                bound = 0.0,
+                bound = C.EqualTo(0.0),
             ) for (rxn, (dG0, met_ids, stoich_coeffs)) in zip(rxns, dG0s_met_ids_stoichs)
         )
 
@@ -83,8 +83,9 @@ function build_max_min_driving_force_model(
     Debatable...
     =#
     for met in [Symbol.(proton_ids); Symbol.(water_ids)]
-        haskey(m.log_metabolite_concentrations, met) &&
-            (m.log_metabolite_concentrations[met].bound = 0.0)
+        if haskey(m.log_metabolite_concentrations, met)
+            m.log_metabolite_concentrations[met] = C.Constraint(value=m.log_metabolite_concentrations[met].value, bound = C.EqualTo(0.0))
+        end
     end
 
     #=
@@ -96,7 +97,7 @@ function build_max_min_driving_force_model(
             Symbol(rxn) => C.Constraint(
                 value = m.delta_G_reactions[Symbol(rxn)].value *
                         sign(get(reference_flux, rxn, 1.0)),
-                bound = (-Inf, 0.0),
+                bound = C.Between(-Inf, 0.0),
             ) for rxn in rxns
         )
 
@@ -106,7 +107,7 @@ function build_max_min_driving_force_model(
                 value = m.max_min_driving_force.value +
                         m.delta_G_reactions[Symbol(rxn)].value *
                         sign(get(reference_flux, rxn, 1.0)),
-                bound = (-Inf, 0.0),
+                bound = C.Between(-Inf, 0.0),
             ) for rxn in rxns
         )
 
@@ -140,12 +141,11 @@ log_ratio_constraints(
 ) = C.ConstraintTree(
     Symbol(cid) => C.Constraint(
         value = on[Symbol(var1)].value - on[Symbol(var2)].value,
-        bound = log(ratio),
+        bound = C.EqualTo(log(ratio)),
     ) for (cid, (var1, var2, ratio)) in ratios
 )
 
 export log_ratio_constraints
-
 
 """
 $(TYPEDSIGNATURES)
@@ -231,7 +231,7 @@ function max_min_driving_force_analysis(
     )
 
     for (mid, val) in constant_concentrations
-        m.log_metabolite_concentrations[Symbol(mid)].bound = log(val)
+        m.log_metabolite_concentrations[Symbol(mid)].bound = C.EqualTo(log(val))
     end
 
     m *=

@@ -24,7 +24,7 @@ function fbc_model_constraints(model::A.AbstractFBCModel)
     return C.ConstraintTree(
         :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
         :flux_stoichiometry^C.ConstraintTree(
-            met => C.Constraint(value = C.LinearValue(sparse(row)), bound = b) for
+            met => C.Constraint(value = C.LinearValue(sparse(row)), bound = C.EqualTo(b)) for
             (met, row, b) in zip(mets, eachrow(stoi), bal)
         ) *
         :objective^C.Constraint(C.LinearValue(sparse(obj))),
@@ -39,7 +39,7 @@ $(TYPEDSIGNATURES)
 Shortcut for allocation non-negative ("unsigned") variables. The argument
 `keys` is forwarded to `ConstraintTrees.variables` as `keys`.
 """
-unsigned_variables(; keys) = C.variables(; keys, bounds = Ref((0.0, Inf)))
+unsigned_variables(; keys) = C.variables(; keys, bounds = C.Between(0.0, Inf))
 
 export unsigned_variables
 
@@ -77,7 +77,7 @@ sign_split_constraints(;
         value = s.value +
                 (haskey(negative, k) ? negative[k].value : zero(typeof(s.value))) -
                 (haskey(positive, k) ? positive[k].value : zero(typeof(s.value))),
-        bound = 0.0,
+        bound = C.EqualTo(0.0),
     ) for (k, s) in signed
 )
 #TODO the example above might as well go to docs
@@ -88,12 +88,12 @@ function fluxes_in_direction(fluxes::C.ConstraintTree, direction = :forward)
     keys = Symbol[]
     for (id, flux) in fluxes
         if direction == :forward
-            last(flux.bound) > 0 && push!(keys, id)
+            flux.bound.upper > 0 && push!(keys, id)
         else
-            first(flux.bound) < 0 && push!(keys, id)
+            flux.bound.lower < 0 && push!(keys, id)
         end
     end
-    C.variables(; keys, bounds = Ref((0.0, Inf)))
+    C.variables(; keys, bounds = C.Between(0.0, Inf))
 end
 
 export fluxes_in_direction

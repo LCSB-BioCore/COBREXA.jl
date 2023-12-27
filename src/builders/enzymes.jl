@@ -5,7 +5,7 @@ Allocate enzyme variables (gene products in the model) to a constraint tree
 using all the genes in the `model`.
 """
 enzyme_variables(model::A.AbstractFBCModel) =
-    C.variables(; keys = Symbol.(A.genes(model)), bounds = Ref((0.0, Inf)))
+    C.variables(; keys = Symbol.(A.genes(model)), bounds = C.Between(0.0, Inf))
 
 export enzyme_variables
 
@@ -23,7 +23,7 @@ function isozyme_variables(
 )
     C.variables(;
         keys = Symbol.(collect(keys(reaction_isozymes[reaction_id]))),
-        bounds = Ref((0.0, Inf)),
+        bounds = C.Between(0.0, Inf),
     )
 end
 
@@ -40,7 +40,7 @@ function link_isozymes(
     C.ConstraintTree(
         k => C.Constraint(
             value = s.value - sum(x.value for (_, x) in fluxes_isozymes[k]),
-            bound = 0.0,
+            bound = C.EqualTo(0.0),
         ) for (k, s) in fluxes_directional if haskey(fluxes_isozymes, k)
     )
 end
@@ -94,7 +94,7 @@ function enzyme_stoichiometry(
                         haskey(fluxes_isozymes_backward, rid);
                         init = zero(typeof(enz.value)),
                     ), # flux through negative isozymes
-            bound = 0.0,
+            bound = C.EqualTo(0.0),
         ) for (gid, enz) in enzymes if gid in keys(enzyme_rid_lookup)
     )
 end
@@ -139,7 +139,7 @@ function enzyme_capacity(
         value = sum(
             enzymes[Symbol(gid)].value * gene_molar_masses[gid] for gid in enzyme_ids
         ),
-        bound = (0.0, capacity),
+        bound = C.Between(0.0, capacity),
     )
 end
 
@@ -267,7 +267,7 @@ function enzyme_constrained_flux_balance_analysis(
     )
 
     for rid in Symbol.(unconstrain_reactions)
-        m.fluxes[rid].bound = (-1000.0, 1000.0)
+        m.fluxes[rid].bound = C.Between(-1000.0, 1000.0)
     end
 
     optimized_constraints(m; objective = m.objective.value, optimizer, modifications)
