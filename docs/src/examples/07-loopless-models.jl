@@ -14,9 +14,8 @@ download_model(
     "7bedec10576cfe935b19218dc881f3fb14f890a1871448fc19a9b4ee15b448d8",
 )
 
-# Additionally to COBREXA and the model format package, we will need a solver --
-# let's use GLPK here because we will need to solve mixed interger linear
-# programs (MILPs):
+# Additionally to COBREXA and the JSON model format package. We will also need a
+# solver that can solve mixed interger linear programs like GLPK.
 
 import JSONFBCModels
 import GLPK
@@ -24,19 +23,29 @@ import AbstractFBCModels as A
 
 model = load_model("e_coli_core.json")
 
-# ## Setting up the loopless model
+# ## Running a simple loopless FBA (ll-FBA)
 
-# ## Running a ll-FBA
+# One can directly use `loopless_flux_balance_analysis` to solve an FBA problem
+# based on `model` where loopless constraints are added to all fluxes. This is
+# the direct approach. 
 
-sol = loopless_flux_balance_analysis(
-    model;
-    optimizer = GLPK.Optimizer,
-    max_flux_bound = 1000.0, # needs to be an order of magnitude bigger, big M method heuristic
-    strict_inequality_tolerance = 1.0, # heuristic from paper
-    modifications = [set_optimizer_attribute("tol_int", 1e-9)]
+sol = loopless_flux_balance_analysis(model; optimizer = GLPK.Optimizer)
+
+@test isapprox(
+    sol.objective,
+    0.8739215069684303,
+    atol = TEST_TOLERANCE,
+) #src
+
+@test all(
+    v * sol.pseudo_gibbs_free_energy_reaction[k] <= 0
+    for (k, v) in sol.fluxes if haskey(sol.pseudo_gibbs_free_energy_reaction, k)
+) #src
+
+Dict(
+    k => (v,  sol.pseudo_gibbs_free_energy_reaction[k], sol.loopless_binary_variables[k])
+for (k, v) in sol.fluxes if abs(v) > 0 && haskey(sol.pseudo_gibbs_free_energy_reaction, k)
 )
 
-sol.pseudo_gibbs_free_energy_reaction
-
-@test isapprox(mmdf_solution.max_min_driving_force, 0.8739215069684292, atol = TEST_TOLERANCE) #src
+# ## Building your own loopless model
 

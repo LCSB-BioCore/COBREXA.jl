@@ -25,6 +25,9 @@ function optimization_model(
             val = C.substitute(c.value, x)
             isinf(c.bound.lower) || J.@constraint(model, val >= c.bound.lower)
             isinf(c.bound.upper) || J.@constraint(model, val <= c.bound.upper)
+        elseif c.bound isa Binary
+            anon_bool = J.@variable(model, binary = true)
+            J.@constraint(model, C.substitute(c.value, x) == anon_bool)
         end
     end
     function add_constraint(c::C.ConstraintTree)
