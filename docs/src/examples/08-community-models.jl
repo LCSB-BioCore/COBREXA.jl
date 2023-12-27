@@ -129,7 +129,7 @@ bug2_ex_fluxes = Dict(k => v for (k, v) in sol.bug2.fluxes if startswith(string(
 # In this specific case, look at the flux of pyruvate (EX_pyr_e). There is no
 # environmental exchange flux, so the two microbes share the metabolite.
 # However,  `bug1_ex_fluxes[:EX_pyr_e] != bug2_ex_fluxes[:EX_pyr_e]`, but rather
-# `abundance_bug1 * bug1_ex_fluxes[:EX_pyr_e] != abundance_bug2 *
+# `abundance_bug1 * bug1_ex_fluxes[:EX_pyr_e] == abundance_bug2 *
 # bug2_ex_fluxes[:EX_pyr_e]`. Take care of this when comparing fluxes!
 
 @test isapprox(
