@@ -119,24 +119,16 @@ end
 
 export build_max_min_driving_force_model
 
-
 """
 $(TYPEDSIGNATURES)
 
 Add constraints to `m` that represents ratios of variables in log space:
-`log(x/y) = log(const)` where `x` and `y` are variables specified by `on`. These
-constraints are called `name` in the resultant model. The constraints are
-specified by `ratios`, which is a dictionary mapping a constraint id to a tuple
-which consists of the variable ids, `x`, `y`, and the ratio value, `const`. The
-latter is logged internally.
-
-# Example
-```
-m *= :log_ratio_constraints^log_ratio_constraints(
-    Dict("atp" => ("atp_c", "adp_c", log(10.0)), "nadh" => ("nadh_c", "nad_c", log(0.13))),
-    m.log_metabolite_concentrations,
-)
-```
+`log(x/y) = log(const)` where `x` and `y` are variables specified by `on`. The
+constraints are specified by `ratios`, which is a dictionary mapping a
+constraint id to a tuple which consists of the variable ids, `x`, `y`, and the
+ratio value, `const`. The latter is logged internally, while the variables are
+subtracted from each other, as it is assumed they are already in log space,
+`log(x/y) = log(x) - log(y)`.
 """
 log_ratio_constraints(
     ratios::Dict{String,Tuple{String,String,Float64}},
@@ -201,8 +193,9 @@ the optimization problems (these are overwritten by `constant_concentrations` if
 supplied).
 
 `T` and `R` can be specified in the corresponding units; defaults are K and
-kJ/K/mol. The unit of metabolite concentrations is typically molar. As usual,
-optimizer settings can be changed with `modifications`.
+kJ/K/mol. The unit of metabolite concentrations is typically molar, and the ΔG⁰s
+have units of kJ/mol. Other units can be used, as long as they are consistent.
+As usual, optimizer settings can be changed with `modifications`.
 """
 function max_min_driving_force_analysis(
     model::A.AbstractFBCModel,

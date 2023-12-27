@@ -33,17 +33,18 @@ model = load_model("e_coli_core.json")
 # eQuilibrator.jl package.
 
 reaction_standard_gibbs_free_energies = Dict{String,Float64}(
-    "GLCpts" => -45.42430981510088,
-    "PGI" => 2.6307087407442395,
-    "PFK" => -18.546314942995934,
+    # Units are in kJ/mol
+    "ENO" => -3.8108376097261782,
     "FBA" => 23.376920310319235,
-    "TPI" => 5.621932460512994,
     "GAPD" => 0.5307809794271634,
+    "GLCpts" => -45.42430981510088,
+    "LDH_D" => 20.04059765689044,
+    "PFK" => -18.546314942995934,
+    "PGI" => 2.6307087407442395,
     "PGK" => 19.57192102020454,
     "PGM" => -4.470553692565886,
-    "ENO" => -3.8108376097261782,
     "PYK" => -24.48733600711958,
-    "LDH_D" => 20.04059765689044,
+    "TPI" => 5.621932460512994,
 )
 
 # ## Running basic max min driving force analysis
@@ -55,25 +56,35 @@ reaction_standard_gibbs_free_energies = Dict{String,Float64}(
 # dictionary can be a flux solution, the sign of each flux is used to determine
 # if the reaction runs forward or backward.
 
+# ## Using a reference solution
+
+# Frequently it is useful to check the max-min driving force of a specific FBA
+# solution. In this case, one is usually only interested in a subset of all the
+# reactions in a model. These reactions can be specified as a the
+# `reference_flux`, to only compute the MMDF of these reactions, and ignore all
+# other reactions.
+
+reference_flux = Dict(
+    "ENO" => 1.0,
+    "FBA" => 1.0,
+    "GAPD" => 1.0,
+    "GLCpts" => 1.0,
+    "LDH_D" => -1.0,
+    "PFK" => 1.0,
+    "PGI" => 1.0,
+    "PGK" => -1.0,
+    "PGM" => -1.0,
+    "PYK" => 1.0,
+    "TPI" => 1.0,
+)
+
 #!!! warning "Only the signs are extracted from the reference solution"
 # It is most convenient to pass a flux solution into `reference_flux`, but
 # take care to round fluxes near 0 to their correct sign if they should be
 # included in the resultant thermodynamic model. Otherwise, remove them from
 # reference flux input.
 
-reference_flux = Dict(
-    "GLCpts" => 1.0,
-    "PGI" => 1.0,
-    "PFK" => 1.0,
-    "FBA" => 1.0,
-    "TPI" => 1.0,
-    "GAPD" => 1.0,
-    "PGK" => -1.0,
-    "PGM" => -1.0,
-    "ENO" => 1.0,
-    "PYK" => 1.0,
-    "LDH_D" => -1.0,
-)
+# ## Solving the MMDF problem
 
 mmdf_solution = max_min_driving_force_analysis(
     model,
@@ -118,7 +129,7 @@ m *=
         m.log_metabolite_concentrations,
     )
 
-# solve the model
+# solve the model, which is not just a normal constraint tree! 
 mmdf_solution = optimized_constraints(
     m;
     objective = m.max_min_driving_force.value,

@@ -45,7 +45,7 @@ run_test_file("data_downloaded.jl")
 
 @testset "COBREXA test suite" begin
     run_doc_examples()
-    include("enzyme-model.jl")
+    include("enzyme_model.jl")
     run_test_file("aqua.jl")
 end
 

@@ -1,5 +1,5 @@
 
-const ecoli_core_gene_product_masses = Dict{String,Float64}(
+const ecoli_core_gene_product_masses = Dict(
     #=
     Data downloaded from Uniprot for E. coli K12,
     gene mass in kDa. To obtain these data yourself, go to
@@ -145,7 +145,7 @@ const ecoli_core_gene_product_masses = Dict{String,Float64}(
     "s0001" => 0.0,
 )
 
-const ecoli_core_reaction_kcats = Dict{String,Vector{Tuple{Float64,Float64}}}(
+const ecoli_core_reaction_kcats = Dict(
     #=
     Data taken from Heckmann, David, et al. "Machine learning applied to enzyme
     turnover numbers reveals protein structural correlates and improves metabolic

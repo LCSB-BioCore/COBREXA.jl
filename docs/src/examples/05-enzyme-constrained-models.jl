@@ -13,6 +13,7 @@ import Downloads: download
 # Additionally to COBREXA and the model format package, we will need a solver
 # -- let's use Tulip here:
 
+import AbstractFBCModels as A
 import JSONFBCModels
 import Tulip
 
@@ -22,35 +23,35 @@ model = load_model("e_coli_core.json")
 # conventional constraint based models. These include reaction specific turnover
 # numbers, molar masses of enzymes, and capacity bounds.
 
-import AbstractFBCModels as A
+# ## Reaction turnover numbers
 
-### Reaction turnover numbers
+# Enzyme constrained models require reaction turnover numbers, which are often
+# isozyme specfic. Many machine learning tools, or experimental data sets, can
+# be used to estimate these parameters.
 
-# Here we will use randomly generated turnover numbers for simplicity. Each
-# reaction in a constraint-based model usually has gene reaction rules
+# ```@raw html
+# <details><summary>Reaction turnover numbers</summary>
+# ??? how to load this?
+# </details>
+# ```
+
+# Each reaction in a constraint-based model usually has gene reaction rules
 # associated with it. These typically take the form of, possibly multiple,
 # isozymes that can catalyze a reaction. A turnover number needs to be assigned
 # to each isozyme, as shown below.
-
-using Random
 
 reaction_isozymes = Dict{String,Dict{String,Isozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
 for rid in A.reactions(model)
     grrs = A.reaction_gene_association_dnf(model, rid)
     isnothing(grrs) && continue # skip if no grr available
-    haskey(ecoli_core_reaction_kcats, rid) || continue #src
+    haskey(ecoli_core_reaction_kcats, rid) || continue # skip if no kcat data available
     for (i, grr) in enumerate(grrs)
         d = get!(reaction_isozymes, rid, Dict{String,Isozyme}())
         # each isozyme gets a unique name
         d["isozyme_"*string(i)] = Isozyme( # Isozyme struct is defined by COBREXA
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), # assume subunit stoichiometry of 1 for all isozymes
-            kcat_forward = (100 + 50 * rand()) * 3600.0, # forward reaction turnover number units = 1/h
-            kcat_backward = (100 + 50 * rand()) * 3600.0, # reverse reaction turnover number units = 1/h
-        )
-        d["isozyme_"*string(i)] = Isozyme( #src
-            gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), #src
-            kcat_forward = ecoli_core_reaction_kcats[rid][i][1] * 3600.0, #src
-            kcat_backward = ecoli_core_reaction_kcats[rid][i][2] * 3600.0, #src
+            kcat_forward = ecoli_core_reaction_kcats[rid] * 3600.0, # forward reaction turnover number units = 1/h
+            kcat_backward = ecoli_core_reaction_kcats[rid] * 3600.0, # reverse reaction turnover number units = 1/h
         )
     end
 end
@@ -59,15 +60,21 @@ end
 #    Take care with the units of the turnover numbers. In literature they are
 #    usually reported in 1/s. However, flux units are typically mmol/gDW/h,
 #    suggesting that you should rescale the turnover numbers to 1/h if you
-#    want to use the traditional flux units.
+#    want to use the conventional flux units.
 
 ### Enzyme molar masses
 
-# Similarly, we will randomly generate enzyme molar masses for use in the enzyme
-# constrained model.
+# We also require the mass of each enzyme, to properly weight the contribution
+# of each flux/isozyme in the capacity bound(s). These data can typically be
+# found in uniprot.
 
-gene_molar_masses = Dict(gid => 20 + 40 * rand() for gid in A.genes(model))
-gene_molar_masses = ecoli_core_gene_product_masses #src
+# ```@raw html
+# <details><summary>Reaction turnover numbers</summary>
+# ??? how to load this?
+# </details>
+# ```
+
+gene_molar_masses = ecoli_core_gene_product_masses
 
 #!!! warning "Molar mass units"
 #    Take care with the units of the molar masses. In literature they are
@@ -89,6 +96,9 @@ total_enzyme_capacity = 0.1 # g enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
+# With all the parameters specified, we can directly use the enzyme constrained
+# convenience function to run enzyme constrained FBA in one shot:
+
 ec_solution = enzyme_constrained_flux_balance_analysis(
     model,
     reaction_isozymes,
@@ -100,12 +110,17 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
 )
 
 #src these values should be unique (glucose transporter is the only way to get carbon into the system)
-@test isapprox(ec_solution.objective, 3.2105477675077743, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.objective, 1.671357282901553, atol = TEST_TOLERANCE) #src
 @test isapprox(ec_solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
-@test isapprox(ec_solution.fluxes.EX_glc__D_e, -42.0, atol = 0.1) #src
-@test isapprox(ec_solution.enzymes.b2417, 9.974991164132524e-5, atol = 1e-7) #src
+@test isapprox(ec_solution.fluxes.EX_glc__D_e, -49.92966287110028, atol = 0.1) #src
+@test isapprox(ec_solution.enzymes.b2417, 0.00011859224858442563, atol = 1e-7) #src
 
 ### Building a model incrementally
+
+# Sometimes it is necessary to build a more complicated model, perhaps using a
+# novel type of constraint. For this, it is useful to build the enzyme
+# constrained model incrementally, using the ConstraintTree building blocks.
+
 import ConstraintTrees as C
 
 # create basic flux model
@@ -114,8 +129,10 @@ m = fbc_model_constraints(model)
 # create enzyme variables
 m += :enzymes^enzyme_variables(model)
 
-# constrain some fluxes and enzymes manually
+# constrain some fluxes...
 m.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 0.0) # undo glucose important bound from original model
+
+# ...And enzymes manually
 m.enzymes.b2417.bound = C.Between(0.0, 0.1) # for fun, change the bounds of the protein b2417
 
 # attach the enzyme mass balances
