@@ -31,21 +31,42 @@ model = load_model("e_coli_core.json")
 
 sol = loopless_flux_balance_analysis(model; optimizer = GLPK.Optimizer)
 
-@test isapprox(
-    sol.objective,
-    0.8739215069684303,
-    atol = TEST_TOLERANCE,
-) #src
+@test isapprox(sol.objective, 0.8739215069684303, atol = TEST_TOLERANCE) #src
 
 @test all(
-    v * sol.pseudo_gibbs_free_energy_reaction[k] <= 0
-    for (k, v) in sol.fluxes if haskey(sol.pseudo_gibbs_free_energy_reaction, k)
+    v * sol.pseudo_gibbs_free_energy_reaction[k] <= -TEST_TOLERANCE for
+    (k, v) in sol.fluxes if
+    haskey(sol.pseudo_gibbs_free_energy_reaction, k) && abs(v) >= 1e-6
 ) #src
-
-Dict(
-    k => (v,  sol.pseudo_gibbs_free_energy_reaction[k], sol.loopless_binary_variables[k])
-for (k, v) in sol.fluxes if abs(v) > 0 && haskey(sol.pseudo_gibbs_free_energy_reaction, k)
-)
 
 # ## Building your own loopless model
 
+# ConstraintTrees allows one to add loopless constraints to any model. To
+# illustrate how one would add loopless constraints to an arbitrary model (and
+# not use the convenience function), let's build a loopless model from scratch.
+
+# First, build a normal flux balance model
+m = fbc_model_constraints(model)
+
+# Next, find all internal reactions, and their associated indices for use later
+internal_reactions = [
+    (i, Symbol(rid)) for
+    (i, rid) in enumerate(A.reactions(model)) if !is_boundary(model, rid)
+]
+internal_reaction_ids = last.(internal_reactions)
+internal_reaction_idxs = first.(internal_reactions) # order needs to match the internal reaction ids below
+
+# Construct the stoichiometric nullspace of the internal reactions
+internal_reaction_stoichiometry_nullspace_columns =
+    eachcol(nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs])))
+
+# And simply add loopless contraints on the fluxes of the model
+m = add_loopless_constraints!(
+    m,
+    internal_reaction_ids,
+    internal_reaction_stoichiometry_nullspace_columns;
+    fluxes = m.fluxes,
+)
+
+# Now the model can be solved as before!
+optimized_constraints(m; objective = m.objective.value, optimizer = GLPK.Optimizer)
