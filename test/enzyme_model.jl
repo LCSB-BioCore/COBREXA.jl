@@ -51,12 +51,12 @@
     model = A.CanonicalModel.Model(rxns, mets, gs)
 
     reaction_isozymes = Dict(
-        "r3" => Dict("iso1" => Isozyme(Dict("g1" => 1), 1.0, 1.0)),
+        "r3" => Dict("iso1" => SimpleIsozyme(Dict("g1" => 1), 1.0, 1.0)),
         "r4" => Dict(
-            "iso1" => Isozyme(Dict("g1" => 1), 2.0, 2.0),
-            "iso2" => Isozyme(Dict("g2" => 1), 3.0, 3.0),
+            "iso1" => SimpleIsozyme(Dict("g1" => 1), 2.0, 2.0),
+            "iso2" => SimpleIsozyme(Dict("g2" => 1), 3.0, 3.0),
         ),
-        "r5" => Dict("iso1" => Isozyme(Dict("g3" => 1, "g4" => 2), 70.0, 70.0)),
+        "r5" => Dict("iso1" => SimpleIsozyme(Dict("g3" => 1, "g4" => 2), 70.0, 70.0)),
     )
 
     gene_product_molar_mass =
