@@ -129,7 +129,7 @@ m *=
         m.log_metabolite_concentrations,
     )
 
-# solve the model, which is not just a normal constraint tree! 
+# solve the model, which is not just a normal constraint tree!
 mmdf_solution = optimized_constraints(
     m;
     objective = m.max_min_driving_force.value,
