@@ -84,7 +84,10 @@ function build_max_min_driving_force_model(
     =#
     for met in [Symbol.(proton_ids); Symbol.(water_ids)]
         if haskey(m.log_metabolite_concentrations, met)
-            m.log_metabolite_concentrations[met] = C.Constraint(value=m.log_metabolite_concentrations[met].value, bound = C.EqualTo(0.0))
+            m.log_metabolite_concentrations[met] = C.Constraint(
+                value = m.log_metabolite_concentrations[met].value,
+                bound = C.EqualTo(0.0),
+            )
         end
     end
 
