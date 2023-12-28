@@ -1,6 +1,4 @@
 
-import SparseArrays: sparse
-
 """
 $(TYPEDSIGNATURES)
 
