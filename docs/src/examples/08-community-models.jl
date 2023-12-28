@@ -82,12 +82,12 @@ m *= :objective^C.Constraint(m.bug1.fluxes.:BIOMASS_Ecoli_core_w_GAM.value)
 # for each individual member is limited. We need to undo this limitation, and
 # rather rely on the constrained environmental exchange reaction (and the bounds
 # we set for it earlier).
-m.bug1.fluxes.EX_glc__D_e.bound = (-1000.0, 1000.0)
-m.bug2.fluxes.EX_glc__D_e.bound = (-1000.0, 1000.0)
+m.bug1.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 1000.0)
+m.bug2.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 1000.0)
 
 # We can also be interesting, and limit respiration in one of the members, to
 # see what effect this has on the community.
-m.bug1.fluxes.CYTBD.bound = (-10.0, 10.0)
+m.bug1.fluxes.CYTBD.bound = C.Between(-10.0, 10.0)
 
 # Finally, we can simulate the system!
 sol = optimized_constraints(
@@ -103,8 +103,8 @@ sol = optimized_constraints(
 # change this by changing their individual exchange bounds. 
 mets = [:EX_akg_e, :EX_succ_e, :EX_pyr_e, :EX_acald_e, :EX_fum_e, :EX_mal__L_e]
 for met in mets
-    m.bug1.fluxes[met].bound = (-1000.0, 1000.0)
-    m.bug2.fluxes[met].bound = (-1000.0, 1000.0)
+    m.bug1.fluxes[met].bound = C.Between(-1000.0, 1000.0)
+    m.bug2.fluxes[met].bound = C.Between(-1000.0, 1000.0)
 end
 
 sol = optimized_constraints(
