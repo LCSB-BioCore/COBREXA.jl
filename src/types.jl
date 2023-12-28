@@ -45,3 +45,14 @@ SimpleIsozyme(gids::Vector{String}; kcat_forward::Float64, kcat_backward::Float6
         kcat_forward,
         kcat_backward,
     )
+
+"""
+$(TYPEDEF)
+
+Representation of a binary bound, i.e. constrain a variable to only take the
+value 0 or 1 exclusively. Requires a mixed integer-capable solver for
+optimization.
+"""
+struct Binary <: C.Bound end
+
+export Binary

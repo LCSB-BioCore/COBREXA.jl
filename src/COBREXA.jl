@@ -25,6 +25,7 @@ import AbstractFBCModels as A
 import ConstraintTrees as C
 import JuMP as J
 import SparseArrays: sparse, findnz
+import LinearAlgebra: nullspace
 
 include("types.jl")
 include("io.jl")
@@ -35,6 +36,8 @@ include("builders/genes.jl")
 include("builders/objectives.jl")
 include("builders/enzymes.jl")
 include("builders/thermodynamic.jl")
+include("builders/loopless.jl")
+include("builders/communities.jl")
 
 include("analysis/modifications.jl")
 include("analysis/flux_balance.jl")
@@ -42,5 +45,6 @@ include("analysis/parsimonious_flux_balance.jl")
 include("analysis/minimal_metabolic_adjustment.jl")
 
 include("misc/bounds.jl")
+include("misc/utils.jl")
 
 end # module COBREXA
