@@ -26,9 +26,9 @@ model = load_model("e_coli_core.json")
 # are then linked to an environmental exchange. For more theoretical details,
 # see "Gottstein, et al, 2016, Constraint-based stoichiometric modelling from
 # single organisms to microbial communities, Journal of the Royal Society
-# Interface". 
+# Interface".
 
-# ## Building a community of two *E. coli*s 
+# ## Building a community of two *E. coli*s
 
 # Here we will construct a simple community of two interacting microbes. To do
 # this, we need to import the models. We import the models are ConstraintTrees,
@@ -100,7 +100,7 @@ sol = optimized_constraints(
 @test isapprox(sol.:objective, 0.66686196344, atol = TEST_TOLERANCE) #src
 
 # At the moment the members cannot really exchange any metabolites. We can
-# change this by changing their individual exchange bounds. 
+# change this by changing their individual exchange bounds.
 mets = [:EX_akg_e, :EX_succ_e, :EX_pyr_e, :EX_acald_e, :EX_fum_e, :EX_mal__L_e]
 for met in mets
     m.bug1.fluxes[met].bound = C.Between(-1000.0, 1000.0)
