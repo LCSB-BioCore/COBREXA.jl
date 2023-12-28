@@ -37,6 +37,7 @@ include("builders/objectives.jl")
 include("builders/enzymes.jl")
 include("builders/thermodynamic.jl")
 include("builders/loopless.jl")
+include("builders/communities.jl")
 
 include("analysis/modifications.jl")
 include("analysis/flux_balance.jl")
