@@ -86,7 +86,7 @@ function add_loopless_constraints!(
             ) for rid in internal_reaction_ids
         )
 
-    # use nullspace to ensure there are no loops 
+    # use nullspace to ensure there are no loops
     m *=
         :loopless_condition^C.ConstraintTree(
             Symbol(:nullspace_vector, i) => C.Constraint(

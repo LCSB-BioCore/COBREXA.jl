@@ -27,7 +27,7 @@ model = load_model("e_coli_core.json")
 
 # One can directly use `loopless_flux_balance_analysis` to solve an FBA problem
 # based on `model` where loopless constraints are added to all fluxes. This is
-# the direct approach. 
+# the direct approach.
 
 sol = loopless_flux_balance_analysis(model; optimizer = GLPK.Optimizer)
 
