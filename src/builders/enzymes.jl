@@ -164,9 +164,7 @@ assign kcats to reactions. Use [`SimpleIsozyme`](@ref) when in doubt.
 """
 function add_enzyme_constraints!(
     m::C.ConstraintTree,
-    reaction_isozymes::Dict{String,Dict{String,T}},
-    gene_molar_masses::Dict{String,Float64},
-    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
+    reaction_isozymes::Dict{String,Dict{String,T}};
     fluxes = m.fluxes,
     enzymes = m.enzymes,
 ) where {T<:Isozyme}
@@ -224,11 +222,6 @@ function add_enzyme_constraints!(
             m.fluxes_isozymes_backward,
             reaction_isozymes,
         )
-
-    # add capacity limitations
-    for (id, gids, cap) in capacity_limitations
-        m *= Symbol(id)^enzyme_capacity(enzymes, gene_molar_masses, gids, cap)
-    end
 
     m
 end
