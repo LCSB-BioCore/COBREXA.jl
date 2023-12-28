@@ -3,7 +3,7 @@
 $(TYPEDSIGNATURES)
 """
 knockout_constraints(; fluxes::C.ConstraintTree, knockout_test) = C.ConstraintTree(
-    rxn => C.Constraint(C.value(fluxes[rxn]), 0.0) for
+    rxn => C.Constraint(C.value(fluxes[rxn]), C.EqualTo(0.0)) for
     rxn in keys(fluxes) if knockout_test(rxn)
 )
 

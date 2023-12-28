@@ -55,7 +55,7 @@ vt = optimized_constraints(
 # Models that cannot be solved return `nothing`. In the example below, the
 # underlying model is modified.
 
-ctmodel.fluxes.ATPM.bound = (1000.0, 10000.0)
+ctmodel.fluxes.ATPM.bound = C.Between(1000.0, 10000.0)
 
 #TODO explicitly show here how false sharing looks like
 
@@ -70,7 +70,7 @@ vt = optimized_constraints(
 
 # Models can also be piped into the analysis functions
 
-ctmodel.fluxes.ATPM.bound = (8.39, 10000.0) # revert
+ctmodel.fluxes.ATPM.bound = C.Between(8.39, 10000.0) # revert
 vt = optimized_constraints(
     ctmodel,
     objective = ctmodel.objective.value,

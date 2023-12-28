@@ -5,3 +5,54 @@
 Type of optional values.
 """
 const Maybe{X} = Union{Nothing,X}
+
+"""
+$(TYPEDEF)
+
+Abstract isozyme type that stores all kinetic information required for
+constraint-based modeling.
+
+"""
+abstract type Isozyme end
+
+"""
+$(TYPEDEF)
+
+A simple struct storing information about the isozyme composition, including
+subunit stoichiometry and turnover numbers.
+
+# Fields
+$(TYPEDFIELDS)
+"""
+Base.@kwdef mutable struct SimpleIsozyme <: Isozyme
+    gene_product_stoichiometry::Dict{String,Float64}
+    kcat_forward::Maybe{Float64} = nothing
+    kcat_backward::Maybe{Float64} = nothing
+end
+
+export SimpleIsozyme
+
+"""
+$(TYPEDSIGNATURES)
+
+A convenience constructor for [`SimpleIsozyme`](@ref) that takes a string gene
+reaction rule and converts it into the appropriate format. Assumes the
+`gene_product_stoichiometry` for each subunit is 1.
+"""
+SimpleIsozyme(gids::Vector{String}; kcat_forward::Float64, kcat_backward::Float64) =
+    SimpleIsozyme(;
+        gene_product_stoichiometry = Dict(gid => 1.0 for gid in gids),
+        kcat_forward,
+        kcat_backward,
+    )
+
+"""
+$(TYPEDEF)
+
+Representation of a binary bound, i.e. constrain a variable to only take the
+value 0 or 1 exclusively. Requires a mixed integer-capable solver for
+optimization.
+"""
+struct Binary <: C.Bound end
+
+export Binary

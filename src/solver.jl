@@ -19,12 +19,15 @@ function optimization_model(
 
     # constraints
     function add_constraint(c::C.Constraint)
-        if c.bound isa Float64
-            J.@constraint(model, C.substitute(c.value, x) == c.bound)
-        elseif c.bound isa C.IntervalBound
+        if c.bound isa C.EqualTo
+            J.@constraint(model, C.substitute(c.value, x) == c.bound.equal_to)
+        elseif c.bound isa C.Between
             val = C.substitute(c.value, x)
-            isinf(c.bound[1]) || J.@constraint(model, val >= c.bound[1])
-            isinf(c.bound[2]) || J.@constraint(model, val <= c.bound[2])
+            isinf(c.bound.lower) || J.@constraint(model, val >= c.bound.lower)
+            isinf(c.bound.upper) || J.@constraint(model, val <= c.bound.upper)
+        elseif c.bound isa Binary
+            anon_bool = J.@variable(model, binary = true)
+            J.@constraint(model, C.substitute(c.value, x) == anon_bool)
         end
     end
     function add_constraint(c::C.ConstraintTree)
