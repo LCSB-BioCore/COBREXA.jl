@@ -59,11 +59,11 @@ model.reactions["CS"].stoichiometry
 
 # ## Running FBA on modified models
 #
-# Since the canonical model is completely mutable, you can change it in any way you like and feed it directly into [`flux_balance`](@ref). Let's first find a "original" solution, so that we have a base solution for comparing:
+# Since the canonical model is completely mutable, you can change it in any way you like and feed it directly into [`flux_balance_analysis`](@ref). Let's first find a "original" solution, so that we have a base solution for comparing:
 
 import GLPK
 
-base_solution = flux_balance(model, GLPK.Optimizer)
+base_solution = flux_balance_analysis(model, GLPK.Optimizer)
 base_solution.objective
 
 # Now, for example, we can limit the intake of glucose by the model:
@@ -76,7 +76,7 @@ model.reactions["EX_glc__D_e"].lower_bound = -5.0
 
 # ...and solve the modified model:
 #
-low_glucose_solution = flux_balance(model, GLPK.Optimizer)
+low_glucose_solution = flux_balance_analysis(model, GLPK.Optimizer)
 low_glucose_solution.objective
 
 @test isapprox(low_glucose_solution.objective, 0.41559777, atol = TEST_TOLERANCE) #src

@@ -70,7 +70,7 @@ $(TYPEDSIGNATURES)
 
 Compute a parsimonious flux solution for the given `model`. In short, the
 objective value of the parsimonious solution should be the same as the one from
-[`flux_balance`](@ref), except the squared sum of reaction fluxes is minimized.
+[`flux_balance_analysis`](@ref), except the squared sum of reaction fluxes is minimized.
 If there are multiple possible fluxes that achieve a given objective value,
 parsimonious flux thus represents the "minimum energy" one, thus arguably more
 realistic. The optimized squared distance is present in the result as
@@ -80,10 +80,10 @@ Most arguments are forwarded to [`parsimonious_optimized_constraints`](@ref),
 with some (objectives) filled in automatically to fit the common processing of
 FBC models, and some (`tolerances`) provided with more practical defaults.
 
-Similarly to the [`flux_balance`](@ref), returns a tree with the optimization
+Similarly to the [`flux_balance_analysis`](@ref), returns a tree with the optimization
 solutions of the shape as given by [`fbc_model_constraints`](@ref).
 """
-function parsimonious_flux_balance(
+function parsimonious_flux_balance_analysis(
     model::A.AbstractFBCModel,
     optimizer;
     tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
@@ -104,9 +104,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Pipe-able variant of [`parsimonious_flux_balance`](@ref).
+Pipe-able variant of [`parsimonious_flux_balance_analysis`](@ref).
 """
-parsimonious_flux_balance(optimizer; kwargs...) =
-    model -> parsimonious_flux_balance(model, optimizer; kwargs...)
+parsimonious_flux_balance_analysis(optimizer; kwargs...) =
+    model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
 
-export parsimonious_flux_balance
+export parsimonious_flux_balance_analysis
