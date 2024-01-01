@@ -138,12 +138,19 @@ m.enzymes.b2417.bound = C.Between(0.0, 0.1) # for fun, change the bounds of the 
 # attach the enzyme mass balances
 m = add_enzyme_constraints!(
     m,
-    reaction_isozymes,
-    gene_molar_masses,
-    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)];
+    reaction_isozymes;
     fluxes = m.fluxes, # mount enzyme constraints to these fluxes
     enzymes = m.enzymes, # enzyme variables
 )
+
+# add capacity limitation
+m *=
+    :total_proteome_bound^enzyme_capacity(
+        m.enzymes,
+        gene_molar_masses,
+        A.genes(model),
+        total_enzyme_capacity,
+    )
 
 # solve the model
 ec_solution = optimized_constraints(

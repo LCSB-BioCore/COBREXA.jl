@@ -127,21 +127,36 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Create enzyme capacity limitation.
+Create a enzyme capacity limitation. Bounds the gene product masses (concentration
+* molar mass) of gene products in `enzyme_ids` by `capacity_bound`.
 """
 function enzyme_capacity(
     enzymes::C.ConstraintTree,
     gene_molar_masses::Dict{String,Float64},
     enzyme_ids::Vector{String},
-    capacity::Float64,
+    capacity_bound::C.Bound,
 )
     C.Constraint(
         value = sum(
             enzymes[Symbol(gid)].value * gene_molar_masses[gid] for gid in enzyme_ids
         ),
-        bound = C.Between(0.0, capacity),
+        bound = capacity_bound,
     )
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Create an enzyme capacity limitation. Bounds the gene product masses
+(concentration * molar mass) of gene products in `enzyme_ids` between `[0, capacity]`.
+"""
+enzyme_capacity(
+    enzymes::C.ConstraintTree,
+    gene_molar_masses::Dict{String,Float64},
+    enzyme_ids::Vector{String},
+    capacity::Float64,
+) = enzyme_capacity(enzymes, gene_molar_masses, enzyme_ids, C.Between(0.0, capacity))
+
 
 export enzyme_capacity
 
@@ -164,9 +179,7 @@ assign kcats to reactions. Use [`SimpleIsozyme`](@ref) when in doubt.
 """
 function add_enzyme_constraints!(
     m::C.ConstraintTree,
-    reaction_isozymes::Dict{String,Dict{String,T}},
-    gene_molar_masses::Dict{String,Float64},
-    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
+    reaction_isozymes::Dict{String,Dict{String,T}};
     fluxes = m.fluxes,
     enzymes = m.enzymes,
 ) where {T<:Isozyme}
@@ -224,11 +237,6 @@ function add_enzyme_constraints!(
             m.fluxes_isozymes_backward,
             reaction_isozymes,
         )
-
-    # add capacity limitations
-    for (id, gids, cap) in capacity_limitations
-        m *= Symbol(id)^enzyme_capacity(enzymes, gene_molar_masses, gids, cap)
-    end
 
     m
 end

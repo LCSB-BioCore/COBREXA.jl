@@ -29,12 +29,13 @@ function enzyme_constrained_flux_balance_analysis(
     # create enzyme variables
     m += :enzymes^enzyme_variables(model)
 
-    m = add_enzyme_constraints!(
-        m,
-        reaction_isozymes,
-        gene_molar_masses,
-        capacity_limitations,
-    )
+    # add enzyme equality constraints (stoichiometry)
+    m = add_enzyme_constraints!(m, reaction_isozymes)
+
+    # add capacity limitations
+    for (id, gids, cap) in capacity_limitations
+        m *= Symbol(id)^enzyme_capacity(m.enzymes, gene_molar_masses, gids, cap)
+    end
 
     for rid in Symbol.(unconstrain_reactions)
         m.fluxes[rid].bound = C.Between(-1000.0, 1000.0)
