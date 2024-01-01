@@ -127,13 +127,14 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Create enzyme capacity limitation.
+Create enzyme capacity limitation. Bounds the gene product masses (concentration
+* molar mass) of gene products in `enzyme_ids` by `capacity`.
 """
 function enzyme_capacity(
     enzymes::C.ConstraintTree,
     gene_molar_masses::Dict{String,Float64},
     enzyme_ids::Vector{String},
-    capacity::Float64,
+    capacity::Real,
 )
     C.Constraint(
         value = sum(
