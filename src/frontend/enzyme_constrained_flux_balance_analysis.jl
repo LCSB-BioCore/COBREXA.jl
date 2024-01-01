@@ -30,10 +30,7 @@ function enzyme_constrained_flux_balance_analysis(
     m += :enzymes^enzyme_variables(model)
 
     # add enzyme equality constraints (stoichiometry)
-    m = add_enzyme_constraints!(
-        m,
-        reaction_isozymes,
-    )
+    m = add_enzyme_constraints!(m, reaction_isozymes)
 
     # add capacity limitations
     for (id, gids, cap) in capacity_limitations

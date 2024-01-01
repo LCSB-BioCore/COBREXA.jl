@@ -144,7 +144,13 @@ m = add_enzyme_constraints!(
 )
 
 # add capacity limitation
-m *= :total_proteome_bound^enzyme_capacity(m.enzymes, gene_molar_masses, A.genes(model), total_enzyme_capacity)
+m *=
+    :total_proteome_bound^enzyme_capacity(
+        m.enzymes,
+        gene_molar_masses,
+        A.genes(model),
+        total_enzyme_capacity,
+    )
 
 # solve the model
 ec_solution = optimized_constraints(
