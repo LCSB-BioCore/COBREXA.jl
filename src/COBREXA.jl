@@ -48,24 +48,25 @@ include("io.jl")
 include("solver.jl")
 
 # these functions build or extend constrainttrees of metabolic models
-include("builders/core.jl")
-include("builders/genes.jl")
-include("builders/objectives.jl")
-include("builders/enzymes.jl")
-include("builders/thermodynamic.jl")
-include("builders/loopless.jl")
 include("builders/communities.jl")
+include("builders/enzymes.jl")
+include("builders/fbc.jl")
+include("builders/knockouts.jl")
+include("builders/loopless.jl")
+include("builders/objectives.jl")
+include("builders/thermodynamic.jl")
+include("builders/unsigned.jl")
 
 # these are the one shot analysis functions
-include("frontend/flux_balance_analysis.jl")
-include("frontend/parsimonious_flux_balance.jl")
-include("frontend/minimization_of_metabolic_adjustment_analysis.jl")
 include("frontend/enzyme_constrained_flux_balance_analysis.jl")
+include("frontend/flux_balance_analysis.jl")
 include("frontend/loopless_flux_balance_analysis.jl")
 include("frontend/max_min_driving_force_analysis.jl")
+include("frontend/minimization_of_metabolic_adjustment_analysis.jl")
+include("frontend/parsimonious_flux_balance.jl")
 
-include("misc/modifications.jl")
 include("misc/bounds.jl")
+include("misc/modifications.jl")
 include("misc/utils.jl")
 
 end # module COBREXA

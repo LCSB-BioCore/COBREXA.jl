@@ -17,38 +17,6 @@
 """
 $(TYPEDSIGNATURES)
 
-A constraint tree that models the content of the given instance of
-`AbstractFBCModel`.
-
-The constructed tree contains subtrees `fluxes` (with the reaction-defining
-"variables") and `flux_stoichiometry` (with the metabolite-balance-defining
-constraints), and a single constraint `objective` thad describes the objective
-function of the model.
-"""
-function fbc_model_constraints(model::A.AbstractFBCModel)
-    rxns = Symbol.(A.reactions(model))
-    mets = Symbol.(A.metabolites(model))
-    lbs, ubs = A.bounds(model)
-    stoi = A.stoichiometry(model)
-    bal = A.balance(model)
-    obj = A.objective(model)
-
-    #TODO: is sparse() required below?
-    return C.ConstraintTree(
-        :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
-        :flux_stoichiometry^C.ConstraintTree(
-            met => C.Constraint(value = C.LinearValue(sparse(row)), bound = C.EqualTo(b))
-            for (met, row, b) in zip(mets, eachrow(stoi), bal)
-        ) *
-        :objective^C.Constraint(C.LinearValue(sparse(obj))),
-    )
-end
-
-export fbc_model_constraints
-
-"""
-$(TYPEDSIGNATURES)
-
 Shortcut for allocation non-negative ("unsigned") variables. The argument
 `keys` is forwarded to `ConstraintTrees.variables` as `keys`.
 """
@@ -97,6 +65,7 @@ sign_split_constraints(;
 
 export sign_split_constraints
 
+# TODO: docs, doesn't apply to fluxes only
 function fluxes_in_direction(fluxes::C.ConstraintTree, direction = :forward)
     keys = Symbol[]
     for (id, flux) in fluxes
