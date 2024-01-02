@@ -58,12 +58,12 @@ include("builders/thermodynamic.jl")
 include("builders/unsigned.jl")
 
 # these are the one shot analysis functions
-include("frontend/enzyme_constrained_flux_balance_analysis.jl")
-include("frontend/flux_balance_analysis.jl")
-include("frontend/loopless_flux_balance_analysis.jl")
-include("frontend/max_min_driving_force_analysis.jl")
-include("frontend/minimization_of_metabolic_adjustment_analysis.jl")
-include("frontend/parsimonious_flux_balance.jl")
+include("frontend/balance.jl")
+include("frontend/parsimonious.jl")
+include("frontend/mmdf.jl")
+include("frontend/moma.jl")
+include("frontend/loopless.jl")
+include("frontend/enzyme_constrained.jl")
 
 include("misc/bounds.jl")
 include("misc/modifications.jl")
