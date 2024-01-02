@@ -33,14 +33,15 @@ function fbc_model_constraints(model::A.AbstractFBCModel)
     bal = A.balance(model)
     obj = A.objective(model)
 
-    #TODO: is sparse() required below?
     return C.ConstraintTree(
         :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
         :flux_stoichiometry^C.ConstraintTree(
-            met => C.Constraint(value = C.LinearValue(sparse(row)), bound = C.EqualTo(b))
-            for (met, row, b) in zip(mets, eachrow(stoi), bal)
+            met => C.Constraint(
+                value = C.LinearValue(SparseArrays.sparse(row)),
+                bound = C.EqualTo(b),
+            ) for (met, row, b) in zip(mets, eachrow(stoi), bal)
         ) *
-        :objective^C.Constraint(C.LinearValue(sparse(obj))),
+        :objective^C.Constraint(C.LinearValue(SparseArrays.sparse(obj))),
     )
 end
 

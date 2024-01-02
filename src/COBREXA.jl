@@ -40,14 +40,15 @@ using DocStringExtensions
 import AbstractFBCModels as A
 import ConstraintTrees as C
 import JuMP as J
-import SparseArrays: sparse, findnz
-import LinearAlgebra: nullspace
+import SparseArrays
 
 include("types.jl")
+
+# core functionality
 include("io.jl")
 include("solver.jl")
 
-# these functions build or extend constrainttrees of metabolic models
+# conversion of various stuff to constraint trees
 include("builders/communities.jl")
 include("builders/enzymes.jl")
 include("builders/fbc.jl")
@@ -57,7 +58,7 @@ include("builders/objectives.jl")
 include("builders/thermodynamic.jl")
 include("builders/unsigned.jl")
 
-# these are the one shot analysis functions
+# simplified front-ends for the above
 include("frontend/balance.jl")
 include("frontend/parsimonious.jl")
 include("frontend/mmdf.jl")
@@ -65,6 +66,7 @@ include("frontend/moma.jl")
 include("frontend/loopless.jl")
 include("frontend/enzyme_constrained.jl")
 
+# utilities
 include("misc/bounds.jl")
 include("misc/modifications.jl")
 include("misc/utils.jl")

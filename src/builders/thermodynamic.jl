@@ -72,7 +72,8 @@ function build_max_min_driving_force_model(
     model_mets = A.metabolites(model)
     dG0s_met_ids_stoichs = Vector{Tuple{Float64,Vector{String},Vector{Float64}}}()
     for rxn in rxns # prepare to create CT below
-        met_idxs, stoich_coeffs = findnz(stoi[:, findfirst(==(rxn), model_rxns)])
+        met_idxs, stoich_coeffs =
+            SparseArrays.findnz(stoi[:, findfirst(==(rxn), model_rxns)])
         met_ids = model_mets[met_idxs]
         dG0 = reaction_standard_gibbs_free_energies[rxn]
         push!(dG0s_met_ids_stoichs, (dG0, met_ids, stoich_coeffs))

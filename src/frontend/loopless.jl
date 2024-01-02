@@ -55,8 +55,9 @@ function loopless_flux_balance_analysis(
     internal_reaction_ids = last.(internal_reactions)
     internal_reaction_idxs = first.(internal_reactions) # order needs to match the internal reaction ids below
 
-    internal_reaction_stoichiometry_nullspace_columns =
-        eachcol(nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs]))) # no sparse nullspace function
+    internal_reaction_stoichiometry_nullspace_columns = eachcol(
+        LinearAlgebra.nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs])),
+    ) # no sparse nullspace function
 
     m = add_loopless_constraints!(
         m,
