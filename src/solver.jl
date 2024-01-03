@@ -33,21 +33,25 @@ function optimization_model(
     isnothing(objective) || J.@objective(model, sense, C.substitute(objective, x))
 
     # constraints
+    function add_constraint(v::C.Value, b::C.EqualTo)
+        J.@constraint(model, C.substitute(v, x) == b.equal_to)
+    end
+    function add_constraint(v::C.Value, b::C.Between)
+        vx = C.substitute(v, x)
+        isinf(b.lower) || J.@constraint(model, vx >= b.lower)
+        isinf(b.upper) || J.@constraint(model, vx <= b.upper)
+    end
+    function add_constraint(v::C.Value, _::Binary)
+        boolean = J.@variable(model, binary = true)
+        J.@constraint(model, C.substitute(v, x) == boolean)
+    end
     function add_constraint(c::C.Constraint)
-        if c.bound isa C.EqualTo
-            J.@constraint(model, C.substitute(c.value, x) == c.bound.equal_to)
-        elseif c.bound isa C.Between
-            val = C.substitute(c.value, x)
-            isinf(c.bound.lower) || J.@constraint(model, val >= c.bound.lower)
-            isinf(c.bound.upper) || J.@constraint(model, val <= c.bound.upper)
-        elseif c.bound isa Binary
-            anon_bool = J.@variable(model, binary = true)
-            J.@constraint(model, C.substitute(c.value, x) == anon_bool)
-        end
+        add_constraint(c.value, c.bound)
     end
     function add_constraint(c::C.ConstraintTree)
         add_constraint.(values(c))
     end
+
     add_constraint(cs)
 
     return model

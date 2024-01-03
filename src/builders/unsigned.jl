@@ -18,11 +18,12 @@
 $(TYPEDSIGNATURES)
 
 Shortcut for allocation non-negative ("unsigned") variables. The argument
-`keys` is forwarded to `ConstraintTrees.variables` as `keys`.
+`keys` is forwarded to `ConstraintTrees.variables`.
 """
 unsigned_variables(; keys) = C.variables(; keys, bounds = C.Between(0.0, Inf))
 
 export unsigned_variables
+
 
 """
 $(TYPEDSIGNATURES)
