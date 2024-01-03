@@ -58,6 +58,7 @@ include("builders/loopless.jl")
 include("builders/objectives.jl")
 include("builders/thermodynamic.jl")
 include("builders/unsigned.jl")
+include("builders/variables.jl")
 
 # simplified front-ends for the above
 include("frontend/balance.jl")

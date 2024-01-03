@@ -39,8 +39,7 @@ model = load_model("e_coli_core.json") # load the model
 
 # Use the convenience function to run standard pFBA on
 
-vt =
-    parsimonious_flux_balance_analysis(model, Clarabel.Optimizer; settings = [silence])
+vt = parsimonious_flux_balance_analysis(model, Clarabel.Optimizer; settings = [silence])
 
 # Or use the piping functionality
 

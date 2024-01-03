@@ -22,8 +22,7 @@ Shortcut for allocation non-negative ("unsigned") variables. The argument
 """
 unsigned_variables(; keys) = C.variables(; keys, bounds = C.Between(0.0, Inf))
 
-export unsigned_variables
-
+export unsigned_variables # TODO kill
 
 """
 $(TYPEDSIGNATURES)
@@ -62,11 +61,26 @@ sign_split_constraints(;
         bound = C.EqualTo(0.0),
     ) for (k, s) in signed
 )
-#TODO the example above might as well go to docs
+#TODO the example above needs to go to docs
+# TODO this is a prime treezip candidate
 
 export sign_split_constraints
 
+positive_bound_contribution(b::C.EqualTo) = b.equal_to >= 0 ? b : C.EqualTo(0.0)
+positive_bound_contribution(b::C.Between) =
+    b.lower >= 0 && b.upper >= 0 ? b :
+    b.lower <= 0 && b.upper <= 0 ? C.EqualTo(0) :
+    C.Between(max(0, b.lower), max(0, b.upper))
+# TODO binary doesn't really fit here but it would be great if it could.
+
+unsigned_positive_contribution_variables(cs::C.ConstraintTree) =
+    variables_for(c -> positive_bound_contribution(c.bound), cs)
+
+unsigned_negative_contribution_variables(cs::C.ConstraintTree) =
+    variables_for(c -> positive_bound_contribution(c.bound), cs)
+
 # TODO: docs, doesn't apply to fluxes only
+# TODO replace by the above
 function fluxes_in_direction(fluxes::C.ConstraintTree, direction = :forward)
     keys = Symbol[]
     for (id, flux) in fluxes

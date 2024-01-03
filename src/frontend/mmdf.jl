@@ -109,12 +109,7 @@ function max_min_driving_force_analysis(
         )
 
 
-    optimized_constraints(
-        m;
-        objective = m.max_min_driving_force.value,
-        optimizer,
-        settings,
-    )
+    optimized_constraints(m; objective = m.max_min_driving_force.value, optimizer, settings)
 end
 
 export max_min_driving_force_analysis
