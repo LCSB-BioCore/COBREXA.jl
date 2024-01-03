@@ -20,7 +20,7 @@ $(TYPEDSIGNATURES)
 Optimize the system of `constraints` to get the optimal `objective` value. Then
 try to find a "parsimonious" solution with the same `objective` value, which
 optimizes the `parsimonious_objective` (possibly also switching optimization
-sense, optimizer, and adding more modifications).
+sense, optimizer, and adding more settings).
 
 For efficiency, everything is performed on a single instance of JuMP model.
 
@@ -30,7 +30,7 @@ in [`parsimonious_flux_balance`](@ref).
 function parsimonious_optimized_constraints(
     constraints::C.ConstraintTreeElem;
     objective::C.Value,
-    modifications = [],
+    settings = [],
     parsimonious_objective::C.Value,
     parsimonious_optimizer = nothing,
     parsimonious_sense = J.MIN_SENSE,
@@ -42,7 +42,7 @@ function parsimonious_optimized_constraints(
 
     # first solve the optimization problem with the original objective
     om = optimization_model(constraints; objective, kwargs...)
-    for m in modifications
+    for m in settings
         m(om)
     end
     J.optimize!(om)

@@ -120,7 +120,7 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
     reaction_isozymes,
     gene_molar_masses,
     [("total_proteome_bound", A.genes(model), total_enzyme_capacity)];
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
     unconstrain_reactions = ["EX_glc__D_e"],
     optimizer = Tulip.Optimizer,
 )
@@ -173,5 +173,5 @@ ec_solution = optimized_constraints(
     m;
     objective = m.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
 )

@@ -69,7 +69,7 @@ include("frontend/enzyme_constrained.jl")
 
 # utilities
 include("misc/bounds.jl")
-include("misc/modifications.jl")
+include("misc/settings.jl")
 include("misc/utils.jl")
 
 end # module COBREXA

@@ -17,7 +17,7 @@
 # # Changing optimizer parameters
 #
 # Many optimizers require fine-tuning to produce best results. You can pass in
-# additional optimizer settings via the `modifications` parameter of
+# additional optimizer settings via the `settings` parameter of
 # [`flux_balance_analysis`](@ref). These include e.g.
 #
 # - [`set_optimizer_attribute`](@ref) (typically allowing you to tune e.g.
@@ -47,7 +47,7 @@ model = load_model("e_coli_core.json")
 solution = flux_balance_analysis(
     model,
     Tulip.Optimizer;
-    modifications = [silence, set_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    settings = [silence, set_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 
 @test !isnothing(solution) #src
@@ -60,7 +60,7 @@ solution = flux_balance_analysis(
 solution = flux_balance_analysis(
     model,
     Tulip.Optimizer;
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 2)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 2)],
 )
 
 println(solution)

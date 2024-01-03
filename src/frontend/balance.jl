@@ -39,7 +39,7 @@ $(TYPEDSIGNATURES)
 
 Pipe-able overload of [`flux_balance_analysis`](@ref).
 """
-flux_balance_analysis(optimizer; modifications = []) =
-    m -> flux_balance_analysis(m, optimizer; modifications)
+flux_balance_analysis(optimizer; settings = []) =
+    m -> flux_balance_analysis(m, optimizer; settings)
 
 export flux_balance_analysis

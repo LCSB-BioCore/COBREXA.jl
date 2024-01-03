@@ -57,7 +57,7 @@ A slightly easier-to-use version of [`minimization_of_metabolic_adjustment_analy
 computes the reference flux as the optimal solution of the
 [`reference_model`](@ref). The reference flux is calculated using
 `reference_optimizer` and `reference_modifications`, which default to the
-`optimizer` and `modifications`.
+`optimizer` and `settings`.
 
 Leftover arguments are passed to the overload of
 [`minimization_of_metabolic_adjustment_analysis`](@ref) that accepts the reference flux
@@ -68,15 +68,15 @@ function minimization_of_metabolic_adjustment_analysis(
     reference_model::A.AbstractFBCModel,
     optimizer;
     reference_optimizer = optimizer,
-    modifications = [],
-    reference_modifications = modifications,
+    settings = [],
+    reference_settings = settings,
     kwargs...,
 )
     reference_constraints = fbc_model_constraints(reference_model)
     reference_fluxes = optimized_constraints(
         reference_constraints;
         optimizer = reference_optimizer,
-        modifications = reference_modifications,
+        settings = reference_settings,
         output = reference_constraints.fluxes,
     )
     isnothing(reference_fluxes) && return nothing
@@ -84,7 +84,7 @@ function minimization_of_metabolic_adjustment_analysis(
         model,
         reference_fluxes,
         optimizer;
-        modifications,
+        settings,
         kwargs...,
     )
 end

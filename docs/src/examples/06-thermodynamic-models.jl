@@ -116,7 +116,7 @@ mmdf_solution = max_min_driving_force_analysis(
     concentration_ub = 1e-1, # M
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
     optimizer = Tulip.Optimizer,
 )
 
@@ -150,5 +150,5 @@ mmdf_solution = optimized_constraints(
     m;
     objective = m.max_min_driving_force.value,
     optimizer = Tulip.Optimizer,
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
 )

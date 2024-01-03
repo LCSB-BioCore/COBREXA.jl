@@ -41,7 +41,7 @@ function loopless_flux_balance_analysis(
     model;
     max_flux_bound = 1000.0, # needs to be an order of magnitude bigger, big M method heuristic
     strict_inequality_tolerance = 1.0, # heuristic from paper
-    modifications = [],
+    settings = [],
     optimizer,
 )
 
@@ -68,7 +68,7 @@ function loopless_flux_balance_analysis(
     )
 
     # solve
-    optimized_constraints(m; objective = m.objective.value, optimizer, modifications)
+    optimized_constraints(m; objective = m.objective.value, optimizer, settings)
 end
 
 export loopless_flux_balance_analysis

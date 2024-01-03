@@ -25,7 +25,7 @@ The latter is a vector of tuples, where each tuple represents a distinct bound
 as `(bound_id, genes_in_bound, protein_mass_bound)`. Typically, `model` has
 bounded exchange reactions, which are unnecessary in enzyme constrained models.
 Unbound these reactions by listing their IDs in `unconstrain_reactions`, which
-makes them reversible. Optimization `modifications` are directly forwarded.
+makes them reversible. Optimization `settings` are directly forwarded.
 
 In the event that your model requires more complex build steps, consider
 constructing it manually by using [`add_enzyme_constraints!`](@ref).
@@ -37,7 +37,7 @@ function enzyme_constrained_flux_balance_analysis(
     capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
     optimizer,
     unconstrain_reactions = String[],
-    modifications = [],
+    settings = [],
 )
     m = fbc_model_constraints(model)
 
@@ -56,7 +56,7 @@ function enzyme_constrained_flux_balance_analysis(
         m.fluxes[rid].bound = C.Between(-1000.0, 1000.0)
     end
 
-    optimized_constraints(m; objective = m.objective.value, optimizer, modifications)
+    optimized_constraints(m; objective = m.objective.value, optimizer, settings)
 end
 
 export enzyme_constrained_flux_balance_analysis

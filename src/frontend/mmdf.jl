@@ -67,7 +67,7 @@ supplied).
 `T` and `R` can be specified in the corresponding units; defaults are K and
 kJ/K/mol. The unit of metabolite concentrations is typically molar, and the ΔG⁰s
 have units of kJ/mol. Other units can be used, as long as they are consistent.
-As usual, optimizer settings can be changed with `modifications`.
+As usual, optimizer settings can be changed with `settings`.
 """
 function max_min_driving_force_analysis(
     model::A.AbstractFBCModel,
@@ -82,7 +82,7 @@ function max_min_driving_force_analysis(
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
     ignore_reaction_ids = String[],
-    modifications = [],
+    settings = [],
     optimizer,
 )
     m = build_max_min_driving_force_model(
@@ -113,7 +113,7 @@ function max_min_driving_force_analysis(
         m;
         objective = m.max_min_driving_force.value,
         optimizer,
-        modifications,
+        settings,
     )
 end
 

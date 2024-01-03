@@ -110,7 +110,7 @@ sol = optimized_constraints(
     m;
     objective = m.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 
 @test isapprox(sol.:objective, 0.66686196344, atol = TEST_TOLERANCE) #src
@@ -127,7 +127,7 @@ sol = optimized_constraints(
     m;
     objective = m.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1000)],
 )
 
 
