@@ -17,52 +17,24 @@
 """
 $(TYPEDSIGNATURES)
 
-Shortcut for allocation non-negative ("unsigned") variables. The argument
-`keys` is forwarded to `ConstraintTrees.variables`.
-"""
-unsigned_variables(; keys) = C.variables(; keys, bounds = C.Between(0.0, Inf))
-
-export unsigned_variables # TODO kill
-
-"""
-$(TYPEDSIGNATURES)
-
 A constraint tree that bound the values present in `signed` to be sums of pairs
 of `positive` and `negative` contributions to the individual values.
 
 Keys in the result are the same as the keys of `signed` constraints.
 
 Typically, this can be used to create "unidirectional" fluxes
-together with [`unsigned_variables`](@ref):
-```
-uvars = unsigned_variables(keys(myModel.fluxes))
-
-myModel = myModel +
-    :fluxes_forward^uvars +
-    :fluxes_reverse^uvars
-
-myModel *=
-    :direction_sums^sign_split_constraints(
-        positive = myModel.fluxes_forward,
-        negative = myModel.fluxes_reverse,
-        signed = myModel.fluxes,
-    )
-```
+together with [`unsigned_negative_contribution_variables`](@ref) and
+[`unsigned_positive_contribution_variables`](@ref).
 """
 sign_split_constraints(;
     positive::C.ConstraintTree,
     negative::C.ConstraintTree,
     signed::C.ConstraintTree,
-) = C.ConstraintTree(
-    k => C.Constraint(
-        value = s.value +
-                (haskey(negative, k) ? negative[k].value : zero(typeof(s.value))) -
-                (haskey(positive, k) ? positive[k].value : zero(typeof(s.value))),
-        bound = C.EqualTo(0.0),
-    ) for (k, s) in signed
-)
-#TODO the example above needs to go to docs
-# TODO this is a prime treezip candidate
+) =
+    C.zip(positive, negative, signed, C.Constraint) do p, n, s
+        C.Constraint(s.value + n.value - p.value, 0.0)
+    end
+#TODO the construction needs an example in the docs.
 
 export sign_split_constraints
 
@@ -76,21 +48,9 @@ positive_bound_contribution(b::C.Between) =
 unsigned_positive_contribution_variables(cs::C.ConstraintTree) =
     variables_for(c -> positive_bound_contribution(c.bound), cs)
 
+export unsigned_positive_contribution_variables
+
 unsigned_negative_contribution_variables(cs::C.ConstraintTree) =
-    variables_for(c -> positive_bound_contribution(c.bound), cs)
+    variables_for(c -> positive_bound_contribution(-c.bound), cs)
 
-# TODO: docs, doesn't apply to fluxes only
-# TODO replace by the above
-function fluxes_in_direction(fluxes::C.ConstraintTree, direction = :forward)
-    keys = Symbol[]
-    for (id, flux) in fluxes
-        if direction == :forward
-            flux.bound.upper > 0 && push!(keys, id)
-        else
-            flux.bound.lower < 0 && push!(keys, id)
-        end
-    end
-    C.variables(; keys, bounds = C.Between(0.0, Inf))
-end
-
-export fluxes_in_direction
+export unsigned_negative_contribution_variables
