@@ -54,12 +54,11 @@ A convenience constructor for [`Isozyme`](@ref) that takes a string gene
 reaction rule and converts it into the appropriate format. Assumes the
 `gene_product_stoichiometry` for each subunit is 1.
 """
-Isozyme(gids::Vector{String}; kcat_forward::Float64, kcat_backward::Float64) =
-    Isozyme(;
-        gene_product_stoichiometry = Dict(gid => 1.0 for gid in gids),
-        kcat_forward,
-        kcat_backward,
-    )
+Isozyme(gids::Vector{String}; kcat_forward::Float64, kcat_backward::Float64) = Isozyme(;
+    gene_product_stoichiometry = Dict(gid => 1.0 for gid in gids),
+    kcat_forward,
+    kcat_backward,
+)
 
 """
 $(TYPEDEF)
