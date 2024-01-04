@@ -55,7 +55,7 @@ function enzyme_constrained_flux_balance_analysis(
     optimizer,
     settings = [],
 )
-    ct = fbc_model_constraints(model)
+    constraints = fbc_model_constraints(model)
 
     # might be nice to omit some conditionally (e.g. slash the direction if one
     # kcat is nothing)
@@ -65,10 +65,10 @@ function enzyme_constrained_flux_balance_analysis(
     )
 
     # allocate variables for everything (nb. += wouldn't associate right here)
-    ct =
-        ct +
-        :fluxes_forward^unsigned_positive_contribution_variables(ct.fluxes) +
-        :fluxes_reverse^unsigned_negative_contribution_variables(ct.fluxes) +
+    constraints =
+        constraints +
+        :fluxes_forward^unsigned_positive_contribution_variables(constraints.fluxes) +
+        :fluxes_reverse^unsigned_negative_contribution_variables(constraints.fluxes) +
         :isozyme_forward_amounts^isozyme_amounts +
         :isozyme_reverse_amounts^isozyme_amounts +
         :gene_product_amounts^C.variables(
@@ -77,32 +77,32 @@ function enzyme_constrained_flux_balance_analysis(
         )
 
     # connect all parts with constraints
-    ct =
-        ct *
+    constraints =
+        constraints *
         :directional_flux_balance^sign_split_constraints(
-            ct.fluxes_forward,
-            ct.fluxes_reverse,
-            ct.fluxes,
+            constraints.fluxes_forward,
+            constraints.fluxes_reverse,
+            constraints.fluxes,
         ) *
         :isozyme_flux_forward_balance^isozyme_flux_constraints(
-            ct.isozyme_forward_amounts,
-            ct.fluxes_forward,
+            constraints.isozyme_forward_amounts,
+            constraints.fluxes_forward,
             (rid, isozyme) -> maybemap(
                 x -> x.kcat_forward,
                 maybeget(reaction_isozymes, string(rid), string(isozyme)),
             ),
         ) *
         :isozyme_flux_reverse_balance^isozyme_flux_constraints(
-            ct.isozyme_reverse_amounts,
-            ct.fluxes_reverse,
+            constraints.isozyme_reverse_amounts,
+            constraints.fluxes_reverse,
             (rid, isozyme) -> maybemap(
                 x -> x.kcat_reverse,
                 maybeget(reaction_isozymes, string(rid), string(isozyme)),
             ),
         ) *
         :gene_product_isozyme_balance^gene_product_isozyme_constraints(
-            ct.gene_product_amounts,
-            (ct.isozyme_forward_amounts, ct.isozyme_reverse_amounts),
+            constraints.gene_product_amounts,
+            (constraints.isozyme_forward_amounts, constraints.isozyme_reverse_amounts),
             (rid, isozyme) -> maybemap(
                 x -> x.gene_product_stoichiometry,
                 maybeget(reaction_isozymes, string(rid), string(isozyme)),
@@ -111,14 +111,19 @@ function enzyme_constrained_flux_balance_analysis(
         :gene_product_capacity_limits^C.ConstraintTree(
             Symbol(id) => C.Constraint(
                 value = sum(
-                    ct.gene_product_amounts[gp].value * gene_product_molar_masses[gp]
-                    for gp in gps
+                    constraints.gene_product_amounts[gp].value *
+                    gene_product_molar_masses[gp] for gp in gps
                 ),
                 bound = C.Between(0, limit),
             ) for (id, gps, limit) in capacity_limits
         )
 
-    optimized_constraints(ct; objective = ct.objective.value, optimizer, settings)
+    optimized_constraints(
+        constraints;
+        objective = constraints.objective.value,
+        optimizer,
+        settings,
+    )
 end
 
 export enzyme_constrained_flux_balance_analysis
