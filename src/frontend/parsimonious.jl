@@ -125,3 +125,55 @@ parsimonious_flux_balance_analysis(optimizer; kwargs...) =
     model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
 
 export parsimonious_flux_balance_analysis
+
+"""
+$(TYPEDSIGNATURES)
+
+Like [`parsimonious_flux_balance_analysis`](@ref), but uses a L1 metric for
+solving the parsimonious problem.
+
+In turn, the solution is often faster, does not require a solver capable of
+quadratic objectives, and has many beneficial properties of the usual
+parsimonious solutions (such as the general lack of unnecessary loops). On the
+other hand, like with plain flux balance analysis there is no strong guarantee
+of uniqueness of the solution.
+"""
+function linear_parsimonious_flux_balance_analysis(
+    model::A.AbstractFBCModel,
+    optimizer;
+    tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
+    kwargs...,
+)
+    constraints = fbc_model_constraints(model)
+    constraints =
+        constraints +
+        :fluxes_forward^unsigned_positive_contribution_variables(ct.fluxes) +
+        :fluxes_reverse^unsigned_negative_contribution_variables(ct.fluxes)
+    constraints *=
+        :directional_flux_balance^sign_split_constraints(
+            ct.fluxes_forward,
+            ct.fluxes_reverse,
+            ct.fluxes,
+        )
+
+    parsimonious_objective = sum_objective(ct.fluxes_forward, ct.fluxes_reverse)
+
+    parsimonious_optimized_constraints(
+        constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);
+        optimizer,
+        objective = constraints.objective.value,
+        parsimonious_objective,
+        tolerances,
+        kwargs...,
+    )
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Pipe-able variant of [`linear_parsimonious_flux_balance_analysis`](@ref).
+"""
+linear_parsimonious_flux_balance_analysis(optimizer; kwargs...) =
+    model -> linear_parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
+
+export linear_parsimonious_flux_balance_analysis

@@ -53,15 +53,15 @@ end
 """
 $(TYPEDSIGNATURES)
 
-A slightly easier-to-use version of [`minimization_of_metabolic_adjustment_analysis`](@ref) that
-computes the reference flux as the optimal solution of the
-[`reference_model`](@ref). The reference flux is calculated using
-`reference_optimizer` and `reference_modifications`, which default to the
-`optimizer` and `settings`.
+A slightly easier-to-use version of
+[`minimization_of_metabolic_adjustment_analysis`](@ref) that computes the
+reference flux as the optimal solution of the [`reference_model`](@ref). The
+reference flux is calculated using `reference_optimizer` and
+`reference_modifications`, which default to the `optimizer` and `settings`.
 
 Leftover arguments are passed to the overload of
-[`minimization_of_metabolic_adjustment_analysis`](@ref) that accepts the reference flux
-dictionary.
+[`minimization_of_metabolic_adjustment_analysis`](@ref) that accepts the
+reference flux dictionary.
 """
 function minimization_of_metabolic_adjustment_analysis(
     model::A.AbstractFBCModel,
@@ -90,3 +90,81 @@ function minimization_of_metabolic_adjustment_analysis(
 end
 
 export minimization_of_metabolic_adjustment_analysis
+
+"""
+$(TYPEDSIGNATURES)
+
+Like [`minimization_of_metabolic_adjustment_analysis`](@ref) but optimizes the
+L1 norm. This typically produces a sufficiently good result with less
+resources, depending on the situation. See documentation of
+[`linear_parsimonious_flux_balance_analysis`](@ref) for some of the
+considerations.
+"""
+function linear_minimization_of_metabolic_adjustment_analysis(
+    model::A.AbstractFBCModel,
+    reference_fluxes::Dict{Symbol,Float64},
+    optimizer;
+    kwargs...,
+)
+    constraints = fbc_model_constraints(model)
+
+    difference = C.zip(ct.fluxes, C.Tree(reference_fluxes)) do orig, ref
+        C.Constraint(orig.value - ref)
+    end
+
+    difference_split_variables =
+        C.variables(keys = keys(difference), bounds = C.Between(0, Inf))
+    constraints += :reference_positive_diff^difference_split_variables
+    constraints += :reference_negative_diff^difference_split_variables
+
+    # `difference` actually doesn't need to go to the CT, but we include it
+    # anyway to calm the curiosity of good neighbors.
+    constraints *= :reference_diff^difference
+    constraints *=
+        :reference_directional_diff_balance^sign_split_constraints(
+            constraints.reference_positive_diff,
+            constraints.reference_negative_diff,
+            difference,
+        )
+
+    objective = sum_objective(
+        constraints.reference_positive_diff,
+        constraints.reference_negative_diff,
+    )
+
+    optimized_constraints(
+        constraints * :linear_minimal_adjustment_objective^C.Constraint(objective);
+        optimizer,
+        objective,
+        sense = Minimal,
+        kwargs...,
+    )
+end
+
+function linear_minimization_of_metabolic_adjustment_analysis(
+    model::A.AbstractFBCModel,
+    reference_model::A.AbstractFBCModel,
+    optimizer;
+    reference_optimizer = optimizer,
+    settings = [],
+    reference_settings = settings,
+    kwargs...,
+)
+    reference_constraints = fbc_model_constraints(reference_model)
+    reference_fluxes = optimized_constraints(
+        reference_constraints;
+        optimizer = reference_optimizer,
+        settings = reference_settings,
+        output = reference_constraints.fluxes,
+    )
+    isnothing(reference_fluxes) && return nothing
+    linear_minimization_of_metabolic_adjustment_analysis(
+        model,
+        reference_fluxes,
+        optimizer;
+        settings,
+        kwargs...,
+    )
+end
+
+export linear_minimization_of_metabolic_adjustment_analysis

@@ -25,6 +25,21 @@ squared_sum_objective(x::C.ConstraintTree) =
 """
 $(TYPEDSIGNATURES)
 
+TODO useful for L1 parsimonious stuff
+"""
+function sum_objective(x...)
+    res = zero(C.LinearValue)
+    for ct in x
+        C.map(ct) do c
+            res += c.value
+        end
+    end
+    res
+end
+
+"""
+$(TYPEDSIGNATURES)
+
 TODO
 """
 squared_sum_error_objective(constraints::C.ConstraintTree, target::Dict{Symbol,Float64}) =
