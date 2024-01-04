@@ -46,11 +46,11 @@ positive_bound_contribution(b::C.Between) =
 # TODO binary doesn't really fit here but it would be great if it could.
 
 unsigned_positive_contribution_variables(cs::C.ConstraintTree) =
-    variables_for(c -> positive_bound_contribution(c.bound), cs)
+    C.variables_for(c -> positive_bound_contribution(c.bound), cs)
 
 export unsigned_positive_contribution_variables
 
 unsigned_negative_contribution_variables(cs::C.ConstraintTree) =
-    variables_for(c -> positive_bound_contribution(-c.bound), cs)
+    C.variables_for(c -> positive_bound_contribution(-c.bound), cs)
 
 export unsigned_negative_contribution_variables
