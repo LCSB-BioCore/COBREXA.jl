@@ -58,7 +58,6 @@ include("builders/loopless.jl")
 include("builders/objectives.jl")
 include("builders/thermodynamic.jl")
 include("builders/unsigned.jl")
-include("builders/variables.jl")
 
 # simplified front-ends for the above
 include("frontend/balance.jl")
@@ -71,6 +70,7 @@ include("frontend/enzyme_constrained.jl")
 # utilities
 include("misc/bounds.jl")
 include("misc/settings.jl")
+include("misc/maybe.jl")
 include("misc/utils.jl")
 
 end # module COBREXA
