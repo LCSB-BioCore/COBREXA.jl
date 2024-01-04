@@ -85,7 +85,7 @@ function max_min_driving_force_analysis(
     settings = [],
     optimizer,
 )
-    m = build_max_min_driving_force_model(
+    m = max_min_driving_force_constraints(
         model,
         reaction_standard_gibbs_free_energies;
         reference_flux,
@@ -103,9 +103,12 @@ function max_min_driving_force_analysis(
     end
 
     m *=
-        :metabolite_ratio_constraints^log_ratio_constraints(
-            concentration_ratios,
-            m.log_metabolite_concentrations,
+        :metabolite_ratio_constraints^C.ConstraintTree(
+            cid => C.Constraint(
+                m.log_metabolite_concentrations[Symbol(m2)].value -
+                m.log_metabolite_concentrations[Symbol(m1)].value,
+                ratio,
+            ) for (cid, (m1, m2, ratio)) in concentration_ratios
         )
 
 
