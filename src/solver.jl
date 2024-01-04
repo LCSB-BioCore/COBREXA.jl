@@ -15,6 +15,32 @@
 # limitations under the License.
 
 """
+$(TYPEDEF)
+
+Representation of a "binary switch" bound for `ConstraintTree`s. The value is
+constrained to be either the value of field `a` or of field `b`; both fields
+are `Float64`s. Upon translation to JuMP, the switches create an extra boolean
+variable, and the value is constrained to equal `a + boolean_var * (b-a)`.
+
+Switches can be offset by adding real numbers, negated, and multiplied and
+divided by scalar constraints. For optimizing some special cases, multiplying
+by exact zero returns an equality bound to zero.
+"""
+struct Switch <: C.Bound
+    a::Float64
+    b::Float64
+end
+
+export Switch
+
+Base.:-(x::Switch) = Switch(-s.a, -s.b)
+Base.:+(x::Real, s::Switch) = b + a
+Base.:+(s::Switch, x::Real) = Switch(s.a + x, s.b + x)
+Base.:*(x::Real, s::Switch) = b * a
+Base.:*(s::Switch, x::Real) = x == 0 ? C.EqualTo(0) : Switch(s.a * x, s.b * x)
+Base.:/(s::Switch, x::Real) = Switch(s.a / x, s.b / x)
+
+"""
 $(TYPEDSIGNATURES)
 
 Construct a JuMP `Model` that describes the precise constraint system into the
@@ -41,9 +67,9 @@ function optimization_model(
         isinf(b.lower) || J.@constraint(model, vx >= b.lower)
         isinf(b.upper) || J.@constraint(model, vx <= b.upper)
     end
-    function add_constraint(v::C.Value, _::Binary)
+    function add_constraint(v::C.Value, b::Switch)
         boolean = J.@variable(model, binary = true)
-        J.@constraint(model, C.substitute(v, x) == boolean)
+        J.@constraint(model, C.substitute(v, x) == b.a + boolean * (b.b - b.a))
     end
     function add_constraint(c::C.Constraint)
         add_constraint(c.value, c.bound)

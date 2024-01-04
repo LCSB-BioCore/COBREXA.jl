@@ -49,7 +49,7 @@ function with_loopless_constraints(
     m +=
         :loopless_binary_variables^C.variables(
             keys = internal_reaction_ids,
-            bounds = Binary(),
+            bounds = Switch(0, 1),
         )
     m +=
         :pseudo_gibbs_free_energy_reaction^C.variables(
