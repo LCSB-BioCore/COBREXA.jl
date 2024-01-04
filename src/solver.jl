@@ -45,7 +45,8 @@ $(TYPEDSIGNATURES)
 
 Construct a JuMP `Model` that describes the precise constraint system into the
 JuMP `Model` created for solving in `optimizer`, with a given optional
-`objective` and optimization `sense`.
+`objective` and optimization `sense` chosen from [`Maximal`](@ref),
+[`Minimal`](@ref) and [`Feasible`](@ref).
 """
 function optimization_model(
     cs::C.ConstraintTreeElem;
