@@ -36,7 +36,7 @@ internal_reaction_stoichiometry_nullspace_columns =
     eachcol(nullspace(Array(A.stoichiometry(model)[:, internal_rxn_idxs_in_order_of_internal_rxn_ids])))
 ```
 """
-function add_loopless_constraints!(
+function with_loopless_constraints(
     m,
     internal_reaction_ids,
     internal_reaction_stoichiometry_nullspace_columns;
@@ -117,4 +117,4 @@ function add_loopless_constraints!(
     m
 end
 
-export add_loopless_constraints!
+export with_loopless_constraints

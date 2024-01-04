@@ -59,7 +59,7 @@ function loopless_flux_balance_analysis(
         LinearAlgebra.nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs])),
     ) # no sparse nullspace function
 
-    m = add_loopless_constraints!(
+    m = with_loopless_constraints(
         m,
         internal_reaction_ids,
         internal_reaction_stoichiometry_nullspace_columns;

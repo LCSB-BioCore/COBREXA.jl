@@ -28,7 +28,7 @@ Unbound these reactions by listing their IDs in `unconstrain_reactions`, which
 makes them reversible. Optimization `settings` are directly forwarded.
 
 In the event that your model requires more complex build steps, consider
-constructing it manually by using [`add_enzyme_constraints!`](@ref).
+constructing it manually by using [`with_enzyme_constraints`](@ref).
 """
 function enzyme_constrained_flux_balance_analysis(
     model::A.AbstractFBCModel,
@@ -45,7 +45,7 @@ function enzyme_constrained_flux_balance_analysis(
     m += :enzymes^enzyme_variables(model)
 
     # add enzyme equality constraints (stoichiometry)
-    m = add_enzyme_constraints!(m, reaction_isozymes)
+    m = with_enzyme_constraints(m, reaction_isozymes)
 
     # add capacity limitations
     for (id, gids, cap) in capacity_limitations

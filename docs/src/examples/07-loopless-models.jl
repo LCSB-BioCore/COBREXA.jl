@@ -78,7 +78,7 @@ internal_reaction_stoichiometry_nullspace_columns =
     eachcol(nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs])))
 
 # And simply add loopless contraints on the fluxes of the model
-m = add_loopless_constraints!(
+m = with_loopless_constraints(
     m,
     internal_reaction_ids,
     internal_reaction_stoichiometry_nullspace_columns;

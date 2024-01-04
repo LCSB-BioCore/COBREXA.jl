@@ -193,7 +193,7 @@ The isozyme struct used in `reaction_isozymes` must have fields
 `gene_product_stoichiometry`, `kcat_forward`, and `kcat_backward` to properly
 assign kcats to reactions. Use [`SimpleIsozyme`](@ref) when in doubt.
 """
-function add_enzyme_constraints!(
+function with_enzyme_constraints(
     m::C.ConstraintTree,
     reaction_isozymes::Dict{String,Dict{String,T}};
     fluxes = m.fluxes,
@@ -257,4 +257,4 @@ function add_enzyme_constraints!(
     m
 end
 
-export add_enzyme_constraints!
+export with_enzyme_constraints

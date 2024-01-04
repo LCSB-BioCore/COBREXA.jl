@@ -152,7 +152,7 @@ m.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 0.0) # undo glucose important bo
 m.enzymes.b2417.bound = C.Between(0.0, 0.1) # for fun, change the bounds of the protein b2417
 
 # attach the enzyme mass balances
-m = add_enzyme_constraints!(
+m = with_enzyme_constraints(
     m,
     reaction_isozymes;
     fluxes = m.fluxes, # mount enzyme constraints to these fluxes
