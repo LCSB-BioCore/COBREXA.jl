@@ -17,31 +17,13 @@
 """
 $(TYPEDSIGNATURES)
 
-Allocate enzyme variables (gene products in the model) to a constraint tree
-using all the genes in the `model`.
+Allocate a (non-negative) variable for all amounts of gene products in the
+`model`.
 """
-enzyme_variables(model::A.AbstractFBCModel) =
+gene_product_variables(model::A.AbstractFBCModel) =
     C.variables(; keys = Symbol.(A.genes(model)), bounds = C.Between(0.0, Inf))
 
-export enzyme_variables
-
-"""
-$(TYPEDSIGNATURES)
-
-Helper function to create isozyme variables for reactions. A single reaction may
-be catalyzed by multiple enzymes (isozymes), and the total flux through a
-reaction is the sum through of all these isozymes. These variables are linked to
-fluxes through [`link_isozymes`](@ref).
-"""
-function isozyme_variables(
-    reaction_id::String,
-    reaction_isozymes::Dict{String,Dict{String,T}},
-) where {T<:Isozyme}
-    C.variables(;
-        keys = Symbol.(collect(keys(reaction_isozymes[reaction_id]))),
-        bounds = C.Between(0.0, Inf),
-    )
-end
+export gene_product_variables
 
 """
 $(TYPEDSIGNATURES)
@@ -191,14 +173,14 @@ mounted.
 # Note
 The isozyme struct used in `reaction_isozymes` must have fields
 `gene_product_stoichiometry`, `kcat_forward`, and `kcat_backward` to properly
-assign kcats to reactions. Use [`SimpleIsozyme`](@ref) when in doubt.
+assign kcats to reactions. Use [`Isozyme`](@ref) when in doubt.
 """
 function with_enzyme_constraints(
     m::C.ConstraintTree,
-    reaction_isozymes::Dict{String,Dict{String,T}};
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}};
     fluxes = m.fluxes,
     enzymes = m.enzymes,
-) where {T<:Isozyme}
+)
 
     # create directional fluxes
     m +=
@@ -217,18 +199,18 @@ function with_enzyme_constraints(
     for (rid, _) in m.fluxes_forward
         if haskey(reaction_isozymes, string(rid))
             m +=
-                :fluxes_isozymes_forward^rid^isozyme_variables(
-                    string(rid),
-                    reaction_isozymes,
+                :fluxes_isozymes_forward^rid^C.variables(
+                    keys = Symbol.(keys(reaction_isozymes[string(rid)])),
+                    bounds = Between(0, Inf),
                 )
         end
     end
     for (rid, _) in m.fluxes_backward
         if haskey(reaction_isozymes, string(rid))
             m +=
-                :fluxes_isozymes_backward^rid^isozyme_variables(
-                    string(rid),
-                    reaction_isozymes,
+                :fluxes_isozymes_backward^rid^C.variables(
+                    keys = Symbol.(keys(reaction_isozymes[string(rid)])),
+                    bounds = Between(0, Inf),
                 )
         end
     end

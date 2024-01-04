@@ -15,6 +15,23 @@
 # limitations under the License.
 
 """
+$(TYPEDEF)
+
+A simple struct storing information about the isozyme composition, including
+subunit stoichiometry and turnover numbers.
+
+# Fields
+$(TYPEDFIELDS)
+"""
+Base.@kwdef mutable struct Isozyme
+    gene_product_stoichiometry::Dict{String,Float64}
+    kcat_forward::Maybe{Float64} = nothing
+    kcat_backward::Maybe{Float64} = nothing
+end
+
+export Isozyme
+
+"""
 $(TYPEDSIGNATURES)
 
 Run a basic enzyme constrained flux balance analysis on `model`. The enzyme
@@ -31,32 +48,56 @@ In the event that your model requires more complex build steps, consider
 constructing it manually by using [`with_enzyme_constraints`](@ref).
 """
 function enzyme_constrained_flux_balance_analysis(
-    model::A.AbstractFBCModel,
-    reaction_isozymes::Dict{String,Dict{String,SimpleIsozyme}},
-    gene_molar_masses::Dict{String,Float64},
-    capacity_limitations::Vector{Tuple{String,Vector{String},Float64}};
+    model::A.AbstractFBCModel;
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    gene_product_molar_masses::Dict{String,Float64},
+    capacity_limits::Vector{Tuple{String,Vector{String},Float64}},
     optimizer,
-    unconstrain_reactions = String[],
     settings = [],
 )
-    m = fbc_model_constraints(model)
+    ct = fbc_model_constraints(model)
 
-    # create enzyme variables
-    m += :enzymes^enzyme_variables(model)
+    # allocate variables for everything (nb. += doesn't associate right here)
+    ct =
+        ct +
+        :fluxes_forward^unsigned_positive_contribution_variables(ct.fluxes) +
+        :fluxes_reverse^unsigned_negative_contribution_variables(ct.fluxes) +
+        :gene_product_amounts^gene_product_variables(model) +
+        :isozyme_amounts^sum(
+            Symbol(rid)^C.variables(keys = Symbol.(keys(is)), bounds = C.Between(0, Inf))
+            for (rid, is) in reaction_isozymes
+        )
 
-    # add enzyme equality constraints (stoichiometry)
-    m = with_enzyme_constraints(m, reaction_isozymes)
+    # connect all parts with constraints
+    ct =
+        ct *
+        :directional_flux_balance^sign_split_constraints(
+            ct.fluxes_forward,
+            ct.fluxes_reverse,
+            ct.fluxes,
+        ) *
+        :isozyme_flux_balance^isozyme_flux_constraints(
+            ct.fluxes_forward,
+            ct.fluxes_reverse,
+            ct.isozyme_amounts,
+            reaction_isozymes,
+        ) *
+        :gene_product_isozyme_balance^gene_product_isozyme_constraints(
+            ct.isozyme_amounts,
+            ct.gene_amounts,
+            reaction_isozymes,
+        ) *
+        :gene_product_capacity_limits^C.ConstraintTree(
+            Symbol(id) => C.Constraint(
+                value = sum(
+                    ct.gene_product_amounts[gp].value * gene_product_molar_masses[gp]
+                    for gp in gps
+                ),
+                bound = C.Between(0, limit),
+            ) for (id, gps, limit) in capacity_limits
+        )
 
-    # add capacity limitations
-    for (id, gids, cap) in capacity_limitations
-        m *= Symbol(id)^enzyme_capacity(m.enzymes, gene_molar_masses, gids, cap)
-    end
-
-    for rid in Symbol.(unconstrain_reactions)
-        m.fluxes[rid].bound = C.Between(-1000.0, 1000.0)
-    end
-
-    optimized_constraints(m; objective = m.objective.value, optimizer, settings)
+    optimized_constraints(ct; objective = ct.objective.value, optimizer, settings)
 end
 
 export enzyme_constrained_flux_balance_analysis

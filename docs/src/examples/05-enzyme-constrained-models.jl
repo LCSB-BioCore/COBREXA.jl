@@ -56,15 +56,15 @@ model = load_model("e_coli_core.json")
 # isozymes that can catalyze a reaction. A turnover number needs to be assigned
 # to each isozyme, as shown below.
 
-reaction_isozymes = Dict{String,Dict{String,SimpleIsozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
+reaction_isozymes = Dict{String,Dict{String,Isozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
 for rid in A.reactions(model)
     grrs = A.reaction_gene_association_dnf(model, rid)
     isnothing(grrs) && continue # skip if no grr available
     haskey(ecoli_core_reaction_kcats, rid) || continue # skip if no kcat data available
     for (i, grr) in enumerate(grrs)
-        d = get!(reaction_isozymes, rid, Dict{String,SimpleIsozyme}())
+        d = get!(reaction_isozymes, rid, Dict{String,Isozyme}())
         # each isozyme gets a unique name
-        d["isozyme_"*string(i)] = SimpleIsozyme( # SimpleIsozyme struct is defined by COBREXA
+        d["isozyme_"*string(i)] = Isozyme( # SimpleIsozyme struct is defined by COBREXA
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), # assume subunit stoichiometry of 1 for all isozymes
             kcat_forward = ecoli_core_reaction_kcats[rid] * 3600.0, # forward reaction turnover number units = 1/h
             kcat_backward = ecoli_core_reaction_kcats[rid] * 3600.0, # reverse reaction turnover number units = 1/h
@@ -143,7 +143,7 @@ import ConstraintTrees as C
 m = fbc_model_constraints(model)
 
 # create enzyme variables
-m += :enzymes^enzyme_variables(model)
+m += :enzymes^gene_product_variables(model)
 
 # constrain some fluxes...
 m.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 0.0) # undo glucose important bound from original model
