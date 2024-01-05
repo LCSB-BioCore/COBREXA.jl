@@ -68,7 +68,7 @@ function parsimonious_optimized_constraints(
         )
 
         J.optimize!(om)
-        is_solved(om) && return C.constraint_values(output, J.value.(om[:x]))
+        is_solved(om) && return C.substitute_values(output, J.value.(om[:x]))
 
         J.delete(om, pfba_tolerance_constraint)
         J.unregister(om, :pfba_tolerance_constraint)

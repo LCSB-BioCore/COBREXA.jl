@@ -149,7 +149,7 @@ function optimized_constraints(
         m(om)
     end
     J.optimize!(om)
-    is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
+    is_solved(om) ? C.substitute_values(output, J.value.(om[:x])) : nothing
 end
 
 export optimized_constraints
