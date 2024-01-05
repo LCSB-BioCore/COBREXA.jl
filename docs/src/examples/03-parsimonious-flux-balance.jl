@@ -54,7 +54,7 @@ model |> parsimonious_flux_balance_analysis(Clarabel.Optimizer; settings = [sile
 # the quadratic objective (this approach is much more flexible).
 
 ctmodel = fbc_model_constraints(model)
-ctmodel *= :l2objective^squared_sum_objective(ctmodel.fluxes)
+ctmodel *= :l2objective^squared_sum_value(ctmodel.fluxes)
 ctmodel.objective.bound = 0.3 # set growth rate # TODO currently breaks
 
 opt_model = optimization_model(
@@ -90,7 +90,7 @@ minimize_metabolic_adjustment(ref_sol, Clarabel.Optimizer; settings = [silence])
 
 ctmodel = fbc_model_constraints(model)
 ctmodel *=
-    :minoxphospho^squared_sum_error_objective(
+    :minoxphospho^squared_sum_error_value(
         ctmodel.fluxes,
         Dict(:ATPS4r => 33.0, :CYTBD => 22.0),
     )

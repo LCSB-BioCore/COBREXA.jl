@@ -29,7 +29,7 @@ similar perturbation). MOMA solution then gives an expectable "easiest"
 adjustment of the organism towards a somewhat working state.
 
 Reference fluxes that do not exist in the model are ignored (internally, the
-objective is constructed via [`squared_sum_error_objective`](@ref)).
+objective is constructed via [`squared_sum_error_value`](@ref)).
 
 Additional parameters are forwarded to [`optimized_constraints`](@ref).
 """
@@ -40,7 +40,7 @@ function minimization_of_metabolic_adjustment_analysis(
     kwargs...,
 )
     constraints = fbc_model_constraints(model)
-    objective = squared_sum_error_objective(constraints.fluxes, reference_fluxes)
+    objective = squared_sum_error_value(constraints.fluxes, reference_fluxes)
     optimized_constraints(
         constraints * :minimal_adjustment_objective^C.Constraint(objective);
         optimizer,
@@ -122,15 +122,13 @@ function linear_minimization_of_metabolic_adjustment_analysis(
     constraints *= :reference_diff^difference
     constraints *=
         :reference_directional_diff_balance^sign_split_constraints(
-            constraints.reference_positive_diff,
-            constraints.reference_negative_diff,
-            difference,
+            positive = constraints.reference_positive_diff,
+            negative = constraints.reference_negative_diff,
+            signed = difference,
         )
 
-    objective = sum_objective(
-        constraints.reference_positive_diff,
-        constraints.reference_negative_diff,
-    )
+    objective =
+        sum_value(constraints.reference_positive_diff, constraints.reference_negative_diff)
 
     optimized_constraints(
         constraints * :linear_minimal_adjustment_objective^C.Constraint(objective);

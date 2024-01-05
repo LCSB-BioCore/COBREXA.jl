@@ -73,16 +73,16 @@ function enzyme_constrained_flux_balance_analysis(
         :isozyme_reverse_amounts^isozyme_amounts +
         :gene_product_amounts^C.variables(
             keys = Symbol.(A.genes(model)),
-            bounds = Between(0, Inf),
+            bounds = C.Between(0, Inf),
         )
 
     # connect all parts with constraints
     constraints =
         constraints *
         :directional_flux_balance^sign_split_constraints(
-            constraints.fluxes_forward,
-            constraints.fluxes_reverse,
-            constraints.fluxes,
+            positive = constraints.fluxes_forward,
+            negative = constraints.fluxes_reverse,
+            signed = constraints.fluxes,
         ) *
         :isozyme_flux_forward_balance^isozyme_flux_constraints(
             constraints.isozyme_forward_amounts,
@@ -104,18 +104,28 @@ function enzyme_constrained_flux_balance_analysis(
             constraints.gene_product_amounts,
             (constraints.isozyme_forward_amounts, constraints.isozyme_reverse_amounts),
             (rid, isozyme) -> maybemap(
-                x -> x.gene_product_stoichiometry,
+                x -> [(Symbol(k), v) for (k, v) in x.gene_product_stoichiometry],
                 maybeget(reaction_isozymes, string(rid), string(isozyme)),
             ),
         ) *
-        :gene_product_capacity_limits^C.ConstraintTree(
-            Symbol(id) => C.Constraint(
+        :gene_product_capacity^(
+            capacity isa Float64 ?
+            C.Constraint(
                 value = sum(
-                    constraints.gene_product_amounts[gp].value *
-                    gene_product_molar_masses[gp] for gp in gps
+                    gpa.value * gene_product_molar_masses[String(gp)] for
+                    (gp, gpa) in constraints.gene_product_amounts
                 ),
-                bound = C.Between(0, limit),
-            ) for (id, gps, limit) in capacity_limits
+                bound = C.Between(0, capacity),
+            ) :
+            C.ConstraintTree(
+                Symbol(id) => C.Constraint(
+                    value = sum(
+                        constraints.gene_product_amounts[Symbol(gp)].value *
+                        gene_product_molar_masses[gp] for gp in gps
+                    ),
+                    bound = C.Between(0, limit),
+                ) for (id, gps, limit) in capacity_limits
+            )
         )
 
     optimized_constraints(

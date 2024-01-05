@@ -19,15 +19,14 @@ $(TYPEDSIGNATURES)
 
 TODO
 """
-squared_sum_objective(x::C.ConstraintTree) =
-    squared_sum_error_objective(x, Dict(keys(x) .=> 0.0))
+squared_sum_value(x::C.ConstraintTree) = squared_sum_error_value(x, Dict(keys(x) .=> 0.0))
 
 """
 $(TYPEDSIGNATURES)
 
 TODO useful for L1 parsimonious stuff
 """
-function sum_objective(x...)
+function sum_value(x...)
     res = zero(C.LinearValue)
     for ct in x
         C.map(ct) do c
@@ -42,8 +41,7 @@ $(TYPEDSIGNATURES)
 
 TODO
 """
-squared_sum_error_objective(constraints::C.ConstraintTree, target::Dict{Symbol,Float64}) =
-    sum(
-        (C.squared(C.value(c) - target[k]) for (k, c) in constraints if haskey(target, k)),
-        init = zero(C.LinearValue),
-    )
+squared_sum_error_value(constraints::C.ConstraintTree, target::Dict{Symbol,Float64}) = sum(
+    (C.squared(C.value(c) - target[k]) for (k, c) in constraints if haskey(target, k)),
+    init = zero(C.LinearValue),
+)

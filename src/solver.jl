@@ -72,6 +72,7 @@ function optimization_model(
         boolean = J.@variable(model, binary = true)
         J.@constraint(model, C.substitute(v, x) == b.a + boolean * (b.b - b.a))
     end
+    add_constraint(::C.Value, _::Nothing) = nothing
     function add_constraint(c::C.Constraint)
         add_constraint(c.value, c.bound)
     end

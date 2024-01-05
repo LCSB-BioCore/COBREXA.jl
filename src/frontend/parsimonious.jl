@@ -105,7 +105,7 @@ function parsimonious_flux_balance_analysis(
     kwargs...,
 )
     constraints = fbc_model_constraints(model)
-    parsimonious_objective = squared_sum_objective(constraints.fluxes)
+    parsimonious_objective = squared_sum_value(constraints.fluxes)
     parsimonious_optimized_constraints(
         constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);
         optimizer,
@@ -151,12 +151,12 @@ function linear_parsimonious_flux_balance_analysis(
         :fluxes_reverse^unsigned_negative_contribution_variables(ct.fluxes)
     constraints *=
         :directional_flux_balance^sign_split_constraints(
-            ct.fluxes_forward,
-            ct.fluxes_reverse,
-            ct.fluxes,
+            positive = ct.fluxes_forward,
+            negative = ct.fluxes_reverse,
+            signed = ct.fluxes,
         )
 
-    parsimonious_objective = sum_objective(ct.fluxes_forward, ct.fluxes_reverse)
+    parsimonious_objective = sum_value(ct.fluxes_forward, ct.fluxes_reverse)
 
     parsimonious_optimized_constraints(
         constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);

@@ -64,10 +64,10 @@ for rid in A.reactions(model)
     for (i, grr) in enumerate(grrs)
         d = get!(reaction_isozymes, rid, Dict{String,Isozyme}())
         # each isozyme gets a unique name
-        d["isozyme_"*string(i)] = Isozyme( # SimpleIsozyme struct is defined by COBREXA
+        d["isozyme_"*string(i)] = Isozyme(
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), # assume subunit stoichiometry of 1 for all isozymes
-            kcat_forward = ecoli_core_reaction_kcats[rid] * 3600.0, # forward reaction turnover number units = 1/h
-            kcat_backward = ecoli_core_reaction_kcats[rid] * 3600.0, # reverse reaction turnover number units = 1/h
+            kcat_forward = ecoli_core_reaction_kcats[rid] * 3.6, # forward reaction turnover number units = 1/h
+            kcat_reverse = ecoli_core_reaction_kcats[rid] * 3.6, # reverse reaction turnover number units = 1/h
         )
     end
 end
@@ -90,7 +90,7 @@ end
 # </details>
 # ```
 
-gene_molar_masses = ecoli_core_gene_product_masses
+gene_product_molar_masses = ecoli_core_gene_product_masses
 
 #!!! warning "Molar mass units"
 #    Take care with the units of the molar masses. In literature they are
@@ -108,7 +108,7 @@ gene_molar_masses = ecoli_core_gene_product_masses
 # The capacity limitation usually denotes an upper bound of protein available to
 # the cell.
 
-total_enzyme_capacity = 0.1 # g enzyme/gDW
+total_enzyme_capacity = 100.0 # mg enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
@@ -116,12 +116,12 @@ total_enzyme_capacity = 0.1 # g enzyme/gDW
 # convenience function to run enzyme constrained FBA in one shot:
 
 ec_solution = enzyme_constrained_flux_balance_analysis(
-    model,
+    model;
     reaction_isozymes,
-    gene_molar_masses,
-    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)];
+    gene_product_molar_masses,
+    capacity = total_enzyme_capacity,
     settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
-    unconstrain_reactions = ["EX_glc__D_e"],
+    #unconstrain_reactions = ["EX_glc__D_e"],
     optimizer = Tulip.Optimizer,
 )
 
