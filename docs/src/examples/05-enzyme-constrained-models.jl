@@ -108,7 +108,7 @@ gene_product_molar_masses = ecoli_core_gene_product_masses
 # The capacity limitation usually denotes an upper bound of protein available to
 # the cell.
 
-total_enzyme_capacity = 100.0 # mg enzyme/gDW
+total_enzyme_capacity = 50.0 # mg enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
