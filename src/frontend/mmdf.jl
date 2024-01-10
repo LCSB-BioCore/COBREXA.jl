@@ -127,7 +127,6 @@ function max_min_driving_force_analysis(
             "unknown metabolites referenced by ignored_metabolites",
         ),
     )
-
     if !ismissing(check_ignored_reactions) && (
         all(
             x -> !haskey(reaction_standard_gibbs_free_energies, x),
