@@ -18,56 +18,41 @@
 $(TYPEDSIGNATURES)
 
 Perform a max-min driving force analysis using `optimizer` on the `model` with
-supplied ΔG⁰s in `reaction_standard_gibbs_free_energies`, as defined by Noor, et
-al., "Pathway thermodynamics highlights kinetic obstacles in central
-metabolism.", PLoS computational biology, 2014.
+supplied reaction standard Gibbs energies in `reaction_standard_gibbs_free_energies`.
 
-Optionally, `reference_flux` can be used to set the directions of each reaction
-in `model` (all reactions are assumed to proceed forward by default). The
-supplied `reference_flux` should be free of internal cycles i.e.
-thermodynamically consistent. This optional input is important if a reaction in
-`model` normally runs in reverse (negative flux). Note, only the signs are
-extracted from this input, so be careful with floating point precision near 0.
+The method was described by by: Noor, et al., "Pathway thermodynamics highlights
+kinetic obstacles in central metabolism.", PLoS computational biology, 2014.
 
-The max-min driving force algorithm returns the Gibbs free energy of the
-reactions, the concentrations of metabolites and the actual maximum minimum
-driving force. The optimization problem solved is:
-```
-max min -ΔᵣG
-s.t. ΔᵣG = ΔrG⁰ + R T S' ln(C)
-     ΔᵣG ≤ 0
-     ln(Cₗ) ≤ ln(C) ≤ ln(Cᵤ)
-```
-where `ΔrG` are the Gibbs energies dissipated by the reactions, R is the gas
-constant, T is the temperature, S is the stoichiometry of the model, and C is
-the vector of metabolite concentrations (and their respective lower and upper
-bounds).
+`reference_flux` sets the directions of each reaction in `model`. The scale of
+the values is not important, only the direction is examined (w.r.t.
+`reference_flux_atol` tolerance). Ideally, the supplied `reference_flux` should
+be completely free of internal cycles, which enables the thermodynamic
+consistency. To get the cycle-free flux, you can use
+[`loopless_flux_balance_analysis`](@ref) (computationally complex but gives
+very good fluxes), [`parsimonious_flux_balance_analysis`](@ref) or
+[`linear_parsimonious_flux_balance_analysis`](@ref) (computationally simplest
+but the consistency is not guaranteed).
 
-In case no feasible solution exists, `nothing` is returned.
+Internally, [`fbc_log_concentration_constraints`](@ref) is used to lay out the
+base structure of the problem.
 
-Reactions specified in `ignore_reaction_ids` are internally ignored when
-calculating the max-min driving force. Importantly, this should include water
-and proton importers.
-
-Since biochemical thermodynamics are assumed, the `proton_metabolites` and `water_metabolites`
-need to be specified so that they can be ignored in the calculations.
-Effectively this assumes an aqueous environment at constant pH is used.
-
-`constant_concentrations` is used to fix the concentrations of certain
-metabolites (such as CO₂) by passing a dictionary mapping metabolite id to its
-constant value. `concentration_ratios` is used to specify additional constraints
-on metabolite pair concentrations (typically, this is done with various
-cofactors, such as the ATP/ADP ratio. For example, you can fix the concentration
-of ATP to be always 5× higher than of ADP by specifying `Dict("atp_ratio" =>
-("atp_c","adp_c", 5.0))` if these metabolites are called `atp_c` and `adp_c` in
-the model. `concentration_lb` and `concentration_ub` set the `Cₗ` and `Cᵤ` in
-the optimization problems (these are overwritten by `constant_concentrations` if
-supplied).
-
-`T` and `R` can be specified in the corresponding units; defaults are K and
-kJ/K/mol. The unit of metabolite concentrations is typically molar, and the ΔG⁰s
-have units of kJ/mol. Other units can be used, as long as they are consistent.
-As usual, optimizer settings can be changed with `settings`.
+Following arguments are set optionally:
+- `water_metabolites`, `proton_metabolites` and `ignored_metabolites` allow to
+  completely ignore constraints on a part of the metabolite set, which is
+  explicitly recommended especially for water and protons (since the analyses
+  generally assume aqueous environment of constant pH)
+- `constant_concentrations` can be used to fix the concentrations of the
+  metabolites
+- `concentration_lower_bound` and `concentration_upper_bound` set the default
+  concentration bounds for all other metabolites
+- `concentration ratios` is a dictionary that assigns a tuple of
+  metabolite-metabolite-concentration ratio constraint names; e.g. ATP/ADP
+  ratio can be fixed to five-times-more-ATP by setting `concentration_ratios =
+  Dict("adenosin_ratio" => ("atp", "adp", 5.0))`
+- `T` and `R` default to the usual required thermodynamic constraints in the
+  usual units (K and kJ/K/mol, respectively). These multiply the
+  log-concentrations to obtain the actual Gibbs energies and thus driving
+  forces.
 """
 function max_min_driving_force_analysis(
     model::A.AbstractFBCModel,
@@ -82,13 +67,15 @@ function max_min_driving_force_analysis(
     concentration_upper_bound = 1e-1, # M
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
+    reference_flux_atol = 1e-6,
     check_ignored_reactions = missing,
     settings = [],
     optimizer,
 )
 
-    # First let's check if all the identifiers are okay because we use quite a
-    # lot of these.
+    # First let's just check if all the identifiers are okay because we use
+    # quite a lot of these; the rest of the function may be a bit cleaner with
+    # this checked properly.
 
     model_reactions = Set(A.reactions(model))
     model_metabolites = Set(A.metabolites(model))
@@ -97,9 +84,10 @@ function max_min_driving_force_analysis(
         DomainError(
             reaction_standard_gibbs_free_energies,
             "unknown reactions referenced by reaction_standard_gibbs_free_energies",
-            o,
         ),
     )
+    all(x -> haskey(reaction_standard_gibbs_free_energies, x), keys(reference_flux)) ||
+        throw(DomainError(reference_flux, "some reactions have no reference flux"))
     all(in(model_reactions), keys(reference_flux)) || throw(
         DomainError(
             reaction_standard_gibbs_free_energies,
@@ -154,9 +142,12 @@ function max_min_driving_force_analysis(
         throw(AssertionError("check_ignored_reactions validation failed"))
     end
 
-    default_bound =
+    # that was a lot of checking.
+
+    default_concentration_bound =
         C.Between(log(concentration_lower_bound), log(concentration_upper_bound))
-    zero_concentration_metabolites = union(
+
+    no_concentration_metabolites = union(
         Set(Symbol.(water_metabolites)),
         Set(Symbol.(proton_metabolites)),
         Set(Symbol.(ignored_metabolites)),
@@ -165,14 +156,14 @@ function max_min_driving_force_analysis(
     constraints =
         fbc_log_concentration_constraints(
             model,
-            concentration_bound = met -> if met in zero_concentration_metabolites
+            concentration_bound = met -> if met in no_concentration_metabolites
                 C.EqualTo(0)
             else
                 mid = String(met)
                 if haskey(constant_concentrations, mid)
                     C.EqualTo(log(constant_concentrations[mid]))
                 else
-                    default_bound
+                    default_concentration_bound
                 end
             end,
         ) + :max_min_driving_force^C.variable()
@@ -181,7 +172,15 @@ function max_min_driving_force_analysis(
         let r = Symbol(rid)
             r => C.Constraint(
                 value = dGr0 + (R * T) * constraints.reactant_log_concentrations[r],
-                bound = C.Between(-Inf, 0),
+                bound = let rf = reference_flux[rid]
+                    if isapprox(rf, 0.0, atol = reference_flux_atol)
+                        C.EqualTo(0)
+                    elseif rf > 0
+                        C.Between(-Inf, 0)
+                    else
+                        C.Between(0, Inf)
+                    end
+                end,
             )
         end for (rid, dGr0) in reaction_standard_gibbs_free_energies
     )
