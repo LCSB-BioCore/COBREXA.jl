@@ -22,10 +22,10 @@ Compute an optimal objective-optimizing solution of the given `model`.
 Most arguments are forwarded to [`optimized_constraints`](@ref).
 
 Returns a tree with the optimization solution of the same shape as
-given by [`fbc_model_constraints`](@ref).
+given by [`fbc_flux_balance_constraints`](@ref).
 """
 function flux_balance_analysis(model::A.AbstractFBCModel, optimizer; kwargs...)
-    constraints = fbc_model_constraints(model)
+    constraints = fbc_flux_balance_constraints(model)
     optimized_constraints(
         constraints;
         objective = constraints.objective.value,

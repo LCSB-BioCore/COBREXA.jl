@@ -45,7 +45,7 @@ function loopless_flux_balance_analysis(
     optimizer,
 )
 
-    m = fbc_model_constraints(model)
+    m = fbc_flux_balance_constraints(model)
 
     # find all internal reactions
     internal_reactions = [

@@ -140,7 +140,7 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
 import ConstraintTrees as C
 
 # create basic flux model
-m = fbc_model_constraints(model)
+m = fbc_flux_balance_constraints(model)
 
 # create enzyme variables
 m += :enzymes^gene_product_variables(model)

@@ -25,7 +25,7 @@ The constructed tree contains subtrees `fluxes` (with the reaction-defining
 constraints), and a single constraint `objective` thad describes the objective
 function of the model.
 """
-function fbc_model_constraints(model::A.AbstractFBCModel)
+function fbc_flux_balance_constraints(model::A.AbstractFBCModel)
     rxns = Symbol.(A.reactions(model))
     mets = Symbol.(A.metabolites(model))
     lbs, ubs = A.bounds(model)
@@ -34,7 +34,7 @@ function fbc_model_constraints(model::A.AbstractFBCModel)
     obj = A.objective(model)
 
     return C.ConstraintTree(
-        :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
+        :fluxes^C.variables(keys = reactions, bounds = zip(lbs, ubs)) *
         :flux_stoichiometry^C.ConstraintTree(
             met => C.Constraint(
                 value = C.LinearValue(SparseArrays.sparse(row)),
@@ -45,4 +45,38 @@ function fbc_model_constraints(model::A.AbstractFBCModel)
     )
 end
 
-export fbc_model_constraints
+export fbc_flux_balance_constraints
+
+"""
+$(TYPEDSIGNATURES)
+
+TODO
+"""
+function fbc_log_concentration_constraints(
+    model::A.AbstractFBCModel;
+    concentration_bound = _ -> nothing,
+)
+    rxns = Symbol.(A.reations(model))
+    mets = Symbol.(A.metabolites(model))
+    stoi = A.stoichiometry(model)
+
+    constraints =
+        :log_concentrations^C.variables(keys = mets, bounds = concentration_bound.(mets)) +
+        :reactant_log_concentrations^C.variables(keys = rxns)
+
+    cs = C.ConstraintTree()
+
+    for (midx, ridx, coeff) in zip(findnz(stoi)...)
+        rid = rxns[ridx]
+        value = constraints.log_concentrations[mets[midx]] * coeff
+        if haskey(cs, rid)
+            cs[rid].value += value
+        else
+            cs[rid] = C.Constraint(; value)
+        end
+    end
+
+    return constraints * :concentration_stoichiometry^cs
+end
+
+export fbc_log_concentration_constraints

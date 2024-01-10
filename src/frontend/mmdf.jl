@@ -49,7 +49,7 @@ Reactions specified in `ignore_reaction_ids` are internally ignored when
 calculating the max-min driving force. Importantly, this should include water
 and proton importers.
 
-Since biochemical thermodynamics are assumed, the `proton_ids` and `water_ids`
+Since biochemical thermodynamics are assumed, the `proton_metabolites` and `water_metabolites`
 need to be specified so that they can be ignored in the calculations.
 Effectively this assumes an aqueous environment at constant pH is used.
 
@@ -75,42 +75,133 @@ function max_min_driving_force_analysis(
     reference_flux = Dict{String,Float64}(),
     concentration_ratios = Dict{String,Tuple{String,String,Float64}}(),
     constant_concentrations = Dict{String,Float64}(),
-    proton_ids,
-    water_ids,
-    concentration_lb = 1e-9, # M
-    concentration_ub = 1e-1, # M
+    ignored_metabolites = Set{String}(),
+    proton_metabolites = Set{String}(),
+    water_metabolites = Set{String}(),
+    concentration_lower_bound = 1e-9, # M
+    concentration_upper_bound = 1e-1, # M
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
-    ignore_reaction_ids = String[],
+    check_ignored_reactions = missing,
     settings = [],
     optimizer,
 )
-    m = max_min_driving_force_constraints(
-        model,
-        reaction_standard_gibbs_free_energies;
-        reference_flux,
-        concentration_lb,
-        concentration_ub,
-        R,
-        T,
-        ignore_reaction_ids,
-        water_ids,
-        proton_ids,
+
+    # First let's check if all the identifiers are okay because we use quite a
+    # lot of these.
+
+    model_reactions = Set(A.reactions(model))
+    model_metabolites = Set(A.metabolites(model))
+
+    all(in(model_reactions), keys(reaction_standard_gibbs_free_energies)) || throw(
+        DomainError(
+            reaction_standard_gibbs_free_energies,
+            "unknown reactions referenced by reaction_standard_gibbs_free_energies",
+            o,
+        ),
+    )
+    all(in(model_reactions), keys(reference_flux)) || throw(
+        DomainError(
+            reaction_standard_gibbs_free_energies,
+            "unknown reactions referenced by reference_flux",
+        ),
+    )
+    all(in(model_metabolites), keys(constant_concentrations)) || throw(
+        DomainError(
+            constant_concentrations,
+            "unknown metabolites referenced by constant_concentrations",
+        ),
+    )
+    all(
+        in(model_metabolites),
+        (m for (_, (x, y, _)) in concentration_ratios for m in (x, y)),
+    ) || throw(
+        DomainError(
+            concentration_ratios,
+            "unknown metabolites referenced by concentration_ratios",
+        ),
+    )
+    all(in(model_metabolites), proton_metabolites) || throw(
+        DomainError(
+            concentration_ratios,
+            "unknown metabolites referenced by proton_metabolites",
+        ),
+    )
+    all(in(model_metabolites), water_metabolites) || throw(
+        DomainError(
+            concentration_ratios,
+            "unknown metabolites referenced by water_metabolites",
+        ),
+    )
+    all(in(model_metabolites), ignored_metabolites) || throw(
+        DomainError(
+            concentration_ratios,
+            "unknown metabolites referenced by ignored_metabolites",
+        ),
     )
 
-    for (mid, val) in constant_concentrations
-        m.log_metabolite_concentrations[Symbol(mid)].bound = C.EqualTo(log(val))
+    if !ismissing(check_ignored_reactions) && (
+        all(
+            x -> !haskey(reaction_standard_gibbs_free_energies, x),
+            check_ignored_reactions,
+        ) || (
+            union(
+                Set(check_ignored_reactions),
+                Set(keys(reaction_standard_gibbs_free_energies)),
+            ) != model_reactions
+        )
+    )
+        throw(AssertionError("check_ignored_reactions validation failed"))
     end
 
-    m *=
-        :metabolite_ratio_constraints^C.ConstraintTree(
-            cid => C.Constraint(
+    default_bound =
+        C.Between(log(concentration_lower_bound), log(concentration_upper_bound))
+    zero_concentration_metabolites = union(
+        Set(Symbol.(water_metabolites)),
+        Set(Symbol.(proton_metabolites)),
+        Set(Symbol.(ignored_metabolites)),
+    )
+
+    constraints =
+        fbc_log_concentration_constraints(
+            model,
+            concentration_bound = met -> if met in zero_concentration_metabolites
+                C.EqualTo(0)
+            else
+                mid = String(met)
+                if haskey(constant_concentrations, mid)
+                    C.EqualTo(log(constant_concentrations[mid]))
+                else
+                    default_bound
+                end
+            end,
+        ) + :max_min_driving_force^C.variable()
+
+    min_driving_forces = C.ConstraintTree(
+        let r = Symbol(rid)
+            r => C.Constraint(
+                value = dGr0 + (R * T) * constraints.reactant_log_concentrations[r],
+                bound = C.Between(-Inf, 0),
+            )
+        end for (rid, dGr0) in reaction_standard_gibbs_free_energies
+    )
+
+    constraints =
+        constraints *
+        :min_driving_forces^min_driving_forces *
+        :min_driving_force_thresholds^C.map(min_driving_forces) do c
+            C.Constraint(
+                value = constraints.max_min_driving_force.value - c.value;
+                bound = C.Between(0, Inf),
+            )
+        end *
+        :concentration_ratio_constraints^C.ConstraintTree(
+            Symbol(cid) => C.Constraint(
                 m.log_metabolite_concentrations[Symbol(m2)].value -
                 m.log_metabolite_concentrations[Symbol(m1)].value,
-                ratio,
+                log(ratio),
             ) for (cid, (m1, m2, ratio)) in concentration_ratios
         )
-
 
     optimized_constraints(m; objective = m.max_min_driving_force.value, optimizer, settings)
 end

@@ -55,7 +55,7 @@ function enzyme_constrained_flux_balance_analysis(
     optimizer,
     settings = [],
 )
-    constraints = fbc_model_constraints(model)
+    constraints = fbc_flux_balance_constraints(model)
 
     # might be nice to omit some conditionally (e.g. slash the direction if one
     # kcat is nothing)
