@@ -34,12 +34,4 @@ function flux_balance_analysis(model::A.AbstractFBCModel, optimizer; kwargs...)
     )
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Pipe-able overload of [`flux_balance_analysis`](@ref).
-"""
-flux_balance_analysis(optimizer; settings = []) =
-    m -> flux_balance_analysis(m, optimizer; settings)
-
 export flux_balance_analysis

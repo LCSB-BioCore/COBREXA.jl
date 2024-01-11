@@ -33,7 +33,7 @@ objective is constructed via [`squared_sum_error_value`](@ref)).
 
 Additional parameters are forwarded to [`optimized_constraints`](@ref).
 """
-function minimization_of_metabolic_adjustment_analysis(
+function minimization_of_metabolic_adjustment(
     model::A.AbstractFBCModel,
     reference_fluxes::Dict{Symbol,Float64},
     optimizer;
@@ -54,16 +54,16 @@ end
 $(TYPEDSIGNATURES)
 
 A slightly easier-to-use version of
-[`minimization_of_metabolic_adjustment_analysis`](@ref) that computes the
+[`minimization_of_metabolic_adjustment`](@ref) that computes the
 reference flux as the optimal solution of the [`reference_model`](@ref). The
 reference flux is calculated using `reference_optimizer` and
 `reference_modifications`, which default to the `optimizer` and `settings`.
 
 Leftover arguments are passed to the overload of
-[`minimization_of_metabolic_adjustment_analysis`](@ref) that accepts the
+[`minimization_of_metabolic_adjustment`](@ref) that accepts the
 reference flux dictionary.
 """
-function minimization_of_metabolic_adjustment_analysis(
+function minimization_of_metabolic_adjustment(
     model::A.AbstractFBCModel,
     reference_model::A.AbstractFBCModel,
     optimizer;
@@ -80,7 +80,7 @@ function minimization_of_metabolic_adjustment_analysis(
         output = reference_constraints.fluxes,
     )
     isnothing(reference_fluxes) && return nothing
-    minimization_of_metabolic_adjustment_analysis(
+    minimization_of_metabolic_adjustment(
         model,
         reference_fluxes,
         optimizer;
@@ -89,18 +89,18 @@ function minimization_of_metabolic_adjustment_analysis(
     )
 end
 
-export minimization_of_metabolic_adjustment_analysis
+export minimization_of_metabolic_adjustment
 
 """
 $(TYPEDSIGNATURES)
 
-Like [`minimization_of_metabolic_adjustment_analysis`](@ref) but optimizes the
+Like [`minimization_of_metabolic_adjustment`](@ref) but optimizes the
 L1 norm. This typically produces a sufficiently good result with less
 resources, depending on the situation. See documentation of
-[`linear_parsimonious_flux_balance_analysis`](@ref) for some of the
+[`linear_parsimonious_flux_balance`](@ref) for some of the
 considerations.
 """
-function linear_minimization_of_metabolic_adjustment_analysis(
+function linear_minimization_of_metabolic_adjustment(
     model::A.AbstractFBCModel,
     reference_fluxes::Dict{Symbol,Float64},
     optimizer;
@@ -139,7 +139,7 @@ function linear_minimization_of_metabolic_adjustment_analysis(
     )
 end
 
-function linear_minimization_of_metabolic_adjustment_analysis(
+function linear_minimization_of_metabolic_adjustment(
     model::A.AbstractFBCModel,
     reference_model::A.AbstractFBCModel,
     optimizer;
@@ -156,7 +156,7 @@ function linear_minimization_of_metabolic_adjustment_analysis(
         output = reference_constraints.fluxes,
     )
     isnothing(reference_fluxes) && return nothing
-    linear_minimization_of_metabolic_adjustment_analysis(
+    linear_minimization_of_metabolic_adjustment(
         model,
         reference_fluxes,
         optimizer;
@@ -165,4 +165,4 @@ function linear_minimization_of_metabolic_adjustment_analysis(
     )
 end
 
-export linear_minimization_of_metabolic_adjustment_analysis
+export linear_minimization_of_metabolic_adjustment

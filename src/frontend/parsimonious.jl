@@ -116,14 +116,6 @@ function parsimonious_flux_balance_analysis(
     )
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Pipe-able variant of [`parsimonious_flux_balance_analysis`](@ref).
-"""
-parsimonious_flux_balance_analysis(optimizer; kwargs...) =
-    model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
-
 export parsimonious_flux_balance_analysis
 
 """
@@ -167,13 +159,5 @@ function linear_parsimonious_flux_balance_analysis(
         kwargs...,
     )
 end
-
-"""
-$(TYPEDSIGNATURES)
-
-Pipe-able variant of [`linear_parsimonious_flux_balance_analysis`](@ref).
-"""
-linear_parsimonious_flux_balance_analysis(optimizer; kwargs...) =
-    model -> linear_parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
 
 export linear_parsimonious_flux_balance_analysis
