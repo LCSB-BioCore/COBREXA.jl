@@ -34,7 +34,7 @@ function parsimonious_optimized_constraints(
     parsimonious_objective::C.Value,
     parsimonious_optimizer = nothing,
     parsimonious_sense = J.MIN_SENSE,
-    parsimonious_modifications = [],
+    parsimonious_settings = [],
     tolerances = [absolute_tolerance_bound(0)],
     output = constraints,
     kwargs...,
@@ -52,7 +52,7 @@ function parsimonious_optimized_constraints(
 
     # switch to parsimonizing the solution w.r.t. to the objective value
     isnothing(parsimonious_optimizer) || J.set_optimizer(om, parsimonious_optimizer)
-    for m in parsimonious_modifications
+    for m in parsimonious_settings
         m(om)
     end
 

@@ -17,25 +17,20 @@
 """
 $(TYPEDSIGNATURES)
 
-Add quasi-thermodynamic constraints to the model to ensure that no thermodynamically
-infeasible internal cycles can occur. Adds the following constraints to the problem:
-```
--max_flux_bound × (1 - yᵢ) ≤ xᵢ ≤ max_flux_bound × yᵢ
--max_flux_bound × yᵢ + strict_inequality_tolerance × (1 - yᵢ) ≤ Gᵢ
-Gᵢ ≤ -strict_inequality_tolerance × yᵢ + max_flux_bound × (1 - yᵢ)
-Nᵢₙₜ' × G = 0
-yᵢ ∈ {0, 1}
-Gᵢ ∈ ℝ
-i ∈ internal reactions
-Nᵢₙₜ is the nullspace of the internal stoichiometric matrix
-```
-Note, this modification introduces binary variables, so an optimization solver capable of
-handing mixed integer problems needs to be used. The arguments `max_flux_bound` and
-`strict_inequality_tolerance` implement the "big-M" method of indicator constraints.
+Perform a flux balance analysis with added quasi-thermodynamic constraints that
+ensure that thermodynamically infeasible internal cycles can not occur. The
+method is closer described by: Schellenberger, Lewis, and, Palsson.
+"Elimination of thermodynamically infeasible loops in steady-state metabolic
+models.", Biophysical journal, 2011`.
 
-For more details about the algorithm, see `Schellenberger, Lewis, and, Palsson. "Elimination
-of thermodynamically infeasible loops in steady-state metabolic models.", Biophysical
-journal, 2011`.
+The loopless condition comes with a performance overhead: the computation needs
+to find the null space of the stoichiometry matrix (essentially inverting it);
+and the subsequently created optimization problem contains binary variables for
+each internal reaction, thus requiring a MILP solver and a potentially
+exponential solving time.
+
+The arguments `max_flux_bound` and `strict_inequality_tolerance` implement the
+"big-M" method of indicator constraints (TODO as described by the paper?).
 """
 function loopless_flux_balance_analysis(
     model;

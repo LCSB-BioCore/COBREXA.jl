@@ -68,9 +68,9 @@ include("frontend/loopless.jl")
 include("frontend/enzyme_constrained.jl")
 
 # utilities
+include("misc/boundary.jl")
 include("misc/bounds.jl")
 include("misc/settings.jl")
 include("misc/maybe.jl")
-include("misc/utils.jl")
 
 end # module COBREXA
