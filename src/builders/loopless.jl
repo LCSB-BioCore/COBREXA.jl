@@ -36,85 +36,60 @@ internal_reaction_stoichiometry_nullspace_columns =
     eachcol(nullspace(Array(A.stoichiometry(model)[:, internal_rxn_idxs_in_order_of_internal_rxn_ids])))
 ```
 """
-function with_loopless_constraints(
-    m,
-    internal_reaction_ids,
-    internal_reaction_stoichiometry_nullspace_columns;
-    fluxes = m.fluxes,
-    max_flux_bound = 1000.0, # needs to be an order of magnitude bigger, big M method heuristic
-    strict_inequality_tolerance = 1.0, # heuristic from paper
+function loopless_constraints(;
+    fluxes::C.ConstraintTree,
+    loopless_direction_indicators::C.ConstraintTree,
+    loopless_driving_forces::C.ConstraintTree,
+    internal_reactions::Vector{Symbol},
+    internal_nullspace::Matrix,
+    flux_infinity_bound,
+    driving_force_nonzero_bound,
+    driving_force_infinity_bound,
 )
 
-    # add loopless variables: flux direction setters (binary) and pseudo gibbs free energy of reaction
-    m +=
-        :loopless_binary_variables^C.variables(
-            keys = internal_reaction_ids,
-            bounds = Switch(0, 1),
-        )
-    m +=
-        :pseudo_gibbs_free_energy_reaction^C.variables(
-            keys = internal_reaction_ids,
-            bounds = C.Between(-Inf, Inf),
-        )
-
-    # add -1000 * (1-a) ≤ v ≤ 1000 * a which need to be split into forward and backward components
-    # -1000 * (1-a) - v ≤ 0 (backward)
-    # v - 1000a ≤ 0 (forward)
-    m *=
-        :loopless_reaction_directions^:backward^C.ConstraintTree(
-            rid => C.Constraint(
-                value = -max_flux_bound * (1 - m.loopless_binary_variables[rid].value) -
-                        fluxes[rid].value,
-                bound = C.Between(Inf, 0),
-            ) for rid in internal_reaction_ids
-        )
-    m *=
-        :loopless_reaction_directions^:forward^C.ConstraintTree(
-            rid => C.Constraint(
-                value = fluxes[rid].value -
-                        max_flux_bound * m.loopless_binary_variables[rid].value,
+    C.ConstraintTree(
+        :flux_direction_lower_bounds => C.ConstraintTree(
+            r => C.Constraint(
+                value = fluxes[r].value + flux_infinity_bound * (1-loopless_direction_indicators[r].value),
+                bound = C.Between(0, Inf),
+            ) for r=internal_reactions
+        ),
+        :flux_direction_upper_bounds => C.ConstraintTree(
+            r => C.Constraint(
+                value = fluxes[r].value + flux_infinity_bound * loopless_direction_indicators[r].value,
                 bound = C.Between(-Inf, 0),
-            ) for rid in internal_reaction_ids
-        )
-
-    # add -1000*a + 1 * (1-a) ≤ Gibbs ≤ -1 * a + 1000 * (1 - a) which also need to be split
-    # -1000 * a + 1 * (1-a)  - G ≤ 0 (backward)
-    # G + 1 * a - 1000 * (1-a) ≤ 0 (forward)
-    m *=
-        :loopless_pseudo_gibbs_sign^:backward^C.ConstraintTree(
-            rid => C.Constraint(
-                value = -max_flux_bound * m.loopless_binary_variables[rid].value +
+            ) for r=internal_reactions
+        ),
+        :driving_force_lower_bounds => C.ConstraintTree(
+            r => C.Constraint(
+                value = loopless_driving_forces[r].value -
                         strict_inequality_tolerance *
-                        (1 - m.loopless_binary_variables[rid].value) -
-                        m.pseudo_gibbs_free_energy_reaction[rid].value,
-                bound = (-Inf, 0),
-            ) for rid in internal_reaction_ids
-        )
-    m *=
-        :loopless_pseudo_gibbs_sign^:forward^C.ConstraintTree(
-            rid => C.Constraint(
-                value = m.pseudo_gibbs_free_energy_reaction[rid].value +
+                        loopless_direction_indicators[r].value +
+                        flux_infinity_bound * (1 - loopless_direction_indicators[r].value),
+                bound = C.Between(0, Inf),
+            ) for r in internal_reaction_ids
+        ),
+        :driving_force_upper_bounds => C.ConstraintTree(
+            r => C.Constraint(
+                value = loopless_driving_forces[r].value +
                         strict_inequality_tolerance *
-                        m.loopless_binary_variables[rid].value -
-                        max_flux_bound * (1 - m.loopless_binary_variables[rid].value),
-                bound = (-Inf, 0),
-            ) for rid in internal_reaction_ids
-        )
-
-    # use nullspace to ensure there are no loops
-    m *=
-        :loopless_condition^C.ConstraintTree(
+                        (1 - loopless_direction_indicators[r].value) -
+                        flux_infinity_bound * loopless_direction_indicators[r].value,
+                bound = C.Between(-Inf, 0),
+            ) for r in internal_reaction_ids
+        ),
+        :loopless_condition => C.ConstraintTree(
+            #TODO
             Symbol(:nullspace_vector, i) => C.Constraint(
                 value = sum(
                     col[j] *
-                    m.pseudo_gibbs_free_energy_reaction[internal_reaction_ids[j]].value
+                    loopless_driving_forces[internal_reaction_ids[j]].value
                     for j in eachindex(col)
                 ),
                 bound = C.EqualTo(0),
             ) for (i, col) in enumerate(internal_reaction_stoichiometry_nullspace_columns)
-        )
-
-    m
+        ),
+    )
 end
 
-export with_loopless_constraints
+export loopless_constraints

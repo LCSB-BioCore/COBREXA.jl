@@ -29,40 +29,46 @@ and the subsequently created optimization problem contains binary variables for
 each internal reaction, thus requiring a MILP solver and a potentially
 exponential solving time.
 
-The arguments `max_flux_bound` and `strict_inequality_tolerance` implement the
-"big-M" method of indicator constraints (TODO as described by the paper?).
+The arguments `driving_force_max_bound` and `driving_force_nonzero_bound` set
+the bounds (possibly negated ones) on the virtual "driving forces" (G_i in the
+paper).
 """
 function loopless_flux_balance_analysis(
-    model;
-    max_flux_bound = 1000.0, # needs to be an order of magnitude bigger, big M method heuristic
-    strict_inequality_tolerance = 1.0, # heuristic from paper
+    model::A.AbstractFBCModel;
+    flux_infinity_bound = 10000.0,
+    driving_force_nonzero_bound = 1.0,
+    driving_force_infinity_bound = 1000.0,
     settings = [],
     optimizer,
 )
 
-    m = fbc_flux_balance_constraints(model)
+    constraints = fbc_flux_balance_constraints(model)
 
-    # find all internal reactions
-    internal_reactions = [
-        (i, Symbol(rid)) for
-        (i, rid) in enumerate(A.reactions(model)) if !is_boundary(model, rid)
-    ]
-    internal_reaction_ids = last.(internal_reactions)
-    internal_reaction_idxs = first.(internal_reactions) # order needs to match the internal reaction ids below
+    rxns = A.reactions(model)
+    stoi = A.stoichiometry(model)
+    internal_mask = count(stoi .!= 0; dims = 1)[begin,:] .> 1
+    internal_reactions = Symbol.(rxns[reactions_internal]),
 
-    internal_reaction_stoichiometry_nullspace_columns = eachcol(
-        LinearAlgebra.nullspace(Array(A.stoichiometry(model)[:, internal_reaction_idxs])),
-    ) # no sparse nullspace function
-
-    m = with_loopless_constraints(
-        m,
-        internal_reaction_ids,
-        internal_reaction_stoichiometry_nullspace_columns;
-        max_flux_bound,
-        strict_inequality_tolerance,
+    constraints = constraints + 
+        :loopless_directions ^ C.variables(
+            keys = internal_reactions,
+            bounds = Switch(0, 1)
+        ) +
+        :loopless_driving_forces ^ C.variables(
+            keys = internal_reactions
+        )
+    
+    constraints *= :loopless_constraints^loopless_constraints(;
+        fluxes = constraints.fluxes,
+        loopless_directions = constraints.loopless_directions,
+        loopless_driving_forces = constraints.loopless_driving_forces,
+        internal_reactions,
+        internal_nullspace = LinearAlgebra.nullspace(Matrix(stoi[:, internal_mask])),
+        flux_infinity_bound,
+        driving_force_nonzero_bound,
+        driving_force_infinity_bound,
     )
 
-    # solve
     optimized_constraints(m; objective = m.objective.value, optimizer, settings)
 end
 
