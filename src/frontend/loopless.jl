@@ -46,28 +46,27 @@ function loopless_flux_balance_analysis(
 
     rxns = A.reactions(model)
     stoi = A.stoichiometry(model)
-    internal_mask = count(stoi .!= 0; dims = 1)[begin,:] .> 1
-    internal_reactions = Symbol.(rxns[reactions_internal]),
+    internal_mask = count(stoi .!= 0; dims = 1)[begin, :] .> 1
+    internal_reactions =
+        Symbol.(rxns[reactions_internal]), constraints =
+            constraints +
+            :loopless_directions^C.variables(
+                keys = internal_reactions,
+                bounds = Switch(0, 1),
+            ) +
+            :loopless_driving_forces^C.variables(keys = internal_reactions)
 
-    constraints = constraints + 
-        :loopless_directions ^ C.variables(
-            keys = internal_reactions,
-            bounds = Switch(0, 1)
-        ) +
-        :loopless_driving_forces ^ C.variables(
-            keys = internal_reactions
+    constraints *=
+        :loopless_constraints^loopless_constraints(;
+            fluxes = constraints.fluxes,
+            loopless_directions = constraints.loopless_directions,
+            loopless_driving_forces = constraints.loopless_driving_forces,
+            internal_reactions,
+            internal_nullspace = LinearAlgebra.nullspace(Matrix(stoi[:, internal_mask])),
+            flux_infinity_bound,
+            driving_force_nonzero_bound,
+            driving_force_infinity_bound,
         )
-    
-    constraints *= :loopless_constraints^loopless_constraints(;
-        fluxes = constraints.fluxes,
-        loopless_directions = constraints.loopless_directions,
-        loopless_driving_forces = constraints.loopless_driving_forces,
-        internal_reactions,
-        internal_nullspace = LinearAlgebra.nullspace(Matrix(stoi[:, internal_mask])),
-        flux_infinity_bound,
-        driving_force_nonzero_bound,
-        driving_force_infinity_bound,
-    )
 
     optimized_constraints(m; objective = m.objective.value, optimizer, settings)
 end

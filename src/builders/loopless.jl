@@ -50,15 +50,17 @@ function loopless_constraints(;
     C.ConstraintTree(
         :flux_direction_lower_bounds => C.ConstraintTree(
             r => C.Constraint(
-                value = fluxes[r].value + flux_infinity_bound * (1-loopless_direction_indicators[r].value),
+                value = fluxes[r].value +
+                        flux_infinity_bound * (1 - loopless_direction_indicators[r].value),
                 bound = C.Between(0, Inf),
-            ) for r=internal_reactions
+            ) for r in internal_reactions
         ),
         :flux_direction_upper_bounds => C.ConstraintTree(
             r => C.Constraint(
-                value = fluxes[r].value + flux_infinity_bound * loopless_direction_indicators[r].value,
+                value = fluxes[r].value +
+                        flux_infinity_bound * loopless_direction_indicators[r].value,
                 bound = C.Between(-Inf, 0),
-            ) for r=internal_reactions
+            ) for r in internal_reactions
         ),
         :driving_force_lower_bounds => C.ConstraintTree(
             r => C.Constraint(
@@ -78,16 +80,14 @@ function loopless_constraints(;
                 bound = C.Between(-Inf, 0),
             ) for r in internal_reaction_ids
         ),
-        :loopless_condition => C.ConstraintTree(
-            #TODO
-            Symbol(:nullspace_vector, i) => C.Constraint(
+        :loopless_nullspace => C.ConstraintTree(
+            Symbol(:nullspace_base_, i) => C.Constraint(
                 value = sum(
-                    col[j] *
-                    loopless_driving_forces[internal_reaction_ids[j]].value
-                    for j in eachindex(col)
+                    coeff * loopless_driving_forces[r].value for
+                    (coeff, r) in zip(vec, internal_reactions)
                 ),
                 bound = C.EqualTo(0),
-            ) for (i, col) in enumerate(internal_reaction_stoichiometry_nullspace_columns)
+            ) for (i, col) in enumerate(eachcol(internal_nullspace))
         ),
     )
 end
