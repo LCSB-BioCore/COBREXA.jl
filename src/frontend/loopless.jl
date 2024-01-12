@@ -47,14 +47,12 @@ function loopless_flux_balance_analysis(
     rxns = A.reactions(model)
     stoi = A.stoichiometry(model)
     internal_mask = count(stoi .!= 0; dims = 1)[begin, :] .> 1
-    internal_reactions =
-        Symbol.(rxns[reactions_internal]), constraints =
-            constraints +
-            :loopless_directions^C.variables(
-                keys = internal_reactions,
-                bounds = Switch(0, 1),
-            ) +
-            :loopless_driving_forces^C.variables(keys = internal_reactions)
+    internal_reactions = Symbol.(rxns[reactions_internal])
+
+    constraints =
+        constraints +
+        :loopless_directions^C.variables(keys = internal_reactions, bounds = Switch(0, 1)) +
+        :loopless_driving_forces^C.variables(keys = internal_reactions)
 
     constraints *=
         :loopless_constraints^loopless_constraints(;

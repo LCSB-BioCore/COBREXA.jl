@@ -24,8 +24,7 @@ fbc_boundary_constraints(
     constraints::C.ConstraintTree;
     ignore = _ -> false,
     bound = _ -> nothing,
-)
-network_boundary_constraints(c.fluxes.c.flux_stoichiometry; ...)
+) = network_boundary_constraints(c.fluxes.c.flux_stoichiometry; ignore, bound)
 
 """
 $(TYPEDSIGNATURES)
