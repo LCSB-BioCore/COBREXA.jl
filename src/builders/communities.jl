@@ -17,6 +17,109 @@
 """
 $(TYPEDSIGNATURES)
 
+Create an "interface" block for constraints created by
+[`fbc_flux_balance_constraints`](@ref) (or any compatible constraint tree).
+"""
+fbc_boundary_constraints(
+    constraints::C.ConstraintTree;
+    ignore = _ -> false,
+    bound = _ -> nothing,
+)
+network_boundary_constraints(c.fluxes.c.flux_stoichiometry; ...)
+
+"""
+$(TYPEDSIGNATURES)
+
+Create an "interface" block for a constrained reaction network described by
+variables in `fluxes` and flux balance in `balances`. Boundary reactions are
+assumed to be the ones that either "only create" or "only remove" the balanced
+components (metabolites), i.e, each dot product of the reaction description
+with all balance components is either strictly non-negative or non-positive.
+"""
+function network_boundary_constraints(
+    reactions,
+    balances;
+    ignore = _ -> false,
+    bound = _ -> nothing,
+)
+    #TODO
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Linearly scale all bounds in a constraint tree by the `factor`.
+"""
+function scale_bounds(tree::C.ConstraintTree, factor)
+    C.map(tree) do c
+        isnothing(c.bound) ? c : C.Constraint(value = c.value, bound = factor * c.bound)
+    end
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Join multiple modules into a bigger module.
+
+Modules are like usual constraint trees, but contain an explicitly declared
+`interface` part, marked properly a tuple (the parameters should form a
+dictionary constructor that would generally look such as `:module_name =>
+(module, module.interface)`; the second tuple member may also be specified just
+by name as e.g. `:interface`, or omitted while relying on `default_interface`).
+
+Interface parts get merged and constrained to create a new interface; networks
+are copied intact.
+"""
+function join_modules(
+    ps::Pair...;
+    default_in_interface = :interface,
+    out_interface = :interface,
+    out_balance = :interface_balance,
+    ignore = _ -> false,
+    bound = _ -> nothing,
+)
+
+    prep(id::String, x) = prep(Symbol(id), x)
+    prep(id::Symbol, mod::C.ConstraintTree) = prep(id, (mod, default_interface))
+    prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,Symbol}) =
+        prep(id, mod, mod[interface])
+    prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,C.ConstraintTree}) =
+        (id^(:network^mod * :interface^interface))
+
+    # collect everything into one huge network (while also renumbering the interfaces)
+    modules = sum(prep.(ps))
+
+    # extract a union of all non-ignored interface keys
+    interface_keys =
+        filter(!ignore, collect(union((keys(m.interface) for (_, m) in modules)...)))
+
+    # remove the interface placeholders and add variables for the new interface
+    constraints =
+        ConstraintTree(id => (m.network) for (id, m) in modules) +
+        out_interface^C.variables(keys = interface_keys, bounds = bound.(interface_keys))
+
+    # join everything with the interrace balance and return
+    constraints * C.map(constraints.out_interface) do ic
+        C.Constraint(
+            value = sum(c.value for mod in modules for (k, c) in mod.interface) - ic.value,
+        )
+    end
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Overload of `join_module_constraints` for general key-value containers.
+"""
+join_module_constraints(kv) = join_module_constraints(kv...)
+
+# TODO equal_growth must be preserved, should be extended to ratios (using an extra variable)
+# TODO same for exchanges (ratio_bounds?)
+# TODO probably similar to the distance bounds from MMDF -- unify!
+
+"""
+$(TYPEDSIGNATURES)
+
 Helper function to create environmental exchange rections.
 """
 function environment_exchange_variables(env_ex_rxns = Dict{String,Tuple{Float64,Float64}}())
