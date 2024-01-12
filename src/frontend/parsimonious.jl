@@ -96,7 +96,7 @@ with some (objectives) filled in automatically to fit the common processing of
 FBC models, and some (`tolerances`) provided with more practical defaults.
 
 Similarly to the [`flux_balance_analysis`](@ref), returns a tree with the optimization
-solutions of the shape as given by [`fbc_flux_balance_constraints`](@ref).
+solutions of the shape as given by [`flux_balance_constraints`](@ref).
 """
 function parsimonious_flux_balance_analysis(
     model::A.AbstractFBCModel,
@@ -104,7 +104,7 @@ function parsimonious_flux_balance_analysis(
     tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
     kwargs...,
 )
-    constraints = fbc_flux_balance_constraints(model)
+    constraints = flux_balance_constraints(model)
     parsimonious_objective = squared_sum_value(constraints.fluxes)
     parsimonious_optimized_constraints(
         constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);
@@ -136,7 +136,7 @@ function linear_parsimonious_flux_balance_analysis(
     tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
     kwargs...,
 )
-    constraints = fbc_flux_balance_constraints(model)
+    constraints = flux_balance_constraints(model)
     constraints =
         constraints +
         :fluxes_forward^unsigned_positive_contribution_variables(ct.fluxes) +

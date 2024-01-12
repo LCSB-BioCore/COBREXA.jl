@@ -18,7 +18,7 @@
 $(TYPEDSIGNATURES)
 
 Create an "interface" block for constraints created by
-[`fbc_flux_balance_constraints`](@ref) (or any compatible constraint tree).
+[`flux_balance_constraints`](@ref) (or any compatible constraint tree).
 """
 fbc_boundary_constraints(
     constraints::C.ConstraintTree;

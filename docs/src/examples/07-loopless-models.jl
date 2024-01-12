@@ -61,7 +61,7 @@ sol = loopless_flux_balance_analysis(model; optimizer = GLPK.Optimizer)
 # not use the convenience function), let's build a loopless model from scratch.
 
 # First, build a normal flux balance model
-m = fbc_flux_balance_constraints(model)
+m = flux_balance_constraints(model)
 
 # Next, find all internal reactions, and their associated indices for use later
 internal_reactions = [

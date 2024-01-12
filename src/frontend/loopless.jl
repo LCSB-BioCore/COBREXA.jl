@@ -42,7 +42,7 @@ function loopless_flux_balance_analysis(
     optimizer,
 )
 
-    constraints = fbc_flux_balance_constraints(model)
+    constraints = flux_balance_constraints(model)
 
     rxns = A.reactions(model)
     stoi = A.stoichiometry(model)

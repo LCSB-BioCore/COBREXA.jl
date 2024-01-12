@@ -51,8 +51,8 @@ model = load_model("e_coli_core.json")
 # because it is easier to build the model explicitly than rely on an opaque
 # one-shot function.
 
-ecoli1 = fbc_flux_balance_constraints(model)
-ecoli2 = fbc_flux_balance_constraints(model)
+ecoli1 = flux_balance_constraints(model)
+ecoli2 = flux_balance_constraints(model)
 
 # Since the models are joined through their individual exchange reactions to an
 # environmental exchange reactionq, we need to identify all possible exchange

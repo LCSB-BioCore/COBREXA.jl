@@ -51,7 +51,7 @@ model = load_model("e_coli_core.json")
 
 import ConstraintTrees as C
 
-ctmodel = fbc_flux_balance_constraints(model)
+ctmodel = flux_balance_constraints(model)
 
 fermentation = ctmodel.fluxes.EX_ac_e.value + ctmodel.fluxes.EX_etoh_e.value
 

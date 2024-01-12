@@ -25,7 +25,7 @@ The constructed tree contains subtrees `fluxes` (with the reaction-defining
 constraints), and a single constraint `objective` thad describes the objective
 function of the model.
 """
-function fbc_flux_balance_constraints(model::A.AbstractFBCModel)
+function flux_balance_constraints(model::A.AbstractFBCModel)
     rxns = Symbol.(A.reactions(model))
     mets = Symbol.(A.metabolites(model))
     lbs, ubs = A.bounds(model)
@@ -45,14 +45,14 @@ function fbc_flux_balance_constraints(model::A.AbstractFBCModel)
     )
 end
 
-export fbc_flux_balance_constraints
+export flux_balance_constraints
 
 """
 $(TYPEDSIGNATURES)
 
 TODO
 """
-function fbc_log_concentration_constraints(
+function log_concentration_constraints(
     model::A.AbstractFBCModel;
     concentration_bound = _ -> nothing,
 )
@@ -76,7 +76,7 @@ function fbc_log_concentration_constraints(
         end
     end
 
-    return constraints * :concentration_stoichiometry^cs
+    return constraints * :log_concentration_stoichiometry^cs
 end
 
-export fbc_log_concentration_constraints
+export log_concentration_constraints

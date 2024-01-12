@@ -39,7 +39,7 @@ function minimization_of_metabolic_adjustment(
     optimizer;
     kwargs...,
 )
-    constraints = fbc_flux_balance_constraints(model)
+    constraints = flux_balance_constraints(model)
     objective = squared_sum_error_value(constraints.fluxes, reference_fluxes)
     optimized_constraints(
         constraints * :minimal_adjustment_objective^C.Constraint(objective);
@@ -72,7 +72,7 @@ function minimization_of_metabolic_adjustment(
     reference_settings = settings,
     kwargs...,
 )
-    reference_constraints = fbc_flux_balance_constraints(reference_model)
+    reference_constraints = flux_balance_constraints(reference_model)
     reference_fluxes = optimized_constraints(
         reference_constraints;
         optimizer = reference_optimizer,
@@ -106,7 +106,7 @@ function linear_minimization_of_metabolic_adjustment(
     optimizer;
     kwargs...,
 )
-    constraints = fbc_flux_balance_constraints(model)
+    constraints = flux_balance_constraints(model)
 
     difference = C.zip(ct.fluxes, C.Tree(reference_fluxes)) do orig, ref
         C.Constraint(orig.value - ref)
@@ -148,7 +148,7 @@ function linear_minimization_of_metabolic_adjustment(
     reference_settings = settings,
     kwargs...,
 )
-    reference_constraints = fbc_flux_balance_constraints(reference_model)
+    reference_constraints = flux_balance_constraints(reference_model)
     reference_fluxes = optimized_constraints(
         reference_constraints;
         optimizer = reference_optimizer,

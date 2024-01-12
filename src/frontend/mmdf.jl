@@ -33,7 +33,7 @@ very good fluxes), [`parsimonious_flux_balance_analysis`](@ref) or
 [`linear_parsimonious_flux_balance_analysis`](@ref) (computationally simplest
 but the consistency is not guaranteed).
 
-Internally, [`fbc_log_concentration_constraints`](@ref) is used to lay out the
+Internally, [`log_concentration_constraints`](@ref) is used to lay out the
 base structure of the problem.
 
 Following arguments are set optionally:
@@ -153,7 +153,7 @@ function max_min_driving_force_analysis(
     )
 
     constraints =
-        fbc_log_concentration_constraints(
+        log_concentration_constraints(
             model,
             concentration_bound = met -> if met in no_concentration_metabolites
                 C.EqualTo(0)

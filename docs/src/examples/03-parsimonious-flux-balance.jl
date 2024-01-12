@@ -53,7 +53,7 @@ model |> parsimonious_flux_balance_analysis(Clarabel.Optimizer; settings = [sile
 # Alternatively, you can construct your own constraint tree model with
 # the quadratic objective (this approach is much more flexible).
 
-ctmodel = fbc_flux_balance_constraints(model)
+ctmodel = flux_balance_constraints(model)
 ctmodel *= :l2objective^squared_sum_value(ctmodel.fluxes)
 ctmodel.objective.bound = 0.3 # set growth rate # TODO currently breaks
 
@@ -88,7 +88,7 @@ minimize_metabolic_adjustment(ref_sol, Clarabel.Optimizer; settings = [silence])
 # Alternatively, you can construct your own constraint tree model with
 # the quadratic objective (this approach is much more flexible).
 
-ctmodel = fbc_flux_balance_constraints(model)
+ctmodel = flux_balance_constraints(model)
 ctmodel *=
     :minoxphospho^squared_sum_error_value(
         ctmodel.fluxes,
