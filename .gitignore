@@ -25,3 +25,4 @@ Manifest.toml
 *.xml
 *.json
 *.mat
+*.tsv
