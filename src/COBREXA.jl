@@ -44,6 +44,7 @@ import LinearAlgebra
 import SparseArrays
 
 include("types.jl")
+include("config.jl")
 
 # core functionality
 include("io.jl")
@@ -57,6 +58,7 @@ include("builders/knockouts.jl")
 include("builders/loopless.jl")
 include("builders/mmdf.jl")
 include("builders/objectives.jl")
+include("builders/scale.jl")
 include("builders/unsigned.jl")
 
 # simplified front-ends for the above

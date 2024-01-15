@@ -17,59 +17,20 @@
 """
 $(TYPEDSIGNATURES)
 
-Create an "interface" block for constraints created by
-[`flux_balance_constraints`](@ref) (or any compatible constraint tree).
-"""
-fbc_boundary_constraints(
-    constraints::C.ConstraintTree;
-    ignore = _ -> false,
-    bound = _ -> nothing,
-) = network_boundary_constraints(c.fluxes.c.flux_stoichiometry; ignore, bound)
-
-"""
-$(TYPEDSIGNATURES)
-
-Create an "interface" block for a constrained reaction network described by
-variables in `fluxes` and flux balance in `balances`. Boundary reactions are
-assumed to be the ones that either "only create" or "only remove" the balanced
-components (metabolites), i.e, each dot product of the reaction description
-with all balance components is either strictly non-negative or non-positive.
-"""
-function network_boundary_constraints(
-    reactions,
-    balances;
-    ignore = _ -> false,
-    bound = _ -> nothing,
-)
-    #TODO
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Linearly scale all bounds in a constraint tree by the `factor`.
-"""
-function scale_bounds(tree::C.ConstraintTree, factor)
-    C.map(tree) do c
-        isnothing(c.bound) ? c : C.Constraint(value = c.value, bound = factor * c.bound)
-    end
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Join multiple modules into a bigger module.
+Join multiple constraint tree modules with interfaces into a bigger module with
+an interface.
 
 Modules are like usual constraint trees, but contain an explicitly declared
-`interface` part, marked properly a tuple (the parameters should form a
-dictionary constructor that would generally look such as `:module_name =>
-(module, module.interface)`; the second tuple member may also be specified just
-by name as e.g. `:interface`, or omitted while relying on `default_interface`).
+`interface` part, marked properly in arguments using e.g. a tuple (the
+parameters should form a dictionary constructor that would generally look such
+as `:module_name => (module, module.interface)`; the second tuple member may
+also be specified just by name as e.g. `:interface`, or omitted while relying
+on `default_interface`).
 
-Interface parts get merged and constrained to create a new interface; networks
-are copied intact.
+Compatible modules with interfaces may be created e.g. by
+[`flux_balance_constraints`](@ref).
 """
-function join_modules(
+function join_module_constraints(
     ps::Pair...;
     default_in_interface = :interface,
     out_interface = :interface,
@@ -85,23 +46,27 @@ function join_modules(
     prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,C.ConstraintTree}) =
         (id^(:network^mod * :interface^interface))
 
-    # collect everything into one huge network (while also renumbering the interfaces)
+    # first, collect everything into one huge network
+    # (while also renumbering the interfaces)
     modules = sum(prep.(ps))
 
-    # extract a union of all non-ignored interface keys
-    interface_keys =
-        filter(!ignore, collect(union((keys(m.interface) for (_, m) in modules)...)))
+    # fold a union of all non-ignored interface keys
+    interface_sum = foldl(modules, init = C.ConstraintTree()) do accs, (_, ms)
+        C.imerge(accs, ms) do path, acc, m
+            ignore(path) ? missing :
+            ismissing(acc) ? C.Constraint(value = m.value) :
+            C.Constraint(value = acc.value + m.value)
+        end
+    end
 
-    # remove the interface placeholders and add variables for the new interface
+    # extract the plain networks and add variables for the new interfaces
     constraints =
         ConstraintTree(id => (m.network) for (id, m) in modules) +
-        out_interface^C.variables(keys = interface_keys, bounds = bound.(interface_keys))
+        out_interface^C.variables_ifor(bound, interface_sum)
 
     # join everything with the interrace balance and return
-    constraints * C.map(constraints.out_interface) do ic
-        C.Constraint(
-            value = sum(c.value for mod in modules for (k, c) in mod.interface) - ic.value,
-        )
+    constraints * C.zip(interface_sum, constraints.out_interface) do sum, out
+        C.Constraint(value = sum.value - out.value)
     end
 end
 
