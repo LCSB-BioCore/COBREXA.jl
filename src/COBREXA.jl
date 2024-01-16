@@ -39,6 +39,7 @@ using DocStringExtensions
 
 import AbstractFBCModels as A
 import ConstraintTrees as C
+import Distributed as D
 import JuMP as J
 import LinearAlgebra
 import SparseArrays
@@ -49,6 +50,12 @@ include("config.jl")
 # core functionality
 include("io.jl")
 include("solver.jl")
+
+# generic analysis functions
+include("analysis/envelope.jl")
+include("analysis/sample.jl")
+include("analysis/screen.jl")
+include("analysis/variability.jl")
 
 # conversion of various stuff to constraint trees
 include("builders/communities.jl")
@@ -63,11 +70,15 @@ include("builders/unsigned.jl")
 
 # simplified front-ends for the above
 include("frontend/balance.jl")
-include("frontend/parsimonious.jl")
+include("frontend/envelope.jl")
+include("frontend/enzymes.jl")
+include("frontend/knockout.jl")
+include("frontend/loopless.jl")
 include("frontend/mmdf.jl")
 include("frontend/moma.jl")
-include("frontend/loopless.jl")
-include("frontend/enzyme_constrained.jl")
+include("frontend/parsimonious.jl")
+include("frontend/sample.jl")
+include("frontend/variability.jl")
 
 # utilities
 include("misc/bounds.jl")

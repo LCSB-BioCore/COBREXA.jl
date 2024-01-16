@@ -27,7 +27,10 @@ as `:module_name => (module, module.interface)`; the second tuple member may
 also be specified just by name as e.g. `:interface`, or omitted while relying
 on `default_interface`).
 
-Compatible modules with interfaces may be created e.g. by
+Interface parts get merged and constrained to create a new interface; networks
+are intact with disjoint variable sets.
+
+Compatible modules with ready-made interfaces may be created e.g. by
 [`flux_balance_constraints`](@ref).
 """
 function join_module_constraints(

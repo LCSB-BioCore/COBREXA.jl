@@ -18,7 +18,8 @@
 $(TYPEDEF)
 
 A simple struct storing information about the isozyme composition, including
-subunit stoichiometry and turnover numbers.
+subunit stoichiometry and turnover numbers. Use with
+[`enzyme_constrained_flux_balance_analysis`](@ref).
 
 # Fields
 $(TYPEDFIELDS)
