@@ -16,28 +16,17 @@
 
 function screen(
     f,
-    model::A.AbstractFBCModel;
-    args::Array{Tuple} = [()],
-    workers = D.workers(),
-    kwargs...,
-)
-    # TODO might belong to the frontend
-end
-
-function screen(
-    f,
-    constraints::C.ConstraintTree;
-    args::Array{Tuple} = [()],
+    args...;
     workers = D.workers(),
 )
-    # TODO
+    D.pmap(f, D.CachingPool(workers), args...)
 end
 
 function screen_optimization_model(
     f,
     constraints::C.ConstraintTree,
-    args::Maybe{Array},
+    args...,
     workers = D.workers(),
 )
-    # TODO
+    # TODO can we do this via simple CachingPool?
 end
