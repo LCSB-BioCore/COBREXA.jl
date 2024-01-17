@@ -17,40 +17,47 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+A constraint that makes sure that the difference from `a` to `b` is within the
+`difference_bound`. For example, `difference_constraint(-1, 1, difference_bound
+= 2)` will always be valid. Any type of `ConstraintTree.Bound` can be supplied.
 """
-difference_constraint(a, b, distance_bound) =
-    C.Constraint(C.value(b) - C.value(a), distance)
+difference_constraint(a, b; difference_bound) =
+    C.Constraint(C.value(b) - C.value(a), difference_bound)
 
 """
 $(TYPEDSIGNATURES)
 
-TODO
+A constraint that makes sure that the values of `a` and `b` are the same.
 """
-same_value_constraint(a, b) = C.Constraint(C.value(a) - C.value(b), 0)
+same_value_constraint(a, b) = difference_constraint(a, b, 0)
 
 """
 $(TYPEDSIGNATURES)
 
-TODO
+A constriant tree that makes sure that all values in `tree` are the same as the
+value of `a`.
+
+Names in the output `ConstraintTree` match the names in the `tree`.
 """
-all_same_constraints(a, bs::C.ConstraintTree) =
-    C.map(bs) do b
+all_same_constraints(a, tree::C.ConstraintTree) =
+    C.map(tree) do b
         same_value_constraint(a, b)
     end
 
 """
 $(TYPEDSIGNATURES)
 
-TODO
+A constraint that makes sure that the value of `a` is greater than or equal to
+the the value of `b`.
 """
-greater_or_equal_constraint(a, b) = C.Constraint(C.value(a) - C.value(b), C.Between(0, Inf))
+greater_or_equal_constraint(a, b) = difference_bound(a, b, C.Between(0, Inf))
 
 """
 $(TYPEDSIGNATURES)
 
-TODO
+A constraint that makes sure that the value of `a` is less than or equal to the
+the value of `b`.
 """
-less_or_equal_constraint(a, b) = C.Constraint(C.value(b) - C.value(a), C.Between(0, Inf))
+less_or_equal_constraint(a, b) = difference_bound(b, a, C.Between(0, Inf))
 
 # TODO try to use the helper functions everywhere
