@@ -17,7 +17,8 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Make a function that returns absolute tolerance bounds, i.e. `value -
+tolerance` and `value + tolerance` in a tuple, in the increasing order.
 """
 absolute_tolerance_bound(tolerance) = x -> begin
     bound = (x - tolerance, x + tolerance)
@@ -27,7 +28,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Make a function that returns relative tolerance bounds, i.e. `value /
+tolerance` and `value * tolerance` in a tuple, in the increasing order.
 """
 relative_tolerance_bound(tolerance) = x -> begin
     bound = (x * tolerance, x / tolerance)
