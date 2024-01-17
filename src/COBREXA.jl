@@ -59,6 +59,7 @@ include("analysis/variability.jl")
 
 # conversion of various stuff to constraint trees
 include("builders/communities.jl")
+include("builders/compare.jl")
 include("builders/enzymes.jl")
 include("builders/fbc.jl")
 include("builders/knockouts.jl")
