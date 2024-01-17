@@ -25,9 +25,15 @@ variable, and the value is constrained to equal `a + boolean_var * (b-a)`.
 Switches can be offset by adding real numbers, negated, and multiplied and
 divided by scalar constraints. For optimizing some special cases, multiplying
 by exact zero returns an equality bound to zero.
+
+# Fields
+$(TYPEDFIELDS)
 """
-struct Switch <: C.Bound
+Base.@kwdef mutable struct Switch
+    "One choice"
     a::Float64
+
+    "The other choice"
     b::Float64
 end
 

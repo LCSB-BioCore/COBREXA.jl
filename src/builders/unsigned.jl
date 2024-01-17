@@ -32,7 +32,7 @@ sign_split_constraints(;
     signed::C.ConstraintTree,
 ) =
     C.zip(positive, negative, signed, C.Constraint) do p, n, s
-        C.Constraint(s.value + n.value - p.value, 0.0)
+        equal_value_constraint(s.value + n.value, p.value, 0.0)
     end
 #TODO the construction needs an example in the docs.
 
@@ -43,7 +43,10 @@ positive_bound_contribution(b::C.Between) =
     b.lower >= 0 && b.upper >= 0 ? b :
     b.lower <= 0 && b.upper <= 0 ? C.EqualTo(0) :
     C.Between(max(0, b.lower), max(0, b.upper))
-# TODO binary doesn't really fit here but it would be great if it could.
+positive_bound_contribution(b::C.Switch) =
+    let upper_bound = max(b.a, b.b)
+        upper_bound > 0 ? C.Between(0.0, upper_bound) : C.EqualTo(0.0)
+    end
 
 unsigned_positive_contribution_variables(cs::C.ConstraintTree) =
     C.variables_for(c -> positive_bound_contribution(c.bound), cs)

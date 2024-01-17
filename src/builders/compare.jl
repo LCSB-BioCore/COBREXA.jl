@@ -29,7 +29,7 @@ $(TYPEDSIGNATURES)
 
 A constraint that makes sure that the values of `a` and `b` are the same.
 """
-same_value_constraint(a, b) = difference_constraint(a, b, 0)
+equal_value_constraint(a, b) = difference_constraint(a, b, 0)
 
 """
 $(TYPEDSIGNATURES)
@@ -39,9 +39,9 @@ value of `a`.
 
 Names in the output `ConstraintTree` match the names in the `tree`.
 """
-all_same_constraints(a, tree::C.ConstraintTree) =
+all_equal_constraints(a, tree::C.ConstraintTree) =
     C.map(tree) do b
-        same_value_constraint(a, b)
+        equal_value_constraint(a, b)
     end
 
 """
