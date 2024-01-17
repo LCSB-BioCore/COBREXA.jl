@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#TODO: at this point, consider renaming the whole thing to "settings"
-
 """
 $(TYPEDSIGNATURES)
 
