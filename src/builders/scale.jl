@@ -18,8 +18,8 @@
 $(TYPEDSIGNATURES)
 
 Linearly scale all bounds in a constraint tree by the `factor`. This actually
-changes the model (and may not work in surprising/improper ways with some
-constraint systems, esp.  the MILP and QP ones).
+changes the model semantics, and may not work in surprising/improper ways with
+some constraint systems, esp. the MILP and QP ones.
 
 See also [`scale_constraints`](@ref).
 """

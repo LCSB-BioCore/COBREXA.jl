@@ -40,7 +40,8 @@ function minimization_of_metabolic_adjustment(
     kwargs...,
 )
     constraints = flux_balance_constraints(model)
-    objective = squared_sum_error_value(constraints.fluxes, reference_fluxes)
+    objective =
+        squared_sum_error_value(constraints.fluxes, x -> get(reference_fluxes, x, nothing))
     optimized_constraints(
         constraints * :minimal_adjustment_objective^C.Constraint(objective);
         optimizer,

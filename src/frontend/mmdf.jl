@@ -188,15 +188,12 @@ function max_min_driving_force_analysis(
         constraints *
         :min_driving_forces^min_driving_forces *
         :min_driving_force_thresholds^C.map(min_driving_forces) do c
-            C.Constraint(
-                value = constraints.max_min_driving_force.value - c.value;
-                bound = C.Between(0, Inf),
-            )
+            greater_or_equal_constraint(constraints.max_min_driving_force, c)
         end *
         :concentration_ratio_constraints^C.ConstraintTree(
-            Symbol(cid) => C.Constraint(
-                m.log_metabolite_concentrations[Symbol(m2)].value -
-                m.log_metabolite_concentrations[Symbol(m1)].value,
+            Symbol(cid) => difference_constraint(
+                m.log_metabolite_concentrations[Symbol(m1)],
+                m.log_metabolite_concentrations[Symbol(m2)],
                 log(ratio),
             ) for (cid, (m1, m2, ratio)) in concentration_ratios
         )

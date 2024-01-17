@@ -97,7 +97,18 @@ export flux_balance_constraints
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Build log-concentration-stoichiometry constraints for the `model`, as used e.g.
+by [`max_min_driving_force_analysis`](@ref).
+
+The output constraint tree contains a log-concentration variable for each
+metabolite in subtree `log_concentrations`. Individual reactions' total
+reactant log concentrations (i.e., all log concentrations of actual reactants
+minus all log concentrations of products) have their own variables in
+`reactant_log_concentrations`. The values are connected by
+`log_concentration_stoichiometry`.
+
+Function `concentration_bound` may return a bound for the log-concentration of
+a given metabolite (compatible with `ConstraintTrees.Bound`), or `nothing`.
 """
 function log_concentration_constraints(
     model::A.AbstractFBCModel;
