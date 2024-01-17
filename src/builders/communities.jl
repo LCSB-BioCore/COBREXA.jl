@@ -42,6 +42,8 @@ function join_module_constraints(
     bound = _ -> nothing,
 )
 
+    #TODO find a better name. Also the file name could be better.
+
     prep(id::String, x) = prep(Symbol(id), x)
     prep(id::Symbol, mod::C.ConstraintTree) = prep(id, (mod, default_interface))
     prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,Symbol}) =
@@ -51,7 +53,7 @@ function join_module_constraints(
 
     # first, collect everything into one huge network
     # (while also renumbering the interfaces)
-    modules = sum(prep.(ps))
+    modules = sum(prep.(ps); init = C.ConstraintTree())
 
     # fold a union of all non-ignored interface keys
     interface_sum = foldl(modules, init = C.ConstraintTree()) do accs, (_, ms)
@@ -79,6 +81,8 @@ $(TYPEDSIGNATURES)
 Overload of `join_module_constraints` for general key-value containers.
 """
 join_module_constraints(kv) = join_module_constraints(kv...)
+
+export join_module_constraints
 
 # TODO equal_growth must be preserved, should be extended to ratios (using an extra variable)
 # TODO same for exchanges (ratio_bounds?)
