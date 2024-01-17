@@ -27,7 +27,7 @@ $(TYPEDSIGNATURES)
 
 TODO
 """
-same_value_constraint(a, b) = C.Constraint(a - b, 0)
+same_value_constraint(a, b) = C.Constraint(C.value(a) - C.value(b), 0)
 
 """
 $(TYPEDSIGNATURES)
