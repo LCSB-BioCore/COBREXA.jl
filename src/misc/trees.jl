@@ -19,26 +19,26 @@ $(TYPEDSIGNATURES)
 
 TODO
 """
-function constraints_variability(
-    constraints::C.ConstraintTree,
-    targets::C.ConstraintTree;
-    optimizer,
-    workers = D.workers(),
-)::C.Tree{Tuple{Maybe{Float64},Maybe{Float64}}}
-
-    #TODO settings?
-    target_array = [dim * dir for dim in tree_deflate(C.value, x), dir in (-1, 1)]
-
-    result_array = screen_optimization_model(
-        constraints,
-        target_array;
-        optimizer,
-        workers,
-    ) do om, target
-        J.@objective(om, Maximal, C.substitute(target, om[:x]))
-        J.optimize!(om)
-        if_solved(om) ? J.objective_value(om) : nothing
+function tree_deflate(f, x::C.Tree{T})::Vector{T} where {T}
+    count = C.mapreduce(_ -> 1, +, x, init = 0)
+    res = Vector{T}(undef, count)
+    i = 1
+    C.traverse(x) do c
+        res[i] = c
+        i += 1
     end
+    res
+end
 
-    constraint_tree_reinflate(targets, [(row[1], row[2]) for row in eachrow(result_array)])
+"""
+$(TYPEDSIGNATURES)
+
+TODO
+"""
+function tree_reinflate(x::C.Tree, elems::Vector{T})::C.Tree{T} where {T}
+    i = 0
+    C.map(x) do _
+        i += 1
+        elems[i]
+    end
 end

@@ -25,15 +25,19 @@ screen(f, args...; workers = D.workers()) = D.pmap(f, D.CachingPool(workers), ar
 $(TYPEDSIGNATURES)
 
 TODO also point out there's [`optimized_model`](@ref)
+
 """
 function screen_optimization_model(
     f,
     constraints::C.ConstraintTree,
-    args...,
+    args...;
+    objective::Union{Nothing,C.Value} = nothing,
+    optimizer,
     workers = D.workers(),
 )
+    # TODO maybe settings?
     worker_cache = worker_local_data(constraints) do c
-        (c, COBREXA.optimization_model(c))
+        (c, COBREXA.optimization_model(c; objective, optimizer))
     end
 
     D.pmap(
