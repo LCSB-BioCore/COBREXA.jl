@@ -38,6 +38,8 @@ function flux_variability_analysis(
         settings,
     )
 
+    isnothing(objective_flux) && return nothing
+
     constraint_variability(
         constraints *
         :objective_bound^C.Constraint(objective, objective_bound(objective_flux)),
@@ -47,3 +49,5 @@ function flux_variability_analysis(
         workers,
     )
 end
+
+export flux_variability_analysis
