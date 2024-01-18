@@ -14,19 +14,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-function screen(
-    f,
-    args...;
-    workers = D.workers(),
-)
-    D.pmap(f, D.CachingPool(workers), args...)
-end
+"""
+$(TYPEDSIGNATURES)
 
+TODO
+"""
+screen(f, args...; workers = D.workers()) = D.pmap(f, D.CachingPool(workers), args...)
+
+"""
+$(TYPEDSIGNATURES)
+
+TODO also point out there's [`optimized_model`](@ref)
+"""
 function screen_optimization_model(
     f,
     constraints::C.ConstraintTree,
     args...,
     workers = D.workers(),
 )
-    # TODO can we do this via simple CachingPool?
+    worker_cache = worker_local_data(constraints) do c
+        (c, COBREXA.optimization_model(c))
+    end
+
+    D.pmap(
+        (as...) -> f(get_worker_local_data(worker_cache)..., as...),
+        D.CachingPool(workers),
+        args...,
+    )
 end

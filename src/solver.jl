@@ -155,8 +155,24 @@ function optimized_constraints(
     for m in settings
         m(om)
     end
+
+    optimized_model(om; output)
+end
+
+export optimized_constraints
+
+"""
+$(TYPEDSIGNATURES)
+
+Like [`optimized_constraints`](@ref), but works directly with a given JuMP
+model `om` without applying any settings or creating the optimization model.
+
+To run the process manually, you can use [`optimization_model`](@ref) to
+convert the constraints into a suitable JuMP optimization model.
+"""
+function optimized_model(om; output::ConstraintTreeElem)
     J.optimize!(om)
     is_solved(om) ? C.substitute_values(output, J.value.(om[:x])) : nothing
 end
 
-export optimized_constraints
+export optimized_model

@@ -50,6 +50,7 @@ include("config.jl")
 # core functionality
 include("io.jl")
 include("solver.jl")
+include("worker_data.jl")
 
 # generic analysis functions
 include("analysis/envelope.jl")
