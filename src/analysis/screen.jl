@@ -33,11 +33,15 @@ function screen_optimization_model(
     args...;
     objective::Union{Nothing,C.Value} = nothing,
     optimizer,
+    settings = [],
     workers = D.workers(),
 )
-    # TODO maybe settings?
     worker_cache = worker_local_data(constraints) do c
-        (c, COBREXA.optimization_model(c; objective, optimizer))
+        om = COBREXA.optimization_model(c; objective, optimizer)
+        for s in settings
+            s(om)
+        end
+        om
     end
 
     D.pmap(

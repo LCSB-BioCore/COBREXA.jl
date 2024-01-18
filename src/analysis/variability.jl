@@ -23,6 +23,7 @@ function constraints_variability(
     constraints::C.ConstraintTree,
     targets::C.ConstraintTree;
     optimizer,
+    settings = [],
     workers = D.workers(),
 )::C.Tree{Tuple{Maybe{Float64},Maybe{Float64}}}
 
@@ -33,12 +34,13 @@ function constraints_variability(
         constraints,
         target_array;
         optimizer,
+        settings,
         workers,
     ) do om, target
         J.@objective(om, Maximal, C.substitute(target, om[:x]))
         J.optimize!(om)
-        if_solved(om) ? J.objective_value(om) : nothing
+        is_solved(om) ? J.objective_value(om) : nothing
     end
 
-    constraint_tree_reinflate(targets, [(row[1], row[2]) for row in eachrow(result_array)])
+    constraint_tree_reinflate(targets, [tuple(a, b) for (a, b) in eachrow(result_array)])
 end

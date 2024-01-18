@@ -14,11 +14,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+$(TYPEDSIGNATURES)
+
+TODO
+"""
 function constraints_objective_envelope(
-    constraints::C.ConstraintTree,
-    grid::Array{C.ConstraintTreeElem},
-    objective::C.Value;
+    constraints::C.ConstraintTree;
+    dims...;
+    objective::C.Value,
+    optimizer,
+    settings = [],
     workers = D.workers(),
 )
-    #TODO
+    values = first.(dims)
+    ranges = last.(dims)
+
+    screen_optimization_model(
+        constraints,
+        Iterators.product(ranges...);
+        objective,
+        optimizer,
+        settings,
+        workers,
+    ) do om, coords
+        con_refs = [
+            begin
+                J.@constraint(om, con_ref, C.substitute(v, om[:x]) == x)
+                con_ref
+            end for (v, x) in zip(values, coords)
+        ]
+        J.optimize!(om)
+        res = is_solved(om) ? J.objective_value(om) : nothing
+        J.delete.(con_refs)
+        res
+    end
 end
