@@ -40,7 +40,7 @@ function objective_production_envelope(
 
     #TODO check for nothings in the bounds
 
-    bss = [split_interval(envelope_bounds[r]...; breaks) for r in rs]
+    bss = [break_interval(envelope_bounds[r]..., breaks) for r in rs]
 
     return (
         breaks = reactions .=> bss,
