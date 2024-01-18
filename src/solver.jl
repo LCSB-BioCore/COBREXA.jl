@@ -146,9 +146,9 @@ For a "nice" version for simpler finding of metabolic model optima, use
 [`flux_balance`](@ref).
 """
 function optimized_constraints(
-    constraints::C.ConstraintTreeElem;
+    constraints::C.ConstraintTree;
     settings = [],
-    output = constraints,
+    output::C.ConstraintTreeElem = constraints,
     kwargs...,
 )
     om = optimization_model(constraints; kwargs...)

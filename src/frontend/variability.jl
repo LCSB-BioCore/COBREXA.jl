@@ -14,6 +14,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-function flux_variability_analysis(model::A.AbstractFBCModel; optimizer, kwargs...)
-    #TODO
+"""
+$(TYPEDSIGNATURES)
+
+TODO
+"""
+function flux_variability_analysis(
+    model::A.AbstractFBCModel;
+    objective_bound,
+    optimizer,
+    settings,
+    workers = D.workers(),
+)
+    constraints = flux_balance_constraints(model)
+
+    objective = constraints.objective_value
+
+    objective_flux = optimized_constraints(
+        constraints;
+        objective = constraints.objective.value,
+        output = constraints.objective,
+        optimizer,
+        settings,
+    )
+
+    constraint_variability(
+        constraints *
+        :objective_bound^C.Constraint(objective, objective_bound(objective_flux)),
+        constraints.fluxes;
+        optimizer,
+        settings,
+        workers,
+    )
 end
