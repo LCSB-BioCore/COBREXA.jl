@@ -14,17 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#TODO these are likely hot candidates to be moved to CTs
+
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Extract all elements of a `ConstraintTrees.Tree` in order and return them in a
+`Vector` transformed by `f`. If the order is not modified, one can re-insert a
+vector of modified elements into the same-shaped tree using
+[`tree_reinflate`](@ref).
 """
 function tree_deflate(f, x::C.Tree{T})::Vector{T} where {T}
-    count = C.mapreduce(_ -> 1, +, x, init = 0)
+    count = 0
+    C.traverse(x) do _
+        count += 1
+    end
     res = Vector{T}(undef, count)
     i = 1
     C.traverse(x) do c
-        res[i] = c
+        res[i] = f(c)
         i += 1
     end
     res
@@ -33,7 +41,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Insert a `Vector` of elements into the "values" of a `ConstraintTrees.Tree`.
+The order of elements is given by [`tree_deflate`](@ref).
 """
 function tree_reinflate(x::C.Tree, elems::Vector{T})::C.Tree{T} where {T}
     i = 0

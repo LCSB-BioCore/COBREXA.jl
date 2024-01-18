@@ -59,10 +59,10 @@ include("analysis/screen.jl")
 include("analysis/variability.jl")
 
 # conversion of various stuff to constraint trees
-include("builders/communities.jl")
 include("builders/compare.jl")
 include("builders/enzymes.jl")
 include("builders/fbc.jl")
+include("builders/interface.jl")
 include("builders/knockouts.jl")
 include("builders/loopless.jl")
 include("builders/mmdf.jl")
@@ -84,7 +84,9 @@ include("frontend/variability.jl")
 
 # utilities
 include("misc/bounds.jl")
-include("misc/settings.jl")
+include("misc/breaks.jl")
 include("misc/maybe.jl")
+include("misc/settings.jl")
+include("misc/trees.jl")
 
 end # module COBREXA

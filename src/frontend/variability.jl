@@ -17,11 +17,19 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Perform a Flux Variability Analysis (FVA) on the `model`, and return a
+dictionary of flux ranges where the model is able to perform optimally. The
+optimality tolerance can be specified with objective_bound using e.g.
+[`relative_tolerance_bound`](@ref) or [`absolute_tolerance_bound`](@ref); the
+default is 99% relative tolerance.
+
+Parameters `optimizer` and `settings` are used as with
+[`optimized_constraints`](@ref). `workers` may be used to enable parallel or
+distributed processing; the execution defaults to all available workers.
 """
 function flux_variability_analysis(
     model::A.AbstractFBCModel;
-    objective_bound,
+    objective_bound = relative_tolerance_bound(0.99),
     optimizer,
     settings,
     workers = D.workers(),

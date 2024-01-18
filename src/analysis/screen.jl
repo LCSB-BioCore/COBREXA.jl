@@ -17,27 +17,48 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Execute a function with arguments given by `args` on `workers`.
+
+This is merely a nice shortcut for `Distributed.pmap` running over a
+`Distributed.CachingPool` of the given workers.
 """
 screen(f, args...; workers = D.workers()) = D.pmap(f, D.CachingPool(workers), args...)
 
 """
 $(TYPEDSIGNATURES)
 
-TODO also point out there's [`optimized_model`](@ref)
+Execute a function arguments from arrays `args` on `workers`, with a pre-cached
+JuMP optimization model created from `constraints`, `objective` and `optimizer`
+using [`optimization_model`](@ref). `settings` are applied to the optimization
+model before first execution of `f`.
 
+Since the model is cached and never re-created, this may be faster than just
+plain [`screen`](@ref) in many use cases.
+
+The function `f` is supposed to take `length(args)+1` arguments, the first
+argument is the JuMP model, and the other arguments are taken from `args` as
+with `Distributed.pmap`. While the model may be modified in place, one should
+take care to avoid modifications that change results of subsequent invocations
+of `f`, as that almost always results in data races and irreproducible
+executions. Ideally, all modifications of the model should be either manually
+reverted in the invocation of `f`, or the future invocations of `f` must be
+able to overwrite them.
+
+`f` may use [`optimized_model`](@ref) to extract results easily w.r.t. some
+given `ConstraintTree`.
 """
 function screen_optimization_model(
     f,
     constraints::C.ConstraintTree,
     args...;
     objective::Union{Nothing,C.Value} = nothing,
+    sense = Maximal,
     optimizer,
     settings = [],
     workers = D.workers(),
 )
     worker_cache = worker_local_data(constraints) do c
-        om = COBREXA.optimization_model(c; objective, optimizer)
+        om = COBREXA.optimization_model(c; objective, sense, optimizer)
         for s in settings
             s(om)
         end
@@ -45,7 +66,7 @@ function screen_optimization_model(
     end
 
     D.pmap(
-        (as...) -> f(get_worker_local_data(worker_cache)..., as...),
+        (as...) -> f(get_worker_local_data(worker_cache), as...),
         D.CachingPool(workers),
         args...,
     )

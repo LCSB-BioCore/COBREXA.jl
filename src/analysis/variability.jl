@@ -17,7 +17,7 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Compute the variability
 """
 function constraints_variability(
     constraints::C.ConstraintTree,
@@ -27,8 +27,7 @@ function constraints_variability(
     workers = D.workers(),
 )::C.Tree{Tuple{Maybe{Float64},Maybe{Float64}}}
 
-    #TODO settings?
-    target_array = [dim * dir for dim in tree_deflate(C.value, x), dir in (-1, 1)]
+    target_array = [dim * dir for dim in tree_deflate(C.value, targets), dir in (-1, 1)]
 
     result_array = screen_optimization_model(
         constraints,

@@ -17,12 +17,26 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Optimize the system given by `constraints` and `objective` with `optimizer`
+(with custom `settings`) for all combination of constriants given by `dims`.
+
+`dims` should be compatible with pairs that assign a sequence of breaks to a
+`ConstraintTrees.Value`: For example, `organism.fluxes.PFK => 1:3` will compute
+optima of the model with the flux through `PFK` constrained to be equal to 1, 2
+and 3.
+
+In turn, all `dims` are converted to groups of equality constraints, and the
+model is solved for all combinations. Shape of the output matrix corresponds to
+`Iterators.product(last.(dims)...)`.
+
+Operation is parallelized by distribution over `workers`; by default all
+`Distributed` workers are used.
 """
 function constraints_objective_envelope(
     constraints::C.ConstraintTree;
     dims...;
     objective::C.Value,
+    sense = Maximal,
     optimizer,
     settings = [],
     workers = D.workers(),
@@ -34,6 +48,7 @@ function constraints_objective_envelope(
         constraints,
         Iterators.product(ranges...);
         objective,
+        sense,
         optimizer,
         settings,
         workers,
