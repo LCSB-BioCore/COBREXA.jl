@@ -14,11 +14,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+$(TYPEDSIGNATURES)
+
+TODO
+"""
 function objective_production_envelope(
     model::A.AbstractFBCModel,
-    dimensions;
+    reactions;
+    breaks = 10,
     optimizer,
-    kwargs...,
+    settings = [],
+    workers,
 )
-    #TODO
+    constraints = flux_balance_constraints(model)
+    rs = Symbol.(reactions)
+
+    envelope_bounds = constraints_variability(
+        constraints,
+        (r => constraints.fluxes[r] for r in rs);
+        optimizer,
+        settings,
+        workers,
+    )
+
+    #TODO check for nothings in the bounds
+
+    bss = [split_interval(envelope_bounds[r]...; breaks) for r in rs]
+
+    return (
+        breaks = reactions .=> bss,
+        objective_values = constraints_objective_envelope(
+            constraints,
+            (constraints.fluxes[r] => bs for (r, bs) in zip(rs, bss))...;
+            objective = model.objective.value,
+            optimizer,
+            settings,
+            workers,
+        ),
+    )
+
+    # this converts nicely to a dataframe, but I'm not a total fan.
+    #=
+    xss = Iterators.product(bss)
+    @assert length(result) == length(xss)
+    xss = reshape(xss, tuple(length(xss)))
+
+    return (;
+        (r => [xs[i] for xs in xss] for (i, r) in enumerate(rs))...,
+        objective_value_name => reshape(result, tuple(length(result))),
+    )
+    # TODO think about it
+    =#
 end
