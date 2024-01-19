@@ -40,6 +40,8 @@ function parsimonious_optimized_constraints(
     kwargs...,
 )
 
+    # TODO move this to analysis
+
     # first solve the optimization problem with the original objective
     om = optimization_model(constraints; objective, kwargs...)
     for m in settings

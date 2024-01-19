@@ -60,9 +60,9 @@ function max_min_driving_force_analysis(
     reference_flux = Dict{String,Float64}(),
     concentration_ratios = Dict{String,Tuple{String,String,Float64}}(),
     constant_concentrations = Dict{String,Float64}(),
-    ignored_metabolites = Set{String}(),
-    proton_metabolites = Set{String}(),
-    water_metabolites = Set{String}(),
+    ignored_metabolites = [],
+    proton_metabolites = [],
+    water_metabolites = [],
     concentration_lower_bound = 1e-9, # M
     concentration_upper_bound = 1e-1, # M
     T = 298.15, # Kelvin
@@ -170,7 +170,7 @@ function max_min_driving_force_analysis(
     min_driving_forces = C.ConstraintTree(
         let r = Symbol(rid)
             r => C.Constraint(
-                value = dGr0 + (R * T) * constraints.reactant_log_concentrations[r],
+                value = dGr0 + (R * T) * constraints.reactant_log_concentrations[r].value,
                 bound = let rf = reference_flux[rid]
                     if isapprox(rf, 0.0, atol = reference_flux_atol)
                         C.EqualTo(0)

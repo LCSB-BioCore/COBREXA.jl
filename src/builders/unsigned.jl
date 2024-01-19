@@ -32,7 +32,7 @@ sign_split_constraints(;
     signed::C.ConstraintTree,
 ) =
     C.zip(positive, negative, signed, C.Constraint) do p, n, s
-        equal_value_constraint(s.value + n.value, p.value, 0.0)
+        equal_value_constraint(s.value + n.value, p.value)
     end
 #TODO the construction needs an example in the docs.
 

@@ -20,7 +20,7 @@ $(TYPEDSIGNATURES)
 Construct a `ConstraintTrees.Value` out of squared sum of all values directly
 present in a given constraint tree.
 """
-squared_sum_value(x::C.ConstraintTree) = squared_sum_error_value(x, Dict(keys(x) .=> 0.0))
+squared_sum_value(x::C.ConstraintTree) = squared_sum_error_value(x, _ -> 0.0)
 
 """
 $(TYPEDSIGNATURES)

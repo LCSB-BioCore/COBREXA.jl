@@ -29,7 +29,7 @@ by exact zero returns an equality bound to zero.
 # Fields
 $(TYPEDFIELDS)
 """
-Base.@kwdef mutable struct Switch
+Base.@kwdef mutable struct Switch <: C.Bound
     "One choice"
     a::Float64
 

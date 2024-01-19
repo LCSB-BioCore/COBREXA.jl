@@ -110,45 +110,14 @@ mmdf_solution = max_min_driving_force_analysis(
         "atp" => ("atp_c", "adp_c", 10.0),
         "nadh" => ("nadh_c", "nad_c", 0.13),
     ),
-    proton_ids = ["h_c", "h_e"],
-    water_ids = ["h2o_c", "h2o_e"],
-    concentration_lb = 1e-6, # M
-    concentration_ub = 1e-1, # M
+    proton_metabolites = ["h_c", "h_e"],
+    water_metabolites = ["h2o_c", "h2o_e"],
+    concentration_lower_bound = 1e-6, # M
+    concentration_upper_bound = 1e-1, # M
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
-    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
     optimizer = Tulip.Optimizer,
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
 )
 
 @test isapprox(mmdf_solution.max_min_driving_force, 5.78353, atol = TEST_TOLERANCE) #src
-
-# ## Building the thermodynamic model yourself
-
-# It is also possible to build the thermodynamic model yourself. This allows you
-# to incorporate more complex constraints and gives you more freedom.
-
-m = build_max_min_driving_force_model(
-    model,
-    reaction_standard_gibbs_free_energies;
-    proton_ids = ["h_c", "h_e"],
-    water_ids = ["h2o_c", "h2o_e"],
-    reference_flux,
-    concentration_lb = 1e-6, # M
-    concentration_ub = 1e-1, # M
-    T = 298.15, # Kelvin
-    R = 8.31446261815324e-3, # kJ/K/mol
-)
-
-m *=
-    :metabolite_ratio_constraints^log_ratio_constraints(
-        Dict("atp" => ("atp_c", "adp_c", 10.0), "nadh" => ("nadh_c", "nad_c", 0.13)),
-        m.log_metabolite_concentrations,
-    )
-
-# solve the model, which is not just a normal constraint tree!
-mmdf_solution = optimized_constraints(
-    m;
-    objective = m.max_min_driving_force.value,
-    optimizer = Tulip.Optimizer,
-    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
-)

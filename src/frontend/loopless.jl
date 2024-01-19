@@ -47,7 +47,7 @@ function loopless_flux_balance_analysis(
     rxns = A.reactions(model)
     stoi = A.stoichiometry(model)
     internal_mask = count(stoi .!= 0; dims = 1)[begin, :] .> 1
-    internal_reactions = Symbol.(rxns[reactions_internal])
+    internal_reactions = Symbol.(rxns[internal_mask])
 
     constraints =
         constraints +
@@ -57,7 +57,7 @@ function loopless_flux_balance_analysis(
     constraints *=
         :loopless_constraints^loopless_constraints(;
             fluxes = constraints.fluxes,
-            loopless_directions = constraints.loopless_directions,
+            loopless_direction_indicators = constraints.loopless_directions,
             loopless_driving_forces = constraints.loopless_driving_forces,
             internal_reactions,
             internal_nullspace = LinearAlgebra.nullspace(Matrix(stoi[:, internal_mask])),
@@ -66,7 +66,12 @@ function loopless_flux_balance_analysis(
             driving_force_infinity_bound,
         )
 
-    optimized_constraints(m; objective = m.objective.value, optimizer, settings)
+    optimized_constraints(
+        constraints;
+        objective = constraints.objective.value,
+        optimizer,
+        settings,
+    )
 end
 
 export loopless_flux_balance_analysis

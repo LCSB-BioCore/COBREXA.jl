@@ -18,10 +18,10 @@
 $(TYPEDSIGNATURES)
 
 A constraint that makes sure that the difference from `a` to `b` is within the
-`difference_bound`. For example, `difference_constraint(-1, 1, difference_bound
-= 2)` will always be valid. Any type of `ConstraintTree.Bound` can be supplied.
+`difference_bound`. For example, `difference_constraint(-1, 1, 2)` will always
+be valid. Any type of `ConstraintTree.Bound` can be supplied.
 """
-difference_constraint(a, b; difference_bound) =
+difference_constraint(a, b, difference_bound) =
     C.Constraint(C.value(b) - C.value(a), difference_bound)
 
 """
@@ -50,7 +50,7 @@ $(TYPEDSIGNATURES)
 A constraint that makes sure that the value of `a` is greater than or equal to
 the the value of `b`.
 """
-greater_or_equal_constraint(a, b) = difference_bound(a, b, C.Between(0, Inf))
+greater_or_equal_constraint(a, b) = difference_constraint(a, b, C.Between(0, Inf))
 
 """
 $(TYPEDSIGNATURES)
@@ -58,6 +58,6 @@ $(TYPEDSIGNATURES)
 A constraint that makes sure that the value of `a` is less than or equal to the
 the value of `b`.
 """
-less_or_equal_constraint(a, b) = difference_bound(b, a, C.Between(0, Inf))
+less_or_equal_constraint(a, b) = difference_constraint(b, a, C.Between(0, Inf))
 
 # TODO try to use the helper functions everywhere

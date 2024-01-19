@@ -120,9 +120,8 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
     reaction_isozymes,
     gene_product_molar_masses,
     capacity = total_enzyme_capacity,
-    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
-    #unconstrain_reactions = ["EX_glc__D_e"],
     optimizer = Tulip.Optimizer,
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
 )
 
 #src these values should be unique (glucose transporter is the only way to get carbon into the system)
@@ -130,48 +129,3 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
 @test isapprox(ec_solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
 @test isapprox(ec_solution.fluxes.EX_glc__D_e, -49.92966287110028, atol = 0.1) #src
 @test isapprox(ec_solution.enzymes.b2417, 0.00011859224858442563, atol = 1e-7) #src
-
-### Building a model incrementally
-
-# Sometimes it is necessary to build a more complicated model, perhaps using a
-# novel type of constraint. For this, it is useful to build the enzyme
-# constrained model incrementally, using the ConstraintTree building blocks.
-
-import ConstraintTrees as C
-
-# create basic flux model
-m = flux_balance_constraints(model)
-
-# create enzyme variables
-m += :enzymes^gene_product_variables(model)
-
-# constrain some fluxes...
-m.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 0.0) # undo glucose important bound from original model
-
-# ...And enzymes manually
-m.enzymes.b2417.bound = C.Between(0.0, 0.1) # for fun, change the bounds of the protein b2417
-
-# attach the enzyme mass balances
-m = with_enzyme_constraints(
-    m,
-    reaction_isozymes;
-    fluxes = m.fluxes, # mount enzyme constraints to these fluxes
-    enzymes = m.enzymes, # enzyme variables
-)
-
-# add capacity limitation
-m *=
-    :total_proteome_bound^enzyme_capacity(
-        m.enzymes,
-        gene_molar_masses,
-        A.genes(model),
-        total_enzyme_capacity,
-    )
-
-# solve the model
-ec_solution = optimized_constraints(
-    m;
-    objective = m.objective.value,
-    optimizer = Tulip.Optimizer,
-    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
-)

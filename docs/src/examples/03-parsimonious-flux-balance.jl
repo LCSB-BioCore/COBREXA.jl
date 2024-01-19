@@ -41,10 +41,6 @@ model = load_model("e_coli_core.json") # load the model
 
 vt = parsimonious_flux_balance_analysis(model, Clarabel.Optimizer; settings = [silence])
 
-# Or use the piping functionality
-
-model |> parsimonious_flux_balance_analysis(Clarabel.Optimizer; settings = [silence])
-
 @test isapprox(vt.objective, 0.87392; atol = TEST_TOLERANCE) #src
 @test sum(x^2 for x in values(vt.fluxes)) < 15000 #src
 

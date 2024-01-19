@@ -54,7 +54,7 @@ function flux_balance_constraints(
     obj = A.objective(model)
 
     constraints = C.ConstraintTree(
-        :fluxes^C.variables(keys = reactions, bounds = zip(lbs, ubs)) *
+        :fluxes^C.variables(keys = rxns, bounds = zip(lbs, ubs)) *
         :flux_stoichiometry^C.ConstraintTree(
             met => C.Constraint(
                 value = C.LinearValue(SparseArrays.sparse(row)),
@@ -114,7 +114,7 @@ function log_concentration_constraints(
     model::A.AbstractFBCModel;
     concentration_bound = _ -> nothing,
 )
-    rxns = Symbol.(A.reations(model))
+    rxns = Symbol.(A.reactions(model))
     mets = Symbol.(A.metabolites(model))
     stoi = A.stoichiometry(model)
 
@@ -124,9 +124,9 @@ function log_concentration_constraints(
 
     cs = C.ConstraintTree()
 
-    for (midx, ridx, coeff) in zip(findnz(stoi)...)
+    for (midx, ridx, coeff) in zip(SparseArrays.findnz(stoi)...)
         rid = rxns[ridx]
-        value = constraints.log_concentrations[mets[midx]] * coeff
+        value = constraints.log_concentrations[mets[midx]].value * coeff
         if haskey(cs, rid)
             cs[rid].value += value
         else
