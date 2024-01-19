@@ -57,6 +57,7 @@ include("analysis/envelope.jl")
 include("analysis/parsimonious.jl")
 include("analysis/sample.jl")
 include("analysis/screen.jl")
+include("analysis/solver.jl")
 include("analysis/variability.jl")
 
 # conversion of various stuff to constraint trees
