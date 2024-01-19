@@ -17,7 +17,23 @@
 """
 $(TYPEDSIGNATURES)
 
-TODO
+Construct the loopless constraint system that binds `fluxes` of all
+`internal_reactions` to direction of `loopless_direction_indicators` and
+connects them to `loopless_driving_forces`. The solution is bounded to lie in
+`internal_nullspace` (which is a sufficient algebraic condition for
+loop-less-ness).
+
+The simplest (but by no means the fastest) way to obtain a good
+`internal_nullspace` is to use `LinearAlgebra.nullspace` with the internal
+reactions' stoichiometry matrix. Rows of `internal_nullspace` must correspond
+to `internal_reactions`.
+
+`flux_infinity_bound` is used as the maximal bound for fluxes (for constraints
+that connect them to indicator variables); it should optimally be greater than
+the maximum possible absolute value of any flux in the original model.
+
+`driving_force_nonzero_bound` and `driving_force_infinity_bound` are similarly
+used to limit the individual reaction's driving forces.
 """
 loopless_constraints(;
     fluxes::C.ConstraintTree,
