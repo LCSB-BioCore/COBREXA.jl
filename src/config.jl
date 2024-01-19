@@ -48,25 +48,25 @@ Base.@kwdef mutable struct Configuration
     SBO numbers that label exchange reactions for
     [`flux_balance_constraints`](@ref).
     """
-    exchange_sbos::Vector{Int} = ["SBO:0000627"]
+    exchange_sbos::Vector{String} = ["SBO:0000627"]
 
     """
     SBO numbers that label biomass production reactions for
     [`flux_balance_constraints`](@ref).
     """
-    biomass_sbos::Vector{Int} = ["SBO:0000629"]
+    biomass_sbos::Vector{String} = ["SBO:0000629"]
 
     """
     SBO numbers that label ATP maintenance reactions for
     [`flux_balance_constraints`](@ref).
     """
-    atp_maintenance_sbos::Vector{Int} = ["SBO:0000630"]
+    atp_maintenance_sbos::Vector{String} = ["SBO:0000630"]
 
     """
     SBO numbers that label metabolite demand reactions for
     [`flux_balance_constraints`](@ref).
     """
-    demand_sbos::Vector{Int} = ["SBO:0000628"]
+    demand_sbos::Vector{String} = ["SBO:0000628"]
 end
 
 """

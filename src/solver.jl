@@ -170,7 +170,7 @@ model `om` without applying any settings or creating the optimization model.
 To run the process manually, you can use [`optimization_model`](@ref) to
 convert the constraints into a suitable JuMP optimization model.
 """
-function optimized_model(om; output::ConstraintTreeElem)
+function optimized_model(om; output::C.ConstraintTreeElem)
     J.optimize!(om)
     is_solved(om) ? C.substitute_values(output, J.value.(om[:x])) : nothing
 end

@@ -33,7 +33,7 @@ Operation is parallelized by distribution over `workers`; by default all
 `Distributed` workers are used.
 """
 function constraints_objective_envelope(
-    constraints::C.ConstraintTree;
+    constraints::C.ConstraintTree,
     dims...;
     objective::C.Value,
     sense = Maximal,
