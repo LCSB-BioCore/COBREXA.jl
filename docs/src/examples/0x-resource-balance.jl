@@ -32,7 +32,9 @@ p_md, p_tabs = SBtabFBCModels.load_tables("bsubtilis_rba_parameters.tsv");
 
 using DataFrames
 using ConstraintTrees
+using JSON
 
+todict(s) = JSON.parse(replace(s, "'" => "\""))
 
 summary = DataFrame(tabs[2]) # summary
 mets = DataFrame(tabs[3])
@@ -42,7 +44,7 @@ prots = DataFrame(tabs[6])
 macro_mols = DataFrame(tabs[7])
 compartments = DataFrame(tabs[8])
 cell_modules = DataFrame(tabs[9]) # empty
-processes = DataFrame(tabs[10])
+processes = DataFrame(tabs[10]) # machines
 cell_targets = DataFrame(tabs[11])
 met_cons = DataFrame(tabs[12])
 dens_cons = DataFrame(tabs[13])
@@ -55,3 +57,29 @@ enz_cap_b = DataFrame(p_tabs[3]) # 1/h
 machine_cap = DataFrame(p_tabs[4]) # 1/h
 comp_cap = DataFrame(p_tabs[5]) # mmol/gDW
 target_vals = DataFrame(p_tabs[6]) # no unit
+
+# uniprot
+using BioSequences, FASTX
+
+bsub_proteome = Dict()
+FASTAReader(open("Bsub_proteome.fasta")) do reader
+    for record in reader
+        id = split(identifier(record), "|")[2]
+        seq = sequence(record)
+        c = split(seq,"")
+        uc = String.(unique(c)) 
+        bsub_proteome[id] = Dict(u => count(==(u), c) for u in uc)
+    end
+end
+
+uni_id = Dict(k1 => get(todict(k2), "UniprotID", nothing) for (k1, k2) in zip(prots.ID, prots.Annotation) if !ismissing(k2) && startswith(k2, "{"))
+
+# metabolite mass balances
+
+SBtabFBCModels.parse_reaction_formula(rxns[1,:].ReactionFormula)
+
+processes
+todict(processes[1,:].ProcessComponents)
+todict(processes[1,:].MachineSubunits)
+
+processes[1,:].InitiationCofactors
