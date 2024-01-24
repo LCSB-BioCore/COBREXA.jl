@@ -33,7 +33,7 @@ are intact with disjoint variable sets.
 Compatible modules with ready-made interfaces may be created e.g. by
 [`flux_balance_constraints`](@ref).
 """
-function join_module_constraints(
+function interface_constraints(
     ps::Pair...;
     default_in_interface = :interface,
     out_interface = :interface,
@@ -42,12 +42,14 @@ function join_module_constraints(
     bound = _ -> nothing,
 )
 
-    #TODO find a better name. Also the file name could be better.
-
     prep(id::String, x) = prep(Symbol(id), x)
     prep(id::Symbol, mod::C.ConstraintTree) = prep(id, (mod, default_interface))
+    prep(id::Symbol, (mod, multiplier)::Tuple{C.ConstraintTree,<:Real}) =
+        prep(id, (mod, default_interface, multiplier))
     prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,Symbol}) =
         prep(id, mod, mod[interface])
+    prep(id::Symbol, (mod, interface, multiplier)::Tuple{C.ConstraintTree,Symbol,<:Real}) =
+        prep(id, mod, C.map(c -> c * multiplier, mod[interface]))
     prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,C.ConstraintTree}) =
         (id^(:network^mod * :interface^interface))
 
@@ -55,10 +57,14 @@ function join_module_constraints(
     # (while also renumbering the interfaces)
     modules = sum(prep.(ps); init = C.ConstraintTree())
 
+    # TODO maybe split the interface creation into a separate function
+    # (BUT- people shouldn't really need it since they should have all of their
+    # interfacing stuff in interface subtrees anyway, right?)
+
     # fold a union of all non-ignored interface keys
-    interface_sum = foldl(modules, init = C.ConstraintTree()) do accs, (_, ms)
-        C.imerge(accs, ms) do path, acc, m
-            ignore(path) ? missing :
+    interface_sum = foldl(modules, init = C.ConstraintTree()) do accs, (id, ms)
+        C.imerge(accs, ms.interface) do path, acc, m
+            ignore(id, path) ? missing :
             ismissing(acc) ? C.Constraint(value = m.value) :
             C.Constraint(value = acc.value + m.value)
         end
@@ -78,82 +84,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Overload of `join_module_constraints` for general key-value containers.
+Overload of [`interface_constraints`](@ref) for general key-value containers.
 """
-join_module_constraints(kv) = join_module_constraints(kv...)
+interface_constraints(kv; kwargs...) = interface_constraints(kv...; kwargs...)
 
-export join_module_constraints
-
-# TODO equal_growth must be preserved, should be extended to ratios (using an extra variable)
-# TODO same for exchanges (ratio_bounds?)
-# TODO probably similar to the distance bounds from MMDF -- unify!
-
-"""
-$(TYPEDSIGNATURES)
-
-Helper function to create environmental exchange rections.
-"""
-function environment_exchange_variables(env_ex_rxns = Dict{String,Tuple{Float64,Float64}}())
-    rids = collect(keys(env_ex_rxns))
-    lbs_ubs = collect(values(env_ex_rxns))
-    C.variables(; keys = Symbol.(rids), bounds = lbs_ubs)
-end
-
-export environment_exchange_variables
-
-"""
-$(TYPEDSIGNATURES)
-
-Helper function to build a "blank" community model with only environmental exchange reactions.
-"""
-function build_community_environment(env_ex_rxns = Dict{String,Tuple{Float64,Float64}}())
-    C.ConstraintTree(
-        :environmental_exchange_reactions => environment_exchange_variables(env_ex_rxns),
-    )
-end
-
-export build_community_environment
-
-"""
-$(TYPEDSIGNATURES)
-
-Helper function to link species specific exchange reactions to the environmental
-exchange reactions by weighting them with their abundances.
-"""
-function link_environmental_exchanges(
-    m::C.ConstraintTree,
-    member_abundances::Vector{Tuple{Symbol,Float64}};
-    on = m.:environmental_exchange_reactions,
-    member_fluxes_id = :fluxes,
-)
-    C.ConstraintTree(
-        rid => C.Constraint(
-            value = -rxn.value + sum(
-                abundance * m[member][member_fluxes_id][rid].value for
-                (member, abundance) in member_abundances if
-                haskey(m[member][member_fluxes_id], rid);
-                init = zero(C.LinearValue),
-            ),
-            bound = 0.0,
-        ) for (rid, rxn) in on
-    )
-end
-
-export link_environmental_exchanges
-
-"""
-$(TYPEDSIGNATURES)
-
-Helper function to set each species growth rate equal to each other.
-"""
-function equal_growth_rate_constraints(
-    member_biomasses::Vector{Tuple{Symbol,C.LinearValue}},
-)
-    C.ConstraintTree(
-        Symbol(bid1, :_, bid2) => C.Constraint(value = bval1 - bval2, bound = 0.0) for
-        ((bid1, bval1), (bid2, bval2)) in
-        zip(member_biomasses[1:end-1], member_biomasses[2:end])
-    )
-end
-
-export equal_growth_rate_constraints
+export interface_constraints
