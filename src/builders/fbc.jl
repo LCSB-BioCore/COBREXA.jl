@@ -72,7 +72,7 @@ function flux_balance_constraints(
                 )
         )
     if interface == :sbo
-        sbod(sbos, rid) = any(in(sbos), get(A.reaction_annotation(model, rid), "sbo", []))
+        sbod(sbos, rid) = any(in(sbos), get(A.reaction_annotations(model, rid), "sbo", []))
         add_interface(:exchanges, sbod.(Ref(configuration.exchange_sbos), rxn_strings))
         add_interface(:biomass, sbod.(Ref(configuration.biomass_sbos), rxn_strings))
         add_interface(
@@ -81,12 +81,28 @@ function flux_balance_constraints(
         )
         add_interface(:demand, sbod.(Ref(configuration.demand_sbos), rxn_strings))
     elseif interface == :identifier_prefixes
-        prefixed(ps, s) = any(p -> hasprefix(p, s), ps)
-        add_interface(:exchanges, prefixed.(Ref(configuration.exchange_id_prefixes), s))
-        add_interface(:biomass, prefixed.(Ref(configuration.biomass_id_prefixes), s))
-        add_interface(:atp_maintenance, in.(s, Ref(configuration.atp_maintenance_ids)))
+        prefixed(ps, s) = any(p -> startswith(s, p), ps)
+        add_interface(
+            :exchanges,
+            prefixed.(Ref(configuration.exchange_id_prefixes), rxn_strings),
+        )
+        add_interface(
+            :biomass,
+            prefixed.(Ref(configuration.biomass_id_prefixes), rxn_strings),
+        )
+        add_interface(
+            :atp_maintenance,
+            in.(rxn_strings, Ref(configuration.atp_maintenance_ids)),
+        )
     elseif interface == :boundary
-        add_interface(:boundary, ((all(s .<= 0) || all(s .>= 0)) for s in eachcol(stoi)))
+        add_interface(
+            :boundary,
+            [(all(col .<= 0) | all(col .>= 0)) for col in eachcol(stoi)],
+        )
+    elseif interface == nothing
+        # nothing :]
+    else
+        throw(DomainError(interface, "unknown interface specifier"))
     end
 
     return constraints
