@@ -103,7 +103,7 @@ function gene_product_isozyme_constraints(
                         res[gp].value += i.value * stoi
                     else
                         res[gp] =
-                            equal_value_constraint(i.value * stoi, gene_product_amounts[gp])
+                            C.Constraint(i.value * stoi - gene_product_amounts[gp].value, 0)
                     end
                 end
             end
