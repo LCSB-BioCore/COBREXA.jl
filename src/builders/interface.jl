@@ -32,13 +32,18 @@ are intact with disjoint variable sets.
 
 Compatible modules with ready-made interfaces may be created e.g. by
 [`flux_balance_constraints`](@ref).
+
+`ignore` may be used to selectively ignore parts of interfaces given the
+"module name" identifier and constraint path in the interface (these form 2
+parameters passed to `ignore`). Similarly, `bound` may be used to specify
+bounds for the new interface, if required.
 """
 function interface_constraints(
     ps::Pair...;
-    default_in_interface = :interface,
-    out_interface = :interface,
-    out_balance = :interface_balance,
-    ignore = _ -> false,
+    default_interface = :interface,
+    out_interface = default_interface,
+    out_balance = Symbol(out_interface, :_balance),
+    ignore = (_, _) -> false,
     bound = _ -> nothing,
 )
 
@@ -47,15 +52,16 @@ function interface_constraints(
     prep(id::Symbol, (mod, multiplier)::Tuple{C.ConstraintTree,<:Real}) =
         prep(id, (mod, default_interface, multiplier))
     prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,Symbol}) =
-        prep(id, mod, mod[interface])
+        prep(id, (mod, mod[interface]))
     prep(id::Symbol, (mod, interface, multiplier)::Tuple{C.ConstraintTree,Symbol,<:Real}) =
-        prep(id, mod, C.map(c -> c * multiplier, mod[interface]))
-    prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTree,C.ConstraintTree}) =
+        prep(id, (mod, C.map(c -> c * multiplier, mod[interface])))
+    prep(id::Symbol, (mod, interface)::Tuple{C.ConstraintTreeElem,C.ConstraintTreeElem}) =
         (id^(:network^mod * :interface^interface))
+    prep_pair((a, b)) = prep(a, b)
 
     # first, collect everything into one huge network
     # (while also renumbering the interfaces)
-    modules = sum(prep.(ps); init = C.ConstraintTree())
+    modules = sum(prep_pair.(ps); init = C.ConstraintTree())
 
     # TODO maybe split the interface creation into a separate function
     # (BUT- people shouldn't really need it since they should have all of their
@@ -72,12 +78,12 @@ function interface_constraints(
 
     # extract the plain networks and add variables for the new interfaces
     constraints =
-        ConstraintTree(id => (m.network) for (id, m) in modules) +
-        out_interface^C.variables_ifor(bound, interface_sum)
+        C.ConstraintTree(id => (m.network) for (id, m) in modules) +
+        out_interface^C.variables_ifor((path, _) -> bound(path), interface_sum)
 
-    # join everything with the interrace balance and return
-    constraints * C.zip(interface_sum, constraints.out_interface) do sum, out
-        C.Constraint(value = sum.value - out.value)
+    # join everything with the interface balance and return
+    constraints * out_balance^C.zip(interface_sum, constraints[out_interface]) do sum, out
+        C.Constraint(sum.value - out.value, 0)
     end
 end
 
