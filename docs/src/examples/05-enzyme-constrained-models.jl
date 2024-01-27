@@ -133,3 +133,16 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
     0.011875920383431717, #src
     atol = TEST_TOLERANCE, #src
 ) #src
+
+### Running a simplified enzyme constrained model
+
+ec_solution2 = simplified_enzyme_constrained_flux_balance_analysis(
+    model;
+    reaction_isozymes,
+    gene_product_molar_masses,
+    capacity = total_enzyme_capacity,
+    optimizer = Tulip.Optimizer,
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
+)
+
+@test isapprox(ec_solution.objective, ec_solution2.objective, atol = TEST_TOLERANCE) #src
