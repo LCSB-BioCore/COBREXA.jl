@@ -23,6 +23,9 @@ around manually.
 
 Changing the configuration values at runtime is possible via the global
 [`configuration`](@ref) variable.
+
+# Fields
+$(TYPEDFIELDS)
 """
 Base.@kwdef mutable struct Configuration
 
