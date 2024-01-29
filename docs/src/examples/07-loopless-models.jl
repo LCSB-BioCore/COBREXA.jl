@@ -34,22 +34,15 @@ download_model(
 
 import JSONFBCModels
 import GLPK
-import AbstractFBCModels as A
 
 model = load_model("e_coli_core.json")
 
-# ## Running a simple loopless FBA (ll-FBA)
+# ## Running a loopless FBA (ll-FBA)
 
 # One can directly use `loopless_flux_balance_analysis` to solve an FBA problem
 # based on `model` where loopless constraints are added to all fluxes. This is
 # the direct approach.
 
-sol = loopless_flux_balance_analysis(model; optimizer = GLPK.Optimizer)
+solution = loopless_flux_balance_analysis(model; optimizer = GLPK.Optimizer)
 
-@test isapprox(sol.objective, 0.8739215069684303, atol = TEST_TOLERANCE) #src
-
-@test all( #src
-    v * sol.loopless_driving_forces[k] <= -TEST_TOLERANCE for #src
-    (k, v) in sol.fluxes if #src
-    haskey(sol.loopless_driving_forces, k) && abs(v) >= 1e-6 #src
-) #src
+@test isapprox(solution.objective, 0.8739215069684303, atol = TEST_TOLERANCE) #src

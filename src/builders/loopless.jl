@@ -23,6 +23,9 @@ connects them to `loopless_driving_forces`. The solution is bounded to lie in
 `internal_nullspace` (which is a sufficient algebraic condition for
 loop-less-ness).
 
+The indicators must be discrete variables, valued `1` if the reaction flux goes
+forward, or `0` if the reaction flux is reversed.
+
 The simplest (but by no means the fastest) way to obtain a good
 `internal_nullspace` is to use `LinearAlgebra.nullspace` with the internal
 reactions' stoichiometry matrix. Rows of `internal_nullspace` must correspond
@@ -54,7 +57,7 @@ loopless_constraints(;
     ),
     :flux_direction_upper_bounds => C.ConstraintTree(
         r => C.Constraint(
-            value = fluxes[r].value +
+            value = fluxes[r].value -
                     flux_infinity_bound * loopless_direction_indicators[r].value,
             bound = C.Between(-Inf, 0),
         ) for r in internal_reactions
