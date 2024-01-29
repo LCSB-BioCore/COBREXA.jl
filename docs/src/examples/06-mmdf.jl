@@ -30,14 +30,16 @@ using COBREXA
 
 import Downloads: download
 
+#TODO use AFBCMs functionality
 !isfile("e_coli_core.json") &&
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 
 # Additionally to COBREXA, and the model format package, we will need a solver
-# -- let's use Tulip here:
+# -- let's use GLPK here:
 
+using COBREXA
 import JSONFBCModels
-import Tulip
+import GLPK
 
 model = load_model("e_coli_core.json")
 
@@ -116,8 +118,7 @@ mmdf_solution = max_min_driving_force_analysis(
     concentration_upper_bound = 1e-1, # M
     T = 298.15, # Kelvin
     R = 8.31446261815324e-3, # kJ/K/mol
-    optimizer = Tulip.Optimizer,
-    settings = [set_optimizer_attribute("IPM_IterationsLimit", 1_000)],
+    optimizer = GLPK.Optimizer,
 )
 
 @test isapprox(mmdf_solution.max_min_driving_force, 5.78353, atol = TEST_TOLERANCE) #src
