@@ -42,13 +42,17 @@ function enzyme_constrained_flux_balance_analysis(
 )
     constraints = flux_balance_constraints(model)
 
-    constraints = enzyme_constraints(
+    constraints += enzyme_variables(
         constraints;
+        reaction_isozymes,
+    )
+    
+    constraints *= enzyme_constraints(constraints;
         reaction_isozymes,
         gene_product_molar_masses,
         capacity,
     )
-
+    
     optimized_constraints(
         constraints;
         objective = constraints.objective.value,
@@ -58,8 +62,6 @@ function enzyme_constrained_flux_balance_analysis(
 end
 
 export enzyme_constrained_flux_balance_analysis
-
-
 
 """
 $(TYPEDSIGNATURES)
@@ -89,7 +91,9 @@ function simplified_enzyme_constrained_flux_balance_analysis(
 )
     constraints = flux_balance_constraints(model)
 
-    constraints = simplified_enzyme_constraints(
+    constraints += unidirectional_fluxes(constraints)
+    
+    constraints *= simplified_enzyme_constraints(
         constraints;
         reaction_isozymes,
         gene_product_molar_masses,

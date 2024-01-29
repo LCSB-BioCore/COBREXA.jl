@@ -57,3 +57,19 @@ unsigned_negative_contribution_variables(cs::C.ConstraintTree) =
     C.variables_for(c -> positive_bound_contribution(-c.bound), cs)
 
 export unsigned_negative_contribution_variables
+
+"""
+$(TYPEDSIGNATURES)
+
+Returns freshly allocated variables `fluxes_reverse`, `fluxes_forward` that are
+the unidirectional reaction fluxes corresponding to `fluxes`.
+"""
+function unidirectional_fluxes(
+    constraints;
+    fluxes = constraints.fluxes,
+)
+    :fluxes_forward^unsigned_positive_contribution_variables(fluxes) +
+    :fluxes_reverse^unsigned_negative_contribution_variables(fluxes)
+end
+
+export unidirectional_fluxes

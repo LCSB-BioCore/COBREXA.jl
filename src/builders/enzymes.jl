@@ -135,24 +135,15 @@ export gene_product_isozyme_constraints
 """
 $(TYPEDSIGNATURES)
 
-Adds enzyme-constraints to `constraints`. Requires `reaction_isozymes`, which is
-a mapping of reaction identifiers to [`Isozyme`](@ref) descriptions, and
-`gene_product_molar_masses` which is a mapping of gene products to their molar
-masses.
-
-`capacity` may be a single number, which sets the limit for all the gene
-products contained in `reaction_isozymes`. Alternatively, `capacity` may be a
-vector of identifier-genes-limit triples that make a constraint (identified by
-the given identifier) that limits the listed genes to the given limit.
+Returns freshly allocated variables `fluxes_reverse`, `fluxes_forward`,
+`isozyme_forward_amounts`, `isozyme_reverse_amounts`, and
+`gene_product_amounts`, which is used to build enzyme constrained models.
 """
-function enzyme_constraints(
+function enzyme_variables(
     constraints::C.ConstraintTree;
     fluxes = constraints.fluxes,
     reaction_isozymes::Dict{String,Dict{String,Isozyme}},
-    gene_product_molar_masses::Dict{String,Float64},
-    capacity::Union{Vector{Tuple{String,Vector{String},Float64}},Float64},
 )
-
     gene_ids = unique([
         Symbol(gid) for isos_dict in values(reaction_isozymes) for
         iso in values(isos_dict) for gid in keys(iso.gene_product_stoichiometry)
@@ -166,67 +157,103 @@ function enzyme_constraints(
     )
 
     # allocate variables for everything (nb. += wouldn't associate right here)
-    constraints =
-        constraints +
-        :fluxes_forward^unsigned_positive_contribution_variables(fluxes) +
-        :fluxes_reverse^unsigned_negative_contribution_variables(fluxes) +
-        :isozyme_forward_amounts^isozyme_amounts +
-        :isozyme_reverse_amounts^isozyme_amounts +
-        :gene_product_amounts^C.variables(keys = gene_ids, bounds = C.Between(0, Inf))
+    unidirectional_fluxes(
+        constraints;
+        fluxes,
+    ) +
+    :isozyme_forward_amounts^isozyme_amounts +
+    :isozyme_reverse_amounts^isozyme_amounts +
+    :gene_product_amounts^C.variables(keys = gene_ids, bounds = C.Between(0, Inf))
+end
 
-    # connect all parts with constraints
-    constraints =
-        constraints *
-        :directional_flux_balance^sign_split_constraints(
-            positive = constraints.fluxes_forward,
-            negative = constraints.fluxes_reverse,
-            signed = fluxes,
-        ) *
-        :isozyme_flux_forward_balance^isozyme_flux_constraints(
-            constraints.isozyme_forward_amounts,
-            constraints.fluxes_forward,
-            (rid, isozyme) -> maybemap(
-                x -> x.kcat_forward,
-                maybeget(reaction_isozymes, string(rid), string(isozyme)),
+export enzyme_variables
+
+"""
+$(TYPEDSIGNATURES)
+
+Returns enzyme and protein capacity constraints, using the variables: `fluxes`,
+`fluxes_reverse`, `fluxes_forward`, `isozyme_forward_amounts`,
+`isozyme_reverse_amounts`, and `gene_product_amounts`. These variables should
+already be present in the model, see [`enzyme_variables`](@ref) for a quick way
+to add them to a normal flux balance model.
+
+Only reactions in `reaction_isozymes`, which is a mapping of reaction
+identifiers to [`Isozyme`](@ref) descriptions are included in the constraints.
+For each gene product in `reaction_isozymes`, a corresponding entry in
+`gene_product_molar_masses` must be present, which is a mapping of gene products
+to their molar masses.
+
+`capacity` (mass/gDW units) may be a single number, which sets the combined
+limit for all the gene products contained in `reaction_isozymes`. Alternatively,
+`capacity` may be a vector of identifier-genes-limit triples that make a
+constraint (identified by the given identifier) that limits the listed genes to
+the given limit (mass/gDW units).
+
+Note: [`simplified_enzyme_constraints`](@ref) and [`enzyme_constraints`](@ref)
+differ in how the capacity bound(s) are formulated. For the former, fluxes are
+used, but for the latter, gene products are used directly.
+"""
+function enzyme_constraints(
+    constraints;
+    fluxes = constraints.fluxes,
+    fluxes_reverse = constraints.fluxes_reverse,
+    fluxes_forward = constraints.fluxes_forward,
+    isozyme_forward_amounts = constraints.isozyme_forward_amounts,
+    isozyme_reverse_amounts = constraints.isozyme_reverse_amounts,
+    gene_product_amounts = constraints.gene_product_amounts,
+    reaction_isozymes::Dict{String,Dict{String,Isozyme}},
+    gene_product_molar_masses::Dict{String,Float64},
+    capacity::Union{Vector{Tuple{String,Vector{String},Float64}},Float64},
+)
+
+    :directional_flux_balance^sign_split_constraints(
+        positive = fluxes_forward,
+        negative = fluxes_reverse,
+        signed = fluxes,
+    ) *
+    :isozyme_flux_forward_balance^isozyme_flux_constraints(
+        isozyme_forward_amounts,
+        fluxes_forward,
+        (rid, isozyme) -> maybemap(
+            x -> x.kcat_forward,
+            maybeget(reaction_isozymes, string(rid), string(isozyme)),
+        ),
+    ) *
+    :isozyme_flux_reverse_balance^isozyme_flux_constraints(
+        isozyme_reverse_amounts,
+        fluxes_reverse,
+        (rid, isozyme) -> maybemap(
+            x -> x.kcat_reverse,
+            maybeget(reaction_isozymes, string(rid), string(isozyme)),
+        ),
+    ) *
+    :gene_product_isozyme_balance^gene_product_isozyme_constraints(
+        gene_product_amounts,
+        (isozyme_forward_amounts, isozyme_reverse_amounts),
+        (rid, isozyme) -> maybemap(
+            x -> [(Symbol(k), v) for (k, v) in x.gene_product_stoichiometry],
+            maybeget(reaction_isozymes, string(rid), string(isozyme)),
+        ),
+    ) *
+    :gene_product_capacity^(
+        capacity isa Float64 ?
+        C.Constraint(
+            value = sum(
+                gpa.value * gene_product_molar_masses[String(gp)] for
+                (gp, gpa) in gene_product_amounts
             ),
-        ) *
-        :isozyme_flux_reverse_balance^isozyme_flux_constraints(
-            constraints.isozyme_reverse_amounts,
-            constraints.fluxes_reverse,
-            (rid, isozyme) -> maybemap(
-                x -> x.kcat_reverse,
-                maybeget(reaction_isozymes, string(rid), string(isozyme)),
-            ),
-        ) *
-        :gene_product_isozyme_balance^gene_product_isozyme_constraints(
-            constraints.gene_product_amounts,
-            (constraints.isozyme_forward_amounts, constraints.isozyme_reverse_amounts),
-            (rid, isozyme) -> maybemap(
-                x -> [(Symbol(k), v) for (k, v) in x.gene_product_stoichiometry],
-                maybeget(reaction_isozymes, string(rid), string(isozyme)),
-            ),
-        ) *
-        :gene_product_capacity^(
-            capacity isa Float64 ?
-            C.Constraint(
+            bound = C.Between(0, capacity),
+        ) :
+        C.ConstraintTree(
+            Symbol(id) => C.Constraint(
                 value = sum(
-                    gpa.value * gene_product_molar_masses[String(gp)] for
-                    (gp, gpa) in constraints.gene_product_amounts
+                    gene_product_amounts[Symbol(gp)].value *
+                    gene_product_molar_masses[gp] for gp in gps
                 ),
-                bound = C.Between(0, capacity),
-            ) :
-            C.ConstraintTree(
-                Symbol(id) => C.Constraint(
-                    value = sum(
-                        constraints.gene_product_amounts[Symbol(gp)].value *
-                        gene_product_molar_masses[gp] for gp in gps
-                    ),
-                    bound = C.Between(0, limit),
-                ) for (id, gps, limit) in capacity_limits
-            )
+                bound = C.Between(0, limit),
+            ) for (id, gps, limit) in capacity_limits
         )
-
-    constraints
+    )
 end
 
 export enzyme_constraints
@@ -234,27 +261,33 @@ export enzyme_constraints
 """
 $(TYPEDSIGNATURES)
 
-Adds simplified enzyme constraints to `constraints`. Requires
-`reaction_isozymes`, which is a mapping of reaction identifiers to
-[`Isozyme`](@ref) descriptions, and `gene_product_molar_masses` which is a
-mapping of gene products to their molar masses. Internally, the cheapest and
-fastest isozyme (minimum of MW/kcat for each isozyme) is used in the capacity
-bound.
+Returns simplified enzyme constraints using the variables: `fluxes`,
+`fluxes_reverse`, and `fluxes_forward`. These variables should already be
+present in the model, see [`unidirectional_fluxes`](@ref) for a quick way to add
+the latter two variables to a normal flux balance model.
+
+Only reactions in `reaction_isozymes`, which is a mapping of reaction
+identifiers to [`Isozyme`](@ref) descriptions are included in the constraints.
+For each gene product in `reaction_isozymes`, a corresponding entry in
+`gene_product_molar_masses` must be present, which is a mapping of gene products
+to their molar masses. Internally, the cheapest and fastest isozyme (minimum of
+MW/kcat for each isozyme) is used in the capacity bound.
 
 `capacity` may be a single number, which sets the limit of protein required for
-all the fluxes in `reaction_isozymes`. Alternatively, `capacity` may be a vector
-of identifier-fluxes-limit triples that make a constraint (identified by the
-given identifier) that limits the enzyme requirements of the listed fluxes to
-the given limit.
+all the fluxes in `reaction_isozymes` (mass/gDW units). Alternatively,
+`capacity` may be a vector of identifier-fluxes-limit triples that make a
+constraint (identified by the given identifier) that limits the enzyme
+requirements of the listed fluxes to the given limit (mass/gDW units).
 
-Note: [`simplified_enzyme_constraints`](@ref) and
-[`enzyme_constraints`](@ref) differ in how the capacity bound(s) are
-formulated. For the former, fluxes are used, but for the latter, gene products
-are used directly.
+Note: [`simplified_enzyme_constraints`](@ref) and [`enzyme_constraints`](@ref)
+differ in how the capacity bound(s) are formulated. For the former, fluxes are
+used, but for the latter, gene products are used directly.
 """
 function simplified_enzyme_constraints(
     constraints::C.ConstraintTree;
     fluxes = constraints.fluxes,
+    fluxes_reverse = constraints.fluxes_reverse,
+    fluxes_forward = constraints.fluxes_forward,
     reaction_isozymes::Dict{String,Dict{String,Isozyme}},
     gene_product_molar_masses::Dict{String,Float64},
     capacity::Union{Vector{Tuple{String,Vector{String},Float64}},Float64},
@@ -277,48 +310,38 @@ function simplified_enzyme_constraints(
         ) for (rid, isos) in reaction_isozymes
     )
 
-    # allocate variables for everything (nb. += wouldn't associate right here)
-    constraints =
-        constraints +
-        :fluxes_forward^unsigned_positive_contribution_variables(fluxes) +
-        :fluxes_reverse^unsigned_negative_contribution_variables(fluxes)
 
     # connect all parts with constraints
-    constraints =
-        constraints *
-        :directional_flux_balance^sign_split_constraints(
-            positive = constraints.fluxes_forward,
-            negative = constraints.fluxes_reverse,
-            signed = fluxes,
-        ) *
-        :capacity^(
-            capacity isa Float64 ?
-            C.Constraint(
+    :directional_flux_balance^sign_split_constraints(
+        positive = fluxes_forward,
+        negative = fluxes_reverse,
+        signed = fluxes,
+    ) *
+    :capacity^(
+        capacity isa Float64 ?
+        C.Constraint(
+            value = sum(
+                C.value(c) * enzyme_speeds[rid].forward for
+                (rid, c) in fluxes_forward if haskey(enzyme_speeds, rid)
+            ) + sum(
+                C.value(c) * enzyme_speeds[rid].reverse for
+                (rid, c) in fluxes_reverse if haskey(enzyme_speeds, rid)
+            ),
+            bound = C.Between(0, capacity),
+        ) :
+        C.ConstraintTree(
+            Symbol(id) => C.Constraint(
                 value = sum(
-                    C.value(c) * enzyme_speeds[rid].forward for
-                    (rid, c) in constraints.fluxes_forward if haskey(enzyme_speeds, rid)
+                    C.value(get(fluxes_forward, rid, 0)) *
+                    enzyme_speeds[rid].forward for
+                    rid in flxs if haskey(enzyme_speeds, rid)
                 ) + sum(
-                    C.value(c) * enzyme_speeds[rid].reverse for
-                    (rid, c) in constraints.fluxes_reverse if haskey(enzyme_speeds, rid)
+                    C.value(get(fluxes_reverse, rid´, 0)) *
+                    enzyme_speeds[rid].reverse for
+                    (rid, c) in flxs if haskey(enzyme_speeds, rid)
                 ),
-                bound = C.Between(0, capacity),
-            ) :
-            C.ConstraintTree(
-                Symbol(id) => C.Constraint(
-                    value = sum(
-                        C.value(get(constraints.fluxes_forward, rid, 0)) *
-                        enzyme_speeds[rid].forward for
-                        rid in flxs if haskey(enzyme_speeds, rid)
-                    ) + sum(
-                        C.value(get(constraints.fluxes_reverse, rid´, 0)) *
-                        enzyme_speeds[rid].reverse for
-                        (rid, c) in flxs if haskey(enzyme_speeds, rid)
-                    ),
-                    bound = C.Between(0, limit),
-                ) for (id, flxs, limit) in capacity_limits
-            )
+                bound = C.Between(0, limit),
+            ) for (id, flxs, limit) in capacity_limits
         )
-
-    constraints
-
+    )
 end

@@ -146,3 +146,4 @@ ec_solution2 = simplified_enzyme_constrained_flux_balance_analysis(
 )
 
 @test isapprox(ec_solution.objective, ec_solution2.objective, atol = TEST_TOLERANCE) #src
+
