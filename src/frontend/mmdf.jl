@@ -165,9 +165,9 @@ function max_min_driving_force_analysis(
                     default_concentration_bound
                 end
             end,
-        ) + :max_min_driving_force^C.variable()
+        ) + :min_driving_force^C.variable()
 
-    min_driving_forces = C.ConstraintTree(
+    driving_forces = C.ConstraintTree(
         let r = Symbol(rid)
             r => C.Constraint(
                 value = dGr0 + (R * T) * constraints.reactant_log_concentrations[r].value,
@@ -186,9 +186,9 @@ function max_min_driving_force_analysis(
 
     constraints =
         constraints *
-        :min_driving_forces^min_driving_forces *
-        :min_driving_force_thresholds^C.map(min_driving_forces) do c
-            greater_or_equal_constraint(constraints.max_min_driving_force, c)
+        :driving_forces^driving_forces *
+        :min_driving_force_thresholds^C.map(driving_forces) do c
+            less_or_equal_constraint(constraints.min_driving_force, c)
         end *
         :concentration_ratio_constraints^C.ConstraintTree(
             Symbol(cid) => difference_constraint(
@@ -200,7 +200,8 @@ function max_min_driving_force_analysis(
 
     optimized_constraints(
         constraints;
-        objective = constraints.max_min_driving_force.value,
+        objective = constraints.min_driving_force.value,
+        sense = Maximal,
         optimizer,
         settings,
     )

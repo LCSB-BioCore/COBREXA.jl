@@ -56,7 +56,7 @@ $(TYPEDSIGNATURES)
 A constraint that makes sure that the value of `a` is greater than or equal to
 the the value of `b`.
 """
-greater_or_equal_constraint(a, b) = difference_constraint(a, b, C.Between(0, Inf))
+greater_or_equal_constraint(a, b) = difference_constraint(a, b, C.Between(-Inf, 0))
 
 export greater_or_equal_constraint
 
@@ -66,6 +66,6 @@ $(TYPEDSIGNATURES)
 A constraint that makes sure that the value of `a` is less than or equal to the
 the value of `b`.
 """
-less_or_equal_constraint(a, b) = difference_constraint(b, a, C.Between(0, Inf))
+less_or_equal_constraint(a, b) = difference_constraint(a, b, C.Between(0, Inf))
 
 export less_or_equal_constraint

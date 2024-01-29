@@ -120,8 +120,7 @@ The output constraint tree contains a log-concentration variable for each
 metabolite in subtree `log_concentrations`. Individual reactions' total
 reactant log concentrations (i.e., all log concentrations of actual reactants
 minus all log concentrations of products) have their own variables in
-`reactant_log_concentrations`. The values are connected by
-`log_concentration_stoichiometry`.
+`reactant_log_concentrations`.
 
 Function `concentration_bound` may return a bound for the log-concentration of
 a given metabolite (compatible with `ConstraintTrees.Bound`), or `nothing`.
@@ -135,8 +134,7 @@ function log_concentration_constraints(
     stoi = A.stoichiometry(model)
 
     constraints =
-        :log_concentrations^C.variables(keys = mets, bounds = concentration_bound.(mets)) +
-        :reactant_log_concentrations^C.variables(keys = rxns)
+        :log_concentrations^C.variables(keys = mets, bounds = concentration_bound.(mets))
 
     cs = C.ConstraintTree()
 
@@ -150,7 +148,7 @@ function log_concentration_constraints(
         end
     end
 
-    return constraints * :log_concentration_stoichiometry^cs
+    return constraints * :reactant_log_concentrations^cs
 end
 
 export log_concentration_constraints
