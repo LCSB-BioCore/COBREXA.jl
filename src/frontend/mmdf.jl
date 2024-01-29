@@ -56,8 +56,8 @@ Following arguments are set optionally:
 """
 function max_min_driving_force_analysis(
     model::A.AbstractFBCModel,
-    reaction_standard_gibbs_free_energies::Dict{String,Float64};
-    reference_flux = Dict{String,Float64}(),
+    reaction_standard_gibbs_free_energies::Dict{String,Float64},
+    reference_flux::Dict{String,Float64};
     concentration_ratios = Dict{String,Tuple{String,String,Float64}}(),
     constant_concentrations = Dict{String,Float64}(),
     ignored_metabolites = [],
@@ -154,7 +154,8 @@ function max_min_driving_force_analysis(
 
     constraints =
         log_concentration_constraints(
-            model,
+            model;
+            reaction_subset = Symbol.(collect(keys(reference_flux))),
             concentration_bound = met -> if met in no_concentration_metabolites
                 C.EqualTo(0)
             else

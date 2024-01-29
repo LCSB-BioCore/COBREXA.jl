@@ -16,8 +16,6 @@
 
 # # Thermodynamic models
 
-using COBREXA
-
 # Here we will solve the max min driving force analysis problem using the
 # glycolysis pathway of *E. coli*. In essence, the method attempts to find
 # metabolite concentrations (NB: not fluxes) that maximize the smallest
@@ -106,8 +104,8 @@ reference_flux = Dict(
 
 mmdf_solution = max_min_driving_force_analysis(
     model,
-    reaction_standard_gibbs_free_energies;
-    reference_flux,
+    reaction_standard_gibbs_free_energies,
+    reference_flux;
     concentration_ratios = Dict(
         "atp" => ("atp_c", "adp_c", 10.0),
         "nadh" => ("nadh_c", "nad_c", 0.13),
