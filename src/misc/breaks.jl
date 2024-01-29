@@ -15,8 +15,11 @@
 # limitations under the License.
 
 """
-    Maybe{X}
+$(TYPEDSIGNATURES)
 
-Type of optional values.
+Break an interval into `breaks` (count) breaks.
+
+Used for computing breaks in [`objective_production_envelope`](@ref).
 """
-const Maybe{X} = Union{Nothing,X}
+break_interval(lower, upper, breaks::Int) =
+    lower .+ (upper - lower) .* ((1:s) .- 1) ./ max(breaks - 1, 1)

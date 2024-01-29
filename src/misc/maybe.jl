@@ -14,16 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+$(TYPEDSIGNATURES)
+
+Helper for getting stuff from dictionaries where keys may be easily missing.
+"""
+maybeget(_::Nothing, _...) = nothing
+maybeget(x, k, ks...) = haskey(x, k) ? maybeget(x[k], ks...) : nothing
+maybeget(x) = x
 
 """
 $(TYPEDSIGNATURES)
 
-Return true if the reaction denoted by `rxn_id` in `model` is a boundary
-reaction, otherwise return false. Checks if on boundary by inspecting the number
-of metabolites in the reaction stoichiometry. Boundary reactions have only one
-metabolite, e.g. an exchange reaction, or a sink/demand reaction.
+Helper for applying functions to stuff that might be `nothing`.
 """
-is_boundary(model::A.AbstractFBCModel, rxn_id::String) =
-    length(keys(A.reaction_stoichiometry(model, rxn_id))) == 1
-
-export is_boundary
+maybemap(f, _::Nothing) = nothing
+maybemap(f, x) = f(x)

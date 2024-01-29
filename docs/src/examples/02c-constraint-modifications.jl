@@ -51,7 +51,7 @@ model = load_model("e_coli_core.json")
 
 import ConstraintTrees as C
 
-ctmodel = fbc_model_constraints(model)
+ctmodel = flux_balance_constraints(model)
 
 fermentation = ctmodel.fluxes.EX_ac_e.value + ctmodel.fluxes.EX_etoh_e.value
 
@@ -62,7 +62,7 @@ vt = optimized_constraints(
     forced_mixed_fermentation,
     objective = forced_mixed_fermentation.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [silence],
+    settings = [silence],
 )
 
 @test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
@@ -78,7 +78,7 @@ vt = optimized_constraints(
     ctmodel,
     objective = ctmodel.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [silence],
+    settings = [silence],
 )
 
 @test isnothing(vt) #src
@@ -90,7 +90,7 @@ vt = optimized_constraints(
     ctmodel,
     objective = ctmodel.objective.value,
     optimizer = Tulip.Optimizer,
-    modifications = [silence],
+    settings = [silence],
 )
 
 @test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src

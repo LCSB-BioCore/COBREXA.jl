@@ -15,11 +15,44 @@
 # limitations under the License.
 
 """
+$(TYPEDEF)
+
+Representation of a "binary switch" bound for `ConstraintTree`s. The value is
+constrained to be either the value of field `a` or of field `b`; both fields
+are `Float64`s. Upon translation to JuMP, the switches create an extra boolean
+variable, and the value is constrained to equal `a + boolean_var * (b-a)`.
+
+Switches can be offset by adding real numbers, negated, and multiplied and
+divided by scalar constraints. For optimizing some special cases, multiplying
+by exact zero returns an equality bound to zero.
+
+# Fields
+$(TYPEDFIELDS)
+"""
+Base.@kwdef mutable struct Switch <: C.Bound
+    "One choice"
+    a::Float64
+
+    "The other choice"
+    b::Float64
+end
+
+export Switch
+
+Base.:-(x::Switch) = Switch(-s.a, -s.b)
+Base.:+(x::Real, s::Switch) = b + a
+Base.:+(s::Switch, x::Real) = Switch(s.a + x, s.b + x)
+Base.:*(x::Real, s::Switch) = b * a
+Base.:*(s::Switch, x::Real) = x == 0 ? C.EqualTo(0) : Switch(s.a * x, s.b * x)
+Base.:/(s::Switch, x::Real) = Switch(s.a / x, s.b / x)
+
+"""
 $(TYPEDSIGNATURES)
 
 Construct a JuMP `Model` that describes the precise constraint system into the
 JuMP `Model` created for solving in `optimizer`, with a given optional
-`objective` and optimization `sense`.
+`objective` and optimization `sense` chosen from [`Maximal`](@ref),
+[`Minimal`](@ref) and [`Feasible`](@ref).
 """
 function optimization_model(
     cs::C.ConstraintTreeElem;
@@ -33,21 +66,26 @@ function optimization_model(
     isnothing(objective) || J.@objective(model, sense, C.substitute(objective, x))
 
     # constraints
+    function add_constraint(v::C.Value, b::C.EqualTo)
+        J.@constraint(model, C.substitute(v, x) == b.equal_to)
+    end
+    function add_constraint(v::C.Value, b::C.Between)
+        vx = C.substitute(v, x)
+        isinf(b.lower) || J.@constraint(model, vx >= b.lower)
+        isinf(b.upper) || J.@constraint(model, vx <= b.upper)
+    end
+    function add_constraint(v::C.Value, b::Switch)
+        boolean = J.@variable(model, binary = true)
+        J.@constraint(model, C.substitute(v, x) == b.a + boolean * (b.b - b.a))
+    end
+    add_constraint(::C.Value, _::Nothing) = nothing
     function add_constraint(c::C.Constraint)
-        if c.bound isa C.EqualTo
-            J.@constraint(model, C.substitute(c.value, x) == c.bound.equal_to)
-        elseif c.bound isa C.Between
-            val = C.substitute(c.value, x)
-            isinf(c.bound.lower) || J.@constraint(model, val >= c.bound.lower)
-            isinf(c.bound.upper) || J.@constraint(model, val <= c.bound.upper)
-        elseif c.bound isa Binary
-            anon_bool = J.@variable(model, binary = true)
-            J.@constraint(model, C.substitute(c.value, x) == anon_bool)
-        end
+        add_constraint(c.value, c.bound)
     end
     function add_constraint(c::C.ConstraintTree)
         add_constraint.(values(c))
     end
+
     add_constraint(cs)
 
     return model
@@ -99,26 +137,15 @@ export Feasible
 """
 $(TYPEDSIGNATURES)
 
-Make an JuMP model out of `constraints` using [`optimization_model`](@ref)
-(most arguments are forwarded there), then apply the `modifications`, optimize
-the model, and return either `nothing` if the optimization failed, or `output`
-substituted with the solved values (`output` defaults to `constraints`.
+Like [`optimized_constraints`](@ref), but works directly with a given JuMP
+model `om` without applying any settings or creating the optimization model.
 
-For a "nice" version for simpler finding of metabolic model optima, use
-[`flux_balance`](@ref).
+To run the process manually, you can use [`optimization_model`](@ref) to
+convert the constraints into a suitable JuMP optimization model.
 """
-function optimized_constraints(
-    constraints::C.ConstraintTreeElem;
-    modifications = [],
-    output = constraints,
-    kwargs...,
-)
-    om = optimization_model(constraints; kwargs...)
-    for m in modifications
-        m(om)
-    end
+function optimized_model(om; output::C.ConstraintTreeElem)
     J.optimize!(om)
-    is_solved(om) ? C.constraint_values(output, J.value.(om[:x])) : nothing
+    is_solved(om) ? C.substitute_values(output, J.value.(om[:x])) : nothing
 end
 
-export optimized_constraints
+export optimized_model

@@ -20,7 +20,7 @@ $(TYPEDSIGNATURES)
 Optimize the system of `constraints` to get the optimal `objective` value. Then
 try to find a "parsimonious" solution with the same `objective` value, which
 optimizes the `parsimonious_objective` (possibly also switching optimization
-sense, optimizer, and adding more modifications).
+sense, optimizer, and adding more settings).
 
 For efficiency, everything is performed on a single instance of JuMP model.
 
@@ -30,11 +30,11 @@ in [`parsimonious_flux_balance`](@ref).
 function parsimonious_optimized_constraints(
     constraints::C.ConstraintTreeElem;
     objective::C.Value,
-    modifications = [],
+    settings = [],
     parsimonious_objective::C.Value,
     parsimonious_optimizer = nothing,
     parsimonious_sense = J.MIN_SENSE,
-    parsimonious_modifications = [],
+    parsimonious_settings = [],
     tolerances = [absolute_tolerance_bound(0)],
     output = constraints,
     kwargs...,
@@ -42,7 +42,7 @@ function parsimonious_optimized_constraints(
 
     # first solve the optimization problem with the original objective
     om = optimization_model(constraints; objective, kwargs...)
-    for m in modifications
+    for m in settings
         m(om)
     end
     J.optimize!(om)
@@ -52,7 +52,7 @@ function parsimonious_optimized_constraints(
 
     # switch to parsimonizing the solution w.r.t. to the objective value
     isnothing(parsimonious_optimizer) || J.set_optimizer(om, parsimonious_optimizer)
-    for m in parsimonious_modifications
+    for m in parsimonious_settings
         m(om)
     end
 
@@ -68,7 +68,7 @@ function parsimonious_optimized_constraints(
         )
 
         J.optimize!(om)
-        is_solved(om) && return C.constraint_values(output, J.value.(om[:x]))
+        is_solved(om) && return C.substitute_values(output, J.value.(om[:x]))
 
         J.delete(om, pfba_tolerance_constraint)
         J.unregister(om, :pfba_tolerance_constraint)
@@ -79,49 +79,3 @@ function parsimonious_optimized_constraints(
 end
 
 export parsimonious_optimized_constraints
-
-"""
-$(TYPEDSIGNATURES)
-
-Compute a parsimonious flux solution for the given `model`. In short, the
-objective value of the parsimonious solution should be the same as the one from
-[`flux_balance_analysis`](@ref), except the squared sum of reaction fluxes is minimized.
-If there are multiple possible fluxes that achieve a given objective value,
-parsimonious flux thus represents the "minimum energy" one, thus arguably more
-realistic. The optimized squared distance is present in the result as
-`parsimonious_objective`.
-
-Most arguments are forwarded to [`parsimonious_optimized_constraints`](@ref),
-with some (objectives) filled in automatically to fit the common processing of
-FBC models, and some (`tolerances`) provided with more practical defaults.
-
-Similarly to the [`flux_balance_analysis`](@ref), returns a tree with the optimization
-solutions of the shape as given by [`fbc_model_constraints`](@ref).
-"""
-function parsimonious_flux_balance_analysis(
-    model::A.AbstractFBCModel,
-    optimizer;
-    tolerances = relative_tolerance_bound.(1 .- [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
-    kwargs...,
-)
-    constraints = fbc_model_constraints(model)
-    parsimonious_objective = squared_sum_objective(constraints.fluxes)
-    parsimonious_optimized_constraints(
-        constraints * :parsimonious_objective^C.Constraint(parsimonious_objective);
-        optimizer,
-        objective = constraints.objective.value,
-        parsimonious_objective,
-        tolerances,
-        kwargs...,
-    )
-end
-
-"""
-$(TYPEDSIGNATURES)
-
-Pipe-able variant of [`parsimonious_flux_balance_analysis`](@ref).
-"""
-parsimonious_flux_balance_analysis(optimizer; kwargs...) =
-    model -> parsimonious_flux_balance_analysis(model, optimizer; kwargs...)
-
-export parsimonious_flux_balance_analysis

@@ -39,33 +39,55 @@ using DocStringExtensions
 
 import AbstractFBCModels as A
 import ConstraintTrees as C
+import Distributed as D
 import JuMP as J
-import SparseArrays: sparse, findnz
-import LinearAlgebra: nullspace
+import LinearAlgebra
+import SparseArrays
 
 include("types.jl")
+include("config.jl")
+
+# core functionality
 include("io.jl")
 include("solver.jl")
+include("worker_data.jl")
 
-# these functions build or extend constrainttrees of metabolic models
-include("builders/core.jl")
-include("builders/genes.jl")
-include("builders/objectives.jl")
+# generic analysis functions
+include("analysis/envelope.jl")
+include("analysis/parsimonious.jl")
+include("analysis/sample.jl")
+include("analysis/screen.jl")
+include("analysis/solver.jl")
+include("analysis/variability.jl")
+
+# conversion of various stuff to constraint trees
+include("builders/compare.jl")
 include("builders/enzymes.jl")
-include("builders/thermodynamic.jl")
+include("builders/fbc.jl")
+include("builders/interface.jl")
+include("builders/knockouts.jl")
 include("builders/loopless.jl")
-include("builders/communities.jl")
+include("builders/objectives.jl")
+include("builders/scale.jl")
+include("builders/unsigned.jl")
 
-# these are the one shot analysis functions
-include("frontend/flux_balance_analysis.jl")
-include("frontend/parsimonious_flux_balance.jl")
-include("frontend/minimization_of_metabolic_adjustment_analysis.jl")
-include("frontend/enzyme_constrained_flux_balance_analysis.jl")
-include("frontend/loopless_flux_balance_analysis.jl")
-include("frontend/max_min_driving_force_analysis.jl")
+# simplified front-ends for the above
+include("frontend/balance.jl")
+include("frontend/envelope.jl")
+include("frontend/enzymes.jl")
+include("frontend/knockout.jl")
+include("frontend/loopless.jl")
+include("frontend/mmdf.jl")
+include("frontend/moma.jl")
+include("frontend/parsimonious.jl")
+include("frontend/sample.jl")
+include("frontend/variability.jl")
 
-include("misc/modifications.jl")
+# utilities
 include("misc/bounds.jl")
-include("misc/utils.jl")
+include("misc/breaks.jl")
+include("misc/maybe.jl")
+include("misc/settings.jl")
+include("misc/trees.jl")
 
 end # module COBREXA

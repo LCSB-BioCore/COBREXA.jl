@@ -56,18 +56,18 @@ model = load_model("e_coli_core.json")
 # isozymes that can catalyze a reaction. A turnover number needs to be assigned
 # to each isozyme, as shown below.
 
-reaction_isozymes = Dict{String,Dict{String,SimpleIsozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
+reaction_isozymes = Dict{String,Dict{String,Isozyme}}() # a mapping from reaction IDs to isozyme IDs to isozyme structs.
 for rid in A.reactions(model)
     grrs = A.reaction_gene_association_dnf(model, rid)
     isnothing(grrs) && continue # skip if no grr available
     haskey(ecoli_core_reaction_kcats, rid) || continue # skip if no kcat data available
     for (i, grr) in enumerate(grrs)
-        d = get!(reaction_isozymes, rid, Dict{String,SimpleIsozyme}())
+        d = get!(reaction_isozymes, rid, Dict{String,Isozyme}())
         # each isozyme gets a unique name
-        d["isozyme_"*string(i)] = SimpleIsozyme( # SimpleIsozyme struct is defined by COBREXA
+        d["isozyme_"*string(i)] = Isozyme(
             gene_product_stoichiometry = Dict(grr .=> fill(1.0, size(grr))), # assume subunit stoichiometry of 1 for all isozymes
-            kcat_forward = ecoli_core_reaction_kcats[rid] * 3600.0, # forward reaction turnover number units = 1/h
-            kcat_backward = ecoli_core_reaction_kcats[rid] * 3600.0, # reverse reaction turnover number units = 1/h
+            kcat_forward = ecoli_core_reaction_kcats[rid] * 3.6, # forward reaction turnover number units = 1/h
+            kcat_reverse = ecoli_core_reaction_kcats[rid] * 3.6, # reverse reaction turnover number units = 1/h
         )
     end
 end
@@ -90,7 +90,7 @@ end
 # </details>
 # ```
 
-gene_molar_masses = ecoli_core_gene_product_masses
+gene_product_molar_masses = ecoli_core_gene_product_masses
 
 #!!! warning "Molar mass units"
 #    Take care with the units of the molar masses. In literature they are
@@ -108,7 +108,7 @@ gene_molar_masses = ecoli_core_gene_product_masses
 # The capacity limitation usually denotes an upper bound of protein available to
 # the cell.
 
-total_enzyme_capacity = 0.1 # g enzyme/gDW
+total_enzyme_capacity = 50.0 # mg enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
@@ -116,62 +116,20 @@ total_enzyme_capacity = 0.1 # g enzyme/gDW
 # convenience function to run enzyme constrained FBA in one shot:
 
 ec_solution = enzyme_constrained_flux_balance_analysis(
-    model,
+    model;
     reaction_isozymes,
-    gene_molar_masses,
-    [("total_proteome_bound", A.genes(model), total_enzyme_capacity)];
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
-    unconstrain_reactions = ["EX_glc__D_e"],
+    gene_product_molar_masses,
+    capacity = total_enzyme_capacity,
     optimizer = Tulip.Optimizer,
+    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
 )
 
 #src these values should be unique (glucose transporter is the only way to get carbon into the system)
-@test isapprox(ec_solution.objective, 1.671357282901553, atol = TEST_TOLERANCE) #src
-@test isapprox(ec_solution.total_proteome_bound, 0.1, atol = TEST_TOLERANCE) #src
-@test isapprox(ec_solution.fluxes.EX_glc__D_e, -49.92966287110028, atol = 0.1) #src
-@test isapprox(ec_solution.enzymes.b2417, 0.00011859224858442563, atol = 1e-7) #src
-
-### Building a model incrementally
-
-# Sometimes it is necessary to build a more complicated model, perhaps using a
-# novel type of constraint. For this, it is useful to build the enzyme
-# constrained model incrementally, using the ConstraintTree building blocks.
-
-import ConstraintTrees as C
-
-# create basic flux model
-m = fbc_model_constraints(model)
-
-# create enzyme variables
-m += :enzymes^enzyme_variables(model)
-
-# constrain some fluxes...
-m.fluxes.EX_glc__D_e.bound = C.Between(-1000.0, 0.0) # undo glucose important bound from original model
-
-# ...And enzymes manually
-m.enzymes.b2417.bound = C.Between(0.0, 0.1) # for fun, change the bounds of the protein b2417
-
-# attach the enzyme mass balances
-m = add_enzyme_constraints!(
-    m,
-    reaction_isozymes;
-    fluxes = m.fluxes, # mount enzyme constraints to these fluxes
-    enzymes = m.enzymes, # enzyme variables
-)
-
-# add capacity limitation
-m *=
-    :total_proteome_bound^enzyme_capacity(
-        m.enzymes,
-        gene_molar_masses,
-        A.genes(model),
-        total_enzyme_capacity,
-    )
-
-# solve the model
-ec_solution = optimized_constraints(
-    m;
-    objective = m.objective.value,
-    optimizer = Tulip.Optimizer,
-    modifications = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
-)
+@test isapprox(ec_solution.objective, 0.706993382849705, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.gene_product_capacity, 50.0, atol = TEST_TOLERANCE) #src
+@test isapprox(ec_solution.fluxes.EX_glc__D_e, -10, atol = TEST_TOLERANCE) #src
+@test isapprox( #src
+    ec_solution.gene_product_amounts.b2417, #src
+    0.011875920383431717, #src
+    atol = TEST_TOLERANCE, #src
+) #src

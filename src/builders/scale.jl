@@ -15,8 +15,27 @@
 # limitations under the License.
 
 """
-    Maybe{X}
+$(TYPEDSIGNATURES)
 
-Type of optional values.
+Linearly scale all bounds in a constraint tree by the `factor`. This actually
+changes the model semantics, and may not work in surprising/improper ways with
+some constraint systems, esp. the MILP and QP ones.
+
+See also [`scale_constraints`](@ref).
 """
-const Maybe{X} = Union{Nothing,X}
+scale_bounds(tree::C.ConstraintTree, factor) =
+    C.map(tree) do c
+        isnothing(c.bound) ? c : C.Constraint(value = c.value, bound = factor * c.bound)
+    end
+
+"""
+$(TYPEDSIGNATURES)
+
+Linearly scale all constraints in a constraint tree by the `factor`.
+
+See also [`scale_bounds`](@ref).
+"""
+scale_constraints(tree::C.ConstraintTree, factor) =
+    C.map(tree) do c
+        c * factor
+    end

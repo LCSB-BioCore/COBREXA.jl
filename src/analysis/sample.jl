@@ -14,9 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-    Maybe{X}
+function sample_achr(
+    constraints::C.ConstraintTree,
+    points::Matrix{Float64};
+    seed,
+    chains,
+    collect_iterations,
+    epsilon,
+    filter_constraints::C.ConstraintTree,
+    workers = D.workers(),
+) end
 
-Type of optional values.
-"""
-const Maybe{X} = Union{Nothing,X}
+function sample_affine_hr(
+    constraints::C.ConstraintTree,
+    points::Matrix{Float64};
+    seed,
+    chains,
+    collect_iterations,
+    epsilon,
+    mix_points,
+    filter_constraints::C.ConstraintTree,
+    workers = D.workers(),
+) end

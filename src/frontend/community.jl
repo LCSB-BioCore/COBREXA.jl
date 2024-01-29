@@ -14,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-    Maybe{X}
-
-Type of optional values.
-"""
-const Maybe{X} = Union{Nothing,X}
+function community_flux_balance_analysis(
+    model_abundances::Vector{Tuple{A.AbstractFBCModel,Float64}},
+    optimizer;
+    kwargs...,
+)
+    # TODO f this gets complicated, make a specialized community_constraints
+    # builder or so. But ideally this is just module loading + 1 big join +
+    # optimizer run.
+end

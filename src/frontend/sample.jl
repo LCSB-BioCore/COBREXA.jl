@@ -14,9 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-    Maybe{X}
+function flux_sampling_achr(model::A.AbstractFBCModel; optimizer, kwargs...)
+    #TODO
+end
 
-Type of optional values.
-"""
-const Maybe{X} = Union{Nothing,X}
+function flux_sampling_affine_hr(model::A.AbstractFBCModel; optimizer, kwargs...)
+    #TODO probably share a lot of the frontend with the above thing
+end

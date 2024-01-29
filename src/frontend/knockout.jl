@@ -14,9 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-    Maybe{X}
-
-Type of optional values.
-"""
-const Maybe{X} = Union{Nothing,X}
+function gene_knockouts(model::A.AbstractFBCModel, genes, n; kwargs...)
+    # TODO just use screen to do this right
+end

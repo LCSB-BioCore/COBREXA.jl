@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#TODO: at this point, consider renaming the whole thing to "settings"
-
 """
 $(TYPEDSIGNATURES)
 
@@ -55,5 +53,12 @@ Modification that disable all output from the JuMP optimizer (shortcut for
 `set_silent` from JuMP).
 """
 silence(opt_model) = J.set_silent(opt_model)
+
+"""
+$(TYPEDSIGNATURES)
+
+Portable way to set a time limit in seconds for the optimizer computation.
+"""
+set_time_limit_sec(limit) = opt_model -> J.set_time_limit_sec(opt_model, limit)
 
 export silence
