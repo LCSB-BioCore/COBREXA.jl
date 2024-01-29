@@ -168,19 +168,15 @@ function max_min_driving_force_analysis(
         ) + :min_driving_force^C.variable()
 
     driving_forces = C.ConstraintTree(
-        let r = Symbol(rid)
-            r => C.Constraint(
-                value = dGr0 + (R * T) * constraints.reactant_log_concentrations[r].value,
-                bound = let rf = reference_flux[rid]
-                    if isapprox(rf, 0.0, atol = reference_flux_atol)
-                        C.EqualTo(0)
-                    elseif rf > 0
-                        C.Between(-Inf, 0)
-                    else
-                        C.Between(0, Inf)
-                    end
-                end,
-            )
+        let r = Symbol(rid),
+            rf = reference_flux[rid],
+            df = dGr0 + R * T * constraints.reactant_log_concentrations[r].value
+
+            r => if isapprox(rf, 0.0, atol = reference_flux_atol)
+                C.Constraint(df, C.EqualTo(0))
+            else
+                C.Constraint(rf > 0 ? -df : df, C.Between(0, Inf))
+            end
         end for (rid, dGr0) in reaction_standard_gibbs_free_energies
     )
 
@@ -201,7 +197,6 @@ function max_min_driving_force_analysis(
     optimized_constraints(
         constraints;
         objective = constraints.min_driving_force.value,
-        sense = Maximal,
         optimizer,
         settings,
     )

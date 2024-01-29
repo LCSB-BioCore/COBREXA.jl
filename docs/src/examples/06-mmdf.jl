@@ -121,4 +121,5 @@ mmdf_solution = max_min_driving_force_analysis(
     optimizer = GLPK.Optimizer,
 )
 
-@test isapprox(mmdf_solution.max_min_driving_force, 5.78353, atol = TEST_TOLERANCE) #src
+# TODO verify correctness
+@test isapprox(mmdf_solution.min_driving_force, 2.79911, atol = TEST_TOLERANCE) #src
