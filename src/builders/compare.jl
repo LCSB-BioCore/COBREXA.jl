@@ -24,12 +24,16 @@ be valid. Any type of `ConstraintTree.Bound` can be supplied.
 difference_constraint(a, b, difference_bound) =
     C.Constraint(C.value(b) - C.value(a), difference_bound)
 
+export difference_constraint
+
 """
 $(TYPEDSIGNATURES)
 
 A constraint that makes sure that the values of `a` and `b` are the same.
 """
 equal_value_constraint(a, b) = difference_constraint(a, b, 0)
+
+export equal_value_constraint
 
 """
 $(TYPEDSIGNATURES)
@@ -44,6 +48,8 @@ all_equal_constraints(a, tree::C.ConstraintTree) =
         equal_value_constraint(a, b)
     end
 
+export all_equal_constraints
+
 """
 $(TYPEDSIGNATURES)
 
@@ -51,6 +57,8 @@ A constraint that makes sure that the value of `a` is greater than or equal to
 the the value of `b`.
 """
 greater_or_equal_constraint(a, b) = difference_constraint(a, b, C.Between(0, Inf))
+
+export greater_or_equal_constraint
 
 """
 $(TYPEDSIGNATURES)
@@ -60,4 +68,4 @@ the value of `b`.
 """
 less_or_equal_constraint(a, b) = difference_constraint(b, a, C.Between(0, Inf))
 
-# TODO try to use the helper functions everywhere
+export less_or_equal_constraint
