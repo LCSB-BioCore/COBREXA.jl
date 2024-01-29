@@ -40,7 +40,7 @@ download_model(
 )
 
 import JSONFBCModels
-import Tulip
+import GLPK
 
 model = load_model("e_coli_core.json")
 
@@ -61,8 +61,7 @@ forced_mixed_fermentation =
 vt = optimized_constraints(
     forced_mixed_fermentation,
     objective = forced_mixed_fermentation.objective.value,
-    optimizer = Tulip.Optimizer,
-    settings = [silence],
+    optimizer = GLPK.Optimizer,
 )
 
 @test isapprox(vt.objective, 0.6337, atol = TEST_TOLERANCE) #src
@@ -77,8 +76,7 @@ ctmodel.fluxes.ATPM.bound = C.Between(1000.0, 10000.0)
 vt = optimized_constraints(
     ctmodel,
     objective = ctmodel.objective.value,
-    optimizer = Tulip.Optimizer,
-    settings = [silence],
+    optimizer = GLPK.Optimizer,
 )
 
 @test isnothing(vt) #src
@@ -89,8 +87,7 @@ ctmodel.fluxes.ATPM.bound = C.Between(8.39, 10000.0) # revert
 vt = optimized_constraints(
     ctmodel,
     objective = ctmodel.objective.value,
-    optimizer = Tulip.Optimizer,
-    settings = [silence],
+    optimizer = GLPK.Optimizer,
 )
 
 @test isapprox(vt.objective, 0.8739, atol = TEST_TOLERANCE) #src

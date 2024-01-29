@@ -27,11 +27,11 @@ import Downloads: download
     download("http://bigg.ucsd.edu/static/models/e_coli_core.json", "e_coli_core.json")
 
 # Additionally to COBREXA and the model format package, we will need a solver
-# -- let's use Tulip here:
+# -- let's use GLPK here:
 
 import AbstractFBCModels as A
 import JSONFBCModels
-import Tulip
+import GLPK
 
 model = load_model("e_coli_core.json")
 
@@ -326,8 +326,7 @@ ec_solution = enzyme_constrained_flux_balance_analysis(
     reaction_isozymes,
     gene_product_molar_masses = ecoli_core_gene_product_masses,
     capacity = total_enzyme_capacity,
-    optimizer = Tulip.Optimizer,
-    settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
+    optimizer = GLPK.Optimizer,
 )
 
 #src these values should be unique (glucose transporter is the only way to get carbon into the system)
