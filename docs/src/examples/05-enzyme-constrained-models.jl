@@ -46,7 +46,7 @@ model = load_model("e_coli_core.json")
 # be used to estimate these parameters.
 
 #md # ```@raw html
-#md # <details><summary>Reaction turnover numbers</summary>
+#md # <details><summary><strong>Data for reaction turnover numbers</strong></summary>
 #md # ```
 # This data is taken from: *Heckmann, David, et al. "Machine learning applied
 # to enzyme turnover numbers reveals protein structural correlates and improves
@@ -119,6 +119,10 @@ const ecoli_core_reaction_kcats = Dict(
 #md # </details>
 #md # ```
 
+# We have these here:
+
+ecoli_core_reaction_kcats
+
 # Each reaction in a constraint-based model usually has gene reaction rules
 # associated with it. These typically take the form of, possibly multiple,
 # isozymes that can catalyze a reaction. A turnover number needs to be assigned
@@ -149,7 +153,7 @@ end
 # found in uniprot.
 
 #md # ```@raw html
-#md # <details><summary>Reaction turnover numbers</summary>
+#md # <details><summary><strong>Gene product masses</strong></summary>
 #md # ```
 # This data is downloaded from Uniprot for E. coli K12, gene mass in kDa. To
 # obtain these data yourself, go to [Uniprot](https://www.uniprot.org/) and
@@ -298,26 +302,19 @@ const ecoli_core_gene_product_masses = Dict(
 #md # </details>
 #md # ```
 
+# We have the molar masses here:
 
-gene_product_molar_masses = ecoli_core_gene_product_masses
+ecoli_core_gene_product_masses
 
-#!!! warning "Molar mass units"
-#    Take care with the units of the molar masses. In literature they are
-#    usually reported in Da or kDa (g/mol). However, as noted above, flux
-#    units are typically mmol/gDW/h. Since the enzyme kinetic equation is
-#    `v = k * e`, where `k` is the turnover number, it suggests that the
-#    enzyme variable will have units of mmol/gDW. The molar masses come
-#    into play when setting the capacity limitations, e.g. usually a sum
-#    over all enzymes weighted by their molar masses: `e * mm`. Thus, if
-#    your capacity limitation has units of g/gDW, then the molar masses
-#    must have units of g/mmol (= kDa).
+#md # !!! warning "Molar mass units"
+#md #    Take care with the units of the molar masses. In literature they are usually reported in Da or kDa (g/mol). However, as noted above, flux units are typically mmol/gDW/h. Since the enzyme kinetic equation is `v = k * e`, where `k` is the turnover number, it suggests that the enzyme variable will have units of mmol/gDW. The molar masses come into play when setting the capacity limitations, e.g. usually a sum over all enzymes weighted by their molar masses: `e * mm`. Thus, if your capacity limitation has units of g/gDW, then the molar masses must have units of g/mmol (= kDa).
 
 ### Capacity limitation
 
 # The capacity limitation usually denotes an upper bound of protein available to
 # the cell.
 
-total_enzyme_capacity = 50.0 # mg enzyme/gDW
+total_enzyme_capacity = 50.0 # mg of enzyme/gDW
 
 ### Running a basic enzyme constrained model
 
@@ -327,7 +324,7 @@ total_enzyme_capacity = 50.0 # mg enzyme/gDW
 ec_solution = enzyme_constrained_flux_balance_analysis(
     model;
     reaction_isozymes,
-    gene_product_molar_masses,
+    gene_product_molar_masses = ecoli_core_gene_product_masses,
     capacity = total_enzyme_capacity,
     optimizer = Tulip.Optimizer,
     settings = [set_optimizer_attribute("IPM_IterationsLimit", 10_000)],
