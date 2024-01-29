@@ -192,13 +192,18 @@ function max_min_driving_force_analysis(
         end *
         :concentration_ratio_constraints^C.ConstraintTree(
             Symbol(cid) => difference_constraint(
-                m.log_metabolite_concentrations[Symbol(m1)],
-                m.log_metabolite_concentrations[Symbol(m2)],
+                constraints.log_concentrations[Symbol(m1)],
+                constraints.log_concentrations[Symbol(m2)],
                 log(ratio),
             ) for (cid, (m1, m2, ratio)) in concentration_ratios
         )
 
-    optimized_constraints(m; objective = m.max_min_driving_force.value, optimizer, settings)
+    optimized_constraints(
+        constraints;
+        objective = constraints.max_min_driving_force.value,
+        optimizer,
+        settings,
+    )
 end
 
 export max_min_driving_force_analysis
