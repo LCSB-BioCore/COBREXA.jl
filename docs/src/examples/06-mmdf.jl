@@ -47,11 +47,10 @@ model = load_model("e_coli_core.json")
 
 # We will need ΔᵣG⁰ data for each reaction we want to include in the
 # thermodynamic model. To generate this data manually, go to
-# https://equilibrator.weizmann.ac.il/. To generate automatically, use the
-# eQuilibrator.jl package.
+# https://equilibrator.weizmann.ac.il/. To generate automatically, you may use
+# the eQuilibrator.jl package.
 
 reaction_standard_gibbs_free_energies = Dict{String,Float64}(
-    # Units are in kJ/mol
     "ENO" => -3.8108376097261782,
     "FBA" => 23.376920310319235,
     "GAPD" => 0.5307809794271634,
@@ -64,6 +63,9 @@ reaction_standard_gibbs_free_energies = Dict{String,Float64}(
     "PYK" => -24.48733600711958,
     "TPI" => 5.621932460512994,
 )
+
+
+# (The units of the energies are kJ/mol.)
 
 # ## Running basic max min driving force analysis
 
