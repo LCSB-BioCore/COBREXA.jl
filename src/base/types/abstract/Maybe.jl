@@ -18,8 +18,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Apply a function to `x` only if it is not `nothing`.
+Apply a function to `x` only if it is not `nothing`. Returns `f(x)` when applied, otherwise returns `dflt`.
 """
-function _maybemap(f, x::Maybe)::Maybe
-    isnothing(x) ? nothing : f(x)
+function _maybemap(f, x::Maybe, dflt = nothing)::Maybe
+    isnothing(x) ? dflt : f(x)
 end
