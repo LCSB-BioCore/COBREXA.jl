@@ -62,8 +62,10 @@ JSONModel(json::Dict{String,Any}) = begin
 end
 
 function _parse_annotations(x)::Annotations
-    Annotations([k => if typeof(v) == String
+    Annotations([k => if v isa String
         [v]
+    elseif v isa AbstractDict
+        string.(collect(v))
     else
         convert(Vector{String}, v)
     end for (k, v) in x])
@@ -161,6 +163,7 @@ Parses the `.gene_reaction_rule` from reactions.
 reaction_gene_association(model::JSONModel, rid::String) = _maybemap(
     _parse_grr,
     get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
+    nothing,
 )
 
 """
@@ -176,8 +179,11 @@ $(TYPEDSIGNATURES)
 
 Parse and return the metabolite `.formula`
 """
-metabolite_formula(model::JSONModel, mid::String) =
-    _maybemap(_parse_formula, get(model.mets[model.met_index[mid]], "formula", nothing))
+metabolite_formula(model::JSONModel, mid::String) = _maybemap(
+    _parse_formula,
+    get(model.mets[model.met_index[mid]], "formula", nothing),
+    nothing,
+)
 
 """
 $(TYPEDSIGNATURES)
@@ -203,6 +209,7 @@ Gene annotations from the [`JSONModel`](@ref).
 gene_annotations(model::JSONModel, gid::String)::Annotations = _maybemap(
     _parse_annotations,
     get(model.genes[model.gene_index[gid]], "annotation", nothing),
+    Annotations(),
 )
 
 """
@@ -210,8 +217,11 @@ $(TYPEDSIGNATURES)
 
 Gene notes from the [`JSONModel`](@ref).
 """
-gene_notes(model::JSONModel, gid::String)::Notes =
-    _maybemap(_parse_notes, get(model.genes[model.gene_index[gid]], "notes", nothing))
+gene_notes(model::JSONModel, gid::String)::Notes = _maybemap(
+    _parse_notes,
+    get(model.genes[model.gene_index[gid]], "notes", nothing),
+    Notes(),
+)
 
 """
 $(TYPEDSIGNATURES)
@@ -221,6 +231,7 @@ Reaction annotations from the [`JSONModel`](@ref).
 reaction_annotations(model::JSONModel, rid::String)::Annotations = _maybemap(
     _parse_annotations,
     get(model.rxns[model.rxn_index[rid]], "annotation", nothing),
+    Annotations(),
 )
 
 """
@@ -228,8 +239,11 @@ $(TYPEDSIGNATURES)
 
 Reaction notes from the [`JSONModel`](@ref).
 """
-reaction_notes(model::JSONModel, rid::String)::Notes =
-    _maybemap(_parse_notes, get(model.rxns[model.rxn_index[rid]], "notes", nothing))
+reaction_notes(model::JSONModel, rid::String)::Notes = _maybemap(
+    _parse_notes,
+    get(model.rxns[model.rxn_index[rid]], "notes", nothing),
+    Notes(),
+)
 
 """
 $(TYPEDSIGNATURES)
@@ -239,6 +253,7 @@ Metabolite annotations from the [`JSONModel`](@ref).
 metabolite_annotations(model::JSONModel, mid::String)::Annotations = _maybemap(
     _parse_annotations,
     get(model.mets[model.met_index[mid]], "annotation", nothing),
+    Annotations(),
 )
 
 """
@@ -246,8 +261,11 @@ $(TYPEDSIGNATURES)
 
 Metabolite notes from the [`JSONModel`](@ref).
 """
-metabolite_notes(model::JSONModel, mid::String)::Notes =
-    _maybemap(_parse_notes, get(model.mets[model.met_index[mid]], "notes", nothing))
+metabolite_notes(model::JSONModel, mid::String)::Notes = _maybemap(
+    _parse_notes,
+    get(model.mets[model.met_index[mid]], "notes", nothing),
+    Notes(),
+)
 
 """
 $(TYPEDSIGNATURES)
