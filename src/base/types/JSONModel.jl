@@ -163,7 +163,7 @@ Parses the `.gene_reaction_rule` from reactions.
 reaction_gene_association(model::JSONModel, rid::String) = _maybemap(
     _parse_grr,
     get(model.rxns[model.rxn_index[rid]], "gene_reaction_rule", nothing),
-    nothing
+    nothing,
 )
 
 """
@@ -180,9 +180,9 @@ $(TYPEDSIGNATURES)
 Parse and return the metabolite `.formula`
 """
 metabolite_formula(model::JSONModel, mid::String) = _maybemap(
-    _parse_formula, 
+    _parse_formula,
     get(model.mets[model.met_index[mid]], "formula", nothing),
-    nothing
+    nothing,
 )
 
 """
@@ -209,7 +209,7 @@ Gene annotations from the [`JSONModel`](@ref).
 gene_annotations(model::JSONModel, gid::String)::Annotations = _maybemap(
     _parse_annotations,
     get(model.genes[model.gene_index[gid]], "annotation", nothing),
-    Annotations()
+    Annotations(),
 )
 
 """
@@ -218,9 +218,9 @@ $(TYPEDSIGNATURES)
 Gene notes from the [`JSONModel`](@ref).
 """
 gene_notes(model::JSONModel, gid::String)::Notes = _maybemap(
-    _parse_notes, 
+    _parse_notes,
     get(model.genes[model.gene_index[gid]], "notes", nothing),
-    Notes()
+    Notes(),
 )
 
 """
@@ -231,7 +231,7 @@ Reaction annotations from the [`JSONModel`](@ref).
 reaction_annotations(model::JSONModel, rid::String)::Annotations = _maybemap(
     _parse_annotations,
     get(model.rxns[model.rxn_index[rid]], "annotation", nothing),
-    Annotations()
+    Annotations(),
 )
 
 """
@@ -240,9 +240,9 @@ $(TYPEDSIGNATURES)
 Reaction notes from the [`JSONModel`](@ref).
 """
 reaction_notes(model::JSONModel, rid::String)::Notes = _maybemap(
-    _parse_notes, 
-    get(model.rxns[model.rxn_index[rid]], "notes", nothing), 
-    Notes()
+    _parse_notes,
+    get(model.rxns[model.rxn_index[rid]], "notes", nothing),
+    Notes(),
 )
 
 """
@@ -253,7 +253,7 @@ Metabolite annotations from the [`JSONModel`](@ref).
 metabolite_annotations(model::JSONModel, mid::String)::Annotations = _maybemap(
     _parse_annotations,
     get(model.mets[model.met_index[mid]], "annotation", nothing),
-    Annotations()
+    Annotations(),
 )
 
 """
@@ -262,9 +262,9 @@ $(TYPEDSIGNATURES)
 Metabolite notes from the [`JSONModel`](@ref).
 """
 metabolite_notes(model::JSONModel, mid::String)::Notes = _maybemap(
-    _parse_notes, 
+    _parse_notes,
     get(model.mets[model.met_index[mid]], "notes", nothing),
-    Notes()
+    Notes(),
 )
 
 """
@@ -272,7 +272,7 @@ $(TYPEDSIGNATURES)
 
 Return the stoichiometry of reaction with ID `rid`.
 """
-reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String, Float64} =
+reaction_stoichiometry(model::JSONModel, rid::String)::Dict{String,Float64} =
     model.rxns[model.rxn_index[rid]]["metabolites"]
 
 """
