@@ -105,8 +105,8 @@ function coupling_bounds(m::MATModel)
     nc = n_coupling_constraints(m)
     if _mat_has_squashed_coupling(m.mat)
         (
-            sparse(fill(-Inf, nc)),
-            sparse(reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end]),
+            reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end],
+            reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end],
         )
     elseif haskey(m.mat, "d")
         (
