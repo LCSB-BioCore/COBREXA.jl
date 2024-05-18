@@ -104,14 +104,18 @@ Extracts the coupling constraints. Currently, there are several accepted ways to
 function coupling_bounds(m::MATModel)
     nc = n_coupling_constraints(m)
     if _mat_has_squashed_coupling(m.mat)
+        c = reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end]
+        csense = reshape(m.mat["csense"], length(m.mat["csense"]))[n_reactions(m)+1:end],
         (
-            reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end],
-            reshape(m.mat["b"], length(m.mat["b"]))[n_reactions(m)+1:end],
+            [sense in ["G", "E"] ? val : -Inf for (val, sense) in zip(c, csense)],
+            [sense in ["L", "E"] ? val : Inf for (val, sense) in zip(c, csense)],
         )
-    elseif haskey(m.mat, "d")
+    elseif haskey(m.mat, "d") && haskey(m.mat, "dsense")
+        d = reshape(m.mat["d"], nc)
+        dsense = reshape(m.mat["dsense"], nc)
         (
-            reshape(get(m.mat, "d", fill(-Inf, nc, 1)), nc),
-            reshape(get(m.mat, "d", fill(Inf, nc, 1)), nc),
+            [sense in ["G", "E"] ? val : -Inf for (val, sense) in zip(d, dsense)],
+            [sense in ["L", "E"] ? val : Inf for (val, sense) in zip(d, dsense)],
         )
     else
         (
