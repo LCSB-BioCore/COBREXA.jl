@@ -110,13 +110,13 @@ function coupling_bounds(m::MATModel)
         )
     elseif haskey(m.mat, "d")
         (
-            sparse(reshape(get(m.mat, "d", fill(-Inf, nc, 1)), nc)),
-            sparse(reshape(get(m.mat, "d", fill(Inf, nc, 1)), nc)),
+            reshape(get(m.mat, "d", fill(-Inf, nc, 1)), nc),
+            reshape(get(m.mat, "d", fill(Inf, nc, 1)), nc),
         )
     else
         (
-            sparse(reshape(get(m.mat, "cl", fill(-Inf, nc, 1)), nc)),
-            sparse(reshape(get(m.mat, "cu", fill(Inf, nc, 1)), nc)),
+            reshape(get(m.mat, "cl", fill(-Inf, nc, 1)), nc),
+            reshape(get(m.mat, "cu", fill(Inf, nc, 1)), nc),
         )
     end
 end
