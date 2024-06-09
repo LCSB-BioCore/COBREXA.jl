@@ -24,8 +24,16 @@ function make_optimization_model(model::MetabolicModel, optimizer; sense = MAX_S
     C = coupling(model) # empty if no coupling
     isempty(C) || begin
         cl, cu = coupling_bounds(model)
-        @constraint(optimization_model, c_lbs, cl .<= C * x) # coupling lower bounds
-        @constraint(optimization_model, c_ubs, C * x .<= cu) # coupling upper bounds
+        @constraint(
+            optimization_model,
+            c_lbs,
+            cl[isfinite.(cl)] .<= C[isfinite.(cl), :] * x
+        ) # coupling lower bounds
+        @constraint(
+            optimization_model,
+            c_ubs,
+            C[isfinite.(cu), :] * x .<= cu[isfinite.(cu)]
+        ) # coupling upper bounds
     end
 
     return optimization_model
