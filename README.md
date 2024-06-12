@@ -36,6 +36,12 @@
 This package provides constraint-based reconstruction and analysis tools for
 exa-scale metabolic modeling in Julia.
 
+**This repository contains the "legacy" version of COBREXA (version 1.x).
+COBREXA development is continuing at
+[github.com/COBREXA](https://github.com/COBREXA/) with a much-improved version
+2.x, and many other new packages. Unless you need version 1.x for compatibility
+reasons, we recommend switching to version 2!**
+
 ## How to get started
 
 ### Prerequisites and requirements
@@ -80,8 +86,13 @@ of the package).
 You can install COBREXA from Julia repositories. Start `julia`, **press `]`** to
 switch to the Packaging environment, and type:
 ```
-add COBREXA
+add COBREXA@1
 ```
+
+(Note: the above command installs the "1.x" version of COBREXA, which is what
+is described in this repository and the associated documentation. If you are
+not limited by compatibility and similar reasons, consider updating to [COBREXA
+2](https://github.com/COBREXA/COBREXA.jl).)
 
 You also need to install your favorite solver supported by `JuMP.jl` (such as
 Gurobi, Mosek, CPLEX, GLPK, Clarabel, etc., see a [list
